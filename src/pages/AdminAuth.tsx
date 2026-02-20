@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import CebaLoginForm from '@/components/auth/ceba/CebaLoginForm';
 import CebaRegisterForm from '@/components/auth/ceba/CebaRegisterForm';
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import CebaForgotPasswordForm from '@/components/auth/ceba/CebaForgotPasswordForm';
 import {
     Shield,
     Lock,
@@ -169,8 +169,7 @@ const AdminAuth = () => {
 
                             {authMode === 'forgot-password' && (
                                 <div className="animate-fade-in-up">
-                                    <ForgotPasswordForm
-                                        variant="admin"
+                                    <CebaForgotPasswordForm
                                         onBackToLogin={() => setAuthMode('login')}
                                     />
                                 </div>

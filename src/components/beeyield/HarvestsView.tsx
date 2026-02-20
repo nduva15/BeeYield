@@ -1,6 +1,25 @@
 import React, { useState } from 'react';
-import { Package, Plus, Calendar, MapPin, Hexagon, TrendingUp, Download, Filter, Search, RefreshCw } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import {
+    Package,
+    Plus,
+    Calendar,
+    MapPin,
+    Hexagon,
+    TrendingUp,
+    Download,
+    Search,
+    RefreshCw,
+    ShieldCheck,
+    Zap,
+    Wind,
+    ArrowRight,
+    ChevronLeft,
+    SearchX,
+    Filter,
+    Layers,
+    Cpu
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -11,19 +30,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { PageHeader, StatCard, SectionHeader, EmptyState } from './SharedPageComponents';
 import { useHarvests, useCreateHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 interface HarvestsViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string, action?: string } | null;
 }
 
-const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams }) => {
+const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterYear, setFilterYear] = useState<string>('all');
     const [isAddingHarvest, setIsAddingHarvest] = useState(false);
@@ -82,14 +102,14 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams 
         });
     }, [harvests, searchQuery, filterYear]);
 
-    const getColorGrade = (grade?: string) => {
-        const colors: Record<string, string> = {
-            'Extra Light Amber': 'bg-amber-100 text-amber-700 border-amber-200',
-            'Light Amber': 'bg-amber-200 text-amber-800 border-amber-300',
-            'Amber': 'bg-amber-300 text-amber-900 border-amber-400',
-            'Dark Amber': 'bg-amber-500 text-white border-amber-600',
+    const getColorGradeStyles = (grade?: string) => {
+        const styles: Record<string, string> = {
+            'Extra Light Amber': 'bg-amber-50 text-amber-600 border-amber-100',
+            'Light Amber': 'bg-amber-100/50 text-amber-700 border-amber-200',
+            'Amber': 'bg-amber-500/10 text-amber-800 border-amber-500/20',
+            'Dark Amber': 'bg-amber-900/10 text-amber-950 border-amber-900/20',
         };
-        return colors[grade || ''] || 'bg-gray-100 text-gray-700 border-gray-200';
+        return styles[grade || ''] || 'bg-gray-50 text-gray-600 border-gray-100';
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -112,59 +132,76 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams 
                     weather_conditions: 'Sunny',
                     is_verified: true
                 });
+                toast.success('Yield archived successfully');
             }
         });
     };
 
     if (isAddingHarvest) {
         return (
-            <div className="space-y-6 pb-12">
-                <PageHeader
-                    title="Log New Harvest"
-                    subtitle="Record honey harvest details"
-                    icon={Package}
-                    onBack={() => setIsAddingHarvest(false)}
-                />
-                <Card className="max-w-4xl">
-                    <CardContent className="p-8">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        Harvest Date
-                                    </label>
+            <div className="space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Custom Page Header */}
+                <div className="flex items-center gap-6">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsAddingHarvest(false)}
+                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:text-beeyield-forest"
+                    >
+                        <ChevronLeft className="w-6 h-6" />
+                    </Button>
+                    <div>
+                        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-2">
+                            <Package className="w-3.5 h-3.5 text-beeyield-forest" />
+                            <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.1em]">Yield Inventory</span>
+                        </div>
+                        <h1 className="text-4xl font-bold text-beeyield-charcoal tracking-tight">Log Extraction</h1>
+                    </div>
+                </div>
+
+                <Card className="rounded-[3rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden max-w-5xl">
+                    <CardHeader className="p-12 pb-6">
+                        <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Harvest Parametrics</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-12 pt-0">
+                        <form onSubmit={handleSubmit} className="space-y-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Archive Date</Label>
                                     <Input
                                         type="date"
                                         value={formData.harvest_date}
                                         onChange={(e) => setFormData({ ...formData, harvest_date: e.target.value })}
+                                        className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
                                         required
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        Quantity (kg)
-                                    </label>
-                                    <Input
-                                        type="number"
-                                        step="0.1"
-                                        placeholder="0.0"
-                                        value={formData.quantity_kg || ''}
-                                        onChange={(e) => setFormData({ ...formData, quantity_kg: parseFloat(e.target.value) })}
-                                        required
-                                    />
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Net Weight (kg)</Label>
+                                    <div className="relative">
+                                        <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />
+                                        <Input
+                                            type="number"
+                                            step="0.1"
+                                            placeholder="0.0"
+                                            value={formData.quantity_kg || ''}
+                                            onChange={(e) => setFormData({ ...formData, quantity_kg: parseFloat(e.target.value) })}
+                                            className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        Honey Type
-                                    </label>
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Varietal Feed</Label>
                                     <Select
                                         value={formData.honey_type}
                                         onValueChange={(val) => setFormData({ ...formData, honey_type: val })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
+                                            <Layers className="w-4 h-4 mr-2 text-beeyield-forest" />
                                             <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="rounded-2xl">
                                             <SelectItem value="Acacia">Acacia</SelectItem>
                                             <SelectItem value="Multifloral">Multifloral</SelectItem>
                                             <SelectItem value="Sunflower">Sunflower</SelectItem>
@@ -173,18 +210,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams 
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        Color Grade
-                                    </label>
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Chromatic Grade</Label>
                                     <Select
                                         value={formData.color_grade}
                                         onValueChange={(val) => setFormData({ ...formData, color_grade: val })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
+                                            <div className="w-3 h-3 rounded-full mr-2 bg-amber-400" />
                                             <SelectValue placeholder="Select grade" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="rounded-2xl">
                                             <SelectItem value="Extra Light Amber">Extra Light Amber</SelectItem>
                                             <SelectItem value="Light Amber">Light Amber</SelectItem>
                                             <SelectItem value="Amber">Amber</SelectItem>
@@ -192,47 +228,49 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams 
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        Extraction Method
-                                    </label>
-                                    <Input
-                                        placeholder="e.g. Cold Extraction"
-                                        value={formData.extraction_method || ''}
-                                        onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
-                                    />
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Extraction Protocol</Label>
+                                    <div className="relative">
+                                        <Cpu className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <Input
+                                            placeholder="e.g. Cold Centrifugue"
+                                            value={formData.extraction_method || ''}
+                                            onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
+                                            className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                                        Weather Conditions
-                                    </label>
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Extraction Environment</Label>
                                     <Input
-                                        placeholder="e.g. Sunny"
+                                        placeholder="e.g. Sunny / Temp Controlled"
                                         value={formData.weather_conditions || ''}
                                         onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
+                                        className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-3 pt-6 border-t">
+                            <div className="flex justify-end gap-4 pt-10 border-t border-[#F5F5F5]">
                                 <Button
                                     type="button"
-                                    variant="outline"
+                                    variant="ghost"
                                     onClick={() => setIsAddingHarvest(false)}
+                                    className="h-14 px-8 rounded-2xl font-bold text-gray-400 hover:text-beeyield-charcoal"
                                 >
-                                    Cancel
+                                    Discard
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={isCreating}
-                                    className="gap-2"
+                                    className="h-16 px-12 rounded-2xl bg-beeyield-forest text-white gap-3 font-bold text-lg shadow-xl shadow-beeyield-forest/20"
                                 >
                                     {isCreating ? (
-                                        <RefreshCw className="w-4 h-4 animate-spin" />
+                                        <RefreshCw className="w-5 h-5 animate-spin" />
                                     ) : (
-                                        <Plus className="w-4 h-4" />
+                                        <ShieldCheck className="w-5 h-5" />
                                     )}
-                                    Confirm Harvest
+                                    Commit Production Log
                                 </Button>
                             </div>
                         </form>
@@ -243,118 +281,123 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams 
     }
 
     return (
-        <div className="space-y-6 pb-12">
-            {/* Header */}
-            <PageHeader
-                title="Harvests"
-                subtitle="Track and manage your honey harvests"
-                icon={Package}
-                badge={{ text: `${stats.totalHarvests} Total`, variant: 'success' }}
-                onRefresh={() => window.location.reload()}
-                actions={
+        <div className="space-y-12 pb-20 animate-in fade-in duration-500">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
+                        <Package className="w-3.5 h-3.5 text-beeyield-forest" />
+                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Yield Management</span>
+                    </div>
+                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Extraction Records</h1>
+                    <p className="text-gray-500 font-medium mt-3 text-lg">
+                        Biometric tracking of honey production and varietal classification.
+                    </p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => window.location.reload()}
+                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:text-beeyield-forest"
+                    >
+                        <RefreshCw className="w-5 h-5" />
+                    </Button>
                     <Button
                         onClick={() => setIsAddingHarvest(true)}
-                        className="gap-2"
+                        className="h-14 px-8 rounded-2xl bg-beeyield-forest hover:opacity-90 text-white shadow-lg shadow-beeyield-forest/20 gap-3 font-bold text-sm tracking-wide"
                     >
-                        <Plus className="w-4 h-4" />
-                        Log Harvest
+                        <Plus className="w-5 h-5" />
+                        Log Extraction
                     </Button>
-                }
-            />
+                </div>
+            </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard
-                    label="Total Harvests"
-                    value={stats.totalHarvests}
-                    icon={Package}
-                    color="amber"
-                    subtitle="All time"
-                />
-                <StatCard
-                    label="Total Honey"
-                    value={`${stats.totalHoney} kg`}
-                    icon={TrendingUp}
-                    color="green"
-                    subtitle="Cumulative yield"
-                />
-                <StatCard
-                    label="This Month"
-                    value={stats.thisMonth}
-                    icon={Calendar}
-                    color="blue"
-                    subtitle="Recent harvests"
-                />
-                <StatCard
-                    label="Avg per Harvest"
-                    value={`${stats.avgPerHarvest} kg`}
-                    icon={Package}
-                    color="purple"
-                    subtitle="Average yield"
-                />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                {[
+                    { label: 'Cumulative Yield', value: `${stats.totalHoney}kg`, icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50' },
+                    { label: 'Extraction Cycles', value: stats.totalHarvests, icon: Package, color: 'text-beeyield-forest', bg: 'bg-beeyield-forest/5' },
+                    { label: 'Active Cycle', value: stats.thisMonth, icon: Calendar, color: 'text-blue-500', bg: 'bg-blue-50' },
+                    { label: 'Yield Coefficient', value: `${stats.avgPerHarvest}kg`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' }
+                ].map((stat, i) => (
+                    <motion.div key={i} whileHover={{ y: -4, scale: 1.01 }}>
+                        <Card className="rounded-[2rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden group">
+                            <CardContent className="p-8">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:bg-beeyield-forest group-hover:border-beeyield-forest group-hover:text-white", stat.bg)}>
+                                        <stat.icon className={cn("w-6 h-6 stroke-[2] transition-colors duration-500 group-hover:text-white", stat.color)} />
+                                    </div>
+                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">{stat.label}</p>
+                                </div>
+                                <h3 className="text-4xl font-bold text-beeyield-charcoal tracking-tighter">{stat.value}</h3>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                ))}
             </div>
 
             {/* Filters */}
-            <Card>
-                <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
+            <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
+                <CardContent className="p-8">
+                    <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
-                                placeholder="Search by batch code or honey type..."
+                                placeholder="Search by batch identifier or honey varietal..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10"
+                                className="pl-12 h-14 rounded-2xl border-[#E0E0E0] bg-white font-medium text-sm focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30 transition-all shadow-sm"
                             />
                         </div>
                         <Select value={filterYear} onValueChange={setFilterYear}>
-                            <SelectTrigger className="w-full sm:w-[180px]">
-                                <SelectValue placeholder="Filter by year" />
+                            <SelectTrigger className="h-14 md:w-[220px] rounded-2xl border-[#E0E0E0] font-bold text-sm bg-white shadow-sm">
+                                <Calendar className="w-4 h-4 mr-2 text-beeyield-forest" />
+                                <SelectValue placeholder="Harvest Year" />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Years</SelectItem>
-                                <SelectItem value="2024">2024</SelectItem>
-                                <SelectItem value="2023">2023</SelectItem>
-                                <SelectItem value="2022">2022</SelectItem>
+                            <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
+                                <SelectItem value="all">Across All Cycles</SelectItem>
+                                <SelectItem value="2025">2025 Cycle</SelectItem>
+                                <SelectItem value="2024">2024 Cycle</SelectItem>
+                                <SelectItem value="2023">2023 Cycle</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" className="gap-2">
+                        <Button variant="outline" className="h-14 px-8 rounded-2xl border-[#E0E0E0] text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:border-beeyield-forest/20 hover:text-beeyield-forest transition-all gap-2 font-bold text-sm">
                             <Download className="w-4 h-4" />
-                            Export
+                            Export Data
                         </Button>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Harvests List */}
+            {/* List Content */}
             {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[1, 2, 3, 4, 5, 6].map(i => (
-                        <Card key={i} className="animate-pulse">
-                            <CardContent className="p-6">
-                                <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                            </CardContent>
-                        </Card>
+                        <div key={i} className="aspect-[4/3] rounded-[2.5rem] bg-beeyield-sand/20 animate-pulse border border-beeyield-sand/30" />
                     ))}
                 </div>
             ) : filteredHarvests.length === 0 ? (
-                <EmptyState
-                    icon={Package}
-                    title="No Harvests Found"
-                    description="Start logging your honey harvests to track production and quality over time."
-                    action={{
-                        label: "Log First Harvest",
-                        onClick: () => setIsAddingHarvest(true)
-                    }}
-                />
+                <div className="py-20 text-center flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-[2.5rem] bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center mb-8">
+                        <SearchX className="w-10 h-10 text-beeyield-forest/30" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-beeyield-charcoal mb-3">No Extractions Found</h3>
+                    <p className="text-gray-400 font-medium max-w-md mb-8">Begin documenting your production metrics by logging your first extraction cycle.</p>
+                    <Button onClick={() => setIsAddingHarvest(true)} className="h-12 px-6 rounded-xl bg-beeyield-forest text-white font-bold gap-2">
+                        <Plus className="w-4 h-4" /> Log First Harvest
+                    </Button>
+                </div>
             ) : (
-                <>
-                    <SectionHeader
-                        title="Harvest Records"
-                        subtitle={`Showing ${filteredHarvests.length} of ${harvests.length} harvests`}
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <AnimatePresence>
+                <div className="space-y-8">
+                    <div className="flex items-center gap-3">
+                        <h3 className="text-xl font-bold text-beeyield-charcoal px-2">Archive Feed</h3>
+                        <div className="h-[1px] flex-1 bg-[#F5F5F5]" />
+                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{filteredHarvests.length} Batch Records</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <AnimatePresence mode="popLayout">
                             {filteredHarvests.map((harvest, index) => (
                                 <motion.div
                                     key={harvest.id}
@@ -363,80 +406,88 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange, initialParams 
                                     transition={{ duration: 0.4, delay: index * 0.05 }}
                                 >
                                     <Card
-                                        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-amber-500 overflow-hidden"
+                                        className="rounded-[2.5rem] border-[#E0E0E0] bg-white group hover:shadow-xl hover:shadow-beeyield-forest/5 hover:border-beeyield-forest/20 transition-all duration-300 border-l-4 border-l-beeyield-forest overflow-hidden relative"
                                     >
-                                        <CardContent className="p-6">
-                                            <div className="flex items-start justify-between mb-4">
+                                        <CardContent className="p-10">
+                                            <div className="flex items-start justify-between mb-8">
                                                 <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <Package className="w-4 h-4 text-amber-600" />
-                                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                            {harvest.batch_code || 'No Batch Code'}
+                                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-beeyield-sand/30 border border-[#E8E0D5] mb-4">
+                                                        <Package className="w-3.5 h-3.5 text-beeyield-forest" />
+                                                        <span className="text-[9px] font-black text-beeyield-charcoal uppercase tracking-[0.15em]">
+                                                            {harvest.batch_code || 'UNIDENTIFIED'}
                                                         </span>
                                                     </div>
-                                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                                                        {harvest.quantity_kg} kg
-                                                    </h3>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                        {harvest.honey_type || 'Mixed Flora'}
+                                                    <div className="flex items-baseline gap-2">
+                                                        <h3 className="text-4xl font-bold text-beeyield-charcoal tracking-tight">
+                                                            {harvest.quantity_kg}
+                                                        </h3>
+                                                        <span className="text-lg font-bold text-gray-400">kg</span>
+                                                    </div>
+                                                    <p className="text-base font-bold text-beeyield-forest mt-1">
+                                                        {harvest.honey_type || 'Mixed Flora'} Varietal
                                                     </p>
                                                 </div>
                                                 {harvest.is_verified && (
-                                                    <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
-                                                        Verified
-                                                    </Badge>
+                                                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                                                        <ShieldCheck className="w-6 h-6" />
+                                                    </div>
                                                 )}
                                             </div>
 
-                                            <div className="space-y-3">
-                                                <div className="flex items-center gap-2 text-sm">
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-3 py-3 border-y border-[#F8F8F8]">
                                                     <Calendar className="w-4 h-4 text-gray-400" />
-                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                    <span className="text-sm font-bold text-beeyield-charcoal">
                                                         {format(new Date(harvest.harvest_date), 'MMM dd, yyyy')}
                                                     </span>
                                                 </div>
 
-                                                {harvest.hive && (
-                                                    <div className="flex items-center gap-2 text-sm">
-                                                        <Hexagon className="w-4 h-4 text-gray-400" />
-                                                        <span className="text-gray-600 dark:text-gray-400">
-                                                            Hive: {harvest.hive.hive_code}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    {harvest.hive && (
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8 h-8 rounded-lg bg-beeyield-sand/30 flex items-center justify-center text-beeyield-forest">
+                                                                <Hexagon className="w-4 h-4" />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-beeyield-charcoal">
+                                                                #{harvest.hive.hive_code}
+                                                            </span>
+                                                        </div>
+                                                    )}
 
-                                                {harvest.apiary && (
-                                                    <div className="flex items-center gap-2 text-sm">
-                                                        <MapPin className="w-4 h-4 text-gray-400" />
-                                                        <span className="text-gray-600 dark:text-gray-400">
-                                                            {harvest.apiary.name}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                    {harvest.apiary && (
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8 h-8 rounded-lg bg-beeyield-sand/30 flex items-center justify-center text-beeyield-forest">
+                                                                <MapPin className="w-4 h-4" />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-beeyield-charcoal truncate">
+                                                                {harvest.apiary.name}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
 
                                                 {harvest.color_grade && (
-                                                    <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
-                                                        <Badge className={getColorGrade(harvest.color_grade)}>
+                                                    <div className="pt-2">
+                                                        <Badge className={cn("rounded-lg px-3 py-1 border font-bold text-[9px] uppercase tracking-widest", getColorGradeStyles(harvest.color_grade))}>
+                                                            <div className="w-2 h-2 rounded-full bg-current mr-2 opacity-40" />
                                                             {harvest.color_grade}
                                                         </Badge>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            {harvest.extraction_method && (
-                                                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                                                    <p className="text-xs text-gray-500">
-                                                        <span className="font-semibold">Method:</span> {harvest.extraction_method}
-                                                    </p>
+                                            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+                                                <div className="w-10 h-10 rounded-xl bg-beeyield-forest text-white flex items-center justify-center shadow-lg shadow-beeyield-forest/20">
+                                                    <ArrowRight className="w-5 h-5" />
                                                 </div>
-                                            )}
+                                            </div>
                                         </CardContent>
                                     </Card>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
                     </div>
-                </>
+                </div>
             )}
         </div>
     );

@@ -4,11 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Lock, CheckCircle, Shield } from 'lucide-react';
+import { Loader2, Lock, CheckCircle, Shield, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const UpdatePasswordForm: React.FC = () => {
-    const { updatePassword, session } = useAuth();
+    const { updatePassword, session, activeBackend } = useAuth();
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,7 +17,6 @@ const UpdatePasswordForm: React.FC = () => {
     const [isValidSession, setIsValidSession] = useState(false);
 
     useEffect(() => {
-        // Check if we have a valid session (user came from reset link)
         // Supabase automatically logs the user in when they click the reset link
         if (session) {
             setIsValidSession(true);
@@ -28,12 +27,12 @@ const UpdatePasswordForm: React.FC = () => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            toast.error('Passwords do not match');
+            toast.error('Access mismatch: Passwords do not match');
             return;
         }
 
         if (password.length < 6) {
-            toast.error('Password must be at least 6 characters');
+            toast.error('Encryption insufficient: Password must be at least 6 characters');
             return;
         }
 
@@ -42,40 +41,39 @@ const UpdatePasswordForm: React.FC = () => {
         const { error } = await updatePassword(password);
 
         if (error) {
-            toast.error('Could not update password', { description: error.message });
+            toast.error('Update Protocol Failed', { description: error.message });
         } else {
             setSuccess(true);
-            toast.success('Password changed! 🎉', {
-                description: 'You can now log in with your new password.',
-            });
+            toast.success('Security Protocol Updated! 🎉');
         }
 
         setLoading(false);
     };
 
-    // Success state
+    const loginPath = activeBackend === 'ceba' ? '/ceba/login' : activeBackend === 'beeyield' ? '/beeyield-login' : '/login';
+
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-amber-900/20 dark:to-gray-900 p-4">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans">
                 <div className="w-full max-w-md">
-                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl border border-amber-200/50 dark:border-amber-500/20 p-8 space-y-6">
-                        <div className="text-center space-y-4">
-                            <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
-                                <CheckCircle className="h-10 w-10 text-green-500" />
+                    <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10 space-y-8 text-center">
+                        <div className="space-y-4">
+                            <div className="w-20 h-20 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto border-2 border-beeyield-green/20">
+                                <CheckCircle className="h-10 w-10 text-beeyield-green" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-2xl font-bold">Password Updated!</h2>
-                                <p className="text-sm text-muted-foreground">
-                                    Your password has been successfully updated. You can now log in with your new password.
+                                <h2 className="text-3xl font-black text-beeyield-green tracking-tight">Security Updated.</h2>
+                                <p className="text-sm text-beeyield-green/60 font-medium leading-relaxed">
+                                    Your access credentials have been successfully reset. You may now re-authenticate via the secure portal.
                                 </p>
                             </div>
                         </div>
 
                         <Button
-                            onClick={() => navigate('/ceba/login')}
-                            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                            onClick={() => navigate(loginPath)}
+                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
                         >
-                            Go to Login
+                            Return to Sign In
                         </Button>
                     </div>
                 </div>
@@ -83,56 +81,44 @@ const UpdatePasswordForm: React.FC = () => {
         );
     }
 
-    // Loading session check
     if (!isValidSession) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-amber-900/20 dark:to-gray-900 p-4">
-                <div className="w-full max-w-md">
-                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl border border-amber-200/50 dark:border-amber-500/20 p-8 space-y-6">
-                        <div className="text-center space-y-4">
-                            <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto">
-                                <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
-                            </div>
-                            <div className="space-y-2">
-                                <h2 className="text-xl font-bold">Checking link...</h2>
-                                <p className="text-sm text-muted-foreground">
-                                    Please wait while we check your link.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <div className="min-h-screen flex items-center justify-center bg-beeyield-cream p-4">
+                <div className="text-center space-y-4">
+                    <Loader2 className="h-10 w-10 animate-spin text-beeyield-green mx-auto" />
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-beeyield-green/40">Synchronizing Session...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-amber-900/20 dark:to-gray-900 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans">
             <div className="w-full max-w-md">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl border border-amber-200/50 dark:border-amber-500/20 p-8">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="text-center space-y-2">
-                            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                                <Shield className="h-8 w-8 text-primary" />
+                <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10">
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="text-center space-y-3">
+                            <div className="w-16 h-16 rounded-2xl bg-beeyield-gold/10 flex items-center justify-center mx-auto border border-beeyield-gold/20">
+                                <Shield className="h-8 w-8 text-beeyield-gold" />
                             </div>
-                            <h2 className="text-2xl font-bold">New Password</h2>
-                            <p className="text-sm text-muted-foreground">
-                                Choose a new password
+                            <h2 className="text-2xl font-black text-beeyield-green uppercase tracking-tighter">New Access Key</h2>
+                            <p className="text-xs font-black text-beeyield-green/40 uppercase tracking-widest">
+                                Establish your revised security protocol
                             </p>
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="new-password">New Password</Label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Label htmlFor="new-password" title="Enter at least 6 characters" className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/60 pl-1">New Access Key</Label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
                                     <Input
                                         id="new-password"
                                         type="password"
-                                        placeholder="At least 6 characters"
+                                        placeholder="Min. 6 alphanumeric"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-10 h-14 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl bg-white"
                                         required
                                         autoFocus
                                     />
@@ -140,16 +126,16 @@ const UpdatePasswordForm: React.FC = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="confirm-password">Confirm New Password</Label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Label htmlFor="confirm-password" className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/60 pl-1">Verify Access Key</Label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
                                     <Input
                                         id="confirm-password"
                                         type="password"
-                                        placeholder="••••••••"
+                                        placeholder="Repeat your access key"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-10 h-14 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl bg-white"
                                         required
                                     />
                                 </div>
@@ -158,22 +144,24 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-white font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
                             disabled={loading}
                         >
                             {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Updating...
-                                </>
+                                <Loader2 className="h-5 w-5 animate-spin" />
                             ) : (
-                                'Update Password'
+                                'Activate Security Key'
                             )}
                         </Button>
 
-                        <p className="text-xs text-center text-muted-foreground">
-                            Password must be at least 6 characters long.
-                        </p>
+                        <button
+                            type="button"
+                            onClick={() => navigate(loginPath)}
+                            className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
+                        >
+                            <ArrowLeft className="h-3 w-3" />
+                            Return to Portal
+                        </button>
                     </form>
                 </div>
             </div>
