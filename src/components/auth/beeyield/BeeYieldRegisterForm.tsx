@@ -42,7 +42,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         }, 'beeyield');
 
         if (error) {
-            toast.error("Registry error", { description: error.message });
+            toast.error("Login error", { description: error.message });
         } else {
             const { supabaseBeeYield } = await import('@/lib/supabase');
             if (supabaseBeeYield && signupData?.user) {
@@ -55,7 +55,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 });
             }
 
-            toast.success("Identity registered. Check email.");
+            toast.success("Account created. Check your email.");
             onSuccess?.();
         }
         setLoading(false);
@@ -67,7 +67,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         localStorage.setItem('authBackend', 'beeyield');
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
         if (error) {
-            toast.error("Sinc error", { description: error.message });
+            toast.error("Login error", { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -85,7 +85,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 ) : (
                     <ShieldCheck className="h-4 w-4" />
                 )}
-                Register with Google
+                Login with Google
             </button>
 
             <div className="relative">
@@ -93,15 +93,15 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     <span className="w-full border-t-2 border-[#064e3b]/10" />
                 </div>
                 <div className="relative flex justify-center text-[10px] font-black tracking-[0.3em] uppercase">
-                    <span className="bg-white px-6 text-[#064e3b]">Manual Input</span>
+                    <span className="bg-white px-6 text-[#064e3b]">Or use your email</span>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Given Name</Label>
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">First Name</Label>
                     <input
-                        placeholder="INPUT FIRST"
+                        placeholder="ENTER FIRST NAME"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase placeholder:opacity-20"
@@ -109,9 +109,9 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Family Name</Label>
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Last Name</Label>
                     <input
-                        placeholder="INPUT LAST"
+                        placeholder="ENTER LAST NAME"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase placeholder:opacity-20"
@@ -121,10 +121,10 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             </div>
 
             <div className="space-y-2">
-                <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Network Email</Label>
+                <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Email Address</Label>
                 <input
                     type="email"
-                    placeholder="E.G. USER@BEEYIELD.COM"
+                    placeholder="E.G. NAME@EMAIL.COM"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase placeholder:opacity-20"
@@ -134,7 +134,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Access Key</Label>
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Password</Label>
                     <input
                         type="password"
                         placeholder="••••••••"
@@ -145,7 +145,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Confirm Key</Label>
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Confirm Password</Label>
                     <input
                         type="password"
                         placeholder="••••••••"
@@ -164,19 +164,19 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             >
                 <div className="flex items-center justify-center gap-3">
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="w-4 h-4" />}
-                    Initialize Account
+                    Login
                 </div>
             </button>
 
             {onSwitchToLogin && (
                 <p className="text-center text-[10px] font-black text-[#064e3b] uppercase tracking-widest pt-4">
-                    Existing User?{' '}
+                    Have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
                         className="underline decoration-2 decoration-[#facc15] underline-offset-4 hover:text-[#10b981]"
                     >
-                        Login Path
+                        Login here
                     </button>
                 </p>
             )}

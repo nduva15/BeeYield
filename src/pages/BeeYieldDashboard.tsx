@@ -16,7 +16,8 @@ import {
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
     Navigation, FileBarChart,
     Brain,
-    Crosshair
+    Crosshair,
+    Award
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -75,6 +76,18 @@ import LiveActivityHeatmap from '@/components/beeyield/LiveActivityHeatmap';
 import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
 import HealthyHiveIndex from '@/components/beeyield/HealthyHiveIndex';
 import DeploymentPlanning from '@/components/beeyield/DeploymentPlanning';
+
+import ForagingOptimizer from '@/components/beeyield/ForagingOptimizer';
+import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
+import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
+import AcousticMoodTransformer from '@/components/beeyield/AcousticMoodTransformer';
+import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast';
+import VpmAutoCounter from '@/components/beeyield/VpmAutoCounter';
+import VpmTicker from '@/components/beeyield/VpmTicker';
+import HpaOptimizer from '@/components/beeyield/HpaOptimizer';
+import FleetSecurity from '@/components/beeyield/FleetSecurity';
+import ComplianceReport from '@/components/beeyield/ComplianceReport';
+import BeeCalculatorPage from '@/components/beeyield/BeeCalculatorPage';
 
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 
@@ -193,28 +206,42 @@ const BeeYieldDashboard: React.FC = () => {
             icon: Calculator,
             hasSubmenu: true,
             submenuItems: [
-                // ── Mission Control ──────────────────────
-                { id: 'precision-pollination-home', label: 'Mission Control', icon: Activity },
-                // ── Field Intelligence ───────────────────
-                { id: 'bloom-tracking', label: 'Bloom Tracking', icon: Zap },
-                { id: 'precision-pollination-grid', label: 'Tactical Grid', icon: Layers },
-                { id: 'intelligence', label: 'Intelligence', icon: Brain },
-                { id: 'heat-map', label: 'PIP Heatmap', icon: Layers },
-                { id: 'yield-predict', label: 'Yield Predict', icon: Cpu },
-                { id: 'hhi-audit', label: 'HHI Audit', icon: ShieldCheck },
-                { id: 'deployment', label: 'War Room', icon: Crosshair },
-                // ── BaaS Command Centre ───────────────────
-                { id: 'sensor-vitals', label: 'Sensor Vitals', icon: Zap },
-                { id: 'continuous-monitor', label: 'Live Monitor', icon: Activity },
-                { id: 'yard-management', label: 'Yard Operations', icon: ClipboardList },
-                { id: 'fleet-security', label: 'Fleet Security', icon: Shield },
-                // ── Planning & Logistics ─────────────────
-                { id: 'orchard-mapper', label: 'Orchard Setup', icon: MapPin },
-                { id: 'pollination-calcs', label: 'Bee Calculator', icon: Calculator },
-                { id: 'season-summary', label: 'Season Report', icon: FileBarChart },
-                // ── Other ────────────────────────────────
-                { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
-                { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+                {
+                    title: 'Field Info',
+                    items: [
+                        { id: 'intelligence', label: 'Pollination Info', icon: Brain },
+                        { id: 'logistics-setup', label: 'Farm Map', icon: Layers },
+                        { id: 'fleet-security-active', label: 'Asset Security', icon: ShieldCheck },
+                    ]
+                },
+                {
+                    title: 'Analysis',
+                    items: [
+                        { id: 'acoustic-transformer', label: 'Hive Sound', icon: Volume2 },
+                        { id: 'bee-calculator', label: 'Op-Health Calculator', icon: Calculator },
+                        { id: 'hpa-optimizer', label: 'HPA Optimizer', icon: Calculator },
+                        { id: 'foraging-optimizer', label: 'Bee Optimizer', icon: Crosshair },
+                        { id: 'vpm-counter', label: 'Visits Counter', icon: Camera },
+                        { id: 'bfh-forecast', label: 'Efficiency Forecast', icon: Zap },
+                        { id: 'yield-predict', label: 'Yield Forecast', icon: Cpu },
+                    ]
+                },
+                {
+                    title: 'Checkups',
+                    items: [
+                        { id: 'digital-audit', label: 'Hive Check', icon: FileBarChart },
+                        { id: 'compliance-report', label: 'Pollination Report', icon: Award },
+                        { id: 'bloom-tracking', label: 'Flower Status', icon: Zap },
+                    ]
+                },
+                {
+                    title: 'System View',
+                    items: [
+                        { id: 'sensor-vitals', label: 'Hive Health', icon: Zap },
+                        { id: 'continuous-monitor', label: 'Live View', icon: Activity },
+                        { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
+                    ]
+                },
             ]
         },
 
@@ -330,17 +357,51 @@ const BeeYieldDashboard: React.FC = () => {
                 return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="map" />;
             case 'site-reports-tactical':
                 return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="reports" />;
-            case 'pollination-intelligence':
+
             case 'intelligence':
+            case 'pollination-intelligence':
                 return <PollinationIntelligence onTabChange={handleTabChange} />;
-            case 'heat-map':
-                return <LiveActivityHeatmap onTabChange={handleTabChange} />;
+
+            case 'logistics-setup':
+            case 'orchard-mapper':
+                return <OrchardMapper onTabChange={handleTabChange} />;
+
+            case 'fleet-security':
+            case 'geospatial-security':
+            case 'deployment':
+                return <HiveLogisticsSecurity onTabChange={handleTabChange} />;
+
+            case 'acoustic-transformer':
+                return <AcousticMoodTransformer />;
+
+            case 'bee-calculator':
+                return <BeeCalculatorPage />;
+
+            case 'hpa-optimizer':
+                return <HpaOptimizer />;
+
+            case 'foraging-optimizer':
+                return <ForagingOptimizer onTabChange={handleTabChange} />;
+
             case 'yield-predict':
                 return <PredictiveSuccessEngine onTabChange={handleTabChange} />;
+
+            case 'fleet-security-active':
+                return <FleetSecurity />;
+
+            case 'bfh-forecast':
+                return <BeeFlightHoursForecast />;
+
+            case 'vpm-counter':
+                return <VpmAutoCounter />;
+
+            case 'digital-audit':
             case 'hhi-audit':
-                return <HealthyHiveIndex onTabChange={handleTabChange} />;
-            case 'deployment':
-                return <DeploymentPlanning onTabChange={handleTabChange} />;
+                return <DigitalHealthAudit onTabChange={handleTabChange} />;
+
+            case 'compliance-report':
+                return <ComplianceReport />;
+
             case 'sensor-vitals':
                 return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor':
@@ -417,7 +478,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'sound':
                 return <SoundAnalysisView onTabChange={handleTabChange} />;
             case 'health-guide':
-                return <HealthGuideView onTabChange={handleTabChange} />;
+                return <HealthGuideView />;
             case 'reports-exports':
                 return <ReportsExportsView onTabChange={handleTabChange} />;
             case 'label-generator':
@@ -465,13 +526,13 @@ const BeeYieldDashboard: React.FC = () => {
                             Access <span className="text-[#10b981]">Denied</span>
                         </h1>
                         <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-[0.4em]">
-                            Security Protocol // 42_BETA
+                            Security Check
                         </p>
                     </div>
 
                     <div className="border-4 border-[#064e3b] p-10 bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
                         <p className="text-sm font-black uppercase leading-relaxed mb-10">
-                            Registry access requires valid authentication. Credentials must be verified through the central node.
+                            You need to log in to see this page.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <button
@@ -479,7 +540,7 @@ const BeeYieldDashboard: React.FC = () => {
                                 className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-white font-black uppercase text-xs tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3"
                             >
                                 <Lock className="w-4 h-4" />
-                                Login Path
+                                Login
                             </button>
                         </div>
                     </div>
@@ -488,10 +549,10 @@ const BeeYieldDashboard: React.FC = () => {
                         onClick={() => navigate('/')}
                         className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30 hover:text-[#10b981] transition-colors"
                     >
-                        Back to Origin
+                        Back home
                     </button>
-                </div>
-            </div>
+                </div >
+            </div >
         );
     }
 

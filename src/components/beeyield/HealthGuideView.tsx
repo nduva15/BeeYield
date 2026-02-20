@@ -129,10 +129,10 @@ const HealthGuideView: React.FC = () => {
                 <div className="space-y-1">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-1">
                         <Microscope className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Bio-Medical Audit Protocol</span>
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Health Check</span>
                     </div>
                     <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
-                        Health <span className="text-[#10b981]">Matrix</span>
+                        Health <span className="text-[#10b981]">Guide</span>
                     </h1>
                 </div>
 
@@ -140,7 +140,7 @@ const HealthGuideView: React.FC = () => {
                     <div className="relative w-96">
                         <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
                         <Input
-                            placeholder="SEARCH BIO-ARCHIVE..."
+                            placeholder="SEARCH HEALTH INFO..."
                             className="pl-12 h-14 rounded-none border-4 border-[#064e3b] bg-neutral-50 font-black uppercase text-xs tracking-widest placeholder:text-neutral-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5 transition-none"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -154,7 +154,7 @@ const HealthGuideView: React.FC = () => {
                                 activeTab === 'diseases' ? "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]" : "text-[#064e3b]/40 hover:text-[#064e3b]"
                             )}
                         >
-                            Pathogens
+                            Diseases
                         </button>
                         <button
                             onClick={() => { setActiveTab('species'); setSelectedItem(null); }}
@@ -163,7 +163,7 @@ const HealthGuideView: React.FC = () => {
                                 activeTab === 'species' ? "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]" : "text-[#064e3b]/40 hover:text-[#064e3b]"
                             )}
                         >
-                            Taxonomy
+                            Bee Types
                         </button>
                     </div>
                 </div>
@@ -175,7 +175,7 @@ const HealthGuideView: React.FC = () => {
                     <div className="space-y-6">
                         <div className="flex items-center gap-3 border-b-4 border-[#064e3b]/10 pb-4">
                             <Activity className="w-5 h-5 text-[#064e3b]" />
-                            <h3 className="text-xl font-black uppercase tracking-tighter">Registry Index</h3>
+                            <h3 className="text-xl font-black uppercase tracking-tighter">Health List</h3>
                         </div>
                         <div className="space-y-4">
                             {filteredItems.map((item) => (
@@ -210,7 +210,7 @@ const HealthGuideView: React.FC = () => {
                                     <h4 className="text-xl font-black uppercase tracking-tighter leading-tight">{item.name}</h4>
                                     <div className="flex items-center gap-2 mt-2 opacity-40">
                                         <ChevronRight className="w-3 h-3" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">ACCESS_PROTOCOL</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest">DETAILS</span>
                                     </div>
                                 </button>
                             ))}
@@ -233,7 +233,7 @@ const HealthGuideView: React.FC = () => {
                                             <h2 className="text-6xl font-black uppercase tracking-tighter text-[#064e3b]">{selectedItem.name}</h2>
                                         </div>
                                         <p className="text-2xl font-black text-[#10b981] uppercase tracking-tight">
-                                            {activeTab === 'diseases' ? `Classification: ${selectedItem.type}` : `Common Alias: ${selectedItem.commonName}`}
+                                            {activeTab === 'diseases' ? `Type: ${selectedItem.type}` : `Common Name: ${selectedItem.commonName}`}
                                         </p>
                                     </div>
                                 </div>
@@ -246,7 +246,7 @@ const HealthGuideView: React.FC = () => {
                                         <section className="space-y-6">
                                             <div className="flex items-center gap-3 border-[#064e3b] border-l-8 pl-6">
                                                 <AlertCircle className="w-6 h-6 text-[#064e3b]" />
-                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Clinical Symptoms</h3>
+                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Symptoms</h3>
                                             </div>
                                             <ul className="space-y-4">
                                                 {selectedItem.symptoms.map((symptom: string, i: number) => (
@@ -260,7 +260,7 @@ const HealthGuideView: React.FC = () => {
                                         <section className="space-y-6">
                                             <div className="flex items-center gap-3 border-[#10b981] border-l-8 pl-6">
                                                 <ShieldCheck className="w-6 h-6 text-[#10b981]" />
-                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Counter-Measures</h3>
+                                                <h3 className="text-3xl font-black uppercase tracking-tighter">What to do</h3>
                                             </div>
                                             <div className="p-8 border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
                                                 <p className="text-sm font-black uppercase tracking-loose leading-relaxed">{selectedItem.treatment}</p>
@@ -272,7 +272,7 @@ const HealthGuideView: React.FC = () => {
                                         <section className="space-y-6">
                                             <div className="flex items-center gap-3 border-[#facc15] border-l-8 pl-6">
                                                 <Info className="w-6 h-6 text-[#facc15]" />
-                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Proactive Shield</h3>
+                                                <h3 className="text-3xl font-black uppercase tracking-tighter">How to prevent</h3>
                                             </div>
                                             <div className="p-8 border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                                                 <p className="text-sm font-black text-[#064e3b] uppercase tracking-loose leading-relaxed">{selectedItem.prevention}</p>
@@ -282,9 +282,9 @@ const HealthGuideView: React.FC = () => {
                                             <div className="w-16 h-16 bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] text-[#facc15]">
                                                 <Activity className="w-8 h-8" />
                                             </div>
-                                            <h4 className="text-xl font-black uppercase tracking-tighter">Log Inspection</h4>
+                                            <h4 className="text-xl font-black uppercase tracking-tighter">Check Hive</h4>
                                             <Button className="w-full h-14 bg-[#064e3b] text-white hover:bg-[#10b981] uppercase font-black tracking-widest transition-none shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]">
-                                                EXECUTE_AUDIT_REQUEST
+                                                Check now
                                             </Button>
                                         </section>
                                     </div>
@@ -311,7 +311,7 @@ const HealthGuideView: React.FC = () => {
                                             <h3 className="text-3xl font-black uppercase tracking-tighter">Ecological Sector</h3>
                                         </div>
                                         <div className="p-10 border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[10px_10px_0px_0px_rgba(16,185,129,1)]">
-                                            <span className="block text-[10px] text-white/40 font-black uppercase tracking-widest mb-4">DEPLOYMENT_VIABILITY</span>
+                                            <span className="block text-[10px] text-white/40 font-black uppercase tracking-widest mb-4">Location</span>
                                             <p className="text-2xl font-black uppercase tracking-tighter">{selectedItem.suitability}</p>
                                         </div>
                                     </section>
@@ -324,8 +324,8 @@ const HealthGuideView: React.FC = () => {
                                 <Search className="w-16 h-16 text-[#facc15]" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Pending Selection</h3>
-                                <p className="text-[#064e3b]/30 font-black uppercase text-[10px] tracking-[0.3em]">Interrogate bio-archive registry for data.</p>
+                                <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Select an item</h3>
+                                <p className="text-[#064e3b]/30 font-black uppercase text-[10px] tracking-[0.3em]">Choose a disease or bee type from the list.</p>
                             </div>
                         </div>
                     )}

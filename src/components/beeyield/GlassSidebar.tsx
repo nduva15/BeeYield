@@ -148,24 +148,53 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                         className="overflow-hidden ml-9 pl-3 border-l border-gray-100 mt-1 mb-1"
                                     >
                                         <div className="py-1 space-y-0.5">
-                                            {item.submenuItems.map((subItem) => (
-                                                <button
-                                                    key={subItem.id}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onTabChange(subItem.id);
-                                                    }}
-                                                    className={cn(
-                                                        "w-full text-left py-2 px-3 text-[11px] font-black uppercase rounded-none transition-all flex items-center gap-2.5",
-                                                        activeTab === subItem.id
-                                                            ? "text-[#10b981] bg-[#10b981]/[0.05]"
-                                                            : "text-[#064e3b]/50 hover:text-[#064e3b] hover:bg-[#10b981]/[0.02]"
-                                                    )}
-                                                >
-                                                    {subItem.icon && <subItem.icon className="w-3.5 h-3.5 opacity-60" />}
-                                                    {subItem.label}
-                                                </button>
-                                            ))}
+                                            {item.submenuItems.map((sub, idx) => {
+                                                if ('title' in sub) {
+                                                    return (
+                                                        <div key={idx} className="mt-4 mb-2">
+                                                            <p className="text-[9px] font-black uppercase text-[#064e3b]/30 tracking-widest pl-3 mb-2">{sub.title}</p>
+                                                            <div className="space-y-0.5">
+                                                                {sub.items.map(subItem => (
+                                                                    <button
+                                                                        key={subItem.id}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            onTabChange(subItem.id);
+                                                                        }}
+                                                                        className={cn(
+                                                                            "w-full text-left py-2 px-3 text-[11px] font-black uppercase rounded-none transition-all flex items-center gap-2.5",
+                                                                            activeTab === subItem.id
+                                                                                ? "text-[#10b981] bg-[#10b981]/[0.05]"
+                                                                                : "text-[#064e3b]/50 hover:text-[#064e3b] hover:bg-[#10b981]/[0.02]"
+                                                                        )}
+                                                                    >
+                                                                        {subItem.icon && <subItem.icon className="w-3.5 h-3.5 opacity-60" />}
+                                                                        {subItem.label}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+                                                return (
+                                                    <button
+                                                        key={sub.id}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onTabChange(sub.id);
+                                                        }}
+                                                        className={cn(
+                                                            "w-full text-left py-2 px-3 text-[11px] font-black uppercase rounded-none transition-all flex items-center gap-2.5",
+                                                            activeTab === sub.id
+                                                                ? "text-[#10b981] bg-[#10b981]/[0.05]"
+                                                                : "text-[#064e3b]/50 hover:text-[#064e3b] hover:bg-[#10b981]/[0.02]"
+                                                        )}
+                                                    >
+                                                        {sub.icon && <sub.icon className="w-3.5 h-3.5 opacity-60" />}
+                                                        {sub.label}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </motion.div>
                                 )}

@@ -25,12 +25,18 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+export interface NavGroup {
+    title: string;
+    items: NavItem[];
+}
+
 export interface NavItem {
     id: string;
     label: string;
     icon: React.ElementType;
+    hidden?: boolean;
     hasSubmenu?: boolean;
-    submenuItems?: NavItem[];
+    submenuItems?: (NavItem | NavGroup)[];
     subItems?: NavItem[]; // for third level
 }
 
@@ -58,7 +64,18 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
     const isTabActive = (id: string) => activeTab === id;
 
-    const renderNavItem = (item: NavItem, depth = 0) => {
+    const renderNavItem = (item: NavItem | NavGroup, depth = 0) => {
+        if ('title' in item) {
+            return (
+                <div key={item.title} className="mt-6 mb-2">
+                    <div className="px-8 py-2">
+                        <span className="text-[9px] font-black uppercase text-[#064e3b]/30 tracking-[0.3em]">{item.title}</span>
+                    </div>
+                    {item.items.map(subItem => renderNavItem(subItem, depth + 1))}
+                </div>
+            );
+        }
+
         const isActive = isTabActive(item.id);
         const hasChildren = (item.submenuItems && item.submenuItems.length > 0) || (item.subItems && item.subItems.length > 0);
         const isExpanded = expandedGroups.includes(item.id);
@@ -94,7 +111,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
                 {hasChildren && isExpanded && (
                     <div className="bg-white">
-                        {(item.submenuItems || item.subItems)?.map(sub => renderNavItem(sub, depth + 1))}
+                        {(item.submenuItems || item.subItems)?.map((sub: any) => renderNavItem(sub, depth + 1))}
                     </div>
                 )
                 }

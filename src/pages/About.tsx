@@ -10,7 +10,7 @@ const About = () => {
         <div className="container mx-auto px-8 relative z-10">
           <div className="max-w-5xl">
             <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-[#064e3b] bg-[#10b981] text-white text-[10px] font-black uppercase tracking-widest mb-12 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
-              EST. 2020 // KIBWEZI REGISTRY
+              EST. 2020 // KIBWEZI FARM
             </div>
 
             <h1 className="text-7xl md:text-[10rem] font-black mb-12 tracking-tighter leading-[0.8] uppercase text-[#064e3b]">
@@ -18,7 +18,7 @@ const About = () => {
             </h1>
 
             <p className="text-xl md:text-3xl font-black mb-12 max-w-2xl leading-tight uppercase text-[#064e3b]">
-              Managing 184 colony units through verifiable IoT telemetry.
+              Managing 184 hives with real-time monitoring.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6">
@@ -32,7 +32,7 @@ const About = () => {
                 to="/contact"
                 className="h-16 px-12 border-2 border-[#064e3b] bg-[#facc15] text-[#064e3b] font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none flex items-center justify-center transform active:translate-x-1 active:translate-y-1"
               >
-                Contact Desk
+                Contact Us
               </Link>
             </div>
           </div>
@@ -45,17 +45,17 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-20 items-stretch">
             <div className="border-2 border-[#064e3b] p-12 bg-white shadow-[10px_10px_0px_0px_rgba(6,78,59,1)] flex flex-col justify-center">
               <div className="inline-block border-2 border-[#064e3b] bg-[#064e3b] text-white px-4 py-1 font-black uppercase tracking-widest text-[10px] mb-8">
-                CORE_ORIGIN
+                How we started
               </div>
               <h2 className="text-5xl md:text-7xl font-black mb-10 leading-[0.85] tracking-tighter uppercase">
-                4 NODES <span className="text-[#10b981]">TO</span> 184.
+                4 HIVES <span className="text-[#10b981]">TO</span> 184.
               </h2>
               <div className="space-y-8 text-lg font-black leading-snug uppercase text-[#064e3b]/60">
                 <p>
-                  Started 2020 at Kibwezi Apiary. Transitioned from manual oversight to hardware-driven monitoring.
+                  Started in 2020 at Kibwezi Farm. Changed from manual checks to smart technology.
                 </p>
                 <p>
-                  Built for precision. Every hive is a data point in our national registry.
+                  Built for precision. Every hive is part of our national farm map.
                 </p>
               </div>
             </div>
@@ -70,7 +70,7 @@ const About = () => {
               </div>
               <div className="absolute top-10 right-10 bg-[#10b981] border-2 border-[#064e3b] p-8 shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
                 <p className="text-6xl font-black text-white">184</p>
-                <p className="text-[10px] font-black text-white uppercase tracking-widest border-t border-white/20 pt-2 mt-2">Active Units</p>
+                <p className="text-[10px] font-black text-white uppercase tracking-widest border-t border-white/20 pt-2 mt-2">Active Hives</p>
               </div>
             </div>
           </div>
@@ -87,9 +87,9 @@ const About = () => {
 
           <div className="grid md:grid-cols-3 gap-0 border-4 border-[#064e3b]">
             {[
-              { title: "Network", desc: "Hardware interface and node registry.", icon: Activity, link: "/team" },
-              { title: "Output", desc: "Production metrics and verification.", icon: Zap, link: "/impact" },
-              { title: "Audit", desc: "Security protocols and data integrity.", icon: ShieldCheck, link: "/traceability" }
+              { title: "Network", desc: "Hive sensors and maps.", icon: Activity, link: "/team" },
+              { title: "Output", desc: "Production and harvest stats.", icon: Zap, link: "/impact" },
+              { title: "Health", desc: "Hive checks and safety.", icon: ShieldCheck, link: "/traceability" }
             ].map((item, i) => (
               <Link
                 key={i}
@@ -115,8 +115,8 @@ const About = () => {
         <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fee74a62?auto=format&fit=crop&q=80&w=2600')] bg-cover grayscale" />
         <div className="relative z-10 max-w-4xl mx-auto text-center border-4 border-white p-12 bg-[#064e3b]/80 backdrop-blur-sm">
           <Hexagon className="w-12 h-12 text-[#facc15] mx-auto mb-8 fill-current" />
-          <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mb-6">Colony Monitoring Registry</h2>
-          <p className="text-xs font-black uppercase text-[#10b981] tracking-[0.4em]">Protocol Active // Established 2020</p>
+          <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mb-6">Hive Monitoring</h2>
+          <p className="text-xs font-black uppercase text-[#10b981] tracking-[0.4em]">Active since 2020</p>
         </div>
       </section>
     </div>
