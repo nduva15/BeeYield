@@ -9,7 +9,7 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [language, setLanguage] = useState<LanguageCode>('EN');
 
     useEffect(() => {
@@ -35,10 +35,12 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     );
 };
 
-export const useLanguage = () => {
+const useLanguage = () => {
     const context = useContext(LanguageContext);
     if (context === undefined) {
         throw new Error('useLanguage must be used within a LanguageProvider');
     }
     return context;
 };
+
+export { LanguageProvider, useLanguage };

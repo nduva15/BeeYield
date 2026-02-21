@@ -111,20 +111,31 @@ async def save_label_design(
     label_id = design_data.get("id")
     
     payload = {
-        "id": label_id,
         "user_id": user_id,
         "design_json": design_data,
         "harvest_batch_id": design_data.get("batchNumber"),
         "include_qr": design_data.get("showQRCode", False)
     }
+    
+    # Only include ID if it's a valid non-empty string
+    if label_id and str(label_id).strip():
+        payload["id"] = str(label_id).strip()
 
     # Use db_upsert for both insert and update
     result = await db_upsert("saved_labels", payload, token=token)
     
     if not result.get("success"):
-        raise HTTPException(status_code=500, detail=result.get("error", "Failed to save label design"))
+        error_detail = result.get("error", "Failed to save label design")
+        print(f"[LABELS] Save failed: {error_detail}")
+        raise HTTPException(status_code=500, detail=error_detail)
     
-    return result.get("data", [{}])[0]
+    data = result.get("data")
+    if not data or not isinstance(data, list) or len(data) == 0:
+        # Fallback if Prefer: return=representation was ignored or failed but success was true
+        # We try to return what we have
+        return {"id": label_id, "design_json": design_data, "user_id": user_id}
+
+    return data[0]
 
 @router.delete("/{label_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_label_design(

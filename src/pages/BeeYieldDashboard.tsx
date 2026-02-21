@@ -216,7 +216,7 @@ const BeeYieldDashboard: React.FC = () => {
                 {
                     title: 'Field Info',
                     items: [
-                        { id: 'intelligence', label: 'Pollination Info', icon: Brain },
+                        { id: 'intelligence', label: 'Info', icon: Brain },
                         { id: 'logistics-setup', label: 'Farm Map', icon: Layers },
                         { id: 'fleet-security-active', label: 'Asset Security', icon: ShieldCheck },
                     ]
@@ -237,8 +237,8 @@ const BeeYieldDashboard: React.FC = () => {
                     title: 'Checkups',
                     items: [
                         { id: 'digital-audit', label: 'Hive Check', icon: FileBarChart },
-                        { id: 'compliance-report', label: 'Pollination Report', icon: Award },
-                        { id: 'bloom-tracking', label: 'Flower Status', icon: Zap },
+                        { id: 'compliance-report', label: 'Report', icon: Award },
+                        { id: 'bloom-tracking', label: 'Status', icon: Zap },
                     ]
                 },
                 {

@@ -31,6 +31,6 @@ fn beeyield_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<ingestion::IngestionEngine>()?;
     m.add_class::<search::SearchEngine>()?;
     m.add_class::<shop::ShopEngine>()?;
-    m.add_class::<assistant::AssistantEngine>()?;
+    m.add_class::<assistant::BeeYieldAI>()?;
     Ok(())
 }

@@ -28,7 +28,7 @@ async def get_total_honey_sold_grams(token: Optional[str] = None) -> int:
         return _engine.calculate_total_weight(items)
     return 0 # Fallback
 
-async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[Dict[ Any]]:
+async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[Dict[str, Any]]:
     filters = {"is_active": True}
     if category: filters["category"] = category
     products = await db_select("products", filters=filters, token=token)

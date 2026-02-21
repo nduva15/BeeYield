@@ -2,11 +2,14 @@ import React, { Suspense, lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Buffer } from 'buffer';
 import { Loader2 } from 'lucide-react'
+import { initPrefetch } from './prefetch'
 
 // Polyfill Buffer for browser environment
 if (typeof window !== 'undefined') {
     globalThis.Buffer = Buffer;
+    initPrefetch();
 }
+
 import ScrollToTop from './components/ScrollToTop'
 import { BeeYieldQueryProvider } from './components/QueryClientProvider'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -70,54 +73,6 @@ const Terms = lazy(() => import('@/pages/Terms'))
 const PollinationCalcs = lazy(() => import('@/pages/pollination/PollinationCalcs'))
 const FlightMapping = lazy(() => import('@/pages/pollination/FlightMapping'))
 const PollinationReports = lazy(() => import('@/pages/pollination/PollinationReports'))
-
-// 🚀 Performance Optimization: Route Prefetching Logic
-// This registry allows us to trigger the lazy dynamic imports on-demand (e.g. on link hover)
-const routeMap: Record<string, () => Promise<any>> = {
-    '/honey': () => import('@/pages/HoneyLanding'),
-    '/about': () => import('@/pages/About'),
-    '/shop': () => import('@/pages/Shop'),
-    '/contact': () => import('@/pages/Contact'),
-    '/traceability': () => import('@/pages/Traceability'),
-    '/checkout': () => import('@/pages/Checkout'),
-    '/learn': () => import('@/pages/BeeLearn'),
-    '/blogs': () => import('@/pages/Blogs'),
-    '/team': () => import('@/pages/Team'),
-    '/careers': () => import('@/pages/Careers'),
-    '/impact': () => import('@/pages/Impact'),
-    '/esg': () => import('@/pages/ESG'),
-    '/commitment': () => import('@/pages/Commitment'),
-    '/ourstory': () => import('@/pages/OurStory'),
-    '/global-hive-network': () => import('@/pages/GlobalHiveNetwork'),
-    '/precision-pollination': () => import('@/pages/PrecisionPollination'),
-    '/pollination-solutions': () => import('@/pages/PollinationSolutions'),
-    '/in-land-pollination': () => import('@/pages/InLandPollinationPlatform'),
-    '/crops-we-pollinate': () => import('@/pages/CropsWePollinate'),
-    '/pollination-request': () => import('@/pages/PollinationRequest'),
-    '/diseases': () => import('@/pages/Diseases'),
-    '/media': () => import('@/pages/Media'),
-};
-
-if (typeof window !== 'undefined') {
-    // Listen for custom prefetch events from QuickLink component
-    window.addEventListener('prefetch-route', (e: any) => {
-        const path = e.detail?.path;
-        if (path && routeMap[path]) {
-            console.log(`[Prefetch] Pre-loading route: ${path}`);
-            routeMap[path]().catch(() => { }); // Fire and forget
-        }
-    });
-
-    // Strategy: Early pre-warmup for critical pages after initial load
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            // Pre-warm the most likely first clicks
-            ['/', '/shop', '/about', '/contact'].forEach(path => {
-                if (routeMap[path]) routeMap[path]().catch(() => { });
-            });
-        }, 2000);
-    });
-}
 
 const PageLoader = () => (
     <div className="flex items-center justify-center h-[50vh] w-full">
@@ -206,4 +161,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </BeeYieldQueryProvider>
     </React.StrictMode>
 )
-
