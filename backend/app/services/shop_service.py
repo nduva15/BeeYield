@@ -133,3 +133,16 @@ async def get_order(order_id: str, token: Optional[str] = None) -> Optional[Dict
 async def get_user_orders(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
     orders = await db_select("orders", filters={"user_id": user_id}, token=token)
     return sorted(orders, key=lambda x: x.get('created_at', ''), reverse=True)
+
+async def update_order_status(
+        order_id: str, 
+        status: str, 
+        payment_status: Optional[str] = None, 
+        token: Optional[str] = None
+) -> dict:
+    """Update order status and payment information."""
+    update_data = {"status": status}
+    if payment_status:
+        update_data["payment_status"] = payment_status
+    
+    return await db_update("orders", update_data, filters={"id": order_id}, token=token)

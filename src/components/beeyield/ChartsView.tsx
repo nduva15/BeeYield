@@ -144,8 +144,8 @@ const ChartsView: React.FC = () => {
                     </div>
                 </div>
                 <CardContent className="p-10">
-                    <div className="h-[380px] w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                    <div className="h-[380px] w-full min-h-[380px]">
+                        <ResponsiveContainer width="99%" height="100%">
                             <LineChart data={chartData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">

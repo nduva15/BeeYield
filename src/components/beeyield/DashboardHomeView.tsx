@@ -232,8 +232,8 @@ const DeploymentCard: React.FC<{
             </div>
 
             {/* Spark Chart */}
-            <div className="h-16 mb-5">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <div className="h-16 min-h-[64px] mb-5">
+                <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={sparkData}>
                         <Line
                             type="monotone"
