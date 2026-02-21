@@ -5,20 +5,21 @@ import {
     Zap,
     TrendingUp,
     ArrowUpRight,
-    Search,
-    Edit3,
-    Download,
     Hexagon,
     Target,
-    LayoutGrid
+    LayoutGrid,
+    Users,
+    Calendar,
+    BarChart3,
+    ChevronRight,
+    Plus
 } from 'lucide-react';
 import beeyieldService, { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { LineChart, Line, ResponsiveContainer, YAxis, XAxis } from 'recharts';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
@@ -27,234 +28,447 @@ interface DashboardHomeViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-const OrchardStatusCard: React.FC<{ orchard: Apiary; onAction: (tab: string) => void }> = ({ orchard, onAction }) => {
-    // Simulated live metrics based on orchard data
-    const activityScore = Math.floor(Math.random() * 4) + 6; // 6-10 range
+/* ─── Fleet Health Gauge ─── */
+const FleetHealthGauge: React.FC<{ score: number }> = ({ score }) => {
+    const normalizedScore = Math.min(Math.max(score, 0), 1000);
+    const percentage = normalizedScore / 1000;
+    const angle = percentage * 180; // Semi-circle
+    const radius = 120;
+    const cx = 140;
+    const cy = 140;
 
-    const sparkData = [
-        { name: 'D1', bloom: 10, activity: 20 },
-        { name: 'D2', bloom: 30, activity: 35 },
-        { name: 'D3', bloom: 60, activity: 50 }, // Deficit starting
-        { name: 'D4', bloom: 85, activity: 48 }, // Deficit peak
-        { name: 'D5', bloom: 90, activity: 70 },
-    ];
+    // Create arc path
+    const startAngle = Math.PI;
+    const endAngle = Math.PI - (angle * Math.PI) / 180;
+    const x1 = cx + radius * Math.cos(startAngle);
+    const y1 = cy + radius * Math.sin(startAngle);
+    const x2 = cx + radius * Math.cos(endAngle);
+    const y2 = cy + radius * Math.sin(endAngle);
+    const largeArc = angle > 180 ? 1 : 0;
+
+    // Color based on score
+    const getColor = () => {
+        if (percentage < 0.33) return '#FF6B6B';
+        if (percentage < 0.66) return '#FBBF24';
+        return '#10B981';
+    };
 
     return (
-        <div className="border-4 border-[#064e3b] bg-white group hover:shadow-[12px_12px_0px_0px_rgba(45,90,39,1)] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] flex flex-col h-full">
-            {/* Header */}
-            <div className="p-6 border-b-4 border-[#064e3b] bg-[#064e3b]/3">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h3 className="text-2xl font-black text-[#064e3b] tracking-tighter uppercase">{orchard.name}</h3>
-                        <p className="text-[10px] font-black uppercase text-[#10b981] tracking-widest mt-1">Variety: Almond (Nonpareil)</p>
-                    </div>
-                    <div className="w-10 h-10 border-2 border-[#064e3b] bg-white flex items-center justify-center">
-                        <MapPin className="w-5 h-5 text-[#064e3b]" />
-                    </div>
-                </div>
-            </div>
-
-            {/* Metrics */}
-            <div className="p-6 flex-1 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">Bee Activity Score</p>
-                        <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-5xl font-black text-[#064e3b] tabular-nums">{activityScore}</span>
-                            <span className="text-xs font-black text-[#064e3b]/30">/ 10</span>
-                        </div>
-                    </div>
-                    {/* Activity Gauge */}
-                    <div className="w-16 h-8 bg-[#064e3b]/5 overflow-hidden relative flex items-end px-1 gap-0.5">
-                        {[0.3, 0.5, 0.8, 1, 0.9, 0.7].map((h, i) => (
-                            <div key={i} className="flex-1 bg-[#10b981]" style={{ height: `${h * 100}%` }} />
-                        ))}
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">Bloom vs. Bee Pulse</p>
-                        <span className="text-[9px] font-black text-[#facc15] uppercase">Alert: Coverage Deficit</span>
-                    </div>
-                    <div className="h-20 w-full bg-[#064e3b]/[0.02] border-2 border-[#064e3b]/5">
-                        <ResponsiveContainer width="100%" height={80} minWidth={0} minHeight={0} debounce={50}>
-                            <LineChart data={sparkData}>
-                                <Line type="monotone" dataKey="bloom" stroke="#facc15" strokeWidth={3} dot={false} />
-                                <Line type="monotone" dataKey="activity" stroke="#2D5A27" strokeWidth={3} dot={false} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="border-2 border-[#064e3b]/10 p-3">
-                        <p className="text-[8px] font-black uppercase text-[#064e3b]/30">Current Bloom</p>
-                        <p className="text-lg font-black text-[#064e3b]">85%</p>
-                    </div>
-                    <div className="border-2 border-[#064e3b]/10 p-3">
-                        <p className="text-[8px] font-black uppercase text-[#064e3b]/30">FPA Ratio</p>
-                        <p className="text-lg font-black text-[#10b981]">0.92</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-3 border-t-4 border-[#064e3b]">
-                <button
-                    onClick={() => onAction('orchard-mapper')}
-                    className="p-4 flex flex-col items-center justify-center border-r-4 border-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none"
+        <div className="relative flex flex-col items-center">
+            <svg width="280" height="160" viewBox="0 0 280 160">
+                {/* Background arc */}
+                <path
+                    d={`M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`}
+                    fill="none"
+                    stroke="#F1F5F9"
+                    strokeWidth="18"
+                    strokeLinecap="round"
+                />
+                {/* Score arc */}
+                <motion.path
+                    d={`M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`}
+                    fill="none"
+                    stroke={getColor()}
+                    strokeWidth="18"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                />
+                {/* Score segments - Red/Yellow/Green indicators */}
+                {[0, 60, 120].map((pos, i) => {
+                    const a = Math.PI - (pos * Math.PI) / 180;
+                    const outerR = radius + 24;
+                    return (
+                        <circle
+                            key={i}
+                            cx={cx + outerR * Math.cos(a)}
+                            cy={cy + outerR * Math.sin(a)}
+                            r="3"
+                            fill={['#FF6B6B', '#FBBF24', '#10B981'][i]}
+                            opacity={0.4}
+                        />
+                    );
+                })}
+            </svg>
+            {/* Center score display */}
+            <div className="absolute top-[60px] flex flex-col items-center">
+                <motion.span
+                    className="text-5xl font-black text-slate-900 tabular-nums tracking-tighter"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
                 >
-                    <MapPin className="w-4 h-4 mb-2" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Map</span>
-                </button>
-                <button
-                    onClick={() => onAction('bloom-tracking')}
-                    className="p-4 flex flex-col items-center justify-center border-r-4 border-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none"
-                >
-                    <Edit3 className="w-4 h-4 mb-2" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Bloom</span>
-                </button>
-                <button
-                    onClick={() => onAction('season-summary')}
-                    className="p-4 flex flex-col items-center justify-center hover:bg-[#064e3b] hover:text-white transition-none"
-                >
-                    <Download className="w-4 h-4 mb-2" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Audit</span>
-                </button>
+                    {normalizedScore}
+                </motion.span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Health Score</span>
             </div>
         </div>
     );
 };
 
-const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabChange }) => {
-    return (
-        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-white min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-10">
-                <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-2">
-                        <Activity className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Executive Portfolio Summary</span>
-                    </div>
-                    <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.8] text-[#064e3b]">
-                        Orchard <span className="text-[#10b981]">Status</span>
-                    </h1>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] pt-2">
-                        Cross-Property Pollination Analytics · Real-Time Coverage Scores
-                    </p>
-                </div>
+/* ─── Telemetry Dot Matrix ─── */
+const TelemetryDotMatrix: React.FC = () => {
+    // Generate 12 weeks × 7 days of mock telemetry data
+    const weeks = 12;
+    const days = 7;
+    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-                <div className="flex items-center gap-4">
-                    <div className="px-8 py-4 border-4 border-[#064e3b] bg-[#064e3b] text-white font-black text-sm uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(45,90,39,1)] italic">
-                        FUND_RES: KES 142,500
+    const matrix = React.useMemo(() =>
+        Array.from({ length: weeks }, () =>
+            Array.from({ length: days }, () => Math.random() > 0.12) // ~88% success rate
+        ), []
+    );
+
+    return (
+        <div className="space-y-3">
+            <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold text-slate-400">Daily Sensor Pings</p>
+                <div className="flex items-center gap-3 text-[9px] font-bold text-slate-400">
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
+                        <span>Online</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-sm bg-red-400" />
+                        <span>Offline</span>
                     </div>
                 </div>
             </div>
+            <div className="flex gap-1.5">
+                {/* Day labels */}
+                <div className="flex flex-col gap-1.5 pr-1">
+                    {dayLabels.map((d, i) => (
+                        <span key={i} className="text-[8px] font-bold text-slate-300 w-3 h-3 flex items-center justify-center">{d}</span>
+                    ))}
+                </div>
+                {/* Matrix grid */}
+                {matrix.map((week, wi) => (
+                    <div key={wi} className="flex flex-col gap-1.5">
+                        {week.map((ok, di) => (
+                            <motion.div
+                                key={di}
+                                className={cn(
+                                    "w-3 h-3 rounded-sm transition-colors",
+                                    ok ? "bg-emerald-500/80 hover:bg-emerald-500" : "bg-red-400/60 hover:bg-red-400"
+                                )}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: wi * 0.03 + di * 0.01, duration: 0.3 }}
+                                title={ok ? 'Sensor online' : 'Sensor offline'}
+                            />
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
-            {/* Quick Portfolio Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+/* ─── Avatar Group ─── */
+const AvatarGroup: React.FC<{ avatars: string[]; max?: number }> = ({ avatars, max = 4 }) => {
+    const visible = avatars.slice(0, max);
+    const overflow = avatars.length - max;
+
+    return (
+        <div className="flex items-center -space-x-2.5">
+            {visible.map((src, i) => (
+                <img
+                    key={i}
+                    src={src}
+                    className="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover"
+                    alt={`Team member ${i + 1}`}
+                />
+            ))}
+            {overflow > 0 && (
+                <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-500">
+                    +{overflow}
+                </div>
+            )}
+        </div>
+    );
+};
+
+/* ─── Deployment Card ─── */
+const DeploymentCard: React.FC<{
+    orchard: Apiary;
+    onAction: (tab: string) => void;
+}> = ({ orchard, onAction }) => {
+    const sparkData = [
+        { v: 20 }, { v: 35 }, { v: 50 }, { v: 48 }, { v: 70 }, { v: 65 }, { v: 80 },
+    ];
+
+    const teamAvatars = [
+        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80',
+        'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=80',
+        'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&w=80',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80',
+    ];
+
+    const healthScore = Math.floor(Math.random() * 30) + 70; // 70-100
+
+    return (
+        <motion.div
+            whileHover={{ y: -4 }}
+            className="bg-white rounded-[28px] p-6 border border-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] transition-shadow cursor-pointer group"
+            onClick={() => onAction('orchard-mapper')}
+        >
+            {/* Header */}
+            <div className="flex items-start justify-between mb-5">
+                <div>
+                    <h3 className="text-lg font-bold text-slate-900">{orchard.name}</h3>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5 flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        Almond · Nonpareil
+                    </p>
+                </div>
+                <div className={cn(
+                    "px-3 py-1 rounded-full text-[10px] font-bold",
+                    healthScore >= 80 ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                )}>
+                    {healthScore}% Health
+                </div>
+            </div>
+
+            {/* Spark Chart */}
+            <div className="h-16 mb-5">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                    <LineChart data={sparkData}>
+                        <Line
+                            type="monotone"
+                            dataKey="v"
+                            stroke="#10B981"
+                            strokeWidth={2.5}
+                            dot={false}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
-                    { label: 'Total Acreage', val: '482 ac', icon: LayoutGrid },
-                    { label: 'Mean Activity', val: '8.4', icon: Zap },
-                    { label: 'Total Hives', val: '840', icon: Hexagon },
-                    { label: 'Yield Confidence', val: '92%', icon: Target },
-                ].map(stat => (
-                    <div key={stat.label} className="border-4 border-[#064e3b] p-6 bg-[#064e3b]/3 relative overflow-hidden group">
-                        <stat.icon className="absolute -right-4 -bottom-4 w-20 h-20 text-[#064e3b]/5 group-hover:rotate-12 transition-all" />
-                        <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">{stat.label}</p>
-                        <p className="text-4xl font-black text-[#064e3b] mt-1 tabular-nums">{stat.val}</p>
+                    { label: 'Hives', val: '120' },
+                    { label: 'Bloom', val: '85%' },
+                    { label: 'Activity', val: '9.2' },
+                ].map(s => (
+                    <div key={s.label} className="bg-slate-50 rounded-2xl px-3 py-2.5 text-center">
+                        <p className="text-lg font-bold text-slate-900">{s.val}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase">{s.label}</p>
                     </div>
                 ))}
             </div>
 
-            {/* AI Yield Summary Block */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[12px_12px_0px_0px_rgba(16,185,129,1)] overflow-hidden">
-                <div className="flex flex-col lg:flex-row divide-y-4 lg:divide-y-0 lg:divide-x-4 divide-white/10">
-                    <div className="p-10 flex-1 space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white/10 flex items-center justify-center">
-                                <TrendingUp className="w-6 h-6 text-[#facc15]" />
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-black uppercase tracking-tighter italic">AI YIELD PREDICTION</h3>
-                                <p className="text-[10px] font-black uppercase text-white/40 tracking-widest">Season Aggregate Forecast v4.2</p>
-                            </div>
-                        </div>
-                        <div className="flex items-baseline gap-4">
-                            <span className="text-6xl md:text-8xl font-black tabular-nums tracking-tighter italic">742.4</span>
-                            <span className="text-xl md:text-2xl font-black text-[#10b981]">METRIC TONS</span>
-                        </div>
-                        <div className="flex items-center gap-4 pt-4 border-t-2 border-white/10">
-                            <Badge className="bg-[#10b981] text-white rounded-none px-4 py-1 text-[10px] font-black italic">+12.8% YOY</Badge>
-                            <p className="text-[10px] font-black uppercase text-white/40">Confidence Interval: [718.2 - 765.9]</p>
-                        </div>
-                    </div>
-                    <div className="p-10 lg:w-96 bg-white flex flex-col justify-between">
-                        <div>
-                            <span className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block mb-4">Risk Assessment</span>
-                            <div className="space-y-4">
-                                {[
-                                    { label: 'Pests/Pathogens', val: 12, color: 'bg-green-500' },
-                                    { label: 'Weather Impact', val: 8, color: 'bg-green-500' },
-                                    { label: 'Hive Mortality', val: 4, color: 'bg-[#10b981]' },
-                                ].map(risk => (
-                                    <div key={risk.label} className="space-y-1">
-                                        <div className="flex justify-between text-[9px] font-black uppercase text-[#064e3b]">
-                                            <span>{risk.label}</span>
-                                            <span>{risk.val}% RISK</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-neutral-100 border border-[#064e3b]/10">
-                                            <div className={cn("h-full", risk.color)} style={{ width: `${risk.val}%` }} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <Button
-                            onClick={async () => {
-                                toast.loading("Synthesizing Season Intelligence...");
-                                try {
-                                    const result = await (beeyieldService as any).generateSeasonReport({ apiary_id: 'apiary_123' });
-                                    toast.success("Intelligence Report Generated", {
-                                        description: "Report has been archived to your billing ledger."
-                                    });
-                                    console.log("Report Result:", result);
-                                } catch (error: any) {
-                                    toast.error("Report generation failed", { description: error.message });
-                                }
-                            }}
-                            className="w-full h-12 mt-8 rounded-none bg-[#064e3b] text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
-                        >
-                            Generate Full Season Report
-                        </Button>
-                    </div>
-                </div>
-            </Card>
-
-            {/* Orchard Detail Cards */}
-            <div className="space-y-6">
-                <div className="flex items-center justify-between border-b-4 border-[#064e3b]/10 pb-4">
-                    <h2 className="text-3xl font-black uppercase tracking-tighter">Property Registry</h2>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30">{apiaries.length} Active Orchards</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
-                    {apiaries.map(orchard => (
-                        <OrchardStatusCard key={orchard.id} orchard={orchard} onAction={onTabChange} />
-                    ))}
-                    {/* Empty placeholder for adding new */}
-                    <button className="border-4 border-dashed border-[#064e3b]/20 p-10 flex flex-col items-center justify-center hover:border-[#064e3b] hover:bg-[#064e3b]/3 transition-all">
-                        <div className="w-16 h-16 border-4 border-dashed border-[#064e3b]/20 flex items-center justify-center mb-4">
-                            <span className="text-4xl font-light text-[#064e3b]/30">+</span>
-                        </div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#064e3b]/40">Provision New Orchard</p>
-                    </button>
+            {/* Footer: Team Avatars + Action */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                <AvatarGroup avatars={teamAvatars} max={4} />
+                <div className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-slate-900 transition-colors">
+                    View Details
+                    <ChevronRight className="w-4 h-4" />
                 </div>
             </div>
+        </motion.div>
+    );
+};
+
+
+/* ─── Main Dashboard Home ─── */
+const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabChange }) => {
+    const healthScore = 782;
+
+    return (
+        <div className="space-y-8">
+            {/* Welcome Banner */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col md:flex-row md:items-center justify-between gap-6"
+            >
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                        Good Afternoon, Timothy <span className="text-2xl">👋</span>
+                    </h1>
+                    <p className="text-sm text-slate-400 font-medium mt-1">
+                        Here's your apiary overview for today
+                    </p>
+                </div>
+
+                {/* Pill Tabs */}
+                <div className="flex bg-slate-50 rounded-full p-1.5 border border-slate-100 gap-1">
+                    {['Overview', 'Analytics', 'Reports'].map((tab, i) => (
+                        <button
+                            key={tab}
+                            className={cn(
+                                "px-5 py-2 rounded-full text-[12px] font-bold transition-all",
+                                i === 0
+                                    ? "bg-white text-slate-900 shadow-sm"
+                                    : "text-slate-400 hover:text-slate-600"
+                            )}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+            </motion.div>
+
+            {/* Hero Row: Health Gauge + Quick Stats + Telemetry */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Fleet Health Gauge */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.6 }}
+                    className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col items-center justify-center"
+                >
+                    <FleetHealthGauge score={healthScore} />
+                    <div className="flex items-center gap-6 mt-2">
+                        {[
+                            { label: 'Sensors Online', val: '24/26', color: 'text-emerald-500' },
+                            { label: 'Alerts Active', val: '2', color: 'text-amber-500' },
+                        ].map(s => (
+                            <div key={s.label} className="text-center">
+                                <p className={cn("text-lg font-bold", s.color)}>{s.val}</p>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase">{s.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Quick Portfolio Stats */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
+                    className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col justify-between"
+                >
+                    <p className="text-[11px] font-bold text-slate-400 mb-4">Portfolio Summary</p>
+                    <div className="space-y-5">
+                        {[
+                            { label: 'Total Acreage', val: '482 ac', icon: LayoutGrid, trend: '+12%' },
+                            { label: 'Total Hives', val: '840', icon: Hexagon, trend: '+8%' },
+                            { label: 'Mean Activity', val: '8.4/10', icon: Zap, trend: '+5%' },
+                            { label: 'Yield Confidence', val: '92%', icon: Target, trend: '+3%' },
+                        ].map(stat => (
+                            <div key={stat.label} className="flex items-center justify-between group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-[#CEF144]/20 transition-colors">
+                                        <stat.icon className="w-5 h-5 text-slate-400 group-hover:text-slate-900 transition-colors" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-900">{stat.val}</p>
+                                        <p className="text-[10px] text-slate-400 font-medium">{stat.label}</p>
+                                    </div>
+                                </div>
+                                <span className="text-[11px] font-bold text-emerald-500">{stat.trend}</span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Telemetry Dot Matrix */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.03)]"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <p className="text-[11px] font-bold text-slate-400">Telemetry History</p>
+                        <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">88% Uptime</span>
+                    </div>
+                    <TelemetryDotMatrix />
+                    <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
+                        <div>
+                            <p className="text-lg font-bold text-slate-900">24</p>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase">Active Sensors</p>
+                        </div>
+                        <div>
+                            <p className="text-lg font-bold text-slate-900">2</p>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase">Need Check</p>
+                        </div>
+                        <div>
+                            <p className="text-lg font-bold text-slate-900">5m</p>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase">Ping Rate</p>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Yield Prediction Banner */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="bg-slate-900 rounded-[32px] p-10 text-white overflow-hidden relative"
+            >
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#CEF144] opacity-5 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3" />
+                <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+                    <div className="space-y-4 flex-1">
+                        <div className="flex items-center gap-3">
+                            <div className="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center">
+                                <TrendingUp className="w-5 h-5 text-[#CEF144]" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold tracking-tight">Season Yield Forecast</h3>
+                                <p className="text-[11px] text-white/40 font-medium">Based on current bloom and activity data</p>
+                            </div>
+                        </div>
+                        <div className="flex items-baseline gap-3">
+                            <span className="text-6xl font-black tabular-nums tracking-tighter">742.4</span>
+                            <span className="text-lg font-bold text-[#CEF144]">metric tons</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full">+12.8% vs last year</span>
+                            <span className="text-[11px] text-white/30 font-medium">Confidence: 718.2 – 765.9 MT</span>
+                        </div>
+                    </div>
+                    <Button
+                        onClick={async () => {
+                            toast.loading("Generating season report...");
+                            try {
+                                const result = await (beeyieldService as any).generateSeasonReport({ apiary_id: 'apiary_123' });
+                                toast.success("Season report ready", { description: "Report saved to your records." });
+                            } catch (error: any) {
+                                toast.error("Report failed", { description: error.message });
+                            }
+                        }}
+                        className="bg-[#CEF144] text-slate-900 hover:bg-[#c5e83a] rounded-full px-8 h-12 font-bold text-[12px] shadow-lg shadow-[#CEF144]/20"
+                    >
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        Generate Full Report
+                    </Button>
+                </div>
+            </motion.div>
+
+            {/* Active Deployments */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+            >
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-900">Active Deployments</h2>
+                        <p className="text-[11px] text-slate-400 font-medium mt-0.5">{apiaries.length} orchards under management</p>
+                    </div>
+                    <Button
+                        variant="outline"
+                        className="rounded-full px-5 h-10 text-[11px] font-bold border-slate-200 hover:bg-slate-50"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Orchard
+                    </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {apiaries.map(orchard => (
+                        <DeploymentCard key={orchard.id} orchard={orchard} onAction={onTabChange} />
+                    ))}
+                </div>
+            </motion.div>
         </div>
     );
 };
 
 export default DashboardHomeView;
-

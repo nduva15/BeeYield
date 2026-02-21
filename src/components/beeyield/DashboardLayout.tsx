@@ -28,15 +28,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
     return (
-        <div className="flex h-screen w-full bg-white dark:bg-[#0a0a0a] overflow-hidden font-sans text-[#064e3b] dark:text-gray-100 selection:bg-[#10b981]/20">
-            {/* Subtle Texture/Grain could go here if needed, but keeping it clean for now */}
-
-            <div className="relative z-10 flex w-full h-full">
+        <div className="flex h-screen w-full bg-[#F4F7FB] dark:bg-[#070708] overflow-hidden font-sans text-slate-900 dark:text-slate-100 selection:bg-[#CEF144]/30 p-0 md:p-6">
+            <div className="relative flex w-full h-full bg-white/40 dark:bg-black/10 backdrop-blur-xl md:rounded-[40px] border border-white/20 dark:border-white/5 shadow-2xl overflow-hidden">
                 <GlassSidebar
                     activeTab={activeTab}
                     onTabChange={onTabChange}
                     onLogout={onLogout}
                     navItems={navItems}
+                    className="md:m-4 md:rounded-[32px] md:h-[calc(100%-32px)]"
                 />
 
                 <main className="flex-1 flex flex-col h-full overflow-hidden relative md:pl-[280px] transition-all duration-500">
@@ -57,13 +56,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         }}
                     />
 
-                    <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
-                        <div className="max-w-[1680px] mx-auto">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                        <div className="max-w-[1600px] mx-auto">
                             {!isAdmin && <FirstStepsBanner onTabChange={onTabChange} />}
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                             >
                                 {children}
                             </motion.div>

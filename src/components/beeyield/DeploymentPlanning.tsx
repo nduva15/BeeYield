@@ -21,8 +21,8 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
     const [pallets, setPallets] = React.useState<Pallet[]>([]);
     const [draggingPallet, setDraggingPallet] = React.useState<string | null>(null);
     const [logs, setLogs] = React.useState([
-        { id: 1, type: 'syrup', desc: 'Sector 4 Syrup Feeding complete (250 gal)', time: '09:00' },
-        { id: 2, type: 'mite', desc: 'Mite check Sector 12 - nominal', time: '10:15' },
+        { id: 1, type: 'syrup', desc: 'Area 4 Syrup Feeding complete (250 gal)', time: '09:00' },
+        { id: 2, type: 'mite', desc: 'Mite check Area 12 - normal', time: '10:15' },
     ]);
     const svgRef = React.useRef<SVGSVGElement>(null);
 
@@ -69,11 +69,11 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                             <Crosshair className="w-6 h-6 text-[#facc15]" />
                         </div>
                         <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Deployment <span className="text-[#10b981]">War Room</span>
+                            Field <span className="text-[#10b981]">Planner</span>
                         </h1>
                     </div>
                     <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Digital War Room · Live Pallet Tracking · Coverage Simulation
+                        Planning Space · Tray Tracking · Coverage Estimate
                     </p>
                 </div>
 
@@ -93,10 +93,10 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 {/* Simulation Area */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
                     <div className="flex items-center justify-between border-4 border-[#064e3b]/10 p-4 bg-[#064e3b]/3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">Click to place hive pallets · Drag to reposition</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">Click to place hive trays · Drag to reposition</span>
                         <div className="flex gap-3">
                             <button onClick={() => setPallets([])} className="p-2 border-2 border-[#064e3b] hover:bg-white transition-none"><RotateCcw className="w-4 h-4" /></button>
-                            <button className="px-4 py-2 bg-[#064e3b] text-white font-black text-[10px] uppercase tracking-widest shadow-[4px_4px_0px_0px_#10b981]">Save Deployment Plan</button>
+                            <button className="px-4 py-2 bg-[#064e3b] text-white font-black text-[10px] uppercase tracking-widest shadow-[4px_4px_0px_0px_#10b981]">Save Field Plan</button>
                         </div>
                     </div>
 
@@ -160,15 +160,15 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                             <div className="flex items-start gap-3 p-3 bg-white border-2 border-red-500">
                                 <div className="w-2 h-2 rounded-full bg-red-500 mt-1 animate-ping" />
                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-red-600">Tip-over detected: Sector 4</p>
-                                    <p className="text-[8px] font-bold text-red-600/50 uppercase mt-1">Impact sensor triggered at 15:02 UTC. Likely weather related.</p>
+                                    <p className="text-[10px] font-black uppercase text-red-600">Hive Tipped Over: Area 4</p>
+                                    <p className="text-[8px] font-bold text-red-600/50 uppercase mt-1">Movement detected. Likely the wind or animals.</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3 p-3 bg-white border-2 border-red-500">
                                 <div className="w-2 h-2 rounded-full bg-red-500 mt-1 animate-ping" />
                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-red-600">Geofence breach: Hive WAT-012</p>
-                                    <p className="text-[8px] font-bold text-red-600/50 uppercase mt-1">Colony moved 1.2km outside perimeter. Possible theft in progress.</p>
+                                    <p className="text-[10px] font-black uppercase text-red-600">Hive Moved: Hive WAT-012</p>
+                                    <p className="text-[8px] font-bold text-red-600/50 uppercase mt-1">Colony moved 1.2km outside safe area. Possible theft.</p>
                                 </div>
                             </div>
                         </div>

@@ -8,122 +8,62 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 48 30% 97%;
-    --foreground: 0 0% 10%;
+    /* Design System 2.0 - Soft Minimalist & High Contrast */
+    --background: 214 40% 98%;
+    /* #F4F7FB */
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --primary: 222 47% 11%;
+    /* Slate/Black #111827 */
+    --primary-foreground: 210 40% 98%;
 
-    /* BeeYield Logo Yellow/Gold - #F4D03F */
-    --primary: 48 87% 60%;
-    --primary-foreground: 0 0% 10%;
-    --primary-glow: 48 90% 65%;
+    --secondary: 73 87% 61%;
+    /* Lime Green #CEF144 */
+    --secondary-foreground: 222 47% 11%;
 
-    /* BeeYield Logo Green - #1B9157 */
-    --secondary: 153 68% 34%;
-    --secondary-foreground: 0 0% 100%;
+    --accent: 73 87% 61%;
+    --accent-foreground: 222 47% 11%;
 
-    /* Sand and Forest Theme Variables */
-    --sand-bg: 45 33% 96%;
-    /* #F9F7F2 */
-    --forest-green: 153 42% 19%;
-    /* #1B4332 */
-    --charcoal-text: 0 0% 15%;
-    /* #262626 */
-
-    /* Warm cream muted */
-    --muted: 45 33% 92%;
-    --muted-foreground: 0 0% 35%;
-
-    /* Accent - forest variant */
-    --accent: 153 42% 19%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 45 33% 88%;
-    --input: 45 33% 88%;
-    --ring: 153 42% 19%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
-    --radius: 1rem;
-    /* 16px */
+    --radius: 1.5rem;
+    /* 24px default */
 
-    /* Custom tokens - BeeYield Logo Colors */
-    --honey-light: 48 85% 85%;
-    --honey-dark: 48 75% 45%;
-    --nature-green: 153 42% 19%;
-    --nature-green-light: 153 42% 90%;
-
-    /* Gradients - Forest and Sand */
-    --gradient-hero: linear-gradient(135deg, hsl(153 42% 19%) 0%, hsl(153 68% 34%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(45 33% 97%) 0%, hsl(45 33% 92%) 100%);
-
-    /* Shadows - softer for premium look */
-    --shadow-soft: 0 10px 30px -5px rgba(27, 67, 50, 0.05);
-    --shadow-glow: 0 8px 32px -4px rgba(27, 67, 50, 0.1);
-
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 15%;
-    --sidebar-primary: 48 87% 60%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 48 70% 95%;
-    --sidebar-accent-foreground: 48 80% 25%;
-    --sidebar-border: 48 20% 90%;
-    --sidebar-ring: 48 87% 60%;
+    /* PRD 2.0 Specifics */
+    --bg-soft: 214 40% 98%;
+    --slate-primary: 222 47% 11%;
+    --lime-action: 73 87% 61%;
+    --shadow-diffuse: 0 12px 40px hsla(222, 47%, 11%, 0.03);
+    --radius-extreme: 32px;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 222 47% 8%;
+    --foreground: 213 31% 91%;
 
     --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 213 31% 91%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-
-    /* BeeYield Logo Yellow/Gold - #F4D03F */
-    --primary: 48 87% 60%;
+    --primary: 73 87% 61%;
     --primary-foreground: 222 47% 11%;
-    --primary-glow: 48 90% 65%;
 
-    /* BeeYield Logo Green - #1B9157 */
-    --secondary: 153 60% 42%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 73 87% 61%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 48 20% 90%;
-    --input: 48 20% 90%;
-    --ring: 48 87% 60%;
-
-    /* Custom tokens - BeeYield Logo Colors */
-    --honey-light: 48 85% 90%;
-    --honey-dark: 48 75% 50%;
-    --nature-green: 153 68% 34%;
-    --nature-green-light: 153 50% 90%;
-    --sidebar-background: 48 30% 97%;
-    --sidebar-foreground: 0 0% 15%;
-    --sidebar-primary: 48 87% 60%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 48 70% 95%;
-    --sidebar-accent-foreground: 48 80% 25%;
-    --sidebar-border: 48 20% 90%;
-    --sidebar-ring: 48 87% 60%;
+    --border: 222 47% 15%;
+    --input: 222 47% 15%;
+    --ring: 73 87% 61%;
   }
 }
 
@@ -485,16 +425,24 @@ All colors MUST be HSL.
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
+  .shadow-diffuse {
+    box-shadow: var(--shadow-diffuse);
+  }
+
+  .rounded-card-v2 {
+    border-radius: var(--radius-extreme);
+  }
+
   .glass-panel {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-diffuse;
   }
 
   .glass-card {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-2xl;
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-diffuse;
   }
 
   .glass-morphism {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-diffuse;
   }
 
   /* === INTELLIGENT HIVE COMPONENT STYLES === */

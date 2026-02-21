@@ -1,0 +1,17 @@
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "beeyield_core"
+version = "0.1.0"
+description = "BeeYield Rust compute engine — PyO3 bindings"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "beeyield_core"
