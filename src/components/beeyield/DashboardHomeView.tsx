@@ -15,6 +15,9 @@ import {
 import { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, ResponsiveContainer, YAxis, XAxis } from 'recharts';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
