@@ -4,6 +4,7 @@ import { LucideIcon, Hexagon, ChevronDown, LogOut, Search, Command, LayoutGrid, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { NavItem } from './DashboardSidebar';
+import { Button } from '@/components/ui/button';
 
 interface GlassSidebarProps {
     className?: string;
@@ -19,183 +20,131 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     activeTab,
     onTabChange,
     onLogout,
-    navItems,
-    isAdmin = false
+    navItems
 }) => {
-    const [pinnedItems, setPinnedItems] = React.useState<string[]>(['beeyield', 'data', 'meters']);
+    const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'data']);
     const { t } = useLanguage();
 
-    const toggleExpand = (id: string, e?: React.MouseEvent) => {
+    const toggleFolder = (id: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
-        setPinnedItems(prev =>
-            prev.includes(id)
-                ? prev.filter(i => i !== id)
-                : [...prev, id]
+        setExpandedFolders(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
         );
-    };
-
-    const containerVariants = {
-        hidden: { opacity: 0, x: -20 },
-        visible: {
-            opacity: 1,
-            x: 0,
-            transition: {
-                duration: 0.8,
-                ease: [0.16, 1, 0.3, 1] as const,
-                staggerChildren: 0.04
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, x: -5 },
-        visible: { opacity: 1, x: 0 }
     };
 
     return (
         <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-                "fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-[#E0E0E0] z-40 hidden md:flex flex-col antialiased",
+                "fixed left-0 top-0 bottom-0 w-[270px] bg-white border-r border-[#E0E7FF]/50 z-40 hidden md:flex flex-col antialiased shadow-[0_12px_40px_rgba(0,0,0,0.03)]",
                 className
             )}
         >
-            {/* Logo Area */}
-            <div className="px-7 pt-10 pb-8">
+            {/* Brand Logo */}
+            <div className="px-8 pt-12 pb-10">
                 <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center gap-3 cursor-pointer group"
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-4 cursor-pointer group"
                     onClick={() => onTabChange('home')}
                 >
-                    <div className="w-10 h-10 bg-[#064e3b] border-2 border-[#10b981] rounded-none flex items-center justify-center transition-transform duration-500 group-hover:rotate-12">
-                        <Hexagon className="w-6 h-6 text-[#facc15]" />
+                    <div className="w-12 h-12 bg-slate-900 rounded-[14px] flex items-center justify-center shadow-lg shadow-slate-200">
+                        <Hexagon className="w-6 h-6 text-[#CEF144] fill-current" />
                     </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-lg font-black text-[#064e3b] uppercase tracking-tighter leading-none">
+                    <div>
+                        <h1 className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-none">
                             Floaria™
                         </h1>
-                        <span className="text-[10px] font-black text-[#10b981] uppercase tracking-[0.2em] mt-1 opacity-70">
-                            Enterprise Node
-                        </span>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
+                            V2.0 Dashboard
+                        </p>
                     </div>
                 </motion.div>
             </div>
 
-            {/* Navigation Body */}
-            <div className="flex-1 px-4 overflow-y-auto custom-scrollbar-slim space-y-1 pb-6 pt-2">
-                <div className="px-4 mb-4">
-                    <span className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">
-                        {t('main_menu') || 'Navigation'}
-                    </span>
-                </div>
-
+            {/* Nav Links */}
+            <div className="flex-1 px-4 overflow-y-auto custom-scrollbar-slim space-y-1.5 pb-8">
                 {navItems.filter(item => !item.hidden).map((item) => {
                     const isActive = activeTab === item.id;
-                    const isExpanded = pinnedItems.includes(item.id);
+                    const isFolder = item.hasSubmenu;
+                    const isExpanded = expandedFolders.includes(item.id);
 
                     return (
                         <div key={item.id} className="relative">
                             <motion.button
-                                variants={itemVariants}
-                                whileHover={{ x: 3 }}
+                                whileHover={{ x: 4 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => {
-                                    onTabChange(item.id);
-                                    if (item.hasSubmenu) toggleExpand(item.id);
+                                    if (isFolder) {
+                                        toggleFolder(item.id);
+                                    } else {
+                                        onTabChange(item.id);
+                                    }
                                 }}
                                 className={cn(
-                                    "w-full flex items-center justify-between px-4 py-2.5 rounded-none transition-all duration-200 group relative border-2 border-transparent",
+                                    "w-full flex items-center justify-between px-5 py-3.5 rounded-full transition-all duration-300 group",
                                     isActive
-                                        ? "bg-[#064e3b] text-white font-black"
-                                        : "text-[#064e3b]/60 hover:text-[#064e3b] hover:bg-[#facc15]/10"
+                                        ? "bg-slate-900 text-white shadow-xl shadow-slate-200"
+                                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                                 )}
                             >
-                                {/* Active Indicator Bar */}
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="sidebar-active-indicator"
-                                        className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#facc15] rounded-none"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.3 }}
-                                    />
-                                )}
-
-                                <div className="flex items-center gap-3.5">
+                                <div className="flex items-center gap-4">
                                     <item.icon className={cn(
-                                        "w-[18px] h-[18px] stroke-[2] transition-all duration-300",
-                                        isActive ? "text-[#facc15]" : "text-[#064e3b]/40 group-hover:text-[#064e3b]"
+                                        "w-5 h-5 transition-colors",
+                                        isActive ? "text-[#CEF144]" : "text-slate-400 group-hover:text-slate-900"
                                     )} />
-                                    <span className="text-[12px] font-black uppercase tracking-tight">{item.label}</span>
+                                    <span className="text-[13px] font-bold tracking-tight">{item.label}</span>
                                 </div>
-
-                                {item.hasSubmenu && (
+                                {isFolder && (
                                     <ChevronDown className={cn(
-                                        "w-3.5 h-3.5 transition-transform duration-300 opacity-40",
-                                        isExpanded ? "rotate-180" : "rotate-0"
+                                        "w-4 h-4 opacity-40 transition-transform duration-500",
+                                        isExpanded ? "rotate-180" : ""
                                     )} />
                                 )}
                             </motion.button>
 
                             <AnimatePresence>
-                                {item.hasSubmenu && isExpanded && item.submenuItems && (
+                                {isFolder && isExpanded && (
                                     <motion.div
                                         initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        className="overflow-hidden ml-9 pl-3 border-l border-gray-100 mt-1 mb-1"
+                                        className="overflow-hidden ml-11 mt-1 border-l-2 border-slate-50 pl-2 space-y-1"
                                     >
-                                        <div className="py-1 space-y-0.5">
-                                            {item.submenuItems.map((sub, idx) => {
-                                                if ('title' in sub) {
-                                                    return (
-                                                        <div key={idx} className="mt-4 mb-2">
-                                                            <p className="text-[9px] font-black uppercase text-[#064e3b]/30 tracking-widest pl-3 mb-2">{sub.title}</p>
-                                                            <div className="space-y-0.5">
-                                                                {sub.items.map(subItem => (
-                                                                    <button
-                                                                        key={subItem.id}
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            onTabChange(subItem.id);
-                                                                        }}
-                                                                        className={cn(
-                                                                            "w-full text-left py-2 px-3 text-[11px] font-black uppercase rounded-none transition-all flex items-center gap-2.5",
-                                                                            activeTab === subItem.id
-                                                                                ? "text-[#10b981] bg-[#10b981]/[0.05]"
-                                                                                : "text-[#064e3b]/50 hover:text-[#064e3b] hover:bg-[#10b981]/[0.02]"
-                                                                        )}
-                                                                    >
-                                                                        {subItem.icon && <subItem.icon className="w-3.5 h-3.5 opacity-60" />}
-                                                                        {subItem.label}
-                                                                    </button>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }
+                                        {item.submenuItems?.map((sub: any, idx) => {
+                                            if ('title' in sub) {
                                                 return (
-                                                    <button
-                                                        key={sub.id}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            onTabChange(sub.id);
-                                                        }}
-                                                        className={cn(
-                                                            "w-full text-left py-2 px-3 text-[11px] font-black uppercase rounded-none transition-all flex items-center gap-2.5",
-                                                            activeTab === sub.id
-                                                                ? "text-[#10b981] bg-[#10b981]/[0.05]"
-                                                                : "text-[#064e3b]/50 hover:text-[#064e3b] hover:bg-[#10b981]/[0.02]"
-                                                        )}
-                                                    >
-                                                        {sub.icon && <sub.icon className="w-3.5 h-3.5 opacity-60" />}
-                                                        {sub.label}
-                                                    </button>
+                                                    <div key={idx} className="pt-4 pb-2">
+                                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-4 mb-2 block">{sub.title}</span>
+                                                        {sub.items.map((subItem: any) => (
+                                                            <button
+                                                                key={subItem.id}
+                                                                onClick={() => onTabChange(subItem.id)}
+                                                                className={cn(
+                                                                    "w-full text-left px-4 py-2.5 rounded-full text-[12px] font-bold transition-all",
+                                                                    activeTab === subItem.id ? "text-slate-900 bg-slate-50" : "text-slate-400 hover:text-slate-900 hover:bg-slate-50/50"
+                                                                )}
+                                                            >
+                                                                {subItem.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 );
-                                            })}
-                                        </div>
+                                            }
+                                            return (
+                                                <button
+                                                    key={sub.id}
+                                                    onClick={() => onTabChange(sub.id)}
+                                                    className={cn(
+                                                        "w-full text-left px-4 py-2.5 rounded-full text-[12px] font-bold transition-all",
+                                                        activeTab === sub.id ? "text-slate-900 bg-slate-50" : "text-slate-400 hover:text-slate-900 hover:bg-slate-50/50"
+                                                    )}
+                                                >
+                                                    {sub.label}
+                                                </button>
+                                            );
+                                        })}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -204,41 +153,32 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 })}
             </div>
 
-            {/* User Profile / Footer */}
-            <div className="p-6 border-t border-[#064e3b]/10 bg-neutral-50/10">
-                <div className="flex items-center gap-3 mb-6 px-1">
-                    <div className="w-10 h-10 border-2 border-[#064e3b] bg-[#facc15] flex items-center justify-center text-[#064e3b] font-black text-xs shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
-                        JD
+            {/* User Profile */}
+            <div className="p-6 border-t border-slate-50 bg-slate-50/30">
+                <div className="flex items-center gap-4 mb-5">
+                    <div className="relative">
+                        <img
+                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100"
+                            className="w-11 h-11 rounded-full border-2 border-white shadow-md object-cover"
+                            alt="User"
+                        />
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase text-[#064e3b]">John Doe</span>
-                        <span className="text-[8px] font-bold uppercase text-[#10b981]">Owner</span>
+                    <div>
+                        <p className="text-sm font-bold text-slate-900 leading-none">Timothy Nduva</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Enterprise Owner</p>
                     </div>
                 </div>
 
-                <motion.button
-                    whileHover={{ backgroundColor: '#064e3b', color: '#fff' }}
+                <Button
+                    variant="ghost"
                     onClick={onLogout}
-                    className="w-full py-2.5 bg-white border-2 border-[#064e3b] text-[10px] font-black uppercase text-[#064e3b] flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] hover:shadow-none translate-y-[-2px] hover:translate-y-0"
+                    className="w-full justify-start text-slate-400 hover:text-slate-900 hover:bg-white rounded-full transition-all group"
                 >
-                    <LogOut className="w-3.5 h-3.5" />
-                    {t('logout')}
-                </motion.button>
+                    <LogOut className="w-4 h-4 mr-3" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">{t('logout')}</span>
+                </Button>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .custom-scrollbar-slim::-webkit-scrollbar {
-                    width: 2px;
-                }
-                .custom-scrollbar-slim::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar-slim::-webkit-scrollbar-thumb {
-                    background: #E0E0E0;
-                    border-radius: 10px;
-                }
-            `}} />
         </motion.div>
     );
 };

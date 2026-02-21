@@ -35,7 +35,7 @@ const FlightMapView: React.FC = () => {
                         y: 10 + ((z.density_score || 0.5) * 60 + i * 15) % 80,
                         id: i + 10,
                         type: 'forage' as const,
-                        label: z.flora_type || 'Forage Area',
+                        label: z.flora_type || 'Feeding area',
                     }));
                     setPoints([...hivePoints, ...foragePoints]);
 
@@ -75,7 +75,7 @@ const FlightMapView: React.FC = () => {
             y: 10 + Math.random() * 80,
             id: i + 10,
             type: 'forage' as const,
-            label: 'Forage Area',
+            label: 'Feeding area',
         }));
         setPoints([...hivePoints, ...foragePoints]);
         setStats({ activeBees: 124, avgTrip: 12.4, forageRange: 2.4 });
@@ -101,7 +101,7 @@ const FlightMapView: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-[2.5rem] font-bold text-[#0F172A] tracking-tight">Flight Map</h1>
-                    <p className="text-gray-500 mt-1">Real-time bee activity and forage path tracking.</p>
+                    <p className="text-gray-500 mt-1">Real-time bee activity and flight path tracking.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="rounded-xl border-gray-200" onClick={() => setIsPlaying(!isPlaying)}>
@@ -158,7 +158,7 @@ const FlightMapView: React.FC = () => {
                                 {point.type === 'hive' ? <Navigation className="w-2 h-2 text-white" /> : <div className="w-1 h-1 bg-white rounded-full" />}
                             </div>
                             <div className="absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white px-2 py-1 rounded text-[8px] font-bold text-slate-900 border border-slate-200 opacity-0 group-hover:opacity-100 uppercase shadow-sm">
-                                {point.label || (point.type === 'hive' ? `Hive ${point.id}` : 'Forage Area')}
+                                {point.label || (point.type === 'hive' ? `Hive ${point.id}` : 'Feeding area')}
                             </div>
                         </motion.div>
                     ))}
@@ -170,13 +170,13 @@ const FlightMapView: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Forage Zones</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Feeding Areas</span>
                         </div>
                     </div>
 
                     <div className="absolute top-6 right-6">
                         <Badge className="bg-white/10 backdrop-blur-md text-[#1B9157] border-white/10 font-black">
-                            {forageZones.length > 0 ? `${forageZones.length} ZONES LOADED` : 'PRECISION TRACKING ACTIVE'}
+                            {forageZones.length > 0 ? `${forageZones.length} AREAS LOADED` : 'MONITORING ACTIVE'}
                         </Badge>
                     </div>
                 </Card>
@@ -184,7 +184,7 @@ const FlightMapView: React.FC = () => {
                 {/* Info Sidebar */}
                 <div className="lg:col-span-4 space-y-6">
                     <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#1B9157]">
-                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Flight Stats</h3>
+                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Flight Details</h3>
                         <div className="space-y-4">
                             <div className="flex justify-between items-end border-b border-gray-50 pb-2">
                                 <span className="text-sm font-medium text-gray-500">Active Bees/m²</span>
@@ -195,7 +195,7 @@ const FlightMapView: React.FC = () => {
                                 <span className="text-xl font-black text-gray-900">{stats.avgTrip} min</span>
                             </div>
                             <div className="flex justify-between items-end border-b border-gray-50 pb-2">
-                                <span className="text-sm font-medium text-gray-500">Forage Range</span>
+                                <span className="text-sm font-medium text-gray-500">Feeding Range</span>
                                 <span className="text-xl font-black text-gray-900">{stats.forageRange} km</span>
                             </div>
                         </div>
@@ -204,12 +204,12 @@ const FlightMapView: React.FC = () => {
                     {/* Forage Zones List */}
                     {forageZones.length > 0 && (
                         <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#F4D03F]">
-                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Forage Zones</h3>
+                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Feeding Areas</h3>
                             <div className="space-y-3">
                                 {forageZones.slice(0, 5).map((z: any, i: number) => (
                                     <div key={z.id || i} className="flex justify-between items-center text-sm">
                                         <div>
-                                            <p className="font-bold text-slate-800">{z.zone_name || z.flora_type || `Zone ${i + 1}`}</p>
+                                            <p className="font-bold text-slate-800">{z.zone_name || z.flora_type || `Area ${i + 1}`}</p>
                                             <p className="text-xs text-slate-400">{z.flora_type || '-'} · {z.season || 'year_round'}</p>
                                         </div>
                                         <span className="text-xs font-bold text-green-600">{z.density_score ? `${(z.density_score * 100).toFixed(0)}%` : '-'}</span>
@@ -220,7 +220,7 @@ const FlightMapView: React.FC = () => {
                     )}
 
                     <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#F4D03F]">
-                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Activity Heatmap</h3>
+                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Activity Map</h3>
                         <div className="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center border border-dashed border-gray-200">
                             <Activity className="w-12 h-12 text-gray-200" />
                         </div>

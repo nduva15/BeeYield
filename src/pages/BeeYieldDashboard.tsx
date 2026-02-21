@@ -554,10 +554,10 @@ const BeeYieldDashboard: React.FC = () => {
 
                     <div className="space-y-6">
                         <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">
-                            Access <span className="text-[#10b981]">Denied</span>
+                            No <span className="text-[#10b981]">Access</span>
                         </h1>
                         <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-[0.4em]">
-                            Security Check
+                            Account Check
                         </p>
                     </div>
 

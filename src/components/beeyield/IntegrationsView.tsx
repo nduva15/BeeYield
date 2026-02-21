@@ -105,7 +105,7 @@ const IntegrationsView: React.FC = () => {
             });
             setLoading(false);
             if (res) {
-                toast.success("Shopify Store Tunnel Established");
+                toast.success("Shopify Store connected");
                 fetchConfigs();
             }
         }
@@ -154,7 +154,7 @@ const IntegrationsView: React.FC = () => {
         const res = await beeyieldService.updateIntegrationSettings(platform, config);
         setLoading(false);
         if (res.success) {
-            toast.success(`${platform} Mapping Policy Updated`);
+            toast.success(`${platform} Setup Updated`);
             fetchConfigs();
         } else {
             toast.error("Failed to commit policy");
@@ -175,10 +175,10 @@ const IntegrationsView: React.FC = () => {
 
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8">
-                        <Badge className="bg-[#1B9157]/20 text-[#1B9157] border-[#1B9157]/30 px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-[10px]">Commercial Ecosystem</Badge>
+                        <Badge className="bg-[#1B9157]/20 text-[#1B9157] border-[#1B9157]/30 px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-[10px]">Business Tools</Badge>
                         <h1 className="text-6xl font-black tracking-tighter uppercase leading-[0.9]">
                             Connect Your<br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1B9157] to-[#F4D03F]">Enterprise</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1B9157] to-[#F4D03F]">Business</span>
                         </h1>
                         <p className="text-gray-400 text-sm font-bold uppercase tracking-widest leading-relaxed">
                             BeeYield seamlessly bridges your apiary activities with global financial and retail powerhouses.
@@ -243,19 +243,19 @@ const IntegrationsView: React.FC = () => {
                         onClick={() => handleConnectService('quickbooks')}
                         className="bg-[#2CA01C] hover:bg-[#238016] text-white rounded-2xl h-14 px-8 font-black text-xs uppercase tracking-widest shadow-xl shadow-[#2CA01C]/20"
                     >
-                        {isConnected('quickbooks') ? "Renew OAuth Link" : "Establish QBO Link"}
+                        {isConnected('quickbooks') ? "Renew Link" : "Connect QuickBooks"}
                     </Button>
                     <Button onClick={() => handleSyncNow('quickbooks')} disabled={!isConnected('quickbooks')} variant="outline" className="rounded-2xl h-14 px-8 font-black text-xs uppercase tracking-widest">
-                        Force Pulse <RefreshCw className="w-3 h-3 ml-2" />
+                        Sync Now <RefreshCw className="w-3 h-3 ml-2" />
                     </Button>
                 </div>
             </div>
 
             <Tabs defaultValue="overview" className="space-y-10">
                 <TabsList className="bg-transparent border-b border-gray-100 w-full justify-start rounded-none h-auto p-0 gap-8">
-                    <TabsTrigger value="overview" className="border-b-2 border-transparent data-[state=active]:border-[#2CA01C] data-[state=active]:bg-transparent rounded-none px-0 pb-4 h-auto font-black uppercase text-[10px] tracking-widest">Deep Overview</TabsTrigger>
+                    <TabsTrigger value="overview" className="border-b-2 border-transparent data-[state=active]:border-[#2CA01C] data-[state=active]:bg-transparent rounded-none px-0 pb-4 h-auto font-black uppercase text-[10px] tracking-widest">Full View</TabsTrigger>
                     <TabsTrigger value="history" className="border-b-2 border-transparent data-[state=active]:border-[#2CA01C] data-[state=active]:bg-transparent rounded-none px-0 pb-4 h-auto font-black uppercase text-[10px] tracking-widest">Sync History</TabsTrigger>
-                    <TabsTrigger value="settings" className="border-b-2 border-transparent data-[state=active]:border-[#2CA01C] data-[state=active]:bg-transparent rounded-none px-0 pb-4 h-auto font-black uppercase text-[10px] tracking-widest">Asset Mapping</TabsTrigger>
+                    <TabsTrigger value="settings" className="border-b-2 border-transparent data-[state=active]:border-[#2CA01C] data-[state=active]:bg-transparent rounded-none px-0 pb-4 h-auto font-black uppercase text-[10px] tracking-widest">Account Setup</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-10">
@@ -297,12 +297,12 @@ const IntegrationsView: React.FC = () => {
                                 </ul>
                             </div>
                             <div className="space-y-4">
-                                <h4 className="text-sm font-black uppercase flex items-center gap-2"><Terminal className="w-4 h-4" /> Live Payload Terminal</h4>
+                                <h4 className="text-sm font-black uppercase flex items-center gap-2"><Terminal className="w-4 h-4" /> Activity Log</h4>
                                 <div className="bg-[#09090b] rounded-[1.5rem] p-6 font-mono text-[9px] text-green-400 space-y-2 border border-white/5 shadow-inner">
-                                    <div className="flex gap-2"><span>[11:23:44]</span> <span className="text-blue-400">INFO</span> Established OAuth2 Handshake</div>
-                                    <div className="flex gap-2"><span>[11:23:45]</span> <span className="text-gray-500">AUTH</span> Token Rotation Success: ID=...{Math.random().toString(36).slice(4)}</div>
-                                    <div className="flex gap-2"><span>[11:23:46]</span> <span className="text-yellow-400">WARN</span> Deferred 2 records (Missing Item Codes)</div>
-                                    <div className="flex gap-2 animate-pulse"><span>[11:23:47]</span> <span className="text-green-400">SYNC</span> Synchronizing Ledger Hive #104...</div>
+                                    <div className="flex gap-2"><span>[11:23:44]</span> <span className="text-blue-400">INFO</span> Account Link Established</div>
+                                    <div className="flex gap-2"><span>[11:23:45]</span> <span className="text-gray-500">AUTH</span> Key Refresh Success: ID=...{Math.random().toString(36).slice(4)}</div>
+                                    <div className="flex gap-2"><span>[11:23:46]</span> <span className="text-yellow-400">WARN</span> Deferred 2 records (Check Item Codes)</div>
+                                    <div className="flex gap-2 animate-pulse"><span>[11:23:47]</span> <span className="text-green-400">SYNC</span> Updating Hive Records #104...</div>
                                 </div>
                                 <p className="text-[9px] text-gray-500 font-bold uppercase leading-relaxed">
                                     The QuickBooks pipeline utilizes a stateless OAuth2 proxy. BeeYield never stores your QBO credentials.
@@ -373,7 +373,7 @@ const IntegrationsView: React.FC = () => {
                             onClick={() => handleSaveMapping('quickbooks')}
                             className="bg-black text-white hover:bg-neutral-800 rounded-2xl h-14 px-12 font-black text-xs uppercase tracking-widest"
                         >
-                            Commit Mapping Policy
+                            Save Account Setup
                         </Button>
                     </div>
                 </TabsContent>
@@ -393,7 +393,7 @@ const IntegrationsView: React.FC = () => {
                         <div>
                             <h2 className="text-4xl font-black uppercase tracking-tighter">Shopify Boutique</h2>
                             <Badge className={isConnected('shopify') ? "bg-[#95BF47] text-white" : "bg-red-50 text-red-500"}>
-                                {isConnected('shopify') ? "ACTIVE TUNNEL" : "DISCONNECTED"}
+                                {isConnected('shopify') ? "CONNECTED" : "DISCONNECTED"}
                             </Badge>
                         </div>
                     </div>
@@ -588,7 +588,7 @@ const IntegrationsView: React.FC = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-[#1B9157]" />
-                        <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Hydrating Connections...</span>
+                        <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Loading Account Data...</span>
                     </div>
                 ) : (
                     <>
@@ -605,7 +605,7 @@ const IntegrationsView: React.FC = () => {
                     <HistoryIcon className="w-8 h-8 text-gray-300" />
                 </div>
                 <div className="max-w-2xl space-y-4">
-                    <h3 className="text-sm font-black uppercase">Infrastructure Transparency</h3>
+                    <h3 className="text-sm font-black uppercase">System Security</h3>
                     <p className="text-[10px] text-gray-500 font-bold uppercase leading-relaxed tracking-wide">
                         BeeYield integrates with external providers using secure multi-hop relays. No personally identifiable financial data is persisted locally.
                         Every sync event is recorded in the organization's immutable audit log for legal compliance.
