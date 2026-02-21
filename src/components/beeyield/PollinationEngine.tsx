@@ -1,7 +1,9 @@
 import React from 'react';
-import { Calculator, Zap, Target, TrendingUp, Info, ArrowRight, Save, LayoutGrid, CheckCircle2 } from 'lucide-react';
+import { Calculator, Zap, Target, TrendingUp, Info, ArrowRight, Save, LayoutGrid, CheckCircle2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis } from 'recharts';
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 interface PollinationEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -46,6 +48,7 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string }> = (
 const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) => {
     const [schemeA, setSchemeA] = React.useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Scheme A (Standard)' });
     const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Scheme B (Premium)' });
+    const [isSaving, setIsSaving] = React.useState(false);
 
     // Model Constants
     const TARGET_FPA = 1.0; // Frames per acre target
@@ -65,6 +68,24 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
         const setProbability = Math.min(100, fpa * 100 * VARIETY_MULTIPLIER);
         return { fpa, cost, setProbability };
     }, [schemeB]);
+
+    const handleCommitPlan = async (scheme: Scenario, stats: any) => {
+        setIsSaving(true);
+        const { error } = await beeyieldService.savePollinationDeployment({
+            field_name: `Planned: ${scheme.label}`,
+            crop_type: 'Almond (Modeled)',
+            total_acres: 100, // Placeholder for modeling
+            target_fpa: stats.fpa,
+            bloom_intensity: 0.8,
+            forage_condition: 0.8,
+            status: 'planned',
+            metrics_json: { ...stats, scheme }
+        });
+        setIsSaving(false);
+        if (!error) {
+            onTabChange('precision-pollination-home', 'Planned modeling committed to mission control.', 'view-registry');
+        }
+    };
 
     return (
         <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
@@ -208,10 +229,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
             </div>
 
             <button
-                onClick={() => onTabChange('precision-pollination-home', 'Calculation results modeled and ready.', 'commit-plan')}
-                className="w-full py-6 bg-[#064e3b] text-white font-black uppercase tracking-[0.4em] text-sm hover:translate-x-1 hover:translate-y-1 transition-all shadow-[8px_8px_0px_0px_#10b981] active:shadow-none active:translate-x-2 active:translate-y-2"
+                onClick={() => handleCommitPlan(statsA.setProbability > statsB.setProbability ? schemeA : schemeB, statsA.setProbability > statsB.setProbability ? statsA : statsB)}
+                disabled={isSaving}
+                className="w-full py-6 bg-[#064e3b] text-white font-black uppercase tracking-[0.4em] text-sm hover:translate-x-1 hover:translate-y-1 transition-all shadow-[8px_8px_0px_0px_#10b981] active:shadow-none active:translate-x-2 active:translate-y-2 disabled:opacity-50 flex items-center justify-center gap-4"
             >
-                Commit Modeling to Mission Control
+                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                Commit Best Scenario to Mission Control
             </button>
         </div>
     );

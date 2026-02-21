@@ -69,6 +69,7 @@ import PollinationIntelligence from '@/components/beeyield/PollinationIntelligen
 import OrchardMapper from '@/components/beeyield/OrchardMapper';
 import SeasonSummary from '@/components/beeyield/SeasonSummary';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
+import IntegrationsView from '@/components/beeyield/IntegrationsView';
 
 import LiveActivityHeatmap from '@/components/beeyield/LiveActivityHeatmap';
 import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
@@ -224,11 +225,11 @@ const BeeYieldDashboard: React.FC = () => {
                     title: 'Analysis',
                     items: [
                         { id: 'acoustic-transformer', label: 'Hive Sound', icon: Volume2 },
-                        { id: 'bee-calculator', label: 'Op-Health Calculator', icon: Calculator },
-                        { id: 'hpa-optimizer', label: 'HPA Optimizer', icon: Calculator },
-                        { id: 'foraging-optimizer', label: 'Bee Optimizer', icon: Crosshair },
+                        { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
+                        { id: 'hpa-optimizer', label: 'Performance Planner', icon: Calculator },
+                        { id: 'foraging-optimizer', label: 'Flower Guide', icon: Crosshair },
                         { id: 'vpm-counter', label: 'Visits Counter', icon: Camera },
-                        { id: 'bfh-forecast', label: 'Efficiency Forecast', icon: Zap },
+                        { id: 'bfh-forecast', label: 'Work Forecast', icon: Zap },
                         { id: 'yield-predict', label: 'Yield Forecast', icon: Cpu },
                     ]
                 },
@@ -252,8 +253,8 @@ const BeeYieldDashboard: React.FC = () => {
                 {
                     title: 'Forecasting & Infrastructure',
                     items: [
-                        { id: 'hive-telemetry', label: 'Weight Dynamics', icon: Scale },
-                        { id: 'saturation-math', label: 'Saturation Math', icon: Crosshair },
+                        { id: 'hive-telemetry', label: 'Hive Weight Changes', icon: Scale },
+                        { id: 'saturation-math', label: 'Area Coverage', icon: Crosshair },
                         { id: 'contract-verification', label: 'Grade Certificates', icon: ShieldCheck },
                     ]
                 },
@@ -339,6 +340,7 @@ const BeeYieldDashboard: React.FC = () => {
             ]
         },
         { id: 'billing', label: t('billing'), icon: Receipt },
+        { id: 'integrations', label: 'Integrations', icon: Puzzle },
         { id: 'support', label: t('nav_support'), icon: LifeBuoy },
         { id: 'settings', label: t('settings'), icon: Settings },
     ];
@@ -496,6 +498,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'billing':
                 return <BillingView onTabChange={handleTabChange} />;
+            case 'integrations':
+                return <IntegrationsView />;
             case 'support':
                 return <SupportCenterView onTabChange={handleTabChange} />;
             case 'settings': // Special case from top bar or banner

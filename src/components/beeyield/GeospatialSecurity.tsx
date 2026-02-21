@@ -1,6 +1,8 @@
 import React from 'react';
 import { MapPin, Shield, AlertTriangle, CheckCircle2, Zap, Navigation, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 interface GeospatialSecurityProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -25,15 +27,21 @@ const hiveMarkers: HiveMarker[] = [
     { id: 'HV-006', name: 'Hive Foxtrot', x: 78, y: 65, status: 'alert', block: 'Block 3A', saturation: 18 },
 ];
 
-// Heatmap grid cells (8x6)
-const heatGrid = [
-    [40, 55, 70, 85, 72, 50, 30, 20],
-    [50, 68, 88, 95, 90, 65, 35, 25],
-    [35, 60, 75, 82, 76, 60, 28, 15],
-    [25, 45, 65, 78, 70, 55, 40, 22],
-    [20, 38, 55, 68, 80, 72, 50, 30],
-    [15, 28, 42, 58, 70, 65, 45, 25],
-];
+// Heatmap logic: 8x6 grid
+// Blocks mapping:
+const blockHives = {
+    'Block 1C': { startCol: 0, endCol: 3, startRow: 0, endRow: 2, capacity: 50 },
+    'Block 2D': { startCol: 4, endCol: 7, startRow: 0, endRow: 2, capacity: 50 },
+    'Block 4B': { startCol: 0, endCol: 3, startRow: 3, endRow: 5, capacity: 50 },
+    'Block 3A': { startCol: 4, endCol: 7, startRow: 3, endRow: 5, capacity: 50 },
+};
+
+const calculateSaturation = (blockName: string, hives: HiveMarker[]) => {
+    const block = blockHives[blockName as keyof typeof blockHives];
+    if (!block) return 0;
+    const count = hives.filter(h => h.block === blockName).length;
+    return Math.round((count / block.capacity) * 100);
+};
 
 const getHeatColor = (val: number) => {
     if (val >= 80) return 'rgba(16,185,129,0.60)';
@@ -52,11 +60,36 @@ const statusConfig = {
 const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) => {
     const [selected, setSelected] = React.useState<HiveMarker | null>(null);
     const [showHeatmap, setShowHeatmap] = React.useState(true);
+    const [hives, setHives] = React.useState<HiveMarker[]>(hiveMarkers);
 
-    const alerts = hiveMarkers.filter(h => h.status !== 'nominal');
+    React.useEffect(() => {
+        // Subscribe to real-time security alerts
+        const gatewaySub = beeyieldService.subscribeToGatewayStatus((payload) => {
+            const gatewayId = payload.new.id;
+            toast.error(`Security Alert: Gateway ${gatewayId} is OFFLINE!`, {
+                description: "Immediate check required in Block 4B.",
+                duration: 10000
+            });
+            // Update local state if we had real mapping
+        });
+
+        const weightSub = beeyieldService.subscribeToWeightAlerts((payload) => {
+            toast.error("Critical Event: Step-function weight drop detected!", {
+                description: "Possible theft or swarming event in progress.",
+                duration: 10000
+            });
+        });
+
+        return () => {
+            gatewaySub?.unsubscribe();
+            weightSub?.unsubscribe();
+        };
+    }, []);
+
+    const alerts = hives.filter(h => h.status !== 'nominal');
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-white min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
                 <div>
@@ -64,7 +97,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center">
                             <Shield className="w-6 h-6 text-[#facc15]" />
                         </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[0.8]">
                             Hive <span className="text-[#10b981]">Map</span>
                         </h1>
                     </div>
@@ -125,9 +158,20 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         {/* Heatmap layer */}
                         {showHeatmap && (
                             <div className="absolute inset-0 grid" style={{ gridTemplateColumns: 'repeat(8, 1fr)', gridTemplateRows: 'repeat(6, 1fr)' }}>
-                                {heatGrid.flat().map((val, i) => (
-                                    <div key={i} style={{ backgroundColor: getHeatColor(val) }} />
-                                ))}
+                                {Array.from({ length: 48 }).map((_, i) => {
+                                    const r = Math.floor(i / 8);
+                                    const c = i % 8;
+                                    let blockName = '';
+                                    if (r < 3 && c < 4) blockName = 'Block 1C';
+                                    else if (r < 3 && c >= 4) blockName = 'Block 2D';
+                                    else if (r >= 3 && c < 4) blockName = 'Block 4B';
+                                    else blockName = 'Block 3A';
+
+                                    const saturation = calculateSaturation(blockName, hives);
+                                    // Add some jitter for a more organic feel
+                                    const jittered = Math.max(0, Math.min(100, saturation + (Math.sin(i) * 5)));
+                                    return <div key={i} style={{ backgroundColor: getHeatColor(jittered) }} />;
+                                })}
                             </div>
                         )}
 
@@ -151,7 +195,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         ))}
 
                         {/* Hive Markers */}
-                        {hiveMarkers.map(h => {
+                        {hives.map(h => {
                             const s = statusConfig[h.status];
                             const isSelected = selected?.id === h.id;
                             return (
@@ -201,7 +245,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                 <div className="lg:col-span-4 space-y-4">
                     <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Hive List</h3>
                     <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
-                        {hiveMarkers.map(h => {
+                        {hives.map(h => {
                             const s = statusConfig[h.status];
                             const isSelected = selected?.id === h.id;
                             return (

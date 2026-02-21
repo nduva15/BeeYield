@@ -60,7 +60,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 <div className="space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-2">
                         <Globe className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Orbital Intelligence Hub</span>
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Satellite View</span>
                     </div>
                     <h1 className="text-7xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
                         Satellite <span className="text-[#10b981]">Registry</span>
@@ -71,7 +71,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="px-6 py-3 border-4 border-[#064e3b] bg-[#064e3b] text-white font-black text-[10px] uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(16,185,129,1)]">
-                        COPERNICUS_SENTINEL_2L
+                        SATELLITE_SYSTEM_V4
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                             <div className="w-10 h-10 bg-[#10b981] flex items-center justify-center border-2 border-[#064e3b]">
                                 <BrainCircuit className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-[10px] font-black text-[#10b981] uppercase tracking-[0.2em]">Environmental Data Subsystem</span>
+                            <span className="text-[10px] font-black text-[#10b981] uppercase tracking-[0.2em]">Nature Data</span>
                         </div>
                         <h2 className="text-6xl font-black text-white leading-none uppercase tracking-tighter">
                             Field <span className="text-[#facc15]">Dynamics.</span>
@@ -117,10 +117,10 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                 onClick={() => onTabChange('precision-pollination')}
                                 className="h-16 px-10 border-4 border-white bg-white text-[#064e3b] hover:bg-[#10b981] hover:border-[#10b981] hover:text-white font-black text-xs uppercase tracking-widest transition-none shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                             >
-                                INTERROGATE_ATLAS
+                                VIEW FIELD MAP
                             </button>
                             <button className="h-16 px-10 border-4 border-white/20 bg-transparent text-white hover:bg-white/10 font-black text-xs uppercase tracking-widest transition-none">
-                                PROTOCOL_DOCS
+                                HELP GUIDES
                             </button>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <div className="space-y-10">
                 <div className="flex items-center gap-4 border-b-4 border-[#064e3b]/10 pb-6">
                     <Cpu className="w-8 h-8 text-[#064e3b]" />
-                    <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Diagnostic Nodes</h3>
+                    <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Field Status</h3>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
                     {[
@@ -158,15 +158,15 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <div className="space-y-10">
                 <div className="flex items-center gap-4 border-b-4 border-[#064e3b]/10 pb-6">
                     <Layers className="w-8 h-8 text-[#064e3b]" />
-                    <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Operational Pipeline</h3>
+                    <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">How it works</h3>
                 </div>
                 <div className="border-4 border-[#064e3b] bg-white p-12 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
                         {[
-                            { title: "Ingestion", icon: Satellite },
+                            { title: "Reading data", icon: Satellite },
                             { title: "Analysis", icon: Layers },
-                            { title: "Correlation", icon: BrainCircuit },
-                            { title: "Insights", icon: Target }
+                            { title: "Comparing", icon: BrainCircuit },
+                            { title: "Final Tips", icon: Target }
                         ].map((step, i, arr) => (
                             <React.Fragment key={step.title}>
                                 <div className="flex flex-col items-center gap-6 flex-1">

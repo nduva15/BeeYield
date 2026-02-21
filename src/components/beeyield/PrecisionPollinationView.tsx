@@ -22,9 +22,13 @@ import {
     Plus,
     Minus,
     AlertTriangle,
-    CheckCircle2
+    CheckCircle2,
+    Save,
+    Loader2,
+    FileDown
 } from 'lucide-react';
-import { IoTDevice, SensorReading } from '@/services/beeyieldService';
+import beeyieldService, { IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
 
@@ -48,7 +52,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     const setActiveSubPage = (page: SubPage) => {
         if (activeSubPageOverride) {
-            // Map sub-pages back to dashboard tabs if needed
             const tabMap: Record<SubPage, string> = {
                 'home': 'precision-pollination',
                 'grid': 'precision-pollination-grid',
@@ -79,6 +82,56 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     const metrics = React.useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
 
+    const [deployments, setDeployments] = React.useState<any[]>([]);
+    const [isSaving, setIsSaving] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+
+    const fetchDeployments = async () => {
+        setLoading(true);
+        const data = await beeyieldService.getPollinationDeployments();
+        setDeployments(data);
+        setLoading(false);
+    };
+
+    React.useEffect(() => {
+        fetchDeployments();
+    }, []);
+
+    const handleSaveDeployment = async () => {
+        setIsSaving(true);
+        const result = await beeyieldService.savePollinationDeployment({
+            field_name: `Tactical Deployment ${new Date().toLocaleDateString()}`,
+            crop_type: 'Almond',
+            total_acres: calcInputs.totalAcres,
+            bloom_intensity: calcInputs.bloomIntensity,
+            forage_condition: calcInputs.forageCondition,
+            status: 'active',
+            metrics_json: metrics
+        });
+        if (!result.error) {
+            fetchDeployments();
+        }
+        setIsSaving(false);
+    };
+
+    const handleExport = async (type: string) => {
+        toast.promise(
+            new Promise(resolve => setTimeout(resolve, 1500)),
+            {
+                loading: `Generating ${type} export...`,
+                success: `${type} ready for download.`,
+                error: 'Export failed'
+            }
+        );
+
+        await beeyieldService.logExport({
+            export_type: 'CSV',
+            entity_scope: 'Pollination',
+            file_name: `BeeYield_Pollination_${type}_${new Date().toISOString().slice(0, 10)}.csv`,
+            record_count: deployments.length || 10
+        });
+    };
+
     const filteredDevices = React.useMemo(() => {
         return devices.filter(d =>
             d.device_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -106,10 +159,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const latestReading = deviceReadings[0];
 
     const subPageOptions = [
-        { id: 'grid', label: 'Tactical Grid', icon: Layers },
-        { id: 'calcs', label: 'Pollination Calcs', icon: Calculator },
-        { id: 'map', label: 'Flight Mapping', icon: Navigation },
-        { id: 'reports', label: 'Site Reports', icon: FileBarChart }
+        { id: 'grid', label: 'Map Grid', icon: Layers },
+        { id: 'calcs', label: 'Hive Calculator', icon: Calculator },
+        { id: 'map', label: 'Bee Flight Map', icon: Navigation },
+        { id: 'reports', label: 'Farm Reports', icon: FileBarChart }
     ];
 
     return (
@@ -119,18 +172,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Precision <span className="text-[#10b981]">Professional</span>
+                            Pollination <span className="text-[#10b981]">Manager</span>
                         </h1>
                         <div className="px-3 py-1 bg-[#facc15] border-2 border-[#064e3b] text-[10px] font-black uppercase">
-                            v2.4.0-PR
+                            v2.4
                         </div>
                     </div>
                     <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] mt-4">
-                        Enterprise Geospacial Pollination Management
+                        Professional Farm Mapping
                     </p>
                 </div>
 
-                {/* Sub-Page Dropdown/Navigation - Hidden when driven by dashboard folder */}
                 {!activeSubPageOverride && (
                     <div className="flex flex-wrap items-center gap-2">
                         {subPageOptions.map(opt => (
@@ -155,40 +207,37 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             {/* Sub-Page Content Area */}
             {activeSubPage === 'home' && (
                 <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* Mission Control Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        {/* Status Card */}
                         <div className="lg:col-span-2 border-4 border-[#064e3b] p-10 bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] flex flex-col justify-between">
                             <div className="space-y-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-3 h-3 bg-[#10b981] animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Mission Status: Active</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">System Status: Active</span>
                                 </div>
                                 <h2 className="text-7xl font-black text-[#064e3b] tracking-tighter uppercase leading-[0.8]">
-                                    Pollination <br /> <span className="text-[#10b981]">Command</span>
+                                    Farm <br /> <span className="text-[#10b981]">Overview</span>
                                 </h2>
                                 <p className="max-w-md text-sm font-bold text-[#064e3b] leading-relaxed">
-                                    Centralized geospacial intelligence for high-density pollination cycles. Fleet monitoring, bloom correlation, and tactical deployment metrics aggregated in real-time.
+                                    See your hives, flowering status, and farm data in one place. Monitor your fleet across the yard in real-time.
                                 </p>
                             </div>
                             <div className="pt-10 flex items-center gap-10 border-t-2 border-[#064e3b]/10">
                                 <div>
-                                    <p className="text-[10px] font-black text-[#064e3b]/30 uppercase mb-2">Active Nodes</p>
+                                    <p className="text-[10px] font-black text-[#064e3b]/30 uppercase mb-2">Active Sensors</p>
                                     <p className="text-4xl font-black">{devices.length}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black text-[#064e3b]/30 uppercase mb-2">Fleet Integrity</p>
+                                    <p className="text-[10px] font-black text-[#064e3b]/30 uppercase mb-2">Active Hives</p>
                                     <p className="text-4xl font-black text-[#10b981]">98%</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quick Stats Sidebar */}
                         <div className="space-y-6">
                             <div className="border-4 border-[#064e3b] p-6 bg-[#facc15] shadow-[6px_6px_0px_0px_#064e3b]">
                                 <div className="flex items-center gap-3 mb-4">
                                     <Zap className="w-5 h-5 text-[#064e3b]" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">Bloom Saturation</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">Flower Coverage</span>
                                 </div>
                                 <p className="text-5xl font-black text-[#064e3b]">72%</p>
                                 <p className="text-[10px] font-black uppercase text-[#064e3b]/60 mt-2">Variety: Nonpareil Almond</p>
@@ -204,13 +253,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         </div>
                     </div>
 
-                    {/* Module Navigation Tiles */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { id: 'bloom-tracking', label: 'Bloom Tracking', icon: Zap, desc: 'Phenological Analysis', color: 'hover:bg-[#10b981]/5', external: true },
-                            { id: 'grid', label: 'Tactical Grid', icon: Layers, desc: 'Node Map & Telemetry', color: 'hover:bg-[#facc15]/10', external: false },
-                            { id: 'calcs', label: 'Pollination Calcs', icon: Calculator, desc: 'Bee Math™ Engine', color: 'hover:bg-[#064e3b]/5', external: false },
-                            { id: 'map', label: 'Flight Mapping', icon: Navigation, desc: 'Tactical Vectors', color: 'hover:bg-[#10b981]/5', external: false },
+                            { id: 'bloom-tracking', label: 'Flower Status', icon: Zap, desc: 'Field Analysis', color: 'hover:bg-[#10b981]/5', external: true },
+                            { id: 'grid', label: 'Map Grid', icon: Layers, desc: 'Sensor Map', color: 'hover:bg-[#facc15]/10', external: false },
+                            { id: 'calcs', label: 'Hive Calculator', icon: Calculator, desc: 'Bee Calculator', color: 'hover:bg-[#064e3b]/5', external: false },
+                            { id: 'map', label: 'Bee Flight Map', icon: Navigation, desc: 'Flight Paths', color: 'hover:bg-[#10b981]/5', external: false },
                         ].map(module => (
                             <button
                                 key={module.id}
@@ -235,7 +283,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
             {activeSubPage === 'grid' && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* Node Selector - Sidebar Registry style */}
                     <div className="lg:col-span-4 space-y-6">
                         <div className="flex items-center gap-4 mb-4">
                             <Hexagon className="w-6 h-6 text-[#10b981]" />
@@ -277,17 +324,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         </div>
                     </div>
 
-                    {/* Map/Telemetry View */}
                     <div className="lg:col-span-8 space-y-10">
-                        {/* Simulated Map Grid */}
                         <div className="aspect-video border-4 border-[#064e3b] bg-white relative overflow-hidden group">
                             <div className="absolute inset-0 bg-[#facc15]/5 opacity-20" style={{ backgroundImage: 'radial-gradient(#064e3b 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
                             <div className="absolute inset-0 flex items-center justify-center grayscale opacity-40 contrast-125">
                                 <MapIcon className="w-1/2 h-1/2 text-[#064e3b]" />
                             </div>
-
-                            {/* Node Pulse Overlay */}
                             {selectedDevice && (
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                                     <div className="relative">
@@ -299,15 +341,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                 </div>
                             )}
-
-                            <div className="absolute bottom-6 left-6 flex items-center gap-4">
-                                <div className="px-3 py-1 bg-white border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
-                                    X: 34.223 Y: 1.455
-                                </div>
-                            </div>
                         </div>
 
-                        {/* Node Telemetry Card */}
                         {selectedDevice && (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="border-4 border-[#064e3b] p-6 bg-white space-y-4">
@@ -337,11 +372,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 </div>
             )}
 
-            {/* CALCS SUB-PAGE */}
             {activeSubPage === 'calcs' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        {/* Parameters Panel */}
                         <div className="lg:col-span-1 space-y-8">
                             <div className="border-4 border-[#064e3b] p-8 bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                                 <div className="flex items-center gap-4 mb-8">
@@ -410,7 +443,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             </div>
                         </div>
 
-                        {/* Metrics Output */}
                         <div className="lg:col-span-2 space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="border-4 border-[#064e3b] p-8 bg-white space-y-4">
@@ -422,13 +454,21 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                 </div>
                                 <div className="border-4 border-[#064e3b] p-8 bg-[#facc15] space-y-4 shadow-[8px_8px_0px_0px_#064e3b]">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">Effective Frames (Bee Mathâ„¢)</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">Effective Frames (Bee Math™)</p>
                                     <h4 className="text-6xl font-black">{metrics.effectiveFrames}</h4>
                                     <div className="flex items-center gap-2 px-3 py-1 bg-white border-2 border-[#064e3b] inline-flex">
                                         <Zap className="w-3 h-3 text-[#10b981] fill-current" />
                                         <span className="text-[8px] font-black uppercase text-[#064e3b]">Adjusted Force</span>
                                     </div>
                                 </div>
+                                <button
+                                    onClick={handleSaveDeployment}
+                                    disabled={isSaving}
+                                    className="md:col-span-2 border-4 border-[#064e3b] p-6 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-[#10b981] transition-all disabled:opacity-50"
+                                >
+                                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                    Save Farm Plan
+                                </button>
                             </div>
 
                             <div className="border-4 border-[#064e3b] p-10 bg-white grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -445,22 +485,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="text-5xl font-black">{metrics.pollinationEfficacy}%</div>
                                 </div>
                             </div>
-
-                            <div className={cn(
-                                "border-4 p-8 flex items-start gap-6",
-                                metrics.pollinationEfficacy < 60 ? "border-red-500 bg-red-50" :
-                                    metrics.pollinationEfficacy < 85 ? "border-[#facc15] bg-[#facc15]/10" : "border-[#10b981] bg-[#10b981]/5"
-                            )}>
-                                {metrics.pollinationEfficacy < 60 ? <AlertTriangle className="w-8 h-8 text-red-500 shrink-0" /> : <CheckCircle2 className="w-8 h-8 text-[#10b981] shrink-0" />}
-                                <div className="space-y-2">
-                                    <h5 className="font-black uppercase text-xs tracking-widest">Protocol Recommendation</h5>
-                                    <p className="text-lg font-bold leading-tight">{metrics.recommendation}</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    {/* Hive Inventory (Effects of Small vs Large) */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between border-b-4 border-black pb-4">
                             <h3 className="text-3xl font-black uppercase tracking-tighter">Colony Inventory & Strength Logic</h3>
@@ -520,144 +547,110 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         </div>
                     </div>
                 </div>
-            )}
+            )
+            }
 
-            {/* MAP SUB-PAGE */}
-            {activeSubPage === 'map' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
-                    <div className="border-4 border-[#064e3b] bg-white h-[600px] relative overflow-hidden group">
-                        {/* Interactive Background */}
-                        <div className="absolute inset-0 grayscale opacity-20 contrast-150" style={{
-                            backgroundImage: 'url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200")',
-                            backgroundSize: 'cover'
-                        }} />
-                        <div className="absolute inset-0 bg-[#064e3b]/10" />
-
-                        {/* Tactical Grid */}
-                        <div className="absolute inset-0 p-10 grid grid-cols-12 grid-rows-8 gap-4">
-                            {[...Array(96)].map((_, i) => (
-                                <div key={i} className="border border-[#064e3b]/10 hover:bg-[#facc15]/20 flex items-center justify-center transition-none cursor-crosshair group/tile relative">
-                                    <div className="text-[6px] font-black text-white/40 absolute top-1 left-1 opacity-0 group-hover/tile:opacity-100">{i}</div>
+            {
+                activeSubPage === 'map' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                        <div className="border-4 border-[#064e3b] bg-white h-[600px] relative overflow-hidden group">
+                            <div className="absolute inset-0 grayscale opacity-20 contrast-150" style={{
+                                backgroundImage: 'url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200")',
+                                backgroundSize: 'cover'
+                            }} />
+                            <div className="absolute inset-0 bg-[#064e3b]/10" />
+                            <div className="absolute inset-0 p-10 grid grid-cols-12 grid-rows-8 gap-4">
+                                {[...Array(96)].map((_, i) => (
+                                    <div key={i} className="border border-[#064e3b]/10 hover:bg-[#facc15]/20 flex items-center justify-center transition-none cursor-crosshair group/tile relative">
+                                        <div className="text-[6px] font-black text-white/40 absolute top-1 left-1 opacity-0 group-hover/tile:opacity-100">{i}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="absolute inset-0">
+                                <div className="absolute top-[30%] left-[20%]">
+                                    <div className="w-4 h-4 bg-[#facc15] border-2 border-black rotate-45 shadow-[4px_4px_0px_0px_#000]" />
+                                    <div className="mt-4 px-2 py-1 bg-white border-2 border-black font-black text-[8px] uppercase">Node_Alpha</div>
+                                    <svg className="absolute top-2 left-2 w-48 h-48 pointer-events-none overflow-visible">
+                                        <path d="M 0 0 Q 50 -100 150 -50" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 4" className="animate-[dash_10s_linear_infinite]" />
+                                        <circle r="3" fill="#10b981">
+                                            <animateMotion path="M 0 0 Q 50 -100 150 -50" dur="2s" repeatCount="indefinite" />
+                                        </circle>
+                                    </svg>
                                 </div>
-                            ))}
-                        </div>
-
-                        {/* Hive Points & Flight Paths */}
-                        <div className="absolute inset-0">
-                            {/* Hive A */}
-                            <div className="absolute top-[30%] left-[20%]">
-                                <div className="w-4 h-4 bg-[#facc15] border-2 border-black rotate-45 shadow-[4px_4px_0px_0px_#000]" />
-                                <div className="mt-4 px-2 py-1 bg-white border-2 border-black font-black text-[8px] uppercase">Node_Alpha</div>
-                                {/* Flight Vector */}
-                                <svg className="absolute top-2 left-2 w-48 h-48 pointer-events-none overflow-visible">
-                                    <path d="M 0 0 Q 50 -100 150 -50" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 4" className="animate-[dash_10s_linear_infinite]" />
-                                    <circle r="3" fill="#10b981">
-                                        <animateMotion path="M 0 0 Q 50 -100 150 -50" dur="2s" repeatCount="indefinite" />
-                                    </circle>
-                                </svg>
-                            </div>
-
-                            {/* Hive B */}
-                            <div className="absolute top-[60%] left-[70%]">
-                                <div className="w-4 h-4 bg-[#facc15] border-2 border-black rotate-45 shadow-[4px_4px_0px_0px_#000]" />
-                                <div className="mt-4 px-2 py-1 bg-white border-2 border-black font-black text-[8px] uppercase">Node_Beta</div>
-                            </div>
-                        </div>
-
-                        {/* Legend Overlay */}
-                        <div className="absolute bottom-8 right-8 space-y-2 p-6 bg-white border-4 border-[#064e3b] shadow-[6px_6px_0px_0px_#064e3b]">
-                            <h5 className="font-black uppercase text-[10px] tracking-widest border-b-2 border-black pb-2 mb-4">Flight Analysis</h5>
-                            <div className="flex items-center gap-3">
-                                <div className="w-3 h-1 bg-[#10b981] dashed" />
-                                <span className="text-[8px] font-black uppercase text-neutral-400">High Intesity Route</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-3 h-3 bg-[#facc15] rotate-45 border border-black" />
-                                <span className="text-[8px] font-black uppercase text-neutral-400">Deployed Hive</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {/* REPORTS SUB-PAGE */}
-            {activeSubPage === 'reports' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {/* Bloom Report Card */}
-                        <div className="border-4 border-[#064e3b] bg-white overflow-hidden group">
-                            <div className="bg-[#10b981] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                <h4 className="text-xl font-black text-white uppercase tracking-tight">Bloom Saturation Report</h4>
-                                <Terminal className="w-5 h-5 text-white" />
+            {
+                activeSubPage === 'reports' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="border-4 border-[#064e3b] bg-white overflow-hidden group">
+                                <div className="bg-[#10b981] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
+                                    <h4 className="text-xl font-black text-white uppercase tracking-tight">Bloom Saturation Report</h4>
+                                    <Terminal className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="p-10 space-y-8">
+                                    <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
+                                        <span className="text-[10px] font-black uppercase text-neutral-400">Period Coverage</span>
+                                        <span className="font-black text-lg">MAR 14 - MAR 28</span>
+                                    </div>
+                                    <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
+                                        <span className="text-[10px] font-black uppercase text-neutral-400">Peak Saturation</span>
+                                        <span className="font-black text-lg text-[#10b981]">92.4%</span>
+                                    </div>
+                                    <button
+                                        onClick={() => handleExport('Bloom')}
+                                        className="w-full py-4 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-black transition-none flex items-center justify-center gap-2"
+                                    >
+                                        <FileDown className="w-4 h-4" />
+                                        Export Geodata (.CSV)
+                                    </button>
+                                </div>
                             </div>
-                            <div className="p-10 space-y-8">
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400">Period Coverage</span>
-                                    <span className="font-black text-lg">MAR 14 - MAR 28</span>
+
+                            <div className="border-4 border-[#064e3b] bg-white overflow-hidden group">
+                                <div className="bg-[#facc15] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
+                                    <h4 className="text-xl font-black text-[#064e3b] uppercase tracking-tight">Hive Efficiency Audit</h4>
+                                    <Activity className="w-5 h-5 text-[#064e3b]" />
                                 </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400">Peak Saturation</span>
-                                    <span className="font-black text-lg text-[#10b981]">92.4%</span>
+                                <div className="p-10 space-y-8">
+                                    <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
+                                        <span className="text-[10px] font-black uppercase text-neutral-400">Audit Units</span>
+                                        <span className="font-black text-lg">45 Nodes</span>
+                                    </div>
+                                    <button
+                                        onClick={() => handleExport('Diagnostic')}
+                                        className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-white transition-none flex items-center justify-center gap-2"
+                                    >
+                                        <Activity className="w-4 h-4" />
+                                        Run Health Check
+                                    </button>
                                 </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400">Foraging Overlap</span>
-                                    <span className="font-black text-lg">88.1%</span>
-                                </div>
-                                <button className="w-full py-4 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-black transition-none">
-                                    Export Geodata (.CSV)
-                                </button>
                             </div>
                         </div>
 
-                        {/* Hive Performance Card */}
-                        <div className="border-4 border-[#064e3b] bg-white overflow-hidden group">
-                            <div className="bg-[#facc15] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                <h4 className="text-xl font-black text-[#064e3b] uppercase tracking-tight">Hive Efficiency Audit</h4>
-                                <Activity className="w-5 h-5 text-[#064e3b]" />
-                            </div>
-                            <div className="p-10 space-y-8">
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400">Audit Units</span>
-                                    <span className="font-black text-lg">45 Nodes</span>
-                                </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400">Underperforming</span>
-                                    <span className="font-black text-lg text-red-500">2 Units</span>
-                                </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black uppercase text-neutral-400">Avg Colony Health</span>
-                                    <span className="font-black text-lg text-[#10b981]">OPTIMAL</span>
-                                </div>
-                                <button className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-white transition-none">
-                                    Run Deep Diagnostic
-                                </button>
+                        <div className="border-4 border-[#064e3b] p-8 bg-neutral-50 space-y-6">
+                            <h3 className="text-xl font-black uppercase tracking-widest border-b-2 border-black pb-4">Recent Audit Logs</h3>
+                            <div className="space-y-4 font-mono text-[10px] uppercase">
+                                {deployments.length === 0 ? (
+                                    <p className="text-neutral-400">No recent deployments logged.</p>
+                                ) : (
+                                    deployments.map((d, i) => (
+                                        <div key={i} className="flex gap-10">
+                                            <span className="text-[#10b981] font-black">{new Date(d.created_at).toLocaleString()}</span>
+                                            <span className="text-neutral-400">Deployment</span>
+                                            <span className="font-bold">{d.field_name} - {d.total_acres} Acres committed.</span>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
-                    </div>
-
-                    {/* Historical Timeline */}
-                    <div className="border-4 border-[#064e3b] p-8 bg-neutral-50 space-y-6">
-                        <h3 className="text-xl font-black uppercase tracking-widest border-b-2 border-black pb-4">Recent Audit Logs</h3>
-                        <div className="space-y-4 font-mono text-[10px] uppercase">
-                            <div className="flex gap-10">
-                                <span className="text-[#10b981] font-black">2026.03.14 09:42</span>
-                                <span className="text-neutral-400">System Message</span>
-                                <span className="font-bold">Automated bloom report generated for Sector 7G.</span>
-                            </div>
-                            <div className="flex gap-10">
-                                <span className="text-[#10b981] font-black">2026.03.13 14:10</span>
-                                <span className="text-neutral-400">System Message</span>
-                                <span className="font-bold">Wait time for Node_Alpha exceeding threshold (Colony Activity Spike).</span>
-                            </div>
-                            <div className="flex gap-10">
-                                <span className="text-red-500 font-black">2026.03.12 23:58</span>
-                                <span className="text-neutral-400">Audit Alert</span>
-                                <span className="font-bold">Manual override detected at Gate_Beta. Logging session.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </div >
+                )
+            }
 
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -665,7 +658,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     to { stroke-dashoffset: -100; }
                 }
             `}} />
-        </div>
+        </div >
     );
 };
 

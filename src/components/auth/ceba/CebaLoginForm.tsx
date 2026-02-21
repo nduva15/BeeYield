@@ -40,7 +40,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
 
         if (needsMFA) {
             setShowMFAInput(true);
-            toast.info('Secure Token Required', { description: 'Provide the 6-digit MFA sequence.' });
+            toast.info('Security Code Required', { description: 'Please enter your 6-digit verification code.' });
             setLoading(false);
             return;
         }
@@ -55,9 +55,9 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
         const { error } = await verifyMFAChallenge(mfaCode, 'ceba');
 
         if (error) {
-            toast.error('Token Invalid', { description: error.message });
+            toast.error('Invalid Code', { description: error.message });
         } else {
-            toast.success('Token Accepted. Synchronizing...');
+            toast.success('Code Accepted. Logging in...');
             setShowMFAInput(false);
             await handleFinalizeAccess();
         }
@@ -103,7 +103,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     });
                 }
 
-                toast.success('Access Granted. Welcome, Commander.');
+                toast.success('Access Granted. Welcome back.');
                 onSuccess?.();
             }
         }
@@ -129,15 +129,15 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         <Shield className="h-6 w-6 text-beeyield-green" />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-sm font-black text-beeyield-green uppercase tracking-[0.3em]">Identity Verification</h3>
+                        <h3 className="text-sm font-black text-beeyield-green uppercase tracking-[0.3em]">Identity Check</h3>
                         <p className="text-[9px] font-black text-black/30 uppercase tracking-widest font-mono">
-                            Waiting for MFA handshake code
+                            Waiting for security code
                         </p>
                     </div>
                 </div>
 
                 <div className="space-y-3">
-                    <Label htmlFor="ceba-mfa-code" className="text-beeyield-green font-black uppercase text-[9px] tracking-widest pl-1">Token Input</Label>
+                    <Label htmlFor="ceba-mfa-code" className="text-beeyield-green font-black uppercase text-[9px] tracking-widest pl-1">Security Code</Label>
                     <Input
                         id="ceba-mfa-code"
                         type="text"
@@ -155,7 +155,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     {loading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                        'Validate Token'
+                        'Verify Code'
                     )}
                 </Button>
 
@@ -167,7 +167,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     }}
                     className="w-full text-[9px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
                 >
-                    &lt; Back to Primary Authentication &gt;
+                    &lt; Back to Login &gt;
                 </button>
             </form>
         );
@@ -187,7 +187,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                 ) : (
                     <Globe className="mr-2 h-4 w-4 text-beeyield-gold" />
                 )}
-                Authorize via Cloud Identity
+                Sign in with Google
             </Button>
 
             <div className="relative">
@@ -195,21 +195,21 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     <span className="w-full border-t-2 border-beeyield-green/5" />
                 </div>
                 <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest">
-                    <span className="bg-white px-4 text-beeyield-green/40">Manual Override</span>
+                    <span className="bg-white px-4 text-beeyield-green/40">Or sign in with email</span>
                 </div>
             </div>
 
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-email" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Administrator ID</Label>
+                    <Label htmlFor="ceba-email" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Email Address</Label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Terminal className="h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
+                            <Mail className="h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
                         </div>
                         <Input
                             id="ceba-email"
                             type="email"
-                            placeholder="admin@ceba.sys"
+                            placeholder="your@email.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
@@ -220,14 +220,14 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label htmlFor="ceba-password" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Access Key</Label>
+                        <Label htmlFor="ceba-password" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Password</Label>
                         {onForgotPassword && (
                             <button
                                 type="button"
                                 onClick={onForgotPassword}
                                 className="text-[10px] font-black uppercase tracking-widest text-beeyield-gold hover:text-beeyield-orange transition-colors"
                             >
-                                Reset Key
+                                Forgot Password?
                             </button>
                         )}
                     </div>
@@ -256,10 +256,10 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                 {loading ? (
                     <div className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Authenticating...
+                        Logging in...
                     </div>
                 ) : (
-                    'Initiate Access'
+                    'Login'
                 )}
             </Button>
 
@@ -270,14 +270,9 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         onClick={onSwitchToRegister}
                         className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-green transition-colors"
                     >
-                        Request New Admin Credentials
+                        Create New Admin Account
                     </button>
                 )}
-
-                <div className="flex items-center gap-4 text-[8px] font-black text-beeyield-green/20 uppercase tracking-[0.3em]">
-                    <div className="flex items-center gap-1"><Server className="w-2 h-2" /> Node: Primary</div>
-                    <div className="flex items-center gap-1"><Globe className="w-2 h-2" /> Protocol: TLS 1.3</div>
-                </div>
             </div>
         </form>
     );

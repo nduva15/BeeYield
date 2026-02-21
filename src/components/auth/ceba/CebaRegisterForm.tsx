@@ -29,7 +29,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
         setLoading(true);
 
         if (password !== confirmPassword) {
-            toast.error("Access codes do not match");
+            toast.error("Passwords do not match");
             setLoading(false);
             return;
         }
@@ -56,7 +56,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                 });
             }
 
-            toast.success("Admin Node Provisioned. Please check your email for activation.");
+            toast.success("Admin account created. Please check your email for activation.");
             onSuccess?.();
         }
         setLoading(false);
@@ -69,7 +69,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
 
         const { error } = await signInWithGoogle({ ceba_active: true }, 'ceba');
         if (error) {
-            toast.error('Cloud Registration Failed', { description: error.message });
+            toast.error('Google Registration Failed', { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -88,7 +88,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                 ) : (
                     <Globe className="mr-2 h-4 w-4 text-beeyield-gold" />
                 )}
-                Register via Cloud Identity
+                Register with Google
             </Button>
 
             <div className="relative">
@@ -96,7 +96,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                     <span className="w-full border-t-2 border-beeyield-green/5" />
                 </div>
                 <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest">
-                    <span className="bg-white px-4 text-beeyield-green/40">Credential Entry</span>
+                    <span className="bg-white px-4 text-beeyield-green/40">Account Details</span>
                 </div>
             </div>
 
@@ -107,10 +107,10 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
                         <Input
                             id="ceba-firstName"
-                            placeholder="ADMIN_FIRST"
+                            placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm uppercase transition-all"
+                            className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
                             required
                         />
                     </div>
@@ -119,23 +119,23 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                     <Label htmlFor="ceba-lastName" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Last Name</Label>
                     <Input
                         id="ceba-lastName"
-                        placeholder="ADMIN_LAST"
+                        placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm uppercase transition-all"
+                        className="h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
                         required
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="ceba-reg-email" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Terminal Identity (Email)</Label>
+                <Label htmlFor="ceba-reg-email" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Email Address</Label>
                 <div className="relative group">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
                     <Input
                         id="ceba-reg-email"
                         type="email"
-                        placeholder="admin@ceba.sys"
+                        placeholder="admin@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
@@ -146,7 +146,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-reg-password" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Sec. Protocol</Label>
+                    <Label htmlFor="ceba-reg-password" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Password</Label>
                     <div className="relative group">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
                         <Input
@@ -161,7 +161,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-reg-confirm" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Verify Prot.</Label>
+                    <Label htmlFor="ceba-reg-confirm" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Confirm Password</Label>
                     <Input
                         id="ceba-reg-confirm"
                         type="password"
@@ -182,22 +182,22 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                 {loading ? (
                     <div className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Provisioning...
+                        Creating Account...
                     </div>
                 ) : (
-                    'Register Admin Node'
+                    'Create Admin Account'
                 )}
             </Button>
 
             {onSwitchToLogin && (
                 <p className="text-center text-[10px] font-black uppercase tracking-widest text-beeyield-green/40">
-                    Existing Administrator?{' '}
+                    Already have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
                         className="text-beeyield-gold hover:text-beeyield-orange underline"
                     >
-                        Terminal Access
+                        Go to Login
                     </button>
                 </p>
             )}

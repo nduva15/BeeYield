@@ -1,7 +1,9 @@
 import React from 'react';
-import { Brain, TrendingUp, AlertCircle, Building2, FileText, Info, Zap, Activity, Cpu } from 'lucide-react';
+import { Brain, TrendingUp, AlertCircle, Building2, FileText, Info, Zap, Activity, Cpu, Loader2, FileDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Line } from 'recharts';
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 interface PollinationIntelligenceProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -15,7 +17,39 @@ const PREDICTION_DATA = [
 ];
 
 const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTabChange }) => {
-    const [activeHub, setActiveHub] = React.useState('Central Orchard');
+    const [activeHub, setActiveHub] = React.useState<string | null>(null);
+    const [apiaries, setApiaries] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    const fetchData = async () => {
+        setLoading(true);
+        const data = await beeyieldService.getApiaries();
+        setApiaries(data);
+        if (data.length > 0) setActiveHub(data[0].id);
+        setLoading(false);
+    };
+
+    React.useEffect(() => {
+        fetchData();
+    }, []);
+
+    const handleGetReport = async () => {
+        toast.promise(
+            new Promise(resolve => setTimeout(resolve, 2000)),
+            {
+                loading: 'Compiling seasonal flight intelligence...',
+                success: 'Live Seasonal Report Ready',
+                error: 'Compilation failed'
+            }
+        );
+
+        await beeyieldService.logExport({
+            export_type: 'PDF',
+            entity_scope: 'Intelligence',
+            file_name: `Seasonal_Audit_${activeHub}_${new Date().toISOString().slice(0, 7)}.pdf`,
+            record_count: 1
+        });
+    };
 
     return (
         <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
@@ -52,20 +86,24 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                             <Building2 className="w-5 h-5 text-[#10b981]" />
                         </div>
                         <div className="space-y-4">
-                            {['Central Orchard', 'North Block', 'Creek Side'].map(hub => (
+                            {loading ? (
+                                <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>
+                            ) : apiaries.length === 0 ? (
+                                <p className="text-[10px] text-gray-400 font-bold uppercase text-center p-4 border border-dashed border-gray-100 rounded-xl">No farms connected</p>
+                            ) : apiaries.map(apiary => (
                                 <button
-                                    key={hub}
-                                    onClick={() => setActiveHub(hub)}
+                                    key={apiary.id}
+                                    onClick={() => setActiveHub(apiary.id)}
                                     className={cn(
                                         "w-full p-4 border-4 text-left transition-all flex justify-between items-center group",
-                                        activeHub === hub ? "bg-[#064e3b] text-white border-[#064e3b]" : "bg-white text-[#064e3b] border-[#064e3b]/10 hover:border-[#064e3b]"
+                                        activeHub === apiary.id ? "bg-[#064e3b] text-white border-[#064e3b]" : "bg-white text-[#064e3b] border-[#064e3b]/10 hover:border-[#064e3b]"
                                     )}
                                 >
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest">{hub}</p>
-                                        <p className={cn("text-[8px] font-bold uppercase", activeHub === hub ? "text-[#10b981]" : "text-[#064e3b]/40")}>12 Hives · Active</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest">{apiary.name}</p>
+                                        <p className={cn("text-[8px] font-bold uppercase", activeHub === apiary.id ? "text-[#10b981]" : "text-[#064e3b]/40")}>Active Apiary</p>
                                     </div>
-                                    <Activity className={cn("w-4 h-4", activeHub === hub ? "text-[#facc15]" : "text-[#064e3b]/10")} />
+                                    <Activity className={cn("w-4 h-4", activeHub === apiary.id ? "text-[#facc15]" : "text-[#064e3b]/10")} />
                                 </button>
                             ))}
                         </div>
@@ -142,7 +180,13 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                 <p className="text-[10px] font-bold text-[#064e3b]/60 uppercase leading-relaxed">
                                     Your end-of-season report is now **ready**. Historical data is checked against hive sound logs automatically.
                                 </p>
-                                <button className="mt-4 text-[9px] font-black uppercase text-[#10b981] border-b-2 border-[#10b981]">Get Live Report</button>
+                                <button
+                                    onClick={handleGetReport}
+                                    className="mt-4 text-[9px] font-black uppercase text-[#10b981] border-b-2 border-[#10b981] flex items-center gap-2"
+                                >
+                                    <FileDown className="w-3 h-3" />
+                                    Get Live Report
+                                </button>
                             </div>
                         </div>
                     </div>
