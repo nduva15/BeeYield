@@ -15,12 +15,12 @@ use pyo3::types::{PyDict, PyList};
 use std::collections::HashMap;
 
 #[pyclass]
-pub struct AssistantEngine {
+pub struct BeeYieldAI {
     intents: HashMap<String, Vec<String>>,
 }
 
 #[pymethods]
-impl AssistantEngine {
+impl BeeYieldAI {
     #[new]
     fn new() -> Self {
         let mut intents = HashMap::new();

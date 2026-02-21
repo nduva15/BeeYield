@@ -244,6 +244,9 @@ async def db_upsert(
     """Upsert a record via direct REST API."""
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
     
+    # Add on_conflict to URL parameters
+    params = {"on_conflict": on_conflict}
+    
     headers = {
         "apikey": settings.SUPABASE_KEY,
         "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
@@ -255,7 +258,7 @@ async def db_upsert(
     serialized_data = _serialize_data(data)
     
     try:
-        response = await _execute_request("POST", url, json=serialized_data, headers=headers)
+        response = await _execute_request("POST", url, json=serialized_data, headers=headers, params=params)
         response.raise_for_status()
         return {"success": True, "data": response.json()}
     except Exception as e:

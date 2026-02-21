@@ -331,10 +331,10 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-400">
-                                {t('label_generator_title') || 'Honey Label Generator'}
+                                {t('label_generator_title') || 'Labels'}
                             </h1>
                             <p className="text-sm text-muted-foreground">
-                                {t('label_generator_subtitle') || 'Design and print professional, compliant honey jar labels'}
+                                {t('label_generator_subtitle') || 'Design and print labels.'}
                             </p>
                         </div>
                     </div>
@@ -346,7 +346,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                     </Button>
                     <Button variant="outline" size="sm" onClick={saveDesign} className="gap-2 border-border/50 hover:bg-accent/50 glass-card">
                         <Save className="w-4 h-4" />
-                        <span className="hidden sm:inline">Save Design</span>
+                        <span className="hidden sm:inline">Save Data</span>
                     </Button>
                     <Button
                         size="sm"

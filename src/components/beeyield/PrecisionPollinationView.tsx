@@ -172,7 +172,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Pollination <span className="text-[#10b981]">Manager</span>
+                            Pollination
                         </h1>
                         <div className="px-3 py-1 bg-[#facc15] border-2 border-[#064e3b] text-[10px] font-black uppercase">
                             v2.4
@@ -255,7 +255,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { id: 'bloom-tracking', label: 'Flower Status', icon: Zap, desc: 'Field Analysis', color: 'hover:bg-[#10b981]/5', external: true },
+                            { id: 'bloom-tracking', label: 'Status', icon: Zap, desc: 'Field Analysis', color: 'hover:bg-[#10b981]/5', external: true },
                             { id: 'grid', label: 'Map Grid', icon: Layers, desc: 'Sensor Map', color: 'hover:bg-[#facc15]/10', external: false },
                             { id: 'calcs', label: 'Hive Calculator', icon: Calculator, desc: 'Bee Calculator', color: 'hover:bg-[#064e3b]/5', external: false },
                             { id: 'map', label: 'Bee Flight Map', icon: Navigation, desc: 'Flight Paths', color: 'hover:bg-[#10b981]/5', external: false },
@@ -467,7 +467,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     className="md:col-span-2 border-4 border-[#064e3b] p-6 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-[#10b981] transition-all disabled:opacity-50"
                                 >
                                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    Save Farm Plan
+                                    Save Data
                                 </button>
                             </div>
 
