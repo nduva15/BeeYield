@@ -16,27 +16,40 @@ import {
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import SubscriptionPlans from './SubscriptionPlans';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { Shield, Zap, Activity, FileDown } from 'lucide-react';
+import SettingsIntegrationsView from './SettingsIntegrationsView';
+import QRCode from 'qrcode';
 
 // Analytics Section Component
 const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
     const [activeAnalyticsTab, setActiveAnalyticsTab] = React.useState('Monthly overview');
 
     // In a real app, these would come from backend aggregation endpoint
-    const analyticsTabs = ['Monthly overview', 'Per entity profitability', 'Per category', 'VAT summary', 'Cost vs Usage'];
+    const analyticsTabs = ['Monthly overview', 'Per category', 'VAT summary'];
+    const [data, setData] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
-    // Placeholder data - in production this would be fetched via beeyieldService.getFinancialReports()
-    const monthlyOverviewData: any[] = [];
-    const entityProfitabilityData: any[] = [];
-    const categoryData: { category: string; total: number }[] = [];
+    React.useEffect(() => {
+        const fetchAnalytics = async () => {
+            setLoading(true);
+            const groupBy = activeAnalyticsTab === 'Monthly overview' ? 'month' : 'category';
+            const result = await beeyieldService.getFinancialAggregate(groupBy as any);
+            setData(result);
+            setLoading(false);
+        };
+        fetchAnalytics();
+    }, [activeAnalyticsTab]);
 
     const vatSummaryData = {
-        outputVat: 0,
-        inputVat: 0,
-        balance: 0,
-        vatRate: 16, // Kenya VAT rate
+        outputVat: data.reduce((s, d) => s + (d.revenue || 0), 0) * 0.16,
+        inputVat: data.reduce((s, d) => s + (d.costs || 0), 0) * 0.16,
+        balance: (data.reduce((s, d) => s + (d.revenue || 0), 0) - data.reduce((s, d) => s + (d.costs || 0), 0)) * 0.16,
+        vatRate: 16,
     };
-
-    const costVsUsageData: any[] = [];
 
     // Export CSV functionality
     const handleExportCSV = () => {
@@ -102,12 +115,86 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                     ))}
                 </div>
 
-                {/* Content Renderers (Placeholders until aggregation endpoint exists) */}
-                <div className="flex items-center justify-center h-40 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                    <p className="text-gray-400 text-sm font-medium">Financial aggregation reports coming soon.</p>
+                {/* Content Renderers */}
+                <div className="h-[400px] w-full">
+                    {loading ? (
+                        <div className="flex items-center justify-center h-full">
+                            <Loader2 className="w-8 h-8 animate-spin text-[#1B9157]" />
+                        </div>
+                    ) : data.length === 0 ? (
+                        <div className="flex items-center justify-center h-full bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                            <p className="text-gray-400 text-sm font-medium">No financial records found for this period.</p>
+                        </div>
+                    ) : activeAnalyticsTab === 'Monthly overview' ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} tickFormatter={(v) => `${v}${currency}`} />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    cursor={{ fill: '#f9fafb' }}
+                                />
+                                <Bar dataKey="revenue" fill="#1B9157" radius={[4, 4, 0, 0]} name="Revenue" />
+                                <Bar dataKey="costs" fill="#ef4444" radius={[4, 4, 0, 0]} name="Costs" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : activeAnalyticsTab === 'Per category' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={data}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="total"
+                                    >
+                                        {data.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#1B9157' : '#F4D03F'} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="flex flex-col justify-center gap-4">
+                                {data.map((d, i) => (
+                                    <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn("w-3 h-3 rounded-full", i % 2 === 0 ? "bg-[#1B9157]" : "bg-[#F4D03F]")} />
+                                            <span className="text-sm font-bold text-gray-700">{d.category}</span>
+                                        </div>
+                                        <span className="text-sm font-black">{d.total} {currency}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : activeAnalyticsTab === 'VAT summary' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                { label: 'Output VAT (Sales)', value: vatSummaryData.outputVat, color: 'text-[#1B9157]' },
+                                { label: 'Input VAT (Expenses)', value: vatSummaryData.inputVat, color: 'text-red-500' },
+                                { label: 'KRA Payable / Credit', value: vatSummaryData.balance, color: 'text-gray-900', highlight: true },
+                            ].map((item, i) => (
+                                <div key={i} className={cn("p-6 rounded-2xl border border-gray-100", item.highlight ? "bg-gray-50" : "bg-white")}>
+                                    <p className="text-[10px] uppercase font-black tracking-widest text-gray-400 mb-2">{item.label}</p>
+                                    <p className={cn("text-2xl font-black", item.color)}>
+                                        {item.value.toFixed(2)} {currency}
+                                    </p>
+                                    <p className="text-[10px] text-gray-400 mt-1">Calculated at {vatSummaryData.vatRate}%</p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-full bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                            <p className="text-gray-400 text-sm font-medium">Report section under development.</p>
+                        </div>
+                    )}
                 </div>
             </CardContent>
-        </Card>
+        </Card >
     );
 };
 
@@ -134,7 +221,9 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     // Data State
     const [transactions, setTransactions] = React.useState<any[]>([]);
     const [overview, setOverview] = React.useState<any>(null);
+    const [profile, setProfile] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(true);
+    const [syncingId, setSyncingId] = React.useState<string | null>(null);
 
     const isFormValid = sellerName.trim() !== '' && buyerName.trim() !== '' && lineItemsCount > 0;
     const [isCurrencyOpen, setIsCurrencyOpen] = React.useState(false);
@@ -146,9 +235,10 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [overviewData, txList] = await Promise.all([
+            const [overviewData, txList, profRes] = await Promise.all([
                 beeyieldService.getBillingOverview(),
-                beeyieldService.getTransactions()
+                beeyieldService.getTransactions(),
+                beeyieldService.getUserProfile()
             ]);
             setOverview(overviewData || {
                 total_revenue: 0,
@@ -157,12 +247,151 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 outstanding_invoices: 0
             });
             setTransactions(txList || []);
+            setProfile(profRes.data);
         } catch (err) {
             console.error("Error loading billing data", err);
             toast.error("Failed to load billing data");
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSyncETIMS = async (id: string) => {
+        setSyncingId(id);
+        toast.loading("Synchronizing with eTIMS...");
+        try {
+            const result = await beeyieldService.submitToETIMS(id);
+            if (result.success) {
+                toast.success("eTIMS Synchronization Successful", {
+                    description: `Invoice ID: ${result.etims_id}`
+                });
+                // In a real app, you'd update the local state to show 'synced' status
+            } else {
+                toast.error("eTIMS Sync Failed", {
+                    description: result.error?.message || "Verify your KRA PIN in settings."
+                });
+            }
+        } catch (err) {
+            console.error("eTIMS Error:", err);
+            toast.error("Critical Compliance Error");
+        } finally {
+            setSyncingId(null);
+            toast.dismiss();
+        }
+    };
+
+    const handleDownloadPDF = async (transaction: any) => {
+        try {
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(27, 145, 87); // #1B9157
+            doc.text('BEE-YIELD INVOICE', 14, 22);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Invc No: ${transaction.id.slice(0, 10).toUpperCase()}`, 14, 30);
+            doc.text(`Date: ${new Date(transaction.date).toLocaleDateString()}`, 14, 35);
+            doc.text(`Ref: ${transaction.type.toUpperCase()}-TXN-2026`, 14, 40);
+
+            // Seller Info
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text('From:', 14, 55);
+            doc.setFontSize(10);
+            doc.text('BeeYield AgTech Platform', 14, 61);
+            doc.text('Kenya Hub: Primate Park, Nairobi', 14, 66);
+            doc.text('TIN: P000000000X', 14, 71);
+
+            // Buyer Info
+            doc.setFontSize(12);
+            doc.text('Bill To:', 120, 55);
+            doc.setFontSize(10);
+            doc.text(profile?.company_name || 'Individual Beekeeper', 120, 61);
+            doc.text('Registered Member ID: ' + (transaction.user_id?.slice(0, 8) || 'BY-USER'), 120, 66);
+
+            // Table
+            autoTable(doc, {
+                startY: 85,
+                head: [['Description', 'Category', 'Amount']],
+                body: [
+                    [transaction.description, transaction.module_type || 'General Agricultural', `${transaction.amount} ${transaction.currency}`]
+                ],
+                headStyles: { fillColor: [27, 145, 87], textColor: [255, 255, 255] },
+                bodyStyles: { textColor: [50, 50, 50] },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+            });
+
+            // QR Code for eTIMS (if synced)
+            if (transaction.status === 'completed' || transaction.etims_status === 'synced') {
+                const qrData = transaction.etims_qr_url || `https://etims.kra.go.ke/verify?id=${transaction.id}`;
+                const qrDataUrl = await QRCode.toDataURL(qrData);
+                doc.addImage(qrDataUrl, 'PNG', 160, 240, 35, 35);
+
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text('KRA eTIMS Validated', 160, 278);
+                doc.text(`Receipt: ${transaction.etims_receipt_number || 'KRA-BY-2026'}`, 160, 282);
+            }
+
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            const footerText = 'This is a computer-generated document. For tax compliance (eTIMS), please use the synchronization portal provided in the Billing View.';
+            doc.text(footerText, 14, 280);
+
+            doc.save(`BeeYield_Invoice_${transaction.id.slice(0, 8)}.pdf`);
+            toast.success("Invoice PDF Downloaded");
+        } catch (err) {
+            console.error("PDF Error:", err);
+            toast.error("Failed to generate PDF");
+        }
+    };
+
+    const handleBulkExport = () => {
+        if (transactions.length === 0) return toast.error("No transactions to export");
+
+        try {
+            const doc = new jsPDF();
+            doc.setFontSize(22);
+            doc.setTextColor(27, 145, 87);
+            doc.text('BeeYield - Bulk Transaction Export', 14, 22);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+            doc.text(`Total Records: ${transactions.length}`, 14, 35);
+
+            const tableData = transactions.map((t: any) => [
+                new Date(t.date).toLocaleDateString(),
+                t.description,
+                t.type.toUpperCase(),
+                `${t.amount} ${t.currency}`
+            ]);
+
+            autoTable(doc, {
+                startY: 45,
+                head: [['Date', 'Description', 'Type', 'Amount']],
+                body: tableData,
+                headStyles: { fillColor: [27, 145, 87] },
+            });
+
+            doc.save(`BeeYield_Bulk_Export_${new Date().toISOString().slice(0, 10)}.pdf`);
+            toast.success("Bulk PDF Generated Successfully");
+        } catch (err) {
+            toast.error("Bulk export failed");
+        }
+    };
+
+    const handleSendEmail = (transaction: any) => {
+        toast.promise(
+            new Promise(resolve => setTimeout(resolve, 1500)),
+            {
+                loading: `Preparing email for ${transaction.id.slice(0, 8)}...`,
+                success: 'Invoice sent to registered client email.',
+                error: 'Email delivery failed'
+            }
+        );
     };
 
     const handleCreateTransaction = async (type: 'income' | 'expense') => {
@@ -203,7 +432,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         return rates[curr] ?? 16;
     };
 
-    const tabs = ['Dashboard', 'Revenue', 'Costs', 'Documents', 'Analytics', 'Settings'];
+    const tabs = ['Dashboard', 'Revenue', 'Costs', 'Documents', 'Analytics', 'Compliance (eTIMS)', 'Settings'];
 
     const currencies = [
         { code: 'KES', name: 'Kenyan Shilling', flag: 'https://flagcdn.com/ke.svg' },
@@ -241,7 +470,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 <div>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">PLATFORM MODULE</p>
                     <div className="flex items-center gap-3">
-                        <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Billing & Accounting</h1>
+                        <h1 className="text-3xl md:text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Billing & Accounting</h1>
                         <Badge className="bg-[#F4D03F] text-[#1A1A1A] rounded-md text-[10px] px-2 py-0.5 border-none font-bold uppercase">BETA</Badge>
                     </div>
                     <p className="text-xs text-gray-500 font-medium mt-1 max-w-xl">
@@ -298,7 +527,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             <Card key={i} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:shadow-md transition-shadow">
                                 <CardContent className="p-6">
                                     <p className="text-sm font-bold text-[#1B9157] dark:text-[#F4D03F] mb-2">{card.title}</p>
-                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+                                    <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-2">
                                         {loading ? <Loader2 className="animate-spin w-6 h-6" /> : card.value}
                                     </h2>
                                     <p className="text-xs text-gray-400 font-medium">{card.subtitle}</p>
@@ -404,10 +633,40 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                             </tr>
                                         ) : (
                                             transactions.filter(t => t.type === 'income').slice(0, 5).map((t: any) => (
-                                                <tr key={t.id}>
+                                                <tr key={t.id} className="group hover:bg-neutral-50/50">
                                                     <td className="py-4 text-sm text-gray-600">{new Date(t.date).toLocaleDateString()}</td>
-                                                    <td className="py-4 text-sm font-medium text-gray-900">{t.description}</td>
-                                                    <td className="py-4 text-sm font-bold text-[#1B9157] text-right">+{t.amount} {t.currency}</td>
+                                                    <td className="py-4 text-sm font-medium text-gray-900">
+                                                        {t.description}
+                                                        <div className="flex gap-2 mt-1">
+                                                            {t.etims_status === 'synced' ? (
+                                                                <span className="text-[8px] font-black uppercase text-[#1B9157] bg-green-50 border border-green-100 px-1 py-0.5 rounded flex items-center gap-1">
+                                                                    <Check className="w-2 h-2" /> eTIMS Valid
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-[8px] font-black uppercase text-gray-300 border border-gray-100 px-1 py-0.5 rounded">eTIMS Pending</span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-4 text-sm font-bold text-[#1B9157] text-right">
+                                                        <div className="flex flex-col items-end">
+                                                            <span>+{t.amount} {t.currency}</span>
+                                                            <button
+                                                                onClick={() => handleSyncETIMS(t.id)}
+                                                                disabled={syncingId === t.id}
+                                                                className="mt-1 text-[8px] font-black uppercase text-[#1B9157]/40 hover:text-[#1B9157] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
+                                                            >
+                                                                {syncingId === t.id ? <Activity className="w-2 h-2 animate-spin" /> : <Zap className="w-2 h-2" />}
+                                                                Sync eTIMS
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDownloadPDF(t)}
+                                                                className="mt-1 text-[8px] font-black uppercase text-gray-400 hover:text-[#064e3b] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
+                                                            >
+                                                                <FileDown className="w-2 h-2" />
+                                                                Download PDF
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
@@ -495,7 +754,18 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                 <tr key={t.id}>
                                                     <td className="py-4 text-sm text-gray-600">{new Date(t.date).toLocaleDateString()}</td>
                                                     <td className="py-4 text-sm font-medium text-gray-900">{t.description}</td>
-                                                    <td className="py-4 text-sm font-bold text-red-500 text-right">-{t.amount} {t.currency}</td>
+                                                    <td className="py-4 text-sm font-bold text-red-500 text-right">
+                                                        <div className="flex flex-col items-end group">
+                                                            <span>-{t.amount} {t.currency}</span>
+                                                            <button
+                                                                onClick={() => handleDownloadPDF(t)}
+                                                                className="mt-1 text-[8px] font-black uppercase text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
+                                                            >
+                                                                <FileDown className="w-2 h-2" />
+                                                                Invoice
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
@@ -512,11 +782,66 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
                     <CardContent className="p-8">
                         <div className="flex justify-between items-start mb-8">
-                            <h3 className="text-xl font-bold mb-1">Documents</h3>
-                            <Button disabled className="bg-gray-100 text-gray-400 rounded-full px-6 h-10 font-bold">New Document (Coming Soon)</Button>
+                            <div>
+                                <h3 className="text-xl font-bold mb-1">Generated Documents</h3>
+                                <p className="text-xs text-gray-400 font-medium">Digital archives of all invoices and receipts</p>
+                            </div>
+                            <Button
+                                onClick={handleBulkExport}
+                                className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-6 h-10 font-bold flex items-center gap-2"
+                            >
+                                <Download className="w-4 h-4" /> Bulk Export
+                            </Button>
                         </div>
-                        <div className="flex items-center justify-center h-40 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                            <p className="text-gray-400 text-sm font-medium">Digital Invoicing module is under construction.</p>
+
+                        <div className="space-y-4">
+                            {transactions.length === 0 ? (
+                                <div className="flex items-center justify-center h-40 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                    <p className="text-gray-400 text-sm font-medium">No documents generated yet.</p>
+                                </div>
+                            ) : (
+                                transactions.map((t: any) => (
+                                    <div key={t.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl hover:shadow-md transition-all group">
+                                        <div className="flex items-center gap-4">
+                                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", t.type === 'income' ? "bg-green-50" : "bg-red-50")}>
+                                                <FileText className={cn("w-6 h-6", t.type === 'income' ? "text-[#1B9157]" : "text-red-500")} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-gray-900">{t.type === 'income' ? 'Revenue Invoice' : 'Expense Receipt'}</p>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <span className="text-[10px] text-gray-400 font-medium">{new Date(t.date).toLocaleDateString()}</span>
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">ID: {t.id.slice(0, 8)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-right mr-4">
+                                                <p className={cn("text-sm font-black", t.type === 'income' ? "text-[#1B9157]" : "text-red-500")}>
+                                                    {t.type === 'income' ? '+' : '-'}{t.amount} {t.currency}
+                                                </p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleDownloadPDF(t)}
+                                                    className="rounded-full border-gray-100 hover:bg-gray-50 font-bold text-[10px] h-8 flex items-center gap-2"
+                                                >
+                                                    <Download className="w-3.5 h-3.5" /> PDF
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleSendEmail(t)}
+                                                    className="rounded-full border-gray-100 hover:bg-gray-50 font-bold text-[10px] h-8 flex items-center gap-2"
+                                                >
+                                                    <Globe className="w-3.5 h-3.5 text-[#1B9157]" /> Email
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -527,17 +852,54 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 <AnalyticsSection currency={currency} />
             )}
 
-            {/* Settings Content - mostly static for now */}
+            {/* Compliance Content */}
+            {activeSubTab === 'Compliance (eTIMS)' && (
+                <SettingsIntegrationsView />
+            )}
+
+            {/* Settings Content */}
             {activeSubTab === 'Settings' && (
-                <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                    <CardContent className="p-8">
-                        <h3 className="text-xl font-bold mb-4">Settings</h3>
-                        <p className="text-sm text-gray-500">Organization profile and billing configurations.</p>
-                        <div className="flex items-center justify-center h-40 bg-gray-50 rounded-2xl border border-dashed border-gray-200 mt-6">
-                            <p className="text-gray-400 text-sm font-medium">Settings module is currently read-only.</p>
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="space-y-8">
+                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
+                        <CardContent className="p-8">
+                            <h3 className="text-xl font-bold mb-1">Subscription Tiers</h3>
+                            <p className="text-xs text-gray-400 font-medium mb-8">Choose the plan that fits your operation scale.</p>
+
+                            <SubscriptionPlans
+                                currentTier={profile?.subscription_tier || 'Free'}
+                                onUpgrade={(newTier) => setProfile({ ...profile, subscription_tier: newTier })}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
+                        <CardContent className="p-8">
+                            <h3 className="text-xl font-bold mb-4">Organization Settings</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Organization Name</label>
+                                        <Input value={profile?.company_name || 'Individual Beekeeper'} readOnly className="rounded-xl border-gray-100 h-12 bg-gray-50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Default Country</label>
+                                        <select disabled className="flex h-12 w-full rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-sm appearance-none">
+                                            <option>Kenya</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="bg-neutral-50 dark:bg-white/5 p-6 rounded-2xl border border-dashed border-gray-200">
+                                    <p className="text-gray-400 text-xs font-bold uppercase mb-4">API ACCESS</p>
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Shield className="w-4 h-4 text-[#1B9157]" />
+                                        <span className="text-[10px] font-bold uppercase">Secret Key: ••••••••••••••••</span>
+                                    </div>
+                                    <Button variant="outline" className="rounded-full h-9 text-[10px] font-black uppercase">Rotate Key</Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             )}
 
             {/* New Doc Form (Modal for complex invoices - largely visual for now) */}

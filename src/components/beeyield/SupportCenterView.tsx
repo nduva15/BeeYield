@@ -147,7 +147,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                             <div>
                                 <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-4">Contact Support Centre</h2>
                                 <p className="text-slate-500 font-medium max-w-xl leading-relaxed">
-                                    Our technical team is available 24/7 to assist with your BeeHUB devices, harvest software, or pollination data inquiries.
+                                    Our technical team is available 24/7 to assist with your BeeHUB devices, harvest software, or farm data questions.
                                 </p>
                             </div>
 
@@ -205,7 +205,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     <div className="p-12 relative">
                                         <div className="mb-10">
                                             <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tighter">New Support Ticket</h2>
-                                            <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Confidential technical request</p>
+                                            <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Secure help request</p>
                                         </div>
 
                                         <form onSubmit={handleSubmit} className="space-y-8">
@@ -219,7 +219,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                         <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
                                                             <SelectItem value="Hardware" className="p-4 font-bold text-slate-700">Hardware Support</SelectItem>
                                                             <SelectItem value="Software" className="p-4 font-bold text-slate-700">Software Request</SelectItem>
-                                                            <SelectItem value="Traceability" className="p-4 font-bold text-slate-700">Traceability Inquiry</SelectItem>
+                                                            <SelectItem value="Traceability" className="p-4 font-bold text-slate-700">Product History</SelectItem>
                                                             <SelectItem value="General" className="p-4 font-bold text-slate-700">General</SelectItem>
                                                         </SelectContent>
                                                     </Select>

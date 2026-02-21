@@ -1,25 +1,50 @@
-import React from 'react';
-import { ShieldCheck, Camera, Activity, FileCheck, Info, Award, CheckCircle2, XCircle, Search, Cpu } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ShieldCheck, Camera, Activity, FileCheck, Info, Award, CheckCircle2, XCircle, Search, Cpu, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 interface DigitalHealthAuditProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
 
 const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) => {
-    const [isScanning, setIsScanning] = React.useState(false);
-    const [scanResults, setScanResults] = React.useState<null | { fpa: number; status: string }>(null);
+    const [isScanning, setIsScanning] = useState(false);
+    const [scanResults, setScanResults] = useState<null | any>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleScan = () => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
+            setScanResults(null);
+        }
+    };
+
+    const handleScan = async () => {
+        if (!selectedFile) {
+            toast.error("Please select an image first");
+            fileInputRef.current?.click();
+            return;
+        }
+
         setIsScanning(true);
-        setTimeout(() => {
+        try {
+            const results = await beeyieldService.analyzeHiveImage({
+                image: selectedFile,
+                hiveId: 'HV-001' // Mock ID for now
+            });
+            setScanResults(results);
+            toast.success("Scanning complete!");
+        } catch (error: any) {
+            toast.error("Scanning failed", { description: error.message });
+        } finally {
             setIsScanning(false);
-            setScanResults({ fpa: 8.2, status: 'CERTIFIED' });
-        }, 3000);
+        }
     };
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-white min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
                 <div>
@@ -27,7 +52,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                         <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_#facc15]">
                             <ShieldCheck className="w-6 h-6 text-[#facc15]" />
                         </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[0.8]">
                             Health <span className="text-[#10b981]">Check</span>
                         </h1>
                     </div>
@@ -36,17 +61,33 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                     </p>
                 </div>
 
-                <button
-                    onClick={handleScan}
-                    disabled={isScanning}
-                    className={cn(
-                        "flex items-center gap-4 px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
-                        isScanning ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-white border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
-                    )}
-                >
-                    {isScanning ? <Activity className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
-                    {isScanning ? "Photo Scan..." : "Start Photo Scan"}
-                </button>
+                <div className="flex gap-4">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                    />
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center gap-4 px-6 py-4 border-4 border-[#064e3b] font-black text-xs uppercase tracking-widest bg-white text-[#064e3b] shadow-[4px_4px_0px_0px_#facc15]"
+                    >
+                        <Upload className="w-5 h-5" />
+                        {selectedFile ? selectedFile.name.substring(0, 15) : "Select Image"}
+                    </button>
+                    <button
+                        onClick={handleScan}
+                        disabled={isScanning || !selectedFile}
+                        className={cn(
+                            "flex items-center gap-4 px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
+                            isScanning || !selectedFile ? "bg-gray-100 text-gray-400 border-gray-200" : "bg-[#064e3b] text-white border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
+                        )}
+                    >
+                        {isScanning ? <Activity className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+                        {isScanning ? "Photo Scan..." : "Start Photo Scan"}
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -64,21 +105,43 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                 </div>
                             </div>
                         ) : scanResults ? (
-                            <div className="absolute inset-0 p-12 bg-[#064e3b]/90 text-white flex flex-col justify-center items-center text-center">
-                                <Award className="w-24 h-24 text-[#facc15] mb-6" />
-                                <h3 className="text-5xl font-black uppercase tracking-tighter mb-4">Check Passed</h3>
-                                <div className="flex gap-10 border-t-2 border-white/20 pt-8 mt-4 w-full justify-center">
+                            <div className="absolute inset-0 p-12 bg-[#064e3b]/95 text-white flex flex-col justify-center items-center text-center overflow-y-auto">
+                                <Award className="w-20 h-20 text-[#facc15] mb-4" />
+                                <h3 className="text-4xl font-black uppercase tracking-tighter mb-4">Inspection Complete</h3>
+
+                                <div className="grid grid-cols-3 gap-6 border-y-2 border-white/10 py-6 my-4 w-full">
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-white/40">Bee Score</p>
-                                        <p className="text-4xl font-black">{scanResults.fpa}</p>
+                                        <p className="text-[9px] font-black uppercase text-white/40">Mite Count</p>
+                                        <p className="text-3xl font-black text-red-400">{scanResults.mite_count}</p>
                                     </div>
-                                    <div className="w-px h-12 bg-white/20" />
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-white/40">Status</p>
-                                        <p className="text-4xl font-black text-[#10b981]">OK</p>
+                                        <p className="text-[9px] font-black uppercase text-white/40">Brood Area</p>
+                                        <p className="text-3xl font-black">{scanResults.brood_area_pct}%</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase text-white/40">Health Score</p>
+                                        <p className="text-3xl font-black text-[#10b981]">{scanResults.health_score}</p>
                                     </div>
                                 </div>
-                                <button className="mt-12 px-8 py-3 bg-[#10b981] text-white font-black text-[10px] uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]">Get Certificate</button>
+
+                                <div className="text-left w-full mt-4 bg-black/20 p-4 border border-white/10">
+                                    <p className="text-[10px] font-black uppercase text-white/40 mb-2">AI Insights</p>
+                                    <ul className="space-y-1">
+                                        {scanResults.detections?.slice(0, 3).map((d: any, i: number) => (
+                                            <li key={i} className="text-[9px] font-bold uppercase flex justify-between">
+                                                <span>{d.label}</span>
+                                                <span className="text-[#facc15]">{Math.round(d.confidence * 100)}% Conf.</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <button
+                                    onClick={() => setScanResults(null)}
+                                    className="mt-8 px-8 py-3 bg-[#10b981] text-white font-black text-[10px] uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]"
+                                >
+                                    New Scan
+                                </button>
                             </div>
                         ) : (
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">

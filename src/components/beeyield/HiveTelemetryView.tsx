@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 import {
     Scale,
     TrendingUp,
@@ -62,13 +64,72 @@ const generateWeightData = (): WeightData[] => {
 
 const HiveTelemetryView: React.FC = () => {
     const [data, setData] = React.useState<WeightData[]>(generateWeightData());
+    const [gatewayStatus, setGatewayStatus] = React.useState<'Online' | 'Offline' | 'Connecting'>('Online');
+    const [recentAlert, setRecentAlert] = React.useState<string | null>(null);
+
     const latest = data[data.length - 1];
     const prev = data[data.length - 2];
     const dwdt = latest.weight - prev.weight;
+    const [isTaring, setIsTaring] = React.useState(false);
+
+    const handleTare = async () => {
+        setIsTaring(true);
+        toast.loading("Sending TARE command to hardware...");
+        try {
+            const result = await beeyieldService.tareSensor('DEV-001'); // Mock ID
+            if (result.success) {
+                // In production, you'd refetch readings to see them drop to 0
+                toast.success("Sensor tared successfully");
+            } else {
+                toast.error("Tare failed: Check gateway connectivity");
+            }
+        } catch (err) {
+            toast.error("Calibration error");
+        } finally {
+            setIsTaring(false);
+            toast.dismiss();
+        }
+    };
+
+    const handleManualOffset = async () => {
+        const value = prompt("Enter manual offset correction (kg):", "0.0");
+        if (value === null) return;
+        const offset = parseFloat(value);
+        if (isNaN(offset)) return toast.error("Invalid numeric value");
+
+        try {
+            await beeyieldService.setOffsetCorrection('DEV-001', offset);
+        } catch (err) {
+            toast.error("Failed to set manual offset");
+        }
+    };
 
     // Status Logic
     const isFlowing = dwdt > 0.05;
-    const isAlert = dwdt < -1.5; // Step function drop
+    const isAlert = dwdt < -1.5 || recentAlert !== null;
+
+    React.useEffect(() => {
+        // Subscribe to real-time weight alerts
+        const weightSub = beeyieldService.subscribeToWeightAlerts((payload) => {
+            console.log('Weight Alert Received:', payload);
+            setRecentAlert(`Massive drop detected on Hive ${payload.new.hive_id}`);
+            toast.error('CRITICAL: Weight anomaly detected!');
+        });
+
+        // Subscribe to gateway status
+        const gatewaySub = beeyieldService.subscribeToGatewayStatus((payload) => {
+            console.log('Gateway Status Change:', payload);
+            setGatewayStatus(payload.new.status);
+            if (payload.new.status === 'Offline') {
+                toast.warning('Gateway connectivity lost');
+            }
+        });
+
+        return () => {
+            if (weightSub) beeyieldService.supabaseBeeYield.removeChannel(weightSub);
+            if (gatewaySub) beeyieldService.supabaseBeeYield.removeChannel(gatewaySub);
+        };
+    }, []);
 
     // Integration Approximator (Trapezoidal)
     const totalYield = React.useMemo(() => {
@@ -101,13 +162,13 @@ const HiveTelemetryView: React.FC = () => {
                 <div className="flex gap-4">
                     <div className={cn(
                         "px-8 py-5 border-4 flex flex-col items-end transition-all",
-                        isFlowing ? "border-[#10b981] bg-[#10b981]/5" : "border-[#064e3b] bg-white"
+                        gatewayStatus === 'Online' ? "border-[#10b981] bg-[#10b981]/5" : "border-red-500 bg-red-50"
                     )}>
-                        <span className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest mb-1">State: Nectar Flow</span>
+                        <span className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest mb-1">Gateway Mesh</span>
                         <div className="flex items-center gap-2">
-                            <div className={cn("w-3 h-3 rounded-none border-2", isFlowing ? "bg-[#10b981] animate-pulse border-[#064e3b]" : "bg-neutral-200 border-[#064e3b]")} />
+                            <div className={cn("w-3 h-3 rounded-none border-2", gatewayStatus === 'Online' ? "bg-[#10b981] animate-pulse border-[#064e3b]" : "bg-red-500 border-[#064e3b]")} />
                             <span className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">
-                                {isFlowing ? "ACTIVE_INFLUX" : "NOMINAL_STASIS"}
+                                {gatewayStatus}
                             </span>
                         </div>
                     </div>
@@ -138,9 +199,22 @@ const HiveTelemetryView: React.FC = () => {
                                 <span className="text-[10px] font-black tracking-widest text-[#064e3b]/30">0.002% RMS</span>
                             </div>
                         </div>
-                        <Button className="w-full mt-6 h-12 rounded-none bg-[#064e3b] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-none border-2 border-[#064e3b]">
-                            Tare Sensor
-                        </Button>
+                        <div className="grid grid-cols-2 gap-2 mt-6">
+                            <Button
+                                onClick={handleTare}
+                                disabled={isTaring}
+                                className="h-12 rounded-none bg-[#064e3b] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-none border-2 border-[#064e3b]"
+                            >
+                                {isTaring ? <Activity className="w-4 h-4 animate-spin" /> : "Tare Sensor"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={handleManualOffset}
+                                className="h-12 rounded-none border-2 border-[#064e3b] text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-neutral-50 transition-none"
+                            >
+                                Manual Offset
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 

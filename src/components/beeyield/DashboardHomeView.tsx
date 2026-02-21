@@ -12,8 +12,9 @@ import {
     Target,
     LayoutGrid
 } from 'lucide-react';
-import { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
+import beeyieldService, { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { LineChart, Line, ResponsiveContainer, YAxis, XAxis } from 'recharts';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -128,7 +129,7 @@ const OrchardStatusCard: React.FC<{ orchard: Apiary; onAction: (tab: string) => 
 
 const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabChange }) => {
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-white min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-10">
                 <div className="space-y-4">
@@ -136,7 +137,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                         <Activity className="w-3.5 h-3.5 text-[#facc15]" />
                         <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Executive Portfolio Summary</span>
                     </div>
-                    <h1 className="text-7xl font-black tracking-tighter uppercase leading-[0.8] text-[#064e3b]">
+                    <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.8] text-[#064e3b]">
                         Orchard <span className="text-[#10b981]">Status</span>
                     </h1>
                     <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] pt-2">
@@ -181,8 +182,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                             </div>
                         </div>
                         <div className="flex items-baseline gap-4">
-                            <span className="text-8xl font-black tabular-nums tracking-tighter italic">742.4</span>
-                            <span className="text-2xl font-black text-[#10b981]">METRIC TONS</span>
+                            <span className="text-6xl md:text-8xl font-black tabular-nums tracking-tighter italic">742.4</span>
+                            <span className="text-xl md:text-2xl font-black text-[#10b981]">METRIC TONS</span>
                         </div>
                         <div className="flex items-center gap-4 pt-4 border-t-2 border-white/10">
                             <Badge className="bg-[#10b981] text-white rounded-none px-4 py-1 text-[10px] font-black italic">+12.8% YOY</Badge>
@@ -210,7 +211,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                 ))}
                             </div>
                         </div>
-                        <Button className="w-full h-12 mt-8 rounded-none bg-[#064e3b] text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+                        <Button
+                            onClick={async () => {
+                                toast.loading("Synthesizing Season Intelligence...");
+                                try {
+                                    const result = await (beeyieldService as any).generateSeasonReport({ apiary_id: 'apiary_123' });
+                                    toast.success("Intelligence Report Generated", {
+                                        description: "Report has been archived to your billing ledger."
+                                    });
+                                    console.log("Report Result:", result);
+                                } catch (error: any) {
+                                    toast.error("Report generation failed", { description: error.message });
+                                }
+                            }}
+                            className="w-full h-12 mt-8 rounded-none bg-[#064e3b] text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+                        >
                             Generate Full Season Report
                         </Button>
                     </div>

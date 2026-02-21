@@ -9,12 +9,38 @@ import {
     Mic,
     Play,
     Square,
-    Waves as WaveformIcon
+    Waves as WaveformIcon,
+    Upload,
+    Loader2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 const AcousticWaveform: React.FC = () => {
     const [isPlaying, setIsPlaying] = React.useState(false);
+    const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+    const [analysisResult, setAnalysisResult] = React.useState<any>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setIsAnalyzing(true);
+            try {
+                const result = await beeyieldService.analyzeHiveAudio({
+                    file,
+                    hiveId: 'HV-001'
+                });
+                setAnalysisResult(result);
+                toast.success("Acoustic analysis complete!");
+            } catch (error: any) {
+                toast.error("Audio analysis failed", { description: error.message });
+            } finally {
+                setIsAnalyzing(false);
+            }
+        }
+    };
 
     return (
         <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(250,204,21,1)]">
@@ -56,7 +82,24 @@ const AcousticWaveform: React.FC = () => {
                     </button>
 
                     <div className="absolute top-2 left-4 text-[7px] font-mono text-[#10b981]/60 uppercase">
-                        Real-time Frequency Analysis: 240Hz - 480Hz Band
+                        {analysisResult ? `Result: ${analysisResult.classification} (${Math.round(analysisResult.confidence * 100)}%)` : "Real-time Frequency Analysis: 240Hz - 480Hz Band"}
+                    </div>
+
+                    <div className="absolute top-2 right-4 flex gap-2">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleAudioUpload}
+                            className="hidden"
+                            accept="audio/*"
+                        />
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isAnalyzing}
+                            className="w-8 h-8 bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors"
+                        >
+                            {isAnalyzing ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Mic className="w-4 h-4 text-white" />}
+                        </button>
                     </div>
                 </div>
 
@@ -76,7 +119,9 @@ const AcousticWaveform: React.FC = () => {
                             Transformer Insights
                         </h4>
                         <p className="text-[9px] font-bold text-[#064e3b]/60 uppercase leading-relaxed">
-                            Acoustic footprint matches "Active Queen Present" state. High-frequency 'shimmer' detected, indicating healthy forager return rate.
+                            {analysisResult
+                                ? `State: ${analysisResult.classification}. Spectral energy: ${analysisResult.mel_energy}. ${analysisResult.alert_triggered ? '⚠ ALERT TRIGGERED' : 'Acoustic footprint within nominal range.'}`
+                                : 'Acoustic footprint matches "Active Queen Present" state. High-frequency \'shimmer\' detected, indicating healthy forager return rate.'}
                         </p>
                     </div>
                 </div>
