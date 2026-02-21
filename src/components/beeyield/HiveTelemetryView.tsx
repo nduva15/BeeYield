@@ -40,8 +40,8 @@ interface WeightData {
 }
 
 // Mock data generation for weight dynamics
-const generateWeightData = () => {
-    const data = [];
+const generateWeightData = (): WeightData[] => {
+    const data: WeightData[] = [];
     let weight = 42.5;
     const now = Date.now();
     for (let i = 24; i >= 0; i--) {

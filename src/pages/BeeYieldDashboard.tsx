@@ -92,7 +92,7 @@ import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import HiveTelemetryView from '@/components/beeyield/HiveTelemetryView';
 import ContractVerificationModule from '@/components/beeyield/ContractVerificationModule';
 import GatewayHub from '@/components/beeyield/GatewayHub';
-import SpatialCoverageView from '@/components/telemetry/SpatialCoverageView';
+import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
 import MasterMapView from '@/pages/MasterMapView';
 import BeeCalculatorSuite from '@/pages/BeeCalculatorSuite';
 import BloomPhenology from '@/pages/BloomPhenology';
