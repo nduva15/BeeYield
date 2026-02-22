@@ -15,14 +15,14 @@ use pyo3::types::{PyDict, PyList};
 use std::collections::HashMap;
 
 #[pyclass]
-pub struct BeeYieldAI {
+pub struct Assistant {
     intents: HashMap<String, Vec<String>>,
 }
 
 #[pymethods]
-impl BeeYieldAI {
+impl Assistant {
     #[new]
-    fn new() -> Self {
+    pub fn new() -> Self {
         let mut intents = HashMap::new();
         let map = [
             ("product_search", vec!["buy", "purchase", "order", "shop", "honey", "price", "cost", "product", "available", "stock", "store"]),
@@ -91,7 +91,7 @@ impl BeeYieldAI {
         };
 
         format!(
-            "SYSTEM ROLE: You are BeeYield AI, the intelligent assistant for BeeYield - a precision pollination and honey traceability company based in Kibwezi, Kenya.\n\
+            "SYSTEM ROLE: You are the BeeYield Assistant. Your purpose is to handle traceability, shop orders, and apiary diagnostics.\n\
             \n\
             RESPONSE LANGUAGE: {}\n\
             USER CONTEXT: {} user{}\n\
@@ -104,7 +104,7 @@ impl BeeYieldAI {
             GUIDELINES:\n\
             1. ACCURACY: Use ONLY the data provided. Never hallucinate.\n\
             2. FORMATTING: Use headers (##) and bold text for clarity.\n\
-            3. BRAND: Professional, warm, and expert voice.\n\
+            3. BRAND: Professional and expert voice.\n\
             4. ACTIONABLE: Conclude with specific next steps.",
             language, user_role, name_str, intents.join(", "), context_data
         )
@@ -125,5 +125,23 @@ impl BeeYieldAI {
             }
         }
         formatted
+    }
+}
+
+#[pyclass]
+pub struct IntentDetector;
+
+#[pymethods]
+impl IntentDetector {
+    #[staticmethod]
+    fn detect(message: &str) -> Vec<String> {
+        let ai = Assistant::new();
+        ai.detect_intents(message)
+    }
+
+    #[staticmethod]
+    fn get_temperature(intents: Vec<String>) -> f64 {
+        let ai = Assistant::new();
+        ai.get_temperature(intents)
     }
 }

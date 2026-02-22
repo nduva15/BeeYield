@@ -567,13 +567,13 @@ export const adminService = {
         return await apiGet<any>(`/admin/documents/stats?days=${days}`);
     },
 
-    getTracingHistory: async (filters: any = {}) => {
+    getHistory: async (filters: any = {}) => {
         const queryParams = new URLSearchParams(filters).toString();
-        return await apiGet<any[]>(`/admin/tracing-history?${queryParams}`);
+        return await apiGet<any[]>(`/admin/history?${queryParams}`);
     },
 
-    getTracingStats: async (days: number = 30) => {
-        return await apiGet<any>(`/admin/tracing-history/stats?days=${days}`);
+    getHistoryStats: async (days: number = 30) => {
+        return await apiGet<any>(`/admin/history/stats?days=${days}`);
     },
 
     getPaymentTransactions: async (filters: any = {}) => {
@@ -612,8 +612,8 @@ export const adminService = {
         return await apiPost<any>('/admin/documents', doc);
     },
 
-    logTrace: async (trace: any) => {
-        return await apiPost<any>('/admin/tracing-history', trace);
+    logHistory: async (trace: any) => {
+        return await apiPost<any>('/admin/history', trace);
     },
 
     logPayment: async (payment: any) => {

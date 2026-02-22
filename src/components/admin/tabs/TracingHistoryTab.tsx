@@ -4,14 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { adminService, TracingHistory } from '@/services/adminService';
+import { adminService, TracingHistory as HistoryItem } from '@/services/adminService';
 import { Loader2, QrCode, Globe, Smartphone, Monitor, MapPin } from "lucide-react";
 import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function TracingHistoryTab() {
     const [loading, setLoading] = useState(true);
-    const [traces, setTraces] = useState<TracingHistory[]>([]);
+    const [traces, setTraces] = useState<HistoryItem[]>([]);
     const [stats, setStats] = useState<any>(null);
     const [filters, setFilters] = useState({ days: '30' });
 
@@ -23,8 +23,8 @@ export function TracingHistoryTab() {
         setLoading(true);
         try {
             const [tracesData, statsData] = await Promise.all([
-                adminService.getTracingHistory({ days: parseInt(filters.days) }),
-                adminService.getTracingStats(parseInt(filters.days))
+                adminService.getHistory({ days: parseInt(filters.days) }),
+                adminService.getHistoryStats(parseInt(filters.days))
             ]);
             setTraces(tracesData || []);
             setStats(statsData);
@@ -94,8 +94,8 @@ export function TracingHistoryTab() {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <div>
-                            <CardTitle>Tracing History</CardTitle>
-                            <CardDescription>Log of all batch traceability lookups</CardDescription>
+                            <CardTitle>History</CardTitle>
+                            <CardDescription>Log of all batch lookups</CardDescription>
                         </div>
                         <Select value={filters.days} onValueChange={(v) => setFilters({ days: v })}>
                             <SelectTrigger className="w-[180px]">

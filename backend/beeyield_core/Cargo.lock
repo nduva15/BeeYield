@@ -27,22 +27,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
-name = "beeyield_core"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "hex",
- "md5",
- "pyo3",
- "pyo3-build-config",
- "rand",
- "regex",
- "serde",
- "serde_json",
- "sha2",
-]
-
-[[package]]
 name = "block-buffer"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -160,6 +144,22 @@ name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+
+[[package]]
+name = "honey_rust"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "hex",
+ "md5",
+ "pyo3",
+ "pyo3-build-config",
+ "rand",
+ "regex",
+ "serde",
+ "serde_json",
+ "sha2",
+]
 
 [[package]]
 name = "iana-time-zone"

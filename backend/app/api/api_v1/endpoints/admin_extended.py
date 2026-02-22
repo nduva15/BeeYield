@@ -1,6 +1,4 @@
-"""
-Admin Dashboard Extended API - Activity Logs, Documents, Tracing History, Payments
-"""
+Admin Dashboard Extended API - Activity Logs, Documents, History, Payments
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import Any, Optional, List
 from datetime import datetime, timedelta
@@ -277,11 +275,11 @@ async def get_document_stats(
 
 
 # ==========================================
-# TRACING HISTORY
+# HISTORY
 # ==========================================
 
-@router.get("/tracing-history", response_model=List[dict])
-async def get_tracing_history(
+@router.get("/history", response_model=List[dict])
+async def get_history(
     batch_code: Optional[str] = None,
     trace_source: Optional[str] = None,
     days: int = Query(default=30, le=365),
@@ -291,7 +289,7 @@ async def get_tracing_history(
     token: Optional[str] = Depends(get_token)
 ):
     """
-    Get all tracing history with optional filters.
+    Get all history with optional filters.
     """
     filters = {}
     if trace_source: filters["trace_source"] = trace_source
@@ -313,10 +311,10 @@ async def get_tracing_history(
         return []
 
 
-@router.post("/tracing-history", response_model=dict)
-async def log_trace_event(log_in: TracingLogCreate, token: Optional[str] = Depends(get_token)):
+@router.post("/history", response_model=dict)
+async def log_history_event(log_in: TracingLogCreate, token: Optional[str] = Depends(get_token)):
     """
-    Log a tracing event. This endpoint is public (no admin check) so it can be called from the traceability page.
+    Log a search event. This endpoint is public (no admin check) so it can be called from the history page.
     """
     data = log_in.dict()
     data["is_authenticated"] = bool(data.get("traced_by_email"))

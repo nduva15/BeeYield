@@ -193,7 +193,7 @@ const CartDrawer: React.FC = () => {
                                     className="w-full h-12 text-base font-semibold gap-2 bg-gradient-to-r from-primary to-amber-600 hover:from-primary/90 hover:to-amber-600/90"
                                     onClick={handleCheckout}
                                 >
-                                    Proceed to Checkout
+                                    Pay
                                     <ArrowRight className="h-5 w-5" />
                                 </Button>
 
@@ -223,7 +223,7 @@ const CartDrawer: React.FC = () => {
                         </>
                     )}
                 </div>
-            </div>
+            </div >
         </>
     );
 };

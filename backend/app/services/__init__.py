@@ -1,18 +1,8 @@
 """
-BeeYield Services Package
+BeeYield Services
 """
-# Delayed imports to avoid circular dependencies
-def get_beeyield_ai():
-    from .ai_assistant import BeeYieldAI
-    return BeeYieldAI
+# All core logic is in the honey_rust binary.
+# Python services act as thin wrappers.
 
-# Explicitly export common services
-try:
-    from .ai_assistant import BeeYieldAI, AIQuery, AIContext, AIResponse
-except ImportError:
-    pass
-
-try:
-    from .shop_service import update_order_status
-except ImportError:
-    pass
+from .ai_assistant import Assistant, BeeYieldAI, AIQuery, AIContext, AIResponse
+from .shop_service import update_status, update_order_status, calc_yield, set_order_paid

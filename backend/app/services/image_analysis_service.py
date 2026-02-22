@@ -12,10 +12,11 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 try:
-    from beeyield_core import ImageEngine as _RustEngine
+    from honey_rust import ImageEngine as _RustEngine
     _RUST_AVAILABLE = True
 except ImportError:
     _RUST_AVAILABLE = False
+    print("WARNING: honey_rust binary missing. Run 'maturin develop'.")
 
 # Optional ML imports
 try:

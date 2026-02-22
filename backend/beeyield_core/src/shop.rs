@@ -23,14 +23,14 @@ pub struct ShopEngine {
 #[pymethods]
 impl ShopEngine {
     #[new]
-    fn new(total_harvest_limit_grams: i64) -> Self {
+    pub fn new(total_harvest_limit_grams: i64) -> Self {
         Self {
             total_harvest_limit_grams,
         }
     }
 
     /// Calculate total grams from a list of order items.
-    fn calculate_total_weight(&self, items: &Bound<'_, PyList>) -> PyResult<i64> {
+    pub fn calculate_total_weight(&self, items: &Bound<'_, PyList>) -> PyResult<i64> {
         let mut total_grams = 0;
         for item in items.iter() {
             let item_dict = item.downcast::<PyDict>()?;
@@ -111,6 +111,11 @@ impl ShopEngine {
     /// Check if a combined weight exceeds the total harvest limit.
     fn is_in_stock(&self, current_sold_grams: i64, new_order_grams: i64) -> bool {
         current_sold_grams + new_order_grams <= self.total_harvest_limit_grams
+    }
+
+    /// Functional helper to validate if an order can be marked as paid.
+    fn set_order_paid(&self, current_status: &str) -> bool {
+        current_status == "pending" || current_status == "processing"
     }
 }
 
