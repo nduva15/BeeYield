@@ -13,10 +13,11 @@ from typing import Dict, Optional, List
 import logging
 
 try:
-    from beeyield_core import AcousticEngine as _RustEngine
+    from honey_rust import AcousticEngine as _RustEngine
     _RUST_AVAILABLE = True
 except ImportError:
     _RUST_AVAILABLE = False
+    print("WARNING: honey_rust binary missing. Run 'maturin develop'.")
 
 logger = logging.getLogger(__name__)
 

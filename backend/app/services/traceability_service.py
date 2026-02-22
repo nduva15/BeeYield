@@ -10,10 +10,11 @@ from app.db.supabase_db import db_select, db_get_by_id
 from app.schemas import traceability as schemas
 
 try:
-    from beeyield_core import TraceabilityEngine as _RustEngine
+    from honey_rust import TraceabilityEngine as _RustEngine
     _RUST_AVAILABLE = True
 except ImportError:
     _RUST_AVAILABLE = False
+    print("WARNING: honey_rust binary missing. Run 'maturin develop'.")
 
 _engine = _RustEngine() if _RUST_AVAILABLE else None
 

@@ -1,11 +1,11 @@
 [package]
-name = "beeyield_core"
+name = "honey_rust"
 version = "0.1.0"
 edition = "2021"
 description = "BeeYield core logic engine — Rust compute layer exposed via PyO3"
 
 [lib]
-name = "beeyield_core"
+name = "honey_rust"
 crate-type = ["cdylib"]    # Shared library for Python
 
 [dependencies]

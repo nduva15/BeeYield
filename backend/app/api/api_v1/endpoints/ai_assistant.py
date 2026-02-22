@@ -1,7 +1,7 @@
 """
-BeeYield AI Assistant API Endpoints
-====================================
-Comprehensive API for the AI assistant with all features:
+BeeYield Assistant API Endpoints
+================================
+Comprehensive API for the Assistant with all features:
 - Chat with context
 - Batch traceability
 - Hive health analysis
@@ -95,7 +95,7 @@ async def chat_with_assistant(
     current_user: Optional[dict] = Depends(get_optional_current_user)
 ):
     """
-    Chat with the BeeYield AI Assistant.
+    Chat with the BeeYield Assistant.
     
     Features:
     - Multi-language support (EN, SW, FR, DE, ES, ZH, PL, AR, PT)
@@ -323,13 +323,6 @@ async def execute_quick_action(
     current_user: Optional[dict] = Depends(get_optional_current_user)
 ):
     """
-    Execute a quick action from the AI interface.
-    
-    Supported actions:
-    - check_order: Check order status
-    - find_product: Search products
-    - get_quote: Get pollination quote
-    - schedule_inspection: Schedule hive inspection
     - contact_support: Generate support ticket
     """
     try:
@@ -491,8 +484,8 @@ async def submit_feedback(
     current_user: Optional[dict] = Depends(get_optional_current_user)
 ):
     """
-    Submit feedback on AI response quality.
-    Used to improve AI accuracy over time.
+    Submit feedback on Assistant response quality.
+    Used to improve accuracy over time.
     """
     try:
         # In production, save to database
@@ -513,7 +506,7 @@ async def submit_feedback(
 @router.get("/status")
 async def get_ai_status():
     """
-    Get comprehensive AI system status.
+    Get comprehensive Assistant system status.
     Checks knowledge base, database, and API connectivity.
     """
     try:

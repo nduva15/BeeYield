@@ -921,7 +921,7 @@ const AdminDashboard: React.FC = () => {
             children: [
                 { id: 'overview', label: 'Overview', icon: LayoutDashboard },
                 { id: 'activity', label: 'Activity Log', icon: History },
-                { id: 'tracing', label: 'Tracing History', icon: Search },
+                { id: 'tracing', label: 'History', icon: Search },
             ]
         },
         {
@@ -966,7 +966,7 @@ const AdminDashboard: React.FC = () => {
                 { id: 'recruitment', label: 'Applications', icon: Users },
             ]
         },
-        { id: 'batches', label: 'Trace Data', icon: Database },
+        { id: 'batches', label: 'History', icon: Database },
         ...(isSuperAdmin ? [{ id: 'team', label: 'Team', icon: Shield }] : [])
     ];
 
@@ -982,7 +982,7 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
                         <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">CEBA <span className="text-beeyield-gold italic">Terminal</span></h1>
-                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">Central Intelligence & Data Command</p>
+                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">Command</p>
                     </div>
                 </div>
 
@@ -993,7 +993,7 @@ const AdminDashboard: React.FC = () => {
                             <TabsTrigger value="overview">Overview</TabsTrigger>
                             <TabsTrigger value="orders">Orders</TabsTrigger>
                             <TabsTrigger value="products">Shop</TabsTrigger>
-                            <TabsTrigger value="batches">Traceability</TabsTrigger>
+                            <TabsTrigger value="batches">History</TabsTrigger>
                             <TabsTrigger value="farmers">Farmers</TabsTrigger>
                             <TabsTrigger value="apiaries">Apiaries</TabsTrigger>
                             <TabsTrigger value="hives">Hives</TabsTrigger>
@@ -2081,7 +2081,7 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black">Mint New Ledger Entry</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black">New History Entry</DialogTitle>
                                     <DialogDescription>This action will finalize the batch data on the irreversible HoneyChain network.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
@@ -2311,7 +2311,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
+                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Save</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -2338,7 +2338,7 @@ const AdminDashboard: React.FC = () => {
                                                 <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
                                             </div>
                                             <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
-                                                VERIFIED ON LEDGER
+                                                VERIFIED HISTORY
                                             </Badge>
                                         </div>
 

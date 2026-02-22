@@ -1215,7 +1215,7 @@ const Checkout = () => {
                                         onClick={handleProceedToCheckout}
                                         className="w-full h-12 rounded-xl text-lg font-bold bg-gradient-to-r from-primary to-amber-600 hover:from-primary/90 hover:to-amber-600/90 shadow-glow"
                                     >
-                                        PROCEED TO CHECKOUT
+                                        PAY
                                     </Button>
                                 )}
 
