@@ -63,7 +63,8 @@ impl ShopEngine {
         let mut total_honey_weight = 0;
         for item in items.iter() {
             let item_dict = item.downcast::<PyDict>()?;
-            if let Some(name_bound) = item_dict.get_item("product_name")?.or(item_dict.get_item("name")?) {
+            let name_result = item_dict.get_item("product_name")?.or(item_dict.get_item("name")?);
+            if let Some(name_bound) = name_result {
                 let name = name_bound.extract::<String>()?.to_lowercase();
                 if name.contains("honey") || name.contains("acacia") || name.contains("blossom") {
                     let size_str = match item_dict.get_item("variant_size")? {
@@ -108,14 +109,69 @@ impl ShopEngine {
         Ok(result)
     }
 
+    /// Idempotency Protocol: "Never Trust the Client"
+    /// 1. Check if the key exists in the billing_ledger.
+    /// 2. If it does, return the existing record immediately.
+    /// 3. If not, create a placeholder record and proceed.
+    pub fn process_idempotent(&self, py: Python<'_>, idempotency_key: String, user_id: String, payload: &Bound<'_, PyDict>) -> PyResult<PyObject> {
+        let db = py.import_bound("app.db.supabase_db")?;
+        let db_select_sync = db.getattr("db_select_sync")?;
+        let db_insert_sync = db.getattr("db_insert_sync")?;
+
+        // Part 1: Check for existing transaction
+        let mut filters = std::collections::HashMap::new();
+        filters.insert("idempotency_key", idempotency_key.clone());
+        
+        let kwargs = PyDict::new_bound(py);
+        kwargs.set_item("filters", filters)?;
+        
+        // Use sync SELECT
+        let result_py = db_select_sync.call(("billing_ledger",), Some(&kwargs))?;
+        let existing: Bound<'_, PyList> = result_py.downcast_into::<PyList>()?;
+        
+        if existing.len() > 0 {
+            // Found cached transaction — return the first match
+            return Ok(existing.get_item(0)?.to_object(py));
+        }
+
+        // Part 2: Proceed with new transaction record
+        let mut payment_data = std::collections::HashMap::new();
+        payment_data.insert("user_id", user_id);
+        payment_data.insert("idempotency_key", idempotency_key);
+        payment_data.insert("payment_status", "processing".to_string());
+        
+        // Extract details from payload
+        if let Some(amt) = payload.get_item("amount")? {
+             payment_data.insert("amount", amt.extract::<String>()?);
+        }
+        if let Some(curr) = payload.get_item("currency")? {
+             payment_data.insert("currency", curr.extract::<String>()?);
+        }
+        if let Some(desc) = payload.get_item("description")? {
+             payment_data.insert("description", desc.extract::<String>()?);
+        }
+        payment_data.insert("transaction_type", "income".to_string());
+        payment_data.insert("module_type", "shop".to_string());
+
+        // Use sync INSERT
+        let result = db_insert_sync.call(("billing_ledger", payment_data), None)?;
+        Ok(result.to_object(py))
+    }
+
     /// Check if a combined weight exceeds the total harvest limit.
-    fn is_in_stock(&self, current_sold_grams: i64, new_order_grams: i64) -> bool {
+    pub fn is_in_stock(&self, current_sold_grams: i64, new_order_grams: i64) -> bool {
         current_sold_grams + new_order_grams <= self.total_harvest_limit_grams
     }
 
-    /// Functional helper to validate if an order can be marked as paid.
-    fn set_order_paid(&self, current_status: &str) -> bool {
-        current_status == "pending" || current_status == "processing"
+    /// Validate if an order can be marked as paid via Rust state machine logic.
+    pub fn validate_transition(&self, current_status: &str, next_status: &str) -> bool {
+        match (current_status, next_status) {
+            ("pending", "processing") => true,
+            ("processing", "completed") => true,
+            ("processing", "failed") => true,
+            ("completed", "refunded") => true,
+            _ => false,
+        }
     }
 }
 

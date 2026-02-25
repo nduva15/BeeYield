@@ -12,9 +12,15 @@ import asyncio
 import os
 from typing import Optional, Any, List, Dict
 from app.core.config import settings
+from contextlib import contextmanager
 
 # Gateway URL from environment — no hardcoded defaults for production
 DB_GATEWAY_URL = settings.DB_GATEWAY_URL
+
+@contextmanager
+def get_python_context():
+    """Provides a reference for Rust to call back into Python safely."""
+    yield None
 
 # ============ LAZY SUPABASE SDK (kept for auth endpoints only) ============
 _supabase_client = None
@@ -198,6 +204,54 @@ async def db_select(
         print(f"  URL: {url}")
         print(f"  Params: {params}")
         return []
+
+def db_select_sync(
+    table: str,
+    columns: str = "*",
+    filters: Optional[dict[str, Any]] = None,
+    limit: int = 1000,
+    token: Optional[str] = None,
+) -> list[dict[str, Any]]:
+    """Synchronous select for Rust core."""
+    url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    params = {"select": columns}
+    if filters:
+        for k, v in filters.items():
+            params[k] = f"eq.{v}"
+            
+    headers = {
+        "apikey": settings.SUPABASE_KEY,
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "Range": f"0-{limit-1}" if limit else "0-999"
+    }
+    
+    with httpx.Client(timeout=10.0) as client:
+        try:
+            response = client.get(url, params=params, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            print(f"[ERROR] Sync select failed: {e}")
+            return []
+
+def db_insert_sync(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
+    """Synchronous insert for Rust core."""
+    url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    headers = {
+        "apikey": settings.SUPABASE_KEY,
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    }
+    
+    with httpx.Client(timeout=10.0) as client:
+        try:
+            response = client.post(url, json=data, headers=headers)
+            response.raise_for_status()
+            return {"success": True, "data": response.json()}
+        except Exception as e:
+            print(f"[ERROR] Sync insert failed: {e}")
+            return {"success": False, "error": str(e)}
 
 
 async def db_update(

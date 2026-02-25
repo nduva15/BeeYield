@@ -29,24 +29,16 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 async def startup_event():
-    """
-    Initialize the BeeYield AI infrastructure on startup:
-    1. Start the 12-hour knowledge sync scheduler
-    2. Vector store is lazy-initialized on first AI request (not at startup)
-    """
-    # 1. Start the Knowledge Sync Scheduler (12-hour interval)
+    """Boot sequence — Rust bridge validation then Python gateway confirmation."""
+    # Validate the Rust core is linked and importable
     try:
-        from app.services.sync_scheduler import KnowledgeSyncScheduler
-        await KnowledgeSyncScheduler.start(interval_hours=12)
-        print("[STARTUP] Knowledge sync scheduler started (12h interval)")
-    except Exception as e:
-        print(f"[STARTUP] Scheduler error (non-fatal): {e}")
-    
-    # 2. Vector store (Qdrant + BERT model) is intentionally NOT loaded at startup
-    #    It will be lazy-initialized when the AI assistant is first used.
-    #    Loading the BERT model is CPU-intensive and blocks all requests due to Python's GIL.
-    print("[STARTUP] Vector store will be lazy-loaded on first AI request")
-    print("[STARTUP] BeeYield API ready to serve requests")
+        import honey_rust  # noqa: F401
+        print("Rust Core: Online")
+    except ImportError:
+        print("Rust Core: OFFLINE — run 'maturin develop' inside backend/beeyield_core")
+
+    # Signal that the Python gateway (FastAPI) is up
+    print("Python Gateway: Online")
 
 
 @app.get("/")
@@ -85,5 +77,17 @@ def read_root():
     }
 
 if __name__ == "__main__":
+    import logging
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+    # Silence WatchFiles / uvicorn reload chatter — only our startup prints will show.
+    logging.getLogger("watchfiles").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
+
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="warning",
+    )

@@ -24,7 +24,7 @@ class BlurbRequest(BaseModel):
 @router.post("/chat")
 async def chat_with_assistant(request: ChatRequest):
     """
-    Chat with the BeeYield AI Assistant.
+    Chat endpoint.
     """
     try:
         # Get current time in East Africa Time (EAT) for BeeYield HQ context
@@ -74,11 +74,11 @@ async def generate_blurb(request: BlurbRequest):
 @router.get("/status")
 def get_ai_status():
     """
-    Get the status of the AI Assistant training/knowledge base.
+    Get system status.
     """
     return {
         "status": "active",
         "knowledge_base": "synced with database",
         "last_sync": "just now",
-        "capabilities": ["beeyield_docs", "web_search", "traceability_data"]
+        "capabilities": ["beeyield_docs", "web_search", "history_data"]
     }

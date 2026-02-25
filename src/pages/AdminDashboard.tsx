@@ -1292,7 +1292,7 @@ const AdminDashboard: React.FC = () => {
 
                                 <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
                                     <div className="relative z-10 max-w-xs">
-                                        <h3 className="text-lg font-bold mb-1 leading-tight">Traceability Ledger</h3>
+                                        <h3 className="text-lg font-bold mb-1 leading-tight">Log</h3>
                                         <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
                                         <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
                                             View Ledger
