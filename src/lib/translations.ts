@@ -76,7 +76,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "admin_core": "Management",
         "main_hub": "Home",
 
-        "nav_ai_assistant": "Assistant",
+        "nav_ai_assistant": "Help",
         "nav_my_places": "My Places",
         "nav_beeyield_hives": "BeeYield Hives",
         "nav_inspections": "Inspections",
@@ -239,7 +239,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "note_saved_error": "Failed to save note",
         "error_load_apiary": "Failed to load apiary data",
 
-        // AI Assistant View
+        // Smart Assistant View
         "ai_hub_intelligence": "HELP",
         "ai_assistant_title": "Help",
         "ai_hub_status": "System is checking data",
@@ -249,7 +249,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "system_status_online": "ONLINE",
         "system_status_synchronized": "SYNCED",
         "ai_hub_title": "HELP",
-        "ai_expert_assistant": "BeeYield Support",
+        "ai_expert_assistant": "Support",
         "ai_proprietary_ml": "I check your hive data to help find problems early.",
         "ask_ai_placeholder": "Ask a question... (Upload photos or docs)",
         "ai_terms_agree": "By using BeeYield Assistant, you agree to our",
@@ -453,7 +453,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "note_saved_error": "Ã‰chec de l'enregistrement de la note",
         "error_load_apiary": "Ã‰chec du chargement des donnÃ©es rucher",
 
-        // AI Assistant View
+        // Smart Assistant View
         "ai_hub_intelligence": "CENTRE D'ANALYSE BEEYIELD",
         "ai_assistant_title": "Aide BeeYield",
         "ai_hub_status": "Surveillance & Analyse IoT SÃ©curisÃ©e | SystÃ¨me Actif",

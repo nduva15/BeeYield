@@ -23,7 +23,6 @@ import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import { NavItem } from '@/components/beeyield/DashboardSidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
-import UserDebugPanel from '@/components/beeyield/UserDebugPanel';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
@@ -594,9 +593,6 @@ const BeeYieldDashboard: React.FC = () => {
             onLogout={handleLogout}
             navItems={navItems}
         >
-            <div className="mb-6">
-                <UserDebugPanel />
-            </div>
             {renderContent()}
         </DashboardLayout>
     );

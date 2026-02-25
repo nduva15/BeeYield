@@ -13,6 +13,8 @@ mod ingestion;
 mod search;
 mod shop;
 mod assistant;
+mod payments;
+mod invoicing;
 
 /// BeeYield Core — Rust compute engine exposed to Python via PyO3.
 ///
@@ -34,6 +36,8 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<shop::ShopEngine>()?;
     m.add_class::<assistant::Assistant>()?;
     m.add_class::<assistant::IntentDetector>()?;
+    m.add_class::<payments::MpesaEngine>()?;
+    m.add_class::<invoicing::InvoicingEngine>()?;
     
     // Standalone functional helpers
     #[pyfunction]
