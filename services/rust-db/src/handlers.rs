@@ -6,6 +6,8 @@ use std::sync::Arc;
 use crate::config::Config;
 use crate::models::*;
 use crate::supabase_client::SupabaseClient;
+use base64::{engine::general_purpose, Engine as _};
+use chrono::Local;
 
 pub struct AppState {
     pub client: SupabaseClient,
@@ -155,6 +157,140 @@ pub async fn handle_tokenize(
     }
 }
 
+/// POST /ai/query
+/// Memory-safe, high-concurrency intent detection and prompt assembly.
+pub async fn handle_ai_query(body: web::Json<AIQueryRequest>) -> HttpResponse {
+    let message = &body.message;
+    let mut detected_intents = Vec::new();
+
+    // Ported Intent Logic
+    let intents_map = [
+        ("product_search", vec!["buy", "purchase", "order", "shop", "honey", "price", "cost", "product", "available", "stock", "store"]),
+        ("order_status", vec!["order", "tracking", "delivery", "shipment", "status", "where is my"]),
+        ("trace_honey", vec!["trace", "origin", "source", "batch", "verify", "authenticate", "qr", "honeychain"]),
+        ("iot_data", vec!["sensor", "temperature", "humidity", "weight", "telemetry", "iot", "monitoring", "data"]),
+        ("hive_health", vec!["health", "disease", "sick", "varroa", "mite", "infection", "anomaly", "symptom", "treatment", "cure", "prevention", "pest"]),
+        ("greeting", vec!["hello", "hi", "hey", "jambo", "habari", "natta", "bonjour", "hallo", "hola"]),
+    ];
+
+    let msg_lower = message.to_lowercase();
+    for (intent, keywords) in intents_map {
+        if keywords.iter().any(|&kw| msg_lower.contains(kw)) {
+            detected_intents.push(intent.to_string());
+        }
+    }
+    if detected_intents.is_empty() {
+        detected_intents.push("general".to_string());
+    }
+
+    // Temperature select
+    let temperature = if detected_intents.contains(&"greeting".to_string()) { 0.7 } else { 0.1 };
+
+    // Prompt building
+    let system_prompt = format!(
+        "SYSTEM ROLE: BeeYield Assistant. ROLE: {}. INTENTS: {}.\nCONTEXT:\n{}",
+        body.user_role.as_deref().unwrap_or("User"),
+        detected_intents.join(", "),
+        body.context_data.as_deref().unwrap_or("No additional context.")
+    );
+
+    HttpResponse::Ok().json(AIQueryResponse {
+        response: format!("Processing query: '{}' with intents: {:?}", message, detected_intents),
+        intents: detected_intents,
+        temperature,
+        system_prompt,
+    })
+}
+
+/// POST /payments/stk-push
+/// External external Payment gateway handshake.
+pub async fn handle_mpesa_push(
+    state: web::Data<AppState>,
+    body: web::Json<PaymentStkPushRequest>,
+) -> HttpResponse {
+    // 1. Get OAuth Token
+    let client = reqwest::Client::new();
+    let auth_res = match client
+        .get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials")
+        .basic_auth(&state.config.mpesa_key, Some(&state.config.mpesa_secret))
+        .send()
+        .await {
+            Ok(res) => res,
+            Err(e) => return HttpResponse::InternalServerError().body(format!("OAuth error: {}", e)),
+        };
+
+    let token: serde_json::Value = match auth_res.json().await {
+        Ok(v) => v,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("JSON error: {}", e)),
+    };
+    let access_token = token["access_token"].as_str().unwrap_or_default();
+
+    // 2. Initiate STK Push
+    let timestamp = Local::now().format("%Y%m%d%H%M%S").to_string();
+    let password = general_purpose::STANDARD.encode(format!("{}{}{}", state.config.mpesa_shortcode, state.config.mpesa_passkey, timestamp));
+
+    let payload = serde_json::json!({
+        "BusinessShortCode": state.config.mpesa_shortcode,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": body.amount,
+        "PartyA": body.phone,
+        "PartyB": state.config.mpesa_shortcode,
+        "PhoneNumber": body.phone,
+        "CallBackURL": state.config.mpesa_callback_url,
+        "AccountReference": body.account_ref,
+        "TransactionDesc": "BeeYield Rust Handshake"
+    });
+
+    let stk_res = match client
+        .post("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest")
+        .bearer_auth(access_token)
+        .json(&payload)
+        .send()
+        .await {
+            Ok(res) => res,
+            Err(e) => return HttpResponse::InternalServerError().body(format!("STK error: {}", e)),
+        };
+
+    let stk_data: serde_json::Value = match stk_res.json().await {
+        Ok(v) => v,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("JSON error: {}", e)),
+    };
+
+    HttpResponse::Ok().json(PaymentStkPushResponse {
+        success: stk_data["ResponseCode"].as_str() == Some("0"),
+        checkout_request_id: stk_data["CheckoutRequestID"].as_str().unwrap_or_default().to_string(),
+        message: stk_data["ResponseDescription"].as_str().unwrap_or("Request Initiated").to_string(),
+    })
+}
+
+/// POST /payments/parse-callback
+pub async fn handle_parse_callback(body: web::Json<PaymentCallbackRequest>) -> HttpResponse {
+    let v: serde_json::Value = match serde_json::from_str(&body.body) {
+        Ok(v) => v,
+        Err(_) => return HttpResponse::BadRequest().body("Invalid JSON"),
+    };
+
+    let result_code = v.pointer("/Body/stkCallback/ResultCode")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(1);
+    
+    let merchant_id = v.pointer("/Body/stkCallback/MerchantRequestID")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default();
+    
+    let checkout_id = v.pointer("/Body/stkCallback/CheckoutRequestID")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default();
+
+    HttpResponse::Ok().json(PaymentCallbackResponse {
+        result_code,
+        merchant_request_id: merchant_id.to_string(),
+        checkout_request_id: checkout_id.to_string(),
+    })
+}
+
 /// GET /health
 
 pub async fn health_check(state: web::Data<AppState>) -> HttpResponse {
@@ -165,4 +301,3 @@ pub async fn health_check(state: web::Data<AppState>) -> HttpResponse {
     };
     HttpResponse::Ok().json(resp)
 }
-

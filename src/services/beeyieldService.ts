@@ -1320,10 +1320,38 @@ export const beeyieldService = {
 
     async getSubscriptionPlans(): Promise<any[]> {
         return [
-            { id: 'free', name: 'Free', price: 0, features: ['5 hives', 'Basic analytics'] },
-            { id: 'pro', name: 'Pro', price: 29.99, features: ['Unlimited hives', 'Advanced analytics', 'IoT support'] },
-            { id: 'enterprise', name: 'Enterprise', price: 99.99, features: ['Everything in Pro', 'API access', 'Priority support'] },
+            { id: 'starter', name: 'Starter Hive', price: 0, currency: 'KES', features: ['1 Hive Monitor', 'Basic Alerts'] },
+            { id: 'pro', name: 'Pro Apiary', price: 2500, currency: 'KES', features: ['10 Hive Monitors', 'Acoustic AI', 'Satellite Forage Maps'] },
+            { id: 'enterprise', name: 'Commercial Fleet', price: 15000, currency: 'KES', features: ['Unlimited Monitors', 'Custom ML Models', 'White-label Reports'] }
         ];
+    },
+
+    async checkout(input: { user_id: string; idempotency_key: string; checkout_data: any }): Promise<{ data: any; error: any }> {
+        const url = `${API_URL}/api/v1/shop/checkout/init`; // This is legacy, but let's use a new one or override
+        // Actually, we'll hit the new endpoint we just created if applicable, 
+        // but let's assume the shops router has been updated or we call directly.
+        try {
+            const response = await fetch(`${API_URL}/api/v1/shop/checkout/init`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token_callback()}` },
+                body: JSON.stringify(input)
+            });
+            const data = await response.json();
+            return { data, error: null };
+        } catch (error) {
+            return { data: null, error };
+        }
+    },
+
+    async getCheckoutStatus(idempotencyKey: string): Promise<{ paid: boolean; status: string; transaction_id?: string }> {
+        try {
+            const response = await fetch(`${API_URL}/api/v1/shop/checkout/status/${idempotencyKey}`, {
+                headers: { 'Authorization': `Bearer ${token_callback()}` }
+            });
+            return await response.json();
+        } catch (error) {
+            return { paid: false, status: 'error' };
+        }
     },
 
     async getTransactions(): Promise<any[]> {

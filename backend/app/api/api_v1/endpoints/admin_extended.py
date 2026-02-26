@@ -1,4 +1,6 @@
+"""
 Admin Dashboard Extended API - Activity Logs, Documents, History, Payments
+"""
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import Any, Optional, List
 from datetime import datetime, timedelta

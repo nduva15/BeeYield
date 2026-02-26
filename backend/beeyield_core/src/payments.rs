@@ -1,9 +1,11 @@
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use base64::{engine::general_purpose, Engine as _};
 use std::env;
 use chrono::Local;
+use serde_json::Value;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct OAuthResponse {
@@ -50,7 +52,7 @@ impl MpesaEngine {
     }
 
     /// Initiate an STK Push (M-Pesa Express)
-    pub fn initiate_stk_push(&self, phone: String, amount: i64, account_ref: String) -> PyResult<String> {
+    pub fn initiate_stk_push<'py>(&self, py: Python<'py>, phone: String, amount: i64, account_ref: String) -> PyResult<Bound<'py, PyDict>> {
         let token = self.get_oauth_token()?;
         let timestamp = Local::now().format("%Y%m%d%H%M%S").to_string();
         let password = general_purpose::STANDARD.encode(format!("{}{}{}", self.short_code, self.passkey, timestamp));
@@ -80,11 +82,38 @@ impl MpesaEngine {
         let status = response.status();
         let body = response.text().unwrap_or_default();
 
+        let dict = PyDict::new_bound(py);
         if status.is_success() {
-            Ok(body)
+            let res_json: Value = serde_json::from_str(&body).unwrap_or_default();
+            dict.set_item("success", true)?;
+            dict.set_item("CheckoutRequestID", res_json["CheckoutRequestID"].as_str().unwrap_or_default())?;
+            dict.set_item("ResponseCode", res_json["ResponseCode"].as_str().unwrap_or_default())?;
         } else {
-            Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("M-Pesa API Error ({}): {}", status, body)))
+            dict.set_item("success", false)?;
+            dict.set_item("error", body)?;
         }
+        Ok(dict)
+    }
+
+    /// Parse and validate the M-Pesa Callback Result
+    pub fn parse_callback_result<'py>(&self, py: Python<'py>, body: String) -> PyResult<Bound<'py, PyDict>> {
+        let v: Value = serde_json::from_str(&body).map_err(|_| PyErr::new::<pyo3::exceptions::PyValueError, _>("Invalid JSON callback"))?;
+        let dict = PyDict::new_bound(py);
+
+        // Safaricom Result Structure: Body.stkCallback.ResultCode
+        if let Some(res_code) = v.pointer("/Body/stkCallback/ResultCode") {
+            dict.set_item("result_code", res_code.as_i64().unwrap_or(1))?;
+        }
+
+        if let Some(merchant_id) = v.pointer("/Body/stkCallback/MerchantRequestID") {
+            dict.set_item("merchant_request_id", merchant_id.as_str().unwrap_or_default())?;
+        }
+
+        if let Some(checkout_id) = v.pointer("/Body/stkCallback/CheckoutRequestID") {
+            dict.set_item("checkout_request_id", checkout_id.as_str().unwrap_or_default())?;
+        }
+
+        Ok(dict)
     }
 }
 

@@ -129,6 +129,53 @@ pub struct TokenizeResponse {
     pub tokens: Vec<u32>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AIQueryRequest {
+    pub message: String,
+    #[serde(default)]
+    pub language: Option<String>,
+    #[serde(default)]
+    pub user_role: Option<String>,
+    #[serde(default)]
+    pub user_name: Option<String>,
+    #[serde(default)]
+    pub context_data: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AIQueryResponse {
+    pub response: String,
+    pub intents: Vec<String>,
+    pub temperature: f64,
+    pub system_prompt: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaymentStkPushRequest {
+    pub phone: String,
+    pub amount: i64,
+    pub account_ref: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaymentStkPushResponse {
+    pub success: bool,
+    pub checkout_request_id: String,
+    pub message: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaymentCallbackRequest {
+    pub body: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaymentCallbackResponse {
+    pub result_code: i64,
+    pub merchant_request_id: String,
+    pub checkout_request_id: String,
+}
+
 #[derive(Debug, Serialize)]
 pub struct HealthResponse {
 

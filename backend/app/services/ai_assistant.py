@@ -1,30 +1,17 @@
-"""
-Assistant Service
-=================
-Pure bridge to the honey_rust Assistant engine.
-"""
-from typing import Any, Optional, Dict, List
-from pydantic import BaseModel
-from honey_rust import Assistant as BeeYieldAI
+import httpx
 
-class AIContext(BaseModel):
-    user_id: Optional[str] = None
-    user_name: Optional[str] = None
-    user_role: Optional[str] = "guest"
-    language: str = "EN"
+RUST_SERVICE_URL = "http://127.0.0.1:9091"
 
-class AIQuery(BaseModel):
-    message: str
-    context: Optional[AIContext] = None
-    history: Optional[List[Dict[str, str]]] = None
+class BeeYieldAI:
+    @staticmethod
+    async def query_assistant(payload: dict):
+        async with httpx.AsyncClient() as client:
+            # Direct handshake with the Rust Core
+            response = await client.post(f"{RUST_SERVICE_URL}/ai/query", json=payload)
+            return response.json()
 
-class AIResponse(BaseModel):
-    response: str
-    processing_time_ms: int = 0
-    suggestions: Optional[List[str]] = None
-
-async def chat(message: str, history=None, **kwargs):
-    return BeeYieldAI().format_response("Assistant active.")
-
-async def trace_batch(batch_code: str):
-    return {"status": "verified", "batch": batch_code}
+# Match the names your __init__.py is looking for
+Assistant = BeeYieldAI 
+AIQuery = dict
+AIContext = dict
+AIResponse = dict
