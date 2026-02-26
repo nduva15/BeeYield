@@ -13,7 +13,7 @@ After:  15 lines of Python (import + delegate)
 from typing import Dict, Any, List, Optional
 
 try:
-    from beeyield_core import HiveHealthEngine as _RustEngine
+    from honey_rust import HiveHealthEngine as _RustEngine
     _RUST_AVAILABLE = True
 except ImportError:
     _RUST_AVAILABLE = False

@@ -8,6 +8,12 @@ pub struct Config {
     pub supabase_service_role_key: Option<String>,
     pub listen_host: String,
     pub listen_port: u16,
+    // M-Pesa Daraja Config
+    pub mpesa_key: String,
+    pub mpesa_secret: String,
+    pub mpesa_shortcode: String,
+    pub mpesa_passkey: String,
+    pub mpesa_callback_url: String,
 }
 
 impl Config {
@@ -32,12 +38,23 @@ impl Config {
             .parse::<u16>()
             .expect("RUST_DB_PORT must be a valid port number");
 
+        let mpesa_key = env::var("MPESA_CONSUMER_KEY").unwrap_or_default();
+        let mpesa_secret = env::var("MPESA_CONSUMER_SECRET").unwrap_or_default();
+        let mpesa_shortcode = env::var("MPESA_SHORTCODE").unwrap_or_default();
+        let mpesa_passkey = env::var("MPESA_PASSKEY").unwrap_or_default();
+        let mpesa_callback_url = env::var("MPESA_CALLBACK_URL").unwrap_or_default();
+
         Config {
             supabase_url,
             supabase_key,
             supabase_service_role_key,
             listen_host,
             listen_port,
+            mpesa_key,
+            mpesa_secret,
+            mpesa_shortcode,
+            mpesa_passkey,
+            mpesa_callback_url,
         }
     }
 

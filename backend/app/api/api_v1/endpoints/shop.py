@@ -127,6 +127,31 @@ async def initialize_checkout(
         "payment_info": payment_response
     }
 
+@router.post("/checkout/callback/mpesa")
+async def mpesa_callback(payload: dict):
+    """
+    Public webhook for Safaricom Daraja API.
+    Delegates validation to the Rust ShopEngine.
+    """
+    return await shop_service.process_mpesa_callback(payload)
+
+@router.get("/checkout/status/{idempotency_key}")
+async def get_checkout_status(idempotency_key: str, token: Optional[str] = Depends(get_token)):
+    """
+    Poll point for frontend to check if M-Pesa callback landed.
+    """
+    from app.db.supabase_db import db_select
+    filters = {"idempotency_key": idempotency_key}
+    results = await db_select("billing_ledger", filters=filters, token=token)
+    if results:
+        tx = results[0]
+        return {
+            "status": tx.get("payment_status"),
+            "transaction_id": tx.get("id"),
+            "paid": tx.get("payment_status") == "completed"
+        }
+    return {"status": "not_found", "paid": False}
+
 @router.get("/orders", response_model=list[schemas.Order])
 async def get_user_orders(
     email: Optional[str] = None,

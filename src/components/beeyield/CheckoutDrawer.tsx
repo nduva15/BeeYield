@@ -15,6 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import beeyieldService from '@/services/beeyieldService';
 
 interface PaymentMethod {
     id: string;
@@ -50,23 +51,59 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
     const currentMethod = paymentMethods.find(m => m.id === selectedMethod) || paymentMethods[0];
 
     const handlePayment = async () => {
+        if (!item) return;
         setIsProcessing(true);
         setStep('processing');
 
-        // Generate idempotency key for Rust backend validation
         const idempotencyKey = crypto.randomUUID();
 
         try {
-            // Simulated Rust-Core Payment Execution
-            // In reality: await beeyieldService.checkout({ item_id: item.id, method_id: selectedMethod, key: idempotencyKey })
-            await new Promise(resolve => setTimeout(resolve, 2400));
+            // 1. Initiate Checkout via Oxidized Shop Engine
+            const { data, error } = await beeyieldService.checkout({
+                user_id: 'current_user_id', // In reality, get from auth context
+                idempotency_key: idempotencyKey,
+                checkout_data: {
+                    amount: item.price,
+                    currency: item.currency,
+                    payment_method: currentMethod.type,
+                    phone: currentMethod.phone,
+                    description: `Order for ${item.name}`
+                }
+            });
 
-            setStep('success');
-            toast.success("Payment Verified", { description: "Receipt sent to terminal." });
-            if (onSuccess) onSuccess('TXN_' + Math.random().toString(36).toUpperCase().slice(2, 10));
-        } catch (error) {
+            if (error || (data && !data.success && data.error)) {
+                throw new Error(data?.error || 'Checkout initiation failed');
+            }
+
+            // 2. If M-Pesa, enter Polling Loop (The "Uber" Experience)
+            if (currentMethod.type === 'mpesa') {
+                let attempts = 0;
+                const maxAttempts = 20; // 60 seconds total
+
+                while (attempts < maxAttempts) {
+                    const status = await beeyieldService.getCheckoutStatus(idempotencyKey);
+                    if (status.paid) {
+                        setStep('success');
+                        toast.success("Payment Verified", { description: "Funds secured in vault." });
+                        if (onSuccess) onSuccess(status.transaction_id || 'TXN_SUCCESS');
+                        return;
+                    }
+                    if (status.status === 'failed') {
+                        throw new Error('Transaction declined by provider.');
+                    }
+
+                    await new Promise(r => setTimeout(r, 3000));
+                    attempts++;
+                }
+                throw new Error('Payment timeout. Please check your phone.');
+            } else {
+                // Card or other instant success (Stripe handles its own flow)
+                setStep('success');
+                if (onSuccess) onSuccess('TXN_CARD_SUCCESS');
+            }
+        } catch (error: any) {
             setStep('payment');
-            toast.error("Transaction Failed", { description: "Insufficient funds or gateway timeout." });
+            toast.error("Transaction Error", { description: error.message || "Gateway handshake failed." });
         } finally {
             setIsProcessing(false);
         }
@@ -132,7 +169,8 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                     <div className="pt-4">
                                         <button
                                             onClick={() => setStep('payment')}
-                                            className="w-full h-14 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2"
+                                            disabled={isProcessing}
+                                            className="w-full h-14 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             Select Payment
                                             <ChevronRight size={16} />
@@ -185,14 +223,16 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                     <div className="pt-4 flex flex-col gap-3">
                                         <button
                                             onClick={handlePayment}
-                                            className="w-full h-14 bg-[#F59E0B] text-black font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group"
+                                            disabled={isProcessing}
+                                            className="w-full h-14 bg-[#F59E0B] text-black font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-wait"
                                         >
-                                            Pay {item?.currency} {item?.price.toLocaleString()}
-                                            <Lock size={16} className="group-hover:translate-y-[-1px] transition-transform" />
+                                            {isProcessing ? "Handshaking..." : `Pay ${item?.currency} ${item?.price.toLocaleString()}`}
+                                            <Lock size={16} className={cn("transition-transform", isProcessing ? "animate-pulse" : "group-hover:translate-y-[-1px]")} />
                                         </button>
                                         <button
                                             onClick={() => setStep('review')}
-                                            className="w-full h-11 text-white/20 font-black uppercase tracking-[0.1em] hover:text-white transition-colors text-[10px]"
+                                            disabled={isProcessing}
+                                            className="w-full h-11 text-white/20 font-black uppercase tracking-[0.1em] hover:text-white transition-colors text-[10px] disabled:opacity-0"
                                         >
                                             Back to Review
                                         </button>

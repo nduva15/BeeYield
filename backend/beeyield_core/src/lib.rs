@@ -60,7 +60,7 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
         
         let filters = std::collections::HashMap::from([("id", order_id)]);
         
-        let kwargs = pyo3::types::PyDict::new_bound(py);
+        let kwargs = PyDict::new_bound(py);
         kwargs.set_item("filters", filters)?;
         if let Some(t) = token {
             kwargs.set_item("token", t)?;

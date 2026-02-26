@@ -11,7 +11,6 @@
 //!   Python handles the async HTTP calls to Gemini and DB/Blockchain retrieval.
 
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList};
 use std::collections::HashMap;
 
 #[pyclass]
