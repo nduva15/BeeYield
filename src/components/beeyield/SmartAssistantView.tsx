@@ -218,19 +218,19 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         }, 100);
     };
 
-    const FormattedMessage: React.FC<{ content: string, isUser: boolean }> = ({ content, isUser }) => {
+    const FormattedMessage: React.FC<{ content: string, isUser: boolean, sources?: Message['sources'] }> = ({ content, isUser, sources }) => {
         if (isUser) return <p className="text-[15px] leading-relaxed font-medium">{content}</p>;
 
         const processBoldAndLinks = (text: string) => {
             const boldParts = text.split(/(\*\*[^*]+\*\*|\[.*?\]\(.*?\))/g);
             return boldParts.map((part, i) => {
                 if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i} className="font-bold text-beeyield-forest">{part.slice(2, -2)}</strong>;
+                    return <strong key={i} className="font-black text-black">{part.slice(2, -2)}</strong>;
                 }
                 const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
                 if (linkMatch) {
                     return (
-                        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="shadow-underline text-beeyield-forest font-bold">
+                        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="border-b-2 border-black font-black hover:bg-black hover:text-white transition-none">
                             {linkMatch[1]}
                         </a>
                     );
@@ -240,13 +240,15 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         };
 
         const processInternalLinks = (text: string) => {
-            const parts = text.split(/(\[Insert Link: beeyield\.com[a-zA-Z0-9\-\/\?\=\&]+\])/g);
+            // Updated regex to be more inclusive of allowed URL characters
+            const parts = text.split(/(\[Insert Link: beeyield\.com[a-zA-Z0-9\-\/\?\=\&\._@]+\])/g);
 
             return parts.map((part, j) => {
-                const match = part.match(/\[Insert Link: beeyield\.com([a-zA-Z0-9\-\/\?\=\&]+)\]/);
+                const match = part.match(/\[Insert Link: beeyield\.com([a-zA-Z0-9\-\/\?\=\&\._@]+)\]/);
                 if (match) {
                     const path = match[1];
-                    const displayName = path.split('?')[0].split('/').pop()?.replace(/-/g, ' ').toUpperCase() || 'NAVIGATE';
+                    // Create a nicer display name: /bee-health -> BEE HEALTH
+                    const displayName = path.split('?')[0].split('/').filter(Boolean).pop()?.replace(/-/g, ' ').toUpperCase() || 'DOCUMENT';
 
                     return (
                         <button
@@ -258,7 +260,7 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                     window.open(path, '_blank');
                                 }
                             }}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-beeyield-forest text-white font-bold text-[10px] rounded-lg uppercase tracking-wider hover:bg-opacity-90 transition-all mx-1 align-middle"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-black text-white font-black text-[10px] rounded-none uppercase tracking-widest hover:bg-[#FF4F00] transition-all mx-1 align-middle shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
                         >
                             <LinkIcon className="h-3 w-3" />
                             {displayName}
@@ -270,27 +272,73 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         };
 
         const lines = content.split('\n');
+        let inTakeaways = false;
+        let inReferences = false;
 
         return (
-            <div className="text-[15px] leading-[1.6] space-y-5 text-gray-700">
+            <div className="text-[15px] leading-[1.8] space-y-6 text-black">
                 {lines.map((line, i) => {
                     const trimmedLine = line.trim();
                     if (!trimmedLine) return <div key={i} className="h-2" />;
 
-                    if (trimmedLine.startsWith('###')) {
-                        return <h4 key={i} className="text-lg font-bold mt-6 mb-3 text-beeyield-forest">{trimmedLine.replace('###', '').trim()}</h4>;
+                    // Detect start of sections
+                    if (trimmedLine.toLowerCase().includes('key takeaways')) {
+                        inTakeaways = true;
+                        inReferences = false;
                     }
-                    if (trimmedLine.startsWith('##')) {
-                        return <h3 key={i} className="text-xl font-bold mt-8 mb-4 text-beeyield-forest tracking-tight">{trimmedLine.replace('##', '').trim()}</h3>;
-                    }
-                    if (trimmedLine.startsWith('#')) {
-                        return <h2 key={i} className="text-2xl font-bold mt-10 mb-5 text-beeyield-forest tracking-tighter">{trimmedLine.replace('#', '').trim()}</h2>;
+                    if (trimmedLine.includes('### 📚 References') || (trimmedLine.startsWith('---') && lines[i + 1]?.includes('References'))) {
+                        inReferences = true;
+                        inTakeaways = false;
                     }
 
+                    // Section: References (Brutalist compact)
+                    if (inReferences) {
+                        if (trimmedLine.startsWith('###')) {
+                            return <h4 key={i} className="text-xs font-black uppercase tracking-[0.2em] mt-10 mb-4 bg-black text-white px-4 py-2 inline-block">Verification Bibliography</h4>;
+                        }
+                        if (trimmedLine.startsWith('---')) return null;
+                        return (
+                            <div key={i} className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 border-l-2 border-neutral-200 pl-4 py-1">
+                                {processInternalLinks(trimmedLine)}
+                            </div>
+                        );
+                    }
+
+                    // Section: Key Takeaways (Brutalist Callout)
+                    if (inTakeaways) {
+                        if (trimmedLine.toLowerCase().includes('key takeaways')) {
+                            return <h4 key={i} className="text-xl font-black uppercase tracking-tighter mt-10 mb-6 flex items-center gap-4"><Sparkles className="w-5 h-5 text-[#FF4F00]" /> Intelligence Summary</h4>;
+                        }
+                        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                            return (
+                                <div key={i} className="bg-neutral-100 border-l-8 border-black p-6 mb-4 shadow-[8px_8px_0px_0px_rgba(255,179,0,0.2)]">
+                                    <div className="flex gap-4">
+                                        <div className="w-2 h-2 bg-[#FF4F00] mt-2 shrink-0" />
+                                        <p className="font-bold text-sm tracking-tight">{processInternalLinks(trimmedLine.substring(2))}</p>
+                                    </div>
+                                </div>
+                            );
+                        }
+                        // Stop takeaways if we hit a new heading
+                        if (trimmedLine.startsWith('#')) { inTakeaways = false; }
+                    }
+
+                    // Headings
+                    if (trimmedLine.startsWith('###')) {
+                        return <h4 key={i} className="text-xl font-black uppercase tracking-tighter mt-10 mb-4 border-b-4 border-black pb-2">{trimmedLine.replace('###', '').trim()}</h4>;
+                    }
+                    if (trimmedLine.startsWith('##')) {
+                        return <h3 key={i} className="text-3xl font-black uppercase tracking-tighter mt-14 mb-6 leading-none italic">{trimmedLine.replace('##', '').trim()}</h3>;
+                    }
+                    if (trimmedLine.startsWith('#')) {
+                        return <h2 key={i} className="text-5xl font-black uppercase tracking-tighter mt-20 mb-8 bg-black text-white p-6 inline-block">{trimmedLine.replace('#', '').trim()}</h2>;
+                    }
+
+                    // Standard Lists
                     if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
                         return (
-                            <div key={i} className="flex gap-4 ml-2">
-                                <span className="text-beeyield-forest font-bold mt-1.5">•</span>
+                            <div key={i} className="flex gap-4 ml-6 items-start group">
+                                <span className="w-1.5 h-1.5 bg-black mt-2.5 transition-all group-hover:bg-[#FF4F00] shrink-0" />
                                 <div className="flex-1">
                                     {processInternalLinks(trimmedLine.substring(2))}
                                 </div>
@@ -298,7 +346,7 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                         );
                     }
 
-                    return <div key={i}>{processInternalLinks(line)}</div>;
+                    return <div key={i} className="font-medium">{processInternalLinks(line)}</div>;
                 })}
             </div>
         );
@@ -449,16 +497,34 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                                 ? "bg-neutral-50"
                                                 : "bg-white"
                                         )}>
-                                            <FormattedMessage content={message.content} isUser={message.role === 'user'} />
+                                            <FormattedMessage content={message.content} isUser={message.role === 'user'} sources={message.sources} />
 
                                             {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
                                                 <div className="mt-8 pt-6 border-t-2 border-black flex flex-wrap gap-2.5">
-                                                    {message.sources.map((source, idx) => (
-                                                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-black border border-black">
-                                                            <div className="w-1.5 h-1.5 bg-white" />
-                                                            <span className="text-[8px] font-black text-white uppercase tracking-widest">{source.name}</span>
-                                                        </div>
-                                                    ))}
+                                                    {message.sources.map((source, idx) => {
+                                                        const getUrl = (type: string) => {
+                                                            const t = (type || 'document').toLowerCase();
+                                                            if (t === 'blockchain') return '/traceability';
+                                                            if (t === 'iot') return '/beeyield-dashboard/meters';
+                                                            if (t === 'research') return '/research-hub';
+                                                            if (t === 'document' || t === 'database') return '/bee-data';
+                                                            return '#';
+                                                        };
+                                                        return (
+
+                                                            <button
+                                                                key={idx}
+                                                                onClick={() => {
+                                                                    const url = getUrl(source.type);
+                                                                    if (url.startsWith('/')) navigate(url);
+                                                                }}
+                                                                className="flex items-center gap-2 px-3 py-1.5 bg-black border-2 border-black hover:bg-[#FF4F00] transition-none group"
+                                                            >
+                                                                <div className="w-1.5 h-1.5 bg-white" />
+                                                                <span className="text-[8px] font-black text-white uppercase tracking-widest">{source.name}</span>
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             )}
 

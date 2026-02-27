@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx concurrently --names \"FRONTEND,BACKEND,AI,RUST,GO\" --prefix-colors \"cyan,yellow,green,red,blue\" \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ai\" \"npm run dev:rust-db\" \"npm run dev:db-gateway\"",
     "dev:frontend": "vite",
-    "dev:backend": "backend\\venv\\Scripts\\python -m uvicorn main:app --reload --port 8000 --app-dir backend",
+    "dev:backend": "backend\\venv\\Scripts\\python -m uvicorn main:app --reload --reload-exclude \".venv\" --reload-exclude \"backend/venv\" --port 8000 --app-dir backend",
     "dev:ai": "backend\\venv\\Scripts\\python beeyield-ai\\stream_server.py",
     "dev:rust-db": "cd services/rust-db && cargo run",
     "dev:db-gateway": "backend\\venv\\Scripts\\python services\\db-gateway\\fallback_gateway.py",
@@ -123,6 +123,7 @@
     "@vitejs/plugin-react-swc": "^4.2.3",
     "autoprefixer": "^10.4.24",
     "concurrently": "^9.2.1",
+    "esbuild": ">=0.25.0",
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.0",
@@ -130,13 +131,13 @@
     "lovable-tagger": "^1.1.13",
     "playwright": "^1.58.2",
     "postcss": "^8.5.6",
+    "puppeteer": "^24.37.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.55.0",
     "vite": "^7.3.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.0.18",
-    "esbuild": ">=0.25.0"
+    "vitest": "^4.0.18"
   },
   "pnpm": {
     "overrides": {

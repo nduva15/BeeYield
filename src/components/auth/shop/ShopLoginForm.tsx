@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react';
@@ -24,6 +25,15 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('savedEmail_shop');
+        if (saved) {
+            setEmail(saved);
+            setRememberMe(true);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,8 +46,12 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
         } else if (needsMFA) {
             setShowMFAInput(true);
             toast.info('Security Code Required', { description: 'Please enter the code from your authenticator app.' });
+            if (rememberMe) localStorage.setItem('savedEmail_shop', email);
+            else localStorage.removeItem('savedEmail_shop');
         } else {
             toast.success('Welcome back to the hive! 🍯');
+            if (rememberMe) localStorage.setItem('savedEmail_shop', email);
+            else localStorage.removeItem('savedEmail_shop');
             onSuccess?.();
         }
         setLoading(false);
@@ -165,6 +179,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                             onChange={(e) => setEmail(e.target.value)}
                             className="pl-10 h-12 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl"
                             required
+                            autoComplete="username"
                         />
                     </div>
                 </div>
@@ -192,8 +207,23 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 h-12 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl"
                             required
+                            autoComplete="current-password"
                         />
                     </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id="shop-remember"
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <label
+                        htmlFor="shop-remember"
+                        className="text-xs font-bold text-beeyield-green/80 cursor-pointer"
+                    >
+                        Remember Me
+                    </label>
                 </div>
             </div>
 

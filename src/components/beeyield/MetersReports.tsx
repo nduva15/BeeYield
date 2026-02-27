@@ -84,11 +84,97 @@ const MetersReports: React.FC = () => {
 
     const handleDownload = async (reportName: string, reportData?: any) => {
         setDownloading(reportName);
-        // Minimal logic for PDF trigger
-        setTimeout(() => {
-            toast.success(`File: ${reportName}.pdf`);
+
+        try {
+            const doc = new jsPDF();
+            const data = reportData || generateReportData(reportName);
+
+            // Branding/Brutalist Style
+            doc.setFillColor(6, 78, 59); // \#064e3b
+            doc.rect(0, 0, 210, 40, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text("BEEYIELD PROFESSIONAL", 20, 25);
+
+            doc.setTextColor(250, 204, 21); // \#facc15
+            doc.setFontSize(10);
+            doc.text("OPERATIONAL ARCHIVE PROTOCOL v4.0", 20, 32);
+
+            // Report Header
+            doc.setTextColor(6, 78, 59);
+            doc.setFontSize(18);
+            doc.text(data.title.toUpperCase(), 20, 60);
+
+            doc.setFontSize(10);
+            doc.text(`EXTRACT_DATE: ${data.period}`, 20, 70);
+            doc.text("SECURITY_LEVEL: LEVEL_4_ENCRYPTED", 20, 75);
+
+            // Content Section
+            doc.setLineWidth(1);
+            doc.setDrawColor(6, 78, 59);
+            doc.line(20, 80, 190, 80);
+
+            let y = 95;
+
+            if (reportName === 'Usage Audit') {
+                doc.setFontSize(12);
+                doc.text("EXECUTIVE METRICS_SUMMARY", 20, y);
+                y += 10;
+                data.summary.forEach((s: any) => {
+                    doc.setFontSize(10);
+                    doc.text(`${s.label.toUpperCase()}:`, 25, y);
+                    doc.text(`${s.val}`, 100, y);
+                    y += 7;
+                });
+
+                y += 10;
+                doc.setFontSize(12);
+                doc.text("REGIONAL_BREAKDOWN", 20, y);
+                y += 10;
+                data.breakdown.forEach((b: any) => {
+                    doc.setFontSize(10);
+                    doc.text(`> ${b.region}: ${b.hives} Hives | ${b.production} | Health: ${b.health}`, 25, y);
+                    y += 7;
+                });
+            } else if (reportName === 'Fault Log') {
+                doc.setFontSize(12);
+                doc.text("ANOMALY_REGISTRY", 20, y);
+                y += 10;
+                data.anomalies.forEach((a: any) => {
+                    doc.setFontSize(10);
+                    doc.text(`[${a.severity}] ${a.hive} - ${a.type} (${a.date}) -> STATUS: ${a.status}`, 25, y);
+                    y += 7;
+                });
+            } else {
+                doc.setFontSize(12);
+                doc.text("FINANCIAL_LEDGER_DATA", 20, y);
+                y += 10;
+                data.costs.forEach((c: any) => {
+                    doc.setFontSize(10);
+                    doc.text(`${c.label.toUpperCase()}:`, 25, y);
+                    doc.text(`${c.val}`, 100, y);
+                    y += 7;
+                });
+                y += 10;
+                doc.setFontSize(14);
+                doc.text(`PROJECTED_CORE_MARGIN: ${data.margin}`, 20, y);
+            }
+
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text("This document is a professional extract of the BeeYield neural network. All dates are in EAT (Nairobi).", 20, 280);
+            doc.text("Verification hash: " + btoa(reportName + data.period).substring(0, 16), 20, 285);
+
+            doc.save(`${reportName.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`);
+            toast.success(`Export Complete: ${reportName}.pdf`);
+        } catch (error) {
+            console.error('PDF Generation failed', error);
+            toast.error('Failed to generate PDF archive');
+        } finally {
             setDownloading(null);
-        }, 800);
+        }
     };
 
     return (

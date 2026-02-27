@@ -61,7 +61,7 @@ END $$;
 -- ====================================================================
 DO $$
 DECLARE
-    form_tables TEXT[] := ARRAY['contact_submissions', 'pollination_requests', 'newsletter_subscribers', 'job_applications', 'donations'];
+    form_tables TEXT[] := ARRAY['contact_submissions', 'contact_messages', 'pollination_requests', 'newsletter_subscribers', 'job_applications', 'donations'];
     t TEXT;
 BEGIN
     FOREACH t IN ARRAY form_tables LOOP

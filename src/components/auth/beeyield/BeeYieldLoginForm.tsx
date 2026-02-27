@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock, Hexagon, Cpu, Zap, Activity } from 'lucide-react';
@@ -24,6 +25,15 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('savedEmail_beeyield');
+        if (saved) {
+            setEmail(saved);
+            setRememberMe(true);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,8 +46,12 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
         } else if (needsMFA) {
             setShowMFAInput(true);
             toast.info('Layer 2 Verification Required', { description: 'Provide the secondary authentication token.' });
+            if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
+            else localStorage.removeItem('savedEmail_beeyield');
         } else {
             toast.success('BeeYield Analytics Online. Welcome.');
+            if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
+            else localStorage.removeItem('savedEmail_beeyield');
             onSuccess?.();
         }
         setLoading(false);
@@ -164,6 +178,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                             onChange={(e) => setEmail(e.target.value)}
                             className="pl-10 h-14 bg-[#0a0a0a] border-white/5 focus:border-beeyield-gold/50 focus:ring-0 text-white font-mono text-xs rounded-none"
                             required
+                            autoComplete="username"
                         />
                     </div>
                 </div>
@@ -191,8 +206,23 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 h-14 bg-[#0a0a0a] border-white/5 focus:border-beeyield-gold/50 focus:ring-0 text-white font-mono text-xs rounded-none"
                             required
+                            autoComplete="current-password"
                         />
                     </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id="by-remember"
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <label
+                        htmlFor="by-remember"
+                        className="text-white/40 font-bold text-[8px] uppercase tracking-widest cursor-pointer hover:text-white transition-colors"
+                    >
+                        Store Credentials Locally
+                    </label>
                 </div>
             </div>
 

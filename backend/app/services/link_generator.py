@@ -10,8 +10,8 @@ from typing import List, Tuple
 # Comprehensive page link mapping
 PAGE_LINKS = {
     # Health & Diseases
-    "bee health": "/bee-health",
-    "hive health": "/bee-health",
+    "bee health": "/learn",
+    "hive health": "/beeyield-dashboard",
     "bee diseases": "/diseases",
     "varroa": "/diseases?filter=varroa",
     "varroa mite": "/diseases?filter=varroa",
