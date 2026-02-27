@@ -118,7 +118,7 @@ async def chat_with_assistant(
         # --- NEW: UNIFIED SERVICE DELEGATION ---
         from app.services.ai_service import AIService
         
-        response_text = await AIService.chat(
+        ai_data = await AIService.chat(
             message=request.message,
             history=request.history,
             language=request.language or "EN",
@@ -126,21 +126,13 @@ async def chat_with_assistant(
             current_date=current_date_str
         )
         
-        # Extraction of sources if AIService appended them as simulated metadata
-        # (Though AIService.chat returns a string, we can parse or mock for now)
-        sources = []
-        if "HONEYCHAIN" in response_text or "Verified" in response_text:
-            sources.append({"type": "blockchain", "name": "HoneyChain Ledger"})
-        if "IOT" in response_text or "APISENSE" in response_text:
-            sources.append({"type": "iot", "name": "IoT Sensor Network"})
-        
         return ChatResponse(
-            response=response_text,
-            sources=sources if request.include_sources else None,
+            response=ai_data["response"],
+            sources=ai_data.get("sources") if request.include_sources else None,
             confidence=0.98,
             processing_time_ms=0,
             language=request.language or "EN",
-            suggestions=["View harvest report", "Trace batch origin", "Check hive health"],
+            suggestions=ai_data.get("suggestions"),
             timestamp=now.isoformat()
         )
         

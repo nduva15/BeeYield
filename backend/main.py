@@ -90,4 +90,5 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
         log_level="warning",
+        reload_excludes=[".venv", "venv", "**/venv/**", "**/.venv/**"],
     )

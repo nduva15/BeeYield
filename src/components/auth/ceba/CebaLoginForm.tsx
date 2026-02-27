@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock, Shield, Terminal, Activity, Server, Globe } from 'lucide-react';
@@ -25,6 +26,15 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('savedEmail_ceba');
+        if (saved) {
+            setEmail(saved);
+            setRememberMe(true);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,10 +51,14 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
         if (needsMFA) {
             setShowMFAInput(true);
             toast.info('Security Code Required', { description: 'Please enter your 6-digit verification code.' });
+            if (rememberMe) localStorage.setItem('savedEmail_ceba', email);
+            else localStorage.removeItem('savedEmail_ceba');
             setLoading(false);
             return;
         }
 
+        if (rememberMe) localStorage.setItem('savedEmail_ceba', email);
+        else localStorage.removeItem('savedEmail_ceba');
         await handleFinalizeAccess();
     };
 
@@ -214,6 +228,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                             onChange={(e) => setEmail(e.target.value)}
                             className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
                             required
+                            autoComplete="username"
                         />
                     </div>
                 </div>
@@ -243,8 +258,23 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
                             required
+                            autoComplete="current-password"
                         />
                     </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id="ceba-remember"
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <label
+                        htmlFor="ceba-remember"
+                        className="text-[10px] uppercase font-black tracking-widest text-beeyield-green/60 cursor-pointer hover:text-beeyield-green transition-colors"
+                    >
+                        Remember Me
+                    </label>
                 </div>
             </div>
 

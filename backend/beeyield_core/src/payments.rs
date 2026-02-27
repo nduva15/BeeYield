@@ -36,6 +36,7 @@ pub struct MpesaEngine {
     short_code: String,
     passkey: String,
     callback_url: String,
+    cached_token: std::sync::RwLock<Option<(String, chrono::DateTime<Local>)>>,
 }
 
 #[pymethods]
@@ -48,6 +49,7 @@ impl MpesaEngine {
             short_code: env::var("MPESA_SHORTCODE").unwrap_or_default(),
             passkey: env::var("MPESA_PASSKEY").unwrap_or_default(),
             callback_url: env::var("MPESA_CALLBACK_URL").unwrap_or_default(),
+            cached_token: std::sync::RwLock::new(None),
         }
     }
 
@@ -119,6 +121,19 @@ impl MpesaEngine {
 
 impl MpesaEngine {
     fn get_oauth_token(&self) -> PyResult<String> {
+        // 1. Check cache via read lock
+        {
+            if let Ok(cache) = self.cached_token.read() {
+                if let Some((token, expiry)) = cache.as_ref() {
+                    // Buffer of 60 seconds before actual expiry
+                    if Local::now() < *expiry - chrono::Duration::seconds(60) {
+                        return Ok(token.clone());
+                    }
+                }
+            }
+        }
+
+        // 2. Fetch new token if missing or expired
         let client = Client::new();
         let response = client
             .get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials")
@@ -130,7 +145,17 @@ impl MpesaEngine {
             let auth_res: OAuthResponse = response
                 .json()
                 .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to parse OAuth response: {}", e)))?;
-            Ok(auth_res.access_token)
+            
+            // 3. Cache the new token via write lock
+            let token = auth_res.access_token;
+            let expires_in: i64 = auth_res.expires_in.parse().unwrap_or(3599);
+            let expiry = Local::now() + chrono::Duration::seconds(expires_in);
+
+            if let Ok(mut cache) = self.cached_token.write() {
+                *cache = Some((token.clone(), expiry));
+            }
+            
+            Ok(token)
         } else {
             Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("M-Pesa Auth Denied"))
         }

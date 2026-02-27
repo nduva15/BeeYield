@@ -90,16 +90,14 @@ class AIService:
         language: str = 'EN',
         current_time: str = None,
         current_date: str = None
-    ) -> str:
+    ) -> Dict[str, Any]:
         """
         VERTICAL AI SYSTEM (v4.0): THE DUAL-BRAIN ORCHESTRATOR
         Tier 1: Gemini 2.0 Flash (Observation & Extraction)
         Tier 2: GPT-4o (Reasoning & Professional Writing)
         
-        Features:
-        - Qdrant vector search (if available)
-        - Rate limit management with exponential backoff
-        - Dual-API failover
+        Returns:
+            Dict containing 'response', 'sources', 'suggestions'.
         """
         msg_lower = message.lower().strip()
         
@@ -369,7 +367,11 @@ class AIService:
             add_suggestions=True
         )
 
-        return final_answer
+        return {
+            "response": final_answer,
+            "sources": citations[:12],
+            "suggestions": ["How to detect Varroa?", "Trace honey batch", "Check hive health"]
+        }
 
     @staticmethod
     async def generate_marketing_blurb(

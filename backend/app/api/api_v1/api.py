@@ -172,6 +172,8 @@ def api_root():
             "careers": "/api/v1/careers",
             "jobs": "/api/v1/jobs",
             "contact": "/api/v1/contact",
+            "contact_message": "/api/v1/contact/message",
+            "newsletter": "/api/v1/contact/newsletter",
             "notes": "/api/v1/notes",
             "inspections": "/api/v1/inspections",
             "stats": "/api/v1/stats/impact"

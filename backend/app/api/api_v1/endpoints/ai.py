@@ -33,14 +33,14 @@ async def chat_with_assistant(request: ChatRequest):
         current_time = now.strftime("%H:%M:%S")
         current_date = now.strftime("%A, %B %d, %Y")
         
-        response = await AIService.chat(
+        ai_data = await AIService.chat(
             request.message, 
             request.history, 
             request.language,
             current_time=current_time,
             current_date=current_date
         )
-        return {"response": response}
+        return ai_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
