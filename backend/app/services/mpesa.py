@@ -1,3 +1,6 @@
+import warnings
+warnings.warn("MpesaService is DEPRECATED. Use the honey_rust.MpesaEngine instead.", DeprecationWarning)
+
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
