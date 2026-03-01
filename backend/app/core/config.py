@@ -79,6 +79,7 @@ class Settings(BaseSettings):
     MPESA_PASSKEY: Optional[str] = None
     MPESA_BUSINESS_SHORTCODE: Optional[str] = None
     MPESA_CALLBACK_URL: Optional[str] = None
+    SIMULATE_MPESA: bool = False
 
     # ============ EMAIL (Resend) ============
     RESEND_API_KEY: Optional[str] = None
