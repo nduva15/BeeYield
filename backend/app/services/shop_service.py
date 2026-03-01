@@ -45,7 +45,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         return {"status": "error", "message": "Authentication required for checkout. Please sign in."}
 
     # 3. Rust Engine Ledger Idempotency
-    if id_key and user_id:
+    if id_key:
         payload = order_in.dict()
         payload["amount"] = str(order_in.total_kes)
         payload["currency"] = "KES"

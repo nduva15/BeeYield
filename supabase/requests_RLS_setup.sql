@@ -57,21 +57,21 @@ DROP POLICY IF EXISTS "Users can view their own requests" ON public.requests;
 CREATE POLICY "Users can view their own requests"
 ON public.requests
 FOR SELECT
-USING (auth.uid() = user_id);
+USING ((SELECT auth.uid()) = user_id);
 
 -- Policy: Users can insert their own requests.
 DROP POLICY IF EXISTS "Users can insert their own requests" ON public.requests;
 CREATE POLICY "Users can insert their own requests"
 ON public.requests
 FOR INSERT
-WITH CHECK (auth.uid() = user_id);
+WITH CHECK ((SELECT auth.uid()) = user_id);
 
 -- Policy: Users can update their own requests (e.g. to close them).
 DROP POLICY IF EXISTS "Users can update their own requests" ON public.requests;
 CREATE POLICY "Users can update their own requests"
 ON public.requests
 FOR UPDATE
-USING (auth.uid() = user_id);
+USING ((SELECT auth.uid()) = user_id);
 
 -- 6. RLS Policies for "request_comments"
 
@@ -84,7 +84,7 @@ USING (
     EXISTS (
         SELECT 1 FROM public.requests r
         WHERE r.id = request_comments.request_id
-        AND r.user_id = auth.uid()
+        AND r.user_id = (SELECT auth.uid())
     )
 );
 
@@ -97,7 +97,7 @@ WITH CHECK (
     EXISTS (
         SELECT 1 FROM public.requests r
         WHERE r.id = request_comments.request_id
-        AND r.user_id = auth.uid()
+        AND r.user_id = (SELECT auth.uid())
     )
 );
 

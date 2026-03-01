@@ -1,4 +1,4 @@
-c# try:
+# try:
 #     import dns_fix
 #     dns_fix.patch_dns()
 # except ImportError:

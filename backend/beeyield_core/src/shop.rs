@@ -113,7 +113,7 @@ impl ShopEngine {
     /// 1. Check if the key exists in the billing_ledger.
     /// 2. If it does, return the existing record immediately.
     /// 3. If not, create a placeholder record and proceed.
-    pub fn process_idempotent(&self, py: Python<'_>, idempotency_key: String, user_id: String, payload: &Bound<'_, PyDict>) -> PyResult<PyObject> {
+    pub fn process_idempotent(&self, py: Python<'_>, idempotency_key: String, user_id: Option<String>, payload: &Bound<'_, PyDict>) -> PyResult<PyObject> {
         let db = py.import_bound("app.db.supabase_db")?;
         let db_select_sync = db.getattr("db_select_sync")?;
         let db_insert_sync = db.getattr("db_insert_sync")?;
@@ -136,7 +136,9 @@ impl ShopEngine {
 
         // Part 2: Proceed with new transaction record
         let mut payment_data = std::collections::HashMap::new();
-        payment_data.insert("user_id", user_id);
+        if let Some(uid) = user_id {
+            payment_data.insert("user_id", uid);
+        }
         payment_data.insert("idempotency_key", idempotency_key);
         payment_data.insert("payment_status", "processing".to_string());
         
@@ -154,7 +156,12 @@ impl ShopEngine {
         payment_data.insert("module_type", "shop".to_string());
 
         // Use sync INSERT
-        let result = db_insert_sync.call(("billing_ledger", payment_data), None)?;
+        let data_py = PyDict::new_bound(py);
+        for (k, v) in payment_data {
+            data_py.set_item(k, v)?;
+        }
+        
+        let result = db_insert_sync.call(("billing_ledger", data_py), None)?;
         Ok(result.to_object(py))
     }
 
