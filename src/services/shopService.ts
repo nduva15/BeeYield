@@ -70,6 +70,7 @@ export interface CheckoutOrder {
     }[];
     total_kes: number;
     notes?: string;
+    idempotency_key: string;
 }
 
 export interface CheckoutResponse {

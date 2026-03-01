@@ -1,30 +1,34 @@
-from app.services.mpesa import mpesa_service
-from app.core.config import settings
+try:
+    from honey_rust import MpesaEngine
+    _mpesa = MpesaEngine()
+except ImportError:
+    _mpesa = None
 
 def init_mpesa_payment(phone_number: str, amount: float, reference: str):
     """
-    Initialize M-Pesa STK Push.
+    Initialize M-Pesa STK Push using the Oxidized Rust Engine.
     """
-    # Clean phone number (remove +, ensures starts with 254)
+    if not _mpesa:
+        return {"error": "Oxidized Payment Engine (honey_rust) not loaded.", "status": "failed"}
+
+    # Clean phone number
     phone = phone_number.replace("+", "").strip()
     if phone.startswith("0"):
         phone = "254" + phone[1:]
     elif not phone.startswith("254"):
         phone = "254" + phone
 
-
-
     try:
-        response = mpesa_service.stk_push(
+        # RUST HANDSHAKE: Directly calls Safaricom via compiled Rust logic
+        response = _mpesa.initiate_stk_push(
             phone=phone,
-            amount=amount,
-            reference=reference,
-            description="BeeYield Honey Purchase"
+            amount=int(amount),
+            account_ref=reference
         )
         return response
     except Exception as e:
-        print(f"M-Pesa Service Error: {e}")
-        return {"error": str(e), "status": "failed"}
+        print(f"Oxidized M-Pesa Error: {e}")
+        return {"error": str(e), "status": "failed", "success": False}
 
 def init_stripe_payment(amount: float, currency: str = "usd"):
     """

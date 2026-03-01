@@ -218,7 +218,11 @@ const Checkout = () => {
                 })),
                 total_kes: totalPayable,
                 notes: shippingDetails.notes,
+                idempotency_key: (window as any)._checkoutId || crypto.randomUUID(),
             };
+
+            // Persist the checkout ID for retry safety
+            (window as any)._checkoutId = orderData.idempotency_key;
 
             const response = await initializeCheckout(orderData, session?.access_token);
 
