@@ -60,13 +60,13 @@ BEGIN
             EXECUTE 'DROP POLICY IF EXISTS "Users can manage own data" ON ' || quote_ident(r.tablename);
             -- Explicit cast to text for both sides to handle cases where user_id is TEXT vs UUID
             EXECUTE 'CREATE POLICY "Users can manage own data" ON ' || quote_ident(r.tablename) || 
-                    ' FOR ALL TO authenticated USING (auth.uid()::text = user_id::text) WITH CHECK (auth.uid()::text = user_id::text);';
+                    ' FOR ALL TO authenticated USING ((SELECT auth.uid())::text = user_id::text) WITH CHECK ((SELECT auth.uid())::text = user_id::text);';
         
         -- 2. Check for 'profiles' style link (id is the user_id)
         ELSIF r.tablename IN ('profiles', 'user_profiles') THEN
             EXECUTE 'DROP POLICY IF EXISTS "Users can manage own data" ON ' || quote_ident(r.tablename);
             EXECUTE 'CREATE POLICY "Users can manage own data" ON ' || quote_ident(r.tablename) || 
-                    ' FOR ALL TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);';
+                    ' FOR ALL TO authenticated USING ((SELECT auth.uid()) = id) WITH CHECK ((SELECT auth.uid()) = id);';
         END IF;
     END LOOP;
 END $$;
@@ -124,8 +124,8 @@ BEGIN
         -- Logic: If user metadata contains role 'admin' or 'super_admin'
         EXECUTE 'CREATE POLICY "Admin full access" ON ' || quote_ident(r.tablename) || 
                 ' FOR ALL TO authenticated USING (
-                    (auth.jwt() ->> ''user_metadata'')::jsonb ->> ''role'' IN (''admin'', ''super_admin'')
-                    OR auth.email() = ''timothynduva349@gmail.com''
+                    ((SELECT auth.jwt()) ->> ''user_metadata'')::jsonb ->> ''role'' IN (''admin'', ''super_admin'')
+                    OR (SELECT auth.email()) = ''timothynduva349@gmail.com''
                 );';
     END LOOP;
 END $$;
