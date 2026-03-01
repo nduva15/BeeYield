@@ -188,26 +188,26 @@ BEGIN
                AND table_name IN ('farmers', 'apiaries', 'hives', 'inspections', 'tasks', 'harvests')
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Users can view own %I" ON public.%I', tbl, tbl);
-        EXECUTE format('CREATE POLICY "Users can view own %I" ON public.%I FOR SELECT USING (auth.uid() = user_id)', tbl, tbl);
+        EXECUTE format('CREATE POLICY "Users can view own %I" ON public.%I FOR SELECT USING ((SELECT auth.uid()) = user_id)', tbl, tbl);
         
         EXECUTE format('DROP POLICY IF EXISTS "Users can insert own %I" ON public.%I', tbl, tbl);
-        EXECUTE format('CREATE POLICY "Users can insert own %I" ON public.%I FOR INSERT WITH CHECK (auth.uid() = user_id)', tbl, tbl);
+        EXECUTE format('CREATE POLICY "Users can insert own %I" ON public.%I FOR INSERT WITH CHECK ((SELECT auth.uid()) = user_id)', tbl, tbl);
         
         EXECUTE format('DROP POLICY IF EXISTS "Users can update own %I" ON public.%I', tbl, tbl);
-        EXECUTE format('CREATE POLICY "Users can update own %I" ON public.%I FOR UPDATE USING (auth.uid() = user_id)', tbl, tbl);
+        EXECUTE format('CREATE POLICY "Users can update own %I" ON public.%I FOR UPDATE USING ((SELECT auth.uid()) = user_id)', tbl, tbl);
         
         EXECUTE format('DROP POLICY IF EXISTS "Users can delete own %I" ON public.%I', tbl, tbl);
-        EXECUTE format('CREATE POLICY "Users can delete own %I" ON public.%I FOR DELETE USING (auth.uid() = user_id)', tbl, tbl);
+        EXECUTE format('CREATE POLICY "Users can delete own %I" ON public.%I FOR DELETE USING ((SELECT auth.uid()) = user_id)', tbl, tbl);
     END LOOP;
 END;
 $$;
 
 -- Special policies for profiles (linked via ID, not user_id column)
 DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
-CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING ((SELECT auth.uid()) = id);
 
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
-CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING ((SELECT auth.uid()) = id);
 
 -- ==========================================
 -- AUTOMATION: PROFILE SYNC

@@ -1,4 +1,4 @@
-# try:
+c# try:
 #     import dns_fix
 #     dns_fix.patch_dns()
 # except ImportError:
@@ -38,42 +38,17 @@ async def startup_event():
         print("Rust Core: OFFLINE — run 'maturin develop' inside backend/beeyield_core")
 
     # Signal that the Python gateway (FastAPI) is up
+    print(f"Supabase URL: {settings.SUPABASE_URL}")
     print("Python Gateway: Online")
 
 
 @app.get("/")
 def read_root():
-    from app.db.supabase_db import get_client
-    from app.core.config import settings as cfg
-    
-    # Quick Supabase health check using httpx (never hangs)
-    supabase_status = "not configured"
-    try:
-        if cfg.SUPABASE_URL and cfg.SUPABASE_KEY:
-            client = get_client()
-            resp = client.get("/", params={"select": "count"}, timeout=5.0)
-            supabase_status = "connected" if resp.status_code in (200, 406) else f"error ({resp.status_code})"
-    except Exception as e:
-        supabase_status = f"error: {str(e)[:50]}"
-    
-    # ClickHouse: only check if host is configured
-    clickhouse_status = "not configured"
-    if cfg.CLICKHOUSE_HOST:
-        try:
-            from app.db.clickhouse_db import ClickHouseService
-            clickhouse_status = "connected" if ClickHouseService.get_client() is not None else "connection failed"
-        except Exception:
-            clickhouse_status = "error"
-    
     return {
         "message": f"Welcome to {settings.PROJECT_NAME} API",
         "docs": "/docs",
-        "version": "1.0.0",
-        "status": "online",
-        "connections": {
-            "supabase": supabase_status,
-            "clickhouse": clickhouse_status
-        }
+        "version": "2.0.0",
+        "status": "online"
     }
 
 if __name__ == "__main__":
@@ -82,13 +57,12 @@ if __name__ == "__main__":
 
     # Silence WatchFiles / uvicorn reload chatter — only our startup prints will show.
     logging.getLogger("watchfiles").setLevel(logging.WARNING)
-    logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.error").setLevel(logging.INFO)
 
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
-        log_level="warning",
-        reload_excludes=[".venv", "venv", "**/venv/**", "**/.venv/**"],
+        reload=False,
+        log_level="info"
     )
