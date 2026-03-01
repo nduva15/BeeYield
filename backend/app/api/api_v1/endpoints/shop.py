@@ -111,20 +111,22 @@ async def initialize_checkout(
     except Exception as e:
         pass
 
-    payment_response = {}
-    if is_bypass:
-        payment_response = {"message": "Bypass active. Order confirmed.", "status": "completed"}
-    elif order_in.payment_method == "mpesa":
-        phone = order_in.shipping_address.get("phone", "254700000000")
-        payment_response = payment.init_mpesa_payment(phone, order_in.total_kes, order_number)
-    elif order_in.payment_method == "card":
-        payment_response = payment.init_stripe_payment(order_in.total_kes)
-    else:
-        payment_response = {"message": "Order created, payment pending"}
+    payment_info = order_result.get("payment_info", {})
+    if not payment_info:
+        if is_bypass:
+            payment_info = {"message": "Bypass active. Order confirmed.", "status": "completed"}
+        elif order_in.payment_method == "mpesa":
+             # Should be handled in service, but fallback here
+             phone = order_in.shipping_address.get("phone", "254700000000")
+             payment_info = payment.init_mpesa_payment(phone, order_in.total_kes, order_number)
+        elif order_in.payment_method == "card":
+            payment_info = payment.init_stripe_payment(order_in.total_kes)
+        else:
+            payment_info = {"message": "Order created, payment pending"}
 
     return {
         **order_result,
-        "payment_info": payment_response
+        "payment_info": payment_info
     }
 
 @router.post("/checkout/callback/mpesa")

@@ -85,6 +85,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         await db_insert("order_items", item_data, token=token)
 
     # 5. Link the order to any pending M-Pesa STK push if needed
+    payment_info = {}
     if order_in.payment_method == "mpesa" and id_key:
         # We can now proceed to trigger the STK push via MpesaEngine
         phone = order_in.shipping_address.get("phone", "")
@@ -92,6 +93,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
              try:
                  # Trigger Rust STK push
                  stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
+                 payment_info = stk_res
                  checkout_id = stk_res.get("CheckoutRequestID")
                  if checkout_id:
                      # Update ledger with the gateway reference
@@ -102,11 +104,13 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
                      )
              except Exception as e:
                  logger.warning(f"Secondary M-Pesa Push error: {e}")
+                 payment_info = {"error": str(e), "status": "failed"}
 
     return {
         "status": "success", 
         "order_id": order_id, 
-        "order_number": order_number
+        "order_number": order_number,
+        "payment_info": payment_info
     }
 
 async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[dict]:
