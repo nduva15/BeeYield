@@ -55,6 +55,17 @@ impl MpesaEngine {
 
     /// Initiate an STK Push (M-Pesa Express)
     pub fn initiate_stk_push<'py>(&self, py: Python<'py>, phone: String, amount: i64, account_ref: String) -> PyResult<Bound<'py, PyDict>> {
+        let simulate = env::var("SIMULATE_MPESA").unwrap_or_default() == "true";
+        
+        if simulate {
+            let dict = PyDict::new_bound(py);
+            dict.set_item("success", true)?;
+            dict.set_item("CheckoutRequestID", format!("ws_CO_SIM_{}", Local::now().timestamp()))?;
+            dict.set_item("ResponseCode", "0")?;
+            dict.set_item("CustomerMessage", "Success (Simulated)")?;
+            return Ok(dict);
+        }
+
         let token = self.get_oauth_token()?;
         let timestamp = Local::now().format("%Y%m%d%H%M%S").to_string();
         let password = general_purpose::STANDARD.encode(format!("{}{}{}", self.short_code, self.passkey, timestamp));
@@ -90,6 +101,7 @@ impl MpesaEngine {
             dict.set_item("success", true)?;
             dict.set_item("CheckoutRequestID", res_json["CheckoutRequestID"].as_str().unwrap_or_default())?;
             dict.set_item("ResponseCode", res_json["ResponseCode"].as_str().unwrap_or_default())?;
+            dict.set_item("CustomerMessage", res_json["CustomerMessage"].as_str().unwrap_or_default())?;
         } else {
             dict.set_item("success", false)?;
             dict.set_item("error", body)?;

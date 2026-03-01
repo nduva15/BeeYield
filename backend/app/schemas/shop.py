@@ -54,6 +54,7 @@ class OrderCreate(BaseModel):
     items: list[OrderItem]
     total_kes: float
     notes: Optional[str] = None
+    idempotency_key: Optional[str] = None # Added for Oxidized Financial Core
 
 class Order(OrderCreate):
     id: str
@@ -61,6 +62,7 @@ class Order(OrderCreate):
     status: str
     total_kes: float
     created_at: datetime
+    payment_status: Optional[str] = "pending"
 
 # --- Address ---
 class AddressBase(BaseModel):

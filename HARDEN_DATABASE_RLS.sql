@@ -8,7 +8,12 @@ DO $$
 DECLARE
     r RECORD;
 BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+    FOR r IN (
+        SELECT tablename 
+        FROM pg_tables 
+        WHERE schemaname = 'public' 
+        AND tablename NOT IN ('spatial_ref_sys', 'geography_columns', 'geometry_columns', 'raster_columns', 'raster_overviews')
+    ) LOOP
         EXECUTE 'ALTER TABLE ' || quote_ident(r.tablename) || ' ENABLE ROW LEVEL SECURITY;';
         EXECUTE 'ALTER TABLE ' || quote_ident(r.tablename) || ' FORCE ROW LEVEL SECURITY;';
     END LOOP;
@@ -21,7 +26,12 @@ DO $$
 DECLARE
     r RECORD;
 BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+    FOR r IN (
+        SELECT tablename 
+        FROM pg_tables 
+        WHERE schemaname = 'public'
+        AND tablename NOT IN ('spatial_ref_sys', 'geography_columns', 'geometry_columns', 'raster_columns', 'raster_overviews')
+    ) LOOP
         -- Service Role (Backend/Admin) gets full access
         EXECUTE 'DROP POLICY IF EXISTS "service_role_all" ON ' || quote_ident(r.tablename);
         EXECUTE 'CREATE POLICY "service_role_all" ON ' || quote_ident(r.tablename) || 
@@ -39,7 +49,12 @@ DO $$
 DECLARE
     r RECORD;
 BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+    FOR r IN (
+        SELECT tablename 
+        FROM pg_tables 
+        WHERE schemaname = 'public'
+        AND tablename NOT IN ('spatial_ref_sys', 'geography_columns', 'geometry_columns', 'raster_columns', 'raster_overviews')
+    ) LOOP
         -- 1. Check for 'user_id' column (Common pattern)
         IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = r.tablename AND column_name = 'user_id') THEN
             EXECUTE 'DROP POLICY IF EXISTS "Users can manage own data" ON ' || quote_ident(r.tablename);
@@ -99,7 +114,12 @@ DO $$
 DECLARE
     r RECORD;
 BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+    FOR r IN (
+        SELECT tablename 
+        FROM pg_tables 
+        WHERE schemaname = 'public'
+        AND tablename NOT IN ('spatial_ref_sys', 'geography_columns', 'geometry_columns', 'raster_columns', 'raster_overviews')
+    ) LOOP
         EXECUTE 'DROP POLICY IF EXISTS "Admin full access" ON ' || quote_ident(r.tablename);
         -- Logic: If user metadata contains role 'admin' or 'super_admin'
         EXECUTE 'CREATE POLICY "Admin full access" ON ' || quote_ident(r.tablename) || 
