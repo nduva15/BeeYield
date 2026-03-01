@@ -50,83 +50,32 @@ async def initialize_checkout(
     """
     Initialize payment for order.
     """
-    # Robust bypass check
-    raw_phone = str(order_in.shipping_address.get("phone", ""))
-    clean_phone = "".join(filter(str.isdigit, raw_phone))
+    # 1. Identity Extraction (API concerns)
+    user_id = current_user.get("sub") if current_user else None
     
-    # Check if phone matches configured admin bypass (if set)
-    # Checks last 9 digits (e.g. 742...) to handle +254/07 variations if ADMIN_BYPASS_PHONE is set
-    bypass_ph = settings.ADMIN_BYPASS_PHONE
-    is_bypass = False
-    if bypass_ph and len(clean_phone) >= 9:
-        is_bypass = clean_phone.endswith(bypass_ph[-9:]) or (bypass_ph in str(order_in.dict()))
-    
-    if settings.DEBUG:
-        print(f"DEBUG: Initialize Checkout - User: {current_user}, Bypass: {is_bypass}, Phone: {raw_phone}")
-    
-    user_id = None
-    if is_bypass:
-        user_id = None # Guest/System order
-        order_in.total_kes = 0 # Force 0 for bypass
-    elif not current_user:
-        raise HTTPException(
-            status_code=401, 
-            detail="Authentication required for checkout. Please sign in."
-        )
-    else:
-        user_id = current_user.get("sub")
-    
-    # SECURITY: Validate price on server
-    calculated_total = 0
-    for item in order_in.items:
-        product = await shop_service.get_product_by_id(item.product_id, token=token)
-        if not product:
-            raise HTTPException(status_code=400, detail=f"Product {item.product_id} not found")
-        
-        variant = next((v for v in product.get("variants", []) if v.get("id") == item.variant_id), None)
-        if not variant and product.get("id", "").startswith(("h", "hw", "m", "edu")):
-            variant = product.get("variants", [{}])[0]
-            
-        if not variant:
-            raise HTTPException(status_code=400, detail=f"Variant {item.variant_id} not found")
-        
-        calculated_total += variant.get("price_kes", 0) * item.quantity
-    
-    # Price mismatch check (not for bypass)
-    if not is_bypass and calculated_total > order_in.total_kes + 1:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Price mismatch. Minimum required {calculated_total}, got {order_in.total_kes}."
-        )
+    # 2. Preliminary Validation
+    if not user_id:
+        # Check for bypass in service layer via order_result, 
+        # but for now we require auth unless we're in a bypass state
+        pass # Will be handled by service layer's logic if we want to allow guest checkouts
 
     order_result = await shop_service.create_order(order_in, user_id=user_id, token=token)
     if order_result["status"] == "error":
+        # Check if it was an auth error
+        if "Authentication required" in str(order_result.get("message", "")):
+             raise HTTPException(status_code=401, detail=order_result["message"])
         raise HTTPException(status_code=500, detail=order_result["message"])
 
     order_id = order_result["order_id"]
-    order_number = order_result["order_number"]
     
     try:
         track_order_event(order_id, "created", float(order_in.total_kes))
-    except Exception as e:
+    except Exception:
         pass
-
-    payment_info = order_result.get("payment_info", {})
-    if not payment_info:
-        if is_bypass:
-            payment_info = {"message": "Bypass active. Order confirmed.", "status": "completed"}
-        elif order_in.payment_method == "mpesa":
-             # Should be handled in service, but fallback here
-             phone = order_in.shipping_address.get("phone", "254700000000")
-             payment_info = payment.init_mpesa_payment(phone, order_in.total_kes, order_number)
-        elif order_in.payment_method == "card":
-            payment_info = payment.init_stripe_payment(order_in.total_kes)
-        else:
-            payment_info = {"message": "Order created, payment pending"}
 
     return {
         **order_result,
-        "payment_info": payment_info
+        "payment_info": order_result.get("payment_info", {})
     }
 
 @router.post("/checkout/callback/mpesa")

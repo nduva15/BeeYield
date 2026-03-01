@@ -1,5 +1,6 @@
 from typing import List, Optional, Dict, Any
 from honey_rust import ShopEngine, MpesaEngine, InvoicingEngine, calc_yield as _rust_calc
+from app.core.config import settings
 import logging
 import json
 
@@ -21,7 +22,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
 
     id_key = getattr(order_in, 'idempotency_key', None)
     
-    # 1. Search for existing order with this key (Idempotent Response)
+    # 1. Idempotent Recovery — check for existing order
     if id_key:
         existing = await db_select("orders", filters={"idempotency_key": id_key}, token=token)
         if existing:
@@ -32,18 +33,24 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
                 "message": "Found existing order for this key (Idempotent recovery)."
             }
 
-    # 2. Handshake with Rust Engine for billing/ledger idempotency
-    # This creates a ledger Entry in 'processing' state before we touch 'orders'
+    # 2. Bypass & Auth Check (single pass)
+    raw_phone = str(order_in.shipping_address.get("phone", ""))
+    clean_phone = "".join(filter(str.isdigit, raw_phone))
+    bypass_ph = getattr(settings, "ADMIN_BYPASS_PHONE", None)
+    is_bypass = False
+    if bypass_ph and len(clean_phone) >= 9:
+        is_bypass = clean_phone.endswith(bypass_ph[-9:]) or (bypass_ph in str(order_in.dict()))
+
+    if not is_bypass and not user_id:
+        return {"status": "error", "message": "Authentication required for checkout. Please sign in."}
+
+    # 3. Rust Engine Ledger Idempotency
     if id_key and user_id:
         payload = order_in.dict()
         payload["amount"] = str(order_in.total_kes)
         payload["currency"] = "KES"
-        payload["description"] = f"Order initialization via Shop API"
-        
-        # RUST HANDSHAKE: This will return existing ledger entry or create new one
+        payload["description"] = "Order initialization via Shop API"
         try:
-            # Note: engine.process_idempotent is a blocking PyO3 call, okay for small lookups
-            # It uses its own internal sync DB helpers
             ledger_entry = engine.process_idempotent(id_key, user_id, payload)
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(f"Oxidized Idempotency: Ledger Entry {ledger_entry.get('id')}")
@@ -51,13 +58,35 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             logger.error(f"Oxidized Financial Core Failure: {e}")
             return {"status": "error", "message": f"Financial Core rejected transaction: {str(e)}"}
 
-    # 3. Create actual order document
+    # 4. Strict Price Validation (Never Trust the Client)
+    if not is_bypass:
+        calculated_total = 0
+        for item in order_in.items:
+            product = await get_product_by_id(item.product_id, token=token)
+            if not product:
+                return {"status": "error", "message": f"Product {item.product_id} not found."}
+            
+            variant = next((v for v in product.get("variants", []) if v.get("id") == item.variant_id), None)
+            if not variant and product.get("id", "").startswith(("h", "hw", "m", "edu")):
+                variant = product.get("variants", [{}])[0]
+                
+            if not variant:
+                return {"status": "error", "message": f"Variant {item.variant_id} not found."}
+            
+            calculated_total += variant.get("price_kes", 0) * item.quantity
+        
+        if calculated_total > order_in.total_kes + 1:
+            return {"status": "error", "message": f"Price mismatch. Minimum required {calculated_total}, got {order_in.total_kes}."}
+        
+        order_in.total_kes = calculated_total
+
+    # 5. Create Order Document
     order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{str(uuid.uuid4())[:4].upper()}"
     
     order_data = {
-        "user_id": user_id,
+        "user_id": user_id if not is_bypass else None,
         "order_number": order_number,
-        "total_kes": order_in.total_kes,
+        "total_kes": order_in.total_kes if not is_bypass else 0,
         "status": "pending",
         "shipping_address": order_in.shipping_address,
         "payment_method": order_in.payment_method,
@@ -67,13 +96,13 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
 
     res = await db_insert("orders", order_data, token=token)
     if not res.get("success"):
-         error_msg = res.get('error', 'Unknown DB error')
-         logger.error(f"Order creation failed: {error_msg}")
-         return {"status": "error", "message": f"DB Error: {error_msg}"}
+        error_msg = res.get('error', 'Unknown DB error')
+        logger.error(f"Order creation failed: {error_msg}")
+        return {"status": "error", "message": f"DB Error: {error_msg}"}
     
     order_id = res["data"][0]["id"]
     
-    # 4. Atomic item insertion
+    # 6. Atomic item insertion
     for item in order_in.items:
         item_data = {
             "order_id": order_id,
@@ -84,27 +113,36 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         }
         await db_insert("order_items", item_data, token=token)
 
-    # 5. Link the order to any pending M-Pesa STK push if needed
+    # 7. Financial Core — Payment Trigger
     payment_info = {}
-    if order_in.payment_method == "mpesa" and id_key:
-        # We can now proceed to trigger the STK push via MpesaEngine
-        phone = order_in.shipping_address.get("phone", "")
-        if phone:
-             try:
-                 # Trigger Rust STK push
-                 stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
-                 payment_info = stk_res
-                 checkout_id = stk_res.get("CheckoutRequestID")
-                 if checkout_id:
-                     # Update ledger with the gateway reference
-                     await db_update("billing_ledger", 
-                         {"metadata": {"checkout_request_id": checkout_id, "order_id": order_id}}, 
-                         {"idempotency_key": id_key},
-                         token=token
-                     )
-             except Exception as e:
-                 logger.warning(f"Secondary M-Pesa Push error: {e}")
-                 payment_info = {"error": str(e), "status": "failed"}
+
+    if is_bypass:
+        payment_info = {"message": "Bypass active. Order confirmed.", "status": "completed"}
+    elif order_in.payment_method == "mpesa":
+        phone = clean_phone
+        if phone.startswith("0"):
+            phone = "254" + phone[1:]
+        elif not phone.startswith("254"):
+            phone = "254" + phone
+        
+        try:
+            stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
+            payment_info = stk_res
+            
+            checkout_id = stk_res.get("CheckoutRequestID")
+            if checkout_id and id_key:
+                await db_update("billing_ledger", 
+                    {"metadata": {"checkout_request_id": checkout_id, "order_id": order_id}}, 
+                    {"idempotency_key": id_key},
+                    token=token
+                )
+        except Exception as e:
+            logger.warning(f"Oxidized M-Pesa Push error: {e}")
+            payment_info = {"success": False, "error": str(e)}
+
+    elif order_in.payment_method == "card":
+        from app.services import payment
+        payment_info = payment.init_stripe_payment(order_in.total_kes)
 
     return {
         "status": "success", 
