@@ -113,17 +113,23 @@ impl ShopEngine {
     /// 1. Check if the key exists in the billing_ledger.
     /// 2. If it does, return the existing record immediately.
     /// 3. If not, create a placeholder record and proceed.
+    #[pyo3(signature = (idempotency_key, user_id, payload))]
     pub fn process_idempotent(&self, py: Python<'_>, idempotency_key: String, user_id: Option<String>, payload: &Bound<'_, PyDict>) -> PyResult<PyObject> {
         let db = py.import_bound("app.db.supabase_db")?;
         let db_select_sync = db.getattr("db_select_sync")?;
         let db_insert_sync = db.getattr("db_insert_sync")?;
 
         // Part 1: Check for existing transaction
-        let mut filters = std::collections::HashMap::new();
-        filters.insert("idempotency_key", idempotency_key.clone());
+        let mut filter_map = std::collections::HashMap::new();
+        filter_map.insert("idempotency_key", idempotency_key.clone());
         
+        let filters_py = PyDict::new_bound(py);
+        for (k, v) in filter_map {
+            filters_py.set_item(k, v)?;
+        }
+
         let kwargs = PyDict::new_bound(py);
-        kwargs.set_item("filters", filters)?;
+        kwargs.set_item("filters", filters_py)?;
         
         // Use sync SELECT
         let result_py = db_select_sync.call(("billing_ledger",), Some(&kwargs))?;

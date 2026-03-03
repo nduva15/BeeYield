@@ -170,25 +170,6 @@ DO $$ BEGIN
     ALTER EXTENSION pg_net SET SCHEMA extensions;
 EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
--- B. PostGIS spatial_ref_sys logic
-DO $$
-BEGIN
-    -- Attempt to take ownership to allow RLS enablement
-    BEGIN
-        ALTER TABLE IF EXISTS public.spatial_ref_sys OWNER TO postgres;
-    EXCEPTION WHEN OTHERS THEN
-        RAISE NOTICE 'Could not change owner of spatial_ref_sys';
-    END;
-
-    -- Attempt to enable RLS
-    BEGIN
-        ALTER TABLE IF EXISTS public.spatial_ref_sys ENABLE ROW LEVEL SECURITY;
-        DROP POLICY IF EXISTS "Allow public read" ON public.spatial_ref_sys;
-        CREATE POLICY "Allow public read" ON public.spatial_ref_sys FOR SELECT TO public USING (true);
-    EXCEPTION WHEN OTHERS THEN
-        RAISE NOTICE 'Could not enable RLS on spatial_ref_sys: %', SQLERRM;
-    END;
-END $$;
 
 -- ==========================================
 -- 9. SECURITY: Fix Function Search Paths
