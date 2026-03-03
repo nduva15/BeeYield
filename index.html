@@ -71,58 +71,26 @@
                 font-family: 'Outfit', sans-serif;
             }
 
-            .loader {
-                width: 60px;
-                height: 60px;
-                border: 4px solid #f3f3f3;
-                border-top: 4px solid #f59e0b;
-                border-radius: 50%;
-                animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-                margin-bottom: 20px;
-            }
-
-            .logo-text {
-                font-weight: 900;
-                font-size: 24px;
-                color: #1a1a1a;
-                letter-spacing: -0.05em;
-            }
-
-            .logo-sub {
-                color: #f59e0b;
-            }
-
-            @keyframes spin {
+            @keyframes pulse {
                 0% {
-                    transform: rotate(0deg);
+                    opacity: 0.6;
+                    transform: scale(0.98);
+                }
+
+                50% {
+                    opacity: 1;
+                    transform: scale(1);
                 }
 
                 100% {
-                    transform: rotate(360deg);
+                    opacity: 0.6;
+                    transform: scale(0.98);
                 }
             }
         </style>
         <div id="splash">
             <img src="/logo.png" alt="BeeYield"
                 style="width: 160px; height: auto; animation: pulse 1.5s ease-in-out infinite;" />
-            <style>
-                @keyframes pulse {
-                    0% {
-                        opacity: 0.6;
-                        transform: scale(0.98);
-                    }
-
-                    50% {
-                        opacity: 1;
-                        transform: scale(1);
-                    }
-
-                    100% {
-                        opacity: 0.6;
-                        transform: scale(0.98);
-                    }
-                }
-            </style>
         </div>
     </div>
     <!-- Google Tag Manager (noscript) -->

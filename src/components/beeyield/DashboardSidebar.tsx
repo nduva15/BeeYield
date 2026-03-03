@@ -136,8 +136,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 {/* Branding */}
                 <div className="h-32 flex items-center px-8 border-b-4 border-[#064e3b] bg-white group cursor-pointer" onClick={() => onTabChange('home')}>
                     <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 border-4 border-[#064e3b] bg-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] group-hover:bg-[#10b981] transition-colors">
-                            <Hexagon className="w-8 h-8 text-[#facc15] fill-current" />
+                        <div className="w-14 h-14 border-4 border-[#064e3b] bg-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] transition-colors">
+                            <img src="/logo.png" alt="BeeYield" className="w-10 h-10 object-contain" />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-[#064e3b] uppercase tracking-tighter leading-none">BeeYield</span>

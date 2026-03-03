@@ -2131,6 +2131,13 @@ export const beeyieldService = {
         return { success: !error, error };
     },
 
+    async getInfrastructureRegisters(): Promise<any[]> {
+        if (!sb) return [];
+        const { data, error } = await sb.from('infrastructure_registry').select('*').order('created_at', { ascending: false });
+        if (error) { console.error('getInfrastructureRegisters:', error); return []; }
+        return data || [];
+    },
+
     async logIntegrationAudit(platform: string, eventType: string, status: string, metrics: any): Promise<void> {
         if (!sb) return;
         await sb.rpc('log_integration_event', {
@@ -2139,6 +2146,50 @@ export const beeyieldService = {
             p_status: status,
             p_metrics: metrics
         });
+    },
+
+    // ========== FLIGHT & ROUTING (PRD v2) ==========
+    async getFlightPotential(apiaryId: string): Promise<any> {
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const headers = await getAuthHeaders();
+            const response = await fetch(`${apiUrl}/api/v1/forage/potential?apiary_id=${apiaryId}`, { headers });
+            if (!response.ok) throw new Error('Failed to fetch potential');
+            return response.json();
+        } catch (error) {
+            console.error('getFlightPotential:', error);
+            return { score: 0, status: 'Unknown', active_sources: [] };
+        }
+    },
+
+    async getWeatherData(lat: number, lng: number): Promise<any> {
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const headers = await getAuthHeaders();
+            const response = await fetch(`${apiUrl}/api/v1/forage/weather?lat=${lat}&lng=${lng}`, { headers });
+            if (!response.ok) throw new Error('Failed to fetch weather');
+            return response.json();
+        } catch (error) {
+            console.error('getWeatherData:', error);
+            return null;
+        }
+    },
+
+    async planRoute(startPoint: { lat: number, lng: number }, selectedHiveIds: string[]): Promise<any> {
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const headers = await getAuthHeaders();
+            const response = await fetch(`${apiUrl}/api/v1/routing/plan`, {
+                method: 'POST',
+                headers: { ...headers, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ start_point: startPoint, selected_hive_ids: selectedHiveIds })
+            });
+            if (!response.ok) throw new Error('Failed to plan route');
+            return response.json();
+        } catch (error) {
+            console.error('planRoute:', error);
+            return { path: [] };
+        }
     }
 };
 
