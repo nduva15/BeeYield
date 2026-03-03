@@ -251,7 +251,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 HIVE {filteredHives.length ? `(${filteredHives.length})` : ''}
                             </span>
                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate w-full text-left -mt-0.5 uppercase">
-                                {selectedHive || "184 Hives"}
+                                {selectedHive || "Select Hive"}
                             </span>
                         </div>
                         <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-300", isHivesOpen && "rotate-180 text-[#F4D03F]")} />
@@ -276,7 +276,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                             No hives found
                                         </div>
                                     ) : (
-                                        filteredHives.slice(0, 184).map((hive) => (
+                                        filteredHives.map((hive) => (
                                             <button
                                                 key={hive.id}
                                                 onClick={() => {

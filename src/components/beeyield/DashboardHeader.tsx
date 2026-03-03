@@ -7,10 +7,12 @@ import {
     ChevronDown,
     Plus,
     LogOut,
-    Zap
+    Sun,
+    Moon
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -34,16 +36,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 }) => {
     const { user, beeyieldUser } = useAuth();
     const { language, setLanguage } = useLanguage();
+    const { theme, setTheme } = useTheme();
+
+    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     const userName = beeyieldUser?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 
     return (
-        <header className="h-[72px] bg-[#000000] border-b border-[#1A1A1A] sticky top-0 z-30 flex items-center justify-between px-8">
+        <header className="h-[72px] bg-white dark:bg-[#000000] border-b border-slate-200 dark:border-[#1A1A1A] sticky top-0 z-30 flex items-center justify-between px-8">
             {/* Left: Breadcrumb */}
             <div className="flex items-center gap-3">
-                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] font-mono">Dashboard</span>
-                <span className="text-white/10 text-xs">›</span>
-                <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] font-mono capitalize">
+                <span className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] font-mono">Dashboard</span>
+                <span className="text-slate-300 dark:text-white/10 text-xs">›</span>
+                <span className="text-[10px] font-black text-slate-600 dark:text-white/60 uppercase tracking-[0.2em] font-mono capitalize">
                     {activeTab.replace(/-/g, ' ')}
                 </span>
             </div>
@@ -56,10 +61,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     { label: 'ALERTS', value: '2', positive: false },
                 ].map(stat => (
                     <div key={stat.label} className="flex items-center gap-2">
-                        <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] font-mono">{stat.label}</span>
+                        <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] font-mono">{stat.label}</span>
                         <span className={cn(
                             "text-[11px] font-black font-mono tabular-nums",
-                            stat.positive ? "text-emerald-400" : "text-[#F59E0B]"
+                            stat.positive ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-[#F59E0B]"
                         )}>{stat.value}</span>
                     </div>
                 ))}
@@ -67,6 +72,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
             {/* Right: Actions */}
             <div className="flex items-center gap-2">
+                {/* Theme Toggle */}
+                <button
+                    onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                    className="h-9 w-9 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] flex items-center justify-center hover:border-slate-400 dark:hover:border-white/20 transition-all"
+                    title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                    {isDark ? (
+                        <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    ) : (
+                        <Moon className="w-3.5 h-3.5 text-slate-500" />
+                    )}
+                </button>
+
                 {/* Quick Action CTA */}
                 <button
                     onClick={onQuickAction}
@@ -77,42 +95,42 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 </button>
 
                 {/* Search */}
-                <div className="hidden lg:flex items-center h-9 px-4 bg-[#111111] border border-[#1A1A1A] focus-within:border-white/20 transition-all gap-2">
-                    <Search className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+                <div className="hidden lg:flex items-center h-9 px-4 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] focus-within:border-slate-400 dark:focus-within:border-white/20 transition-all gap-2">
+                    <Search className="w-3.5 h-3.5 text-slate-400 dark:text-white/20 flex-shrink-0" />
                     <input
                         type="text"
                         placeholder="Search..."
-                        className="bg-transparent border-none outline-none text-[11px] text-white placeholder:text-white/20 w-32 font-mono"
+                        className="bg-transparent border-none outline-none text-[11px] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 w-32 font-mono"
                     />
                 </div>
 
                 {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="relative h-9 w-9 bg-[#111111] border border-[#1A1A1A] flex items-center justify-center hover:border-white/20 transition-all">
-                            <Bell className="w-3.5 h-3.5 text-white/40" />
+                        <button className="relative h-9 w-9 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] flex items-center justify-center hover:border-slate-400 dark:hover:border-white/20 transition-all">
+                            <Bell className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />
                             <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#F59E0B] rounded-full" />
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="end"
-                        className="w-80 rounded-none border border-[#1A1A1A] p-0 shadow-[0_16px_64px_rgba(0,0,0,0.8)] bg-[#0D0D0D]"
+                        className="w-80 rounded-none border border-slate-200 dark:border-[#1A1A1A] p-0 shadow-[0_16px_64px_rgba(0,0,0,0.15)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.8)] bg-white dark:bg-[#0D0D0D]"
                     >
-                        <div className="p-4 border-b border-[#1A1A1A]">
-                            <p className="text-[11px] font-black text-white uppercase tracking-[0.2em] font-mono">Notifications</p>
-                            <p className="text-[9px] text-white/30 mt-1 font-mono">3 unread alerts</p>
+                        <div className="p-4 border-b border-slate-200 dark:border-[#1A1A1A]">
+                            <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-[0.2em] font-mono">Notifications</p>
+                            <p className="text-[9px] text-slate-400 dark:text-white/30 mt-1 font-mono">3 unread alerts</p>
                         </div>
-                        <div className="divide-y divide-[#1A1A1A]">
+                        <div className="divide-y divide-slate-200 dark:divide-[#1A1A1A]">
                             {[
-                                { title: 'Hive #12 weight drop', time: '2 min ago', tag: 'ALERT', color: 'text-[#F59E0B]' },
-                                { title: 'Sync complete: QuickBooks', time: '1 hr ago', tag: 'SYNC', color: 'text-emerald-400' },
-                                { title: 'New season report ready', time: '3 hrs ago', tag: 'INFO', color: 'text-white/40' },
+                                { title: 'Hive #12 weight drop', time: '2 min ago', tag: 'ALERT', color: 'text-amber-600 dark:text-[#F59E0B]' },
+                                { title: 'Sync complete: QuickBooks', time: '1 hr ago', tag: 'SYNC', color: 'text-emerald-600 dark:text-emerald-400' },
+                                { title: 'New season report ready', time: '3 hrs ago', tag: 'INFO', color: 'text-slate-400 dark:text-white/40' },
                             ].map((n, i) => (
-                                <div key={i} className="flex items-start gap-3 p-4 hover:bg-white/5 transition-colors cursor-pointer">
+                                <div key={i} className="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
                                     <span className={cn("text-[8px] font-black font-mono tracking-wider pt-0.5 flex-shrink-0", n.color)}>{n.tag}</span>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-bold text-white truncate">{n.title}</p>
-                                        <p className="text-[9px] text-white/20 font-mono mt-0.5">{n.time}</p>
+                                        <p className="text-[11px] font-bold text-slate-800 dark:text-white truncate">{n.title}</p>
+                                        <p className="text-[9px] text-slate-400 dark:text-white/20 font-mono mt-0.5">{n.time}</p>
                                     </div>
                                 </div>
                             ))}
@@ -123,33 +141,33 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Profile */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-2.5 h-9 pl-2 pr-3 bg-[#111111] border border-[#1A1A1A] hover:border-white/20 transition-all">
+                        <button className="flex items-center gap-2.5 h-9 pl-2 pr-3 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] hover:border-slate-400 dark:hover:border-white/20 transition-all">
                             <div className="w-5 h-5 bg-[#F59E0B] flex items-center justify-center flex-shrink-0">
                                 <span className="text-[9px] font-black text-black font-mono">{userName.charAt(0).toUpperCase()}</span>
                             </div>
-                            <span className="text-[10px] font-black text-white/60 hidden md:block font-mono uppercase tracking-wider">
+                            <span className="text-[10px] font-black text-slate-600 dark:text-white/60 hidden md:block font-mono uppercase tracking-wider">
                                 {userName}
                             </span>
-                            <ChevronDown className="w-3 h-3 text-white/20" />
+                            <ChevronDown className="w-3 h-3 text-slate-400 dark:text-white/20" />
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="end"
-                        className="w-48 rounded-none border border-[#1A1A1A] p-0 shadow-[0_16px_64px_rgba(0,0,0,0.8)] bg-[#0D0D0D]"
+                        className="w-48 rounded-none border border-slate-200 dark:border-[#1A1A1A] p-0 shadow-[0_16px_64px_rgba(0,0,0,0.15)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.8)] bg-white dark:bg-[#0D0D0D]"
                     >
-                        <DropdownMenuLabel className="px-4 py-2.5 text-[8px] font-black uppercase text-white/20 tracking-[0.3em] border-b border-[#1A1A1A] font-mono">
+                        <DropdownMenuLabel className="px-4 py-2.5 text-[8px] font-black uppercase text-slate-400 dark:text-white/20 tracking-[0.3em] border-b border-slate-200 dark:border-[#1A1A1A] font-mono">
                             Account
                         </DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() => onTabChange('settings')}
-                            className="px-4 py-3 text-[10px] font-black text-white/50 hover:text-white hover:bg-white/5 cursor-pointer flex items-center gap-3 font-mono uppercase tracking-wider rounded-none"
+                            className="px-4 py-3 text-[10px] font-black text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 font-mono uppercase tracking-wider rounded-none"
                         >
                             <Settings className="w-3.5 h-3.5" />
                             Settings
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={onLogout}
-                            className="px-4 py-3 text-[10px] font-black text-red-500/60 hover:text-red-400 hover:bg-red-400/5 cursor-pointer flex items-center gap-3 font-mono uppercase tracking-wider rounded-none border-t border-[#1A1A1A]"
+                            className="px-4 py-3 text-[10px] font-black text-red-500/60 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-400/5 cursor-pointer flex items-center gap-3 font-mono uppercase tracking-wider rounded-none border-t border-slate-200 dark:border-[#1A1A1A]"
                         >
                             <LogOut className="w-3.5 h-3.5" />
                             Sign Out

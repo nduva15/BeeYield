@@ -87,7 +87,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <BrowserRouter>
                     <AuthProvider>
                         <SettingsProvider>
-                            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                            <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
                                 <LanguageProvider>
                                     <CartProvider>
                                         <WishlistProvider>

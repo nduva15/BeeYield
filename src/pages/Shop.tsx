@@ -777,6 +777,7 @@ const Shop = () => {
                       <div className="relative">
                         <BrandedProductImage
                           src={(() => {
+                            if (!product.variants || product.variants.length === 0) return (product.images && product.images[0]) || "/placeholder.svg";
                             const selectedSize = selectedSizes[product.id] || product.variants[0].size;
                             const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
                             // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
@@ -873,7 +874,11 @@ const Shop = () => {
                         )}
 
                         <div className="space-y-4">
-                          {product.variants.length > 1 ? (
+                          {!product.variants || product.variants.length === 0 ? (
+                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">No variants available</span>
+                            </div>
+                          ) : product.variants.length > 1 ? (
                             <Select
                               value={selectedSizes[product.id] || product.variants[0].size}
                               onValueChange={(value) => handleSizeChange(product.id, value)}
@@ -892,7 +897,7 @@ const Shop = () => {
                           ) : (
                             <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
                               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-2">Edition:</span>
-                              <span className="text-xs font-black uppercase tracking-widest">{product.variants[0].size}</span>
+                              <span className="text-xs font-black uppercase tracking-widest">{product.variants[0]?.size}</span>
                             </div>
                           )}
 
@@ -901,9 +906,9 @@ const Shop = () => {
                               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Price</p>
                               <p className="text-2xl font-black text-foreground">
                                 {formatPrice(
-                                  product.variants.find(
-                                    (v) => v.size === (selectedSizes[product.id] || product.variants[0].size)
-                                  )?.price_kes || product.variants[0].price_kes
+                                  product.variants?.find(
+                                    (v) => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size)
+                                  )?.price_kes || product.variants?.[0]?.price_kes || 0
                                 )}
                               </p>
                             </div>
@@ -912,14 +917,14 @@ const Shop = () => {
                               <Button
                                 className={cn(
                                   "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
-                                  (!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0)
+                                  (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
                                     ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
                                     : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
                                 )}
                                 onClick={() => handleAddToCart(product)}
-                                disabled={!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0}
+                                disabled={!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0}
                               >
-                                {(!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0) ? (
+                                {(!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0) ? (
                                   <span className="flex items-center gap-2">
                                     <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
                                     Sold Out

@@ -34,19 +34,27 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
     useEffect(() => {
         const initWishlist = async () => {
             try {
-                // 1. Load Local
+                // 1. Load Local first (always available, instant)
                 const savedWishlist = localStorage.getItem(WISHLIST_STORAGE_KEY);
                 let localItems: WishlistItem[] = [];
                 if (savedWishlist) {
                     localItems = JSON.parse(savedWishlist);
                 }
 
+                // Set local items immediately for fast UI
+                setItems(localItems);
+
                 // 2. Try Fetch Backend only if user is authenticated
+                if (!supabase) { setIsInitialized(true); return; }
                 const { data: { session } } = await supabase.auth.getSession();
                 let backendItems: any[] = [];
                 if (session?.access_token) {
-                    const { getWishlist } = await import('@/services/shopService');
-                    backendItems = await getWishlist(); // returns [] on error
+                    try {
+                        const { getWishlist } = await import('@/services/shopService');
+                        backendItems = await getWishlist(); // returns [] on error
+                    } catch {
+                        // Backend unreachable — silently use localStorage only
+                    }
                 }
 
                 // 3. Merge (Backend wins on conflict, or simple union by ID)
@@ -137,6 +145,7 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
 
         // Backend Sync (only if authenticated)
         try {
+            if (!supabase) return;
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.access_token) {
                 const { toggleWishlist: apiToggle } = await import('@/services/shopService');

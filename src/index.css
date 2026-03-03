@@ -416,15 +416,28 @@ All colors MUST be HSL.
 /* BeeYield Command Center tokens */
 
 .by-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.dark .by-card {
   background-color: #111111;
   border: 1px solid #1A1A1A;
 }
 
 .by-card:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.dark .by-card:hover {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 .by-separator {
+  border-color: #e2e8f0;
+}
+
+.dark .by-separator {
   border-color: #1A1A1A;
 }
 
@@ -455,7 +468,7 @@ All colors MUST be HSL.
   animation: loading-bar 1.2s ease-in-out infinite;
 }
 
-/* Dark scrollbar for dashboard */
+/* Scrollbar for dashboard — theme-aware */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
@@ -465,11 +478,19 @@ All colors MUST be HSL.
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1A1A1A;
+  background: #d4d4d8;
   border-radius: 0;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1A1A1A;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #333333;
 }
 

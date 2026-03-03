@@ -244,3 +244,119 @@ async def calc_yield(items: List[Dict[str, Any]]) -> int:
 
 async def set_order_paid(order_id: str, token: Optional[str] = None) -> dict:
     return await update_status(order_id, "processing", "completed", token=token)
+
+# ==========================================
+#  WISHLIST SERVICES
+# ==========================================
+
+async def get_user_wishlist(user_id: str, token: Optional[str] = None) -> List[dict]:
+    from app.db.supabase_db import db_select
+    return await db_select("wishlists", columns="*,product:products(*)", filters={"user_id": user_id}, token=token)
+
+async def toggle_wishlist_item(user_id: str, product_id: str, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_select, db_insert, db_delete
+    existing = await db_select("wishlists", filters={"user_id": user_id, "product_id": product_id}, token=token)
+    if existing:
+        await db_delete("wishlists", filters={"user_id": user_id, "product_id": product_id}, token=token)
+        return {"status": "success", "action": "removed"}
+    else:
+        await db_insert("wishlists", {"user_id": user_id, "product_id": product_id}, token=token)
+        return {"status": "success", "action": "added"}
+
+# ==========================================
+#  WALLET SERVICES
+# ==========================================
+
+async def get_user_wallet(user_id: str, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_select, db_insert
+    results = await db_select("wallets", filters={"user_id": user_id}, token=token)
+    if results:
+        return results[0]
+    # Auto-create wallet if missing
+    new_wallet = {"user_id": user_id, "balance": 0.0, "currency": "KES"}
+    res = await db_insert("wallets", new_wallet, token=token)
+    if res.get("success") and res.get("data"):
+        return res["data"][0]
+    return {"user_id": user_id, "balance": 0.0, "currency": "KES"}
+
+async def get_wallet_transactions(user_id: str, token: Optional[str] = None) -> List[dict]:
+    from app.db.supabase_db import db_select
+    return await db_select("wallet_transactions", filters={"user_id": user_id}, token=token)
+
+async def top_up_wallet(user_id: str, amount: float, reference: str, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_insert, db_select, db_update
+    wallet = await get_user_wallet(user_id, token=token)
+    new_balance = wallet.get("balance", 0) + amount
+    await db_update("wallets", {"balance": new_balance}, {"user_id": user_id}, token=token)
+    await db_insert("wallet_transactions", {
+        "user_id": user_id,
+        "amount": amount,
+        "type": "credit",
+        "reference": reference,
+        "balance_after": new_balance
+    }, token=token)
+    return {"status": "success", "new_balance": new_balance}
+
+# ==========================================
+#  ADDRESS SERVICES
+# ==========================================
+
+async def get_user_addresses(user_id: str, token: Optional[str] = None) -> List[dict]:
+    from app.db.supabase_db import db_select
+    return await db_select("addresses", filters={"user_id": user_id}, token=token)
+
+async def add_user_address(user_id: str, address_data: dict, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_insert
+    address_data["user_id"] = user_id
+    res = await db_insert("addresses", address_data, token=token)
+    if res.get("success") and res.get("data"):
+        return res["data"][0]
+    return address_data
+
+async def delete_user_address(user_id: str, address_id: str, token: Optional[str] = None):
+    from app.db.supabase_db import db_delete
+    await db_delete("addresses", filters={"id": address_id, "user_id": user_id}, token=token)
+
+# ==========================================
+#  PAYMENT METHOD SERVICES
+# ==========================================
+
+async def get_user_payment_methods(user_id: str, token: Optional[str] = None) -> List[dict]:
+    from app.db.supabase_db import db_select
+    return await db_select("payment_methods", filters={"user_id": user_id}, token=token)
+
+async def add_user_payment_method(user_id: str, method_data: dict, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_insert
+    method_data["user_id"] = user_id
+    res = await db_insert("payment_methods", method_data, token=token)
+    if res.get("success") and res.get("data"):
+        return res["data"][0]
+    return method_data
+
+async def delete_user_payment_method(user_id: str, method_id: str, token: Optional[str] = None):
+    from app.db.supabase_db import db_delete
+    await db_delete("payment_methods", filters={"id": method_id, "user_id": user_id}, token=token)
+
+# ==========================================
+#  ORDER TRACKING SERVICE
+# ==========================================
+
+async def get_order_tracking(order_id: str, token: Optional[str] = None) -> Optional[dict]:
+    from app.db.supabase_db import db_select
+    results = await db_select("order_tracking", filters={"order_id": order_id}, token=token)
+    if results:
+        return results[0]
+    # Return a default tracking state based on order status
+    order = await get_order(order_id, token=token)
+    if order:
+        return {
+            "order_id": order_id,
+            "status": order.get("status", "pending"),
+            "steps": [
+                {"label": "Order Placed", "completed": True},
+                {"label": "Payment Confirmed", "completed": order.get("status") in ("processing", "shipped", "completed")},
+                {"label": "Shipped", "completed": order.get("status") in ("shipped", "completed")},
+                {"label": "Delivered", "completed": order.get("status") == "completed"},
+            ]
+        }
+    return None
