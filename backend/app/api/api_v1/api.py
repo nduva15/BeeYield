@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, bee_data, pollination, inspections, reports,
     ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth,
-    requests, image_analysis, acoustic, routing
+    requests, image_analysis, acoustic, routing, forage
 )
 
 
@@ -91,6 +91,9 @@ api_router.include_router(acoustic.router, prefix="/acoustic", tags=["Acoustic A
 
 # Economic Routing Planner
 api_router.include_router(routing.router, prefix="/routing", tags=["Routing"])
+
+# Forage & Weather Intelligence
+api_router.include_router(forage.router, prefix="/forage", tags=["Forage Analysis"])
 
 # Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])

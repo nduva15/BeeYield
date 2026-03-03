@@ -75,8 +75,8 @@ const FlightMapping = lazy(() => import('@/pages/pollination/FlightMapping'))
 const PollinationReports = lazy(() => import('@/pages/pollination/PollinationReports'))
 
 const PageLoader = () => (
-    <div className="flex items-center justify-center h-[50vh] w-full">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    <div className="flex flex-col items-center justify-center h-[50vh] w-full gap-4">
+        <img src="/logo.png" alt="Loading..." className="h-12 w-auto animate-pulse" />
     </div>
 )
 

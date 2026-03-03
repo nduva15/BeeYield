@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preload" as="image" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeeYield | Precision Pollination & Honey Traceability in Makueni & Kibwezi</title>
     <meta name="description"
@@ -102,8 +103,26 @@
             }
         </style>
         <div id="splash">
-            <div class="loader"></div>
-            <div class="logo-text">BeeYield <span class="logo-sub">AI</span></div>
+            <img src="/logo.png" alt="BeeYield"
+                style="width: 160px; height: auto; animation: pulse 1.5s ease-in-out infinite;" />
+            <style>
+                @keyframes pulse {
+                    0% {
+                        opacity: 0.6;
+                        transform: scale(0.98);
+                    }
+
+                    50% {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+
+                    100% {
+                        opacity: 0.6;
+                        transform: scale(0.98);
+                    }
+                }
+            </style>
         </div>
     </div>
     <!-- Google Tag Manager (noscript) -->

@@ -213,7 +213,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         className="h-14 px-8 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-white transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest shrink-0"
                                     >
                                         <Bot className="w-5 h-5 mr-3" />
-                                        Ask BeeYield AI
+                                        Ask BeeYield
                                     </Button>
                                 </div>
                                 <div className="h-1 bg-[#064e3b]/10 w-full" />
