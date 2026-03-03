@@ -44,8 +44,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 className="h-[72px] flex items-center px-6 border-b border-slate-200 dark:border-[#1A1A1A] hover:bg-slate-50 dark:hover:bg-[#0D0D0D] transition-colors group w-full text-left"
             >
                 <div className="flex items-center gap-3.5">
-                    <div className="w-9 h-9 bg-[#F59E0B] flex items-center justify-center flex-shrink-0 group-hover:bg-[#FBBF24] transition-colors">
-                        <Hexagon className="w-5 h-5 text-black fill-current" />
+                    <div className="w-9 h-9 flex items-center justify-center flex-shrink-0">
+                        <img src="/logo.png" alt="BeeYield" className="w-7 h-7 object-contain" />
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[15px] font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-none">BeeYield</span>

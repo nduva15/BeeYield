@@ -252,7 +252,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "ai_expert_assistant": "Support",
         "ai_proprietary_ml": "I check your hive data to help find problems early.",
         "ask_ai_placeholder": "Ask a question... (Upload photos or docs)",
-        "ai_terms_agree": "By using BeeYield Assistant, you agree to our",
+        "ai_terms_agree": "By using BeeYield, you agree to our",
         "terms_regulations": "Terms and Regulations",
         "error_ai_thinking": "I'm sorry, I'm having trouble responding right now. Please try again.",
         "new_conversation_title": "New Conversation",

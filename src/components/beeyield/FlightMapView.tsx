@@ -1,234 +1,579 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.heat';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Map as MapIcon, Navigation, Activity, Zap, Play, Pause, RotateCcw, Crosshair, Loader2 } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+    Map as MapIcon, Navigation, Activity, Zap, Play, Pause,
+    RotateCcw, Crosshair, Loader2, Wind, Droplets, Sun,
+    CloudRain, AlertTriangle, Route, Locate
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
+
+// Fix Leaflet default icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    tooltipAnchor: [16, -28],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Custom Heatmap Component for React-Leaflet
+const HeatLayer = ({ points, visible }: { points: any[], visible: boolean }) => {
+    const map = useMap();
+    const heatLayerRef = useRef<any>(null);
+
+    useEffect(() => {
+        if (!map || !visible) {
+            if (heatLayerRef.current) {
+                map.removeLayer(heatLayerRef.current);
+                heatLayerRef.current = null;
+            }
+            return;
+        }
+
+        if (heatLayerRef.current) {
+            map.removeLayer(heatLayerRef.current);
+        }
+
+        const heatPoints = points.map(p => [p.lat, p.lng, p.intensity || 0.5]);
+        // @ts-ignore
+        heatLayerRef.current = L.heatLayer(heatPoints, {
+            radius: 25,
+            blur: 15,
+            maxZoom: 17,
+            gradient: { 0.4: 'blue', 0.65: 'lime', 1: 'red' }
+        }).addTo(map);
+
+        return () => {
+            if (heatLayerRef.current) {
+                map.removeLayer(heatLayerRef.current);
+            }
+        };
+    }, [map, points, visible]);
+
+    return null;
+};
 
 const FlightMapView: React.FC = () => {
-    const [isPlaying, setIsPlaying] = React.useState(true);
-    const [points, setPoints] = React.useState<{ x: number, y: number, id: number, type: 'hive' | 'forage', label?: string }[]>([]);
-    const [forageZones, setForageZones] = React.useState<any[]>([]);
-    const [loading, setLoading] = React.useState(true);
-    const [stats, setStats] = React.useState({ activeBees: 0, avgTrip: 0, forageRange: 0 });
+    const [loading, setLoading] = useState(true);
+    const [places, setPlaces] = useState<any[]>([]);
+    const [selectedPlaceId, setSelectedPlaceId] = useState<string>("");
+    const [selectedPlace, setSelectedPlace] = useState<any>(null);
+    const [hives, setHives] = useState<any[]>([]);
+    const [weather, setWeather] = useState<any>(null);
+    const [foragePotential, setForagePotential] = useState<any>(null);
+    const [effectiveRadius, setEffectiveRadius] = useState(2);
+    const [maxRadius, setMaxRadius] = useState(5);
+    const [showHeatmap, setShowHeatmap] = useState(true);
+    const [showUtility, setShowUtility] = useState(false);
+    const [route, setRoute] = useState<any[]>([]);
+    const [planningRoute, setPlanningRoute] = useState(false);
 
-    React.useEffect(() => {
-        const fetchData = async () => {
+    // Initial Data Fetch
+    useEffect(() => {
+        const init = async () => {
             setLoading(true);
             try {
-                const zones = await beeyieldService.getForageZones();
-                setForageZones(zones || []);
+                // Fetch infrastructure registers (places)
+                const infrastructure = await beeyieldService.getInfrastructureRegisters();
+                setPlaces(infrastructure || []);
 
-                if (zones && zones.length > 0) {
-                    // Generate points from real forage zone data
-                    const hivePoints = zones.slice(0, Math.min(5, zones.length)).map((z: any, i: number) => ({
-                        x: 20 + (i * 15) % 60,
-                        y: 20 + (i * 20) % 60,
-                        id: i,
-                        type: 'hive' as const,
-                        label: z.zone_name || `Hive ${i + 1}`,
-                    }));
-                    const foragePoints = zones.map((z: any, i: number) => ({
-                        x: 10 + ((z.radius_km || 1.5) * 20 + i * 12) % 80,
-                        y: 10 + ((z.density_score || 0.5) * 60 + i * 15) % 80,
-                        id: i + 10,
-                        type: 'forage' as const,
-                        label: z.flora_type || 'Feeding area',
-                    }));
-                    setPoints([...hivePoints, ...foragePoints]);
-
-                    // Calculate stats from zones
-                    const avgRadius = zones.reduce((sum: number, z: any) => sum + (z.radius_km || 1.5), 0) / zones.length;
-                    const avgDensity = zones.reduce((sum: number, z: any) => sum + (z.density_score || 0.5), 0) / zones.length;
-                    setStats({
-                        activeBees: Math.round(avgDensity * 200 + 50),
-                        avgTrip: Math.round(avgRadius * 5 * 10) / 10,
-                        forageRange: Math.round(avgRadius * 10) / 10,
-                    });
+                if (infrastructure && infrastructure.length > 0) {
+                    setSelectedPlaceId(infrastructure[0].id);
+                    await loadPlaceData(infrastructure[0]);
                 } else {
-                    // Fallback to generated demo data
-                    loadDemoData();
+                    // Fallback to apiaries if registry is empty
+                    const apiaries = await beeyieldService.getApiaries();
+                    if (apiaries && apiaries.length > 0) {
+                        const mapped = apiaries.map(a => ({
+                            id: a.id,
+                            name: a.name,
+                            latitude: a.latitude,
+                            longitude: a.longitude,
+                            effective_radius: 2,
+                            max_radius: 5
+                        }));
+                        setPlaces(mapped);
+                        setSelectedPlaceId(mapped[0].id);
+                        await loadPlaceData(mapped[0]);
+                    }
                 }
             } catch (err) {
-                console.error('Error loading flight map data:', err);
-                loadDemoData();
+                console.error("Initialization failed:", err);
+                toast.error("Failed to load map data");
             } finally {
                 setLoading(false);
             }
         };
-
-        fetchData();
+        init();
     }, []);
 
-    const loadDemoData = () => {
-        const hivePoints = Array.from({ length: 5 }).map((_, i) => ({
-            x: 20 + Math.random() * 60,
-            y: 20 + Math.random() * 60,
-            id: i,
-            type: 'hive' as const,
-            label: `Hive ${i + 1}`,
-        }));
-        const foragePoints = Array.from({ length: 8 }).map((_, i) => ({
-            x: 10 + Math.random() * 80,
-            y: 10 + Math.random() * 80,
-            id: i + 10,
-            type: 'forage' as const,
-            label: 'Feeding area',
-        }));
-        setPoints([...hivePoints, ...foragePoints]);
-        setStats({ activeBees: 124, avgTrip: 12.4, forageRange: 2.4 });
-    };
-
-    const handleReset = async () => {
+    const loadPlaceData = async (place: any) => {
         setLoading(true);
+        setSelectedPlace(place);
+        setEffectiveRadius(place.radius_km || 2);
+        setMaxRadius(place.max_radius_km || 5);
+        setRoute([]);
+
         try {
-            const zones = await beeyieldService.getForageZones();
-            if (zones && zones.length > 0) {
-                setForageZones(zones);
-            }
-            loadDemoData(); // Reset to fresh random layout
-        } catch {
-            loadDemoData();
+            // Parallel fetches
+            const [hivesRes, weatherRes, potentialRes] = await Promise.all([
+                beeyieldService.getHives(place.id),
+                beeyieldService.getWeatherData(place.latitude, place.longitude),
+                beeyieldService.getFlightPotential(place.id)
+            ]);
+
+            setHives(hivesRes || []);
+            setWeather(weatherRes);
+            setForagePotential(potentialRes);
+
+            toast.success(`Data Loaded for ${place.name}`);
+        } catch (err) {
+            console.error("Load place data failed:", err);
+            toast.error("Error updating location data");
         } finally {
             setLoading(false);
         }
     };
 
+    const handlePlaceChange = (id: string) => {
+        const place = places.find(p => p.id === id);
+        if (place) {
+            setSelectedPlaceId(id);
+            loadPlaceData(place);
+        }
+    };
+
+    const handlePlanRoute = async () => {
+        if (!selectedPlace) return;
+        setPlanningRoute(true);
+        try {
+            // Filter hives for alerts or critical status
+            const targetHives = hives.filter(h => h.status?.toLowerCase().includes('alert') || h.status?.toLowerCase().includes('weak'));
+            const hiveIds = targetHives.length > 0 ? targetHives.map(h => h.id) : hives.slice(0, 5).map(h => h.id);
+
+            const startPoint = { lat: selectedPlace.latitude, lng: selectedPlace.longitude };
+            const result = await beeyieldService.planRoute(startPoint, hiveIds);
+
+            if (result && result.path && result.path.length > 0) {
+                setRoute(result.path);
+                toast.success(`Route calculated: ${result.path.length - 1} stops`);
+            } else {
+                toast.warning("No optimal route found for selected criteria");
+            }
+        } catch (err) {
+            toast.error("Routing engine error");
+        } finally {
+            setPlanningRoute(false);
+        }
+    };
+
+    if (loading && places.length === 0) {
+        return (
+            <div className="h-[600px] w-full flex items-center justify-center bg-slate-50 rounded-[2.5rem] border border-slate-100">
+                <div className="text-center space-y-4">
+                    <Loader2 className="w-12 h-12 text-[#1B9157] animate-spin mx-auto" />
+                    <p className="font-bold text-slate-400 uppercase tracking-widest">Enabling Tactical Map...</p>
+                </div>
+            </div>
+        );
+    }
+
+    const mapCenter: [number, number] = selectedPlace ? [selectedPlace.latitude, selectedPlace.longitude] : [0, 0];
+
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-[2.5rem] font-bold text-[#0F172A] tracking-tight">Flight Map</h1>
-                    <p className="text-gray-500 mt-1">Real-time bee activity and flight path tracking.</p>
+            {/* Header Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[2rem] shadow-sm border border-slate-50">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                        <MapIcon className="w-6 h-6 text-[#1B9157]" />
+                        <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Flight Deployment</h1>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Locate className="w-4 h-4 text-slate-400" />
+                        <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+                            Syncing: {selectedPlace?.name || 'Searching...'}
+                        </p>
+                    </div>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="rounded-xl border-gray-200" onClick={() => setIsPlaying(!isPlaying)}>
-                        {isPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-                        {isPlaying ? 'Pause' : 'Resume'}
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-xl border-gray-200" onClick={handleReset} disabled={loading}>
-                        {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RotateCcw className="w-4 h-4 mr-2" />}
-                        Reset
+
+                <div className="flex flex-wrap gap-4 items-center">
+                    <div className="w-64">
+                        <Select value={selectedPlaceId} onValueChange={handlePlaceChange}>
+                            <SelectTrigger className="bg-slate-50 border-none rounded-xl font-bold h-12">
+                                <SelectValue placeholder="Select Location" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-none shadow-xl">
+                                {places.map(p => (
+                                    <SelectItem key={p.id} value={p.id} className="font-bold">
+                                        {p.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button
+                        onClick={handlePlanRoute}
+                        disabled={planningRoute}
+                        className="bg-[#1B9157] hover:bg-[#157a48] text-white rounded-xl font-black h-12 px-6 shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95"
+                    >
+                        {planningRoute ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Route className="w-4 h-4 mr-2" />}
+                        PLAN OPTIMAL ROUTE
                     </Button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Map View */}
-                <Card className="lg:col-span-8 rounded-[2.5rem] border border-slate-100 bg-slate-50 overflow-hidden shadow-2xl relative min-h-[500px]">
-                    <div className="absolute inset-0 opacity-20 pointer-events-none"
-                        style={{ backgroundImage: 'radial-gradient(circle, #1B9157 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-
-                    {/* Simulated Flight Paths */}
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                        <AnimatePresence>
-                            {isPlaying && points.filter(p => p.type === 'hive').map((hive, i) => {
-                                const forage = points.find(p => p.type === 'forage' && p.id === i + 10);
-                                if (!forage) return null;
-                                return (
-                                    <motion.path
-                                        key={`path-${i}`}
-                                        d={`M ${hive.x}% ${hive.y}% Q ${(hive.x + forage.x) / 2 + (Math.random() * 10 - 5)}% ${(hive.y + forage.y) / 2 + (Math.random() * 10 - 5)}% ${forage.x}% ${forage.y}%`}
-                                        stroke="#F4D03F"
-                                        strokeWidth="1"
-                                        fill="none"
-                                        initial={{ pathLength: 0, opacity: 0 }}
-                                        animate={{ pathLength: 1, opacity: 0.6 }}
-                                        transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                                    />
-                                );
-                            })}
-                        </AnimatePresence>
-                    </svg>
-
-                    {/* Nodes */}
-                    {points.map(point => (
-                        <motion.div
-                            key={point.id}
-                            className="absolute z-10 group"
-                            style={{ left: `${point.x}%`, top: `${point.y}%` }}
-                            whileHover={{ scale: 1.2 }}
-                        >
-                            <div className={cn(
-                                "w-4 h-4 rounded-full border-2 border-white shadow-xl flex items-center justify-center",
-                                point.type === 'hive' ? "bg-[#1B9157]" : "bg-[#F4D03F]"
-                            )}>
-                                {point.type === 'hive' ? <Navigation className="w-2 h-2 text-white" /> : <div className="w-1 h-1 bg-white rounded-full" />}
-                            </div>
-                            <div className="absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white px-2 py-1 rounded text-[8px] font-bold text-slate-900 border border-slate-200 opacity-0 group-hover:opacity-100 uppercase shadow-sm">
-                                {point.label || (point.type === 'hive' ? `Hive ${point.id}` : 'Feeding area')}
-                            </div>
-                        </motion.div>
-                    ))}
-
-                    <div className="absolute bottom-6 left-6 flex gap-4">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Hives</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Feeding Areas</span>
-                        </div>
-                    </div>
-
-                    <div className="absolute top-6 right-6">
-                        <Badge className="bg-white/10 backdrop-blur-md text-[#1B9157] border-white/10 font-black">
-                            {forageZones.length > 0 ? `${forageZones.length} AREAS LOADED` : 'MONITORING ACTIVE'}
-                        </Badge>
-                    </div>
-                </Card>
-
-                {/* Info Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Tactical Sidebar */}
                 <div className="lg:col-span-4 space-y-6">
-                    <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#1B9157]">
-                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Flight Details</h3>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-end border-b border-gray-50 pb-2">
-                                <span className="text-sm font-medium text-gray-500">Active Bees/m²</span>
-                                <span className="text-xl font-black text-gray-900">{stats.activeBees}</span>
+                    {/* Live Weather Metrics */}
+                    <Card className="rounded-[2.5rem] border-none bg-white shadow-xl overflow-hidden">
+                        <div className="bg-[#0F172A] p-6 text-white">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 mb-4">Bee-Specific Meteo</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2 text-sky-400">
+                                        <Wind className="w-4 h-4" />
+                                        <span className="text-[10px] font-black uppercase">Density</span>
+                                    </div>
+                                    <p className="text-2xl font-black">{weather?.humidity}%</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2 text-yellow-500">
+                                        <Sun className="w-4 h-4" />
+                                        <span className="text-[10px] font-black uppercase">Solar PSI</span>
+                                    </div>
+                                    <p className="text-2xl font-black">{weather?.solar_pressure || 840} <span className="text-[10px] opacity-40">W/m²</span></p>
+                                </div>
                             </div>
-                            <div className="flex justify-between items-end border-b border-gray-50 pb-2">
-                                <span className="text-sm font-medium text-gray-500">Avg Trip Duration</span>
-                                <span className="text-xl font-black text-gray-900">{stats.avgTrip} min</span>
+                        </div>
+                        <CardContent className="p-6 space-y-4">
+                            {weather && weather.temperature < 10 && (
+                                <Alert className="bg-red-50 border-red-100 text-red-700 rounded-2xl">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <AlertTitle className="font-black uppercase text-xs">Flight Grounded</AlertTitle>
+                                    <AlertDescription className="text-[10px] font-medium opacity-80">
+                                        Temp below 10°C. Foraging activity is dormant.
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase text-slate-400">Flight Status</span>
+                                    <Badge className={cn(
+                                        "rounded-full font-black text-[10px] px-3",
+                                        weather?.bee_flight_status === 'Enabled' ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+                                    )}>
+                                        {weather?.bee_flight_status?.toUpperCase() || 'OPTIMAL'}
+                                    </Badge>
+                                </div>
+                                <div className="h-1 lg:h-1.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#1B9157]" style={{ width: `${foragePotential?.score || 70}%` }} />
+                                </div>
                             </div>
-                            <div className="flex justify-between items-end border-b border-gray-50 pb-2">
-                                <span className="text-sm font-medium text-gray-500">Feeding Range</span>
-                                <span className="text-xl font-black text-gray-900">{stats.forageRange} km</span>
+                        </CardContent>
+                    </Card>
+
+                    {/* Radius Controls */}
+                    <Card className="rounded-[2.5rem] border-none bg-white shadow-xl p-8 space-y-8">
+                        <div>
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Foraging Range</h3>
+                                <Badge variant="outline" className="rounded-full border-[#1B9157] text-[#1B9157] font-black px-4 h-6">
+                                    {effectiveRadius}KM - {maxRadius}KM
+                                </Badge>
+                            </div>
+
+                            <div className="space-y-8">
+                                <div className="space-y-4">
+                                    <div className="flex justify-between">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-[#1B9157]">Effective Radius</label>
+                                        <span className="text-[10px] font-black">{effectiveRadius} KM</span>
+                                    </div>
+                                    <Slider
+                                        value={[effectiveRadius]}
+                                        min={0.5}
+                                        max={5}
+                                        step={0.1}
+                                        onValueChange={([v]) => setEffectiveRadius(v)}
+                                        className="py-4"
+                                    />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Max Survival Radius</label>
+                                        <span className="text-[10px] font-black text-slate-400">{maxRadius} KM</span>
+                                    </div>
+                                    <Slider
+                                        value={[maxRadius]}
+                                        min={effectiveRadius}
+                                        max={10}
+                                        step={0.5}
+                                        onValueChange={([v]) => setMaxRadius(v)}
+                                        className="py-4"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-slate-50 space-y-4">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Display Layers</h4>
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    variant={showHeatmap ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setShowHeatmap(!showHeatmap)}
+                                    className={cn("rounded-full font-black text-[10px] px-6 h-10", showHeatmap && "bg-[#0F172A]")}
+                                >
+                                    FLIGHT HEATMAP
+                                </Button>
+                                <Button
+                                    variant={showUtility ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setShowUtility(!showUtility)}
+                                    className={cn("rounded-full font-black text-[10px] px-6 h-10", showUtility && "bg-[#F4D03F] text-black hover:bg-[#ebd04c]")}
+                                >
+                                    UTILITY POTENTIAL
+                                </Button>
                             </div>
                         </div>
                     </Card>
 
-                    {/* Forage Zones List */}
-                    {forageZones.length > 0 && (
-                        <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#F4D03F]">
-                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Feeding Areas</h3>
-                            <div className="space-y-3">
-                                {forageZones.slice(0, 5).map((z: any, i: number) => (
-                                    <div key={z.id || i} className="flex justify-between items-center text-sm">
-                                        <div>
-                                            <p className="font-bold text-slate-800">{z.zone_name || z.flora_type || `Area ${i + 1}`}</p>
-                                            <p className="text-xs text-slate-400">{z.flora_type || '-'} · {z.season || 'year_round'}</p>
+                    {/* Active Sources */}
+                    {foragePotential?.active_sources?.length > 0 && (
+                        <Card className="rounded-[2.5rem] border-none bg-white shadow-xl p-8">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">Nectar Engines</h3>
+                            <div className="space-y-4">
+                                {foragePotential.active_sources.map((source: any, i: number) => (
+                                    <div key={i} className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-all hover:bg-slate-100">
+                                        <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center border-2 border-white shadow-sm font-black text-xs">
+                                            {source.name[0]}
                                         </div>
-                                        <span className="text-xs font-bold text-green-600">{z.density_score ? `${(z.density_score * 100).toFixed(0)}%` : '-'}</span>
+                                        <div className="flex-1">
+                                            <p className="font-black text-xs uppercase">{source.name}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <div className="h-1 flex-1 bg-white rounded-full">
+                                                    <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${source.potential * 100}%` }} />
+                                                </div>
+                                                <span className="text-[8px] font-black">{(source.potential * 100).toFixed(0)}%</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </Card>
                     )}
+                </div>
 
-                    <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#F4D03F]">
-                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Activity Map</h3>
-                        <div className="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center border border-dashed border-gray-200">
-                            <Activity className="w-12 h-12 text-gray-200" />
+                {/* Primary Tactical Map (Leaflet) */}
+                <div className="lg:col-span-8 space-y-6">
+                    <Card className="rounded-[3rem] border-8 border-white bg-slate-50 shadow-2xl overflow-hidden relative h-[700px]">
+                        <MapContainer
+                            center={mapCenter}
+                            zoom={14}
+                            style={{ height: '100%', width: '100%' }}
+                            // @ts-ignore
+                            scrollWheelZoom={false}
+                        >
+                            <TileLayer
+                                url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            />
+
+                            {/* Heatmap Layer */}
+                            <HeatLayer points={hives.map(h => ({ lat: h.latitude || mapCenter[0], lng: h.longitude || mapCenter[1], intensity: 0.8 }))} visible={showHeatmap} />
+
+                            {/* Center Marker */}
+                            <Marker position={mapCenter}>
+                                <Popup className="font-bold">
+                                    <div className="p-2 space-y-1">
+                                        <p className="text-xs font-black uppercase tracking-widest text-[#1B9157]">{selectedPlace?.name}</p>
+                                        <p className="text-[9px] text-slate-400">COORDS: {mapCenter[0].toFixed(4)}, {mapCenter[1].toFixed(4)}</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
+
+                            {/* Hive Markers */}
+                            {hives.map((hive) => (
+                                <Circle
+                                    key={hive.id}
+                                    center={[hive.latitude || mapCenter[0], hive.longitude || mapCenter[1]]}
+                                    radius={20}
+                                    pathOptions={{
+                                        color: hive.status?.toLowerCase().includes('critical') ? '#ef4444' : '#1B9157',
+                                        fillColor: hive.status?.toLowerCase().includes('critical') ? '#ef4444' : '#1B9157',
+                                        fillOpacity: 0.8
+                                    }}
+                                >
+                                    <Popup className="rounded-xl border-none shadow-2xl">
+                                        <div className="p-4 space-y-3 min-w-[200px]">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hive Unit</p>
+                                                    <h4 className="text-lg font-black">{hive.hive_code}</h4>
+                                                </div>
+                                                <Badge className={cn(
+                                                    "font-black uppercase text-[8px]",
+                                                    hive.status?.toLowerCase().includes('healthy') ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                                )}>
+                                                    {hive.status || 'ACTIVE'}
+                                                </Badge>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                                                <div>
+                                                    <span className="text-[8px] font-black text-slate-300 block mb-1 uppercase">Health Index</span>
+                                                    <span className="text-xs font-bold">92.4%</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-[8px] font-black text-slate-300 block mb-1 uppercase">Trip Density</span>
+                                                    <span className="text-xs font-bold">4.2/min</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                </Circle>
+                            ))}
+
+                            {/* Foraging Radii */}
+                            <Circle
+                                center={mapCenter}
+                                radius={effectiveRadius * 1000}
+                                pathOptions={{
+                                    color: '#1B9157',
+                                    fillColor: '#1B9157',
+                                    fillOpacity: 0.05,
+                                    dashArray: '5, 10'
+                                }}
+                            />
+                            <Circle
+                                center={mapCenter}
+                                radius={maxRadius * 1000}
+                                pathOptions={{
+                                    color: '#slate-300',
+                                    fillColor: '#slate-300',
+                                    fillOpacity: 0.02,
+                                    dashArray: '10, 20',
+                                    weight: 1
+                                }}
+                            />
+
+                            {/* Optimal Route Path */}
+                            {route.length > 0 && (
+                                <Polyline
+                                    positions={route.map(p => [p.latitude, p.longitude])}
+                                    pathOptions={{
+                                        color: '#3b82f6',
+                                        weight: 4,
+                                        dashArray: '10, 10',
+                                        opacity: 0.8
+                                    }}
+                                />
+                            )}
+
+                            {/* Change View On Place Transition */}
+                            <MapUpdater center={mapCenter} />
+                        </MapContainer>
+
+                        {/* Tactical HUD Overlay on Map */}
+                        <div className="absolute top-8 left-8 z-[1000] pointer-events-none">
+                            <div className="bg-white/80 backdrop-blur-md border-4 border-white p-4 rounded-3xl shadow-xl flex items-center gap-6">
+                                <div className="flex items-center gap-3 pr-6 border-r border-slate-200">
+                                    <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-[#1B9157]">
+                                        <Crosshair className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase">Tracked Hives</p>
+                                        <p className="text-xl font-black">{hives.length}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <Activity className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase">Flight Power</p>
+                                        <p className="text-xl font-black text-blue-500">{foragePotential?.score}%</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Route Legend */}
+                        {route.length > 0 && (
+                            <div className="absolute bottom-8 left-8 z-[1000] animate-in slide-in-from-left-4">
+                                <Card className="rounded-3xl border-none shadow-2xl p-6 bg-[#0F172A] text-white">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <Route className="w-5 h-5 text-blue-400" />
+                                        <span className="text-sm font-black uppercase tracking-widest">Active Route Protocol</span>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {route.slice(0, 3).map((stop, i) => (
+                                            <div key={i} className="flex items-center gap-3">
+                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-black text-white">
+                                                    {i + 1}
+                                                </div>
+                                                <span className="text-[10px] font-bold uppercase opacity-80">{stop.name}</span>
+                                            </div>
+                                        ))}
+                                        {route.length > 3 && <p className="text-[9px] font-bold opacity-40">+{route.length - 3} MORE STOPS</p>}
+                                    </div>
+                                </Card>
+                            </div>
+                        )}
                     </Card>
+
+                    {/* Educational Logic Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Card className="rounded-[2.5rem] p-6 bg-white shadow-sm border-l-8 border-l-[#1B9157]">
+                            <h4 className="text-xs font-black uppercase mb-2">Environmental Influence</h4>
+                            <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                                Current conditions suggests forage efficiency is {foragePotential?.score > 60 ? 'optimal' : 'restricted'}.
+                                Solar pressure and humidity impacts nectar thinning. Monitor hives for potential washout.
+                            </p>
+                        </Card>
+                        <Card className="rounded-[2.5rem] p-6 bg-white shadow-sm border-l-8 border-l-[#F4D03F]">
+                            <h4 className="text-xs font-black uppercase mb-2">Protocol Recommendation</h4>
+                            <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                                {foragePotential?.recommendation || 'Standard monitoring protocol. Check alert sectors if activity drops.'}
+                            </p>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>
     );
+};
+
+// Helper component to handle map movement
+const MapUpdater = ({ center }: { center: [number, number] }) => {
+    const map = useMap();
+    useEffect(() => {
+        map.setView(center, map.getZoom());
+    }, [center, map]);
+    return null;
 };
 
 export default FlightMapView;
