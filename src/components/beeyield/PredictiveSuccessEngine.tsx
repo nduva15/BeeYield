@@ -33,7 +33,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                         </h1>
                     </div>
                     <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        AI Prediction Engine · VPM Intensity · Bee Flight Hours (BFH)
+                        BeeYield Prediction Engine · VPM Intensity · Bee Flight Hours (BFH)
                     </p>
                 </div>
 
@@ -74,7 +74,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                         </div>
                     </div>
                     <p className="mt-8 text-[9px] font-bold text-[#064e3b]/30 uppercase text-center leading-relaxed">
-                        Based on current VPM intensity and bloom sync, our AI predicts a SOTA-level yield harvest.
+                        Based on current VPM intensity and bloom sync, our engine predicts a SOTA-level yield harvest.
                     </p>
                 </div>
 
@@ -128,7 +128,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                         <tr>
                             <th className="px-6 py-4 text-[10px] font-black text-white/40 uppercase tracking-widest">Predictive Component</th>
                             <th className="px-6 py-4 text-[10px] font-black text-white/40 uppercase tracking-widest">Live status</th>
-                            <th className="px-6 py-4 text-[10px] font-black text-white/40 uppercase tracking-widest">AI weighting</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-white/40 uppercase tracking-widest">BeeYield weighting</th>
                             <th className="px-6 py-4 text-[10px] font-black text-white/40 uppercase tracking-widest">Success influence</th>
                         </tr>
                     </thead>

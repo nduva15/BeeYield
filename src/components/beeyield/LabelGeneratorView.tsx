@@ -284,7 +284,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 use_ai: true,
             });
             updateDesign({ marketingNote: blurb });
-            toast.success('Marketing note generated!', { description: 'Powered by Intelligent Hive AI' });
+            toast.success('Marketing note generated!', { description: 'Powered by BeeYield' });
         } catch (e) {
             console.error(e);
             toast.error('Could not generate description. Using fallback.');

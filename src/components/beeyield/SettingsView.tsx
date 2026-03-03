@@ -260,11 +260,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <div className={brutalCardClass}>
                             <h3 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-4 mb-8">
                                 <Bell className="w-6 h-6 text-[#facc15]" />
-                                AI Alert Patterns
+                                BeeYield Alert Patterns
                             </h3>
                             <div className="space-y-6">
                                 {[
-                                    { id: 'aiAnomalies', title: 'Internal Anomaly detection', desc: 'AI routes sensor spikes and data drift anomalies.', icon: Bot },
+                                    { id: 'aiAnomalies', title: 'Internal Anomaly detection', desc: 'System identifies sensor spikes and data drift anomalies.', icon: Shield },
                                     { id: 'swarmRisk', title: 'Swarm Frequency Alerts', desc: 'Predictive analytics triggers if swarm patterns match.', icon: Activity },
                                     { id: 'onboardingHints', title: 'In-app Hints / Tutorials', desc: 'Context-aware guidance for operations.', icon: Globe },
                                 ].map((alert) => (
