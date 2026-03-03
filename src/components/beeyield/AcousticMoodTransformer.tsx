@@ -108,7 +108,7 @@ const AcousticMoodTransformer: React.FC = () => {
 
                     <div className="flex gap-4">
                         <div className="text-right">
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest mb-1">AI Confidence</p>
+                            <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest mb-1">BeeYield Confidence</p>
                             <p className="text-4xl font-black text-[#064e3b] leading-none">{confidence.toFixed(1)}%</p>
                         </div>
                     </div>
@@ -196,7 +196,7 @@ const AcousticMoodTransformer: React.FC = () => {
                     <section className="space-y-6">
                         <div className="flex items-center gap-3 border-[#10b981] border-l-8 pl-6">
                             <ShieldAlert className="w-6 h-6 text-[#064e3b]" />
-                            <h3 className="text-3xl font-black uppercase tracking-tighter">AI Diagnosis</h3>
+                            <h3 className="text-3xl font-black uppercase tracking-tighter">BeeYield Diagnosis</h3>
                         </div>
 
                         <div className={cn(

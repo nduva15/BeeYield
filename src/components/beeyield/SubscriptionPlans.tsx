@@ -43,7 +43,7 @@ const plans: Plan[] = [
         features: [
             'Unlimited hives & apiaries',
             'Real-time weight & audio alerts',
-            'AI Brood analysis (100/mo)',
+            'BeeYield Brood analysis (100/mo)',
             'Pollination contract management',
             'E-TIMS integration'
         ],
@@ -59,7 +59,7 @@ const plans: Plan[] = [
         features: [
             'Full IoT gateway management',
             'Custom spatial API access',
-            'Unlimited AI analysis',
+            'Unlimited BeeYield analysis',
             'Dedicated account manager',
             'White-label reporting'
         ],

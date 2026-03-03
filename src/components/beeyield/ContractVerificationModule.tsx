@@ -76,7 +76,7 @@ const ContractVerificationModule: React.FC = () => {
                         <h3 className="text-xl font-black uppercase tracking-tighter">Acoustic Brood Index</h3>
                     </div>
                     <p className="text-[10px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
-                        AI analyzes frequency response to determine frames of bees and brood presence. Grade A requires {'>'}85% density.
+                        Our system analyzes frequency response to determine frames of bees and brood presence. Grade A requires {'>'}85% density.
                     </p>
                 </div>
                 <div className="border-4 border-[#064e3b] p-8 bg-neutral-50/50">

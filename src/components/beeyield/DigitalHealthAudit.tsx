@@ -125,7 +125,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                 </div>
 
                                 <div className="text-left w-full mt-4 bg-black/20 p-4 border border-white/10">
-                                    <p className="text-[10px] font-black uppercase text-white/40 mb-2">AI Insights</p>
+                                    <p className="text-[10px] font-black uppercase text-white/40 mb-2">BeeYield Insights</p>
                                     <ul className="space-y-1">
                                         {scanResults.detections?.slice(0, 3).map((d: any, i: number) => (
                                             <li key={i} className="text-[9px] font-bold uppercase flex justify-between">

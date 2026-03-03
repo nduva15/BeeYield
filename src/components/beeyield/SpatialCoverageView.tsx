@@ -181,7 +181,7 @@ const SpatialCoverageView: React.FC = () => {
                         <CardHeader className="p-8">
                             <div className="flex items-center gap-3">
                                 <Zap className="w-6 h-6 text-[#facc15]" />
-                                <CardTitle className="text-xl font-black uppercase tracking-tighter">AI Optimizer</CardTitle>
+                                <CardTitle className="text-xl font-black uppercase tracking-tighter">BeeYield Optimizer</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-8 pt-0 space-y-6">
