@@ -29,8 +29,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
 
     return (
-        /* Pure black canvas — true X/Uber dark foundation */
-        <div className="flex h-screen w-full bg-[#000000] overflow-hidden font-sans text-white selection:bg-[#F59E0B]/30">
+        /* Theme-aware canvas — respects light/dark toggle */
+        <div className="flex h-screen w-full bg-slate-50 dark:bg-[#000000] overflow-hidden font-sans text-slate-900 dark:text-white selection:bg-[#F59E0B]/30">
             {/* Sidebar — fixed left column */}
             <GlassSidebar
                 activeTab={activeTab}
@@ -59,7 +59,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 />
 
                 {/* Scrollable content area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ scrollbarColor: '#1A1A1A transparent' }}>
+                <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ scrollbarColor: 'var(--scrollbar-thumb, #d4d4d8) transparent' }}>
                     <div className="max-w-[1600px] mx-auto p-4 md:p-8">
                         {!isAdmin && <FirstStepsBanner onTabChange={onTabChange} />}
                         <motion.div

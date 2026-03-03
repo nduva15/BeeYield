@@ -337,6 +337,78 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 ))}
             </div>
 
+            {/* Productivity Overview */}
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,0.05)] overflow-hidden">
+                <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">Productivity Overview</p>
+                        <h2 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
+                            {filterYear === 'all' ? new Date().getFullYear() : filterYear}
+                        </h2>
+                    </div>
+                    <Select value={filterYear} onValueChange={setFilterYear}>
+                        <SelectTrigger className="h-14 w-32 rounded-[1.5rem] border-2 border-[#064e3b]/10 font-black text-lg transition-all hover:bg-neutral-50">
+                            <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-2 border-[#064e3b] shadow-2xl max-h-[300px]">
+                            <SelectItem value="all" className="font-black text-sm uppercase">All Time</SelectItem>
+                            {Array.from({ length: new Date().getFullYear() - 2000 + 1 }, (_, i) => {
+                                const year = (new Date().getFullYear() - i).toString();
+                                return (
+                                    <SelectItem key={year} value={year} className="font-black text-sm uppercase">
+                                        {year}
+                                    </SelectItem>
+                                );
+                            })}
+                        </SelectContent>
+                    </Select>
+                </CardHeader>
+                <CardContent className="p-8 pt-0">
+                    <div className="bg-[#facc15]/5 border-2 border-[#facc15]/20 p-4 mb-8">
+                        <p className="text-[10px] font-black text-[#064e3b]/60 uppercase tracking-[0.2em]">
+                            WE ARE PREPARING ADDITIONAL ANALYSES FOR THIS SECTION.
+                        </p>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b-2 border-[#064e3b]/5">
+                                    <th className="pb-4 text-left text-[11px] font-black text-[#064e3b]/40 uppercase tracking-wider">Apiary</th>
+                                    <th className="pb-4 text-center text-[11px] font-black text-[#064e3b]/40 uppercase tracking-wider">Productive families</th>
+                                    <th className="pb-4 text-center text-[11px] font-black text-[#064e3b]/40 uppercase tracking-wider">Total harvest from this hive</th>
+                                    <th className="pb-4 text-center text-[11px] font-black text-[#064e3b]/40 uppercase tracking-wider">kg per family</th>
+                                    <th className="pb-4 text-right text-[11px] font-black text-[#064e3b]/40 uppercase tracking-wider">Change from the previous period</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y-2 divide-[#064e3b]/5">
+                                {[
+                                    { id: 1, name: 'Rogulski', families: 4, total: 27.52, change: 0.72 },
+                                    { id: 2, name: 'Caesar', families: 9, total: 52.6, change: -0.32 },
+                                ].map((item) => (
+                                    <tr key={item.id} className="group hover:bg-neutral-50/50 transition-colors">
+                                        <td className="py-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-none bg-[#facc15]/20 flex items-center justify-center border border-[#facc15] font-black text-[10px] text-[#064e3b]">
+                                                    #{item.id}
+                                                </div>
+                                                <span className="font-black text-[#064e3b] uppercase tracking-tight">{item.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="py-6 text-center font-black text-[#064e3b]/60">{item.families}</td>
+                                        <td className="py-6 text-center font-black text-[#064e3b]">{item.total.toFixed(2)} kg</td>
+                                        <td className="py-6 text-center font-black text-[#064e3b]/40">{(item.total / item.families).toFixed(2)} kg</td>
+                                        <td className={cn("py-6 text-right font-black", item.change >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                                            {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} kg
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* Filters */}
             <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
                 <CardContent className="p-6">
@@ -357,9 +429,14 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                             </SelectTrigger>
                             <SelectContent className="rounded-none border-2 border-[#064e3b] shadow-xl">
                                 <SelectItem value="all" className="uppercase font-black text-[10px]">Across All Cycles</SelectItem>
-                                <SelectItem value="2025" className="uppercase font-black text-[10px]">2025 Cycle</SelectItem>
-                                <SelectItem value="2024" className="uppercase font-black text-[10px]">2024 Cycle</SelectItem>
-                                <SelectItem value="2023" className="uppercase font-black text-[10px]">2023 Cycle</SelectItem>
+                                {Array.from({ length: new Date().getFullYear() - 2000 + 1 }, (_, i) => {
+                                    const year = (new Date().getFullYear() - i).toString();
+                                    return (
+                                        <SelectItem key={year} value={year} className="uppercase font-black text-[10px]">
+                                            {year} Cycle
+                                        </SelectItem>
+                                    );
+                                })}
                             </SelectContent>
                         </Select>
                         <Button variant="outline" className="h-12 px-8 rounded-none border-2 border-[#064e3b] text-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none gap-2 font-black text-xs uppercase tracking-widest">

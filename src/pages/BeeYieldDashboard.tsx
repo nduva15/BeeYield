@@ -104,6 +104,7 @@ const BeeYieldDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut, beeyieldUser } = useAuth();
     const navigate = useNavigate();
     const { t } = useLanguage();
+    const { moduleFlags } = useSettings();
 
     // Auth State
     const [authMode, setAuthMode] = React.useState<AuthMode>('login');
@@ -199,14 +200,20 @@ const BeeYieldDashboard: React.FC = () => {
 
     const lowBattery = devices.filter(d => d.battery_level < 20).length;
 
+    // Nav Items matching screenshot precisely - now filtered by module flags
+    const navItems: NavItem[] = React.useMemo(() => {
+        const items: NavItem[] = [
+            { id: 'home', label: 'Home', icon: Home },
+            { id: 'assistant', label: 'BeeYield AI', icon: Bot },
+        ];
 
+        // 1. Agro & Meteo Module
+        if (moduleFlags.agro) {
+            items.push({ id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid });
+        }
 
-    // Nav Items matching screenshot precisely
-    const navItems: NavItem[] = [
-        { id: 'home', label: 'Home', icon: Home },
-        { id: 'assistant', label: 'BeeYield AI', icon: Bot },
-        { id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid },
-        {
+        // 2. Precision Pollination Folder - Mixed modules
+        items.push({
             id: 'precision-pollination-folder',
             label: t('nav_precision_pollination'),
             icon: Calculator,
@@ -230,7 +237,10 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'vpm-counter', label: 'Visits Counter', icon: Camera },
                         { id: 'bfh-forecast', label: 'Work Forecast', icon: Zap },
                         { id: 'yield-predict', label: 'Yield Forecast', icon: Cpu },
-                    ]
+                    ].filter(i => {
+                        if (i.id === 'foraging-optimizer' && !moduleFlags.agro) return false;
+                        return true;
+                    })
                 },
                 {
                     title: 'Checkups',
@@ -238,7 +248,10 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'digital-audit', label: 'Hive Check', icon: FileBarChart },
                         { id: 'compliance-report', label: 'Report', icon: Award },
                         { id: 'bloom-tracking', label: 'Status', icon: Zap },
-                    ]
+                    ].filter(i => {
+                        if (i.id === 'bloom-tracking' && !moduleFlags.agro) return false;
+                        return true;
+                    })
                 },
                 {
                     title: 'System View',
@@ -246,103 +259,79 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'sensor-vitals', label: 'Hive Health', icon: Zap },
                         { id: 'continuous-monitor', label: 'Live View', icon: Activity },
                         { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
-                        { id: 'gateway-hub', label: 'Gateway Hub', icon: Server },
-                    ]
-                },
-                {
-                    title: 'Forecasting & Infrastructure',
-                    items: [
-                        { id: 'hive-telemetry', label: 'Hive Weight Changes', icon: Scale },
-                        { id: 'saturation-math', label: 'Area Coverage', icon: Crosshair },
-                        { id: 'contract-verification', label: 'Grade Certificates', icon: ShieldCheck },
-                    ]
+                        { id: 'gateway-hub', label: 'Gateway Hub', icon: Server, hidden: !moduleFlags.trackers },
+                    ].filter(i => !i.hidden)
                 },
             ]
-        },
+        });
 
-        { id: 'places', label: t('nav_my_places'), icon: MapPin },
-        {
-            id: 'beeyield',
-            label: t('nav_beeyield_hives'),
-            icon: Hexagon,
-            hasSubmenu: true,
-            submenuItems: [
-                { id: 'inspections', label: t('nav_inspections'), icon: Search },
-                { id: 'harvests', label: t('nav_harvests'), icon: Hand },
-                { id: 'flight-map', label: t('nav_flight_map'), icon: Map },
-                { id: 'varroa', label: t('nav_varroa'), icon: TrendingUp },
-                { id: 'sound', label: t('nav_sound'), icon: Volume2 },
-                { id: 'image-analysis', label: t('nav_image_analysis'), icon: Camera },
-                { id: 'health-guide', label: t('nav_health_guide'), icon: BookOpen },
-                { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileText },
-                { id: 'label-generator', label: t('nav_label_generator'), icon: Tag },
-                { id: 'global-hive-network', label: t('nav_global_hive_network'), icon: Globe },
-            ]
-        },
-        {
-            id: 'data',
-            label: t('nav_measurement_data'),
-            icon: Activity,
-            hasSubmenu: true,
-            submenuItems: [
-                { id: 'online', label: t('nav_online'), icon: Signal },
-                { id: 'bluetooth', label: t('nav_bluetooth'), icon: Bluetooth },
-                { id: 'devices', label: t('nav_my_devices'), icon: Cpu },
-                { id: 'usb', label: t('nav_usb'), icon: Usb },
-            ]
-        },
-        { id: 'notes', label: t('nav_my_notes'), icon: FileText },
-        { id: 'requests', label: t('nav_my_requests'), icon: HelpCircle },
-        { id: 'task', label: t('nav_my_task'), icon: ClipboardList },
-        { id: 'buy', label: t('nav_buy'), icon: Cpu },
-        {
+        // 3. Smart Beehives Module
+        if (moduleFlags.beehives) {
+            items.push({ id: 'places', label: t('nav_my_places'), icon: MapPin });
+            items.push({
+                id: 'beeyield',
+                label: t('nav_beeyield_hives'),
+                icon: Hexagon,
+                hasSubmenu: true,
+                submenuItems: [
+                    { id: 'inspections', label: t('nav_inspections'), icon: Search },
+                    { id: 'harvests', label: t('nav_harvests'), icon: Hand },
+                    { id: 'flight-map', label: t('nav_flight_map'), icon: Map },
+                    { id: 'varroa', label: t('nav_varroa'), icon: TrendingUp },
+                    { id: 'sound', label: t('nav_sound'), icon: Volume2 },
+                    { id: 'image-analysis', label: t('nav_image_analysis'), icon: Camera },
+                    { id: 'health-guide', label: t('nav_health_guide'), icon: BookOpen, hidden: !moduleFlags.patients },
+                    { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileText },
+                    { id: 'label-generator', label: t('nav_label_generator'), icon: Tag },
+                    { id: 'global-hive-network', label: t('nav_global_hive_network'), icon: Globe },
+                ].filter(i => !i.hidden)
+            });
+        }
+
+        // 4. Other Resources (Trackers)
+        if (moduleFlags.trackers) {
+            items.push({
+                id: 'data',
+                label: t('nav_measurement_data'),
+                icon: Activity,
+                hasSubmenu: true,
+                submenuItems: [
+                    { id: 'online', label: t('nav_online'), icon: Signal },
+                    { id: 'bluetooth', label: t('nav_bluetooth'), icon: Bluetooth },
+                    { id: 'devices', label: t('nav_my_devices'), icon: Cpu },
+                    { id: 'usb', label: t('nav_usb'), icon: Usb },
+                ]
+            });
+        }
+
+        items.push({ id: 'notes', label: t('nav_my_notes'), icon: FileText });
+        items.push({ id: 'requests', label: t('nav_my_requests'), icon: HelpCircle });
+        items.push({ id: 'task', label: t('nav_my_task'), icon: ClipboardList });
+        items.push({ id: 'buy', label: t('nav_buy'), icon: Cpu });
+
+        // 5. Meters Module (Always visible but could be filtered if needed)
+        items.push({
             id: 'meters',
             label: t('nav_meters'),
             icon: LayoutList,
             hasSubmenu: true,
             submenuItems: [
                 { id: 'meters-dashboard', label: t('nav_dashboard'), icon: Gauge },
-                {
-                    id: 'meters-list',
-                    label: t('nav_meter_list'),
-                    icon: List,
-                    subItems: [
-                        { id: 'meters-water', label: t('nav_water'), icon: Droplet },
-                        { id: 'meters-heat', label: t('nav_heat'), icon: Flame },
-                        { id: 'meters-energy', label: t('nav_energy'), icon: Zap },
-                        { id: 'meters-other', label: t('nav_other'), icon: Layers },
-                    ]
-                },
-                {
-                    id: 'meters-buildings',
-                    label: t('nav_buildings'),
-                    icon: Building2,
-                    subItems: [
-                        { id: 'meters-apartments', label: t('nav_apartments'), icon: Home },
-                    ]
-                },
-                {
-                    id: 'meters-measurements',
-                    label: t('nav_measurements'),
-                    icon: Activity,
-                    subItems: [
-                        { id: 'meters-charts', label: t('nav_charts'), icon: BarChart3 },
-                        { id: 'meters-consumption', label: t('nav_consumption'), icon: PieChart },
-                        { id: 'meters-comparisons', label: t('nav_comparisons'), icon: ArrowRightLeft },
-                        { id: 'meters-import', label: t('nav_import'), icon: Upload },
-                    ]
-                },
+                { id: 'meters-list', label: t('nav_meter_list'), icon: List },
                 { id: 'meters-alarms', label: t('nav_alarms_events'), icon: Bell },
                 { id: 'meters-payments', label: t('nav_payments_settlements'), icon: Banknote },
                 { id: 'meters-reports', label: t('nav_reports'), icon: FileText },
                 { id: 'meters-settings', label: t('settings'), icon: Settings },
             ]
-        },
-        { id: 'billing', label: t('billing'), icon: Receipt },
-        { id: 'integrations', label: 'Integrations', icon: Puzzle },
-        { id: 'support', label: t('nav_support'), icon: LifeBuoy },
-        { id: 'settings', label: t('settings'), icon: Settings },
-    ];
+        });
+
+        items.push({ id: 'billing', label: t('billing'), icon: Receipt });
+        items.push({ id: 'integrations', label: 'Integrations', icon: Puzzle });
+        items.push({ id: 'support', label: t('nav_support'), icon: LifeBuoy });
+        items.push({ id: 'settings', label: t('settings'), icon: Settings });
+
+        return items;
+    }, [moduleFlags, t]);
 
     // Function to render content based on active tab
     const renderContent = () => {
