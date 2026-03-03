@@ -23,6 +23,7 @@ import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import { NavItem } from '@/components/beeyield/DashboardSidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
@@ -204,7 +205,7 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield AI', icon: Bot },
+            { id: 'assistant', label: 'BeeYield Assistant', icon: Bot },
         ];
 
         // 1. Agro & Meteo Module
@@ -521,8 +522,8 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white">
+                <img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" />
             </div>
         );
     }
