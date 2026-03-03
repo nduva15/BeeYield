@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SettingsViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -35,8 +36,14 @@ interface SettingsViewProps {
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const { user, signOut } = useAuth();
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [showPassword, setShowPassword] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleSave = () => {
         setLoading(true);
@@ -45,6 +52,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             toast.success("Registry Updated");
         }, 1000);
     };
+
+    if (!mounted) return null;
 
     return (
         <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
@@ -125,6 +134,20 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     placeholder="Kibwezi, Kenya"
                                     className="w-full h-12 px-4 border-2 border-[#064e3b] bg-white font-bold text-xs uppercase focus:bg-[#facc15]/10 outline-none"
                                 />
+                            </div>
+
+                            <div className="pt-8 border-t-2 border-[#064e3b]/10 mt-8">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <h4 className="text-sm font-black uppercase tracking-tight">Dark Mode Theme</h4>
+                                        <p className="text-[10px] font-bold text-[#064e3b]/40 uppercase tracking-widest">Toggle visual interface colors.</p>
+                                    </div>
+                                    <Switch
+                                        checked={theme === 'dark'}
+                                        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                                        className="data-[state=checked]:bg-[#10b981] border-2 border-[#064e3b] h-8 w-14 rounded-none"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

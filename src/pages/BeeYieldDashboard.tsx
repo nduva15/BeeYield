@@ -204,7 +204,7 @@ const BeeYieldDashboard: React.FC = () => {
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
         { id: 'home', label: 'Home', icon: Home },
-        { id: 'assistant', label: t('nav_ai_assistant'), icon: Bot },
+        { id: 'assistant', label: 'BeeYield AI', icon: Bot },
         { id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid },
         {
             id: 'precision-pollination-folder',
@@ -508,7 +508,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'sound':
                 return <SoundAnalysisView onTabChange={handleTabChange} />;
             case 'health-guide':
-                return <HealthGuideView />;
+                return <HealthGuideView onTabChange={handleTabChange} />;
             case 'reports-exports':
                 return <ReportsExportsView onTabChange={handleTabChange} />;
             case 'label-generator':

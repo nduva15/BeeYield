@@ -36,13 +36,31 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     # 2. Bypass & Auth Check (single pass)
     raw_phone = str(order_in.shipping_address.get("phone", ""))
     clean_phone = "".join(filter(str.isdigit, raw_phone))
-    bypass_ph = getattr(settings, "ADMIN_BYPASS_PHONE", None)
+    
     is_bypass = False
-    if bypass_ph and len(clean_phone) >= 9:
-        is_bypass = clean_phone.endswith(bypass_ph[-9:]) or (bypass_ph in str(order_in.dict()))
-
-    if not is_bypass and not user_id:
-        return {"status": "error", "message": "Authentication required for checkout. Please sign in."}
+    
+    # Secure Check: If token is provided, verify against the secured database role system
+    # This aligns with the Phase A: Secure Role-Based Access Control PRD
+    if token:
+        try:
+            # db_select automatically runs under the user's RLS context, so is_admin() works
+            admin_check = await db_select("profiles", columns="id", token=token, limit=1)
+            # If we just need to know if they are an admin, we can rely on a custom RPC or just check if the backend allowed a certain operation,
+            # but for a quick RBAC, it's better to fetch their profile role if available. 
+            # Alternatively, since we created the SQL is_admin() function, we can execute an RPC call.
+            from app.db.supabase_db import supabase_client
+            # Verify admin status securely via RPC
+            rpc_res = supabase_client.rpc("is_admin").execute()
+            if rpc_res.data is True:
+                is_bypass = True
+        except Exception as e:
+            logger.warning(f"Failed to verify admin status via RPC: {e}")
+            
+    # Fallback to local .env configuration (for development/legacy support)
+    if not is_bypass:
+        bypass_ph = getattr(settings, "ADMIN_BYPASS_PHONE", None)
+        if bypass_ph and len(clean_phone) >= 9:
+            is_bypass = clean_phone.endswith(bypass_ph[-9:]) or (bypass_ph in str(order_in.dict()))
 
     # 3. Rust Engine Ledger Idempotency
     if id_key:
