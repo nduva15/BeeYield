@@ -12,7 +12,10 @@ import {
     Check,
     ChevronDown,
     ArrowLeft,
-    Loader2
+    Loader2,
+    Repeat,
+    PauseCircle,
+    StopCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -40,6 +43,12 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { beeyieldService, Apiary, Hive, Task } from '@/services/beeyieldService';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+    MoreVertical,
+    Pause,
+    Play,
+    StopCircle as StopIcon
+} from 'lucide-react';
 
 interface MyTaskViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -155,6 +164,9 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                 apiary_id: selectedApiary?.id,
                 hive_id: selectedHive?.id,
                 is_completed: false,
+                is_recurring: isRecurring,
+                recurrence_days: isRecurring ? parseInt(recurrenceDays) : undefined,
+                recurrence_status: isRecurring ? 'active' : undefined,
                 recurrence: isRecurring ? JSON.stringify({ days: parseInt(recurrenceDays) || 7 }) : "None"
             });
 
@@ -181,6 +193,43 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
             toast.error(t('task_saved_error'));
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const toggleTaskCompletion = async (task: Task) => {
+        try {
+            const { error } = await beeyieldService.updateTask(task.id, {
+                is_completed: !task.is_completed,
+                status: !task.is_completed ? 'completed' : 'pending'
+            });
+            if (error) throw error;
+
+            toast.success(task.is_completed ? 'Task reopened' : 'Task completed');
+
+            // Refresh tasks
+            const latestTasks = await beeyieldService.getTasks();
+            setTasks(latestTasks);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to update task');
+        }
+    };
+
+    const updateRecurrenceStatus = async (task: Task, status: 'active' | 'paused' | 'stopped') => {
+        try {
+            const { error } = await beeyieldService.updateTask(task.id, {
+                recurrence_status: status
+            });
+            if (error) throw error;
+
+            toast.success(`Recurrence ${status}`);
+
+            // Refresh tasks
+            const latestTasks = await beeyieldService.getTasks();
+            setTasks(latestTasks);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to update status');
         }
     };
 
@@ -710,24 +759,95 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                                 return d >= monday && d <= sunday;
                                                             })
                                                             .map(task => (
-                                                                <div key={task.id} className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg flex items-center justify-between group hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                                                                    <div className="flex items-center gap-3">
+                                                                <div key={task.id} className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg flex items-center justify-between group hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                                                                    <div className="flex items-center gap-3 flex-1">
+                                                                        <button
+                                                                            onClick={() => toggleTaskCompletion(task)}
+                                                                            className={cn(
+                                                                                "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
+                                                                                task.is_completed
+                                                                                    ? "bg-[#1B9157] border-[#1B9157] text-white"
+                                                                                    : "border-slate-200 dark:border-slate-700 hover:border-[#1B9157]"
+                                                                            )}
+                                                                        >
+                                                                            {task.is_completed && <Check className="w-4 h-4" />}
+                                                                        </button>
                                                                         <div className={cn(
-                                                                            "w-2 h-2 rounded-full",
+                                                                            "w-1 h-8 rounded-full",
                                                                             task.priority === 'High' ? "bg-red-500" : task.priority === 'Medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
                                                                         )} />
-                                                                        <div>
-                                                                            <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{task.title}</h4>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="flex items-center gap-2">
+                                                                                <h4 className={cn(
+                                                                                    "font-bold text-slate-700 dark:text-slate-200 text-sm truncate",
+                                                                                    task.is_completed && "line-through opacity-50"
+                                                                                )}>{task.title}</h4>
+                                                                                {task.is_recurring && (
+                                                                                    <div className="flex items-center gap-1">
+                                                                                        <Repeat className={cn(
+                                                                                            "w-3 h-3",
+                                                                                            task.recurrence_status === 'active' ? "text-[#1B9157]" :
+                                                                                                task.recurrence_status === 'paused' ? "text-amber-500" : "text-slate-400"
+                                                                                        )} />
+                                                                                        {task.recurrence_status !== 'active' && (
+                                                                                            <span className="text-[8px] font-black uppercase tracking-tighter text-slate-400">
+                                                                                                {task.recurrence_status}
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
                                                                             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                                                                                 {task.type} • {format(new Date(task.due_date!), 'h:mm a')}
+                                                                                {task.is_recurring && ` • Every ${task.recurrence_days} days`}
                                                                             </p>
                                                                         </div>
                                                                     </div>
-                                                                    {task.hive && (
-                                                                        <span className="text-[10px] font-mono bg-white dark:bg-black px-2 py-1 rounded border border-slate-100 dark:border-gray-800 text-slate-500">
-                                                                            {task.hive.hive_code}
-                                                                        </span>
-                                                                    )}
+
+                                                                    <div className="flex items-center gap-2">
+                                                                        {task.hive && (
+                                                                            <span className="hidden sm:inline-block text-[10px] font-mono bg-white dark:bg-black px-2 py-1 rounded border border-slate-100 dark:border-gray-800 text-slate-500">
+                                                                                {task.hive.hive_code}
+                                                                            </span>
+                                                                        )}
+
+                                                                        {task.is_recurring && (
+                                                                            <Popover>
+                                                                                <PopoverTrigger asChild>
+                                                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                                                                        <MoreVertical className="w-4 h-4 text-slate-400" />
+                                                                                    </Button>
+                                                                                </PopoverTrigger>
+                                                                                <PopoverContent className="w-48 p-2 rounded-2xl" align="end">
+                                                                                    <div className="space-y-1">
+                                                                                        {task.recurrence_status === 'paused' ? (
+                                                                                            <button
+                                                                                                onClick={() => updateRecurrenceStatus(task, 'active')}
+                                                                                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-xs font-bold text-[#1B9157]"
+                                                                                            >
+                                                                                                <Play className="w-4 h-4" /> Resume Series
+                                                                                            </button>
+                                                                                        ) : (
+                                                                                            <button
+                                                                                                onClick={() => updateRecurrenceStatus(task, 'paused')}
+                                                                                                disabled={task.recurrence_status === 'stopped'}
+                                                                                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-xs font-bold text-amber-500 disabled:opacity-50"
+                                                                                            >
+                                                                                                <Pause className="w-4 h-4" /> Pause Series
+                                                                                            </button>
+                                                                                        )}
+                                                                                        <button
+                                                                                            onClick={() => updateRecurrenceStatus(task, 'stopped')}
+                                                                                            disabled={task.recurrence_status === 'stopped'}
+                                                                                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-xs font-bold text-red-500 disabled:opacity-50"
+                                                                                        >
+                                                                                            <StopIcon className="w-4 h-4" /> Stop Series
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </PopoverContent>
+                                                                            </Popover>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             ))
                                                         }

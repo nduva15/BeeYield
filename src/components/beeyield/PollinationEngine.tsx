@@ -49,6 +49,50 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
     const [schemeA, setSchemeA] = React.useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Scheme A (Standard)' });
     const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Scheme B (Premium)' });
     const [isSaving, setIsSaving] = React.useState(false);
+    const [crops, setCrops] = React.useState<any[]>([]);
+    const [selectedCrop, setSelectedCrop] = React.useState('Almond');
+    const [calcResultA, setCalcResultA] = React.useState<any>(null);
+    const [calcResultB, setCalcResultB] = React.useState<any>(null);
+    const [isCalculating, setIsCalculating] = React.useState(false);
+
+    React.useEffect(() => {
+        const loadCrops = async () => {
+            const data = await beeyieldService.getCropRequirements();
+            setCrops(data);
+        };
+        loadCrops();
+    }, []);
+
+    const runCalculation = React.useCallback(async () => {
+        setIsCalculating(true);
+        try {
+            const [resA, resB] = await Promise.all([
+                beeyieldService.calculatePollination({
+                    crop_type: selectedCrop,
+                    acreage: 100,
+                    avg_frames_per_hive: schemeA.framesPerHive,
+                    weather_factor: 0.9
+                }),
+                beeyieldService.calculatePollination({
+                    crop_type: selectedCrop,
+                    acreage: 100,
+                    avg_frames_per_hive: schemeB.framesPerHive,
+                    weather_factor: 0.9
+                })
+            ]);
+            setCalcResultA(resA);
+            setCalcResultB(resB);
+        } catch (e) {
+            console.error('Calculation error:', e);
+        } finally {
+            setIsCalculating(false);
+        }
+    }, [selectedCrop, schemeA, schemeB]);
+
+    React.useEffect(() => {
+        const timer = setTimeout(runCalculation, 500);
+        return () => clearTimeout(timer);
+    }, [runCalculation]);
 
     // Model Constants
     const TARGET_FPA = 1.0; // Frames per acre target
@@ -105,9 +149,27 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
+                    {crops.length > 0 ? (
+                        <select
+                            value={selectedCrop}
+                            onChange={(e) => setSelectedCrop(e.target.value)}
+                            className="px-4 py-3 border-4 border-[#064e3b] bg-white font-black uppercase text-xs outline-none hover:bg-[#facc15]/10"
+                        >
+                            {crops.map(c => (
+                                <option key={c.id} value={c.crop_name}>{c.crop_name}</option>
+                            ))}
+                        </select>
+                    ) : (
+                        <div className="px-4 py-3 border-4 border-[#064e3b]/10 bg-white/50 animate-pulse text-[10px] font-black uppercase">
+                            Loading Crops...
+                        </div>
+                    )}
                     <div className="px-6 py-3 border-4 border-[#064e3b] bg-[#064e3b] text-white">
                         <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Target FPA</p>
-                        <p className="text-xl font-black text-[#facc15]">1.00 <span className="text-[10px] text-white/60">Frames/Ac</span></p>
+                        <p className="text-xl font-black text-[#facc15]">
+                            {(calcResultA?.target_fpa || TARGET_FPA).toFixed(2)}
+                            <span className="text-[10px] text-white/60 ml-2">Frames/Ac</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -148,12 +210,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6 pt-6">
-                        <CircularGauge value={statsA.setProbability} max={100} label="Pollination Set" />
+                        <CircularGauge value={calcResultA?.coverage_health_pct || statsA.setProbability} max={100} label="Pollination Set" />
                         <div className="border-4 border-[#064e3b] p-4 flex flex-col justify-center">
                             <p className="text-[9px] font-black uppercase text-[#064e3b]/40">Est. Cost/Acre</p>
                             <p className="text-3xl font-black text-[#064e3b] tabular-nums">${statsA.cost.toFixed(0)}</p>
                             <div className="mt-2 h-1 bg-[#064e3b]/10 w-full">
-                                <div className="h-full bg-[#10b981]" style={{ width: `${Math.min(100, statsA.fpa * 100)}%` }} />
+                                <div className="h-full bg-[#10b981]" style={{ width: `${calcResultA?.coverage_health_pct || Math.min(100, statsA.fpa * 100)}%` }} />
                             </div>
                         </div>
                     </div>
@@ -194,12 +256,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6 pt-6">
-                        <CircularGauge value={statsB.setProbability} max={100} label="Pollination Set" />
+                        <CircularGauge value={calcResultB?.coverage_health_pct || statsB.setProbability} max={100} label="Pollination Set" />
                         <div className="border-4 border-[#064e3b] p-4 flex flex-col justify-center">
                             <p className="text-[9px] font-black uppercase text-[#064e3b]/40">Est. Cost/Acre</p>
                             <p className="text-3xl font-black text-[#064e3b] tabular-nums">${statsB.cost.toFixed(0)}</p>
                             <div className="mt-2 h-1 bg-[#064e3b]/10 w-full">
-                                <div className="h-full bg-[#facc15]" style={{ width: `${Math.min(100, statsB.fpa * 100)}%` }} />
+                                <div className="h-full bg-[#facc15]" style={{ width: `${calcResultB?.coverage_health_pct || Math.min(100, statsB.fpa * 100)}%` }} />
                             </div>
                         </div>
                     </div>
@@ -215,10 +277,10 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="flex-1 space-y-3 text-center md:text-left">
                         <h3 className="text-4xl font-black uppercase tracking-tighter">ROI Delta Analysis</h3>
                         <p className="text-xs font-bold text-[#064e3b]/70 max-w-2xl uppercase">
-                            {statsA.setProbability > statsB.setProbability
-                                ? "Scheme A offers superior biological set probability (+" + (statsA.setProbability - statsB.setProbability).toFixed(1) + "%)."
-                                : "Scheme B offers superior biological set probability (+" + (statsB.setProbability - statsA.setProbability).toFixed(1) + "%)."}
-                            Given tree age data, a minimum FPA of {TARGET_FPA.toFixed(2)} is recommended for 100% variety set coverage.
+                            {(calcResultA?.coverage_health_pct || statsA.setProbability) > (calcResultB?.coverage_health_pct || statsB.setProbability)
+                                ? "Scheme A offers superior biological set probability (+" + ((calcResultA?.coverage_health_pct || statsA.setProbability) - (calcResultB?.coverage_health_pct || statsB.setProbability)).toFixed(1) + "%)."
+                                : "Scheme B offers superior biological set probability (+" + ((calcResultB?.coverage_health_pct || statsB.setProbability) - (calcResultA?.coverage_health_pct || statsA.setProbability)).toFixed(1) + "%)."}
+                            Given tree age data and {selectedCrop} requirements, a minimum FPA of {(calcResultA?.target_fpa || TARGET_FPA).toFixed(2)} is recommended for 100% variety set coverage.
                         </p>
                     </div>
                     <div className="border-l-4 border-[#064e3b]/10 pl-10 hidden md:block">

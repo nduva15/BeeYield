@@ -39,7 +39,7 @@ import {
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { submitNewsletterSubscription } from "@/services/contactService";
-import { beeyieldService } from "@/services/beeyieldService";
+import beeyieldService from "@/services/beeyieldService";
 import SEO from "@/components/SEO";
 
 // Reusing same product types and data from Shop.tsx for consistency

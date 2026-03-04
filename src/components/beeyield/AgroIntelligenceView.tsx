@@ -18,7 +18,7 @@ import {
     Activity,
     Globe
 } from 'lucide-react';
-import { beeyieldService } from '@/services/beeyieldService';
+import beeyieldService from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 
 interface AgroIntelligenceViewProps {

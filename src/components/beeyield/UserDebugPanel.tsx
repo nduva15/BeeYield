@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Copy, User, Mail, Key, Database, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import { beeyieldService } from '@/services/beeyieldService';
+import beeyieldService from '@/services/beeyieldService';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 const UserDebugPanel: React.FC = () => {

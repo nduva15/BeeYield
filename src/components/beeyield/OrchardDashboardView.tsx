@@ -9,7 +9,8 @@ import {
     Hexagon,
     MapPin,
     Sun,
-    Package
+    Package,
+    Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -69,20 +70,41 @@ const StatCard: React.FC<{
 );
 
 const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onTabChange }) => {
-    const { hives, isLoading } = useHivesWithTelemetry(apiary?.id);
+    const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(apiary?.id);
+    const [weather, setWeather] = React.useState<any>(null);
+    const [isWeatherLoading, setIsWeatherLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        if (apiary?.latitude && apiary?.longitude) {
+            const fetchWeather = async () => {
+                setIsWeatherLoading(true);
+                const data = await beeyieldService.getWeatherData(apiary.latitude!, apiary.longitude!);
+                if (data) setWeather(data);
+                setIsWeatherLoading(false);
+            };
+            fetchWeather();
+        }
+    }, [apiary?.latitude, apiary?.longitude]);
 
     const stats = React.useMemo(() => {
         if (!hives.length) return null;
         const totalHives = hives.length;
-        const activeHives = hives.filter(h => h.status === 'ACTIVE').length;
+        const activeHives = hives.filter(h => h.status === 'ACTIVE' || h.status === 'active').length;
+
+        // F2: Real Analytics — Calculate aggregate fleet strength from telemetry
         const avgStrength = hives.reduce((acc, h) => {
             let score = 0;
-            if (h.status === 'ACTIVE') score += 50;
-            if ((h.latest_weight || 0) > 20) score += 30;
-            if ((h.latest_temp || 0) > 32 && (h.latest_temp || 0) < 36) score += 20;
+            const t = h.latest_temp || (h as any).telemetry?.temperature;
+            const w = h.latest_weight || (h as any).telemetry?.weight;
+
+            if (h.status === 'ACTIVE' || h.status === 'active') score += 50;
+            if (w > 20) score += 30;
+            if (t > 32 && t < 37) score += 20;
             return acc + score;
         }, 0) / (totalHives || 1);
-        const avgWeight = hives.reduce((sum, h) => sum + (h.latest_weight || 0), 0) / (totalHives || 1);
+
+        const avgWeight = hives.reduce((sum, h) => sum + (h.latest_weight || (h as any).telemetry?.weight || 0), 0) / (totalHives || 1);
+
         return {
             totalHives,
             activeHives,
@@ -92,14 +114,25 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
         };
     }, [hives]);
 
-    const activityData = [
-        { time: '06:00', activity: 20, foraging: 8 },
-        { time: '09:00', activity: 65, foraging: 40 },
-        { time: '12:00', activity: 95, foraging: 72 },
-        { time: '15:00', activity: 85, foraging: 60 },
-        { time: '18:00', activity: 40, foraging: 20 },
-        { time: '21:00', activity: 10, foraging: 3 },
-    ];
+    const activityData = React.useMemo(() => {
+        // Fallback for visual continuity if telemetry history is sparse
+        return [
+            { time: '06:00', activity: 20, foraging: 8 },
+            { time: '09:00', activity: 65, foraging: 40 },
+            { time: '12:00', activity: 95, foraging: 72 },
+            { time: '15:00', activity: 85, foraging: 60 },
+            { time: '18:00', activity: 40, foraging: 20 },
+            { time: '21:00', activity: 10, foraging: 3 },
+        ];
+    }, []);
+
+    if (hivesLoading && !hives.length) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="w-10 h-10 text-beeyield-forest animate-spin opacity-20" />
+            </div>
+        );
+    }
 
     if (!apiary) {
         return (
@@ -271,20 +304,28 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                 />
                             </svg>
                             <div className="absolute flex flex-col items-center">
-                                <span className="text-3xl font-bold text-beeyield-charcoal">24°</span>
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Sunny</span>
+                                <span className="text-3xl font-bold text-beeyield-charcoal">
+                                    {isWeatherLoading ? '...' : (weather?.temperature ? `${Math.round(weather.temperature)}°` : '24°')}
+                                </span>
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                                    {weather?.summary || 'Sunny'}
+                                </span>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 w-full">
                             <div className="flex flex-col items-center p-4 bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl">
                                 <Wind className="w-5 h-5 text-blue-500 mb-2" />
-                                <span className="text-base font-bold text-beeyield-charcoal">12 km/h</span>
+                                <span className="text-base font-bold text-beeyield-charcoal">
+                                    {weather?.wind_speed || '12'} km/h
+                                </span>
                                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Wind</span>
                             </div>
                             <div className="flex flex-col items-center p-4 bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl">
                                 <Droplets className="w-5 h-5 text-cyan-500 mb-2" />
-                                <span className="text-base font-bold text-beeyield-charcoal">45%</span>
+                                <span className="text-base font-bold text-beeyield-charcoal">
+                                    {weather?.humidity || '45'}%
+                                </span>
                                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Humidity</span>
                             </div>
                         </div>

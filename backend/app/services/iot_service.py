@@ -72,3 +72,65 @@ async def create_device(data: Dict[str, Any], token: Optional[str] = None) -> Di
     if result.get("success"):
         return result["data"][0] if result.get("data") else data
     return data
+
+async def check_sensor_health(token: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Automated health scan for sensors. Generates alerts in sensor_alerts table.
+    """
+    from datetime import datetime, timedelta
+    from app.db.supabase_db import db_select, db_insert
+    
+    # 1. Fetch active devices and latest readings
+    devices = await db_select("iot_devices", filters={"status": "active"}, token=token)
+    since_24h = (datetime.utcnow() - timedelta(hours=24)).isoformat()
+    raw_readings = await db_select("sensor_readings", limit=200, order_by="recorded_at", ascending=False, token=token)
+    
+    alerts_spawned = 0
+    
+    # Simple threshold logic
+    for dev in devices:
+        dev_id = dev.get("id")
+        # Check connectivity
+        last_ping = dev.get("last_ping")
+        if not last_ping or last_ping < since_24h:
+            await db_insert("sensor_alerts", {
+                "hive_id": dev.get("hive_id"),
+                "apiary_id": dev.get("apiary_id"),
+                "alert_type": "connectivity",
+                "severity": "warning",
+                "message": f"Sensor {dev.get('device_id')} heartbeat missing for >24h",
+                "reading_value": 0,
+                "resolved": False
+            }, token=token)
+            alerts_spawned += 1
+            
+    # Check data ranges
+    for r in raw_readings:
+        vals = r.get("readings", {})
+        temp = vals.get("temperature") or vals.get("internal_temp")
+        if temp and (temp > 40 or temp < 20):
+            await db_insert("sensor_alerts", {
+                "hive_id": r.get("hive_id"),
+                "alert_type": "temperature",
+                "severity": "critical" if temp > 42 else "warning",
+                "message": f"Abnormal temperature detected: {temp}°C",
+                "reading_value": temp,
+                "threshold_value": 38,
+                "resolved": False
+            }, token=token)
+            alerts_spawned += 1
+            
+        weight = vals.get("hive_weight") or vals.get("weight_kg")
+        if weight and weight < 1.0: # Empty hive or sensor failure
+            await db_insert("sensor_alerts", {
+                "hive_id": r.get("hive_id"),
+                "alert_type": "weight",
+                "severity": "critical",
+                "message": "Critical weight loss or sensor malfunction detected",
+                "reading_value": weight,
+                "threshold_value": 5.0,
+                "resolved": False
+            }, token=token)
+            alerts_spawned += 1
+
+    return {"status": "success", "alerts_spawned": alerts_spawned}

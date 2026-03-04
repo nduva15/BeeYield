@@ -383,13 +383,13 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         }
     };
 
-    const handleSendEmail = (transaction: any) => {
+    const handleSendEmail = async (transaction: any) => {
         toast.promise(
-            new Promise(resolve => setTimeout(resolve, 1500)),
+            beeyieldService.sendOrderInvoice(transaction.id, transaction.client_email),
             {
                 loading: `Preparing email for ${transaction.id.slice(0, 8)}...`,
-                success: 'Invoice sent to registered client email.',
-                error: 'Email delivery failed'
+                success: (res) => res.message || 'Invoice sent to registered client email.',
+                error: (err) => err.message || 'Email delivery failed'
             }
         );
     };
@@ -552,7 +552,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                 <Button variant="outline" className="rounded-full bg-gray-50 border-gray-200 text-gray-600 text-xs font-bold px-4 h-9">
                                     View checklist
                                 </Button>
-                                <Button className="rounded-full bg-[#60A5FA] hover:bg-[#3B82F6] text-white text-xs font-bold px-4 h-9 border-none shadow-sm">
+                                <Button onClick={() => setActiveSubTab('Compliance (eTIMS)')} className="rounded-full bg-[#60A5FA] hover:bg-[#3B82F6] text-white text-xs font-bold px-4 h-9 border-none shadow-sm">
                                     Configure eTIMS
                                 </Button>
                             </div>

@@ -70,6 +70,7 @@ import OrchardMapper from '@/components/beeyield/OrchardMapper';
 import SeasonSummary from '@/components/beeyield/SeasonSummary';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
 import IntegrationsView from '@/components/beeyield/IntegrationsView';
+import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
 
 import LiveActivityHeatmap from '@/components/beeyield/LiveActivityHeatmap';
 import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
@@ -249,6 +250,7 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'digital-audit', label: 'Hive Check', icon: FileBarChart },
                         { id: 'compliance-report', label: 'Report', icon: Award },
                         { id: 'bloom-tracking', label: 'Status', icon: Zap },
+                        { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
                     ].filter(i => {
                         if (i.id === 'bloom-tracking' && !moduleFlags.agro) return false;
                         return true;
@@ -410,6 +412,9 @@ const BeeYieldDashboard: React.FC = () => {
 
             case 'compliance-report':
                 return <ComplianceReport />;
+
+            case 'sensor-alerts':
+                return <SensorAlertsView />;
 
             case 'sensor-vitals':
                 return <SensorHealthView onTabChange={handleTabChange} />;

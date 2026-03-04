@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { beeyieldService } from "@/services/beeyieldService";
+import beeyieldService from "@/services/beeyieldService";
 
 interface Job {
   id: string;

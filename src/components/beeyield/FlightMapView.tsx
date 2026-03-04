@@ -99,8 +99,20 @@ const FlightMapView: React.FC = () => {
                 setPlaces(infrastructure || []);
 
                 if (infrastructure && infrastructure.length > 0) {
-                    setSelectedPlaceId(infrastructure[0].id);
-                    await loadPlaceData(infrastructure[0]);
+                    // Map infrastructure to ensure it has lat/lng from its apiary if missing
+                    const apiaries = await beeyieldService.getApiaries();
+                    const enriched = infrastructure.map(inf => {
+                        const apiary = apiaries.find(a => a.id === inf.apiary_id);
+                        return {
+                            ...inf,
+                            latitude: inf.latitude || apiary?.latitude || 0,
+                            longitude: inf.longitude || apiary?.longitude || 0,
+                            name: inf.name || apiary?.name || `Device ${inf.serial_number}`
+                        };
+                    });
+                    setPlaces(enriched);
+                    setSelectedPlaceId(enriched[0].id);
+                    await loadPlaceData(enriched[0]);
                 } else {
                     // Fallback to apiaries if registry is empty
                     const apiaries = await beeyieldService.getApiaries();

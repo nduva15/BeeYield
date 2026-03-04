@@ -18,13 +18,30 @@ try:
 except Exception as e:
     print(f"[WARNING] Could not apply DNS patch: {e}")
 
+import asyncio
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Initialize shared DB client
     init_db_client()
+    
+    # Start the persistent background worker for task recurrence
+    from app.services.task_worker import chrono_worker
+    
+    async def run_worker_loop():
+        while True:
+            await chrono_worker.run_automation_cycle()
+            # Run every hour (3600 seconds) as per PRD
+            await asyncio.sleep(3600)
+            
+    # Keep a reference to the task so it isn't garbage collected
+    app.state.chrono_task = asyncio.create_task(run_worker_loop())
+    
     yield
     # Shutdown: Close shared DB client
     await close_db_client()
+    if hasattr(app.state, "chrono_task"):
+        app.state.chrono_task.cancel()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

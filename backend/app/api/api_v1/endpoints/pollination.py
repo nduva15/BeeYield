@@ -142,6 +142,39 @@ async def calculate_pollination_needs(
     return await pollination_service.calculate_pollination_needs(input_data, token=token)
 
 
+# ========== FLIGHT OPTIMIZATION (AHP / SPATIAL) ==========
+
+@router.post("/optimize", response_model=List[schemas.PollinationPlacementResult])
+async def optimize_hive_placement(
+    request: schemas.PollinationOptimizationRequest,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    """
+    Run the Spatial Optimizer engine using a Greedy Algorithm.
+    Given an orchard boundary (GeoJSON), target crop, and number of hives to deploy,
+    generates optimal latitude/longitude placements minimizing overlap and maximizing coverage.
+    """
+    from app.services.spatial_optimizer import SpatialOptimizer, OptimizerConfig
+
+    configKwargs = {}
+    if request.bee_flight_radius_km is not None:
+        configKwargs['bee_flight_radius_km'] = request.bee_flight_radius_km
+    if request.ahp_weights is not None:
+        configKwargs['ahp_weights'] = request.ahp_weights
+
+    optimizer = SpatialOptimizer(OptimizerConfig(**configKwargs))
+    
+    # optimize_placement returns a list of PlacementResult Pydantic models.
+    # The endpoint response_model schemas.PollinationPlacementResult matches it exactly.
+    placements = optimizer.optimize_placement(
+        orchard_geojson=request.orchard_geojson,
+        hive_count=request.hive_count,
+        target_crop=request.target_crop
+    )
+    
+    return [p.dict() for p in placements]
+
 # ========== CONTRACTS ==========
 
 @router.get("/contracts", response_model=List[schemas.PollinationContract])

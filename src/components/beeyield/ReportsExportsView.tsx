@@ -435,8 +435,22 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-primary">
-                                            <Download className="w-4 h-4" />
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="text-gray-400 hover:text-primary"
+                                            onClick={() => {
+                                                if (report.file_url) {
+                                                    window.open(report.file_url, '_blank');
+                                                } else {
+                                                    toast.info('Report is still processing...');
+                                                }
+                                            }}
+                                        >
+                                            {report.status === 'processing' || report.status === 'pending'
+                                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                                : <Download className="w-4 h-4" />
+                                            }
                                         </Button>
                                     </div>
                                 ))}
