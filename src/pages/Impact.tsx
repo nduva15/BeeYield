@@ -6,7 +6,7 @@ import impactImage from "@/assets/impact-beekeeping.jpg";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
-import { beeyieldService } from "@/services/beeyieldService";
+import beeyieldService from "@/services/beeyieldService";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";

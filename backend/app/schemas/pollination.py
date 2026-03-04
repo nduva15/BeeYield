@@ -304,6 +304,26 @@ class PollinationCalculatorResult(BaseModel):
         }
 
 
+# ========== SPATIAL OPTIMIZATION SCHEMAS ==========
+
+class PollinationOptimizationRequest(BaseModel):
+    """Input for spatial pollination optimizer"""
+    orchard_geojson: Dict[str, Any]
+    hive_count: int = Field(..., gt=0)
+    target_crop: str
+    bee_flight_radius_km: Optional[float] = 1.5
+    ahp_weights: Optional[Dict[str, float]] = None
+
+class PollinationPlacementResult(BaseModel):
+    """Output individual placement coordinate and score"""
+    lat: float
+    lng: float
+    score: float
+    coverage_radius_km: float
+    metadata: Dict[str, Any]
+
+
+
 # ========== ACTIVITY LOG SCHEMAS ==========
 
 class PollinationActivityLog(BaseModel):

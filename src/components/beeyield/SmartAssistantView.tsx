@@ -53,10 +53,7 @@ interface Message {
 }
 
 const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
-    const [chats, setChats] = React.useState<Chat[]>(() => {
-        const saved = localStorage.getItem('beeyield_chats');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [chats, setChats] = React.useState<Chat[]>([]);
     const [selectedChat, setSelectedChat] = React.useState<string | null>(null);
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [inputValue, setInputValue] = React.useState('');
@@ -74,8 +71,18 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     }, []);
 
     React.useEffect(() => {
-        localStorage.setItem('beeyield_chats', JSON.stringify(chats));
-    }, [chats]);
+        const loadSessions = async () => {
+            const sessions = await aiService.getSessions();
+            setChats(sessions.map(s => ({
+                id: s.id,
+                title: s.title,
+                date: new Date(s.updated_at || s.created_at).toLocaleDateString(),
+                preview: '...',
+                messages: []
+            })));
+        };
+        loadSessions();
+    }, []);
 
     React.useEffect(() => {
         if (initialMessage) {
@@ -89,12 +96,25 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         }
     }, [initialMessage, onInitialMessageConsumed]);
 
-    const switchChat = (chatId: string) => {
+    const switchChat = async (chatId: string) => {
         const chat = chats.find(c => c.id === chatId);
         if (chat) {
             setSelectedChat(chatId);
-            setMessages(chat.messages);
             setShowWelcome(false);
+            const data = await aiService.getSessionMessages(chatId);
+            if (data && data.messages) {
+                const msgs: Message[] = data.messages.map(m => ({
+                    id: m.id,
+                    role: m.role,
+                    content: m.content,
+                    timestamp: new Date(m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+                    sources: typeof m.sources === 'string' ? JSON.parse(m.sources) : m.sources,
+                    suggestions: typeof m.suggestions === 'string' ? JSON.parse(m.suggestions) : m.suggestions
+                }));
+                setMessages(msgs);
+            } else {
+                setMessages(chat.messages || []);
+            }
         }
     };
 
@@ -181,7 +201,7 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         }));
 
         try {
-            const aiData = await aiService.chat(inputValue, history, language);
+            const aiData = await aiService.chat(inputValue, history, language, selectedChat || undefined);
 
             const aiMessage: Message = {
                 id: (Date.now() + 1).toString(),
@@ -193,11 +213,20 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
             };
 
             setMessages(prev => [...prev, aiMessage]);
-            setChats(prev => prev.map(c =>
-                c.id === (selectedChat || currentId)
-                    ? { ...c, messages: [...c.messages, aiMessage], preview: aiData.response.substring(0, 50) + '...' }
-                    : c
-            ));
+
+            // Handle if a new session was created on backend
+            if (aiData.session_id && !selectedChat) {
+                setSelectedChat(aiData.session_id);
+                setChats(prev => prev.map(c =>
+                    c.id === currentId ? { ...c, id: aiData.session_id!, preview: aiData.response.substring(0, 50) + '...' } : c
+                ));
+            } else {
+                setChats(prev => prev.map(c =>
+                    c.id === (selectedChat || currentId)
+                        ? { ...c, messages: [...c.messages, aiMessage], preview: aiData.response.substring(0, 50) + '...' }
+                        : c
+                ));
+            }
         } catch (error) {
             const errorMessage: Message = {
                 id: (Date.now() + 2).toString(),

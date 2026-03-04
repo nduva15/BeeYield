@@ -6,7 +6,7 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact,
     forms, shop, blog, careers, media,
     services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters, beeyield, bee_data, pollination, inspections, reports,
+    admin_extended, meters, beeyield, bee_data, pollination, inspections, reports, billing,
     ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth,
     requests, image_analysis, acoustic, routing, forage
 )
@@ -27,6 +27,7 @@ api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["Bee
 api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=["Bluetooth"])
 api_router.include_router(requests.router, prefix="/beeyield/requests", tags=["Support Requests"])
 api_router.include_router(notes.router, prefix="/beeyield/notes", tags=["Notes"])
+api_router.include_router(billing.router, prefix="/beeyield/billing", tags=["Billing"])
 
 
 # Precision Pollination endpoint
@@ -94,6 +95,9 @@ api_router.include_router(routing.router, prefix="/routing", tags=["Routing"])
 
 # Forage & Weather Intelligence
 api_router.include_router(forage.router, prefix="/forage", tags=["Forage Analysis"])
+
+# Reports Engine (PRD API spec: /api/v1/reports/generate)
+api_router.include_router(reports.router, prefix="/reports", tags=["Reports Engine"])
 
 # Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])

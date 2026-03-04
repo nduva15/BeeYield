@@ -48,6 +48,7 @@ class ChatRequest(BaseModel):
     language: Optional[str] = Field("EN", description="Response language code")
     include_sources: Optional[bool] = Field(True, description="Include data sources")
     stream: Optional[bool] = Field(False, description="Stream response")
+    session_id: Optional[str] = Field(None, description="Chat session ID for persistence")
 
 
 class ChatResponse(BaseModel):
@@ -59,6 +60,7 @@ class ChatResponse(BaseModel):
     language: str = "EN"
     suggestions: Optional[List[str]] = None
     timestamp: str
+    session_id: Optional[str] = None
 
 
 class TraceRequest(BaseModel):
@@ -118,15 +120,70 @@ async def chat_with_assistant(
         # --- NEW: UNIFIED SERVICE DELEGATION ---
         from app.services.ai_service import AIService
         
+        # Load local history if session_id and user exist 
+        merged_history = request.history or []
+        from app.db.supabase_db import db_select, db_insert
+        from app.api.api_v1.endpoints.reports import get_token
+        
+        if request.session_id and current_user:
+            past_messages = await db_select("chat_messages", filters={"session_id": request.session_id}, order_by="created_at", ascending=True)
+            if past_messages:
+                db_hist = [{"role": m["role"], "content": m["content"]} for m in past_messages]
+                # Merge DB history with request history
+                for m in db_hist:
+                    if m not in merged_history:
+                        merged_history.append(m)
+        
         ai_data = await AIService.chat(
             message=request.message,
-            history=request.history,
+            history=merged_history,
             language=request.language or "EN",
             current_time=current_time_str,
             current_date=current_date_str
         )
         
-        return ChatResponse(
+        # Save to DB if user is authenticated
+        if current_user:
+            user_id = current_user.get("sub")
+            session_id = request.session_id
+            
+            # Create session if needed
+            if not session_id:
+                # Generate a title from the message
+                title = request.message[:30] + "..." if len(request.message) > 30 else request.message
+                session_result = await db_insert("chat_sessions", {"user_id": user_id, "title": title})
+                if session_result and session_result.get("data"):
+                    session_id = session_result["data"][0]["id"]
+            
+            if session_id:
+                # Save User Message
+                await db_insert("chat_messages", {
+                    "session_id": session_id,
+                    "role": "user",
+                    "content": request.message,
+                })
+                
+                # Save AI Response
+                await db_insert("chat_messages", {
+                    "session_id": session_id,
+                    "role": "assistant",
+                    "content": ai_data["response"],
+                    "sources": json.dumps(ai_data.get("sources") or []),
+                    "suggestions": json.dumps(ai_data.get("suggestions") or [])
+                })
+                
+                # Log Activity (F5)
+                await db_insert("activity_logs", {
+                    "user_id": user_id,
+                    "event_type": "ai_chat",
+                    "title": "Chat with AI Assistant",
+                    "subtitle": request.message[:50] + "..." if len(request.message) > 50 else request.message,
+                    "entity_type": "chat_session",
+                    "entity_id": session_id
+                })
+        
+        # Add session_id to the response if generated
+        response_data = ChatResponse(
             response=ai_data["response"],
             sources=ai_data.get("sources") if request.include_sources else None,
             confidence=0.98,
@@ -135,11 +192,44 @@ async def chat_with_assistant(
             suggestions=ai_data.get("suggestions"),
             timestamp=now.isoformat()
         )
+        if hasattr(response_data, "session_id") and "session_id" in locals() and session_id:
+            response_data.session_id = session_id
+        
+        return response_data
         
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"AI processing error: {str(e)}")
+
+
+@router.get("/sessions")
+async def get_chat_sessions(current_user: dict = Depends(get_current_user)):
+    """Get all chat sessions for the current user."""
+    from app.db.supabase_db import db_select
+    try:
+        user_id = current_user.get("sub")
+        sessions = await db_select("chat_sessions", filters={"user_id": user_id}, order_by="updated_at", ascending=False)
+        return {"sessions": sessions}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/sessions/{session_id}/messages")
+async def get_chat_session_messages(session_id: str, current_user: dict = Depends(get_current_user)):
+    """Get messages for a specific chat session."""
+    from app.db.supabase_db import db_select
+    try:
+        user_id = current_user.get("sub")
+        # Verify ownership
+        sessions = await db_select("chat_sessions", filters={"id": session_id, "user_id": user_id})
+        if not sessions:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        messages = await db_select("chat_messages", filters={"session_id": session_id}, order_by="created_at", ascending=True)
+        return {"messages": messages, "session": sessions[0]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.post("/chat/stream")

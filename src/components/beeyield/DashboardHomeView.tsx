@@ -248,6 +248,55 @@ const YieldForecastBar: React.FC<{ label: string; value: number; max: number; co
 /* ─── Main ─── */
 const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabChange }) => {
     const [selectedActivity, setSelectedActivity] = React.useState<string | null>(null);
+    const [realActivities, setRealActivities] = React.useState<ActivityItem[]>(activityFeed);
+    const [stats, setStats] = React.useState<any>(null);
+
+    React.useEffect(() => {
+        let isMounted = true;
+
+        const fetchData = async () => {
+            try {
+                // F1, F2: Real Data Integration
+                const [logs, dashboardStats] = await Promise.all([
+                    beeyieldService.getActivityLogs(10),
+                    beeyieldService.getStats()
+                ]);
+
+                if (isMounted) {
+                    if (logs && logs.length > 0) {
+                        const mapped = logs.map(log => {
+                            let type: 'sync' | 'alert' | 'harvest' | 'inspection' | 'system' = 'system';
+                            let status: 'ok' | 'warn' | 'error' | 'pending' = 'ok';
+                            if (log.event_type.includes('alert')) { type = 'alert'; status = 'warn'; }
+                            else if (log.event_type.includes('harvest')) type = 'harvest';
+                            else if (log.event_type.includes('sync')) type = 'sync';
+                            else if (log.event_type.includes('inspection')) type = 'inspection';
+
+                            return {
+                                id: log.id,
+                                type: type,
+                                title: log.title,
+                                subtitle: log.subtitle || '',
+                                time: new Date(log.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+                                status: status,
+                                value: log.metadata?.value || undefined
+                            };
+                        });
+                        setRealActivities(mapped);
+                    }
+                    if (dashboardStats) {
+                        setStats(dashboardStats);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load dashboard data", err);
+            }
+        };
+
+        fetchData();
+        return () => { isMounted = false; };
+    }, []);
+
     const now = new Date();
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
@@ -298,7 +347,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                 <StatCard
                     label="Total Hives"
-                    value="840"
+                    value={stats?.total_hives?.toString() || "..."}
                     change="+8%"
                     positive
                     spark={sparkHives}
@@ -308,8 +357,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                 />
                 <StatCard
                     label="Season Harvest"
-                    value="742"
-                    unit="MT"
+                    value={stats?.total_honey_kg?.toLocaleString() || "..."}
+                    unit="KG"
                     change="+12.8%"
                     positive
                     spark={sparkHarvest}
@@ -330,7 +379,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                 />
                 <StatCard
                     label="Fleet Health"
-                    value="92"
+                    value={stats?.total_hives ? Math.round((stats.active_hives / stats.total_hives) * 100).toString() : "92"}
                     unit="%"
                     change="-1%"
                     positive={false}
@@ -365,7 +414,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
 
                     <div className="divide-y divide-[#1A1A1A]">
                         <AnimatePresence>
-                            {activityFeed.map((item, i) => {
+                            {realActivities.map((item, i) => {
                                 const cfg = statusConfig[item.status];
                                 const ItemIcon = typeIcon[item.type];
                                 const isSelected = selectedActivity === item.id;
@@ -572,7 +621,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                             <p className="text-[12px] font-black text-white group-hover:text-[#F59E0B] transition-colors">{apiary.name}</p>
                                             <p className="text-[9px] text-white/25 font-mono flex items-center gap-1 mt-0.5">
                                                 <MapPin className="w-2.5 h-2.5" />
-                                                Apiary · {apiary.location || 'Kenya'}
+                                                Apiary · {apiary.location_name || 'Kenya'}
                                             </p>
                                         </div>
                                         <span className={cn(

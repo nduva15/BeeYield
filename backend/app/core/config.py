@@ -108,6 +108,11 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "timothynduva349@gmail.com"
     TOTAL_HARVEST_LIMIT_GRAMS: int = 60000
 
+    # ============ ETIMS (KRA Compliance) ============
+    ETIMS_API_KEY: Optional[str] = None
+    ETIMS_BASE_URL: str = "https://etims-sandbox.kra.go.ke/api/v1"
+    ETIMS_VSCU_SERIAL: str = "BY-VSCU-MOCK-2026"
+
     class Config:
         case_sensitive = True
         env_file = ".env"

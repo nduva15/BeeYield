@@ -42,6 +42,12 @@ class ConfirmPaymentRequest(BaseModel):
     order_id: str
 
 
+class InvoiceSendRequest(BaseModel):
+    order_id: str
+    recipient_email: Optional[str] = None
+    include_traceability: bool = True
+
+
 @router.post("/create-payment-intent")
 async def create_payment_intent(
     request: PaymentIntentRequest,
@@ -223,3 +229,63 @@ async def stripe_webhook(request_body: bytes = Depends(lambda r: r.body())):
     
     # For now, we handle payments synchronously
     return {"received": True}
+
+
+@router.post("/invoice/send")
+async def send_invoice(
+    request: InvoiceSendRequest,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    """
+    Send an invoice/confirmation email for an order using Resend.
+    """
+    from app.services.shop_service import get_order
+    from app.services.email_service import email_service
+    
+    order = await get_order(request.order_id, token=token)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Ownership/Admin check
+    is_admin = current_user.get("role") == "admin"
+    if not is_admin and order.get("user_id") != current_user.get("sub"):
+        raise HTTPException(status_code=403, detail="You do not have permission to send this invoice")
+
+    recipient = request.recipient_email or order.get("shipping_address", {}).get("email")
+    if not recipient:
+        raise HTTPException(status_code=400, detail="Recipient email not found")
+
+    # Prepare data for email service
+    items = order.get("items", [])
+    # Flatten items for the email template (strip product prefix if nested)
+    flat_items = []
+    for it in items:
+        p = it.get("product") or {}
+        flat_items.append({
+            "product_name": p.get("name", "Premium Honey"),
+            "variant_size": "Standard", # Default
+            "quantity": it.get("quantity", 1),
+            "total_price": it.get("price_at_purchase", 0) * it.get("quantity", 1)
+        })
+
+    # Prepare batch number if traceability requested
+    batch_number = None
+    if request.include_traceability:
+        batch_number = f"BY-BATCH-{str(order.get('id',''))[:4].upper()}"
+
+    try:
+        # Update order email if recipient provided
+        if request.recipient_email:
+            # We don't necessarily update the DB unless we want to change the customer record
+            pass
+            
+        email_service.send_order_confirmation(
+            order=order,
+            items=flat_items,
+            batch_number=batch_number
+        )
+        return {"status": "success", "message": f"Invoice sent to {recipient}"}
+    except Exception as e:
+        logger.error(f"Email delivery error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

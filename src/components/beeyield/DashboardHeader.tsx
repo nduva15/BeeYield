@@ -20,6 +20,8 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { beeyieldService, SensorAlert } from '@/services/beeyieldService';
+import { formatDistanceToNow } from 'date-fns';
 
 interface DashboardHeaderProps {
     onTabChange: (tab: string) => void;
@@ -37,10 +39,22 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const { user, beeyieldUser } = useAuth();
     const { language, setLanguage } = useLanguage();
     const { theme, setTheme } = useTheme();
+    const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
+
+    React.useEffect(() => {
+        const fetchAlerts = async () => {
+            const data = await beeyieldService.getSensorAlerts(false, 5);
+            setAlerts(data);
+        };
+        fetchAlerts();
+        // Poll every 5 minutes
+        const interval = setInterval(fetchAlerts, 300000);
+        return () => clearInterval(interval);
+    }, []);
 
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    const userName = beeyieldUser?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
+    const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
 
     return (
         <header className="h-[72px] bg-white dark:bg-[#000000] border-b border-slate-200 dark:border-[#1A1A1A] sticky top-0 z-30 flex items-center justify-between px-8">
@@ -56,9 +70,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             {/* Center: Live system ticker (desktop only) */}
             <div className="hidden xl:flex items-center gap-6">
                 {[
-                    { label: 'HIVES', value: '840', positive: true },
+                    { label: 'STATUS', value: 'OPTIMAL', positive: true },
                     { label: 'UPTIME', value: '99.8%', positive: true },
-                    { label: 'ALERTS', value: '2', positive: false },
+                    { label: 'ALERTS', value: alerts.length.toString(), positive: alerts.length === 0 },
                 ].map(stat => (
                     <div key={stat.label} className="flex items-center gap-2">
                         <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] font-mono">{stat.label}</span>
@@ -109,7 +123,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuTrigger asChild>
                         <button className="relative h-9 w-9 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] flex items-center justify-center hover:border-slate-400 dark:hover:border-white/20 transition-all">
                             <Bell className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />
-                            <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#F59E0B] rounded-full" />
+                            {alerts.length > 0 && <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#F59E0B] rounded-full" />}
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -118,22 +132,29 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     >
                         <div className="p-4 border-b border-slate-200 dark:border-[#1A1A1A]">
                             <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-[0.2em] font-mono">Notifications</p>
-                            <p className="text-[9px] text-slate-400 dark:text-white/30 mt-1 font-mono">3 unread alerts</p>
+                            <p className="text-[9px] text-slate-400 dark:text-white/30 mt-1 font-mono">{alerts.length} unread alerts</p>
                         </div>
                         <div className="divide-y divide-slate-200 dark:divide-[#1A1A1A]">
-                            {[
-                                { title: 'Hive #12 weight drop', time: '2 min ago', tag: 'ALERT', color: 'text-amber-600 dark:text-[#F59E0B]' },
-                                { title: 'Sync complete: QuickBooks', time: '1 hr ago', tag: 'SYNC', color: 'text-emerald-600 dark:text-emerald-400' },
-                                { title: 'New season report ready', time: '3 hrs ago', tag: 'INFO', color: 'text-slate-400 dark:text-white/40' },
-                            ].map((n, i) => (
-                                <div key={i} className="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                                    <span className={cn("text-[8px] font-black font-mono tracking-wider pt-0.5 flex-shrink-0", n.color)}>{n.tag}</span>
+                            {alerts.length > 0 ? alerts.map((n, i) => (
+                                <div key={n.id} className="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                                    <span className={cn(
+                                        "text-[8px] font-black font-mono tracking-wider pt-0.5 flex-shrink-0",
+                                        n.severity === 'critical' ? "text-red-500" : "text-amber-600 dark:text-[#F59E0B]"
+                                    )}>
+                                        {n.alert_type.toUpperCase()}
+                                    </span>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-bold text-slate-800 dark:text-white truncate">{n.title}</p>
-                                        <p className="text-[9px] text-slate-400 dark:text-white/20 font-mono mt-0.5">{n.time}</p>
+                                        <p className="text-[11px] font-bold text-slate-800 dark:text-white truncate">{n.message}</p>
+                                        <p className="text-[9px] text-slate-400 dark:text-white/20 font-mono mt-0.5">
+                                            {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+                                        </p>
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="p-8 text-center">
+                                    <p className="text-[11px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest font-mono">No active alerts</p>
+                                </div>
+                            )}
                         </div>
                     </DropdownMenuContent>
                 </DropdownMenu>

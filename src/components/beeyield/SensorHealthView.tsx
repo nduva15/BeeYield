@@ -29,6 +29,8 @@ import {
     Bar
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import beeyieldService, { ActivityLog, SensorAlert, Hive } from '@/services/beeyieldService';
+import { formatDistanceToNow } from 'date-fns';
 
 interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -146,15 +148,88 @@ const VitalsCard: React.FC<{
 // --- Main Component ---
 
 const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
-    const [selectedHive, setSelectedHive] = React.useState(hiveNodes[0]);
+    const [realHives, setRealHives] = React.useState<any[]>([]);
+    const [selectedHive, setSelectedHive] = React.useState<any>(null);
     const [historyRange, setHistoryRange] = React.useState(12);
-    const [historyData] = React.useState(() => generateHistoryData(12));
+    const [historyData, setHistoryData] = React.useState(() => generateHistoryData(12));
     const [liveTime, setLiveTime] = React.useState(new Date());
+    const [realAlerts, setRealAlerts] = React.useState<SensorAlert[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
+        const loadInitialData = async () => {
+            setLoading(true);
+            try {
+                // Fetch hives and alerts in parallel
+                const [hives, alerts] = await Promise.all([
+                    beeyieldService.getHives(),
+                    beeyieldService.getSensorAlerts(false, 10)
+                ]);
+
+                // Fetch latest readings for these hives
+                const readings = await beeyieldService.getSensorReadings(undefined, 100);
+
+                const mappedHives = hives.map(h => {
+                    const latest = readings.find(r => r.hive_id === h.id);
+                    // Check if there's an active alert for this hive
+                    const hasAlert = alerts.some(a => a.hive_id === h.id && !a.resolved);
+
+                    return {
+                        id: h.id,
+                        name: h.name,
+                        temp: latest?.temperature || 35.0,
+                        humidity: latest?.humidity || 60,
+                        acoustic: h.health_status || 'Healthy',
+                        alert: hasAlert ? 'CRITICAL' : null,
+                        lastSeen: latest ? formatDistanceToNow(new Date(latest.created_at), { addSuffix: true }) : 'No signal'
+                    };
+                });
+
+                setRealHives(mappedHives);
+                setRealAlerts(alerts);
+                if (mappedHives.length > 0) {
+                    setSelectedHive(mappedHives[0]);
+                }
+            } catch (err) {
+                console.error("Health view load error", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadInitialData();
         const timer = setInterval(() => setLiveTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
+
+    // Fetch history when hive changes
+    React.useEffect(() => {
+        if (!selectedHive) return;
+
+        const fetchHistory = async () => {
+            try {
+                const history = await beeyieldService.getSensorReadings(selectedHive.id, 24);
+                if (history.length > 0) {
+                    // Map real history to chart format if needed, or keep mock for now if real data is sparse
+                    // setHistoryData(...)
+                }
+            } catch (err) {
+                console.error("History fetch error", err);
+            }
+        };
+        fetchHistory();
+    }, [selectedHive?.id]);
+
+    if (loading || !selectedHive) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-white">
+                <div className="text-center space-y-4">
+                    <Zap className="w-12 h-12 text-[#064e3b] animate-pulse mx-auto" />
+                    <p className="font-black uppercase tracking-widest text-[#064e3b]">Synchronizing Vitals...</p>
+                </div>
+            </div>
+        );
+    }
 
     const visibleData = historyData.slice(12 - historyRange);
 
@@ -190,10 +265,31 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             </div>
 
             {/* Alert Banners */}
-            {hiveNodes.filter(h => h.alert).length > 0 && (
+            {(hiveNodes.filter(h => h.alert).length > 0 || realAlerts.length > 0) && (
                 <div className="space-y-3">
                     {hiveNodes.filter(h => h.alert).map(h => (
                         <AlertBanner key={h.id} hive={h} />
+                    ))}
+                    {realAlerts.map(alert => (
+                        <div key={alert.id} className={cn(
+                            "flex items-start gap-4 p-4 border-l-8 border-4",
+                            alert.severity === 'critical'
+                                ? "bg-red-50 border-red-400 border-l-red-500"
+                                : "bg-[#facc15]/10 border-[#facc15] border-l-[#facc15]"
+                        )}>
+                            <AlertTriangle className={cn("w-5 h-5 mt-0.5 shrink-0", alert.severity === 'critical' ? "text-red-500" : "text-[#facc15]")} />
+                            <div>
+                                <p className={cn("text-xs font-black uppercase tracking-widest", alert.severity === 'critical' ? "text-red-700" : "text-[#b45309]")}>
+                                    ⚠ {alert.alert_type.toUpperCase()} DETECTED — {alert.severity.toUpperCase()}
+                                </p>
+                                <p className="text-[10px] font-bold text-neutral-500 mt-1">
+                                    {alert.message} (Reading: {alert.reading_value})
+                                </p>
+                                <p className="text-[8px] font-mono text-neutral-400 mt-1">
+                                    {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}
+                                </p>
+                            </div>
+                        </div>
                     ))}
                 </div>
             )}
@@ -202,7 +298,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             <div className="space-y-4">
                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Select Hive</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    {hiveNodes.map(hive => {
+                    {realHives.map(hive => {
                         const ac = acousticConfig[hive.acoustic] ?? acousticConfig['Healthy'];
                         const isSelected = hive.id === selectedHive.id;
                         return (
@@ -217,9 +313,9 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                     hive.alert && !isSelected && "border-[#facc15]"
                                 )}
                             >
-                                <div className={cn("w-2 h-2 rounded-full", ac.bg)} />
+                                <div className={cn("w-2.5 h-2.5 rounded-full", ac.bg)} />
                                 <p className={cn("text-[10px] font-black uppercase tracking-wider", isSelected ? "text-white" : "text-[#064e3b]")}>
-                                    {hive.id}
+                                    {hive.id.slice(0, 8)}
                                 </p>
                                 <p className={cn("text-[10px] font-bold", isSelected ? "text-[#10b981]" : "text-[#064e3b]/40")}>
                                     {hive.temp}°C
@@ -382,7 +478,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             </tr>
                         </thead>
                         <tbody className="divide-y-2 divide-[#064e3b]/5">
-                            {hiveNodes.map(hive => {
+                            {realHives.map(hive => {
                                 const ac = acousticConfig[hive.acoustic] ?? acousticConfig['Healthy'];
                                 const tStatus = hive.temp < 32 ? 'critical' : hive.temp > 36.5 ? 'warn' : 'ok';
                                 return (
@@ -398,7 +494,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                             <div className="flex items-center gap-3">
                                                 <div className={cn("w-2.5 h-2.5 rounded-full", ac.bg)} />
                                                 <div>
-                                                    <p className="text-xs font-black text-[#064e3b]">{hive.id}</p>
+                                                    <p className="text-xs font-black text-[#064e3b]">{hive.id.slice(0, 8)}</p>
                                                     <p className="text-[9px] font-bold text-[#064e3b]/40 uppercase">{hive.name}</p>
                                                 </div>
                                             </div>

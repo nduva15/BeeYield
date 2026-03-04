@@ -22,15 +22,41 @@ import {
     Plus,
     Minus,
     AlertTriangle,
-    CheckCircle2,
     Save,
+    FileDown,
+    RefreshCw,
     Loader2,
-    FileDown
+    Calendar,
+    ClipboardList,
+    AlertCircle,
+    User,
+    CheckCircle2,
+    Clock,
 } from 'lucide-react';
 import beeyieldService, { IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
+
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface PrecisionPollinationViewProps {
     devices: IoTDevice[];
@@ -86,11 +112,90 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [isSaving, setIsSaving] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
 
+    const [optimalPlacements, setOptimalPlacements] = React.useState<any[]>([]);
+    const [isOptimizing, setIsOptimizing] = React.useState(false);
+
+    // Mock orchard bounding box in Kenya (-1.29, 36.82)
+    const mockOrchardPolygon = [
+        [-1.29, 36.82],
+        [-1.29, 36.83],
+        [-1.28, 36.83],
+        [-1.28, 36.82]
+    ];
+    // Converting lat/lng pairs to GeoJSON 
+    const mockGeoJSON = {
+        type: "FeatureCollection",
+        features: [{
+            type: "Feature",
+            geometry: {
+                type: "Polygon",
+                coordinates: [[
+                    [36.82, -1.29],
+                    [36.83, -1.29],
+                    [36.83, -1.28],
+                    [36.82, -1.28],
+                    [36.82, -1.29]
+                ]]
+            },
+            properties: {}
+        }]
+    };
+
     const fetchDeployments = async () => {
         setLoading(true);
         const data = await beeyieldService.getPollinationDeployments();
         setDeployments(data);
         setLoading(false);
+    };
+
+    const handleCommitTasks = async () => {
+        if (optimalPlacements.length === 0) {
+            toast.error('No optimized placements to commit.');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const dueDate = new Date().toISOString().split('T')[0];
+            const taskPromises = optimalPlacements.map((pos, idx) => {
+                return beeyieldService.createTask({
+                    title: `Tactical Deployment: Unit #${idx + 1}`,
+                    description: `Deploy hive to coordinates: ${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}. Coverage Score: ${Math.round(pos.score * 100)}%. Map Marker Ref: #${idx + 1}`,
+                    category: 'Pollination',
+                    priority: 'high',
+                    due_date: dueDate,
+                    status: 'pending'
+                });
+            });
+
+            await Promise.all(taskPromises);
+            toast.success(`Successfully committed ${optimalPlacements.length} deployment tasks to field teams.`);
+            setActiveSubPage('reports'); // Redirect to reports or something to see the log
+        } catch (error) {
+            console.error('Commit tasks error:', error);
+            toast.error('Failed to commit deployment tasks.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleOptimize = async () => {
+        setIsOptimizing(true);
+        try {
+            const results = await beeyieldService.optimizePollinationPlacement({
+                orchard_geojson: mockGeoJSON,
+                hive_count: calcInputs.hives.length,
+                target_crop: 'Almond',
+                bee_flight_radius_km: 1.5,
+                ahp_weights: { bloom: 0.8, roads: 0.2, water: 0.1 }
+            });
+            setOptimalPlacements(results);
+            toast.success(`Generated ${results.length} optimal hive placements.`);
+        } catch (error) {
+            toast.error('Failed to calculate optimal placement');
+        } finally {
+            setIsOptimizing(false);
+        }
     };
 
     React.useEffect(() => {
@@ -553,31 +658,69 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             {
                 activeSubPage === 'map' && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                        <div className="flex justify-between items-center bg-[#064e3b] p-4 text-white">
+                            <div>
+                                <h3 className="text-xl font-black uppercase">Spatial Optimizer</h3>
+                                <p className="text-xs text-[#10b981] font-bold">Algorithms driving maximum FPI.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={handleOptimize}
+                                    disabled={isOptimizing}
+                                    className="px-6 py-2 bg-[#facc15] text-[#064e3b] font-black uppercase text-xs flex items-center gap-2 hover:bg-white transition-colors"
+                                >
+                                    {isOptimizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                                    Calculate Optimized Placement
+                                </button>
+                                {optimalPlacements.length > 0 && (
+                                    <button
+                                        onClick={handleCommitTasks}
+                                        disabled={isSaving}
+                                        className="px-6 py-2 bg-[#10b981] text-white font-black uppercase text-xs flex items-center gap-2 hover:bg-[#064e3b] transition-colors"
+                                    >
+                                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ClipboardList className="w-4 h-4" />}
+                                        Commit to Field Tasks
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                         <div className="border-4 border-[#064e3b] bg-white h-[600px] relative overflow-hidden group">
-                            <div className="absolute inset-0 grayscale opacity-20 contrast-150" style={{
-                                backgroundImage: 'url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200")',
-                                backgroundSize: 'cover'
-                            }} />
-                            <div className="absolute inset-0 bg-[#064e3b]/10" />
-                            <div className="absolute inset-0 p-10 grid grid-cols-12 grid-rows-8 gap-4">
-                                {[...Array(96)].map((_, i) => (
-                                    <div key={i} className="border border-[#064e3b]/10 hover:bg-[#facc15]/20 flex items-center justify-center transition-none cursor-crosshair group/tile relative">
-                                        <div className="text-[6px] font-black text-white/40 absolute top-1 left-1 opacity-0 group-hover/tile:opacity-100">{i}</div>
-                                    </div>
+                            <MapContainer
+                                center={[-1.285, 36.825] as any}
+                                zoom={15}
+                                style={{ height: '100%', width: '100%' }}
+                                className="z-0"
+                            >
+                                <TileLayer
+                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                                    attribution='&copy; ESRI'
+                                />
+
+                                {/* Target Orchard */}
+                                <Polygon
+                                    positions={mockOrchardPolygon as any}
+                                    pathOptions={{ color: '#10b981', weight: 4, fillOpacity: 0.1 }}
+                                />
+
+                                {/* Optimized Placements */}
+                                {optimalPlacements.map((pos, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <Marker position={[pos.lat, pos.lng] as any}>
+                                            <Popup>
+                                                <div className="text-center font-bold text-[#064e3b]">
+                                                    <p>Unit #{pos.metadata?.index || idx + 1}</p>
+                                                    <p className="text-xs text-[#10b981]">Score: {pos.score}</p>
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                        <Circle
+                                            center={[pos.lat, pos.lng] as any}
+                                            radius={pos.coverage_radius_km * 1000} // km to meters
+                                            pathOptions={{ color: '#facc15', weight: 1, fillOpacity: 0.1, dashArray: '4' }}
+                                        />
+                                    </React.Fragment>
                                 ))}
-                            </div>
-                            <div className="absolute inset-0">
-                                <div className="absolute top-[30%] left-[20%]">
-                                    <div className="w-4 h-4 bg-[#facc15] border-2 border-black rotate-45 shadow-[4px_4px_0px_0px_#000]" />
-                                    <div className="mt-4 px-2 py-1 bg-white border-2 border-black font-black text-[8px] uppercase">Node_Alpha</div>
-                                    <svg className="absolute top-2 left-2 w-48 h-48 pointer-events-none overflow-visible">
-                                        <path d="M 0 0 Q 50 -100 150 -50" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 4" className="animate-[dash_10s_linear_infinite]" />
-                                        <circle r="3" fill="#10b981">
-                                            <animateMotion path="M 0 0 Q 50 -100 150 -50" dur="2s" repeatCount="indefinite" />
-                                        </circle>
-                                    </svg>
-                                </div>
-                            </div>
+                            </MapContainer>
                         </div>
                     </div>
                 )

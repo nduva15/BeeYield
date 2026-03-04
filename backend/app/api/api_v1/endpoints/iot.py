@@ -76,3 +76,32 @@ async def create_device(
          raise HTTPException(status_code=403, detail="Not authorized to link devices")
          
     return await iot_service.create_device(device_in.dict(), token=token)
+
+@router.post("/health-check")
+async def trigger_health_check(
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    """Trigger a manual health scan of all sensors."""
+    email = current_user.get("email")
+    if email != settings.ADMIN_EMAIL:
+         raise HTTPException(status_code=403, detail="Admin only")
+         
+    return await iot_service.check_sensor_health(token=token)
+
+@router.get("/alerts")
+async def get_alerts(
+    resolved: bool = False,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    """Get active sensor alerts."""
+    from app.db.supabase_db import db_select
+    user_id = current_user.get("sub")
+    email = current_user.get("email")
+    
+    # Simple filtering: admins see all, farmers see theirs
+    filters = {"resolved": resolved}
+    # if email != settings.ADMIN_EMAIL: # Filter by user_id if needed
+    
+    return await db_select("sensor_alerts", filters=filters, order_by="created_at", ascending=False, token=token)

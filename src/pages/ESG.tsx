@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
-import { beeyieldService } from "@/services/beeyieldService";
+import beeyieldService from "@/services/beeyieldService";
 
 const ESG = () => {
   const [downloading, setDownloading] = useState(false);
