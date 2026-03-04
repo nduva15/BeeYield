@@ -198,11 +198,11 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       jspdf:
-        specifier: ^4.1.0
-        version: 4.1.0
+        specifier: ^4.2.0
+        version: 4.2.0
       jspdf-autotable:
         specifier: ^5.0.7
-        version: 5.0.7(jspdf@4.1.0)
+        version: 5.0.7(jspdf@4.2.0)
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -4250,8 +4250,8 @@ packages:
     peerDependencies:
       jspdf: ^2 || ^3 || ^4
 
-  jspdf@4.1.0:
-    resolution: {integrity: sha512-xd1d/XRkwqnsq6FP3zH1Q+Ejqn2ULIJeDZ+FTKpaabVpZREjsJKRJwuokTNgdqOU+fl55KgbvgZ1pRTSWCP2kQ==}
+  jspdf@4.2.0:
+    resolution: {integrity: sha512-hR/hnRevAXXlrjeqU5oahOE+Ln9ORJUB5brLHHqH67A+RBQZuFr5GkbI9XQI8OUFSEezKegsi45QRpc4bGj75Q==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -8852,7 +8852,7 @@ snapshots:
 
   '@types/jspdf@2.0.0':
     dependencies:
-      jspdf: 4.1.0
+      jspdf: 4.2.0
 
   '@types/leaflet@1.9.21':
     dependencies:
@@ -10679,11 +10679,11 @@ snapshots:
 
   json5@2.2.3: {}
 
-  jspdf-autotable@5.0.7(jspdf@4.1.0):
+  jspdf-autotable@5.0.7(jspdf@4.2.0):
     dependencies:
-      jspdf: 4.1.0
+      jspdf: 4.2.0
 
-  jspdf@4.1.0:
+  jspdf@4.2.0:
     dependencies:
       '@babel/runtime': 7.28.6
       fast-png: 6.4.0
