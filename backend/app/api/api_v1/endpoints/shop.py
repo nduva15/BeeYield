@@ -143,9 +143,17 @@ async def get_order_detail(
              
     return order
 
-# ==========================================
 #  NEW ENDPOINTS
 # ==========================================
+
+@router.post("/checkout/coupon/validate", response_model=dict)
+async def validate_coupon(
+    code: str, 
+    amount: float,
+    token: Optional[str] = Depends(get_token)
+):
+    """Validate a coupon code via the Rust engine"""
+    return await shop_service.apply_coupon_code(code, amount)
 
 # --- Wallet ---
 @router.get("/wallet", response_model=schemas.Wallet)

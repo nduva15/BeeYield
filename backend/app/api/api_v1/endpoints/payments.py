@@ -51,7 +51,7 @@ class InvoiceSendRequest(BaseModel):
 @router.post("/create-payment-intent")
 async def create_payment_intent(
     request: PaymentIntentRequest,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: Optional[dict] = Depends(security.get_optional_current_user)
 ):
     """
     Create a Stripe PaymentIntent for checkout.
@@ -64,24 +64,19 @@ async def create_payment_intent(
         )
     
     try:
-        # Convert KES to USD cents for Stripe (approximate rate)
-        # Note: In production, use a real-time exchange rate API service
-        # for accurate currency conversion
-        kes_to_usd = 0.0069  # Approximate rate: 1 KES = 0.0069 USD
-        amount_usd = request.amount * kes_to_usd
-        
-        # Stripe requires minimum 50 cents for USD
-        amount_cents = max(50, int(amount_usd * 100))
-        
         # For KES, we can use amount directly in cents (1 KES = 100 cents)
         if request.currency.lower() == 'kes':
             amount_cents = int(request.amount * 100)
             currency = 'kes'
         else:
+            # Fallback to USD with approx rate if KES not requested
+            kes_to_usd = 0.0069
+            amount_usd = request.amount * kes_to_usd
+            amount_cents = max(50, int(amount_usd * 100))
             currency = 'usd'
         
-        user_id = current_user.get("sub")
-        user_email = current_user.get("email", "")
+        user_id = current_user.get("sub") if current_user else "guest"
+        user_email = current_user.get("email", "guest@beeyield.com") if current_user else "guest"
         
         intent = stripe.PaymentIntent.create(
             amount=amount_cents,
@@ -89,6 +84,7 @@ async def create_payment_intent(
             metadata={
                 "user_id": user_id,
                 "user_email": user_email,
+                "platform": "BeeYield Web"
             },
             automatic_payment_methods={
                 "enabled": True,

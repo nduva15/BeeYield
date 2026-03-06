@@ -76,41 +76,64 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             logger.error(f"Oxidized Financial Core Failure: {e}")
             return {"status": "error", "message": f"Financial Core rejected transaction: {str(e)}"}
 
-    # 4. Strict Price Validation (Never Trust the Client)
+    # 4. Strict Price & Logistics Validation (Oxidized Validation)
     if not is_bypass:
-        calculated_total = 0
+        price_map = {}
         for item in order_in.items:
             product = await get_product_by_id(item.product_id, token=token)
             if not product:
                 return {"status": "error", "message": f"Product {item.product_id} not found."}
+            for v in product.get("variants", []):
+                price_map[v["id"]] = float(v.get("price_kes", 0))
+        
+        try:
+            items_list = list(map(lambda x: x.dict(), order_in.items))
+            # 4a. Base Items Total
+            subtotal = engine.validate_order_prices(items_list, price_map)
             
-            variant = next((v for v in product.get("variants", []) if v.get("id") == item.variant_id), None)
-            if not variant and product.get("id", "").startswith(("h", "hw", "m", "edu")):
-                variant = product.get("variants", [{}])[0]
+            # 4b. Coupon Logic
+            discount = 0.0
+            if getattr(order_in, "coupon_code", None):
+                discount, subtotal = engine.apply_coupon(order_in.coupon_code, subtotal)
                 
-            if not variant:
-                return {"status": "error", "message": f"Variant {item.variant_id} not found."}
+            # 4c. Shipping Logic
+            shipping = engine.calculate_shipping(subtotal, getattr(order_in, "delivery_method", "delivery"))
             
-            calculated_total += variant.get("price_kes", 0) * item.quantity
-        
-        if calculated_total > order_in.total_kes + 1:
-            return {"status": "error", "message": f"Price mismatch. Minimum required {calculated_total}, got {order_in.total_kes}."}
-        
-        order_in.total_kes = calculated_total
+            # 4d. Final Total Calculation (Subtotal + Shipping)
+            final_total = subtotal + shipping
+            
+            if final_total > order_in.total_kes + 1:
+                return {"status": "error", "message": f"Price mismatch. Minimum required {final_total}, got {order_in.total_kes}."}
+            
+            order_in.total_kes = final_total
+        except Exception as e:
+            logger.error(f"Oxidized Validation Failure: {e}")
+            return {"status": "error", "message": f"Validation failed: {str(e)}"}
 
-    # 5. Create Order Document
+async def apply_coupon_code(code: str, total_amount: float) -> dict:
+    """Validate a coupon via the Rust engine"""
+    discount, final = engine.apply_coupon(code, total_amount)
+    if discount > 0:
+        return {"valid": True, "discount_amount": discount, "new_total": final}
+    return {"valid": False, "message": "Invalid or expired coupon code."}
+
+    # 5. Create Order Document (Sanitized)
     order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{str(uuid.uuid4())[:4].upper()}"
     
-    order_data = {
+    raw_data = {
         "user_id": user_id if not is_bypass else None,
         "order_number": order_number,
         "total_kes": order_in.total_kes if not is_bypass else 0,
         "status": "pending",
-        "shipping_address": order_in.shipping_address,
+        "shipping_address": str(order_in.shipping_address), # Will be flattened below
         "payment_method": order_in.payment_method,
         "idempotency_key": id_key,
         "created_at": datetime.now().isoformat()
     }
+    
+    order_data = engine.sanitize_order_data(raw_data)
+    # Re-insert non-string fields if needed, but Rust handles basic PyDict
+    order_data["shipping_address"] = order_in.shipping_address # Put back dictionary
 
     res = await db_insert("orders", order_data, token=token)
     if not res.get("success"):
