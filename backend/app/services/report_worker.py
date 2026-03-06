@@ -430,24 +430,26 @@ async def generate_report_async(
     report_type: str,
     parameters: Dict,
     file_format: str = "PDF",
-    token: Optional[str] = None
+    token: Optional[str] = None,
+    job_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Main orchestrator: aggregates data, generates file, uploads to Supabase Storage,
     and records the report in the generated_reports table.
     """
-    job_id = str(uuid.uuid4())
+    if not job_id:
+        job_id = str(uuid.uuid4())
+        # Record pending job
+        await db_insert("generated_reports", {
+            "id": job_id,
+            "user_id": user_id,
+            "report_type": report_type,
+            "file_format": file_format,
+            "parameters": parameters,
+            "status": "processing",
+            "file_url": None
+        }, token=token)
 
-    # Record pending job
-    await db_insert("generated_reports", {
-        "id": job_id,
-        "user_id": user_id,
-        "report_type": report_type,
-        "file_format": file_format,
-        "parameters": parameters,
-        "status": "processing",
-        "file_url": None
-    }, token=token)
 
     try:
         scope_days = int(parameters.get("scope_days", 365))

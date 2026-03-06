@@ -19,10 +19,14 @@ serve(async (req) => {
 
         const { invoice_id, kra_pin } = await req.json()
 
+        if (!invoice_id) {
+            throw new Error("Invoice ID is required")
+        }
+
         // 1. Fetch invoice data from BeeYield DB
         const { data: invoice, error: invoiceError } = await supabaseClient
             .from('billing_ledger')
-            .select('*, profiles:user_id(full_name)')
+            .select('*, profiles:user_id(full_name, company_name)')
             .eq('id', invoice_id)
             .single()
 
@@ -31,14 +35,22 @@ serve(async (req) => {
         }
 
         // 2. Perform Handshake with eTIMS (Simulation for Phase 4)
-        // In production, this would use fetch() to the KRA eTIMS VSDC API
-        console.log(`[eTIMS] Processing invoice ${invoice_id} for PIN ${kra_pin}`)
+        // In production, this would use fetch() to the KRA eTIMS VSDC API with proper certificates
+        console.log(`[eTIMS] Processing invoice ${invoice_id} for PIN ${kra_pin || 'P000000000Z'}`)
+
+        const timestamp = new Date().toISOString()
+        const checksum = crypto.subtle.digest("SHA-256", new TextEncoder().encode(invoice_id + timestamp))
+        const checksumHex = Array.from(new Uint8Array(await checksum))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('')
 
         const etimsResponse = {
-            receiptNumber: `ETIMS-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
-            controlCode: `VSDC-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
-            qrUrl: `https://etims.kra.go.ke/verify?id=${invoice_id}&t=${Date.now()}`,
-            status: 'synced'
+            receiptNumber: `ETIMS-${invoice_id.slice(0, 4).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+            controlCode: checksumHex.slice(0, 16).toUpperCase(),
+            qrUrl: `https://etims.kra.go.ke/verify?id=${invoice_id}&ts=${Date.now()}&v=2`,
+            signature: checksumHex,
+            status: 'synced',
+            syncedAt: timestamp
         }
 
         // 3. Update BeeYield DB with compliance records
@@ -46,18 +58,28 @@ serve(async (req) => {
             .from('billing_ledger')
             .update({
                 etims_receipt_number: etimsResponse.receiptNumber,
-                etims_control_code: etimsResponse.controlCode,
+                etims_signature: etimsResponse.signature,
                 etims_qr_url: etimsResponse.qrUrl,
                 etims_status: 'synced',
                 invoice_status: 'issued',
-                updated_at: new Date().toISOString()
+                is_etims_synced: true,
+                metadata: {
+                    ...(invoice.metadata || {}),
+                    etims_control_code: etimsResponse.controlCode,
+                    etims_sync_timestamp: etimsResponse.syncedAt,
+                    vscu_serial: "BY-VSCU-2026-X"
+                },
+                updated_at: timestamp
             })
             .eq('id', invoice_id)
 
         if (updateError) throw updateError
 
         return new Response(
-            JSON.stringify(etimsResponse),
+            JSON.stringify({
+                success: true,
+                ...etimsResponse
+            }),
             {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 200
@@ -65,8 +87,13 @@ serve(async (req) => {
         )
 
     } catch (error) {
+        console.error(`[eTIMS Error] ${error.message}`)
         return new Response(
-            JSON.stringify({ error: error.message }),
+            JSON.stringify({
+                success: false,
+                error: error.message,
+                details: "Ensure the transaction exists and your KRA configuration is valid."
+            }),
             {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 400

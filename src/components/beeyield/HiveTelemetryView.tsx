@@ -66,11 +66,37 @@ const HiveTelemetryView: React.FC = () => {
     const [data, setData] = React.useState<WeightData[]>(generateWeightData());
     const [gatewayStatus, setGatewayStatus] = React.useState<'Online' | 'Offline' | 'Connecting'>('Online');
     const [recentAlert, setRecentAlert] = React.useState<string | null>(null);
+    const [isTaring, setIsTaring] = React.useState(false);
+
+    // Fetch real sensor data on mount
+    React.useEffect(() => {
+        const fetchRealData = async () => {
+            try {
+                const readings = await beeyieldService.getSensorReadings(undefined, 24);
+                if (readings && readings.length >= 2) {
+                    const mapped: WeightData[] = (readings as any[]).reverse().map((r, i, arr) => {
+                        const weight = r.weight_kg || r.weight || 42.5;
+                        const prevWeight = i > 0 ? (arr[i - 1].weight_kg || arr[i - 1].weight || 42.5) : weight;
+                        const ts = new Date(r.recorded_at || r.timestamp || r.created_at);
+                        return {
+                            time: ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            weight: parseFloat(weight.toFixed(2)),
+                            dwdt: parseFloat((weight - prevWeight).toFixed(3)),
+                            timestamp: ts.getTime()
+                        };
+                    });
+                    setData(mapped);
+                }
+            } catch (err) {
+                console.warn('Telemetry: Using mock data', err);
+            }
+        };
+        fetchRealData();
+    }, []);
 
     const latest = data[data.length - 1];
     const prev = data[data.length - 2];
     const dwdt = latest.weight - prev.weight;
-    const [isTaring, setIsTaring] = React.useState(false);
 
     const handleTare = async () => {
         setIsTaring(true);
