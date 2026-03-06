@@ -118,10 +118,14 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         }
     };
 
-    const deleteChat = (e: React.MouseEvent, chatId: string) => {
+    const deleteChat = async (e: React.MouseEvent, chatId: string) => {
         e.stopPropagation();
         const updatedChats = chats.filter(c => c.id !== chatId);
         setChats(updatedChats);
+
+        // Remove from persistent DB via backend
+        await aiService.deleteSession(chatId);
+
         if (selectedChat === chatId) {
             setSelectedChat(null);
             setMessages([]);

@@ -100,5 +100,16 @@ export const aiService = {
             console.error('Failed to get session messages:', error);
             return null;
         }
+    },
+
+    async deleteSession(sessionId: string): Promise<boolean> {
+        try {
+            const { apiDelete } = await import('./api');
+            await apiDelete(`/assistant/sessions/${sessionId}`);
+            return true;
+        } catch (error) {
+            console.error('Failed to delete session:', error);
+            return false;
+        }
     }
 };
