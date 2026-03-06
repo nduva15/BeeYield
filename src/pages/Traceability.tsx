@@ -235,7 +235,7 @@ const Traceability = () => {
                             name="qrCode"
                             value={qrCode}
                             onChange={(e) => setQrCode(e.target.value)}
-                            placeholder="e.g. KIB-ACACIAL-26"
+                            placeholder="e.g. HB-2026-0103-001"
                             className="h-16 pl-12 pr-4 rounded-2xl border-2 border-slate-100 focus:border-amber-500 focus:ring-amber-500 transition-all text-lg font-bold"
                             disabled={loading}
                           />
@@ -253,7 +253,7 @@ const Traceability = () => {
                       <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try these example codes</p>
                         <div className="flex flex-wrap gap-2">
-                          {["KIB-ACACIAL-26", "KIB-SAV-2026", "KIB-GOLD-2026"].map(code => (
+                          {["HB-2026-0103-001", "HB-2026-0110-015", "HB-2026-0120-030"].map(code => (
                             <Button
                               key={code}
                               variant="ghost"
