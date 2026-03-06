@@ -9,19 +9,8 @@ import {
     AlertCircle, BarChart3, Lightbulb
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import beeyieldService from '@/services/beeyieldService';
 
-const chartData = [
-    { name: '0.1', value: 0.15 },
-    { name: '0.2', value: 0.25 },
-    { name: '0.3', value: 0.2 },
-    { name: '0.4', value: 0.4 },
-    { name: '0.5', value: 0.35 },
-    { name: '0.6', value: 0.5 },
-    { name: '0.7', value: 0.45 },
-    { name: '0.8', value: 0.6 },
-    { name: '0.9', value: 0.55 },
-    { name: '1.0', value: 0.7 },
-];
 
 const CustomDot = (props: any) => {
     const { cx, cy, value } = props;
@@ -36,6 +25,50 @@ const CustomDot = (props: any) => {
 };
 
 const ChartsView: React.FC = () => {
+    const [chartData, setChartData] = React.useState([
+        { name: '0.1', value: 0.15 },
+        { name: '0.2', value: 0.25 },
+        { name: '0.3', value: 0.2 },
+        { name: '0.4', value: 0.4 },
+        { name: '0.5', value: 0.35 },
+        { name: '0.6', value: 0.5 },
+        { name: '0.7', value: 0.45 },
+        { name: '0.8', value: 0.6 },
+        { name: '0.9', value: 0.55 },
+        { name: '1.0', value: 0.7 },
+    ]);
+    const [sensorType, setSensorType] = React.useState('temperature');
+    const [timeRange, setTimeRange] = React.useState('7days');
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const hours = timeRange === '7days' ? 168 : timeRange === '30days' ? 720 : 2160;
+                const readings = await beeyieldService.getSensorReadings(undefined, hours);
+                if (readings && readings.length > 2) {
+                    const mapped = (readings as any[]).reverse().map(r => {
+                        const ts = new Date(r.recorded_at || r.timestamp || r.created_at);
+                        let value = 0;
+                        if (sensorType === 'temperature') value = (r.temp_internal || r.temperature || 35) / 50;
+                        else if (sensorType === 'humidity') value = (r.humidity_internal || r.humidity || 60) / 100;
+                        else if (sensorType === 'weight') value = (r.weight_kg || r.weight || 40) / 80;
+                        return {
+                            name: ts.toLocaleDateString([], { month: 'short', day: 'numeric' }),
+                            value: parseFloat(value.toFixed(3))
+                        };
+                    });
+                    // Sample down to ~20 points for clean chart rendering
+                    const step = Math.max(1, Math.floor(mapped.length / 20));
+                    const sampled = mapped.filter((_, i) => i % step === 0);
+                    setChartData(sampled);
+                }
+            } catch (err) {
+                console.warn('Charts: Using fallback data', err);
+            }
+        };
+        fetchData();
+    }, [sensorType, timeRange]);
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header */}
@@ -58,28 +91,28 @@ const ChartsView: React.FC = () => {
                     <h3 className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mb-6">Filtering Parameters</h3>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Area</label>
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Apiary</label>
                             <Input
-                                defaultValue="Kibwezi Main Area A"
+                                defaultValue="All Apiaries"
                                 className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Tele-Type</label>
-                            <Select defaultValue="water">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Sensor Type</label>
+                            <Select value={sensorType} onValueChange={setSensorType}>
                                 <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                    <SelectItem value="water" className="uppercase font-black text-[10px]">Water</SelectItem>
-                                    <SelectItem value="heat" className="uppercase font-black text-[10px]">Heat</SelectItem>
-                                    <SelectItem value="electricity" className="uppercase font-black text-[10px]">Electricity</SelectItem>
+                                    <SelectItem value="temperature" className="uppercase font-black text-[10px]">Temperature</SelectItem>
+                                    <SelectItem value="humidity" className="uppercase font-black text-[10px]">Humidity</SelectItem>
+                                    <SelectItem value="weight" className="uppercase font-black text-[10px]">Weight</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
                             <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Temporal Scope</label>
-                            <Select defaultValue="7days">
+                            <Select value={timeRange} onValueChange={setTimeRange}>
                                 <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>

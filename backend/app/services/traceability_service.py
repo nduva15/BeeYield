@@ -36,7 +36,8 @@ class TraceabilityService:
             timeline_dicts = _engine.build_timeline(harvest, apiary_data)
             timeline = [schemas.TraceJourneyStep(**step) for step in timeline_dicts]
         else:
-            timeline = [] # Fallback
+            # Python fallback timeline when Rust binary is unavailable
+            timeline = TraceabilityService._build_python_timeline(harvest, farmer_data, apiary_data, hive_data)
 
         # Impact Stats from DB
         stats = await db_select("company_stats", token=token)
@@ -62,6 +63,61 @@ class TraceabilityService:
         )
 
     @staticmethod
+    def _build_python_timeline(
+        harvest: dict[str, Any],
+        farmer: dict[str, Any],
+        apiary: dict[str, Any],
+        hive: dict[str, Any]
+    ) -> list:
+        """Pure-Python fallback for timeline when Rust core is not compiled."""
+        steps = []
+
+        # Step 1 — Farmer Registration
+        if farmer:
+            steps.append(schemas.TraceJourneyStep(
+                title="Farmer Registration",
+                date=farmer.get("registration_date") or farmer.get("created_at", ""),
+                location=farmer.get("location_name", "Kenya"),
+                description=f"{farmer.get('name', 'Beekeeper')} registered with BeeYield.",
+                icon="user",
+                data={"farmer_id": farmer.get("farmer_id") or farmer.get("id", "")},
+            ))
+
+        # Step 2 — Apiary Established
+        if apiary:
+            steps.append(schemas.TraceJourneyStep(
+                title="Apiary Established",
+                date=apiary.get("established_date") or apiary.get("created_at", ""),
+                location=apiary.get("location_name") or apiary.get("name", ""),
+                description=f"Apiary '{apiary.get('name', '')}' established in {apiary.get('county', apiary.get('region', 'Kenya'))}.",
+                icon="map-pin",
+                data={"apiary_id": apiary.get("apiary_id") or apiary.get("id", "")},
+            ))
+
+        # Step 3 — Hive Installed
+        if hive:
+            steps.append(schemas.TraceJourneyStep(
+                title="Hive Installed",
+                date=hive.get("installation_date") or hive.get("created_at", ""),
+                location=apiary.get("location_name", "") if apiary else "",
+                description=f"Hive {hive.get('hive_code', '')} ({hive.get('hive_type', 'Langstroth')}) installed.",
+                icon="box",
+                data={"hive_id": hive.get("hive_id") or hive.get("id", "")},
+            ))
+
+        # Step 4 — Harvest Recorded
+        steps.append(schemas.TraceJourneyStep(
+            title="Honey Harvested",
+            date=harvest.get("harvest_date") or harvest.get("created_at", ""),
+            location=apiary.get("location_name", "Kenya") if apiary else "Kenya",
+            description=f"{harvest.get('quantity_kg', 0)} kg of {harvest.get('honey_type', 'honey')} harvested. Batch: {harvest.get('batch_code', 'N/A')}.",
+            icon="droplets",
+            data={"batch_code": harvest.get("batch_code", ""), "quantity_kg": harvest.get("quantity_kg", 0)},
+        ))
+
+        return steps
+
+    @staticmethod
     async def get_all_harvests(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
         columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
         data = await db_select("harvests", columns=columns, order_by="harvest_date", ascending=False, limit=limit, token=token)
@@ -77,12 +133,15 @@ class TraceabilityService:
 
     @staticmethod
     async def get_trace_journey(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
-        """Reconstruct journey. Prioritizes DB (Smart Batching)."""
+        """Reconstruct journey. Prioritizes DB (Smart Batching).
+        Uses service_role_key to bypass RLS since this is a public lookup."""
+        from app.core.config import settings
+        # For public traceability lookups, use the service role key to bypass RLS
+        lookup_token = token or getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY', None)
         try:
-            harvests = await db_select("harvests", filters={"batch_code": batch_code}, token=token)
+            harvests = await db_select("harvests", filters={"batch_code": batch_code}, token=lookup_token)
             if harvests:
-                # Use staticmethod call
-                return await TraceabilityService._build_db_journey(harvests[0], token=token)
+                return await TraceabilityService._build_db_journey(harvests[0], token=lookup_token)
         except Exception as e:
             print(f"Journey reconstruction failed: {e}")
         return None

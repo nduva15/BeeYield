@@ -235,7 +235,7 @@ const Traceability = () => {
                             name="qrCode"
                             value={qrCode}
                             onChange={(e) => setQrCode(e.target.value)}
-                            placeholder="e.g. HB-2026-0103-001"
+                            placeholder="e.g. KIB-ACACIAL-26"
                             className="h-16 pl-12 pr-4 rounded-2xl border-2 border-slate-100 focus:border-amber-500 focus:ring-amber-500 transition-all text-lg font-bold"
                             disabled={loading}
                           />
@@ -251,24 +251,7 @@ const Traceability = () => {
                       </form>
 
                       <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try these example codes</p>
-                        <div className="flex flex-wrap gap-2">
-                          {["HB-2026-0103-001", "HB-2026-0110-015", "HB-2026-0120-030"].map(code => (
-                            <Button
-                              key={code}
-                              variant="ghost"
-                              size="sm"
-                              className="text-[10px] font-bold bg-slate-50 hover:bg-amber-50 hover:text-amber-700 rounded-full h-8"
-                              onClick={() => {
-                                setQrCode(code);
-                                handleTrace(code);
-                              }}
-                            >
-                              {code}
-                            </Button>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-2 mt-6">
+                        <div className="flex items-center gap-2">
                           <ShieldCheck className="h-4 w-4 text-green-500" />
                           <span className="text-xs font-bold text-muted-foreground italic">Every batch is permanently recorded and verified</span>
                         </div>

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
-    Plus, MoreHorizontal, FileText, Globe, ChevronDown, ChevronRight, Download, Check, Loader2
+    Plus, MoreHorizontal, FileText, Globe, ChevronDown, ChevronRight, Download, Check, Loader2,
+    Shield, Zap, Activity, FileDown, ShieldCheck, CheckCircle2, TrendingUp, Wallet, CreditCard, DollarSign, ArrowUpCircle, ArrowDownCircle, List
 } from 'lucide-react';
 import {
     Select,
@@ -20,7 +21,6 @@ import SubscriptionPlans from './SubscriptionPlans';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { Shield, Zap, Activity, FileDown } from 'lucide-react';
 import SettingsIntegrationsView from './SettingsIntegrationsView';
 import QRCode from 'qrcode';
 
@@ -59,8 +59,8 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
         switch (activeAnalyticsTab) {
             case 'Monthly overview':
                 csvContent = 'Month,Revenue,Costs,Net\n';
-                monthlyOverviewData.forEach(row => {
-                    csvContent += `${row.month},${row.revenue} ${currency},${row.costs} ${currency},${row.net} ${currency}\n`;
+                data.forEach(row => {
+                    csvContent += `${row.name},${row.revenue} ${currency},${row.costs} ${currency},${row.net} ${currency}\n`;
                 });
                 filename = 'monthly_overview.csv';
                 break;
@@ -262,13 +262,13 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         try {
             const result = await beeyieldService.submitToETIMS(id);
             if (result.success) {
+                fetchData(); // Refresh to show synced status
                 toast.success("eTIMS Synchronization Successful", {
-                    description: `Invoice ID: ${result.etims_id}`
+                    description: `Receipt: ${result.etims_id}`
                 });
-                // In a real app, you'd update the local state to show 'synced' status
             } else {
                 toast.error("eTIMS Sync Failed", {
-                    description: result.error?.message || "Verify your KRA PIN in settings."
+                    description: typeof result.error === 'string' ? result.error : (result.error?.message || "Verify your KRA PIN in settings.")
                 });
             }
         } catch (err) {
@@ -540,13 +540,24 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                     <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
                         <CardContent className="p-8">
                             <div className="flex justify-between items-start mb-1">
-                                <h3 className="text-lg font-bold">eTIMS readiness</h3>
-                                <Badge className="rounded-full bg-orange-100 text-orange-600 text-[10px] font-bold px-3 border-none">UI only</Badge>
+                                <h3 className="text-lg font-bold">eTIMS compliance</h3>
+                                <Badge className={cn(
+                                    "rounded-full text-[10px] font-bold px-3 border-none",
+                                    profile?.metadata?.etims_enabled ? "bg-green-100 text-green-600" : "bg-orange-100 text-orange-600"
+                                )}>
+                                    {profile?.metadata?.etims_enabled ? "LIVE" : "READY"}
+                                </Badge>
                             </div>
-                            <p className="text-xs text-gray-400 font-medium mb-6">Structured invoicing status</p>
+                            <p className="text-xs text-gray-400 font-medium mb-6">Electronic Tax Invoice Management System</p>
                             <div className="flex items-center gap-2 mb-6">
                                 <span className="text-[10px] text-gray-400 uppercase font-black">Status:</span>
-                                <Badge className="bg-[#F4D03F]/10 text-[#7a6820] border border-[#F4D03F]/20 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase">Not connected</Badge>
+                                {profile?.metadata?.etims_enabled ? (
+                                    <Badge className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase flex items-center gap-1">
+                                        <ShieldCheck className="w-3 h-3" /> Connected
+                                    </Badge>
+                                ) : (
+                                    <Badge className="bg-[#F4D03F]/10 text-[#7a6820] border border-[#F4D03F]/20 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase">Configuration Pending</Badge>
+                                )}
                             </div>
                             <div className="flex gap-2 mt-4">
                                 <Button variant="outline" className="rounded-full bg-gray-50 border-gray-200 text-gray-600 text-xs font-bold px-4 h-9">
