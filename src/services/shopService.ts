@@ -238,3 +238,13 @@ export const confirmStripePayment = async (paymentIntentId: string, orderId: str
         order_id: orderId,
     });
 };
+
+// Validate a coupon code
+export const validateCoupon = async (code: string, amount: number): Promise<{
+    valid: boolean;
+    discount_amount?: number;
+    new_total?: number;
+    message?: string;
+}> => {
+    return await apiPost<any>(`/shop/checkout/coupon/validate?code=${code}&amount=${amount}`, {});
+};

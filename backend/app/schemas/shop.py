@@ -51,8 +51,10 @@ class OrderItem(BaseModel):
 class OrderCreate(BaseModel):
     shipping_address: dict
     payment_method: str # mpesa, card
+    delivery_method: str = "delivery" # delivery, pickup
     items: list[OrderItem]
     total_kes: float
+    coupon_code: Optional[str] = None
     notes: Optional[str] = None
     idempotency_key: Optional[str] = None # Added for Oxidized Financial Core
 

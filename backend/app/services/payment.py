@@ -1,3 +1,6 @@
+from app.core.config import settings
+import stripe
+
 try:
     from honey_rust import MpesaEngine
     _mpesa = MpesaEngine()
@@ -30,13 +33,10 @@ def init_mpesa_payment(phone_number: str, amount: float, reference: str):
         print(f"Oxidized M-Pesa Error: {e}")
         return {"error": str(e), "status": "failed", "success": False}
 
-def init_stripe_payment(amount: float, currency: str = "usd"):
+def init_stripe_payment(amount: float, currency: str = "kes"):
     """
     Create Stripe PaymentIntent.
     """
-
-         
-    import stripe
     stripe.api_key = settings.STRIPE_SECRET_KEY
     try:
         intent = stripe.PaymentIntent.create(

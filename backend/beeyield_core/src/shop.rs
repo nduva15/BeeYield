@@ -176,6 +176,73 @@ impl ShopEngine {
         current_sold_grams + new_order_grams <= self.total_harvest_limit_grams
     }
 
+    /// Validate order prices against a reference price map.
+    /// Never trust the client-side calculated total.
+    pub fn validate_order_prices(&self, items: &Bound<'_, PyList>, price_map: &Bound<'_, PyDict>) -> PyResult<f64> {
+        let mut calculated_total = 0.0;
+        for item in items.iter() {
+            let item_dict = item.downcast::<PyDict>()?;
+            let product_id = item_dict.get_item("product_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("product_id missing"))?.extract::<String>()?;
+            let variant_id = item_dict.get_item("variant_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("variant_id missing"))?.extract::<String>()?;
+            let quantity = item_dict.get_item("quantity")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("quantity missing"))?.extract::<i64>()?;
+
+            // Fetch price from price_map[variant_id]
+            if let Some(price_bound) = price_map.get_item(&variant_id)? {
+                let price = price_bound.extract::<f64>()?;
+                calculated_total += price * (quantity as f64);
+            } else {
+                return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Price not found for variant {}", variant_id)));
+            }
+        }
+        Ok(calculated_total)
+    }
+
+    /// Sanitize order data before DB insertion.
+    pub fn sanitize_order_data<'py>(&self, py: Python<'py>, data: &Bound<'py, PyDict>) -> PyResult<Bound<'py, PyDict>> {
+        let sanitized = PyDict::new_bound(py);
+        
+        // Copy selectively and trim strings
+        for (k, v) in data.iter() {
+            if let Ok(val_str) = v.extract::<String>() {
+                 sanitized.set_item(k, val_str.trim())?;
+            } else {
+                 sanitized.set_item(k, v)?;
+            }
+        }
+        
+        Ok(sanitized)
+    }
+
+    /// Apply an authorized coupon code.
+    /// Returns (discount_amount, final_total)
+    pub fn apply_coupon(&self, code: &str, current_total: f64) -> (f64, f64) {
+        let code_upper = code.to_uppercase();
+        let discount_percent = match code_upper.as_str() {
+            "HONEY20" => 0.20,
+            "WELCOME10" => 0.10,
+            "BEEFREE" => 0.15,
+            _ => 0.0,
+        };
+        
+        let discount_amount = current_total * discount_percent;
+        let final_total = current_total - discount_amount;
+        (discount_amount, final_total)
+    }
+
+    /// Calculate shipping cost based on total weight and distance (simplified).
+    /// Free shipping for orders above 5000 KES.
+    pub fn calculate_shipping(&self, total_kes: f64, delivery_method: &str) -> f64 {
+        if delivery_method == "pickup" {
+            return 0.0;
+        }
+        
+        if total_kes >= 5000.0 {
+            0.0
+        } else {
+            350.0
+        }
+    }
+
     /// Validate if an order can be marked as paid via Rust state machine logic.
     pub fn validate_transition(&self, current_status: &str, next_status: &str) -> bool {
         match (current_status, next_status) {
