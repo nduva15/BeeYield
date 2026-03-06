@@ -90,6 +90,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
         setIsSubmitting(true);
         const { data, error } = await beeyieldService.createRequest({
+            type: "support",
             category: formData.category,
             subject: formData.subject,
             description: formData.description,
