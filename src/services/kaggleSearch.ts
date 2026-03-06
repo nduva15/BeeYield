@@ -41,11 +41,12 @@ export async function searchKnowledgeLake(
   // Try Tauri invoke first
   if (typeof window !== "undefined" && "__TAURI__" in window) {
     try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      return await invoke<KaggleSearchResponse>("search_kaggle", {
-        query,
-        topK,
-      });
+      // const { invoke } = await import("@tauri-apps/api/core");
+      // return await invoke<KaggleSearchResponse>("search_kaggle", {
+      //  query,
+      //  topK,
+      // });
+      return directFetch(query, topK);
     } catch (err) {
       console.warn("[kaggle] Tauri invoke failed:", err);
     }
@@ -105,8 +106,8 @@ export async function checkKaggleHealth(): Promise<{
 }> {
   if (typeof window !== "undefined" && "__TAURI__" in window) {
     try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      return await invoke("kaggle_health_check");
+      // const { invoke } = await import("@tauri-apps/api/core");
+      // return await invoke("kaggle_health_check");
     } catch {
       // fall through
     }

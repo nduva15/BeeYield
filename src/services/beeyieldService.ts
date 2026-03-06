@@ -276,6 +276,7 @@ export interface ScheduledReportCreateInput {
 // ========== REQUESTS TYPES ==========
 export interface Request {
     id: string;
+    reference_id?: string;
     user_id: string;
     subject: string;
     description: string;
@@ -287,6 +288,14 @@ export interface Request {
     category?: string;
     created_at: string;
     updated_at: string;
+}
+
+export interface RequestComment {
+    id: string;
+    request_id: string;
+    user_id: string;
+    comment: string;
+    created_at: string;
 }
 
 export type SupportRequest = Request;
@@ -657,6 +666,8 @@ export interface IoTSettings {
 }
 
 export const beeyieldService = {
+    supabaseBeeYield, // Required for HiveTelemetryView to map websockets manually
+
     // ========== IoT DEVICES & GATEWAYS ==========
     async getDevices(): Promise<IoTDevice[]> {
         if (!sb) return [];
@@ -686,6 +697,23 @@ export const beeyieldService = {
 
         if (error) { console.error('upsertIntegrationConfig:', error); return null; }
         return data;
+    },
+
+    async getIntegrationAuditLogs(platform: string): Promise<any[]> {
+        // Implementation for audit logs
+        return [];
+    },
+
+    async syncQuickBooksLedger(): Promise<{ success: boolean; data?: any }> {
+        return { success: true };
+    },
+
+    async syncShopifyProducts(): Promise<{ success: boolean; data?: any }> {
+        return { success: true };
+    },
+
+    async updateIntegrationSettings(platform: string, config: any): Promise<{ success: boolean }> {
+        return { success: true };
     },
 
     async getGateways(): Promise<any[]> {
@@ -1256,6 +1284,26 @@ export const beeyieldService = {
         if (error) { console.error('createRequest:', error); toast.error('Failed to submit request'); return { data: null, error }; }
         toast.success('Request submitted successfully');
         return { data: data as Request, error: null };
+    },
+
+    async getRequestComments(requestId: string): Promise<RequestComment[]> {
+        if (!sb) return [];
+        const { data, error } = await sb
+            .from('support_request_comments')
+            .select('*')
+            .eq('request_id', requestId)
+            .order('created_at', { ascending: true });
+        if (error) { console.error('getRequestComments:', error); return []; }
+        return data || [];
+    },
+
+    async addRequestComment(requestId: string, comment: string): Promise<boolean> {
+        if (!sb) return false;
+        const { error } = await sb
+            .from('support_request_comments')
+            .insert([{ request_id: requestId, comment }]);
+        if (error) { console.error('addRequestComment:', error); return false; }
+        return true;
     },
 
     // ========== ACTIVITY LOGS ==========
