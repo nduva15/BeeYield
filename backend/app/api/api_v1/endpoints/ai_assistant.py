@@ -231,6 +231,26 @@ async def get_chat_session_messages(session_id: str, current_user: dict = Depend
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.delete("/sessions/{session_id}", status_code=204)
+async def delete_chat_session(session_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a chat session and all its messages."""
+    from app.db.supabase_db import db_select, db_delete
+    try:
+        user_id = current_user.get("sub")
+        # Verify ownership
+        sessions = await db_select("chat_sessions", filters={"id": session_id, "user_id": user_id})
+        if not sessions:
+            raise HTTPException(status_code=404, detail="Session not found")
+
+        # Delete messages first (cascade should handle this, but be explicit)
+        await db_delete("chat_messages", {"session_id": session_id})
+        await db_delete("chat_sessions", {"id": session_id})
+        return None
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/chat/stream")
 async def chat_stream(

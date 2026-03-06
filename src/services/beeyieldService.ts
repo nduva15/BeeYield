@@ -1258,6 +1258,21 @@ export const beeyieldService = {
         return { data: data as Request, error: null };
     },
 
+    // ========== ACTIVITY LOGS ==========
+    async getActivityLogs(limit = 20): Promise<any[]> {
+        if (!sb) return [];
+        const { data, error } = await sb.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(limit);
+        if (error) { console.error('getActivityLogs:', error); return []; }
+        return (data || []) as any[];
+    },
+
+    async logActivity(entry: { event_type: string; title: string; subtitle?: string; entity_type?: string; entity_id?: string; metadata?: any }): Promise<void> {
+        if (!sb) return;
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return;
+        await sb.from('activity_logs').insert({ user_id: user.id, ...entry });
+    },
+
     // ========== SENSOR ALERTS ==========
     async getSensorAlerts(resolved = false, limit = 50): Promise<SensorAlert[]> {
         if (!sb) { return []; }
@@ -1700,28 +1715,7 @@ export const beeyieldService = {
         return data;
     },
 
-    // ========== ACTIVITY FEED ==========
-    async getActivityLogs(limit = 10): Promise<ActivityLog[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(limit);
-        if (error) { console.error('getActivityLogs:', error); return []; }
-        return (data || []) as ActivityLog[];
-    },
 
-    async logActivity(input: Partial<ActivityLog>): Promise<{ data: ActivityLog | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-
-        const payload = {
-            user_id: user.id,
-            ...input,
-            created_at: new Date().toISOString()
-        };
-
-        const { data, error } = await sb.from('activity_logs').insert(payload).select().single();
-        return { data: data as ActivityLog, error };
-    },
 
     // ========== ACCOUNT & DEVICES ==========
     async getIotDevices(): Promise<any[]> {
