@@ -76,9 +76,10 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             logger.error(f"Oxidized Financial Core Failure: {e}")
             return {"status": "error", "message": f"Financial Core rejected transaction: {str(e)}"}
 
+    price_map: Dict[str, float] = {}
+    
     # 4. Strict Price & Logistics Validation (Oxidized Validation)
     if not is_bypass:
-        price_map = {}
         for item in order_in.items:
             product = await get_product_by_id(item.product_id, token=token)
             if not product:
@@ -89,6 +90,8 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         try:
             items_list = list(map(lambda x: x.dict(), order_in.items))
             # 4a. Base Items Total
+            print(f"DEBUG: Price Map Keys: {list(price_map.keys())}")
+            print(f"DEBUG: Items Variant IDs: {[i['variant_id'] for i in items_list]}")
             subtotal = engine.validate_order_prices(items_list, price_map)
             
             # 4b. Coupon Logic
@@ -110,13 +113,6 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             logger.error(f"Oxidized Validation Failure: {e}")
             return {"status": "error", "message": f"Validation failed: {str(e)}"}
 
-async def apply_coupon_code(code: str, total_amount: float) -> dict:
-    """Validate a coupon via the Rust engine"""
-    discount, final = engine.apply_coupon(code, total_amount)
-    if discount > 0:
-        return {"valid": True, "discount_amount": discount, "new_total": final}
-    return {"valid": False, "message": "Invalid or expired coupon code."}
-
     # 5. Create Order Document (Sanitized)
     order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{str(uuid.uuid4())[:4].upper()}"
     
@@ -135,7 +131,7 @@ async def apply_coupon_code(code: str, total_amount: float) -> dict:
     # Re-insert non-string fields if needed, but Rust handles basic PyDict
     order_data["shipping_address"] = order_in.shipping_address # Put back dictionary
 
-    res = await db_insert("orders", order_data, token=token)
+    res = await db_insert("orders", order_data, token=settings.SUPABASE_SERVICE_ROLE_KEY)
     if not res.get("success"):
         error_msg = res.get('error', 'Unknown DB error')
         logger.error(f"Order creation failed: {error_msg}")
@@ -145,14 +141,18 @@ async def apply_coupon_code(code: str, total_amount: float) -> dict:
     
     # 6. Atomic item insertion
     for item in order_in.items:
+        # Get the actual price from our validated price_map if possible, else 0
+        price_val = price_map.get(str(item.variant_id), 0.0)
         item_data = {
             "order_id": order_id,
             "product_id": item.product_id,
             "variant_id": item.variant_id,
             "quantity": item.quantity,
-            "price_at_purchase": getattr(item, 'price_at_purchase', 0)
+            "unit_price": price_val,
+            "total_price": price_val * item.quantity,
+            "price_at_purchase": price_val
         }
-        await db_insert("order_items", item_data, token=token)
+        await db_insert("order_items", item_data, token=settings.SUPABASE_SERVICE_ROLE_KEY)
 
     # 7. Financial Core — Payment Trigger
     payment_info = {}
@@ -173,9 +173,12 @@ async def apply_coupon_code(code: str, total_amount: float) -> dict:
             checkout_id = stk_res.get("CheckoutRequestID")
             if checkout_id and id_key:
                 await db_update("billing_ledger", 
-                    {"metadata": {"checkout_request_id": checkout_id, "order_id": order_id}}, 
+                    {
+                        "checkout_request_id": checkout_id,
+                        "metadata": {"checkout_request_id": checkout_id, "order_id": order_id}
+                    }, 
                     {"idempotency_key": id_key},
-                    token=token
+                    token=settings.SUPABASE_SERVICE_ROLE_KEY
                 )
         except Exception as e:
             logger.warning(f"Oxidized M-Pesa Push error: {e}")
@@ -192,17 +195,25 @@ async def apply_coupon_code(code: str, total_amount: float) -> dict:
         "payment_info": payment_info
     }
 
+async def apply_coupon_code(code: str, total_amount: float) -> dict:
+    """Validate a coupon via the Rust engine"""
+    discount, final = engine.apply_coupon(code, total_amount)
+    if discount > 0:
+        return {"valid": True, "discount_amount": discount, "new_total": final}
+    return {"valid": False, "message": "Invalid or expired coupon code."}
+
 async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[dict]:
     from app.db.supabase_db import db_select
     filters = {"category": category} if category else None
-    return await db_select("products", filters=filters, token=token)
+    res = await db_select("products", columns="*,variants:product_variants(*)", filters=filters, token=token)
+    return res
 
 async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Optional[dict]:
     from app.db.supabase_db import db_get_by_id
-    columns = "*,variants(*)"
+    columns = "*,product_variants(*)"
     # Note: db_get_by_id doesn't support complex columns in its simple form, using select instead
     from app.db.supabase_db import db_select
-    res = await db_select("products", columns=columns, filters={"id": product_id}, token=token)
+    res = await db_select("products", columns="*,variants:product_variants(*)", filters={"id": product_id}, token=token)
     return res[0] if res else None
 
 async def get_user_orders(user_id: str, token: Optional[str] = None) -> List[dict]:
@@ -239,17 +250,42 @@ async def generate_invoice(order_id: str, amount: float, items_html: str, trace_
     return invoicer.generate_invoice_html(order_id, amount, items_html, trace_hash)
 
 async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
+    """
+    Process incoming M-Pesa callback from Safaricom.
+    Matches via checkout_request_id and updates both Ledger and Order.
+    """
+    from app.db.supabase_db import db_update, db_select
     try:
         rust_data = mpesa.parse_callback_result(json.dumps(payload))
         res_code = rust_data.get("result_code")
         checkout_id = rust_data.get("checkout_request_id")
-        from app.db.supabase_db import db_update
-        if res_code == 0:
-            await db_update("billing_ledger", {"payment_status": "completed"}, {"metadata->>checkout_request_id": checkout_id})
-            return {"success": True}
-        else:
-            await db_update("billing_ledger", {"payment_status": "failed"}, {"metadata->>checkout_request_id": checkout_id})
-            return {"success": False, "error": f"M-Pesa rejected: {res_code}"}
+        
+        if not checkout_id:
+            logger.error(f"Callback missing checkout_request_id: {payload}")
+            return {"success": False, "error": "Missing checkout_request_id"}
+
+        # 1. Update Ledger status
+        status = "completed" if res_code == 0 else "failed"
+        ledger_res = await db_update("billing_ledger", 
+            {"payment_status": status}, 
+            {"checkout_request_id": checkout_id}
+        )
+        
+        # 2. Find Order ID from Ledger metadata
+        ledger_records = await db_select("billing_ledger", filters={"checkout_request_id": checkout_id})
+        if ledger_records:
+            metadata = ledger_records[0].get("metadata", {})
+            order_id = metadata.get("order_id")
+            if order_id:
+                # 3. Update Order status
+                order_update = {
+                    "payment_status": "paid" if res_code == 0 else "failed",
+                    "status": "processing" if res_code == 0 else "pending"
+                }
+                await db_update("orders", order_update, {"id": order_id})
+                logger.info(f"Payment {status} for Order {order_id} (CheckoutID: {checkout_id})")
+        
+        return {"success": res_code == 0}
     except Exception as e:
         logger.error(f"Callback Processing Error: {e}")
         return {"success": False, "error": str(e)}

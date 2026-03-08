@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus, MapPin, Cpu, ShieldCheck, Leaf, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -42,96 +42,122 @@ const Header = () => {
     { to: "/contact", label: "Contact Us" },
     { to: "/esg", label: "ESG" },
     { to: "/commitment", label: "Commitment" },
-    { to: "/about", label: "About Us" },
     { to: "/careers", label: "Careers" },
     { to: "/team", label: "Team" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-beeyield-gold/20 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm">
-      <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
+      <nav className="container mx-auto flex h-20 items-center justify-between px-6 lg:px-12">
         {/* Left side - Logo (all devices) */}
-        <Link to="/" className="flex items-center space-x-2.5 flex-shrink-0 transition-all hover:scale-105 active:scale-95 group" aria-label="BeeYield home">
+        <Link to="/" className="flex items-center space-x-3 flex-shrink-0 transition-all hover:scale-105 active:scale-95 group" aria-label="BeeYield home">
           <div className="relative">
-            <div className="absolute inset-0 bg-beeyield-gold/20 blur-md rounded-full group-hover:bg-beeyield-gold/30 transition-colors" />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-beeyield-gold/20 blur-xl rounded-full group-hover:bg-beeyield-gold/40 transition-colors" />
             <img
               src={Logo}
               alt="BeeYield logo"
-              className="h-9 w-9 lg:h-10 lg:w-10 object-contain relative z-10"
+              className="h-10 w-10 lg:h-12 lg:w-12 object-contain relative z-10 filter drop-shadow-md"
             />
           </div>
-          <span className="text-lg lg:text-xl font-black text-beeyield-green tracking-tight">BeeYield</span>
+          <div className="flex flex-col -space-y-1">
+            <span className="text-xl lg:text-2xl font-black text-beeyield-green tracking-tighter uppercase italic leading-none">BeeYield</span>
+            <span className="text-[8px] font-black tracking-[0.3em] text-neutral-400 uppercase leading-none">Precision Core</span>
+          </div>
         </Link>
 
         {/* Center - Navigation Links (Desktop only) */}
-        <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+        <div className="hidden lg:flex items-center space-x-2">
           <Link
             to="/crops-we-pollinate"
-            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/crops-we-pollinate") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
+            className={`text-[11px] font-black uppercase tracking-widest transition-all px-4 py-2 rounded-xl hover:bg-neutral-50 ${isActive("/crops-we-pollinate") ? "text-beeyield-gold bg-neutral-50 shadow-sm" : "text-neutral-500 hover:text-neutral-900"
               }`}
           >
-            Professional Pollination
+            Pollination
           </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 text-beeyield-green/80 hover:text-beeyield-green">
-              Pollination Solutions
-              <ChevronDown className="h-3.5 w-3.5" />
+            <DropdownMenuTrigger className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all px-4 py-2 rounded-xl hover:bg-neutral-50 text-neutral-500 hover:text-neutral-900 outline-none">
+              Solutions
+              <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-72 flex flex-col p-3 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100]">
-              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white">
-                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
-                  In Land Pollination
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white">
-                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
-                  In Hive Pollination
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white">
-                <Link to="/diseases" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
-                  Diseases
-                </Link>
-              </DropdownMenuItem>
+            <DropdownMenuContent align="center" className="w-80 p-4 bg-white/95 backdrop-blur-xl border border-neutral-100 rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] z-[100] animate-in slide-in-from-top-2 duration-300">
+              <div className="grid gap-2">
+                <DropdownMenuItem asChild>
+                  <Link to="/in-land-pollination" className="flex items-center gap-3 p-4 rounded-2xl hover:bg-neutral-50 transition-colors group">
+                    <div className="h-10 w-10 rounded-xl bg-beeyield-green/10 flex items-center justify-center text-beeyield-green group-hover:bg-beeyield-green group-hover:text-white transition-all">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-tight text-neutral-900">In Land</p>
+                      <p className="text-[10px] text-neutral-400 font-medium">Field Distribution Metrics</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/precision-pollination" className="flex items-center gap-3 p-4 rounded-2xl hover:bg-neutral-50 transition-colors group">
+                    <div className="h-10 w-10 rounded-xl bg-beeyield-gold/10 flex items-center justify-center text-beeyield-gold group-hover:bg-beeyield-gold group-hover:text-white transition-all">
+                      <Cpu className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-tight text-neutral-900">In Hive</p>
+                      <p className="text-[10px] text-neutral-400 font-medium">IoT Colony Health Monitoring</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/diseases" className="flex items-center gap-3 p-4 rounded-2xl hover:bg-neutral-50 transition-colors group">
+                    <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
+                      <Shield className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-tight text-neutral-900">Pathogens</p>
+                      <p className="text-[10px] text-neutral-400 font-medium">Early Disease Detection Core</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
 
           <Link
             to="/pollination-solutions"
-            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/pollination-solutions") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
+            className={`text-[11px] font-black uppercase tracking-widest transition-all px-4 py-2 rounded-xl hover:bg-neutral-50 ${isActive("/pollination-solutions") ? "text-beeyield-gold bg-neutral-50 shadow-sm" : "text-neutral-500 hover:text-neutral-900"
               }`}
           >
-            Beekeeping Network
+            Network
           </Link>
           <Link
             to="/shop"
             onPrefetch={prefetchShop}
-            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/shop") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
+            className={`text-[11px] font-black uppercase tracking-widest transition-all px-4 py-3 rounded-xl hover:bg-neutral-900 hover:text-white ${isActive("/shop") ? "text-white bg-neutral-900 shadow-xl" : "text-neutral-500"
               }`}
           >
-            Shop
+            The Shop
           </Link>
         </div>
 
         {/* Right side - Traceability Button & Menu (all devices) */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center space-x-3">
           <Link
             to="/beeyield-dashboard"
-            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 group flex items-center justify-center"
+            className="p-3 hover:bg-neutral-50 rounded-2xl transition-all active:scale-95 group relative flex items-center justify-center bg-white/50 border border-neutral-100 shadow-sm"
             title="BeeYield Dashboard"
           >
-            <Shield className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
+            <Shield className="h-5 w-5 text-neutral-700 group-hover:text-beeyield-green transition-colors" />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+            </span>
           </Link>
 
           <button
             onClick={toggleCart}
-            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 group relative"
+            className="p-3 hover:bg-neutral-50 rounded-2xl transition-all active:scale-95 group relative bg-white/50 border border-neutral-100 shadow-sm"
             aria-label="View shopping cart"
           >
-            <ShoppingBag className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
+            <ShoppingBag className="h-5 w-5 text-neutral-700 group-hover:text-beeyield-gold transition-colors" />
             {getTotalItems() > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gradient-to-br from-beeyield-orange to-beeyield-gold text-white text-[10px] font-black h-5 w-5 flex items-center justify-center rounded-full shadow-lg animate-pulse">
+              <span className="absolute -top-2 -right-2 bg-neutral-900 text-white text-[9px] font-black h-5 w-5 flex items-center justify-center rounded-full shadow-lg border-2 border-white">
                 {getTotalItems()}
               </span>
             )}
@@ -140,23 +166,24 @@ const Header = () => {
           <Button
             variant="default"
             size="sm"
-            className="bg-gradient-to-r from-beeyield-green to-beeyield-green-dark hover:from-beeyield-green-dark hover:to-beeyield-green text-white font-black px-4 sm:px-6 text-xs sm:text-sm h-9 sm:h-10 transition-all active:scale-95 rounded-xl shadow-md hover:shadow-lg uppercase tracking-wider"
+            className="bg-neutral-900 hover:bg-beeyield-green text-white font-black px-6 h-12 transition-all active:scale-95 rounded-2xl shadow-xl hover:shadow-neutral-900/10 uppercase tracking-widest text-[10px] hidden sm:flex"
             asChild
           >
             <Link to="/traceability">
-              Verify
+              <ShieldCheck className="h-4 w-4 mr-2" />
+              Verify Jar
             </Link>
           </Button>
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
-            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95"
+            className="p-3 bg-white hover:bg-neutral-50 border border-neutral-100 rounded-2xl shadow-sm transition-all active:scale-95 text-neutral-900"
           >
             {isMenuOpen ? (
-              <X className="h-5 w-5 sm:h-6 sm:w-6 text-beeyield-green" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6" />
             ) : (
-              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-beeyield-green" />
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
             )}
           </button>
         </div>
@@ -167,103 +194,56 @@ const Header = () => {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-neutral-900/20 backdrop-blur-md z-40 animate-in fade-in duration-500"
             onClick={() => setIsMenuOpen(false)}
           />
 
           {/* Menu Panel */}
-          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-3xl bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-beeyield-gold/20 p-4 sm:p-6 shadow-2xl animate-in fade-in slide-in-from-top-2">
-            {/* Main Navigation Section */}
-            <div className="flex flex-col space-y-1 pb-4 border-b border-beeyield-gold/20">
-              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Main Navigation</span>
-              <Link
-                to="/crops-we-pollinate"
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive("/crops-we-pollinate") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
-                  }`}
-              >
-                Professional Pollination
+          <div className="fixed right-4 top-24 z-50 w-80 max-h-[calc(100vh-8rem)] overflow-y-auto rounded-[3rem] bg-white border border-neutral-100 p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] animate-in slide-in-from-top-4 duration-500 group">
+            <div className="flex flex-col space-y-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-4 px-2">Navigation</p>
+
+              <Link to="/crops-we-pollinate" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-neutral-50 transition-all font-bold text-neutral-900">
+                <Leaf className="h-5 w-5 text-beeyield-green" />
+                Pollination Services
               </Link>
 
-              {/* Pollination Solutions Sub-menu */}
-              <div className="flex flex-col">
-                <span className="text-sm sm:text-base font-bold text-beeyield-green px-3 py-2.5 sm:py-3 flex items-center gap-1">
-                  Pollination Solutions
-                  <ChevronDown className="h-4 w-4" />
-                </span>
-                <div className="pl-4 flex flex-col space-y-1">
-                  <Link
-                    to="/in-land-pollination"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive("/in-land-pollination") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
-                      }`}
-                  >
-                    In Land Pollination
-                  </Link>
-                  <Link
-                    to="/precision-pollination"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive("/precision-pollination") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
-                      }`}
-                  >
-                    In Hive Pollination
-                  </Link>
-                  <Link
-                    to="/diseases"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive("/diseases") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
-                      }`}
-                  >
-                    Diseases
-                  </Link>
-                </div>
-              </div>
-
-              <Link
-                to="/pollination-solutions"
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive("/pollination-solutions") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
-                  }`}
-              >
-                Beekeeping Network
-              </Link>
-              <Link
-                to="/shop"
-                onPrefetch={prefetchShop}
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive("/shop") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
-                  }`}
-              >
-                Shop
-              </Link>
-            </div>
-
-            {/* Secondary Links Section */}
-            <div className="flex flex-col space-y-1 pt-4">
-              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black mt-2">My Dashboard</span>
-              <Link
-                to="/beeyield-dashboard"
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-black hover:bg-beeyield-gold/20 rounded-xl px-3 py-2.5 sm:py-3 transition-all bg-gradient-to-r from-beeyield-gold/10 to-beeyield-green/10 text-beeyield-green border-2 border-beeyield-gold/30 flex items-center justify-between mb-2 shadow-sm ${isActive("/beeyield-dashboard") ? "ring-2 ring-beeyield-gold" : ""
-                  }`}
-              >
-                Dashboard
-                <Shield className="h-4 w-4" />
+              <Link to="/shop" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-neutral-50 transition-all font-bold text-neutral-900">
+                <ShoppingBag className="h-5 w-5 text-beeyield-gold" />
+                The Honey Shop
               </Link>
 
-              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black mt-2">More</span>
+              <Link to="/traceability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-neutral-50 transition-all font-bold text-neutral-900">
+                <ShieldCheck className="h-5 w-5 text-neutral-400" />
+                Traceability Report
+              </Link>
+
+              <Separator className="my-6 opacity-50" />
+
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-4 px-2">Company</p>
 
               {menuLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive(link.to) ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
-                    }`}
+                  className="p-4 rounded-2xl hover:bg-neutral-50 transition-all font-bold text-neutral-500 hover:text-neutral-900"
                 >
                   {link.label}
                 </Link>
               ))}
+
+              <Link
+                to="/beeyield-dashboard"
+                onClick={() => setIsMenuOpen(false)}
+                className="mt-6 flex items-center justify-between p-6 bg-neutral-900 rounded-[2rem] text-white shadow-xl hover:scale-[1.02] transition-all group/dash"
+              >
+                <div>
+                  <p className="text-xs font-black uppercase tracking-tight">BeeYield Dashboard</p>
+                  <p className="text-[10px] text-neutral-400 font-medium">Live Monitoring Platform</p>
+                </div>
+                <ArrowRight className="h-5 w-5 group-hover/dash:translate-x-1 transition-transform" />
+              </Link>
             </div>
           </div>
         </>

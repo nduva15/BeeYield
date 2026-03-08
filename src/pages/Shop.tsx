@@ -61,10 +61,9 @@ interface Product {
 }
 
 const STATIC_PRODUCTS: Product[] = [
-  // --- HONEY (8 Items - Professional Traceable Collection) ---
   {
     id: "h1",
-    name: "BeeYield Premium Acacia",
+    name: "BeeYield Acacia Premium",
     description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "Bestseller",
@@ -73,462 +72,25 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 245,
     is_active: true,
     variants: [
-      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-121-250G" },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true, batch_code: "KIB-ACAC-111-500G" },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-101-1KG" }
+      { id: "vh1-1", size: "250g", price_kes: 350, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-2026-P" },
+      { id: "vh1-2", size: "500g", price_kes: 700, stock_quantity: 75, is_available: true, batch_code: "KIB-ACAC-2026-P" },
+      { id: "vh1-3", size: "1kg", price_kes: 1400, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-2026-P" }
     ]
   },
   {
     id: "h2",
     name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+    description: "Our signature Acacia honey, wild-harvested and full of floral notes. Perfect for daily wellness and natural sweetness.",
     category: "honey",
-    badge: "Premium",
+    badge: "Signature",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
     rating: 5.0,
     review_count: 182,
     is_active: true,
     variants: [
-      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-WILD-122-250G" },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-WILD-112-500G" },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true, batch_code: "KIB-WILD-102-1KG" }
-    ]
-  },
-  {
-    id: "h3",
-    name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "Rare",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.8,
-    review_count: 96,
-    is_active: true,
-    variants: [
-      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-FOR-123-250G" },
-      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true, batch_code: "KIB-FOR-113-500G" },
-      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true, batch_code: "KIB-FOR-103-1KG" }
-    ]
-  },
-  {
-    id: "h4",
-    name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "Limited Edition",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.9,
-    review_count: 54,
-    is_active: true,
-    variants: [
-      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-THORN-124-250G" },
-      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true, batch_code: "KIB-THORN-114-500G" },
-      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-THORN-104-1KG" }
-    ]
-  },
-  {
-    id: "h5",
-    name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "100% Raw",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
-    review_count: 312,
-    is_active: true,
-    variants: [
-      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-COMB-125-250G" },
-      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true, batch_code: "KIB-COMB-115-500G" },
-      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true, batch_code: "KIB-COMB-105-1KG" }
-    ]
-  },
-  {
-    id: "h6",
-    name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "New Arrival",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.7,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true, batch_code: "KIB-LAV-126-250G" },
-      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true, batch_code: "KIB-LAV-116-500G" },
-      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-LAV-106-1KG" }
-    ]
-  },
-  {
-    id: "h7",
-    name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "Wellness",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.8,
-    review_count: 128,
-    is_active: true,
-    variants: [
-      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-GINGER-127-250G" },
-      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-GINGER-117-500G" },
-      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true, batch_code: "KIB-GINGER-107-1KG" }
-    ]
-  },
-  {
-    id: "h8",
-    name: "BeeYield Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "Gold Label",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
-    review_count: 15,
-    is_active: true,
-    variants: [
-      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 10, is_available: true, batch_code: "KIB-SIGN-128-250G" },
-      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 10, is_available: true, batch_code: "KIB-SIGN-118-500G" },
-      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 5, is_available: true, batch_code: "KIB-SIGN-108-1KG" }
-    ]
-  },
-  // --- HARDWARE (BeeHUB Precision IoT Ecosystem) ---
-  {
-    id: "hw1",
-    name: "BeeHUB Queen - Lora Pro",
-    description: "The primary gateway for your apiary. Manages multiple sensors and transmits data via Satellite or GSM. Includes solar charging capability.",
-    category: "hardware",
-    badge: "Gateway",
-    images: ["/images/products/beeyield_hub_sensor.jpg"],
-    rating: 5.0,
-    review_count: 84,
-    is_active: true,
-    variants: [
-      { id: "vhw1-1", size: "Unit Only", price_kes: 38500, stock_quantity: 15, is_available: true }
-    ]
-  },
-  {
-    id: "hw2",
-    name: "BeeHUB Sense Node",
-    description: "Internal hive monitoring node. Tracks temperature and humidity. Connects wirelessly to the BeeHUB Queen gateway.",
-    category: "hardware",
-    badge: "Sensor Node",
-    images: ["/images/products/beehub_temp_humidity.png"],
-    rating: 4.8,
-    review_count: 56,
-    is_active: true,
-    variants: [
-      { id: "vhw2-1", size: "Sense V2", price_kes: 12500, stock_quantity: 50, is_available: true }
-    ]
-  },
-  {
-    id: "hw3",
-    name: "Precision Hive Scale",
-    description: "Industrial-grade scale for monitoring nectar flow and honey stores. Highly precise sensors for real-time weight tracking.",
-    category: "hardware",
-    badge: "Production",
-    images: ["/images/products/beehub_hive_scale.png"],
-    rating: 4.9,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "vhw3-1", size: "150kg Max", price_kes: 24500, stock_quantity: 20, is_available: true }
-    ]
-  },
-  {
-    id: "hw4",
-    name: "BeeHUB Tracker (GPS)",
-    description: "Anti-theft GPS tracking for your valuable colonies. Features movement alerts and geofencing via the BeeHUB dashboard.",
-    category: "hardware",
-    badge: "Security",
-    images: ["/images/products/beehub_sim_card.png"],
-    rating: 4.7,
-    review_count: 31,
-    is_active: true,
-    variants: [
-      { id: "vhw4-1", size: "GPS Unit", price_kes: 8500, stock_quantity: 15, is_available: true }
-    ]
-  },
-  {
-    id: "hw5",
-    name: "Temp & Humidity Probe",
-    description: "High-precision internal probe for monitoring brood nest climate. Essential for early disease detection and swarm prevention.",
-    category: "hardware",
-    badge: "Accessory",
-    images: ["/images/products/beehub_temp_humidity.png"],
-    rating: 4.6,
-    review_count: 124,
-    is_active: true,
-    variants: [
-      { id: "vhw5-1", size: "Single Probe", price_kes: 4500, stock_quantity: 100, is_available: true }
-    ]
-  },
-  {
-    id: "hw6",
-    name: "BeeHUB Solar Panel",
-    description: "Weatherproof solar energy harvester for BeeHUB Queen and Sense nodes. Ensures 24/7 uptime in remote locations.",
-    category: "hardware",
-    badge: "Power",
-    images: ["/images/products/beehub_solar_panel.png"],
-    rating: 4.9,
-    review_count: 28,
-    is_active: true,
-    variants: [
-      { id: "vhw6-1", size: "10W Panel", price_kes: 6500, stock_quantity: 40, is_available: true }
-    ]
-  },
-  {
-    id: "hw7",
-    name: "Acoustic Analysis Module",
-    description: "Microphone sensor for analyzing hive sound signatures to detect queen presence and swarm behavior.",
-    category: "hardware",
-    badge: "Technical",
-    images: ["/images/products/beehub_sound_sensor.png"],
-    rating: 4.8,
-    review_count: 19,
-    is_active: true,
-    variants: [
-      { id: "vhw7-1", size: "Pro Audio", price_kes: 11000, stock_quantity: 10, is_available: true }
-    ]
-  },
-  {
-    id: "hw8",
-    name: "Full BeeHUB Station Kit",
-    description: "A complete starter kit including 1 BeeHUB Queen, 2 Sense nodes, 1 Tracker, and 1 Solar panel for your apiary.",
-    category: "hardware",
-    badge: "Best Value",
-    images: ["/images/products/beeyield_hub_sensor.jpg"],
-    rating: 5.0,
-    review_count: 15,
-    is_active: true,
-    variants: [
-      { id: "vhw8-1", size: "Station Kit", price_kes: 72000, stock_quantity: 5, is_available: true }
-    ]
-  },
-  // --- MERCH (8 Items - Lifestyle & Gear) ---
-  {
-    id: "m1",
-    name: "BeeYield Premium Hoodie",
-    description: "Heavyweight organic cotton hoodie with embroidered BeeYield logo. Stylish, warm, and built to last.",
-    category: "merch",
-    badge: "Premium Gear",
-    images: ["/images/products/beeyield_hoodie.png"],
-    rating: 4.9,
-    review_count: 86,
-    is_active: true,
-    variants: [
-      { id: "vm1-1", size: "M", price_kes: 3800, stock_quantity: 20, is_available: true },
-      { id: "vm1-2", size: "L", price_kes: 3800, stock_quantity: 25, is_available: true }
-    ]
-  },
-  {
-    id: "m2",
-    name: "BeeYield Trucker Cap",
-    description: "Classic ventilated trucker cap with embroidered logo. Perfect for sunny days in the apiary.",
-    category: "merch",
-    badge: null,
-    images: ["/images/products/beeyield_cap.png"],
-    rating: 4.5,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "vm2-1", size: "Standard", price_kes: 1200, stock_quantity: 60, is_available: true }
-    ]
-  },
-  {
-    id: "m3",
-    name: "Sustainability Tote Bag",
-    description: "Eco-friendly heavy canvas tote. Features stunning botanical bee artwork.",
-    category: "merch",
-    badge: "Eco-Choice",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.7,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "vm3-1", size: "Large", price_kes: 1200, stock_quantity: 100, is_available: true }
-    ]
-  },
-  {
-    id: "m4",
-    name: "Signature Beekeeper Tee",
-    description: "Soft, breathable 100% organic cotton. A minimalist design that makes a statement.",
-    category: "merch",
-    badge: null,
-    images: ["/images/products/beekeeper_tshirt.png"],
-    rating: 4.8,
-    review_count: 124,
-    is_active: true,
-    variants: [
-      { id: "vm4-1", size: "M", price_kes: 2200, stock_quantity: 30, is_available: true },
-      { id: "vm4-2", size: "L", price_kes: 2200, stock_quantity: 40, is_available: true }
-    ]
-  },
-  {
-    id: "m5",
-    name: "BeeYield Ceramic Mug",
-    description: "A high-fire ceramic mug in matte charcoal. Ergonomic design for that perfect morning coffee.",
-    category: "merch",
-    badge: "Lifestyle",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.6,
-    review_count: 34,
-    is_active: true,
-    variants: [
-      { id: "vm5-1", size: "12oz", price_kes: 950, stock_quantity: 60, is_available: true }
-    ]
-  },
-  {
-    id: "m6",
-    name: "Beekeeping Enamel Pin",
-    description: "Limited edition enamel pins featuring different bee species. Perfect for your jacket.",
-    category: "merch",
-    badge: "Collectible",
-    images: ["/images/products/beeyield_cap.png"],
-    rating: 5.0,
-    review_count: 48,
-    is_active: true,
-    variants: [
-      { id: "vm6-1", size: "Set", price_kes: 1500, stock_quantity: 200, is_available: true }
-    ]
-  },
-  {
-    id: "m7",
-    name: "Bamboo Bee Hotel",
-    description: "Support solitary bees in your garden with this sustainably sourced bamboo bee hotel.",
-    category: "merch",
-    badge: "Garden",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.8,
-    review_count: 29,
-    is_active: true,
-    variants: [
-      { id: "vm7-1", size: "Standard", price_kes: 3200, stock_quantity: 15, is_available: true }
-    ]
-  },
-  {
-    id: "m8",
-    name: "Wildflower Seed Mix",
-    description: "A curated blend of 25 native wildflower species designed to provide forage for bees.",
-    category: "merch",
-    badge: "Impact",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.7,
-    review_count: 156,
-    is_active: true,
-    variants: [
-      { id: "vm8-1", size: "50g Pack", price_kes: 450, stock_quantity: 500, is_available: true }
-    ]
-  },
-  // --- EDUCATION (8 Items - From BeeLearn.tsx) ---
-  {
-    id: "edu-1",
-    name: "BEEKEEPING STARTER GUIDE",
-    description: "Entry-level handbook: hive setup, bee care, and your first honey harvest.",
-    category: "education",
-    badge: "DIGITAL",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.9,
-    review_count: 215,
-    is_active: true,
-    variants: [
-      { id: "ve1-1", size: "PDF Download", price_kes: 1500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-2",
-    name: "PRECISION POLLINATION HANDBOOK",
-    description: "Data-driven techniques for crop yields. For commercial farmers and professional beekeepers.",
-    category: "education",
-    badge: "PROFESSIONAL",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 5.0,
-    review_count: 48,
-    is_active: true,
-    variants: [
-      { id: "ve2-1", size: "PDF Download", price_kes: 3500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-3",
-    name: "QUEEN REARING MASTERCLASS",
-    description: "Video course with 12 hours of expert instruction on queen breeding, grafting, and colony management.",
-    category: "education",
-    badge: "VIDEO COURSE",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.8,
-    review_count: 87,
-    is_active: true,
-    variants: [
-      { id: "ve3-1", size: "Online Access", price_kes: 5500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-4",
-    name: "HONEY PROCESSING MANUAL",
-    description: "Complete guide to extraction, filtering, bottling, and quality certification for commercial honey production.",
-    category: "education",
-    badge: "BESTSELLER",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.7,
-    review_count: 134,
-    is_active: true,
-    variants: [
-      { id: "ve4-1", size: "PDF Download", price_kes: 2500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-5",
-    name: "HIVE MONITORING COURSE",
-    description: "Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.",
-    category: "education",
-    badge: "TECHNICAL",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.9,
-    review_count: 56,
-    is_active: true,
-    variants: [
-      { id: "ve5-1", size: "Online Access", price_kes: 4000, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-6",
-    name: "DISEASE & PEST MANAGEMENT",
-    description: "Identify and treat common bee diseases and pests in East Africa. Includes natural and chemical treatment options.",
-    category: "education",
-    badge: "ESSENTIAL",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.8,
-    review_count: 98,
-    is_active: true,
-    variants: [
-      { id: "ve6-1", size: "PDF Download", price_kes: 2000, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-7",
-    name: "BUSINESS OF BEEKEEPING",
-    description: "Transform your hobby into a profitable venture. Covers pricing, marketing, regulations, and scaling operations.",
-    category: "education",
-    badge: "ENTREPRENEUR",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.6,
-    review_count: 73,
-    is_active: true,
-    variants: [
-      { id: "ve7-1", size: "PDF + Templates", price_kes: 4500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-8",
-    name: "COMPLETE BEEKEEPER BUNDLE",
-    description: "All educational materials in one package! Includes all guides, courses, and lifetime updates.",
-    category: "education",
-    badge: "BEST VALUE",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 5.0,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "ve8-1", size: "Full Bundle", price_kes: 15000, stock_quantity: 9999, is_available: true }
+      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-ACAC-2026" },
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-ACAC-2026" },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true, batch_code: "KIB-ACAC-2026" }
     ]
   }
 ];
@@ -643,100 +205,107 @@ const Shop = () => {
 
   const categories = [
     { value: "honey", label: "Honey", icon: Leaf, description: "Pure, traceable honey from Kibwezi" },
-    { value: "hardware", label: "Sensors", icon: Cpu, description: "Precision IoT hive monitoring" },
-    { value: "merch", label: "Merch", icon: Shirt, description: "Sustainable gear for beekeepers" },
-    { value: "education", label: "Learn", icon: BookOpen, description: "Expert guides and handbooks" },
   ];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Zero-Trust Premium Theme */}
-      <section className="relative py-24 sm:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
+      {/* Hero Section - Premium Editorial (matches About page) */}
+      <section className="relative py-24 sm:py-32 overflow-hidden bg-neutral-50/50">
+        {/* Animated Background */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#10b981]/[0.03] -skew-x-12 translate-x-32 pointer-events-none" />
+        <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-[#facc15]/5 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#10b981]/5 rounded-full blur-[100px] pointer-events-none" />
 
-          {/* Vertical Text Accent */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
-          >
-            <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-              Collection
-            </span>
-          </motion.div>
-        </div>
+        {/* Vertical Text Accent */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}
+          className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
+        >
+          <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+            Collection
+          </span>
+        </motion.div>
 
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center lg:text-left">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl"
-          >
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-4xl">
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <Zap className="w-3.5 h-3.5" />
-              Verified Authenticity Hub
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Badge className="bg-[#10b981]/10 text-[#064e3b] mb-8 hover:bg-[#10b981]/20 transition-colors uppercase tracking-[0.3em] font-black text-[10px] px-5 py-2 rounded-full border border-[#10b981]/20 shadow-sm">
+                  <Zap className="w-3.5 h-3.5 mr-2" />
+                  Verified Authenticity Hub
+                </Badge>
+              </motion.div>
+
+              <h1 className="text-6xl md:text-8xl font-black text-[#064e3b] mb-10 tracking-tighter leading-[0.85] uppercase">
+                The Gold <span className="text-[#facc15] block italic">Standard.</span>
+                <span className="text-[#10b981]">Traceable</span> by Default.
+              </h1>
+
+              <p className="text-xl md:text-2xl text-neutral-600 mb-12 max-w-2xl leading-tight font-bold uppercase tracking-tight">
+                Every item in our boutique is a proof of concept for uncompromised trust. From 100% raw honey to IoT hive monitoring, quality is verified from the source.
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
+                  <Truck className="h-5 w-5 text-[#064e3b]" />
+                  <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Free Delivery Over 5K KES</span>
+                </div>
+                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
+                  <ShieldCheck className="h-5 w-5 text-[#facc15]" />
+                  <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Blockchain Verified</span>
+                </div>
+              </div>
             </motion.div>
-
-            <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
-              The Gold <span className="text-amber-600">Standard.</span> <br />
-              <span className="text-green-700">Traceable</span> by Default.
-            </h1>
-
-            <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl leading-relaxed font-medium">
-              Every item in our boutique is a proof of concept for uncompromised trust. From 100% raw honey to IoT hive monitoring, quality is cryptographically verified from the source.
-            </p>
-
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
-                <Truck className="h-5 w-5 text-green-700" />
-                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Global Purity Standards</span>
-              </div>
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
-                <ShieldCheck className="h-5 w-5 text-amber-600" />
-                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Zero-Trust Verified</span>
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </div>
+
+        {/* Floating Stat Card (matches About page) */}
+        <motion.div
+          animate={{ y: [0, -20, 0], rotate: [0, 3, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 right-12 -translate-y-1/2 hidden lg:block"
+        >
+          <div className="relative w-72 h-80">
+            <div className="absolute inset-0 bg-[#facc15]/20 rounded-[4rem] blur-3xl" />
+            <div className="relative z-10 bg-white/40 backdrop-blur-xl rounded-[3rem] border border-white p-10 shadow-2xl overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#facc15]/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+              <ShoppingBag className="w-14 h-14 text-[#facc15] mb-6 fill-current opacity-80" />
+              <p className="text-4xl font-black text-[#064e3b] mb-2">32</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 border-t border-neutral-100 pt-3">Traceable Products in the Collection</p>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Shop Content */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-6 py-16 lg:py-24">
         <Tabs defaultValue="honey" className="w-full">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-12">
-            <TabsList className="h-auto p-1 bg-muted/30 border border-border/50 rounded-2xl self-start overflow-x-auto max-w-full">
-              {categories.map((cat) => (
-                <TabsTrigger
-                  key={cat.value}
-                  value={cat.value}
-                  className="px-6 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 font-black uppercase tracking-widest text-xs"
-                >
-                  <cat.icon className="h-4 w-4 mr-2 hidden sm:inline" />
-                  {cat.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <div className="hidden lg:flex items-center gap-4 text-sm font-black uppercase tracking-widest text-muted-foreground/60">
-              <Filter className="h-4 w-4" />
-              <span>Scroll to explore the range</span>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-16">
+            {/* Category Section Label */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-1 bg-[#facc15] rounded-full" />
+                <p className="text-[10px] font-black text-[#064e3b] uppercase tracking-[0.4em]">The Honey Collection</p>
+              </div>
             </div>
+
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="hidden sm:flex items-center gap-2">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Order By</span>
+                <Filter className="h-4 w-4 text-neutral-400" />
+                <span className="text-xs font-black uppercase tracking-widest text-neutral-400">Order By</span>
               </div>
               <Select defaultValue="featured">
-                <SelectTrigger className="w-[180px] h-12 rounded-xl border-border/50 bg-card">
+                <SelectTrigger className="w-[180px] h-12 rounded-xl border-neutral-200 bg-white font-bold text-xs">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -747,14 +316,13 @@ const Shop = () => {
                 </SelectContent>
               </Select>
 
-              {/* Account Shortcut for Shop */}
               <Button
                 variant="outline"
-                className="h-12 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-black text-[10px] uppercase tracking-widest gap-2"
+                className="h-12 rounded-xl px-5 border-neutral-200 bg-white hover:bg-neutral-50 transition-all font-black text-[10px] uppercase tracking-widest gap-2"
                 asChild
               >
                 <Link to="/my-account">
-                  <User className="h-4 w-4 text-primary" />
+                  <User className="h-4 w-4 text-[#064e3b]" />
                   <span className="hidden md:inline">My Account</span>
                 </Link>
               </Button>
@@ -762,185 +330,191 @@ const Shop = () => {
           </div>
 
           {categories.map((category) => (
-            <TabsContent key={category.value} value={category.value} className="mt-0 animate-in fade-in zoom-in-95 duration-500">
+            <TabsContent key={category.value} value={category.value} className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {products
                   .filter(p => p.category === category.value)
-                  .map((product) => (
-                    <Card
+                  .map((product, idx) => (
+                    <motion.div
                       key={product.id}
-                      className={cn(
-                        "group relative overflow-hidden border-none transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]",
-                        product.category === 'hardware' ? "bg-white" : "bg-card hover:bg-white/50"
-                      )}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: idx * 0.08 }}
                     >
-                      <div className="relative">
-                        <BrandedProductImage
-                          src={(() => {
-                            if (!product.variants || product.variants.length === 0) return (product.images && product.images[0]) || "/placeholder.svg";
-                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+                      <Card
+                        className={cn(
+                          "group relative overflow-hidden border-none transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] rounded-[3rem]",
+                          product.category === 'hardware' ? "bg-white shadow-lg" : "bg-white shadow-md hover:bg-neutral-50/50"
+                        )}
+                      >
+                        <div className="relative">
+                          <BrandedProductImage
+                            src={(() => {
+                              if (!product.variants || product.variants.length === 0) return (product.images && product.images[0]) || "/placeholder.svg";
+                              const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+                              const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                              // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
+                              return (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
+                                ? product.images[variantIndex + 1]
+                                : (product.images && product.images[0]) || "/placeholder.svg";
+                            })()}
+                            alt={product.name}
+                            category={product.category}
+                            badge={product.badge}
+                            className={cn(
+                              "aspect-square m-2 rounded-[2rem] transition-all duration-700 group-hover:scale-105 group-hover:rotate-1",
+                              product.category === 'hardware' ? "bg-[#F4F8FB] shadow-inner border border-primary/5 p-8" : "bg-muted"
+                            )}
+                          />
+
+                          {product.category === 'honey' && (
+                            <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
+                              <Badge className="bg-white/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-white transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                Verified Quality
+                              </Badge>
+                            </div>
+                          )}
+
+                          {product.category === 'hardware' && (
+                            <div className="absolute top-8 right-8 z-30">
+                              <Badge className="bg-primary/10 backdrop-blur-sm text-primary border-primary/20 flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
+                                <Cpu className="h-3.5 w-3.5" />
+                                Pro Grade
+                              </Badge>
+                            </div>
+                          )}
+
+
+                        </div>
+
+                        <button
+                          aria-label="Add to wishlist"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click if any
+                            const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
                             const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                            const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants[0] || null);
+
                             // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                            return (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
+                            const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
                               ? product.images[variantIndex + 1]
                               : (product.images && product.images[0]) || "/placeholder.svg";
-                          })()}
-                          alt={product.name}
-                          category={product.category}
-                          badge={product.badge}
-                          className={cn(
-                            "aspect-square m-2 rounded-[2rem] transition-all duration-700 group-hover:scale-105 group-hover:rotate-1",
-                            product.category === 'hardware' ? "bg-[#F4F8FB] shadow-inner border border-primary/5 p-8" : "bg-muted"
-                          )}
-                        />
 
-                        {product.category === 'honey' && (
-                          <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
-                            <Badge className="bg-white/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-white transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
-                              <ShieldCheck className="h-3.5 w-3.5" />
-                              Verified Quality
-                            </Badge>
+                            toggleWishlist({
+                              id: product.id,
+                              name: product.name,
+                              description: product.description,
+                              price: variant?.price_kes || 0,
+                              image: image,
+                              category: product.category,
+                              badge: product.badge,
+                              inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                            });
+                          }}
+                          className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
+                            ? "bg-primary text-primary-foreground shadow-primary/25"
+                            : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
+                            }`}
+                        >
+                          <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                        </button>
+
+                        <CardContent className="p-8 pt-4">
+                          <div className="flex justify-between items-start mb-2">
+                            {renderStars(product.rating, product.review_count)}
                           </div>
-                        )}
 
-                        {product.category === 'hardware' && (
-                          <div className="absolute top-8 right-8 z-30">
-                            <Badge className="bg-primary/10 backdrop-blur-sm text-primary border-primary/20 flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
-                              <Cpu className="h-3.5 w-3.5" />
-                              Pro Grade
-                            </Badge>
-                          </div>
-                        )}
+                          <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
+                            {product.name}
+                            {product.category === 'hardware' && <Zap className="h-4 w-4 text-primary fill-primary/20" />}
+                          </h3>
+                          <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
+                            {product.description}
+                          </p>
 
-
-                      </div>
-
-                      <button
-                        aria-label="Add to wishlist"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click if any
-                          const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
-                          const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                          const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants[0] || null);
-
-                          // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                          const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-                            ? product.images[variantIndex + 1]
-                            : (product.images && product.images[0]) || "/placeholder.svg";
-
-                          toggleWishlist({
-                            id: product.id,
-                            name: product.name,
-                            description: product.description,
-                            price: variant?.price_kes || 0,
-                            image: image,
-                            category: product.category,
-                            badge: product.badge,
-                            inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
-                          });
-                        }}
-                        className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
-                          ? "bg-primary text-primary-foreground shadow-primary/25"
-                          : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
-                          }`}
-                      >
-                        <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                      </button>
-
-                      <CardContent className="p-8 pt-4">
-                        <div className="flex justify-between items-start mb-2">
-                          {renderStars(product.rating, product.review_count)}
-                        </div>
-
-                        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
-                          {product.name}
-                          {product.category === 'hardware' && <Zap className="h-4 w-4 text-primary fill-primary/20" />}
-                        </h3>
-                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
-                          {product.description}
-                        </p>
-
-                        {product.category === 'hardware' && (
-                          <div className="grid grid-cols-2 gap-2 mb-6">
-                            <div className="bg-[#F4F8FB] p-2 rounded-xl border border-primary/5">
-                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Performance</p>
-                              <p className="text-[10px] font-black text-slate-700 leading-none">Ultra Precision</p>
-                            </div>
-                            <div className="bg-[#F4F8FB] p-2 rounded-xl border border-primary/5">
-                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Connectivity</p>
-                              <p className="text-[10px] font-black text-slate-700 leading-none">LoRaWAN/GSM</p>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="space-y-4">
-                          {!product.variants || product.variants.length === 0 ? (
-                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">No variants available</span>
-                            </div>
-                          ) : product.variants.length > 1 ? (
-                            <Select
-                              value={selectedSizes[product.id] || product.variants[0].size}
-                              onValueChange={(value) => handleSizeChange(product.id, value)}
-                            >
-                              <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-black uppercase tracking-widest text-[10px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="rounded-xl border-none shadow-glow">
-                                {product.variants.map((v) => (
-                                  <SelectItem key={v.id} value={v.size} className="font-black uppercase tracking-widest text-[10px] focus:bg-primary focus:text-primary-foreground">
-                                    {v.size} — {formatPrice(v.price_kes)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-2">Edition:</span>
-                              <span className="text-xs font-black uppercase tracking-widest">{product.variants[0]?.size}</span>
+                          {product.category === 'hardware' && (
+                            <div className="grid grid-cols-2 gap-2 mb-6">
+                              <div className="bg-[#F4F8FB] p-2 rounded-xl border border-primary/5">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Performance</p>
+                                <p className="text-[10px] font-black text-slate-700 leading-none">Ultra Precision</p>
+                              </div>
+                              <div className="bg-[#F4F8FB] p-2 rounded-xl border border-primary/5">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Connectivity</p>
+                                <p className="text-[10px] font-black text-slate-700 leading-none">LoRaWAN/GSM</p>
+                              </div>
                             </div>
                           )}
 
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Price</p>
-                              <p className="text-2xl font-black text-foreground">
-                                {formatPrice(
-                                  product.variants?.find(
-                                    (v) => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size)
-                                  )?.price_kes || product.variants?.[0]?.price_kes || 0
-                                )}
-                              </p>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                              <Button
-                                className={cn(
-                                  "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
-                                  (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
-                                    ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
-                                    : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
-                                )}
-                                onClick={() => handleAddToCart(product)}
-                                disabled={!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0}
+                          <div className="space-y-4">
+                            {!product.variants || product.variants.length === 0 ? (
+                              <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">No variants available</span>
+                              </div>
+                            ) : product.variants.length > 1 ? (
+                              <Select
+                                value={selectedSizes[product.id] || product.variants[0].size}
+                                onValueChange={(value) => handleSizeChange(product.id, value)}
                               >
-                                {(!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0) ? (
-                                  <span className="flex items-center gap-2">
-                                    <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
-                                    Sold Out
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-2">
-                                    <ShoppingCart className="h-3.5 w-3.5" />
-                                    Add to Cart
-                                  </span>
-                                )}
-                              </Button>
+                                <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-black uppercase tracking-widest text-[10px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-none shadow-glow">
+                                  {product.variants.map((v) => (
+                                    <SelectItem key={v.id} value={v.size} className="font-black uppercase tracking-widest text-[10px] focus:bg-primary focus:text-primary-foreground">
+                                      {v.size} — {formatPrice(v.price_kes)}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-2">Edition:</span>
+                                <span className="text-xs font-black uppercase tracking-widest">{product.variants[0]?.size}</span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Price</p>
+                                <p className="text-2xl font-black text-foreground">
+                                  {formatPrice(
+                                    product.variants?.find(
+                                      (v) => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size)
+                                    )?.price_kes || product.variants?.[0]?.price_kes || 0
+                                  )}
+                                </p>
+                              </div>
+
+                              <div className="flex flex-col gap-2">
+                                <Button
+                                  className={cn(
+                                    "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
+                                    (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
+                                      ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
+                                      : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
+                                  )}
+                                  onClick={() => handleAddToCart(product)}
+                                  disabled={!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0}
+                                >
+                                  {(!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0) ? (
+                                    <span className="flex items-center gap-2">
+                                      <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
+                                      Sold Out
+                                    </span>
+                                  ) : (
+                                    <span className="flex items-center gap-2">
+                                      <ShoppingCart className="h-3.5 w-3.5" />
+                                      Add to Cart
+                                    </span>
+                                  )}
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))}
               </div>
             </TabsContent>
@@ -949,22 +523,23 @@ const Shop = () => {
       </section>
 
       {/* Trust & Traceability Proof */}
-      <section className="container mx-auto px-4 py-24">
+      <section className="container mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="bg-neutral-900 rounded-[3rem] p-10 md:p-20 relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-600/20 to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#facc15]/20 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-[#10b981]/10 to-transparent pointer-events-none" />
 
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             <div>
-              <Badge className="bg-amber-500 text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
+              <Badge className="bg-[#facc15] text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-[#facc15]/20">
                 BeeYield HoneyChain™
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-[0.9] tracking-tighter uppercase">
-                Trust in Every <span className="text-amber-500">Blockchain</span> Sealed Jar
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[0.85] tracking-tighter uppercase">
+                Trust in Every <span className="text-[#facc15] italic">Blockchain</span> Sealed Jar
               </h2>
               <p className="text-neutral-400 text-lg mb-10 leading-relaxed font-medium">
                 Africa's leader in honey traceability. Our HoneyChain™ protocol guarantees authenticity, purity, and full transparency. Look for the QR code on your boutique jar.
@@ -975,11 +550,11 @@ const Shop = () => {
                   "Immutable Harvest Records",
                   "Verified Flora & Water Sources",
                   "Direct Impact Tracking",
-                  "Zero-Trust Verification"
+                  "1 Batch per 2kg — Geographic Diversity"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-white font-bold text-sm">
-                    <div className="h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <ShieldCheck className="h-3 w-3 text-green-500" />
+                    <div className="h-5 w-5 rounded-full bg-[#10b981]/20 flex items-center justify-center">
+                      <ShieldCheck className="h-3 w-3 text-[#10b981]" />
                     </div>
                     {item}
                   </li>
@@ -1001,9 +576,9 @@ const Shop = () => {
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="relative"
               >
-                <div className="absolute inset-0 bg-amber-500/20 blur-[100px] rounded-full" />
+                <div className="absolute inset-0 bg-[#facc15]/20 blur-[100px] rounded-full" />
                 <div className="w-64 h-64 border-2 border-white/10 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/5">
-                  <Cpu className="w-24 h-24 text-amber-500/40" />
+                  <Cpu className="w-24 h-24 text-[#facc15]/40" />
                 </div>
               </motion.div>
             </div>
@@ -1011,12 +586,14 @@ const Shop = () => {
         </motion.div>
       </section>
 
-      {/* Partners Section - Redesigned */}
-      <section className="container mx-auto px-4 py-24 border-t border-neutral-100">
+      {/* Partners Section */}
+      <section className="container mx-auto px-6 py-24 border-t border-neutral-100">
         <div className="text-center mb-16">
-          <Badge className="bg-neutral-100 text-neutral-500 border-none mb-6 px-4 py-1 font-black uppercase tracking-widest text-[9px]">
-            Global Ecosystem
-          </Badge>
+          <div className="flex items-center gap-4 justify-center mb-6">
+            <div className="w-12 h-1 bg-[#facc15] rounded-full" />
+            <p className="text-[10px] font-black text-[#064e3b] uppercase tracking-[0.4em]">Global Ecosystem</p>
+            <div className="w-12 h-1 bg-[#facc15] rounded-full" />
+          </div>
           <h2 className="text-3xl font-black text-neutral-900 uppercase tracking-tighter">Verified Partners</h2>
         </div>
 
@@ -1028,10 +605,10 @@ const Shop = () => {
             { label: "Traceability Core", icon: ShieldCheck }
           ].map((partner, i) => (
             <div key={i} className="flex items-center gap-4 group cursor-pointer">
-              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-white transition-all">
+              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-[#064e3b] group-hover:text-white transition-all">
                 <partner.icon className="h-6 w-6" />
               </div>
-              <span className="font-black text-xs uppercase tracking-[0.2em] text-neutral-400 group-hover:text-neutral-900 transition-colors">
+              <span className="font-black text-xs uppercase tracking-[0.2em] text-neutral-400 group-hover:text-[#064e3b] transition-colors">
                 {partner.label}
               </span>
             </div>

@@ -34,49 +34,134 @@ const InLandPollination = () => {
 
   return (
     <div className="pt-8">
-      {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
-                In-Land Technology
+      {/* Hero Section - The Science of Sight */}
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
+        {/* Architectural Background */}
+        <div className="absolute inset-0 bg-[#f9fafb]">
+          <div className="absolute top-0 right-0 w-[45%] h-full bg-beeyield-green pointer-events-none transform skew-x-[-12deg] translate-x-20 shadow-[-40px_0_80px_rgba(0,0,0,0.1)]" />
+          <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
+            style={{ backgroundImage: 'radial-gradient(circle, #064e3b 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+
+          {/* Large Editorial Watermark */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute left-8 top-1/2 -translate-y-1/2 hidden 2xl:block pointer-events-none"
+          >
+            <span className="text-[180px] font-black text-neutral-200/40 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+              In-Land Intelligence
+            </span>
+          </motion.div>
+        </div>
+
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            >
+              <Badge className="mb-8 bg-beeyield-green/10 text-beeyield-green border-beeyield-green/20 px-6 py-2 rounded-full font-black uppercase tracking-[0.3em] text-[10px] backdrop-blur-md shadow-sm">
+                <Signal className="w-3.5 h-3.5 mr-2 animate-pulse" />
+                Live Field Telemetry Platform
               </Badge>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
-                Pollination Land <br />
-                Insight Platform
+
+              <h1 className="text-6xl md:text-8xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.8] uppercase italic">
+                The Field <br />
+                <span className="text-beeyield-green">Visible.</span> <br />
+                <span className="text-beeyield-gold">Quantified.</span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                PLIP delivers key in-land data on per-flower bee visits to evaluate pollination efficacy.
+
+              <p className="text-xl md:text-2xl text-neutral-500 mb-10 max-w-xl leading-relaxed font-medium tracking-tight">
+                BeeYield's <span className="text-neutral-900 font-bold italic">Pollination Land Insight Platform (PLIP)</span> delivers granular data on per-flower bee visits, turning field variables into actionable metrics.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="shadow-lg" onClick={() => document.getElementById('in-land-form')?.scrollIntoView({ behavior: 'smooth' })}>
-                  Book Pollination Service
+
+              <div className="flex flex-wrap gap-6 mb-16">
+                <Button size="lg" className="bg-neutral-900 hover:bg-beeyield-green text-white font-black rounded-[2rem] px-10 h-16 shadow-2xl transition-all hover:scale-105 uppercase tracking-widest text-[11px]" onClick={() => document.getElementById('in-land-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                  Deploy Intelligence <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-                <Button size="lg" variant="outline" className="gap-2" asChild>
-                  <Link to="/precision-pollination"><Play className="h-4 w-4" /> View Hive Sensors</Link>
+                <Button size="lg" variant="outline" className="border-2 border-neutral-100 text-neutral-900 hover:bg-neutral-50 font-black rounded-[2rem] px-10 h-16 uppercase tracking-widest text-[11px] backdrop-blur-sm" asChild>
+                  <Link to="/precision-pollination">The Architecture</Link>
                 </Button>
               </div>
-            </div>
 
-            <div className="relative">
-              {/* Hero Image */}
-              <div className="aspect-square max-w-md mx-auto bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center relative shadow-xl">
-                <Signal className="h-32 w-32 text-primary opacity-60" />
-                <div className="absolute -bottom-4 -right-4 bg-background rounded-xl shadow-lg p-4 border border-border">
+              {/* Status Bar */}
+              <div className="flex items-center gap-10 pt-8 border-t border-neutral-100">
+                <div className="flex flex-col">
+                  <span className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-1">Network Version</span>
+                  <span className="text-xl font-bold text-neutral-900 uppercase">PLIP v4.2</span>
+                </div>
+                <div className="w-px h-10 bg-neutral-100" />
+                <div className="flex flex-col">
+                  <span className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-1">Sync Latency</span>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-foreground">Acoustic Monitoring</p>
-                    <div className="flex items-center gap-1 text-xs text-green-600">
-                      <Activity className="h-3 w-3" />
-                      Detecting Flight Signatures
-                    </div>
+                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-xl font-bold text-neutral-900 uppercase">Real-Time</span>
                   </div>
                 </div>
               </div>
-              {/* Abstract decorations */}
-              <div className="absolute top-10 left-0 h-20 w-20 bg-primary/10 rounded-full blur-2xl" />
-              <div className="absolute bottom-10 right-10 h-32 w-32 bg-accent/20 rounded-full blur-3xl" />
-            </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
+              className="relative"
+            >
+              {/* Dynamic Visualization Module */}
+              <div className="relative z-10 aspect-square max-w-xl mx-auto bg-neutral-900 rounded-[4rem] flex flex-col items-center justify-center shadow-[0_64px_128px_-32px_rgba(0,0,0,0.4)] border border-white/10 group overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1598135753163-6167c1a1ad65?q=80&w=1200&auto=format&fit=crop"
+                  alt="Sunflower Field"
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000"
+                />
+
+                <div className="relative z-20 flex flex-col items-center gap-6">
+                  <div className="w-24 h-24 bg-beeyield-gold/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-beeyield-gold/30 shadow-[0_0_40px_rgba(244,208,63,0.2)] animate-pulse">
+                    <Signal className="h-12 w-12 text-beeyield-gold" />
+                  </div>
+                  <div className="text-center px-8">
+                    <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic mb-1">Detection Logic active</h3>
+                    <p className="text-sm text-neutral-400 font-medium">Acoustic Signature Recognition Module: ON</p>
+                  </div>
+                </div>
+
+                {/* Data Stream Animation */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-neutral-900 to-transparent p-10 flex flex-col justify-end">
+                  <div className="flex items-center justify-between border-t border-white/10 pt-6">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black text-beeyield-green uppercase tracking-widest">Flora Density</span>
+                      <span className="text-2xl font-black text-white tracking-tighter">0.82 pt</span>
+                    </div>
+                    <div className="flex flex-col text-right">
+                      <span className="text-[10px] font-black text-beeyield-gold uppercase tracking-widest">Visitation Index</span>
+                      <span className="text-2xl font-black text-white tracking-tighter">42.8 v/m</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scanline */}
+                <motion.div
+                  animate={{ y: ["0%", "100%", "0%"] }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 bg-gradient-to-b from-transparent via-beeyield-gold/5 to-transparent h-40 w-full pointer-events-none"
+                />
+              </div>
+
+              {/* Floating Floating Accreditation Tag */}
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-10 -right-10 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-neutral-100 rotate-12"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <ShieldCheck className="h-8 w-8 text-beeyield-green mb-2" />
+                  <span className="text-sm font-black text-neutral-900 uppercase leading-none">Verified</span>
+                  <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Platform Core</span>
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </section>

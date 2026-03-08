@@ -95,7 +95,7 @@ Signals are decoded directly in the **Rust Core** using:
 
 ### 2. Traceability Engine (Golden Thread)
 Every jar of honey is anchored to a unique **Merkle Root** on the BeeYield Ledger.
-*   **Batch Selection Logic:** "1 unique batch per ~600g" implemented in Rust to ensure geographic diversity in every order.
+*   **Batch Selection Logic:** "1 unique batch per 2000g (2kg)" implemented in Rust to ensure geographic and biological diversity in every dispatch.
 
 ### 3. Integrated Enterprise Shop
 *   **Frictionless Checkout:** Single-page glassmorphism UI with guest checkout by default.
