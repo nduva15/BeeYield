@@ -53,7 +53,7 @@ impl ShopEngine {
     }
 
     /// Select batches for a list of items based on total weight.
-    /// Implements the "1 unique batch per ~600g" logic.
+    /// Implements the "1 unique batch per 2000g (2kg)" logic.
     fn select_batches<'py>(
         &self,
         py: Python<'py>,
@@ -82,14 +82,10 @@ impl ShopEngine {
 
         let mut batches = std::collections::HashSet::new();
         if total_honey_weight > 0 && !available_hive_codes.is_empty() {
-            let avg_batch_size = 600;
-            let mut num_hives_needed = (total_honey_weight as f64 / avg_batch_size as f64).ceil() as usize;
+            let avg_batch_size = 2000;
+            let num_hives_needed = (total_honey_weight as f64 / avg_batch_size as f64).ceil() as usize;
             
             let mut rng = thread_rng();
-            if num_hives_needed > 1 {
-                num_hives_needed += *[0, 1].choose(&mut rng).unwrap();
-            }
-            
             let count = num_hives_needed.min(available_hive_codes.len());
             let mut available = available_hive_codes.clone();
             available.shuffle(&mut rng);

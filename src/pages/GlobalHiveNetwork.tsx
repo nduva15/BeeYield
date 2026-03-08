@@ -14,54 +14,56 @@ const GlobalHiveNetwork = () => {
 
     <div className="min-h-screen bg-background">
       {/* Hero Section - Mobile Responsive */}
-      <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-4xl">
-          <Badge className="mb-4 sm:mb-6 bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm">
+      <section className="relative py-24 sm:py-32 bg-neutral-900 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#10b981]/10 -skew-x-12 translate-x-32 pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-[500px] h-[500px] bg-[#facc15]/5 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+
+        <div className="container mx-auto px-6 relative z-10 text-center max-w-5xl">
+          <Badge className="bg-[#10b981]/10 text-[#10b981] mb-8 hover:bg-[#10b981]/20 transition-colors uppercase tracking-[0.3em] font-black text-[10px] px-5 py-2 rounded-full border border-[#10b981]/20 shadow-sm">
             A Global Effort
           </Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 tracking-tight text-foreground px-2">
-            Saving Africa and the World's Pollinators
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-black mb-8 tracking-tighter text-white px-2 uppercase leading-[0.85]">
+            Saving Africa and the <span className="text-[#facc15] italic block mt-2">World's Pollinators.</span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground leading-relaxed mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
+          <p className="text-lg md:text-2xl text-neutral-300 font-bold uppercase tracking-tight max-w-3xl mx-auto px-2 mb-12">
             BeeYield is leading the charge to address the pollinator crisis in Africa and the world, where 60% of bee colonies are lost annually and 75% of food crops depend on pollination.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-            <Button size="lg" asChild className="shadow-xl w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+            <Button size="lg" asChild className="h-14 px-8 bg-[#facc15] text-neutral-900 hover:bg-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl transition-all">
               <a href="#support-african-farmers">Support the Cause Today</a>
             </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
+            <Button size="lg" variant="outline" className="h-14 px-8 border-white/20 text-white hover:bg-white/10 font-black text-sm uppercase tracking-[0.2em] rounded-2xl transition-all">
               Read the Whitepaper
             </Button>
           </div>
 
           {/* Hero Partners */}
-          <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col items-center">
-            <p className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-widest">Trusted By Global Leaders</p>
-            <div className="flex flex-wrap justify-center gap-6 sm:gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Globe className="h-4 w-4 text-primary" />
+          <div className="mt-20 pt-10 border-t border-white/10 flex flex-col items-center">
+            <p className="text-[10px] font-black text-neutral-500 mb-6 uppercase tracking-[0.3em]">Trusted By Global Leaders</p>
+            <div className="flex flex-wrap justify-center gap-8 items-center opacity-80 hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
+                  <Globe className="h-5 w-5 text-[#facc15]" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">Farmers</span>
+                <span className="font-black text-white uppercase tracking-widest text-xs">Farmers</span>
               </div>
-              <div className="w-px h-8 bg-primary/20 hidden sm:block"></div>
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-primary" />
+              <div className="w-px h-8 bg-white/10 hidden sm:block"></div>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
+                  <Activity className="h-5 w-5 text-[#10b981]" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">ApiSense</span>
+                <span className="font-black text-white uppercase tracking-widest text-xs">ApiSense</span>
               </div>
-              <div className="w-px h-8 bg-primary/20 hidden sm:block"></div>
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-primary" />
+              <div className="w-px h-8 bg-white/10 hidden sm:block"></div>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
+                  <Activity className="h-5 w-5 text-[#facc15]" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
+                <span className="font-black text-white uppercase tracking-widest text-xs">Intelligent Hives</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
       </section>
 
       {/* Full-width Video Section - Before Footer */}

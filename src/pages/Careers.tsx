@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -56,7 +57,7 @@ const Careers = () => {
       setJobs(data || []);
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      // Fallback to static data if DB fails (for demo purposes if migration failed)
+      // Fallback to static data
       setJobs([
         {
           id: "1",
@@ -118,8 +119,6 @@ const Careers = () => {
       formData.append('email', email);
       formData.append('phone', phone);
       if (linkedin) {
-        // Add linkedin to notes or description if backend doesn't have explicit field
-        // Or just append it if we update backend later. For now let's send it.
         formData.append('linkedin_url', linkedin);
       }
       formData.append('resume', resume);
@@ -131,7 +130,6 @@ const Careers = () => {
       setUploadSuccess(true);
       toast.success("Application received! We will contact you shortly.");
 
-      // Cleanup
       setFullName("");
       setEmail("");
       setPhone("");
@@ -148,95 +146,74 @@ const Careers = () => {
 
   if (selectedJob) {
     return (
-      <div className="min-h-screen bg-background py-12 px-4 md:px-8">
+      <div className="min-h-screen bg-[#fdfbf6] py-12 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <Button
             variant="ghost"
             onClick={() => { setSelectedJob(null); setUploadSuccess(false); }}
-            className="mb-8 hover:bg-muted group"
+            className="mb-8 hover:bg-beeyield-gold/5 group text-slate-900 font-black uppercase text-[10px] tracking-widest"
           >
-            <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back to Jobs
+            <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back to Careers
           </Button>
 
           {uploadSuccess ? (
-            <Card className="max-w-md mx-auto text-center py-12 border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-900">
+            <Card className="max-w-md mx-auto text-center py-16 border-4 border-beeyield-green rounded-[3rem] bg-white shadow-2xl">
               <CardContent>
-                <div className="flex justify-center mb-6">
-                  <div className="h-20 w-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+                <div className="flex justify-center mb-8">
+                  <div className="h-24 w-24 bg-beeyield-green rounded-full flex items-center justify-center shadow-lg">
+                    <CheckCircle className="h-12 w-12 text-white" />
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold mb-3">Application Received!</h2>
-                <p className="text-muted-foreground mb-8">
-                  Thanks for applying to be a <strong>{selectedJob.title}</strong>.
-                  We've sent a detailed confirmation to {email}.
+                <h2 className="text-3xl font-black mb-4 tracking-tighter uppercase text-slate-900">Mission Accepted.</h2>
+                <p className="text-slate-500 mb-10 font-medium">
+                  Thanks for applying to be a <span className="text-beeyield-green font-bold">{selectedJob.title}</span>.
+                  We've received your credentials and will be in touch.
                 </p>
-                <Button onClick={() => { setSelectedJob(null); setUploadSuccess(false); }}>
-                  Browse More Jobs
+                <Button className="bg-slate-900 text-white rounded-2xl h-14 px-10 font-black shadow-xl" onClick={() => { setSelectedJob(null); setUploadSuccess(false); }}>
+                  Browse More Roles
                 </Button>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* Left Column: Job Description */}
-              <div className="lg:col-span-2 space-y-8">
+              <div className="lg:col-span-8 space-y-10">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">{selectedJob.title}</h1>
-                  <div className="flex flex-wrap gap-4 text-muted-foreground mb-6">
-                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full text-sm">
-                      <MapPin className="h-4 w-4" /> {selectedJob.location}
+                  <Badge variant="outline" className="mb-4 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
+                    {selectedJob.department} Node
+                  </Badge>
+                  <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tighter leading-none">{selectedJob.title}</h1>
+                  <div className="flex flex-wrap gap-6 text-slate-500">
+                    <div className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest">
+                      <MapPin className="h-3 w-3 text-beeyield-green" /> {selectedJob.location}
                     </div>
-                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full text-sm">
-                      <Briefcase className="h-4 w-4" /> {selectedJob.type}
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full text-sm">
-                      <Users className="h-4 w-4" /> {selectedJob.department}
+                    <div className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest">
+                      <Briefcase className="h-3 w-3 text-beeyield-gold" /> {selectedJob.type}
                     </div>
                   </div>
                 </div>
 
-                <Card className="border-none shadow-sm bg-card/50">
-                  <CardContent className="p-8 prose prose-gray max-w-none dark:prose-invert">
-                    <div dangerouslySetInnerHTML={{ __html: selectedJob.description_html }} />
-
-                    {!selectedJob.description_html && (
-                      <div className="space-y-6">
-                        <h3>About the role</h3>
-                        <p>
-                          As a key member of the {selectedJob.department} team, you will be responsible for
-                          driving innovation and ensuring the highest standards of quality in your work.
-                        </p>
-                        <h3>Responsibilities</h3>
-                        <ul>
-                          <li>Collaborate with cross-functional teams</li>
-                          <li>Drive project timelines and deliverables</li>
-                          <li>Maintain high code/operational quality</li>
-                        </ul>
-                        <h3>Requirements</h3>
-                        <ul>
-                          <li>3+ years of relevant experience</li>
-                          <li>Strong communication skills</li>
-                          <li>Passion for ag-tech and sustainability</li>
-                        </ul>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                <div className="rounded-[2.5rem] bg-white border border-slate-100 shadow-soft p-10 prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-p:font-medium">
+                  <div dangerouslySetInnerHTML={{ __html: selectedJob.description_html }} />
+                </div>
               </div>
 
               {/* Right Column: Sticky Application Form */}
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-4">
                 <div className="sticky top-8">
-                  <Card className="border-primary/20 shadow-lg overflow-hidden">
-                    <div className="h-2 bg-primary w-full" />
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-6">Apply for this role</h3>
-                      <form onSubmit={handleSubmit} className="space-y-4">
+                  <Card className="border-4 border-slate-900 rounded-[2.5rem] bg-white shadow-2xl overflow-hidden">
+                    <div className="bg-slate-900 p-8 text-white">
+                      <h3 className="text-xl font-black uppercase tracking-widest">Apply Now</h3>
+                      <p className="text-xs text-slate-400 font-medium mt-1">Join the Tesla of Apiculture</p>
+                    </div>
+                    <CardContent className="p-8">
+                      <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                          <Label htmlFor="fullName">Full Name</Label>
+                          <Label htmlFor="fullName" className="font-black uppercase text-[9px] tracking-widest text-slate-400">Full Name</Label>
                           <Input
                             id="fullName"
                             required
+                            className="rounded-xl h-12 border-slate-100 focus:border-beeyield-gold transition-all"
                             placeholder="Timothy Nduva"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
@@ -244,72 +221,62 @@ const Careers = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="email">Email</Label>
+                          <Label htmlFor="email" className="font-black uppercase text-[9px] tracking-widest text-slate-400">Email</Label>
                           <Input
                             id="email"
                             type="email"
                             required
-                            placeholder="timothy@example.com"
+                            className="rounded-xl h-12 border-slate-100 focus:border-beeyield-gold transition-all"
+                            placeholder="timothy@beeyield.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="phone">Phone</Label>
+                          <Label htmlFor="phone" className="font-black uppercase text-[9px] tracking-widest text-slate-400">Phone</Label>
                           <Input
                             id="phone"
                             required
-                            placeholder="+254 700 000000"
+                            className="rounded-xl h-12 border-slate-100 focus:border-beeyield-gold transition-all"
+                            placeholder="+254 7..."
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="linkedin">LinkedIn URL (Optional)</Label>
-                          <Input
-                            id="linkedin"
-                            type="url"
-                            placeholder="https://linkedin.com/in/..."
-                            value={linkedin}
-                            onChange={(e) => setLinkedin(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Resume / CV (PDF)</Label>
-                          <div className="border-2 border-dashed border-input hover:border-primary rounded-lg p-6 transition-colors text-center cursor-pointer relative bg-muted/20">
+                          <Label className="font-black uppercase text-[9px] tracking-widest text-slate-400">Resume / CV (PDF)</Label>
+                          <div className="border-2 border-dashed border-slate-100 hover:border-beeyield-gold rounded-2xl p-8 transition-all text-center cursor-pointer relative bg-slate-50/50 group">
                             <input
                               type="file"
                               accept=".pdf"
-                              aria-label="Upload resume or CV in PDF format"
                               onChange={handleFileChange}
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
-                            <div className="flex flex-col items-center gap-2">
-                              <Upload className="h-8 w-8 text-muted-foreground" />
+                            <div className="flex flex-col items-center gap-3">
+                              <Upload className="h-8 w-8 text-slate-300 group-hover:text-beeyield-gold transition-colors" />
                               {resume ? (
-                                <div className="text-sm font-medium text-primary break-all bg-primary/10 px-2 py-1 rounded">
+                                <div className="text-[10px] font-black text-beeyield-green bg-beeyield-green/5 px-3 py-1.5 rounded-full border border-beeyield-green/10">
                                   {resume.name}
                                 </div>
                               ) : (
-                                <>
-                                  <span className="text-sm font-medium">Click to upload</span>
-                                  <span className="text-xs text-muted-foreground">PDF only (Max 5MB)</span>
-                                </>
+                                <div className="space-y-1">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Upload Credentials</p>
+                                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">PDF Max 5MB</p>
+                                </div>
                               )}
                             </div>
                           </div>
                         </div>
 
-                        <Button type="submit" className="w-full mt-4" size="lg" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full bg-beeyield-green text-white rounded-2xl h-14 font-black shadow-xl hover:bg-beeyield-green/90 transition-all text-xs uppercase tracking-widest" disabled={isSubmitting}>
                           {isSubmitting ? (
                             <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Transmitting...
                             </>
                           ) : (
-                            "Send Application"
+                            "Submit Application"
                           )}
                         </Button>
                       </form>
@@ -325,210 +292,123 @@ const Careers = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#fdfbf6]">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
-          <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
-            Join the Hive
+      <section className="relative py-32 overflow-hidden bg-white mt-16 md:mt-24">
+        <div className="container mx-auto px-4 relative z-10 text-center max-w-5xl">
+          <Badge variant="outline" className="mb-8 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
+            The BeeYield Collective
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
-            Join Us to Make <br /> an Impact
+          <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter text-slate-900 leading-[0.85]">
+            BUILDING THE <br /><span className="text-beeyield-green">FUTURE OF AGRI.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8">
-            We're a team on a mission to help protect the global food supply.
+          <p className="text-xl md:text-2xl text-slate-500 leading-relaxed mb-12 font-medium max-w-3xl mx-auto">
+            We're a team of engineers, agronomists, and optimists on a mission to protect the global food supply chain.
           </p>
-          <Button size="lg" className="shadow-xl h-14 text-lg" onClick={() => document.getElementById('openings')?.scrollIntoView({ behavior: 'smooth' })}>
-            View Openings
-          </Button>
-        </div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
-      </section>
-
-      {/* Intro Section */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="grid md:grid-cols-2 gap-16 items-start">
-            <div>
-              <h2 className="text-6xl font-bold mb-6 text-primary">Hi!</h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                We get it. Choosing your next job is one of the most important decisions you get to make. After all there's a ton of companies to choose from. All with different cultures and vibes, different levels of compensation, different missions, so in the end it comes down to this — what matters to you, is what matters.
-              </p>
-            </div>
-            <div className="bg-secondary/30 p-8 rounded-2xl border border-secondary">
-              <h3 className="text-2xl font-bold mb-4 text-foreground">So why choose us?</h3>
-              <p className="text-muted-foreground mb-6">
-                Well for one thing we're one of the fastest-growing ag-tech companies with a genuine mission: BeeYield combines a passion for technology to improve pollination and crop outcomes, while ensuring beekeepers and their bees continue to thrive.
-              </p>
-              <div className="flex items-center gap-3 font-medium text-foreground">
-                <Heart className="h-5 w-5 text-primary" />
-                <span>Balance is key</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2 ml-8">
-                We keep things fun and lighthearted, but our commitment to our mission is unwavering.
-              </p>
-            </div>
+          <div className="flex justify-center gap-4">
+            <Button size="lg" className="bg-slate-900 text-white rounded-2xl h-16 px-12 font-black shadow-2xl hover:bg-slate-800" onClick={() => document.getElementById('openings')?.scrollIntoView({ behavior: 'smooth' })}>
+              View Openings
+            </Button>
           </div>
         </div>
+
+        {/* Background Decor */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-beeyield-green/5 rounded-full blur-[140px] -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-beeyield-gold/5 rounded-full blur-[140px] translate-y-1/2 -translate-x-1/2" />
       </section>
 
       {/* Values Grid */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-foreground">What to know about us</h2>
-            <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
-          </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
-              <CardContent className="p-6">
-                <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Compass className="h-6 w-6 text-blue-600" />
+            {[
+              { icon: Compass, title: "Precision Pioneers", desc: "We aim to deliver predictability to a complex biological process.", color: "bg-blue-50 text-blue-600" },
+              { icon: Cpu, title: "Digital First", desc: "We believe data is the key to unlocking sustainable crop yields.", color: "bg-purple-50 text-purple-600" },
+              { icon: Sun, title: "Relentless Optimists", desc: "Pollination doesn't have to be a zero-sum game. We win together.", color: "bg-amber-50 text-amber-600" },
+              { icon: Heart, title: "Eco-Stewardship", desc: "We are leaders in pollinator health. Every hive counts.", color: "bg-green-50 text-beeyield-green" },
+              { icon: Database, title: "Data Integrity", desc: "If you can measure it, you can monitor it. Sci-first operations.", color: "bg-indigo-50 text-indigo-600" },
+              { icon: Zap, title: "Continuous Growth", desc: "We're building a global knowledge hub for the next gen.", color: "bg-orange-50 text-orange-600" }
+            ].map((v, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="group p-10 rounded-[2.5rem] bg-[#fdfbf6] border border-slate-50 transition-all hover:shadow-2xl hover:-translate-y-2"
+              >
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-8 shadow-inner ${v.color}`}>
+                  <v.icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">We are Pioneers</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We aim to improve pollination by using technology to deliver predictability and precision to the process.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
-              <CardContent className="p-6">
-                <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Cpu className="h-6 w-6 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">We are Technologists</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We believe in the power of technology to improve crop yields and support the food supply.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
-              <CardContent className="p-6">
-                <div className="bg-yellow-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Sun className="h-6 w-6 text-yellow-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">We are Optimists</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We believe pollination does not have to be a zero-sum game. All stakeholders can benefit from our solution.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
-              <CardContent className="p-6">
-                <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">We are Bridge Builders</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Our work positions us to be leaders in the field of pollinator health and welfare. We embrace this responsibility.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
-              <CardContent className="p-6">
-                <div className="bg-indigo-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Database className="h-6 w-6 text-indigo-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">We are Data-Driven</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  At BeeYield, we like to say, "If you can measure it, you can monitor it." A science-based approach guides all our decision-making.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
-              <CardContent className="p-6">
-                <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">Knowledge Hub</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We're building a bee knowledge hub so beekeepers can manage hives from their phones.
-                </p>
-              </CardContent>
-            </Card>
+                <h3 className="text-2xl font-black mb-4 tracking-tighter text-slate-900">{v.title}</h3>
+                <p className="text-slate-500 font-medium leading-relaxed">{v.desc}</p>
+              </motion.div>
+            ))}
           </div>
-        </div>
-      </section>
-
-      {/* Innovation DNA Extra Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 max-w-4xl text-center">
-          <h2 className="text-3xl font-bold mb-6">Built for Progress</h2>
-          <p className="text-lg opacity-90 leading-relaxed mb-8">
-            Using data analytics, we're studying colony behavior to better understand and support bee health. At the same time, growers are using our advanced pollination platform to boost crop outcomes.
-          </p>
-          <Button variant="secondary" className="gap-2 font-bold">
-            Check out The Buzz Blog <ArrowRight className="h-4 w-4" />
-          </Button>
         </div>
       </section>
 
       {/* Jobs Section */}
-      <section id="openings" className="py-24 bg-background">
+      <section id="openings" className="py-24">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 text-foreground">Make Your Next Choice</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              If you're seeking a new role, one that truly aligns with your goals, we'd love to be part of your journey! Check out the list of openings below.
-            </p>
-
-            <div className="inline-flex items-center bg-secondary/50 rounded-full px-4 py-2 text-sm font-medium">
-              <Globe className="h-4 w-4 mr-2 text-primary" />
-              <span className="text-muted-foreground mr-2">Showing roles in:</span>
-              <span className="text-foreground font-bold">Kenya</span>
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4 border-slate-200 text-slate-400 font-black uppercase tracking-[0.2em] text-[9px]">
+              Active Nodes
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-6">Current <span className="text-beeyield-green">Openings.</span></h2>
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 bg-slate-900 rounded-full">
+                <Globe className="h-3.5 w-3.5 text-beeyield-gold" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">HQ: Nairobi, Kenya</span>
+              </div>
             </div>
           </div>
 
-          {/* Job Listings */}
           <div className="space-y-4">
             {loading ? (
-              <div className="text-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                <p className="mt-4 text-muted-foreground">Loading openings...</p>
+              <div className="text-center py-20 flex flex-col items-center">
+                <Loader2 className="h-10 w-10 animate-spin text-beeyield-green mb-4" />
+                <p className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-300">Retrieving Datasets...</p>
               </div>
             ) : jobs.length === 0 ? (
-              <div className="text-center py-12 border border-dashed rounded-xl">
-                <p className="text-muted-foreground">No open positions at the moment. Check back later!</p>
+              <div className="text-center py-24 bg-white rounded-[2.5rem] border-2 border-dashed border-slate-100">
+                <p className="font-black text-slate-400 uppercase tracking-widest">No active vacancies. Re-check sequence later.</p>
               </div>
             ) : (
               jobs.map((job) => (
-                <div
+                <motion.div
                   key={job.id}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   onClick={() => setSelectedJob(job)}
-                  className="group border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer flex items-center justify-between bg-card"
+                  className="group bg-white border border-slate-100 rounded-[2rem] p-8 hover:border-beeyield-green hover:shadow-2xl transition-all cursor-pointer flex items-center justify-between"
                 >
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{job.title}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
-                      <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> {job.type}</span>
-                      <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {job.department}</span>
+                  <div className="space-y-3">
+                    <Badge className="bg-beeyield-green/5 text-beeyield-green border-beeyield-green/10 font-bold uppercase text-[8px] tracking-[0.15em] mb-1">
+                      {job.department}
+                    </Badge>
+                    <h3 className="text-2xl font-black text-slate-900 group-hover:text-beeyield-green transition-colors tracking-tight">{job.title}</h3>
+                    <div className="flex items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <span className="flex items-center gap-2"><MapPin className="h-3 w-3" /> {job.location}</span>
+                      <span className="flex items-center gap-2"><Briefcase className="h-3 w-3" /> {job.type}</span>
                     </div>
                   </div>
-                  <div className="hidden md:flex items-center text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    View Details <ArrowRight className="h-4 w-4 ml-2" />
+                  <div className="hidden md:flex flex-col items-end gap-2">
+                    <div className="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-beeyield-green group-hover:border-beeyield-green transition-all">
+                      <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-white transition-all" />
+                    </div>
                   </div>
-                  {/* Mobile view arrow */}
-                  <div className="md:hidden text-muted-foreground">
-                    <ArrowRight className="h-4 w-4" />
-                  </div>
-                </div>
+                </motion.div>
               ))
             )}
-
-            {/* Fail-safe if jobs are empty but no loading (DB connection fail) - handled by catch block using fallback */}
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-sm text-muted-foreground bg-secondary/30 inline-block px-6 py-3 rounded-lg">
-              BeeYield careers are currently available only in <strong>Kenya (Makueni)</strong>.
-            </p>
+          <div className="mt-20 text-center">
+            <div className="inline-block p-1 bg-slate-900 rounded-full">
+              <div className="px-6 py-3 border border-white/10 rounded-full flex items-center gap-3">
+                <Heart className="h-4 w-4 text-beeyield-gold animate-pulse" />
+                <span className="text-[10px] font-black uppercase text-white tracking-[0.2em]">Join the Collective Mission</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

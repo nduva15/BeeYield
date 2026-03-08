@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -201,19 +202,25 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen py-24 sm:py-32 bg-neutral-50/50">
+      <div className="container mx-auto px-6 relative z-10">
 
-        {/* Header */}
-        <div className="mx-auto max-w-3xl text-center mb-12">
-          <h1 className="mb-6 text-5xl font-bold tracking-tight">Contact Us Today</h1>
-          <p className="mb-12 text-xl text-muted-foreground">
-            Fill in the form, and we will get back to you at our earliest convenience.
+        {/* Header - Premium Editorial */}
+        <div className="mx-auto max-w-4xl text-center mb-16">
+          <Badge className="bg-[#10b981]/10 text-[#064e3b] mb-8 hover:bg-[#10b981]/20 transition-colors uppercase tracking-[0.3em] font-black text-[10px] px-5 py-2 rounded-full border border-[#10b981]/20 shadow-sm">
+            <MessageSquare className="w-3.5 h-3.5 mr-2" />
+            24/7 Support Hub
+          </Badge>
+          <h1 className="mb-6 text-6xl md:text-8xl font-black tracking-tighter text-[#064e3b] uppercase leading-[0.85]">
+            Contact <span className="text-[#facc15] italic">Us</span>
+          </h1>
+          <p className="mb-12 text-xl md:text-2xl text-neutral-600 font-bold uppercase tracking-tight max-w-2xl mx-auto">
+            Fill in the form below, and our team will get back to you at our earliest convenience to assist with your inquiry.
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-12 max-w-5xl mx-auto">
+        {/* Tabs - Premium Styling */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-16 max-w-6xl mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -221,13 +228,15 @@ const Contact = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center justify-center gap-3 p-4 rounded-xl border transition-all duration-200 ${isActive
-                  ? "border-primary bg-primary/10 text-primary shadow-sm"
-                  : "border-border bg-card shadow-sm text-muted-foreground hover:bg-muted/50"
+                className={`flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] border transition-all duration-300 group ${isActive
+                  ? "border-none bg-[#064e3b] text-white shadow-xl shadow-[#064e3b]/20"
+                  : "border-neutral-200 bg-white shadow-sm text-neutral-500 hover:bg-neutral-50 hover:border-neutral-300"
                   }`}
               >
-                <Icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <span className="font-bold text-sm">{tab.label}</span>
+                <div className={`p-3 rounded-2xl transition-colors ${isActive ? "bg-[#10b981]/20 text-[#10b981]" : "bg-neutral-100 text-neutral-400 group-hover:text-[#064e3b]"}`}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <span className="font-black text-[10px] uppercase tracking-widest text-center">{tab.label}</span>
               </button>
             );
           })}
