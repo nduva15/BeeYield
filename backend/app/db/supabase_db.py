@@ -133,9 +133,10 @@ async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = 
 async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Insert a record via direct REST API."""
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    auth_key = token or settings.SUPABASE_KEY
     headers = {
-        "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "apikey": auth_key,
+        "Authorization": f"Bearer {auth_key}",
         "Content-Type": "application/json",
         "Prefer": "return=representation"
     }

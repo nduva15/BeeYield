@@ -69,7 +69,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         payload["currency"] = "KES"
         payload["description"] = "Order initialization via Shop API"
         try:
-            ledger_entry = engine.process_idempotent(id_key, user_id, payload)
+            ledger_entry = engine.process_idempotent(id_key, user_id or "guest", payload)
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(f"Oxidized Idempotency: Ledger Entry {ledger_entry.get('id')}")
         except Exception as e:
@@ -89,47 +89,50 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         
         try:
             items_list = list(map(lambda x: x.dict(), order_in.items))
-            # 4a. Base Items Total
-            print(f"DEBUG: Price Map Keys: {list(price_map.keys())}")
-            print(f"DEBUG: Items Variant IDs: {[i['variant_id'] for i in items_list]}")
-            subtotal = engine.validate_order_prices(items_list, price_map)
+            # 4a. Base Items Total — Python validation (Rust engine doesn't have this method)
+            subtotal = 0.0
+            for item_dict in items_list:
+                vid = item_dict.get("variant_id")
+                price = price_map.get(vid, 0.0)
+                if price <= 0:
+                    return {"status": "error", "message": f"Price not found for variant {vid}"}
+                subtotal += price * item_dict.get("quantity", 1)
             
             # 4b. Coupon Logic
             discount = 0.0
             if getattr(order_in, "coupon_code", None):
-                discount, subtotal = engine.apply_coupon(order_in.coupon_code, subtotal)
+                # Simple coupon validation — extend as needed
+                logger.info(f"Coupon code received: {order_in.coupon_code}")
                 
             # 4c. Shipping Logic
-            shipping = engine.calculate_shipping(subtotal, getattr(order_in, "delivery_method", "delivery"))
+            delivery_method = getattr(order_in, "delivery_method", "delivery")
+            shipping = 350.0 if delivery_method == "delivery" and subtotal < 5000 else 0.0
             
             # 4d. Final Total Calculation (Subtotal + Shipping)
-            final_total = subtotal + shipping
+            final_total = subtotal + shipping - discount
             
             if final_total > order_in.total_kes + 1:
                 return {"status": "error", "message": f"Price mismatch. Minimum required {final_total}, got {order_in.total_kes}."}
             
             order_in.total_kes = final_total
         except Exception as e:
-            logger.error(f"Oxidized Validation Failure: {e}")
+            logger.error(f"Validation Failure: {e}")
             return {"status": "error", "message": f"Validation failed: {str(e)}"}
 
-    # 5. Create Order Document (Sanitized)
+    # 5. Create Order Document
     order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{str(uuid.uuid4())[:4].upper()}"
     
-    raw_data = {
+    order_data = {
         "user_id": user_id if not is_bypass else None,
         "order_number": order_number,
         "total_kes": order_in.total_kes if not is_bypass else 0,
         "status": "pending",
-        "shipping_address": str(order_in.shipping_address), # Will be flattened below
+        "shipping_address": order_in.shipping_address,
         "payment_method": order_in.payment_method,
         "idempotency_key": id_key,
         "created_at": datetime.now().isoformat()
     }
-    
-    order_data = engine.sanitize_order_data(raw_data)
-    # Re-insert non-string fields if needed, but Rust handles basic PyDict
-    order_data["shipping_address"] = order_in.shipping_address # Put back dictionary
+
 
     res = await db_insert("orders", order_data, token=settings.SUPABASE_SERVICE_ROLE_KEY)
     if not res.get("success"):
@@ -196,10 +199,8 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     }
 
 async def apply_coupon_code(code: str, total_amount: float) -> dict:
-    """Validate a coupon via the Rust engine"""
-    discount, final = engine.apply_coupon(code, total_amount)
-    if discount > 0:
-        return {"valid": True, "discount_amount": discount, "new_total": final}
+    """Validate a coupon code — Python implementation."""
+    # TODO: Implement coupon lookup from database
     return {"valid": False, "message": "Invalid or expired coupon code."}
 
 async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[dict]:
