@@ -372,11 +372,9 @@ const BeeYieldDashboard: React.FC = () => {
                 return <PollinationIntelligence onTabChange={handleTabChange} />;
 
             case 'logistics-setup':
-            case 'orchard-mapper':
             case 'master-map':
                 return <MasterMapView />;
 
-            case 'fleet-security':
             case 'geospatial-security':
             case 'deployment':
                 return <HiveLogisticsSecurity onTabChange={handleTabChange} />;
