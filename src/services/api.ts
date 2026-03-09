@@ -5,7 +5,7 @@ const isDev = import.meta.env.DEV;
 
 
 // Python Backend (AI ONLY)
-export const AI_API_URL = "http://localhost:8000/api/v1";
+export const AI_API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/v1` : "http://localhost:8000/api/v1";
 
 // Rust/Go Gateway (DATA & SHOP)
 export const DATA_API_URL = "http://localhost:9090/api/v1";
@@ -136,7 +136,8 @@ export function getBaseUrl(endpoint: string): string {
         "/shop/", "shop/",
         "/blog/", "blog/",
         "/meters/", "meters/",
-        "/reports/", "reports/"
+        "/reports/", "reports/",
+        "/intelligence/", "intelligence/", "intelligence"
     ];
 
     const isPythonBackend = pythonPrefixes.some(prefix =>
@@ -197,7 +198,9 @@ export async function apiRequest<T>(
             throw new Error(`Invalid JSON response from server`);
         }
     } catch (error: any) {
-        console.error(`API Error for ${endpoint}:`, error);
+        if (error.name !== 'AbortError') {
+            console.error(`API Error for ${endpoint}:`, error);
+        }
         throw error;
     }
 }

@@ -10,9 +10,10 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Plus, MapPin, Wind, Sun, Info, Database, Calendar } from 'lucide-react';
+import { Plus, MapPin, Wind, Sun, Info, Database, Calendar, Hexagon, Layers, ShieldCheck, RefreshCw } from 'lucide-react';
 import { beeyieldService, Apiary } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface QuickActionModalProps {
     isOpen: boolean;
@@ -67,7 +68,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
         setLoading(false);
 
         if (!error) {
-            toast.success(`Apiary "${apiaryData.name}" added!`);
+            toast.success(`Sector "${apiaryData.name}" initialized!`);
             onSuccess?.();
             onClose();
             // Reset form
@@ -90,13 +91,12 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
         const { data, error } = await beeyieldService.createHive({
             ...hiveData,
             hive_type: hiveData.type,
-            // Add new fields if service supports them, otherwise they go in metadata
             installation_date: hiveData.queen_hatched,
         } as any);
         setLoading(false);
 
         if (!error) {
-            toast.success(`Hive "${hiveData.hive_code}" registered!`);
+            toast.success(`Unit "${hiveData.hive_code}" registered!`);
             onSuccess?.();
             onClose();
             // Reset form
@@ -112,169 +112,170 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-md bg-[#FAF9F6] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden antialiased">
-                <div className="bg-[#FF9100] px-8 py-10 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+            <DialogContent className="max-w-md bg-white dark:bg-[#0f1115] border-none rounded-[3.5rem] shadow-2xl p-0 overflow-hidden antialiased">
+                <div className="bg-neutral-900 dark:bg-amber-600 px-10 py-12 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse" />
                     <DialogHeader className="relative z-10">
-                        <DialogTitle className="text-3xl font-black flex items-center gap-3 tracking-tighter leading-none">
-                            <Plus className="w-8 h-8 stroke-[3]" />
-                            Add New Item
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10 mb-6 w-fit">
+                            <Plus className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Master Registry Update</span>
+                        </div>
+                        <DialogTitle className="text-4xl font-black flex items-center gap-4 tracking-tighter leading-none italic uppercase">
+                            New <span className="text-amber-500 dark:text-amber-200">Asset</span>
                         </DialogTitle>
-                        <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-[0.2em] mt-2">
-                            Add a new apiary or hive
+                        <DialogDescription className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em] mt-3 italic">
+                            Provisioning new biological industrial clusters
                         </DialogDescription>
                     </DialogHeader>
                 </div>
 
-                <div className="p-8">
+                <div className="p-10">
                     <Tabs defaultValue="apiary" onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1.5 rounded-2xl mb-8">
-                            <TabsTrigger value="apiary" className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-xl transition-all h-10">
-                                Apiary
+                        <TabsList className="grid w-full grid-cols-2 bg-slate-50 dark:bg-black/20 p-1.5 rounded-2xl mb-10 border border-slate-100 dark:border-white/5 shadow-inner">
+                            <TabsTrigger value="apiary" className="rounded-xl font-black text-[11px] uppercase tracking-widest data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-lg transition-all h-12">
+                                Sector
                             </TabsTrigger>
-                            <TabsTrigger value="hive" className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-xl transition-all h-10">
-                                Hive
+                            <TabsTrigger value="hive" className="rounded-xl font-black text-[11px] uppercase tracking-widest data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-lg transition-all h-12">
+                                Registry Unit
                             </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="apiary" className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-400">
-                            <div className="space-y-2">
-                                <Label htmlFor="apiary-name" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apiary Name</Label>
+                        <TabsContent value="apiary" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="space-y-3">
+                                <Label htmlFor="apiary-name" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Sector Designation</Label>
                                 <div className="relative">
-                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
+                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
                                     <Input
                                         id="apiary-name"
                                         name="name"
                                         placeholder="e.g. Kibwezi Sector Alpha"
-                                        className="pl-11 h-14 rounded-2xl border-slate-100 bg-white shadow-sm focus:ring-[#FF9100] focus:border-[#FF9100] font-bold text-slate-800"
+                                        className="pl-12 h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-slate-900 dark:text-white uppercase text-xs tracking-tight focus-visible:ring-amber-500/20 shadow-sm"
                                         value={apiaryData.name}
                                         onChange={e => setApiaryData({ ...apiaryData, name: e.target.value })}
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="apiary-location" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Location</Label>
+                            <div className="space-y-3">
+                                <Label htmlFor="apiary-location" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Geographic Coordinates</Label>
                                 <Input
                                     id="apiary-location"
                                     name="location_name"
                                     placeholder="Enter physical address or Lat/Long"
-                                    className="h-14 rounded-2xl border-slate-100 bg-white shadow-sm font-bold text-slate-800"
+                                    className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-slate-900 dark:text-white uppercase text-xs tracking-tight focus-visible:ring-amber-500/20"
                                     value={apiaryData.location_name}
                                     onChange={e => setApiaryData({ ...apiaryData, location_name: e.target.value })}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Forage Type</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Flora Matrix</Label>
                                     <Select
                                         name="forage_type"
                                         value={apiaryData.forage_type}
                                         onValueChange={v => setApiaryData({ ...apiaryData, forage_type: v })}
                                     >
-                                        <SelectTrigger id="apiary-forage" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                        <SelectTrigger id="apiary-forage" className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest text-slate-900 dark:text-white focus:ring-amber-500/20">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
-                                            <SelectItem value="Forest">Wild Forest</SelectItem>
-                                            <SelectItem value="Canola">High Canola</SelectItem>
-                                            <SelectItem value="Acacia">Acacia Prime</SelectItem>
-                                            <SelectItem value="Lavender">Pure Lavender</SelectItem>
+                                        <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
+                                            <SelectItem value="Forest" className="p-4 font-black uppercase text-[10px] tracking-widest">Wild Forest</SelectItem>
+                                            <SelectItem value="Canola" className="p-4 font-black uppercase text-[10px] tracking-widest">High Canola</SelectItem>
+                                            <SelectItem value="Acacia" className="p-4 font-black uppercase text-[10px] tracking-widest">Acacia Prime</SelectItem>
+                                            <SelectItem value="Lavender" className="p-4 font-black uppercase text-[10px] tracking-widest">Pure Lavender</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sun Exposure</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Atmospheric Exposure</Label>
                                     <Select
                                         name="sun_exposure"
                                         value={apiaryData.sun_exposure}
                                         onValueChange={v => setApiaryData({ ...apiaryData, sun_exposure: v })}
                                     >
-                                        <SelectTrigger id="apiary-sun" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                        <SelectTrigger id="apiary-sun" className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest text-slate-900 dark:text-white focus:ring-amber-500/20">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
-                                            <SelectItem value="Full Sun">Full Sun</SelectItem>
-                                            <SelectItem value="Shade">Full Shade</SelectItem>
-                                            <SelectItem value="Semi-Shade">Semi-Shade</SelectItem>
+                                        <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
+                                            <SelectItem value="Full Sun" className="p-4 font-black uppercase text-[10px] tracking-widest">Zenith Exposure</SelectItem>
+                                            <SelectItem value="Shade" className="p-4 font-black uppercase text-[10px] tracking-widest">Deep Shade</SelectItem>
+                                            <SelectItem value="Semi-Shade" className="p-4 font-black uppercase text-[10px] tracking-widest">Balanced Mask</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
                         </TabsContent>
 
-                        <TabsContent value="hive" className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-400">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apiary</Label>
+                        <TabsContent value="hive" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Sector Assignment</Label>
                                 <Select
                                     name="apiary_id"
                                     value={hiveData.apiary_id}
                                     onValueChange={v => setHiveData({ ...hiveData, apiary_id: v })}
                                 >
-                                    <SelectTrigger id="hive-apiary" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                    <SelectTrigger id="hive-apiary" className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest text-slate-900 dark:text-white focus:ring-amber-500/20">
                                         <SelectValue placeholder="Deploy to..." />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-2xl">
+                                    <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
                                         {apiaries.map(apiary => (
-                                            <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                            <SelectItem key={apiary.id} value={apiary.id} className="p-4 font-black uppercase text-[10px] tracking-widest">{apiary.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hive Code</Label>
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Registry Alpha Code</Label>
                                 <div className="relative">
-                                    <Database className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600" />
+                                    <Hexagon className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />
                                     <Input
                                         id="hive-code"
                                         name="hive_code"
                                         placeholder="e.g. BY-ALPHA-01"
-                                        className="pl-11 h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800"
+                                        className="pl-12 h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-slate-900 dark:text-white uppercase text-xs tracking-tight focus-visible:ring-amber-500/20"
                                         value={hiveData.hive_code}
                                         onChange={e => setHiveData({ ...hiveData, hive_code: e.target.value })}
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hive Type</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Unit Architecture</Label>
                                     <Select
                                         name="type"
                                         value={hiveData.type}
                                         onValueChange={v => setHiveData({ ...hiveData, type: v })}
                                     >
-                                        <SelectTrigger id="hive-type" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                        <SelectTrigger id="hive-type" className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/20">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
-                                            <SelectItem value="Langstroth">Langstroth Pro</SelectItem>
-                                            <SelectItem value="Top Bar">Kenyas Top Bar</SelectItem>
-                                            <SelectItem value="Warre">Warre Eco</SelectItem>
+                                        <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
+                                            <SelectItem value="Langstroth" className="p-4 font-black uppercase text-[10px] tracking-widest">Langstroth Pro</SelectItem>
+                                            <SelectItem value="Top Bar" className="p-4 font-black uppercase text-[10px] tracking-widest">Kenyas Top Bar</SelectItem>
+                                            <SelectItem value="Warre" className="p-4 font-black uppercase text-[10px] tracking-widest">Warre Eco</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Date Installed</Label>
-                                    <div className="relative">
-                                        <Input
-                                            id="queen-hatched"
-                                            name="queen_hatched"
-                                            type="date"
-                                            className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800"
-                                            value={hiveData.queen_hatched}
-                                            onChange={e => setHiveData({ ...hiveData, queen_hatched: e.target.value })}
-                                        />
-                                    </div>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Protocol Start Date</Label>
+                                    <Input
+                                        id="queen-hatched"
+                                        name="queen_hatched"
+                                        type="date"
+                                        className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-slate-900 dark:text-white uppercase text-[10px] tracking-widest focus-visible:ring-amber-500/20"
+                                        value={hiveData.queen_hatched}
+                                        onChange={e => setHiveData({ ...hiveData, queen_hatched: e.target.value })}
+                                    />
                                 </div>
                             </div>
 
-                            <div className="space-y-4 pt-4">
-                                <div className="flex justify-between items-center">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Colony Strength</Label>
-                                    <span className="text-[10px] font-black text-green-700 bg-green-50 px-3 py-1 rounded-full uppercase tracking-tighter">
+                            <div className="space-y-5 pt-4">
+                                <div className="flex justify-between items-center px-2">
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Biomass Density Bias</Label>
+                                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-500/10 px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm">
                                         Efficiency {Math.round(hiveData.strength * 20)}%
                                     </span>
                                 </div>
@@ -283,27 +284,32 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                     max={5}
                                     min={1}
                                     step={1}
-                                    className="py-4"
+                                    className="py-6"
                                     onValueChange={v => setHiveData({ ...hiveData, strength: v[0] })}
                                 />
-                                <div className="flex justify-between text-[8px] font-black text-slate-300 uppercase tracking-[0.2em] px-1">
-                                    <span>Minimal</span>
-                                    <span>Optimal</span>
-                                    <span>Maximum</span>
+                                <div className="flex justify-between text-[8px] font-black text-slate-300 uppercase tracking-[0.3em] px-2 italic">
+                                    <span>Minimal Feed</span>
+                                    <span>Nominal Vector</span>
+                                    <span>Max Saturation</span>
                                 </div>
                             </div>
                         </TabsContent>
                     </Tabs>
                 </div>
 
-                <div className="p-8 bg-slate-50 border-t border-slate-100 flex gap-3">
-                    <Button variant="ghost" onClick={onClose} className="flex-1 h-16 rounded-2xl font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 uppercase tracking-widest text-xs">Cancel</Button>
+                <div className="p-10 bg-slate-50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-white/5 flex gap-6">
+                    <Button variant="ghost" onClick={onClose} className="flex-1 h-16 rounded-[1.5rem] font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 uppercase tracking-widest text-[11px] transition-all">Abort</Button>
                     <Button
                         onClick={activeTab === 'apiary' ? handleAddApiary : handleAddHive}
-                        className="flex-[2] h-16 bg-slate-800 text-white hover:bg-slate-900 rounded-2xl px-10 font-black shadow-2xl shadow-slate-400/20 uppercase tracking-widest text-xs"
+                        className="flex-[2] h-16 bg-neutral-900 dark:bg-amber-600 text-white hover:scale-[1.02] active:scale-[0.98] rounded-[1.5rem] px-10 font-black shadow-2xl shadow-black/10 transition-all uppercase tracking-[0.2em] text-xs gap-4 border-none"
                         disabled={loading}
                     >
-                        {loading ? 'Saving...' : 'Save'}
+                        {loading ? (
+                            <RefreshCw className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <ShieldCheck className="w-5 h-5 text-amber-200" />
+                        )}
+                        Commit Registry
                     </Button>
                 </div>
             </DialogContent>

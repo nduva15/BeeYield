@@ -32,6 +32,9 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     // Load wishlist from localStorage on mount and sync with backend
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
         const initWishlist = async () => {
             try {
                 // 1. Load Local first (always available, instant)
@@ -41,67 +44,49 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
                     localItems = JSON.parse(savedWishlist);
                 }
 
-                // Set local items immediately for fast UI
+                if (signal.aborted) return;
                 setItems(localItems);
 
                 // 2. Try Fetch Backend only if user is authenticated
-                if (!supabase) { setIsInitialized(true); return; }
+                if (!supabase) {
+                    if (!signal.aborted) setIsInitialized(true);
+                    return;
+                }
+
                 const { data: { session } } = await supabase.auth.getSession();
-                let backendItems: any[] = [];
+                if (signal.aborted) return;
+
                 if (session?.access_token) {
                     try {
                         const { getWishlist } = await import('@/services/shopService');
-                        backendItems = await getWishlist(); // returns [] on error
-                    } catch {
-                        // Backend unreachable — silently use localStorage only
+                        if (signal.aborted) return;
+
+                        const backendItems = await getWishlist(); // returns [] on error
+                        if (signal.aborted) return;
+
+                        if (backendItems && backendItems.length > 0) {
+                            // Merge logic could go here, for now we trust local + backend union
+                            // Simplified for the current implementation
+                        }
+                    } catch (e: any) {
+                        if (e.name !== 'AbortError') {
+                            console.warn('Backend wishlist sync failed, using local only');
+                        }
                     }
                 }
-
-                // 3. Merge (Backend wins on conflict, or simple union by ID)
-                // If backend has items, we should probably trust it more, OR merge local items INTO backend
-                // For MVP: Union by ID
-                const itemMap = new Map<string, WishlistItem>();
-
-                // Add local items first
-                localItems.forEach(i => itemMap.set(i.id, i));
-
-                // Add backend items (if they have full product details, but backend getWishlist might only return IDs? 
-                // Let's assume shopService.getWishlist returns full items or we need to fetch them. 
-                // shop.py get_wishlist returns list[schemas.WishlistItem] which likely has product details joined.
-                // If backend items lack details, we might want to keep local details.
-                // Checking shop.py... it returns `shop_service.get_user_wishlist`.
-                // Let's assume backend items are valid WishlistItems. 
-                // Note: Types might mismatch if backend returns DB columns. 
-                // We'll trust the user has aligned schemas or `getWishlist` maps it.
-                // If backendItems is empty, we just have local.
-
-                // Actually, if backend returns items, we should use them. 
-                if (backendItems && backendItems.length > 0) {
-                    // We probably need to map backend structure to WishlistItem
-                    // For now, let's just use what we have, assuming shopService normalizes it.
-                    // If backend sync is not fully ready, we might just append.
-
-                    // NOTE: backend `getWishlist` returns `WishlistItem` {id, added_at, product_id...} 
-                    // We need to fetch product details if they aren't included.
-                    // This complexity might break "Simple". 
-                    // Let's stick to: "Fire and forget sync" for `toggle` and just keep local for display to be safe, 
-                    // unless we are sure valid data comes back.
-
-                    // Optimization: Just load local for now to be fast, and triggering backend sync in background?
-                    // Let's keep the existing LOCAL load as primary for speed, and try to push local changes to backend on changes?
-                    // No, bidirectional sync is hard.
-
-                    // Let's just Add "Fire and Forget" to the actions.
+            } catch (error: any) {
+                if (error.name !== 'AbortError') {
+                    console.error('Error loading wishlist:', error);
                 }
-
-                setItems(localItems);
-            } catch (error) {
-                console.error('Error loading wishlist:', error);
+            } finally {
+                if (!signal.aborted) {
+                    setIsInitialized(true);
+                }
             }
-            setIsInitialized(true);
         };
 
         initWishlist();
+        return () => controller.abort();
     }, []);
 
     // Save wishlist to localStorage whenever items change

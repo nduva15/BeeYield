@@ -229,32 +229,32 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     return (
         <div className="space-y-8 pb-20 animate-in fade-in duration-500">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
-                        <Hexagon className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Hive Master Registry</span>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
+                <div className="space-y-2">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200/50 dark:border-amber-900/30">
+                        <Hexagon className="w-3.5 h-3.5" />
+                        Management Protocol
                     </div>
-                    <h1 className="text-7xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Fleet <span className="text-[#10b981]">Assets</span></h1>
-                    <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
-                        Real-time status and productivity audits.
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Fleet <span className="text-emerald-600">Assets</span></h1>
+                    <p className="text-sm font-medium text-slate-500 dark:text-white/30 max-w-md">
+                        Real-time telemetry and industrial productivity audit for your entire colony network.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={handleExportExcel}
                         disabled={isExporting}
-                        className="h-12 w-12 rounded-none border-2 border-[#064e3b] text-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none"
+                        className="h-14 w-14 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 text-slate-400 hover:text-amber-600 transition-all shadow-sm"
                     >
                         {isExporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSpreadsheet className="w-5 h-5" />}
                     </Button>
                     <Button
                         onClick={handleOpenAddHive}
-                        className="h-12 px-8 rounded-none bg-[#064e3b] hover:bg-[#10b981] text-white border-2 border-[#064e3b] gap-3 font-black text-xs uppercase tracking-widest transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                        className="h-14 px-10 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 dark:shadow-amber-900/20 flex items-center gap-3"
                     >
                         <Plus className="w-5 h-5" />
-                        REGISTER ASSET
+                        Register Asset
                     </Button>
                 </div>
             </div>
@@ -262,74 +262,85 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total Fleet', value: stats.total, icon: Box },
-                    { label: 'Online Status', value: stats.active, icon: ShieldCheck },
-                    { label: 'Alert Condition', value: stats.critical, icon: HeartPulse },
-                    { label: 'Mean Payload', value: `${stats.avgWeight}kg`, icon: Zap }
+                    { label: 'Total Fleet', value: stats.total, icon: Box, color: 'text-amber-500' },
+                    { label: 'Nodes Online', value: stats.active, icon: ShieldCheck, color: 'text-emerald-500' },
+                    { label: 'Active Alerts', value: stats.critical, icon: HeartPulse, color: 'text-red-500' },
+                    { label: 'Mean Hive Payload', value: `${stats.avgWeight}kg`, icon: Zap, color: 'text-amber-600' }
                 ].map((stat, i) => (
-                    <Card key={i} className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] group">
-                        <CardContent className="p-6">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-10 h-10 border-2 border-[#10b981] flex items-center justify-center bg-[#064e3b] text-[#facc15] group-hover:bg-[#10b981] group-hover:text-white transition-none">
-                                    <stat.icon className="w-5 h-5" />
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                    >
+                        <Card className="rounded-[2rem] border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 hover:border-amber-500/30 transition-all group overflow-hidden relative">
+                            <CardContent className="p-8">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-900 dark:text-white group-hover:scale-110 transition-transform">
+                                        <stat.icon className={cn("w-5 h-5", stat.color)} />
+                                    </div>
+                                    <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">{stat.label}</p>
                                 </div>
-                                <p className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">{stat.label}</p>
-                            </div>
-                            <h3 className="text-4xl font-black text-[#064e3b] tracking-tighter uppercase">{stat.value}</h3>
-                        </CardContent>
-                    </Card>
+                                <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">{stat.value}</h3>
+                                {/* Decorative background element */}
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-transparent to-black/[0.01] pointer-events-none" />
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 ))}
             </div>
 
             {/* View Switching & Filters */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
-                <CardContent className="p-6">
-                    <div className="flex flex-col lg:flex-row gap-6 justify-between items-center">
-                        <div className="flex border-4 border-[#064e3b] p-1.5 gap-1.5 w-full lg:w-auto bg-neutral-50/50">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setViewMode('hives')}
-                                className={cn('flex-1 lg:flex-initial h-10 px-6 rounded-none text-[10px] font-black uppercase tracking-[0.2em] transition-none border-2 border-transparent',
-                                    viewMode === 'hives' ? 'bg-[#064e3b] text-white border-[#064e3b]' : 'text-[#064e3b]/30 hover:text-[#064e3b] hover:bg-[#facc15]/10'
-                                )}
-                            >
-                                <Box className="w-4 h-4 mr-2" /> Hives
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                onClick={() => setViewMode('devices')}
-                                className={cn('flex-1 lg:flex-initial h-10 px-6 rounded-none text-[10px] font-black uppercase tracking-[0.2em] transition-none border-2 border-transparent',
-                                    viewMode === 'devices' ? 'bg-[#064e3b] text-white border-[#064e3b]' : 'text-[#064e3b]/30 hover:text-[#064e3b] hover:bg-[#facc15]/10'
-                                )}
-                            >
-                                <Cpu className="w-4 h-4 mr-2" /> Devices
-                            </Button>
-                        </div>
-
-                        <div className="flex flex-col md:flex-row gap-4 w-full lg:flex-1 lg:justify-end">
-                            <div className="relative flex-1 max-w-md">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
-                                <Input
-                                    placeholder="SEARCH ASSET REGISTRY..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 h-12 rounded-none border-4 border-[#064e3b] bg-white font-black text-xs uppercase tracking-tight focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5 transition-none placeholder:text-[#064e3b]/20"
-                                />
-                            </div>
-                            <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                <SelectTrigger className="h-12 md:w-[200px] rounded-none border-4 border-[#064e3b] font-black text-[10px] uppercase bg-white focus:ring-0">
-                                    <MapPin className="w-4 h-4 mr-2 text-[#cc9c00]" />
-                                    <SelectValue placeholder="All Sectors" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] bg-white p-0">
-                                    <SelectItem value="all" className="hover:bg-[#facc15]/10 transition-none p-4 font-black uppercase text-[10px] tracking-widest focus:bg-[#10b981] focus:text-white rounded-none">All Sectors</SelectItem>
-                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="hover:bg-[#facc15]/10 transition-none p-4 font-black uppercase text-[10px] tracking-widest focus:bg-[#10b981] focus:text-white rounded-none">{a.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white dark:bg-white/5 border border-slate-200/60 dark:border-white/5 rounded-[2.5rem] p-4 shadow-xl shadow-black/5"
+            >
+                <div className="flex flex-col lg:flex-row gap-6 justify-between items-center">
+                    <div className="flex bg-slate-50 dark:bg-black/20 p-1.5 rounded-[1.25rem] gap-1 w-full lg:w-auto">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setViewMode('hives')}
+                            className={cn('flex-1 lg:flex-initial h-11 px-8 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all',
+                                viewMode === 'hives' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-900 dark:hover:text-white'
+                            )}
+                        >
+                            <Box className="w-4 h-4 mr-2" /> Hive Inventory
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setViewMode('devices')}
+                            className={cn('flex-1 lg:flex-initial h-11 px-8 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all',
+                                viewMode === 'devices' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-900 dark:hover:text-white'
+                            )}
+                        >
+                            <Cpu className="w-4 h-4 mr-2" /> Hardware Fleet
+                        </Button>
                     </div>
-                </CardContent>
-            </Card>
+
+                    <div className="flex flex-col md:flex-row gap-4 w-full lg:flex-1 lg:justify-end">
+                        <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-300 dark:text-white/10" />
+                            <Input
+                                placeholder="Search asset registry..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 font-medium text-sm focus:ring-amber-500/20"
+                            />
+                        </div>
+                        <Select value={selectedPlace} onValueChange={setSelectedPlace}>
+                            <SelectTrigger className="h-12 md:w-[220px] rounded-2xl border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/20">
+                                <MapPin className="w-4 h-4 mr-2 text-amber-500" />
+                                <SelectValue placeholder="All Sectors" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl p-0">
+                                <SelectItem value="all" className="p-4 font-black uppercase text-[10px] tracking-widest">All Industrial Sectors</SelectItem>
+                                {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="p-4 font-black uppercase text-[10px] tracking-widest">{a.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </motion.div>
 
             {/* List Content */}
             {viewMode === 'hives' ? (
@@ -370,64 +381,68 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             ) : (
                 /* Devices View */
                 <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                        <Cpu className="w-6 h-6 text-[#064e3b]" />
-                        <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Hardware Nodes</h3>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Cpu className="w-6 h-6 text-amber-500" />
+                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">Hardware Infrastructure</h3>
+                        </div>
+                        <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-lg">Operational</span>
                     </div>
 
-                    <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-[10px] text-left uppercase font-black tracking-widest">
-                                    <thead className="bg-[#064e3b] text-white border-b-4 border-[#064e3b]">
-                                        <tr>
-                                            <th className="px-6 py-4">Serial Number</th>
-                                            <th className="px-6 py-4">Hive Asset</th>
-                                            <th className="px-6 py-4">Status</th>
-                                            <th className="px-6 py-4">Battery</th>
-                                            <th className="px-6 py-4 text-right">Last Audit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y-2 divide-neutral-100">
-                                        {devices.map((device) => {
-                                            const linkedHive = hives.find(h => h.id === device.hive_id || h.hive_code === device.device_code);
-                                            return (
-                                                <tr key={device.id} className="hover:bg-[#facc15]/5 transition-none">
-                                                    <td className="px-6 py-4 font-black font-mono text-[#10b981]">{device.device_code}</td>
-                                                    <td className="px-6 py-4">
-                                                        {linkedHive ? (
-                                                            <span className="p-2 border-2 border-[#10b981]/20 bg-emerald-50 text-[#064e3b]">#{linkedHive.hive_code}</span>
-                                                        ) : (
-                                                            <span className="text-neutral-300">Unassigned</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className={cn("px-2 py-1 border-2 font-black", device.status === 'active' ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-neutral-50 text-neutral-400 border-neutral-200")}>
+                    <div className="bg-white dark:bg-white/5 border border-slate-200/60 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/5">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[10px] text-left uppercase font-black tracking-widest">
+                                <thead className="bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-white/20 border-b border-slate-100 dark:border-white/10 uppercase">
+                                    <tr>
+                                        <th className="px-8 py-6">Hardware Identifier</th>
+                                        <th className="px-8 py-6">Deployed Asset</th>
+                                        <th className="px-8 py-6">Telemetry Status</th>
+                                        <th className="px-8 py-6">Power Core</th>
+                                        <th className="px-8 py-6 text-right">Registry Audit</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                                    {devices.map((device) => {
+                                        const linkedHive = hives.find(h => h.id === device.hive_id || h.hive_code === device.device_code);
+                                        return (
+                                            <tr key={device.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-all group">
+                                                <td className="px-8 py-6 font-black font-mono text-amber-600 dark:text-amber-400">{device.device_code}</td>
+                                                <td className="px-8 py-6">
+                                                    {linkedHive ? (
+                                                        <span className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-lg text-[9px] font-black border border-emerald-100 dark:border-emerald-900/40 tracking-[0.15em]">#{linkedHive.hive_code}</span>
+                                                    ) : (
+                                                        <span className="text-slate-300 dark:text-white/10 italic">Awaiting Deployment</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-slate-300")} />
+                                                        <span className={cn("text-[10px] font-black", device.status === 'active' ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400")}>
                                                             {device.status}
                                                         </span>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-16 h-4 bg-neutral-100 border-2 border-[#064e3b] overflow-hidden">
-                                                                <div
-                                                                    className={cn("h-full", device.battery_level > 20 ? "bg-[#10b981]" : "bg-red-500")}
-                                                                    style={{ width: `${device.battery_level}%` }}
-                                                                />
-                                                            </div>
-                                                            <span>{device.battery_level}%</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-20 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                                            <div
+                                                                className={cn("h-full transition-all duration-500", device.battery_level > 20 ? "bg-emerald-500" : "bg-red-500")}
+                                                                style={{ width: `${device.battery_level}%` }}
+                                                            />
                                                         </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right text-neutral-400">
-                                                        {new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                                        <span className="text-slate-900 dark:text-white">{device.battery_level}%</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 text-right text-slate-400 dark:text-white/30 lowercase tabular-nums">
+                                                    {new String(new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })).toLowerCase()}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             )}
 

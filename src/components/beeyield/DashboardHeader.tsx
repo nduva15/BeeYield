@@ -20,6 +20,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { beeyieldService, SensorAlert } from '@/services/beeyieldService';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -57,102 +58,90 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
 
     return (
-        <header className="h-[72px] bg-white dark:bg-[#000000] border-b border-slate-200 dark:border-[#1A1A1A] sticky top-0 z-30 flex items-center justify-between px-8">
+        <header className="h-[88px] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md border-b border-slate-200/60 dark:border-white/5 sticky top-0 z-30 flex items-center justify-between px-10">
             {/* Left: Breadcrumb */}
-            <div className="flex items-center gap-3">
-                <span className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] font-mono">Dashboard</span>
-                <span className="text-slate-300 dark:text-white/10 text-xs">›</span>
-                <span className="text-[10px] font-black text-slate-600 dark:text-white/60 uppercase tracking-[0.2em] font-mono capitalize">
-                    {activeTab.replace(/-/g, ' ')}
-                </span>
-            </div>
-
-            {/* Center: Live system ticker (desktop only) */}
-            <div className="hidden xl:flex items-center gap-6">
-                {[
-                    { label: 'STATUS', value: 'OPTIMAL', positive: true },
-                    { label: 'UPTIME', value: '99.8%', positive: true },
-                    { label: 'ALERTS', value: alerts.length.toString(), positive: alerts.length === 0 },
-                ].map(stat => (
-                    <div key={stat.label} className="flex items-center gap-2">
-                        <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] font-mono">{stat.label}</span>
-                        <span className={cn(
-                            "text-[11px] font-black font-mono tabular-nums",
-                            stat.positive ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-[#F59E0B]"
-                        )}>{stat.value}</span>
+            <div className="flex items-center gap-4">
+                <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em]">Dashboard</span>
+                        <span className="text-slate-300 dark:text-white/10 text-xs">/</span>
+                        <span className="text-[10px] font-black text-amber-600 dark:text-amber-500 uppercase tracking-[0.2em] capitalize">
+                            {activeTab.replace(/-/g, ' ')}
+                        </span>
                     </div>
-                ))}
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tighter mt-1">
+                        Welcome back, <span className="text-amber-600">{userName}</span>
+                    </h2>
+                </div>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+                {/* Search */}
+                <div className="hidden lg:flex items-center h-12 px-5 bg-slate-100/50 dark:bg-white/5 rounded-2xl border border-transparent focus-within:border-amber-500/30 focus-within:bg-white dark:focus-within:bg-[#0D0D0D] transition-all gap-3 w-64">
+                    <Search className="w-4 h-4 text-slate-400 dark:text-white/20 flex-shrink-0" />
+                    <input
+                        type="text"
+                        placeholder="Search your data..."
+                        className="bg-transparent border-none outline-none text-xs font-medium text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 w-full"
+                    />
+                </div>
+
                 {/* Theme Toggle */}
                 <button
                     onClick={() => setTheme(isDark ? 'light' : 'dark')}
-                    className="h-9 w-9 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] flex items-center justify-center hover:border-slate-400 dark:hover:border-white/20 transition-all"
+                    className="h-12 w-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-2xl flex items-center justify-center hover:shadow-xl hover:border-amber-500/20 transition-all group"
                     title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                 >
                     {isDark ? (
-                        <Sun className="w-3.5 h-3.5 text-amber-500" />
+                        <Sun className="w-4 h-4 text-amber-500 group-hover:rotate-45 transition-transform" />
                     ) : (
-                        <Moon className="w-3.5 h-3.5 text-slate-500" />
+                        <Moon className="w-4 h-4 text-slate-500 group-hover:-rotate-12 transition-transform" />
                     )}
                 </button>
 
                 {/* Quick Action CTA */}
                 <button
                     onClick={onQuickAction}
-                    className="hidden sm:flex items-center gap-2 px-4 h-9 bg-[#F59E0B] text-black font-black text-[10px] tracking-[0.15em] uppercase font-mono hover:bg-[#FBBF24] transition-colors"
+                    className="hidden sm:flex items-center gap-2 px-6 h-12 bg-green-700 text-white font-black text-[11px] tracking-widest uppercase rounded-2xl shadow-lg shadow-green-900/10 hover:bg-green-800 hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
-                    <Plus className="w-3.5 h-3.5" />
-                    New Entry
+                    <Plus className="w-4 h-4" />
+                    New Record
                 </button>
-
-                {/* Search */}
-                <div className="hidden lg:flex items-center h-9 px-4 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] focus-within:border-slate-400 dark:focus-within:border-white/20 transition-all gap-2">
-                    <Search className="w-3.5 h-3.5 text-slate-400 dark:text-white/20 flex-shrink-0" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="bg-transparent border-none outline-none text-[11px] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 w-32 font-mono"
-                    />
-                </div>
 
                 {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="relative h-9 w-9 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] flex items-center justify-center hover:border-slate-400 dark:hover:border-white/20 transition-all">
-                            <Bell className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />
-                            {alerts.length > 0 && <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#F59E0B] rounded-full" />}
+                        <button className="relative h-12 w-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-2xl flex items-center justify-center hover:shadow-xl hover:border-amber-500/20 transition-all">
+                            <Bell className="w-4 h-4 text-slate-500 dark:text-white/40" />
+                            {alerts.length > 0 && <div className="absolute top-3.5 right-3.5 w-2 h-2 bg-amber-500 rounded-full border-2 border-white dark:border-[#09090b]" />}
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="end"
-                        className="w-80 rounded-none border border-slate-200 dark:border-[#1A1A1A] p-0 shadow-[0_16px_64px_rgba(0,0,0,0.15)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.8)] bg-white dark:bg-[#0D0D0D]"
+                        className="w-80 rounded-[1.5rem] border border-slate-200 dark:border-white/5 p-2 shadow-2xl bg-white dark:bg-[#0D0D0D] overflow-hidden"
                     >
-                        <div className="p-4 border-b border-slate-200 dark:border-[#1A1A1A]">
-                            <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-[0.2em] font-mono">Notifications</p>
-                            <p className="text-[9px] text-slate-400 dark:text-white/30 mt-1 font-mono">{alerts.length} unread alerts</p>
+                        <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl mb-2">
+                            <p className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-[0.2em]">Security Center</p>
+                            <p className="text-[10px] text-slate-500 dark:text-white/30 mt-1">{alerts.length} active alerts detected</p>
                         </div>
-                        <div className="divide-y divide-slate-200 dark:divide-[#1A1A1A]">
-                            {alerts.length > 0 ? alerts.map((n, i) => (
-                                <div key={n.id} className="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                                    <span className={cn(
-                                        "text-[8px] font-black font-mono tracking-wider pt-0.5 flex-shrink-0",
-                                        n.severity === 'critical' ? "text-red-500" : "text-amber-600 dark:text-[#F59E0B]"
-                                    )}>
-                                        {n.alert_type.toUpperCase()}
-                                    </span>
+                        <div className="space-y-1">
+                            {alerts.length > 0 ? alerts.map((n) => (
+                                <div key={n.id} className="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                                    <div className={cn(
+                                        "w-2 h-2 rounded-full mt-1.5 flex-shrink-0 animate-pulse",
+                                        n.severity === 'critical' ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                                    )} />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[11px] font-bold text-slate-800 dark:text-white truncate">{n.message}</p>
-                                        <p className="text-[9px] text-slate-400 dark:text-white/20 font-mono mt-0.5">
+                                        <p className="text-[9px] text-slate-400 dark:text-white/20 mt-1">
                                             {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                                         </p>
                                     </div>
                                 </div>
                             )) : (
                                 <div className="p-8 text-center">
-                                    <p className="text-[11px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest font-mono">No active alerts</p>
+                                    <p className="text-[11px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest leading-relaxed">System Status:<br /><span className="text-emerald-500">All Nodes Optimal</span></p>
                                 </div>
                             )}
                         </div>
@@ -162,35 +151,36 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Profile */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-2.5 h-9 pl-2 pr-3 bg-slate-100 dark:bg-[#111111] border border-slate-200 dark:border-[#1A1A1A] hover:border-slate-400 dark:hover:border-white/20 transition-all">
-                            <div className="w-5 h-5 bg-[#F59E0B] flex items-center justify-center flex-shrink-0">
-                                <span className="text-[9px] font-black text-black font-mono">{userName.charAt(0).toUpperCase()}</span>
+                        <button className="flex items-center gap-3 h-12 pl-2 pr-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-2xl hover:shadow-xl hover:border-amber-500/20 transition-all">
+                            <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/20">
+                                <span className="text-xs font-black text-neutral-900">{userName.charAt(0).toUpperCase()}</span>
                             </div>
-                            <span className="text-[10px] font-black text-slate-600 dark:text-white/60 hidden md:block font-mono uppercase tracking-wider">
+                            <span className="text-xs font-black text-slate-900 dark:text-white hidden md:block uppercase tracking-wider">
                                 {userName}
                             </span>
-                            <ChevronDown className="w-3 h-3 text-slate-400 dark:text-white/20" />
+                            <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/20" />
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="end"
-                        className="w-48 rounded-none border border-slate-200 dark:border-[#1A1A1A] p-0 shadow-[0_16px_64px_rgba(0,0,0,0.15)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.8)] bg-white dark:bg-[#0D0D0D]"
+                        className="w-56 rounded-[1.5rem] border border-slate-200 dark:border-white/5 p-2 shadow-2xl bg-white dark:bg-[#0D0D0D]"
                     >
-                        <DropdownMenuLabel className="px-4 py-2.5 text-[8px] font-black uppercase text-slate-400 dark:text-white/20 tracking-[0.3em] border-b border-slate-200 dark:border-[#1A1A1A] font-mono">
-                            Account
+                        <DropdownMenuLabel className="px-4 py-3 text-[9px] font-black uppercase text-slate-400 dark:text-white/20 tracking-[0.3em] font-sans">
+                            Account Profile
                         </DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() => onTabChange('settings')}
-                            className="px-4 py-3 text-[10px] font-black text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 font-mono uppercase tracking-wider rounded-none"
+                            className="px-4 py-3 text-xs font-bold text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 rounded-xl transition-all"
                         >
-                            <Settings className="w-3.5 h-3.5" />
+                            <Settings className="w-4 h-4" />
                             Settings
                         </DropdownMenuItem>
+                        <Separator className="my-2 bg-slate-100 dark:bg-white/5" />
                         <DropdownMenuItem
                             onClick={onLogout}
-                            className="px-4 py-3 text-[10px] font-black text-red-500/60 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-400/5 cursor-pointer flex items-center gap-3 font-mono uppercase tracking-wider rounded-none border-t border-slate-200 dark:border-[#1A1A1A]"
+                            className="px-4 py-3 text-xs font-bold text-red-500/80 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-400/5 cursor-pointer flex items-center gap-3 rounded-xl transition-all"
                         >
-                            <LogOut className="w-3.5 h-3.5" />
+                            <LogOut className="w-4 h-4" />
                             Sign Out
                         </DropdownMenuItem>
                     </DropdownMenuContent>

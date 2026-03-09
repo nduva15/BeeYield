@@ -2,7 +2,7 @@ import React from 'react';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import {
     Plus, Battery, Signal, Search, Smartphone, RefreshCw, Wifi,
-    FileSearch, Settings, ArrowRight
+    FileSearch, Settings, ArrowRight, Cpu, Network, ShieldCheck, Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +10,7 @@ import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import StatCard from './StatCard';
+import { Button } from '@/components/ui/button';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -40,6 +41,8 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             }
         } catch (error) {
             console.error('Add error:', error);
+            // Even if offline, we show it in local for better DX
+            setLocalDevices([newDeviceData, ...localDevices]);
             toast.info(`Cached: Node ${newDeviceData.device_code}`);
         }
     };
@@ -67,10 +70,10 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
         if (seconds < 60) return 'Online';
         const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) return `${minutes}m`;
+        if (minutes < 60) return `${minutes}m ago`;
         const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours}h`;
-        return `${Math.floor(hours / 24)}d`;
+        if (hours < 24) return `${hours}h ago`;
+        return `${Math.floor(hours / 24)}d ago`;
     };
 
     const now = new Date();
@@ -79,113 +82,183 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const offlineCount = localDevices.filter(d => !readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 3))).length;
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen antialiased text-[#064e3b]">
-            {/* Header - Utility UI */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <h1 className="text-5xl font-black tracking-tighter uppercase leading-none">
-                        Node Registry
-                    </h1>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] mt-4">
-                        Hardware Inventory and Signal Log
+        <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
+                <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-900/40">
+                        <Cpu className="w-3.5 h-3.5" />
+                        Hardware Inventory Management
+                    </div>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic uppercase">Node <span className="text-amber-500">Registry</span></h1>
+                    <p className="text-sm font-medium text-slate-500 dark:text-white/30 max-w-md px-1 lowercase italic">
+                        provisioning, tracking and signal monitoring for all active IoT clusters.
                     </p>
                 </div>
-                <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="h-14 px-8 border-2 border-[#064e3b] bg-[#10b981] font-black text-xs uppercase tracking-widest text-white hover:bg-black transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1 flex items-center gap-3"
-                >
-                    <Plus className="w-5 h-5" />
-                    Connect Node
-                </button>
+
+                <div className="flex items-center gap-4">
+                    <Button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="h-16 px-10 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] gap-4"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Initialize Node
+                    </Button>
+                </div>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <StatCard title="Total Units" value={localDevices.length} icon={Smartphone} />
                 <StatCard title="Sync 24h" value={measured24h} icon={RefreshCw} />
-                <StatCard title="Offline" value={offlineCount} icon={Wifi} trendType="negative" trend={`${offlineCount > 0 ? 'FIX' : 'OK'}`} />
-                <StatCard title="Battery Low" value={localDevices.filter(d => d.battery_level < 20).length} icon={Battery} />
+                <StatCard
+                    title="Offline Nodes"
+                    value={offlineCount}
+                    icon={Wifi}
+                    trendType={offlineCount > 0 ? "negative" : "positive"}
+                    trend={offlineCount > 0 ? 'CRITICAL' : 'MAX'}
+                />
+                <StatCard
+                    title="Low Battery"
+                    value={localDevices.filter(d => d.battery_level < 20).length}
+                    icon={Battery}
+                    trendType="neutral"
+                    trend="Checkups"
+                />
             </div>
 
-            {/* Control Bar */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-4 relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/40" />
-                    <input
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="IDENTIFIER..."
-                        className="w-full h-14 pl-12 pr-4 border-2 border-[#064e3b] bg-white font-black text-xs uppercase focus:outline-none focus:bg-[#facc15]/5"
-                    />
+            {/* Content Card */}
+            <div className="bg-white dark:bg-white/5 rounded-[3rem] border border-slate-200/60 dark:border-white/5 shadow-2xl shadow-black/5 overflow-hidden">
+                {/* Control Bar */}
+                <div className="p-10 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div className="flex-1 relative group">
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+                            <input
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="SEARCH REGISTRY..."
+                                className="w-full h-14 pl-12 pr-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500/50 transition-all outline-none"
+                            />
+                        </div>
+                        <div className="w-full md:w-80">
+                            <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                                <SelectTrigger className="h-14 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/10 focus:border-amber-500/50">
+                                    <SelectValue placeholder="All Sectors" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
+                                    <SelectItem value="all" className="p-4 font-black uppercase text-[10px] tracking-widest">All Industrial Sectors</SelectItem>
+                                    {apiaries.map(apiary => (
+                                        <SelectItem key={apiary.id} value={apiary.id} className="p-4 font-black uppercase text-[10px] tracking-widest">{apiary.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                 </div>
-                <div className="md:col-span-4">
-                    <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                        <SelectTrigger className="h-14 border-2 border-[#064e3b] rounded-none bg-white font-black text-xs uppercase focus:ring-0">
-                            <SelectValue placeholder="All Apiaries" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none border-2 border-[#064e3b] p-0 bg-white">
-                            <SelectItem value="all" className="text-[10px] font-black uppercase p-3 border-b border-[#064e3b]/10">All Apiaries</SelectItem>
-                            {apiaries.map(apiary => (
-                                <SelectItem key={apiary.id} value={apiary.id} className="text-[10px] font-black uppercase p-3 border-b border-[#064e3b]/10">{apiary.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
 
-            {/* Device Table */}
-            <div className="border-4 border-[#064e3b] bg-white overflow-hidden">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="bg-[#064e3b] text-white h-14 font-black uppercase text-[10px] tracking-widest">
-                            <th className="px-6">Status</th>
-                            <th className="px-6">Node ID</th>
-                            <th className="px-6">Locus</th>
-                            <th className="px-6">Hive</th>
-                            <th className="px-6">Battery</th>
-                            <th className="px-6">Pulse</th>
-                            <th className="px-6 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y-2 divide-[#064e3b]/10">
-                        {filteredDevices.length === 0 ? (
-                            <tr>
-                                <td colSpan={7} className="py-20 text-center text-[#064e3b]/20 font-black uppercase text-xs tracking-widest">Empty Registry</td>
+                {/* Device Table */}
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-slate-50/50 dark:bg-white/[0.01] h-16 font-black uppercase text-[9px] tracking-[0.3em] text-slate-400 italic">
+                                <th className="px-10 border-b border-slate-100 dark:border-white/5">Signal Status</th>
+                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Hardware ID</th>
+                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Deployment Sector</th>
+                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Target Hive</th>
+                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Battery Charge</th>
+                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Last Pulse</th>
+                                <th className="px-10 border-b border-slate-100 dark:border-white/5 text-right font-black">Control</th>
                             </tr>
-                        ) : (
-                            filteredDevices.map(device => (
-                                <tr key={device.id} className="hover:bg-[#facc15]/5 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <div className={cn("w-2.5 h-2.5 border border-[#064e3b]", device.status === 'active' ? 'bg-[#10b981]' : 'bg-red-500')} />
-                                            <span className="text-[10px] font-black uppercase">{device.status}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 font-mono text-[10px] font-bold">{device.device_code}</td>
-                                    <td className="px-6 py-4 text-[10px] font-black uppercase">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</td>
-                                    <td className="px-6 py-4 text-[10px] font-black uppercase">{getHiveName(device.hive_id)}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-black">{device.battery_level}%</span>
-                                            <div className="w-16 h-2 border border-[#064e3b] p-[1px] bg-white">
-                                                <div className={cn("h-full", device.battery_level > 20 ? 'bg-[#064e3b]' : 'bg-red-500')} style={{ width: `${device.battery_level}%` }} />
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                            {filteredDevices.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="py-32 text-center">
+                                        <div className="flex flex-col items-center gap-4">
+                                            <div className="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-200 mb-2">
+                                                <Network className="w-8 h-8" />
                                             </div>
+                                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-300 italic">Registry Void</span>
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => setIsAddModalOpen(true)}
+                                                className="text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-widest"
+                                            >
+                                                Initialize First Node →
+                                            </Button>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-[10px] font-black uppercase">{timeAgo(device.last_ping)}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="p-2 border-2 border-[#064e3b] bg-white hover:bg-[#10b981] hover:text-white transition-all mr-2">
-                                            <FileSearch className="w-4 h-4" />
-                                        </button>
-                                        <button className="p-2 border-2 border-[#064e3b] bg-white hover:bg-[#10b981] hover:text-white transition-all">
-                                            <Settings className="w-4 h-4" />
-                                        </button>
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                filteredDevices.map(device => (
+                                    <tr key={device.id} className="hover:bg-amber-500/[0.02] dark:hover:bg-amber-500/[0.03] transition-colors group">
+                                        <td className="px-10 py-8">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "w-2.5 h-2.5 rounded-full",
+                                                    device.status === 'active' ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'
+                                                )} />
+                                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">{device.status}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-black text-slate-900 dark:text-white tracking-widest group-hover:text-amber-500 transition-colors">{device.device_code}</span>
+                                                <span className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest">IOT_v2.41</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8 text-[11px] font-black uppercase text-slate-500 dark:text-white/40 tracking-widest italic leading-none">
+                                            {getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}
+                                        </td>
+                                        <td className="px-8 py-8">
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-100 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-white/60">
+                                                <ShieldCheck className="w-3.5 h-3.5" />
+                                                {getHiveName(device.hive_id)}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8">
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-sm font-black tabular-nums text-slate-900 dark:text-white min-w-[3ch]">{device.battery_level}%</span>
+                                                <div className="w-20 h-2 bg-slate-100 dark:bg-black/20 rounded-full overflow-hidden p-0.5">
+                                                    <div
+                                                        className={cn(
+                                                            "h-full rounded-full transition-all duration-700",
+                                                            device.battery_level > 60 ? 'bg-emerald-500' : device.battery_level > 20 ? 'bg-amber-500' : 'bg-red-500'
+                                                        )}
+                                                        style={{ width: `${device.battery_level}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8 text-[11px] font-black uppercase text-slate-400 dark:text-white/20 tracking-widest tabular-nums italic">
+                                            {timeAgo(device.last_ping)}
+                                        </td>
+                                        <td className="px-10 py-8 text-right">
+                                            <div className="flex items-center justify-end gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
+                                                <Button variant="ghost" className="w-10 h-10 p-0 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5">
+                                                    <FileSearch className="w-4 h-4 text-slate-400" />
+                                                </Button>
+                                                <Button variant="ghost" className="w-10 h-10 p-0 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5">
+                                                    <Settings className="w-4 h-4 text-slate-400" />
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Footer / Pagination */}
+                <div className="p-10 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.3em] italic">INDUSTRIAL HARDWARE REGISTRY SYSTEM v4.2 · ENCRYPTED_SYNC_ACTIVE</p>
+                    <Button variant="outline" className="h-12 px-8 rounded-xl border-slate-200 dark:border-white/10 font-black uppercase text-[10px] tracking-widest gap-3 transition-all hover:scale-[1.02]">
+                        <Download className="w-4 h-4" />
+                        Download Registry Bundle (.CSV)
+                    </Button>
+                </div>
             </div>
 
             <AddDeviceModal

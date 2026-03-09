@@ -1739,14 +1739,14 @@ export const beeyieldService = {
     },
 
     // ========== ACTIVITY FEED ==========
-    async getActivityLogs(limit = 10): Promise<ActivityLog[]> {
+    async getActivityLogs2(limit = 10): Promise<ActivityLog[]> {
         if (!sb) return [];
         const { data, error } = await sb.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(limit);
         if (error) { console.error('getActivityLogs:', error); return []; }
         return (data || []) as ActivityLog[];
     },
 
-    async logActivity(input: Partial<ActivityLog>): Promise<{ data: ActivityLog | null; error: any }> {
+    async logActivity2(input: Partial<ActivityLog>): Promise<{ data: ActivityLog | null; error: any }> {
         if (!sb) return { data: null, error: 'No client' };
         const { data: { user } } = await sb.auth.getUser();
         if (!user) return { data: null, error: 'Not authenticated' };
@@ -1848,7 +1848,7 @@ export const beeyieldService = {
     },
 
     // ========== PRECISION POLLINATION ==========
-    async getPollinationDeployments(): Promise<any[]> {
+    async getPollinationDeployments2(): Promise<any[]> {
         if (!sb) return [];
         const { data, error } = await sb.from('pollination_deployments').select('*').order('created_at', { ascending: false });
         if (error) { console.error('getPollinationDeployments:', error); return []; }
@@ -1863,7 +1863,7 @@ export const beeyieldService = {
         return apiPost<PollinationCalculatorResult>('/pollination/calculate', input);
     },
 
-    async optimizePollinationPlacement(input: {
+    async optimizePollinationPlacement2(input: {
         orchard_geojson: any;
         hive_count: number;
         target_crop: string;

@@ -3,11 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Thermometer, Droplets, Weight, Download, Activity, FileText, Zap } from 'lucide-react';
+import { Thermometer, Droplets, Weight, Download, Activity, FileText, Zap, ChevronDown, Calendar, Database } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { motion } from 'framer-motion';
 
 interface MeasurementDataViewProps {
     onTabChange: (tab: string) => void;
@@ -51,27 +52,36 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
     const latest = displayData[displayData.length - 1] || { temp: 0, hum: 0, weight: 0, acoustics: 0 };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-[#1B9157] dark:text-[#F4D03F]">Measurement Data</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Historical and real-time sensor analytics.</p>
+        <div className="space-y-12 animate-in fade-in duration-500 pb-20 honeycomb-bg min-h-screen p-8 -m-8">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row justify-between items-end gap-8 pb-4">
+                <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-honey/10 text-honey rounded-full text-[10px] font-black uppercase tracking-widest border border-honey/20 backdrop-blur-sm">
+                        <Database className="w-3.5 h-3.5" />
+                        AI-Enhanced Telemetry
+                    </div>
+                    <h1 className="text-6xl font-serif font-black text-honey tracking-tight leading-none">Telemetry <span className="text-foreground">Analytics</span></h1>
+                    <p className="text-sm font-medium text-muted-foreground max-w-lg leading-relaxed uppercase tracking-wider opacity-70">
+                        Historical and real-time sensor analytics powered by BeeYield&apos;s Global Intelligence Framework.
+                    </p>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-200 hover:border-[#1B9157] gap-2 font-bold h-11 px-5 shadow-sm">
-                        <FileText className="w-4 h-4 text-[#1B9157]" /> Export PDF
+
+                <div className="flex flex-wrap gap-3">
+                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-white/50 backdrop-blur-md border border-border text-muted-foreground hover:text-honey font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-honey/50 transition-all">
+                        <FileText className="w-4 h-4 mr-2" /> Export Audit
                     </Button>
-                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-200 hover:border-[#F4D03F] gap-2 font-bold h-11 px-5 shadow-sm">
-                        <Download className="w-4 h-4 text-[#F4D03F]" /> Export CSV
+                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-white/50 backdrop-blur-md border border-border text-muted-foreground hover:text-honey font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-honey/50 transition-all">
+                        <Download className="w-4 h-4 mr-2" /> Dataset
                     </Button>
                     <Select value={timeRange} onValueChange={setTimeRange}>
-                        <SelectTrigger className="w-[180px] h-11 rounded-xl">
+                        <SelectTrigger className="w-[200px] h-14 rounded-2xl border-border bg-white/50 backdrop-blur-md font-black text-[10px] uppercase tracking-widest shadow-sm focus:ring-honey/20">
+                            <Calendar className="w-4 h-4 mr-2 text-honey" />
                             <SelectValue placeholder="Time Range" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-50">
-                            <SelectItem value="24h">Last 24 Hours</SelectItem>
-                            <SelectItem value="7d">Last 7 Days</SelectItem>
-                            <SelectItem value="30d">Last 30 Days</SelectItem>
+                        <SelectContent className="rounded-2xl border-border shadow-2xl p-0 backdrop-blur-xl bg-white/90">
+                            <SelectItem value="24h" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 24h</SelectItem>
+                            <SelectItem value="7d" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 7d</SelectItem>
+                            <SelectItem value="30d" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 30d</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -80,70 +90,79 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'Latest temperature', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-                    { label: 'Latest humidity', value: `${latest.hum}%`, icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-                    { label: 'Current Weight', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
-                    { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10 dark:bg-[#F4D03F]/20' },
-                ].map((stat) => (
-                    <Card key={stat.label} className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm hover:border-[#F4D03F]/30 transition-colors">
-                        <CardContent className="p-6">
-                            <div className="flex items-center gap-4">
-                                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", stat.bg)}>
-                                    <stat.icon className={cn("w-6 h-6", stat.color)} />
+                    { label: 'Thermal Internal', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-honey', bg: 'bg-honey/10' },
+                    { label: 'Ambient Saturation', value: `${latest.hum}%`, icon: Droplets, color: 'text-honey', bg: 'bg-honey/10' },
+                    { label: 'Colony Biomass', value: `${latest.weight}kg`, icon: Weight, color: 'text-honey', bg: 'bg-honey/10' },
+                    { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-honey', bg: 'bg-honey/10' },
+                ].map((stat, i) => (
+                    <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                    >
+                        <Card className="rounded-[2.5rem] border border-border bg-white/80 backdrop-blur-md shadow-xl shadow-black/5 hover:border-honey/30 transition-all group overflow-hidden">
+                            <CardContent className="p-8">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", stat.bg)}>
+                                        <stat.icon className={cn("w-7 h-7", stat.color)} />
+                                    </div>
+                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-tight opacity-70">{stat.label}</p>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">{stat.label}</p>
-                                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                <p className="text-4xl font-serif font-black text-foreground tabular-nums tracking-tight">{stat.value}</p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 ))}
             </div>
 
             {/* Main Chart Area */}
-            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden">
-                <CardContent className="p-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-xl font-bold text-[#1B9157]">Thermal Stability Trend</h3>
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F4D03F]/10 border border-[#F4D03F]/30">
-                                <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
-                                <span className="text-xs font-bold text-[#1A1A1A] dark:text-[#F4D03F] uppercase tracking-tighter">Inner Brood</span>
+            <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden">
+                <CardContent className="p-10">
+                    <div className="flex justify-between items-center mb-12">
+                        <div className="space-y-1">
+                            <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Thermal Stability Registry</h3>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Internal environmental control audit</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-900/40">
+                                <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                                <span className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest">Internal Node 01</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="h-[400px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                    <div className="h-[450px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={displayData}>
                                 <defs>
                                     <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.15} />
+                                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" opacity={0.1} />
                                 <XAxis
                                     dataKey="time"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#9CA3AF', fontWeight: 600 }}
-                                    dy={10}
+                                    tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 900 }}
+                                    dy={15}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#9CA3AF', fontWeight: 600 }}
-                                    dx={-10}
+                                    tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 900 }}
+                                    dx={-15}
                                 />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', padding: '12px' }}
+                                    contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', padding: '20px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)' }}
+                                    itemStyle={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="temp"
-                                    stroke="#F4D03F"
+                                    stroke="#f59e0b"
                                     strokeWidth={4}
                                     fillOpacity={1}
                                     fill="url(#colorTemp)"
@@ -155,40 +174,43 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm p-8">
-                    <h3 className="text-xl font-bold mb-6">Colony Weight (kg)</h3>
-                    <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 p-10">
+                    <div className="flex justify-between items-center mb-10">
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Mass Variation (kg)</h3>
+                        <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-none font-black text-[10px] uppercase tracking-widest">Active Scale</Badge>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={displayData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
-                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
-                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                                <Line type="monotone" dataKey="weight" stroke="#1B9157" strokeWidth={3} dot={{ r: 4, fill: '#1B9157', strokeWidth: 0 }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" opacity={0.1} />
+                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dx={-10} />
+                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 15px 30px -5px rgba(0,0,0,0.1)' }} />
+                                <Line type="monotone" dataKey="weight" stroke="#10b981" strokeWidth={4} dot={{ r: 0 }} activeDot={{ r: 6, fill: '#10b981', strokeWidth: 0 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </Card>
 
-                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm p-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-bold">In-Hive Humidity (%)</h3>
-                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-none font-black text-[10px] uppercase">Stable</Badge>
+                <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 p-10">
+                    <div className="flex justify-between items-center mb-10">
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Saturation Profile (%)</h3>
+                        <Badge className="bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-none font-black text-[10px] uppercase tracking-widest">Balanced</Badge>
                     </div>
-                    <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={displayData}>
                                 <defs>
                                     <linearGradient id="colorHum" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#1B9157" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
+                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
-                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
-                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                                <Area type="monotone" dataKey="hum" stroke="#1B9157" strokeWidth={3} fill="url(#colorHum)" fillOpacity={1} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" opacity={0.1} />
+                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dx={-10} />
+                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none' }} />
+                                <Area type="monotone" dataKey="hum" stroke="#10b981" strokeWidth={4} fill="url(#colorHum)" fillOpacity={1} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
