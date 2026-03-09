@@ -21,8 +21,6 @@ import {
     ArrowDownRight,
 } from 'lucide-react';
 import beeyieldService, { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
-import YieldIntelligencePulse from './YieldIntelligencePulse';
-import ColonyPulse from './ColonyPulse';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { LineChart, Line, AreaChart, Area, ResponsiveContainer } from 'recharts';
@@ -389,24 +387,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                     accentColor="#F87171"
                     delay={0.18}
                 />
-            </div>
-
-            {/* ── Yield AI Pulse & Colony Pulse ── */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8 pb-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.4 }}
-                >
-                    <YieldIntelligencePulse />
-                </motion.div>
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25, duration: 0.4 }}
-                >
-                    <ColonyPulse />
-                </motion.div>
             </div>
 
             {/* ── Command Center Row ── */}

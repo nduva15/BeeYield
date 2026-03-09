@@ -618,13 +618,5 @@ export const adminService = {
 
     logPayment: async (payment: any) => {
         return await apiPost<any>('/admin/payments', payment);
-    },
-
-    logTrace: async (data: { batch_code: string; honey_type: string; farmer_name: string; trace_source: string; is_authenticated: boolean }): Promise<void> => {
-        try {
-            await supabase?.from('traceability_logs').insert([data]);
-        } catch (e) {
-            console.error("Log trace failed", e);
-        }
     }
 };

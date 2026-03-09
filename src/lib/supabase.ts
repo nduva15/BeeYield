@@ -17,11 +17,6 @@ const beeyieldKey = import.meta.env.VITE_SUPABASE_ANON_KEY_BEEYIELD || defaultKe
 const cebaUrl = import.meta.env.VITE_SUPABASE_URL_CEBA || defaultUrl;
 const cebaKey = import.meta.env.VITE_SUPABASE_ANON_KEY_CEBA || defaultKey;
 
-// 4. Knowledge Hub Backend
-const knowledgeUrl = import.meta.env.VITE_SUPABASE_URL_KNOWLEDGE || 'https://laeifazhrupoqrhqmyzg.supabase.co';
-const knowledgeKey = import.meta.env.VITE_SUPABASE_ANON_KEY_KNOWLEDGE || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhZWlmYXpocnVwb3FyaHFteXpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NjAwMDUsImV4cCI6MjA4NzEzNjAwNX0.Qc6b_68QL_RzxCsBVZo49Ol4_tEZMQAEfRF-wwfii-k';
-
-
 const createNamedClient = (url: string, key: string, name: string) => {
   try {
     return createClient(url, key, {
@@ -41,7 +36,6 @@ const createNamedClient = (url: string, key: string, name: string) => {
 export const supabaseShop = createNamedClient(shopUrl, shopKey, 'shop');
 export const supabaseBeeYield = createNamedClient(beeyieldUrl, beeyieldKey, 'beeyield');
 export const supabaseCEBA = createNamedClient(cebaUrl, cebaKey, 'ceba');
-export const supabaseKnowledge = createNamedClient(knowledgeUrl, knowledgeKey, 'knowledge');
 
 // Default export remains for backward compatibility, pointing to shop by default
 export const supabase = supabaseShop;

@@ -30,7 +30,7 @@ import {
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import beeyieldService, { ActivityLog, SensorAlert, Hive } from '@/services/beeyieldService';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -180,7 +180,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         temp: latest?.temperature || 35.0,
                         humidity: latest?.humidity || 60,
                         acoustic: h.health_status || 'Healthy',
-                        alert: hasAlert ? (alerts.find(a => a.hive_id === h.id && !a.resolved)?.alert_type.toUpperCase() || 'CRITICAL') : null,
+                        alert: hasAlert ? 'CRITICAL' : null,
                         lastSeen: latest ? formatDistanceToNow(new Date(latest.created_at), { addSuffix: true }) : 'No signal'
                     };
                 });
@@ -208,16 +208,10 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
         const fetchHistory = async () => {
             try {
-                const history = await beeyieldService.getReadings(selectedHive.id, 50);
-                if (history && history.length > 0) {
-                    const mapped = (history as any[]).reverse().map(r => ({
-                        month: format(new Date(r.recorded_at || r.timestamp || r.created_at), 'HH:mm'),
-                        temp: r.temperature || r.temp_internal || 35,
-                        humidity: r.humidity || r.humidity_internal || 60,
-                        activity: r.bee_activity || r.activity || 50
-                    }));
-                    setHistoryData(mapped);
-                    setHistoryRange(mapped.length);
+                const history = await beeyieldService.getSensorReadings(selectedHive.id, 24);
+                if (history.length > 0) {
+                    // Map real history to chart format if needed, or keep mock for now if real data is sparse
+                    // setHistoryData(...)
                 }
             } catch (err) {
                 console.error("History fetch error", err);
@@ -402,11 +396,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <div className="flex items-center justify-between border-b-4 border-[#064e3b] pb-4">
                     <div className="flex items-center gap-4">
                         <Activity className="w-6 h-6 text-[#10b981]" />
-                        <h3 className="text-3xl font-black uppercase tracking-tighter">Recent Sensor Activity</h3>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter">12-Month Trend</h3>
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40">
-                            Showing last {historyRange} readings
+                            Showing last {historyRange} months
                         </span>
                         <div className="flex items-center gap-1">
                             <button
@@ -436,7 +430,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid vertical={false} stroke="#064e3b" strokeOpacity={0.05} />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 8 }} />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }} />
                                 <YAxis yAxisId="temp" domain={[25, 40]} axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }} />
                                 <YAxis yAxisId="humid" orientation="right" domain={[40, 80]} axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }} />
                                 <Tooltip

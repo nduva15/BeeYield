@@ -1,10 +1,9 @@
 
-import { getAuthHeaders, apiGet, apiDelete } from './api';
-import { ImageAnalysisResult, AnalysisHistoryResponse } from './beeyieldService';
+import { getAuthHeaders, ImageAnalysisResponse, AnalysisHistoryResponse, HealthTrendsResponse } from './beeyieldService';
+import { apiGet, apiDelete } from './api';
 
-export type ImageAnalysisResponse = ImageAnalysisResult;
-export type HealthTrendsResponse = any;
-export type { AnalysisHistoryResponse };
+// Re-export types for convenience
+export type { ImageAnalysisResponse, AnalysisHistoryResponse, HealthTrendsResponse } from './beeyieldService';
 
 export const imageAnalysisService = {
     // Analyze Bee Image

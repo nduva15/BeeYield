@@ -22,10 +22,7 @@ import {
     Download,
     XCircle,
     Settings,
-    Truck,
-    Lock,
-    ArrowLeft,
-    CreditCard as CardIcon
+    Truck
 } from 'lucide-react';
 
 import { useState, useEffect } from 'react';
@@ -55,8 +52,8 @@ import ShopDashboardLayout from '@/components/shop/ShopDashboardLayout';
 import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
 import { adminService } from '@/services/adminService';
 
-// Toast utility import
-import { toast } from 'sonner';
+// Toast utility import (adjust if needed)
+import { toast } from '@/hooks/use-toast';
 
 const ShopDashboard = () => {
     const { user, signOut, loading: authLoading, session } = useAuth();
@@ -1038,7 +1035,6 @@ const ShopDashboard = () => {
                     setIsProcessing(true);
                     try {
                         const orderData: CheckoutOrder = {
-                            idempotency_key: crypto.randomUUID(),
                             shipping_address: {
                                 first_name: shippingDetails.fullName.split(' ')[0] || '',
                                 last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',

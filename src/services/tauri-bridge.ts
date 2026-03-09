@@ -5,11 +5,7 @@
 // These mirror the Rust models 1:1.
 // ─────────────────────────────────────────────────────────────
 
-// import { invoke } from "@tauri-apps/api/core";
-const invoke = async <T>(cmd: string, args?: any): Promise<T> => {
-  console.warn(`[Tauri Mock] IPC command '${cmd}' called in web mode`, args);
-  throw new Error('Tauri not available in web mode');
-};
+import { invoke } from "@tauri-apps/api/core";
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -91,11 +87,11 @@ export interface HiveAnalysisRequest {
 
 export interface ReportRequest {
   report_type:
-  | "HiveHealth"
-  | "HarvestSummary"
-  | "PollinationEfficiency"
-  | "MarketAnalysis"
-  | "TraceabilityAudit";
+    | "HiveHealth"
+    | "HarvestSummary"
+    | "PollinationEfficiency"
+    | "MarketAnalysis"
+    | "TraceabilityAudit";
   farmer_id?: string;
   date_range?: [string, string];
 }
