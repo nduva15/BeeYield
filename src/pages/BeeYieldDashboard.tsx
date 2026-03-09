@@ -206,7 +206,7 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield', icon: Hexagon },
+            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
         ];
 
         // 1. Agro & Meteo Module
@@ -420,15 +420,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor':
                 return <ContinuousMonitor onTabChange={handleTabChange} />;
-            case 'yard-management':
-                return <YardOperations onTabChange={handleTabChange} />;
-            case 'fleet-security':
-            case 'baas-command':
-                return <GeospatialSecurity onTabChange={handleTabChange} />;
-            case 'orchard-mapper':
-                return <OrchardMapper onTabChange={handleTabChange} />;
-            case 'season-summary':
-                return <SeasonSummary onTabChange={handleTabChange} />;
+            // Removed duplicate cases below to fix build errors
+
 
             case 'hive-telemetry':
                 return <HiveTelemetryView />;

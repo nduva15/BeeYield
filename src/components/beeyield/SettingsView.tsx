@@ -25,7 +25,8 @@ import {
     Layers,
     Bot,
     MousePointer2,
-    Check
+    Check,
+    Hexagon
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';

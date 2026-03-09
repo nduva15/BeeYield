@@ -163,6 +163,53 @@ CREATE TABLE IF NOT EXISTS public.harvests (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 9. AI CONVERSATIONS TABLE
+DROP TABLE IF EXISTS public.chat_messages CASCADE;
+DROP TABLE IF EXISTS public.conversations CASCADE;
+
+CREATE TABLE public.conversations (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- Optional link to auth user
+    device_id TEXT NOT NULL,
+    title TEXT DEFAULT 'New Chat',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 10. AI CHAT MESSAGES TABLE
+CREATE TABLE public.chat_messages (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    conversation_id UUID REFERENCES public.conversations(id) ON DELETE CASCADE NOT NULL,
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 11. SENSOR READINGS TABLE (IoT Data)
+DROP TABLE IF EXISTS public.sensor_readings CASCADE;
+
+CREATE TABLE public.sensor_readings (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    hive_id UUID REFERENCES public.hives(id) ON DELETE CASCADE NOT NULL,
+    temp_internal DECIMAL(5, 2),
+    temp_external DECIMAL(5, 2),
+    humidity_internal DECIMAL(5, 2),
+    humidity_external DECIMAL(5, 2),
+    weight_kg DECIMAL(10, 2),
+    battery_voltage DECIMAL(5, 2),
+    acoustic_frequency INTEGER,
+    recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index for IoT data performance
+CREATE INDEX IF NOT EXISTS idx_sensor_readings_hive_id ON public.sensor_readings(hive_id);
+CREATE INDEX IF NOT EXISTS idx_sensor_readings_recorded_at ON public.sensor_readings(recorded_at DESC);
+
+-- Index for device_id to speed up history retrieval
+CREATE INDEX IF NOT EXISTS idx_conversations_device_id ON public.conversations(device_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation_id ON public.chat_messages(conversation_id);
+
 -- ==========================================
 -- ROW LEVEL SECURITY (RLS)
 -- ==========================================
@@ -175,6 +222,9 @@ ALTER TABLE public.hives ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inspections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.harvests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sensor_readings ENABLE ROW LEVEL SECURITY;
 
 -- Consolidated RLS Policies Helper Function
 -- (Instead of writing individual policies for all 6 tables, we can iterate)
@@ -201,6 +251,18 @@ BEGIN
     END LOOP;
 END;
 $$;
+
+-- AI Conversations & messages (Consolidated permissive)
+DROP POLICY IF EXISTS "Users can view own conversations" ON public.conversations;
+DROP POLICY IF EXISTS "Anyone can manage conversations" ON public.conversations;
+CREATE POLICY "Anyone can manage conversations" ON public.conversations FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can view own chat_messages" ON public.chat_messages;
+DROP POLICY IF EXISTS "Anyone can manage chat messages" ON public.chat_messages;
+CREATE POLICY "Anyone can manage chat messages" ON public.chat_messages FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Anyone can view sensor readings" ON public.sensor_readings;
+CREATE POLICY "Anyone can view sensor readings" ON public.sensor_readings FOR SELECT USING (true);
 
 -- Special policies for profiles (linked via ID, not user_id column)
 DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
@@ -248,10 +310,69 @@ DECLARE
 BEGIN
     FOR t IN SELECT table_name FROM information_schema.tables 
              WHERE table_schema = 'public' 
-             AND table_name IN ('profiles', 'farmers', 'apiaries', 'hives', 'inspections', 'tasks', 'harvests')
+             AND table_name IN ('profiles', 'farmers', 'apiaries', 'hives', 'inspections', 'tasks', 'harvests', 'conversations')
+        LOOP
+            EXECUTE format('DROP TRIGGER IF EXISTS update_%I_updated_at ON public.%I', t, t);
+            EXECUTE format('CREATE TRIGGER update_%I_updated_at BEFORE UPDATE ON public.%I FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column()', t, t);
+        END LOOP;
+    END;
+    $$;
+
+-- ==========================================
+-- 11. SUPABASE LINTER: PERFORMANCE & CLEANUP
+-- ==========================================
+
+-- Cleanup Duplicate Indexes
+DROP INDEX IF EXISTS public.idx_contact_status;
+DROP INDEX IF EXISTS public.idx_pollination_status;
+
+-- Cleanup Redundant Policies (Multiple Permissive Policies fix)
+-- Specifically targeting tables mentioned in linter
+DO $$
+DECLARE
+    tbl text;
+BEGIN
+    FOR tbl IN SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'
     LOOP
-        EXECUTE format('DROP TRIGGER IF EXISTS update_%I_updated_at ON public.%I', t, t);
-        EXECUTE format('CREATE TRIGGER update_%I_updated_at BEFORE UPDATE ON public.%I FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column()', t, t);
+        -- If we have both "Users can..." and "authenticated_access", drop "authenticated_access" to avoid redundancy
+        IF EXISTS (SELECT 1 FROM pg_policies WHERE tablename = tbl AND policyname LIKE 'Users can %') 
+           AND EXISTS (SELECT 1 FROM pg_policies WHERE tablename = tbl AND policyname = 'authenticated_access') THEN
+            EXECUTE format('DROP POLICY IF EXISTS "authenticated_access" ON public.%I', tbl);
+        END IF;
     END LOOP;
 END;
 $$;
+
+-- Fix auth.uid() performance (auth_rls_initplan fix)
+-- This iterates through all policies and wraps auth functions in subqueries (SELECT ...)
+DO $$
+DECLARE
+    r RECORD;
+    new_using text;
+    new_with_check text;
+BEGIN
+    FOR r IN (
+        SELECT schemaname, tablename, policyname, roles, cmd, qual, with_check 
+        FROM pg_policies 
+        WHERE schemaname = 'public' 
+        AND (qual LIKE '%auth.uid()%' OR qual LIKE '%auth.email()%' OR with_check LIKE '%auth.uid()%' OR with_check LIKE '%auth.email()%')
+        AND (qual NOT LIKE '%(SELECT auth.uid())%' AND with_check NOT LIKE '%(SELECT auth.uid())%')
+    ) LOOP
+        -- Replace auth.uid() with (SELECT auth.uid()) for USING and WITH CHECK
+        new_using := REPLACE(r.qual, 'auth.uid()', '(SELECT auth.uid())');
+        new_using := REPLACE(new_using, 'auth.email()', '(SELECT auth.email())');
+        
+        new_with_check := REPLACE(r.with_check, 'auth.uid()', '(SELECT auth.uid())');
+        new_with_check := REPLACE(new_with_check, 'auth.email()', '(SELECT auth.email())');
+
+        -- Drop and Recreate policy with optimized check
+        EXECUTE format('DROP POLICY %I ON %I.%I', r.policyname, r.schemaname, r.tablename);
+        
+        EXECUTE format('CREATE POLICY %I ON %I.%I FOR %s TO %s USING (%s) WITH CHECK (%s)', 
+            r.policyname, r.schemaname, r.tablename, r.cmd, array_to_string(r.roles, ','), 
+            COALESCE(new_using, 'true'), COALESCE(new_with_check, 'true'));
+    END LOOP;
+END;
+$$;
+
+NOTIFY pgrst, 'reload schema';

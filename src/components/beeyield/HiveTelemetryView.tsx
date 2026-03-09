@@ -15,7 +15,11 @@ import {
     History,
     FileBarChart,
     ChevronRight,
-    Download
+    Download,
+    Cpu,
+    Database,
+    Binary,
+    Network
 } from 'lucide-react';
 import {
     LineChart,
@@ -143,31 +147,29 @@ const HiveTelemetryView: React.FC = () => {
     }, [data]);
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header / Active Status */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-10">
-                <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
-                        <Scale className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Continuous Weight Dynamics</span>
+        <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
+                <div className="space-y-2">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-900/40">
+                        <Cpu className="w-3.5 h-3.5" />
+                        Autonomous Telemetry Subsystem
                     </div>
-                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
-                        Telemetry <span className="text-[#10b981]">Engine</span>
-                    </h1>
-                    <p className="text-[#064e3b]/40 font-black text-sm uppercase tracking-widest mt-2 px-1">
-                        dW/dt Calculus · Nectar Influx Velocity · Biological Yield Integrals
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic uppercase italic">Real-Time <span className="text-amber-500">Registry</span></h1>
+                    <p className="text-sm font-medium text-slate-500 dark:text-white/30 max-w-md px-1">
+                        High-frequency dW/dt calculus and biometric bio-feedback stream processing.
                     </p>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
                     <div className={cn(
-                        "px-8 py-5 border-4 flex flex-col items-end transition-all",
-                        gatewayStatus === 'Online' ? "border-[#10b981] bg-[#10b981]/5" : "border-red-500 bg-red-50"
+                        "px-8 py-3 rounded-2xl border flex flex-col items-center transition-all bg-white dark:bg-white/5 shadow-sm",
+                        gatewayStatus === 'Online' ? "border-emerald-100 dark:border-emerald-900/40" : "border-red-100 dark:border-red-900/40"
                     )}>
-                        <span className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest mb-1">Gateway Mesh</span>
+                        <span className="text-[9px] font-black uppercase text-slate-400 dark:text-white/20 tracking-[0.2em] mb-1">Gateway Mesh</span>
                         <div className="flex items-center gap-2">
-                            <div className={cn("w-3 h-3 rounded-none border-2", gatewayStatus === 'Online' ? "bg-[#10b981] animate-pulse border-[#064e3b]" : "bg-red-500 border-[#064e3b]")} />
-                            <span className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">
+                            <div className={cn("w-2.5 h-2.5 rounded-full shadow-sm", gatewayStatus === 'Online' ? "bg-emerald-500 animate-pulse" : "bg-red-500")} />
+                            <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter tabular-nums uppercase">
                                 {gatewayStatus}
                             </span>
                         </div>
@@ -178,39 +180,35 @@ const HiveTelemetryView: React.FC = () => {
             {/* Matrix Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Weight Card */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] flex flex-col">
-                    <CardHeader className="p-8 border-b-4 border-[#064e3b]/5">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40 mb-1">Gross Mass</p>
-                        <CardTitle className="text-5xl font-black text-[#064e3b] tabular-nums leading-none">
-                            {latest.weight} <span className="text-xl">kg</span>
+                <Card className="rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden group">
+                    <CardHeader className="p-10 pb-6 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-white/20 mb-2 italic">Current Biomass Score</p>
+                        <CardTitle className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter italic tabular-nums">
+                            {latest.weight}<span className="text-2xl ml-1 opacity-20 not-italic">kg</span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-8 flex-1 flex flex-col justify-between">
+                    <CardContent className="p-10 flex flex-col justify-between min-h-[220px]">
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-3 border-2 border-[#064e3b]/5 bg-neutral-50">
-                                <span className="text-[9px] font-black uppercase">24h Delta</span>
-                                <span className={cn("text-sm font-black flex items-center gap-1", (latest.weight - data[0].weight) > 0 ? "text-[#10b981]" : "text-red-500")}>
-                                    {(latest.weight - data[0].weight) > 0 ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                                    {Math.abs(latest.weight - data[0].weight).toFixed(2)} kg
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-black/20 border border-slate-100 dark:border-white/10">
+                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none">24h Delta</span>
+                                <span className={cn("text-base font-black flex items-center gap-1 leading-none", (latest.weight - data[0].weight) > 0 ? "text-emerald-500" : "text-red-500")}>
+                                    {(latest.weight - data[0].weight) > 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                                    {Math.abs(latest.weight - data[0].weight).toFixed(2)}kg
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between p-3 border-2 border-[#064e3b]/5">
-                                <span className="text-[9px] font-black uppercase">Sensor Drift</span>
-                                <span className="text-[10px] font-black tracking-widest text-[#064e3b]/30">0.002% RMS</span>
-                            </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 mt-6">
+                        <div className="grid grid-cols-2 gap-3 mt-8">
                             <Button
                                 onClick={handleTare}
                                 disabled={isTaring}
-                                className="h-12 rounded-none bg-[#064e3b] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-none border-2 border-[#064e3b]"
+                                className="h-14 rounded-2xl bg-neutral-900 dark:bg-white/5 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-black/10 dark:shadow-none hover:scale-[1.02] active:scale-[0.98] transition-all"
                             >
-                                {isTaring ? <Activity className="w-4 h-4 animate-spin" /> : "Tare Sensor"}
+                                {isTaring ? <Activity className="w-4 h-4 animate-spin" /> : "Calibration"}
                             </Button>
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 onClick={handleManualOffset}
-                                className="h-12 rounded-none border-2 border-[#064e3b] text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-neutral-50 transition-none"
+                                className="h-14 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-400 hover:text-amber-500 font-black uppercase text-[10px] tracking-widest transition-all"
                             >
                                 Manual Offset
                             </Button>
@@ -219,118 +217,135 @@ const HiveTelemetryView: React.FC = () => {
                 </Card>
 
                 {/* Flux Calculus Card */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] flex flex-col">
-                    <CardHeader className="p-8 border-b-4 border-[#064e3b]/5">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40 mb-1">Flux Velocity ($dW/dt$)</p>
-                        <CardTitle className="text-5xl font-black text-[#064e3b] tabular-nums leading-none">
+                <Card className="rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden">
+                    <CardHeader className="p-10 pb-6 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-white/20 mb-2 italic">Flux Velocity ($dW/dt$)</p>
+                        <CardTitle className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter italic tabular-nums">
                             {dwdt > 0 ? '+' : ''}{dwdt.toFixed(3)}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-8 space-y-6">
-                        <p className="text-[10px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
-                            Real-time rate of mass change. Positive values indicate active foraging and dehydration of nectar.
+                    <CardContent className="p-10 pb-12 flex flex-col justify-between min-h-[220px]">
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 leading-relaxed uppercase italic">
+                            Biometric rate of change protocol. Positive values indicate active forager influx and enzymatic dehydration.
                         </p>
-                        <div className="h-6 w-full bg-neutral-100 border-2 border-[#064e3b] relative overflow-hidden">
-                            <motion.div
-                                className="absolute inset-y-0 left-0 bg-[#10b981]"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(100, Math.max(0, (dwdt + 0.5) * 100))}%` }}
-                            />
-                        </div>
-                        <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-[#064e3b]/30">
-                            <span>Consumption</span>
-                            <span>Forage Influx</span>
+                        <div className="space-y-4 mt-8">
+                            <div className="h-4 w-full bg-slate-100 dark:bg-white/5 rounded-full relative overflow-hidden ring-4 ring-slate-50 dark:ring-white/5">
+                                <motion.div
+                                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(100, Math.max(0, (dwdt + 0.5) * 100))}%` }}
+                                    transition={{ type: 'spring', damping: 20 }}
+                                />
+                            </div>
+                            <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 italic">
+                                <span>Net Consumption</span>
+                                <span>Nectar Influx</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Season Yield Card */}
-                <Card className="rounded-none border-4 border-[#10b981] bg-[#064e3b] shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] flex flex-col">
-                    <CardHeader className="p-8 border-b-4 border-white/10">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Projected Season Yield</p>
-                        <CardTitle className="text-5xl font-black text-[#facc15] tabular-nums leading-none">
-                            {totalYield} <span className="text-xl text-white">kg</span>
+                <Card className="rounded-[2.5rem] border-none bg-neutral-900 dark:bg-emerald-600 shadow-2xl shadow-black/10 overflow-hidden relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardHeader className="p-10 pb-6 border-b border-white/5 relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 italic">Integrative Season Total</p>
+                        <CardTitle className="text-6xl font-black text-amber-500 dark:text-amber-300 tracking-tighter italic tabular-nums leading-none">
+                            {totalYield}<span className="text-2xl ml-1 text-white opacity-40 not-italic">kg</span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-8 flex flex-col justify-between flex-1">
+                    <CardContent className="p-10 flex flex-col justify-between min-h-[220px] relative z-10">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <Zap className="w-4 h-4 text-[#facc15]" />
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">ROI Confirmed</span>
+                                <Zap className="w-5 h-5 text-amber-500 group-hover:scale-125 transition-transform" />
+                                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] italic">ROI Audit Confirmed</span>
                             </div>
-                            <p className="text-[10px] font-bold text-white/60 uppercase leading-snug">
-                                Value calculated via definite integral of all positive daily weight dynamics. Final justification for premium pricing.
+                            <p className="text-[10px] font-medium text-white/40 uppercase leading-relaxed italic">
+                                Value extrapolated via trapezoidal integration of periodic biomass shifts. Primary certification for premium pollination tariffs.
                             </p>
                         </div>
-                        <Button variant="outline" className="w-full mt-6 h-12 rounded-none border-4 border-[#facc15] bg-[#facc15] text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-[#064e3b] transition-none shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] active:translate-x-1 active:translate-y-1 active:shadow-none">
-                            Export ROI Certificate
+                        <Button className="w-full mt-8 h-16 rounded-2xl bg-white dark:bg-white text-neutral-900 hover:bg-neutral-100 dark:hover:bg-amber-100 font-black uppercase text-xs tracking-widest shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-3 border-none">
+                            <Download className="w-4 h-4" />
+                            Certify Audit
                         </Button>
                     </CardContent>
                 </Card>
 
                 {/* Alert Card */}
                 <Card className={cn(
-                    "rounded-none border-4 overflow-hidden shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]",
-                    isAlert ? "border-red-500 bg-red-50 animate-pulse" : "border-[#064e3b] bg-white opacity-50"
+                    "rounded-[2.5rem] border overflow-hidden shadow-2xl transition-all duration-700",
+                    isAlert
+                        ? "border-red-500/50 bg-red-500/5 dark:bg-red-500/10 shadow-red-500/10 animate-pulse"
+                        : "border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-black/5 opacity-60"
                 )}>
-                    <CardHeader className="p-8">
+                    <CardHeader className="p-10">
                         <div className="flex justify-between items-start">
-                            <AlertTriangle className={cn("w-10 h-10", isAlert ? "text-red-500" : "text-[#064e3b]/20")} />
-                            <Badge className={cn("rounded-none px-3 font-black", isAlert ? "bg-red-500" : "bg-neutral-200")}>CRITICAL</Badge>
+                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border transition-all", isAlert ? "bg-red-500 text-white border-red-400" : "bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-white/10 border-slate-100 dark:border-white/10")}>
+                                <AlertTriangle className="w-8 h-8" />
+                            </div>
+                            <Badge className={cn("rounded-full px-4 py-1.5 font-black text-[9px] uppercase tracking-widest border-none", isAlert ? "bg-red-500 text-white" : "bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-white/20")}>
+                                SECURE
+                            </Badge>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-8 mt-4">
-                        <h3 className="text-xl font-black uppercase tracking-tighter text-[#064e3b]">Swarm / Theft Detection</h3>
-                        Monitoring for step-function decreases (dW {'<'} -1.5 kg). Pairs with internal acoustics for 100% event confidence.
+                    <CardContent className="p-10 pt-4">
+                        <h3 className={cn("text-2xl font-black uppercase tracking-tighter italic mb-4", isAlert ? "text-red-600 dark:text-red-400" : "text-slate-900 dark:text-white")}>
+                            Theft Mitigation
+                        </h3>
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-white/20 uppercase leading-relaxed italic">
+                            Continuous monitoring for anomalous mass reduction events. Synced with spectral acoustic signatures for secondary validation.
+                        </p>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Performance Graphs */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
                 <WeightDynamicsChart />
                 <AcousticWaveform />
             </div>
 
             {/* Historical Logs */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                <CardHeader className="p-10 border-b-4 border-[#064e3b]/5 flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Audit Ledger</CardTitle>
-                        <p className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest px-1">Raw telemetry frames captured via Gateway mesh</p>
+            <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden">
+                <CardHeader className="p-12 border-b border-slate-100 dark:border-white/10 flex flex-row items-center justify-between bg-slate-50/50 dark:bg-white/[0.02]">
+                    <div className="space-y-1">
+                        <CardTitle className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Audit Ledger</CardTitle>
+                        <p className="text-[10px] font-black uppercase text-slate-400 dark:text-white/20 tracking-[0.3em] px-1 italic">Industrial Telemetry Archive · Raw Mesh Frames</p>
                     </div>
-                    <History className="w-6 h-6 text-[#064e3b]/20" />
+                    <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-400">
+                        <History className="w-6 h-6" />
+                    </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="divide-y-2 divide-[#064e3b]/5">
+                    <div className="divide-y divide-slate-50 dark:divide-white/5">
                         {data.slice(-5).reverse().map((row, idx) => (
-                            <div key={idx} className="p-6 flex items-center justify-between hover:bg-[#10b981]/[0.02] transition-colors group">
-                                <div className="flex gap-10">
-                                    <div className="w-24">
-                                        <span className="text-[9px] font-black text-[#064e3b]/30 uppercase block mb-1">Timestamp</span>
-                                        <span className="text-sm font-bold text-[#064e3b] tabular-nums">{row.time}</span>
+                            <div key={idx} className="px-12 py-8 flex items-center justify-between hover:bg-amber-500/[0.02] dark:hover:bg-amber-500/[0.03] transition-colors group">
+                                <div className="flex gap-16">
+                                    <div className="min-w-[120px]">
+                                        <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase block mb-2 italic tracking-widest text-left">Sector Timestamp</span>
+                                        <span className="text-sm font-black text-slate-600 dark:text-white/60 tabular-nums uppercase">{row.time}</span>
                                     </div>
-                                    <div>
-                                        <span className="text-[9px] font-black text-[#064e3b]/30 uppercase block mb-1">Gross Mass</span>
-                                        <span className="text-sm font-black text-[#064e3b] tabular-nums">{row.weight} kg</span>
+                                    <div className="min-w-[100px]">
+                                        <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase block mb-2 italic tracking-widest text-left">Gross Mass</span>
+                                        <span className="text-lg font-black text-slate-900 dark:text-white tabular-nums italic">{row.weight} kg</span>
                                     </div>
-                                    <div>
-                                        <span className="text-[9px] font-black text-[#064e3b]/30 uppercase block mb-1">Flux Speed</span>
-                                        <span className={cn("text-sm font-black tabular-nums", row.dwdt > 0 ? "text-[#10b981]" : "text-red-500")}>
+                                    <div className="min-w-[100px]">
+                                        <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase block mb-2 italic tracking-widest text-left">Velocity Vector</span>
+                                        <span className={cn("text-lg font-black tabular-nums italic", row.dwdt > 0 ? "text-emerald-500" : "text-red-500")}>
                                             {row.dwdt > 0 ? '+' : ''}{row.dwdt.toFixed(3)}
                                         </span>
                                     </div>
                                 </div>
-                                <Button variant="ghost" className="rounded-none opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <ChevronRight className="w-5 h-5 text-[#064e3b]" />
-                                </Button>
+                                <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-amber-500 group-hover:text-white group-hover:border-amber-400 transition-all cursor-pointer">
+                                    <ChevronRight className="w-6 h-6" />
+                                </div>
                             </div>
                         ))}
                     </div>
-                    <div className="p-8 border-t-4 border-[#064e3b]/5 bg-[#064e3b]/[0.01]">
-                        <Button variant="outline" className="h-12 px-8 rounded-none border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest gap-3">
-                            <Download className="w-4 h-4" />
-                            Download Full Telemetry Archive (.CSV)
+                    <div className="p-12 border-t border-slate-100 dark:border-white/10 bg-slate-50/30 dark:bg-white/[0.01]">
+                        <Button variant="ghost" className="h-16 px-12 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-500 dark:text-white/40 hover:text-amber-600 font-black uppercase text-[10px] tracking-widest gap-4 shadow-sm transition-all group/dl">
+                            <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            Download Master Telemetry Bundle (.CSV)
                         </Button>
                     </div>
                 </CardContent>

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Apiary, Hive } from '@/services/beeyieldService';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Label } from "@/components/ui/label";
+import { Cpu, Database, Network, ShieldCheck, RefreshCw } from 'lucide-react';
 
 interface AddDeviceModalProps {
     open: boolean;
@@ -37,9 +38,6 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
         setIsSubmitting(true);
         try {
-            // In a real app, this would be an API call
-            // beeyieldService.createDevice({ ... })
-
             const newDevice = {
                 id: Math.random().toString(36).substr(2, 9),
                 device_code: deviceCode,
@@ -63,8 +61,10 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
             setSelectedApiaryId("");
             setSelectedHiveId("");
             onOpenChange(false);
+            toast.success("Device successfully integrated into the registry");
         } catch (error) {
             console.error(error);
+            toast.error("Integration failed");
         } finally {
             setIsSubmitting(false);
         }
@@ -72,38 +72,47 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[700px] bg-white border-4 border-black rounded-none p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] animate-none">
-                <DialogHeader className="p-0 space-y-4 border-b-4 border-black pb-8">
-                    <DialogTitle className="text-5xl font-black text-black uppercase tracking-tighter">
-                        Add Device
-                    </DialogTitle>
-                    <DialogDescription className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest">
-                        Connect a new IOT device to your registry.
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-[700px] bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-[3rem] p-0 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                <div className="bg-slate-50 dark:bg-white/[0.02] px-12 py-10 border-b border-slate-100 dark:border-white/5">
+                    <DialogHeader className="p-0 space-y-3">
+                        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-900/40 w-fit">
+                            <Cpu className="w-3.5 h-3.5" />
+                            Hardware Integration Logic
+                        </div>
+                        <DialogTitle className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">
+                            Initialize <span className="text-amber-500">Node</span>
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-400 dark:text-white/20 font-black uppercase text-[10px] tracking-[0.3em] italic">
+                            Pairing industrial IOT hardware with current sector registry.
+                        </DialogDescription>
+                    </DialogHeader>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-10 py-10">
+                <form onSubmit={handleSubmit} className="p-12 space-y-10">
                     <div className="grid grid-cols-2 gap-10">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Serial Number</Label>
-                            <Input
-                                placeholder="E.G. HUB_442"
-                                value={deviceCode}
-                                onChange={(e) => setDeviceCode(e.target.value)}
-                                className="h-14 border-2 border-black rounded-none bg-white font-bold text-xs uppercase focus:bg-neutral-50 transition-none focus:ring-0"
-                            />
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Hardware Signature ID</Label>
+                            <div className="relative">
+                                <Network className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
+                                <Input
+                                    placeholder="E.G. HUB-KIB-001"
+                                    value={deviceCode}
+                                    onChange={(e) => setDeviceCode(e.target.value)}
+                                    className="h-14 pl-12 border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-black/20 font-black text-xs uppercase tracking-widest focus-visible:ring-amber-500/20"
+                                />
+                            </div>
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Device Type</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Node Classification</Label>
                             <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
-                                <SelectTrigger className="h-14 rounded-none bg-white border-2 border-black text-xs font-bold uppercase focus:ring-0 transition-none">
+                                <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-[10px] font-black uppercase tracking-widest focus:ring-amber-500/20">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-none border-2 border-black shadow-none bg-white">
-                                    <SelectItem value="inland" className="text-[10px] font-bold uppercase p-3 border-b border-black/10">Hive Hub</SelectItem>
-                                    <SelectItem value="infield" className="text-[10px] font-bold uppercase p-3 border-b border-black/10">Field Station</SelectItem>
-                                    <SelectItem value="disease" className="text-[10px] font-bold uppercase p-3 border-b border-black/10">Disease Monitor</SelectItem>
+                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
+                                    <SelectItem value="inland" className="text-[10px] font-black uppercase p-4 tracking-widest">Master Hive Hub</SelectItem>
+                                    <SelectItem value="infield" className="text-[10px] font-black uppercase p-4 tracking-widest">Regional Station</SelectItem>
+                                    <SelectItem value="disease" className="text-[10px] font-black uppercase p-4 tracking-widest">Spectral Monitor</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -111,14 +120,14 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
                     <div className="grid grid-cols-2 gap-10">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Location</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Sector Assignment</Label>
                             <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                <SelectTrigger className="h-14 rounded-none bg-white border-2 border-black text-xs font-bold uppercase focus:ring-0 transition-none">
-                                    <SelectValue placeholder="SELECT LOCATION" />
+                                <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-[10px] font-black uppercase tracking-widest focus:ring-amber-500/20">
+                                    <SelectValue placeholder="SELECT SECTOR" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-none border-2 border-black shadow-none bg-white">
+                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
                                     {apiaries.map(apiary => (
-                                        <SelectItem key={apiary.id} value={apiary.id} className="text-[10px] font-bold uppercase p-3 border-b border-black/10">
+                                        <SelectItem key={apiary.id} value={apiary.id} className="text-[10px] font-black uppercase p-4 tracking-widest">
                                             {apiary.name}
                                         </SelectItem>
                                     ))}
@@ -127,18 +136,18 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Hive</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Target Registry ID</Label>
                             <Select
                                 value={selectedHiveId}
                                 onValueChange={setSelectedHiveId}
                                 disabled={!selectedApiaryId}
                             >
-                                <SelectTrigger className="h-14 rounded-none bg-white border-2 border-black text-xs font-bold uppercase focus:ring-0 transition-none">
+                                <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-[10px] font-black uppercase tracking-widest focus:ring-amber-500/20 disabled:opacity-30">
                                     <SelectValue placeholder="SELECT HIVE" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-none border-2 border-black shadow-none bg-white">
+                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
                                     {filteredHives.map(hive => (
-                                        <SelectItem key={hive.id} value={hive.id} className="text-[10px] font-bold uppercase p-3 border-b border-black/10">
+                                        <SelectItem key={hive.id} value={hive.id} className="text-[10px] font-black uppercase p-4 tracking-widest">
                                             {hive.hive_code}
                                         </SelectItem>
                                     ))}
@@ -148,32 +157,38 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                     </div>
 
                     <div className="space-y-3">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Device Name</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Human-Readable Alias</Label>
                         <Input
                             id="device-name"
                             name="device_name"
                             value={deviceName}
                             onChange={(e) => setDeviceName(e.target.value)}
-                            placeholder="E.G. NORTH_HUB_01"
-                            className="h-14 rounded-none bg-white border-2 border-black text-xs font-bold uppercase px-4 focus:ring-0 outline-none transition-none"
+                            placeholder="E.G. ALPHA_GATEWAY_PRIME"
+                            className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-xs uppercase tracking-widest px-6 focus-visible:ring-amber-500/20"
                         />
                     </div>
 
-                    <div className="flex justify-end gap-6 pt-10 border-t-4 border-black">
-                        <button
+                    <div className="flex justify-end gap-6 pt-10 border-t border-slate-100 dark:border-white/5">
+                        <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => onOpenChange(false)}
-                            className="h-14 px-10 border-2 border-black bg-white hover:bg-neutral-100 transition-none font-bold text-[10px] uppercase tracking-widest"
+                            className="h-16 px-10 rounded-2xl font-black text-[11px] uppercase tracking-widest text-slate-400 hover:text-red-500 hover:bg-red-500/5 transition-all"
                         >
-                            Discard
-                        </button>
-                        <button
+                            Abort Process
+                        </Button>
+                        <Button
                             type="submit"
                             disabled={isSubmitting || !deviceCode}
-                            className="h-14 px-12 border-2 border-black bg-black text-white font-black text-[10px] uppercase tracking-widest hover:bg-[#FF4F00] transition-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                            className="h-16 px-14 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-black/10 dark:shadow-amber-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-4 border-none"
                         >
-                            {isSubmitting ? "WAIT..." : "Add Device"}
-                        </button>
+                            {isSubmitting ? (
+                                <RefreshCw className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <ShieldCheck className="w-5 h-5 text-amber-200" />
+                            )}
+                            Initialize Node
+                        </Button>
                     </div>
                 </form>
             </DialogContent>

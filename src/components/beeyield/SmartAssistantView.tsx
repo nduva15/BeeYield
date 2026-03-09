@@ -1,33 +1,13 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-    MessageSquare,
-    Send,
-    Plus,
-    Bot,
-    Trash2,
-    Paperclip,
-    Image as ImageIcon,
-    Link as LinkIcon,
-    Mic,
-    ShieldCheck,
-    Globe,
-    Database,
-    Cpu,
-    Sparkles,
-    Zap,
-    Hexagon
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Logo from '@/assets/Logo.png';
-import { aiService, ChatMessage } from '@/services/aiService';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-
-
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History } from "lucide-react";
+import { toast } from "sonner";
+import Logo from "@/assets/Logo.png";
+import { useTheme } from "@/hooks/use-theme";
+import { useDeviceId } from "@/hooks/use-device-id";
+import { useVoiceInput } from "@/hooks/use-voice-input";
+import { supabase } from "@/integrations/supabase/client";
+import ChatHistory, { type Conversation } from "@/components/ChatHistory";
+import { aiService, type ChatMessage as AIChatMessage } from "@/services/aiService";
 
 interface AIAssistantViewProps {
     onTabChange: (tab: string, message?: string) => void;
@@ -35,590 +15,526 @@ interface AIAssistantViewProps {
     onInitialMessageConsumed?: () => void;
 }
 
-interface Chat {
+type Message = {
     id: string;
-    title: string;
-    date: string;
-    preview: string;
-    messages: Message[];
-}
-
-interface Message {
-    id: string;
-    role: 'user' | 'assistant';
+    role: "user" | "assistant";
     content: string;
-    timestamp: string;
-    sources?: Array<{ type: string; name: string }>;
-    suggestions?: string[];
+    imagePreview?: string;
+    audioName?: string;
+};
+
+const SUGGESTIONS = [
+    "What are all types of honey bees and their subspecies?",
+    "Explain Varroa destructor — lifecycle, damage, and all treatment options",
+    "Compare all 300 plus honey varieties and their medicinal properties",
+    "What causes Colony Collapse Disorder and what are the solutions?",
+    "Precision pollination data — which crops need bees and economic value?",
+    "List every bee disease with cause, symptoms, and cure",
+    "What are world records related to bees, honey, and hives?",
+    "Explain bee venom therapy and apitherapy research",
+    "How does the waggle dance work and what did Karl von Frisch discover?",
+    "What are the latest research findings on bee cognition and intelligence?",
+    "Which bee species are endangered and why?",
+    "Compare all hive types: Langstroth, Warré, Flow Hive, Top-Bar and more",
+];
+
+function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
-const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
-    const [chats, setChats] = React.useState<Chat[]>([]);
-    const [selectedChat, setSelectedChat] = React.useState<string | null>(null);
-    const [messages, setMessages] = React.useState<Message[]>([]);
-    const [inputValue, setInputValue] = React.useState('');
-    const [showWelcome, setShowWelcome] = React.useState(true);
-    const [systemStatus, setSystemStatus] = React.useState<{ status: string, capabilities?: string[] }>({ status: 'online' });
-    const { language, t } = useLanguage();
-    const navigate = useNavigate();
+export default function SmartAssistantView({ onTabChange, initialMessage, onInitialMessageConsumed }: AIAssistantViewProps) {
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [input, setInput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const { theme, toggleTheme } = useTheme();
+    const deviceId = useDeviceId();
 
-    React.useEffect(() => {
-        const checkStatus = async () => {
-            const status = await aiService.getStatus();
-            setSystemStatus(status);
-        };
-        checkStatus();
+    // Conversation state
+    const [conversationId, setConversationId] = useState<string | null>(null);
+    const [conversations, setConversations] = useState<Conversation[]>([]);
+    const [historyOpen, setHistoryOpen] = useState(false);
+
+    // Media state
+    const [attachedImage, setAttachedImage] = useState<File | null>(null);
+    const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+    const [attachedAudio, setAttachedAudio] = useState<File | null>(null);
+
+    const bottomRef = useRef<HTMLDivElement>(null);
+    const imageInputRef = useRef<HTMLInputElement>(null);
+    const audioInputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    // Voice input
+    const handleVoiceResult = useCallback((text: string) => {
+        setInput((prev) => (prev ? prev + " " + text : text));
+        toast.success("Voice captured");
     }, []);
+    const { isListening, isSupported: voiceSupported, toggleListening } = useVoiceInput(handleVoiceResult);
 
-    React.useEffect(() => {
-        const loadSessions = async () => {
-            const sessions = await aiService.getSessions();
-            setChats(sessions.map(s => ({
-                id: s.id,
-                title: s.title,
-                date: new Date(s.updated_at || s.created_at).toLocaleDateString(),
-                preview: '...',
-                messages: []
-            })));
-        };
-        loadSessions();
-    }, []);
+    // Load conversations on mount
+    useEffect(() => {
+        loadConversations();
+    }, [deviceId]);
 
-    React.useEffect(() => {
-        if (initialMessage) {
-            setInputValue(initialMessage);
-            onInitialMessageConsumed?.();
-            const timer = setTimeout(() => {
-                const sendButton = document.getElementById('send-ai-message');
-                if (sendButton) sendButton.click();
-            }, 500);
-            return () => clearTimeout(timer);
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
+    const loadConversations = async () => {
+        const { data } = await supabase
+            .from("conversations")
+            .select("id, title, updated_at")
+            .eq("device_id", deviceId)
+            .order("updated_at", { ascending: false })
+            .limit(50);
+        if (data) setConversations(data);
+    };
+
+    const loadConversation = async (id: string) => {
+        const { data } = await supabase
+            .from("chat_messages")
+            .select("id, role, content, created_at")
+            .eq("conversation_id", id)
+            .order("created_at", { ascending: true });
+        if (data) {
+            setMessages(data.map((m) => ({ id: m.id, role: m.role as "user" | "assistant", content: m.content })));
+            setConversationId(id);
         }
-    }, [initialMessage, onInitialMessageConsumed]);
+    };
 
-    const switchChat = async (chatId: string) => {
-        const chat = chats.find(c => c.id === chatId);
-        if (chat) {
-            setSelectedChat(chatId);
-            setShowWelcome(false);
-            const data = await aiService.getSessionMessages(chatId);
-            if (data && data.messages) {
-                const msgs: Message[] = data.messages.map(m => ({
-                    id: m.id,
-                    role: m.role,
-                    content: m.content,
-                    timestamp: new Date(m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-                    sources: typeof m.sources === 'string' ? JSON.parse(m.sources) : m.sources,
-                    suggestions: typeof m.suggestions === 'string' ? JSON.parse(m.suggestions) : m.suggestions
-                }));
-                setMessages(msgs);
-            } else {
-                setMessages(chat.messages || []);
+    const saveMessage = async (convId: string, role: string, content: string) => {
+        await supabase.from("chat_messages").insert({ conversation_id: convId, role, content });
+    };
+
+    const createConversation = async (title: string): Promise<string> => {
+        const { data } = await supabase
+            .from("conversations")
+            .insert({ device_id: deviceId, title })
+            .select("id")
+            .single();
+        if (!data) throw new Error("Failed to create conversation");
+        loadConversations();
+        return data.id;
+    };
+
+    const clearAttachments = useCallback(() => {
+        setAttachedImage(null);
+        setImagePreviewUrl(null);
+        setAttachedAudio(null);
+        if (imageInputRef.current) imageInputRef.current.value = "";
+        if (audioInputRef.current) audioInputRef.current.value = "";
+    }, []);
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 10 * 1024 * 1024) { toast.error("Image must be under 10 MB"); return; }
+        setAttachedImage(file);
+        setImagePreviewUrl(URL.createObjectURL(file));
+    };
+
+    const handleAudioSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 20 * 1024 * 1024) { toast.error("Audio must be under 20 MB"); return; }
+        setAttachedAudio(file);
+        setAttachedImage(null);
+        setImagePreviewUrl(null);
+        toast.success(`Audio attached: ${file.name}`);
+    };
+
+    const send = async (text: string) => {
+        if (!text.trim() || isLoading) return;
+
+        let imgBase64: string | null = null;
+        let imgType: string | null = null;
+        let audioBase64: string | null = null;
+        let audioType: string | null = null;
+
+        if (attachedImage) {
+            imgBase64 = await fileToBase64(attachedImage);
+            imgType = attachedImage.type;
+        }
+        if (attachedAudio) {
+            audioBase64 = await fileToBase64(attachedAudio);
+            audioType = attachedAudio.type;
+        }
+
+        const userMsg: Message = {
+            id: Date.now().toString(),
+            role: "user",
+            content: text,
+            imagePreview: imagePreviewUrl || undefined,
+            audioName: attachedAudio?.name,
+        };
+
+        const newMessages = [...messages, userMsg];
+        setMessages(newMessages);
+        setInput("");
+        clearAttachments();
+        setIsLoading(true);
+
+        // Create or reuse conversation
+        let convId = conversationId;
+        if (!convId) {
+            try {
+                const title = text.length > 50 ? text.slice(0, 50) + "…" : text;
+                convId = await createConversation(title);
+                setConversationId(convId);
+            } catch {
+                toast.error("Failed to save conversation");
             }
         }
-    };
 
-    const deleteChat = (e: React.MouseEvent, chatId: string) => {
-        e.stopPropagation();
-        const updatedChats = chats.filter(c => c.id !== chatId);
-        setChats(updatedChats);
-        if (selectedChat === chatId) {
-            setSelectedChat(null);
-            setMessages([]);
-            setShowWelcome(true);
-        }
-    };
+        // Save user message
+        if (convId) saveMessage(convId, "user", text);
 
-    const topicCategories = [
-        { icon: '🌸', label: t('topic_pollination'), color: 'bg-beeyield-forest/5' },
-        { icon: '📋', label: t('topic_blockchain'), color: 'bg-beeyield-forest/5' },
-        { icon: '🩺', label: t('topic_bee_health'), color: 'bg-beeyield-forest/5' },
-        { icon: '🛰️', label: t('topic_iot_hive'), color: 'bg-beeyield-forest/5' },
-        { icon: '🎓', label: t('topic_training'), color: 'bg-beeyield-forest/5' },
-        { icon: '🌍', label: t('topic_global_network'), color: 'bg-beeyield-forest/5' },
-    ];
-
-    const handleNewChat = () => {
-        const newChat: Chat = {
-            id: Date.now().toString(),
-            title: t('new_conversation_title'),
-            date: new Date().toLocaleDateString(),
-            preview: t('start_new_conversation'),
-            messages: []
-        };
-        setChats([newChat, ...chats]);
-        setSelectedChat(newChat.id);
-        setMessages([]);
-        setShowWelcome(false);
-    };
-
-    const handleSendMessage = async () => {
-        if (!inputValue.trim()) return;
-
-        const userMessage: Message = {
-            id: Date.now().toString(),
-            role: 'user',
-            content: inputValue,
-            timestamp: new Date().toLocaleTimeString()
-        };
-
-        const updatedMessages = [...messages, userMessage];
-        setMessages(updatedMessages);
-
-        const currentId = selectedChat || Date.now().toString();
-
-        if (!selectedChat) {
-            const newChat: Chat = {
-                id: currentId,
-                title: inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue,
-                date: new Date().toLocaleDateString(),
-                preview: inputValue,
-                messages: updatedMessages
-            };
-            setChats([newChat, ...chats]);
-            setSelectedChat(currentId);
-        } else {
-            setChats(prev => prev.map(c => {
-                if (c.id === selectedChat) {
-                    const isNewTitle = c.title === t('new_conversation_title');
-                    return {
-                        ...c,
-                        title: isNewTitle ? (inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue) : c.title,
-                        preview: inputValue,
-                        messages: updatedMessages
-                    };
-                }
-                return c;
-            }));
-        }
-
-        setInputValue('');
-        setShowWelcome(false);
-
-        const history: ChatMessage[] = updatedMessages.map(m => ({
-            role: m.role,
-            content: m.content
-        }));
+        const history: AIChatMessage[] = newMessages.map((m) => ({ role: m.role, content: m.content }));
+        let assistantContent = "";
 
         try {
-            const aiData = await aiService.chat(inputValue, history, language, selectedChat || undefined);
+            await aiService.chat(
+                text,
+                history,
+                "EN",
+                convId || undefined,
+                (chunk) => {
+                    assistantContent += chunk;
+                    setMessages((p) => {
+                        const last = p[p.length - 1];
+                        if (last?.role === "assistant") {
+                            return p.map((m, i) => (i === p.length - 1 ? { ...m, content: assistantContent } : m));
+                        }
+                        return [...p, { id: (Date.now() + 1).toString(), role: "assistant" as const, content: assistantContent }];
+                    });
+                },
+                {
+                    imageBase64: imgBase64,
+                    imageType: imgType,
+                    audioBase64: audioBase64,
+                    audioType: audioType
+                }
+            );
 
-            const aiMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                role: 'assistant',
-                content: aiData.response,
-                timestamp: new Date().toLocaleTimeString(),
-                sources: aiData.sources,
-                suggestions: aiData.suggestions
-            };
-
-            setMessages(prev => [...prev, aiMessage]);
-
-            // Handle if a new session was created on backend
-            if (aiData.session_id && !selectedChat) {
-                setSelectedChat(aiData.session_id);
-                setChats(prev => prev.map(c =>
-                    c.id === currentId ? { ...c, id: aiData.session_id!, preview: aiData.response.substring(0, 50) + '...' } : c
-                ));
-            } else {
-                setChats(prev => prev.map(c =>
-                    c.id === (selectedChat || currentId)
-                        ? { ...c, messages: [...c.messages, aiMessage], preview: aiData.response.substring(0, 50) + '...' }
-                        : c
-                ));
+            setIsLoading(false);
+            // Save assistant message
+            if (convId && assistantContent) {
+                saveMessage(convId, "assistant", assistantContent);
+                // Update conversation timestamp
+                supabase.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", convId).then(() => loadConversations());
             }
-        } catch (error) {
-            const errorMessage: Message = {
-                id: (Date.now() + 2).toString(),
-                role: 'assistant',
-                content: t('error_ai_thinking'),
-                timestamp: new Date().toLocaleTimeString()
-            };
-            setMessages(prev => [...prev, errorMessage]);
+        } catch {
+            toast.error("Failed to connect to Beeyield AI");
+            setIsLoading(false);
         }
     };
 
-    const handleTopicClick = (topic: string) => {
-        setInputValue(topic);
-        setShowWelcome(false);
-        setTimeout(() => {
-            const sendButton = document.getElementById('send-ai-message');
-            if (sendButton) sendButton.click();
-        }, 100);
+    const handleNewChat = () => {
+        resetChat();
+        setHistoryOpen(false);
     };
 
-    const FormattedMessage: React.FC<{ content: string, isUser: boolean, sources?: Message['sources'] }> = ({ content, isUser, sources }) => {
-        if (isUser) return <p className="text-[15px] leading-relaxed font-medium">{content}</p>;
-
-        const processBoldAndLinks = (text: string) => {
-            const boldParts = text.split(/(\*\*[^*]+\*\*|\[.*?\]\(.*?\))/g);
-            return boldParts.map((part, i) => {
-                if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i} className="font-black text-black">{part.slice(2, -2)}</strong>;
-                }
-                const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
-                if (linkMatch) {
-                    return (
-                        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="border-b-2 border-black font-black hover:bg-black hover:text-white transition-none">
-                            {linkMatch[1]}
-                        </a>
-                    );
-                }
-                return part;
-            });
-        };
-
-        const processInternalLinks = (text: string) => {
-            // Updated regex to be more inclusive of allowed URL characters
-            const parts = text.split(/(\[Insert Link: beeyield\.com[a-zA-Z0-9\-\/\?\=\&\._@]+\])/g);
-
-            return parts.map((part, j) => {
-                const match = part.match(/\[Insert Link: beeyield\.com([a-zA-Z0-9\-\/\?\=\&\._@]+)\]/);
-                if (match) {
-                    const path = match[1];
-                    // Create a nicer display name: /bee-health -> BEE HEALTH
-                    const displayName = path.split('?')[0].split('/').filter(Boolean).pop()?.replace(/-/g, ' ').toUpperCase() || 'DOCUMENT';
-
-                    return (
-                        <button
-                            key={j}
-                            onClick={() => {
-                                if (path.startsWith('/')) {
-                                    navigate(path);
-                                } else {
-                                    window.open(path, '_blank');
-                                }
-                            }}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-black text-white font-black text-[10px] rounded-none uppercase tracking-widest hover:bg-[#FF4F00] transition-all mx-1 align-middle shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
-                        >
-                            <LinkIcon className="h-3 w-3" />
-                            {displayName}
-                        </button>
-                    );
-                }
-                return <span key={j}>{processBoldAndLinks(part)}</span>;
-            });
-        };
-
-        const lines = content.split('\n');
-        let inTakeaways = false;
-        let inReferences = false;
-
-        return (
-            <div className="text-[15px] leading-[1.8] space-y-6 text-black">
-                {lines.map((line, i) => {
-                    const trimmedLine = line.trim();
-                    if (!trimmedLine) return <div key={i} className="h-2" />;
-
-                    // Detect start of sections
-                    if (trimmedLine.toLowerCase().includes('key takeaways')) {
-                        inTakeaways = true;
-                        inReferences = false;
-                    }
-                    if (trimmedLine.includes('### 📚 References') || (trimmedLine.startsWith('---') && lines[i + 1]?.includes('References'))) {
-                        inReferences = true;
-                        inTakeaways = false;
-                    }
-
-                    // Section: References (Brutalist compact)
-                    if (inReferences) {
-                        if (trimmedLine.startsWith('###')) {
-                            return <h4 key={i} className="text-xs font-black uppercase tracking-[0.2em] mt-10 mb-4 bg-black text-white px-4 py-2 inline-block">Verification Bibliography</h4>;
-                        }
-                        if (trimmedLine.startsWith('---')) return null;
-                        return (
-                            <div key={i} className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 border-l-2 border-neutral-200 pl-4 py-1">
-                                {processInternalLinks(trimmedLine)}
-                            </div>
-                        );
-                    }
-
-                    // Section: Key Takeaways (Brutalist Callout)
-                    if (inTakeaways) {
-                        if (trimmedLine.toLowerCase().includes('key takeaways')) {
-                            return <h4 key={i} className="text-xl font-black uppercase tracking-tighter mt-10 mb-6 flex items-center gap-4"><Sparkles className="w-5 h-5 text-[#FF4F00]" /> Intelligence Summary</h4>;
-                        }
-                        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-                            return (
-                                <div key={i} className="bg-neutral-100 border-l-8 border-black p-6 mb-4 shadow-[8px_8px_0px_0px_rgba(255,179,0,0.2)]">
-                                    <div className="flex gap-4">
-                                        <div className="w-2 h-2 bg-[#FF4F00] mt-2 shrink-0" />
-                                        <p className="font-bold text-sm tracking-tight">{processInternalLinks(trimmedLine.substring(2))}</p>
-                                    </div>
-                                </div>
-                            );
-                        }
-                        // Stop takeaways if we hit a new heading
-                        if (trimmedLine.startsWith('#')) { inTakeaways = false; }
-                    }
-
-                    // Headings
-                    if (trimmedLine.startsWith('###')) {
-                        return <h4 key={i} className="text-xl font-black uppercase tracking-tighter mt-10 mb-4 border-b-4 border-black pb-2">{trimmedLine.replace('###', '').trim()}</h4>;
-                    }
-                    if (trimmedLine.startsWith('##')) {
-                        return <h3 key={i} className="text-3xl font-black uppercase tracking-tighter mt-14 mb-6 leading-none italic">{trimmedLine.replace('##', '').trim()}</h3>;
-                    }
-                    if (trimmedLine.startsWith('#')) {
-                        return <h2 key={i} className="text-5xl font-black uppercase tracking-tighter mt-20 mb-8 bg-black text-white p-6 inline-block">{trimmedLine.replace('#', '').trim()}</h2>;
-                    }
-
-                    // Standard Lists
-                    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-                        return (
-                            <div key={i} className="flex gap-4 ml-6 items-start group">
-                                <span className="w-1.5 h-1.5 bg-black mt-2.5 transition-all group-hover:bg-[#FF4F00] shrink-0" />
-                                <div className="flex-1">
-                                    {processInternalLinks(trimmedLine.substring(2))}
-                                </div>
-                            </div>
-                        );
-                    }
-
-                    return <div key={i} className="font-medium">{processInternalLinks(line)}</div>;
-                })}
-            </div>
-        );
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        send(input);
     };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            send(input);
+        }
+    };
+
+    const resetChat = () => {
+        setMessages([]);
+        setInput("");
+        setConversationId(null);
+        clearAttachments();
+    };
+
+    const handleDeleteConversation = async (id: string) => {
+        await supabase.from("chat_messages").delete().eq("conversation_id", id);
+        await supabase.from("conversations").delete().eq("id", id);
+        if (conversationId === id) resetChat();
+        loadConversations();
+    };
+
+    const handleRenameConversation = async (id: string, newTitle: string) => {
+        await supabase.from("conversations").update({ title: newTitle }).eq("id", id);
+        loadConversations();
+    };
+
+    useEffect(() => {
+        if (initialMessage) {
+            send(initialMessage);
+            onInitialMessageConsumed?.();
+        }
+    }, [initialMessage]);
 
     return (
-        <div className="flex flex-col animate-in fade-in duration-700 pb-16">
-            {/* Header Area */}
-            <div className="flex items-center justify-between mb-8 border-b-4 border-black pb-6">
-                <div>
-                    <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
-                        Chat
-                    </h1>
-                    <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest mt-1">Status: Online</p>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 border-2 border-black">
-                    <div className="w-2 h-2 bg-black" />
-                    <span className="text-[10px] font-black text-black uppercase tracking-widest">System OK</span>
-                </div>
-            </div>
+        <div className="flex flex-col h-full w-full bg-background honeycomb-bg overflow-hidden relative">
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-honey/10 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr from-honey/10 to-transparent pointer-events-none rotate-180" />
 
-            {/* Clean Hero Area */}
-            <div className="relative mb-12 border-4 border-black bg-black p-12 text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
-                    <div className="space-y-6 max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF4F00] border-2 border-black">
-                            <span className="text-[10px] font-black uppercase tracking-widest">Expert Search</span>
-                        </div>
-                        <h2 className="text-6xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Search <br />Records.
-                        </h2>
-                        <p className="text-neutral-400 font-bold uppercase text-xs tracking-wide leading-relaxed max-w-lg">
-                            Search through hive data, pollination records, and health telemetry.
-                        </p>
+            {/* Chat History Sidebar */}
+            <ChatHistory
+                conversations={conversations}
+                activeId={conversationId}
+                onSelect={loadConversation}
+                onNew={handleNewChat}
+                onDelete={handleDeleteConversation}
+                onRename={handleRenameConversation}
+                isOpen={historyOpen}
+                onClose={() => setHistoryOpen(false)}
+            />
+
+            {/* Header */}
+            <header className="flex-shrink-0 border-b border-border bg-white/50 backdrop-blur-md px-6 py-4 flex items-center justify-between z-10">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setHistoryOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-border hover:border-honey/50 transition-all text-muted-foreground hover:text-foreground bg-muted/30"
+                        title="Chat history"
+                    >
+                        <History className="w-5 h-5" />
+                        <span className="text-xs font-black uppercase tracking-widest">History</span>
+                    </button>
+
+                    <div className="h-8 w-px bg-border mx-2" />
+
+                    <img src={Logo} alt="Beeyield" className="h-10 w-auto" />
+                    <div className="hidden sm:block">
+                        <div className="font-serif text-2xl font-black text-honey leading-none">BeeYield AI</div>
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Global Intelligence Framework</div>
                     </div>
+                </div>
 
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={toggleTheme}
+                        className="w-11 h-11 rounded-2xl border border-border hover:border-honey/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground bg-muted/30"
+                    >
+                        {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
                     <button
                         onClick={handleNewChat}
-                        className="bg-white text-black border-4 border-black px-10 h-16 font-black uppercase tracking-widest text-lg flex items-center justify-center gap-3 transition-none hover:bg-[#FF4F00] hover:text-white"
+                        className="text-xs font-black uppercase tracking-widest text-honey hover:text-honey-deep border border-honey/30 hover:border-honey px-5 py-2.5 rounded-2xl transition-all"
                     >
-                        <Plus className="w-6 h-6 stroke-[3px]" />
                         New Chat
                     </button>
                 </div>
-            </div>
+            </header>
 
-            {/* Main Chat Interface */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 min-h-[700px]">
-                {/* Sidebar - History */}
-                <div className="lg:col-span-3 bg-white border-4 border-black flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                    <div className="p-6 border-b-4 border-black flex items-center justify-between bg-neutral-50">
-                        <div className="flex items-center gap-3">
-                            <MessageSquare className="w-5 h-5 text-black" />
-                            <span className="text-xs font-black uppercase tracking-widest">History</span>
+            {/* Messages area */}
+            <div className="flex-1 overflow-y-auto custom-scroll px-6 py-8 space-y-8 z-0">
+                {messages.length === 0 && (
+                    <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in zoom-in-95 duration-700 max-w-4xl mx-auto w-full pb-20">
+                        <div className="relative mb-8">
+                            <div className="absolute inset-0 bg-honey/20 blur-3xl rounded-full scale-150 animate-pulse" />
+                            <img src={Logo} alt="Beeyield" className="h-24 w-auto relative z-10 opacity-100" />
                         </div>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {chats.length === 0 ? (
-                            <div className="text-center py-20 px-6">
-                                <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">No Logs</p>
-                            </div>
-                        ) : (
-                            chats.map((chat) => (
-                                <div key={chat.id} className="relative group">
-                                    <button
-                                        onClick={() => switchChat(chat.id)}
-                                        className={cn(
-                                            "w-full text-left p-4 border-2 border-black transition-none",
-                                            selectedChat === chat.id
-                                                ? "bg-black text-white"
-                                                : "hover:bg-neutral-50"
-                                        )}
-                                    >
-                                        <div className="flex flex-col gap-1">
-                                            <p className="text-[11px] font-bold uppercase truncate">
-                                                {chat.title}
-                                            </p>
-                                            <p className={cn(
-                                                "text-[8px] font-bold uppercase tracking-widest",
-                                                selectedChat === chat.id ? "text-neutral-400" : "text-neutral-400"
-                                            )}>{chat.date}</p>
-                                        </div>
-                                    </button>
-                                    <button
-                                        onClick={(e) => deleteChat(e, chat.id)}
-                                        className="absolute right-2 top-2 p-1.5 bg-black border border-white text-white opacity-0 group-hover:opacity-100 transition-none hover:bg-red-600"
-                                    >
-                                        <Trash2 className="w-3 h-3" />
-                                    </button>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
 
-                {/* Main Content Area */}
-                <div className="lg:col-span-9 bg-white border-4 border-black flex flex-col shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
-                    <div className="flex-1 overflow-y-auto p-12 bg-neutral-50/50">
-                        {showWelcome ? (
-                            <div className="flex items-center justify-center h-full">
-                                <div className="text-center max-w-xl">
-                                    <div className="w-24 h-24 bg-black flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(255,79,0,1)] mx-auto mb-10">
-                                        <Hexagon className="w-10 h-10 text-white" />
-                                    </div>
-                                    <h3 className="text-5xl font-black text-black uppercase tracking-tighter mb-4">Search</h3>
-                                    <p className="text-neutral-400 font-bold uppercase text-xs tracking-widest mb-12">Search hive records and health telemetry.</p>
+                        <h1 className="font-serif text-6xl font-black text-honey mb-4 tracking-tight">Welcome to BeeYield AI</h1>
+                        <p className="text-muted-foreground max-w-2xl mb-12 text-sm font-medium leading-relaxed uppercase tracking-wide opacity-70">
+                            The world&apos;s most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
+                        </p>
 
-                                    <div className="grid grid-cols-2 gap-6">
-                                        {topicCategories.map((topic, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => handleTopicClick(topic.label)}
-                                                className="p-8 border-2 border-black bg-white text-left hover:bg-[#FF4F00] hover:text-white transition-none group"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-2xl">{topic.icon}</span>
-                                                    <span className="text-[11px] font-black uppercase tracking-widest">{topic.label}</span>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="max-w-4xl mx-auto space-y-10">
-                                {messages.map((message) => (
-                                    <div
-                                        key={message.id}
-                                        className={cn(
-                                            "flex gap-6",
-                                            message.role === 'user' ? "flex-row-reverse" : "flex-row"
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "w-12 h-12 flex items-center justify-center shrink-0 border-4 border-black",
-                                            message.role === 'user' ? "bg-white" : "bg-black"
-                                        )}>
-                                            {message.role === 'user' ? (
-                                                <span className="text-xs font-black text-black">U</span>
-                                            ) : (
-                                                <Bot className="w-6 h-6 text-white" />
-                                            )}
-                                        </div>
-
-                                        <div className={cn(
-                                            "flex-1 p-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
-                                            message.role === 'user'
-                                                ? "bg-neutral-50"
-                                                : "bg-white"
-                                        )}>
-                                            <FormattedMessage content={message.content} isUser={message.role === 'user'} sources={message.sources} />
-
-                                            {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
-                                                <div className="mt-8 pt-6 border-t-2 border-black flex flex-wrap gap-2.5">
-                                                    {message.sources.map((source, idx) => {
-                                                        const getUrl = (type: string) => {
-                                                            const t = (type || 'document').toLowerCase();
-                                                            if (t === 'blockchain') return '/traceability';
-                                                            if (t === 'iot') return '/beeyield-dashboard/meters';
-                                                            if (t === 'research') return '/research-hub';
-                                                            if (t === 'document' || t === 'database') return '/bee-data';
-                                                            return '#';
-                                                        };
-                                                        return (
-
-                                                            <button
-                                                                key={idx}
-                                                                onClick={() => {
-                                                                    const url = getUrl(source.type);
-                                                                    if (url.startsWith('/')) navigate(url);
-                                                                }}
-                                                                className="flex items-center gap-2 px-3 py-1.5 bg-black border-2 border-black hover:bg-[#FF4F00] transition-none group"
-                                                            >
-                                                                <div className="w-1.5 h-1.5 bg-white" />
-                                                                <span className="text-[8px] font-black text-white uppercase tracking-widest">{source.name}</span>
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-
-                                            {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && (
-                                                <div className="mt-8 flex flex-wrap gap-2">
-                                                    {message.suggestions.map((suggestion, idx) => (
-                                                        <button
-                                                            key={idx}
-                                                            onClick={() => handleTopicClick(suggestion)}
-                                                            className="px-4 py-2 border-2 border-black bg-white text-black text-[9px] font-bold uppercase tracking-widest hover:bg-[#FF4F00] hover:text-white transition-none"
-                                                        >
-                                                            {suggestion}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            <div className="mt-6 flex items-center justify-between border-t-2 border-black pt-4">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-neutral-400">{message.timestamp}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Chat Input Area */}
-                    <div className="p-10 bg-white border-t-4 border-black">
-                        <div className="max-w-4xl mx-auto flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" className="w-14 h-14 border-2 border-black rounded-none text-black hover:bg-neutral-100 transition-none">
-                                    <Paperclip className="w-6 h-6" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="w-14 h-14 border-2 border-black rounded-none text-black hover:bg-neutral-100 transition-none">
-                                    <ImageIcon className="w-6 h-6" />
-                                </Button>
-                            </div>
-                            <div className="relative flex-1">
-                                <Input
-                                    value={inputValue}
-                                    onChange={(e) => setInputValue(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    placeholder="Enter your query..."
-                                    className="w-full h-14 pl-6 pr-14 rounded-none bg-white border-2 border-black focus:ring-0 font-bold placeholder:text-neutral-300 transition-none"
-                                />
-                                <Button
-                                    id="send-ai-message"
-                                    onClick={handleSendMessage}
-                                    className="absolute right-0 top-0 w-14 h-14 rounded-none bg-black hover:bg-[#FF4F00] text-white transition-none shadow-none"
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                            {SUGGESTIONS.map((s) => (
+                                <button
+                                    key={s}
+                                    onClick={() => send(s)}
+                                    className="text-left px-6 py-5 rounded-[2rem] text-sm border border-border bg-white hover:border-honey/50 hover:bg-honey/5 hover:shadow-honey transition-all text-muted-foreground hover:text-foreground leading-relaxed font-semibold shadow-sm"
                                 >
-                                    <Send className="w-5 h-5" />
-                                </Button>
-                            </div>
+                                    {s}
+                                </button>
+                            ))}
                         </div>
                     </div>
+                )}
+
+                <div className="max-w-4xl mx-auto w-full space-y-10 pb-40">
+                    {messages.map((msg) => (
+                        <div
+                            key={msg.id}
+                            className={`flex gap-6 animate-in slide-in-from-bottom-4 duration-500 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                        >
+                            {msg.role === "assistant" && (
+                                <div className="flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-white border border-honey/20 shadow-xl p-2.5">
+                                    <img src={Logo} alt="AI" className="w-full h-full object-contain" />
+                                </div>
+                            )}
+                            <div className={`flex flex-col gap-2 ${msg.role === "user" ? "max-w-[80%] items-end" : "max-w-[85%] items-start"}`}>
+                                {msg.imagePreview && (
+                                    <div className="rounded-[2rem] overflow-hidden border border-border shadow-2xl mb-2">
+                                        <img src={msg.imagePreview} alt="Attached" className="max-h-72 object-contain" />
+                                    </div>
+                                )}
+                                {msg.audioName && (
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted border border-border rounded-full px-5 py-2.5 self-end flex items-center gap-3">
+                                        <Mic className="w-4 h-4 text-honey" />
+                                        {msg.audioName}
+                                    </div>
+                                )}
+                                <div className={`px-8 py-6 text-[15px] leading-relaxed whitespace-pre-wrap shadow-sm ${msg.role === "user"
+                                        ? "bg-honey text-white rounded-[2rem] rounded-tr-lg font-bold"
+                                        : "bg-white text-foreground border border-border rounded-[2.5rem] rounded-tl-lg font-medium"
+                                    }`}>
+                                    {msg.content}
+                                </div>
+                            </div>
+                            {msg.role === "user" && (
+                                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-white border border-border flex items-center justify-center shadow-lg">
+                                    <User className="w-6 h-6 text-muted-foreground" />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+
+                    {isLoading && messages[messages.length - 1]?.role === "user" && (
+                        <div className="flex gap-6 justify-start animate-pulse">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden bg-white border border-honey/20 flex items-center justify-center p-2.5 shadow-xl">
+                                <img src={Logo} alt="AI" className="w-full h-full object-contain" />
+                            </div>
+                            <div className="bg-white border border-border rounded-[2.5rem] rounded-tl-lg px-8 py-6 flex items-center gap-2">
+                                <div className="typing-dot w-2 h-2 rounded-full bg-honey" />
+                                <div className="typing-dot w-2 h-2 rounded-full bg-honey" />
+                                <div className="typing-dot w-2 h-2 rounded-full bg-honey" />
+                            </div>
+                        </div>
+                    )}
+                    <div ref={bottomRef} />
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="mt-8 text-center text-[9px] font-bold text-neutral-400 uppercase tracking-widest bg-white py-6 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-                Archive Retrieval Layer — Search results are limited to available telemetry. <a href="#" className="underline ml-1 hover:text-black">Terms of Service</a>
+            {/* Input area Container */}
+            <div className="flex-shrink-0 px-6 pb-8 absolute bottom-0 w-full z-20">
+                <div className="max-w-4xl mx-auto relative group">
+                    <div className="absolute inset-0 bg-honey/5 blur-3xl -z-10 opacity-0 group-focus-within:opacity-100 transition-opacity" />
+
+                    <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-border shadow-[0_20px_50px_rgba(0,0,0,0.1)] group-focus-within:border-honey/30 transition-all p-3">
+                        {(attachedImage || attachedAudio) && (
+                            <div className="p-4 flex items-center gap-4 bg-muted/30 rounded-3xl mb-3 animate-in slide-in-from-bottom-2">
+                                {imagePreviewUrl && (
+                                    <div className="relative group/img">
+                                        <img src={imagePreviewUrl} alt="Attached" className="h-16 w-16 object-cover rounded-2xl border-2 border-white shadow-xl" />
+                                        <button
+                                            onClick={() => { setAttachedImage(null); setImagePreviewUrl(null); if (imageInputRef.current) imageInputRef.current.value = ""; }}
+                                            className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                                {attachedAudio && (
+                                    <div className="flex items-center gap-4 bg-white border border-border rounded-2xl px-5 py-3 text-[11px] font-black uppercase text-foreground shadow-sm relative group/aud">
+                                        <Mic className="w-4 h-4 text-honey animate-pulse" />
+                                        <span className="max-w-[200px] truncate tracking-widest">{attachedAudio.name}</span>
+                                        <button
+                                            onClick={() => { setAttachedAudio(null); if (audioInputRef.current) audioInputRef.current.value = ""; }}
+                                            className="ml-2 text-muted-foreground hover:text-destructive transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="flex gap-3 items-end">
+                            <div className="flex flex-col gap-2 pb-1">
+                                <button
+                                    type="button"
+                                    onClick={() => imageInputRef.current?.click()}
+                                    className="w-11 h-11 rounded-2xl hover:bg-honey/10 flex items-center justify-center transition-all text-muted-foreground hover:text-honey"
+                                    title="Attach imagery"
+                                >
+                                    <Image className="w-5 h-5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => audioInputRef.current?.click()}
+                                    className="w-11 h-11 rounded-2xl hover:bg-honey/10 flex items-center justify-center transition-all text-muted-foreground hover:text-honey"
+                                    title="Attach acoustic telemetry"
+                                >
+                                    <Mic className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <textarea
+                                ref={textareaRef}
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Ask BeeYield AI anything about bees, honey, diseases, pollination, research..."
+                                className="flex-1 bg-transparent border-none px-4 py-4 text-[15px] text-foreground placeholder:text-muted-foreground/60 outline-none focus:ring-0 transition-all resize-none min-h-[44px] max-h-[200px] font-medium"
+                                rows={1}
+                                disabled={isLoading}
+                                onInput={(e) => {
+                                    const el = e.currentTarget;
+                                    el.style.height = "auto";
+                                    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                                }}
+                            />
+
+                            <div className="flex gap-2 pb-1">
+                                {voiceSupported && (
+                                    <button
+                                        type="button"
+                                        onClick={toggleListening}
+                                        className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm ${isListening
+                                                ? "bg-destructive text-white animate-pulse"
+                                                : "text-muted-foreground hover:bg-honey/10 hover:text-honey"
+                                            }`}
+                                    >
+                                        {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                                    </button>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    disabled={(!input.trim() && !attachedImage && !attachedAudio) || isLoading}
+                                    className="w-14 h-14 rounded-2xl bg-gradient-amber text-white flex items-center justify-center hover:opacity-90 disabled:opacity-30 transition-all shadow-xl hover:scale-105 active:scale-95"
+                                >
+                                    {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <p className="text-center text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] mt-4 opacity-100 flex items-center justify-center gap-4">
+                        <span className="w-8 h-px bg-border" />
+                        BeeYield AI — Specialized exclusively in bees, honey, apiculture, and pollination science
+                        <span className="w-8 h-px bg-border" />
+                    </p>
+                </div>
             </div>
+
+            <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageSelect} />
+            <input ref={audioInputRef} type="file" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/m4a,audio/*" className="hidden" onChange={handleAudioSelect} />
+
+            <style>{`
+        .custom-scroll::-webkit-scrollbar {
+          width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: rgba(245, 158, 11, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(245, 158, 11, 0.3);
+        }
+      `}</style>
         </div>
     );
-};
-
-export default SmartAssistantView;
+}

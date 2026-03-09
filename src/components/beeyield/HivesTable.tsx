@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
     useReactTable,
@@ -34,47 +33,48 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                        className="hover:bg-transparent pl-0 text-left font-bold text-slate-700 dark:text-slate-300"
+                        className="hover:bg-transparent pl-0 text-left font-black uppercase text-[10px] tracking-widest text-slate-400"
                     >
-                        Hive ID
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                        Registry ID
+                        <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
                     </Button>
                 );
             },
-            cell: ({ row }) => <div className="font-bold text-[#1e293b] dark:text-white">{row.getValue('hive_code')}</div>,
+            cell: ({ row }) => <div className="font-black text-slate-900 dark:text-white uppercase tracking-tight">{row.getValue('hive_code')}</div>,
         },
         {
             accessorKey: 'status',
-            header: 'Status',
+            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400">Health Status</span>,
             cell: ({ row }) => {
                 const status = (row.getValue('status') as string || '').toLowerCase();
-                const isHealthy = status.includes('healthy') || status.includes('active');
+                const isHealthy = status.includes('healthy') || status.includes('active') || status === 'ok';
                 const isWarning = status.includes('weak') || status.includes('warning');
                 const isCritical = status.includes('critical') || status.includes('abandoned');
 
                 return (
-                    <Badge className={
-                        isHealthy ? 'bg-green-100 text-green-700 hover:bg-green-100 border-none' :
-                            isWarning ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-none' :
-                                isCritical ? 'bg-red-100 text-red-700 hover:bg-red-100 border-none' :
-                                    'bg-slate-100 text-slate-700 hover:bg-slate-100 border-none'
-                    }>
-                        {row.getValue('status') || 'Unknown'}
+                    <Badge className={cn(
+                        "rounded-full px-3 py-1 font-black text-[9px] uppercase tracking-widest border-none shadow-sm",
+                        isHealthy ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' :
+                            isWarning ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' :
+                                isCritical ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400' :
+                                    'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-white/20'
+                    )}>
+                        {row.getValue('status') || 'Unknown Source'}
                     </Badge>
                 )
             }
         },
         {
             accessorKey: 'latest_weight',
-            header: 'Weight',
+            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400 text-center block">Biomass</span>,
             cell: ({ row }) => {
                 const hive = row.original;
                 const weight = hive.latest_weight || (hive as any).weight;
                 return (
-                    <div className="flex items-center gap-2">
-                        <Scale className="w-4 h-4 text-slate-400" />
-                        <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
-                            {weight ? `${weight.toFixed(1)}kg` : '-'}
+                    <div className="flex items-center gap-2 justify-center">
+                        <Scale className="w-3.5 h-3.5 text-slate-300" />
+                        <span className="font-black text-slate-900 dark:text-white tabular-nums italic">
+                            {weight ? `${weight.toFixed(1)}kg` : '---'}
                         </span>
                     </div>
                 )
@@ -82,30 +82,15 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
         },
         {
             accessorKey: 'latest_temp',
-            header: 'Temp',
+            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400 text-center block">Internal Temp</span>,
             cell: ({ row }) => {
                 const hive = row.original;
                 const temp = hive.latest_temp || (hive as any).temp;
                 return (
-                    <div className="flex items-center gap-2">
-                        <Thermometer className="w-4 h-4 text-slate-400" />
-                        <span className={`font-mono font-bold ${temp && temp > 36 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}`}>
-                            {temp ? `${temp.toFixed(1)}°C` : '-'}
-                        </span>
-                    </div>
-                )
-            }
-        },
-        {
-            id: 'humidity',
-            header: 'Humidity',
-            cell: ({ row }) => {
-                const humidity = (row.original as any).humidity;
-                return (
-                    <div className="flex items-center gap-2">
-                        <Droplets className="w-4 h-4 text-blue-400" />
-                        <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
-                            {humidity ? `${humidity.toFixed(0)}%` : '-'}
+                    <div className="flex items-center gap-2 justify-center">
+                        <Thermometer className="w-3.5 h-3.5 text-slate-300" />
+                        <span className={cn("font-black tabular-nums italic", temp && temp > 36 ? 'text-red-500' : 'text-slate-900 dark:text-white')}>
+                            {temp ? `${temp.toFixed(1)}°C` : '---'}
                         </span>
                     </div>
                 )
@@ -113,13 +98,13 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
         },
         {
             id: 'battery',
-            header: 'Battery',
+            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400 text-right block">Connectivity</span>,
             cell: ({ row }) => {
                 const battery = (row.original as any).battery;
                 return (
-                    <div className="flex items-center gap-2">
-                        <Battery className={cn("w-4 h-4", battery && battery < 20 ? "text-red-500" : "text-green-500")} />
-                        <span className="text-xs font-bold text-slate-500">{battery ? `${battery.toFixed(0)}%` : '95%'}</span>
+                    <div className="flex items-center gap-2 justify-end">
+                        <Battery className={cn("w-3.5 h-3.5", battery && battery < 20 ? "text-red-500" : "text-emerald-500")} />
+                        <span className="text-[10px] font-black text-slate-400 tabular-nums uppercase">{battery ? `${battery.toFixed(0)}%` : '95%'}</span>
                     </div>
                 )
             }
@@ -142,44 +127,44 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
     });
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Full component with search and table */}
-            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                <Search className="w-4 h-4 text-slate-400 ml-2" />
+            <div className="flex items-center gap-4 bg-muted/50 backdrop-blur-md px-6 py-3 rounded-2xl border border-border shadow-inner">
+                <Search className="w-5 h-5 text-honey" />
                 <Input
-                    placeholder="Filter hives..."
+                    placeholder="Search master registry..."
                     value={globalFilter ?? ''}
                     onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="border-none bg-transparent h-8 focus-visible:ring-0"
+                    className="border-none bg-transparent h-10 focus-visible:ring-0 text-[11px] font-black uppercase tracking-widest text-foreground placeholder:text-muted-foreground/50"
                 />
             </div>
 
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 dark:bg-slate-900/80 text-slate-500 dark:text-slate-400 uppercase text-xs font-bold">
+            <div className="rounded-[2.5rem] border border-border bg-white/80 backdrop-blur-md overflow-hidden shadow-xl shadow-black/5">
+                <table className="w-full text-sm text-left border-separate border-spacing-0">
+                    <thead className="bg-muted/30 border-b border-border">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <th key={header.id} className="px-6 py-4">
+                                    <th key={header.id} className="px-10 py-8 first:rounded-tl-[2.5rem] last:rounded-tr-[2.5rem]">
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </th>
                                 ))}
                             </tr>
                         ))}
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-[#1e1e1e]">
+                    <tbody className="divide-y divide-border">
                         {table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <tr
                                     key={row.id}
                                     className={cn(
-                                        "hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors",
+                                        "group hover:bg-honey/5 transition-colors",
                                         onRowClick && "cursor-pointer"
                                     )}
                                     onClick={() => onRowClick && onRowClick(row.original)}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <td key={cell.id} className="px-6 py-4">
+                                        <td key={cell.id} className="px-10 py-8 align-middle">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </td>
                                     ))}
@@ -187,8 +172,8 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={columns.length} className="h-24 text-center text-slate-400">
-                                    No hives found.
+                                <td colSpan={columns.length} className="h-40 text-center text-muted-foreground font-black uppercase text-[10px] tracking-widest opacity-50 italic">
+                                    No registry entries found in current scope.
                                 </td>
                             </tr>
                         )}
@@ -198,26 +183,30 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
 
             {/* Pagination if needed */}
             {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-end gap-2 text-sm text-slate-500">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <span>
-                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                    </span>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </Button>
+                <div className="flex items-center justify-between px-6 pt-4">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-6 py-3 bg-white/50 backdrop-blur-md rounded-full border border-border shadow-sm">
+                        Network Page {table.getState().pagination.pageIndex + 1} // {table.getPageCount()}
+                    </p>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                            className="h-12 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-muted-foreground hover:text-honey border border-border bg-white/50 backdrop-blur-md shadow-sm disabled:opacity-30 transition-all active:scale-95"
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                            className="h-12 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-muted-foreground hover:text-honey border border-border bg-white/50 backdrop-blur-md shadow-sm disabled:opacity-30 transition-all active:scale-95"
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             )}
         </div>

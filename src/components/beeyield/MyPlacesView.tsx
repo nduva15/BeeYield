@@ -93,42 +93,42 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
     }, [hives]);
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-500">
+        <div className="space-y-12 pb-20 animate-in fade-in duration-500 honeycomb-bg min-h-screen p-8 -m-8">
             {/* Custom Detailed Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
                 <div className="flex items-center gap-6">
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => setViewingApiary(null)}
-                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:text-beeyield-forest"
+                        className="h-16 w-16 rounded-[2rem] border border-border bg-white/50 backdrop-blur-md text-muted-foreground hover:text-honey shadow-sm transition-all hover:border-honey/50"
                     >
                         <ChevronLeft className="w-6 h-6" />
                     </Button>
-                    <div>
-                        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-2">
-                            <MapPin className="w-3.5 h-3.5 text-beeyield-forest" />
-                            <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.1em]">{apiary.location_name || 'Satellite Managed'}</span>
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-honey/10 text-honey rounded-full text-[10px] font-black uppercase tracking-widest border border-honey/20 backdrop-blur-sm">
+                            <MapPin className="w-3.5 h-3.5" />
+                            <span className="uppercase tracking-[0.1em]">{apiary.location_name || 'Satellite Managed Sector'}</span>
                         </div>
-                        <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">{apiary.name}</h1>
+                        <h1 className="text-6xl font-serif font-black text-honey tracking-tight leading-none">{apiary.name}</h1>
                     </div>
                 </div>
 
-                <div className="flex bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl p-1.5 gap-1">
+                <div className="flex bg-muted/30 backdrop-blur-md p-2 rounded-[2rem] border border-border gap-1">
                     <Button
                         variant="ghost"
                         onClick={() => setActiveView('dashboard')}
-                        className={cn('h-11 px-8 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all',
-                            activeView === 'dashboard' ? 'bg-beeyield-forest text-white shadow-md shadow-beeyield-forest/20' : 'text-gray-400 hover:text-beeyield-charcoal'
+                        className={cn('h-14 px-10 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all',
+                            activeView === 'dashboard' ? 'bg-white text-honey shadow-md' : 'text-muted-foreground hover:text-honey'
                         )}
                     >
-                        Orchard View
+                        Spatial Map
                     </Button>
                     <Button
                         variant="ghost"
                         onClick={() => setActiveView('details')}
-                        className={cn('h-11 px-8 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all',
-                            activeView === 'details' ? 'bg-beeyield-forest text-white shadow-md shadow-beeyield-forest/20' : 'text-gray-400 hover:text-beeyield-charcoal'
+                        className={cn('h-14 px-10 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all',
+                            activeView === 'details' ? 'bg-white text-honey shadow-md' : 'text-muted-foreground hover:text-honey'
                         )}
                     >
                         Fleet Metrics
@@ -141,54 +141,54 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
             ) : (
                 <div className="space-y-10">
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         <motion.div whileHover={{ y: -4 }}>
-                            <Card className="rounded-[2rem] border-[#E0E0E0] p-8 text-center bg-white shadow-sm">
-                                <Hexagon className="w-6 h-6 mx-auto mb-4 text-beeyield-forest" />
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Hives</p>
-                                <p className="text-3xl font-bold text-beeyield-charcoal">{stats.total}</p>
+                            <Card className="rounded-[2rem] border-slate-200/60 dark:border-white/5 p-8 text-center bg-white dark:bg-white/5 shadow-2xl shadow-black/5">
+                                <Hexagon className="w-6 h-6 mx-auto mb-4 text-emerald-600" />
+                                <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest mb-1">Total Hives</p>
+                                <p className="text-3xl font-black text-slate-900 dark:text-white">{stats.total}</p>
                             </Card>
                         </motion.div>
                         <motion.div whileHover={{ y: -4 }}>
-                            <Card className="rounded-[2rem] border-[#E0E0E0] p-8 text-center bg-white shadow-sm">
+                            <Card className="rounded-[2rem] border-slate-200/60 dark:border-white/5 p-8 text-center bg-white dark:bg-white/5 shadow-2xl shadow-black/5">
                                 <ShieldCheck className="w-6 h-6 mx-auto mb-4 text-emerald-500" />
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Healthy</p>
-                                <p className="text-3xl font-bold text-beeyield-charcoal">{stats.healthy}</p>
+                                <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest mb-1">Healthy</p>
+                                <p className="text-3xl font-black text-slate-900 dark:text-white">{stats.healthy}</p>
                             </Card>
                         </motion.div>
                         <motion.div whileHover={{ y: -4 }}>
-                            <Card className="rounded-[2rem] border-[#E0E0E0] p-8 text-center bg-white shadow-sm">
+                            <Card className="rounded-[2rem] border-slate-200/60 dark:border-white/5 p-8 text-center bg-white dark:bg-white/5 shadow-2xl shadow-black/5">
                                 <Activity className="w-6 h-6 mx-auto mb-4 text-amber-500" />
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Attention</p>
-                                <p className="text-3xl font-bold text-beeyield-charcoal">{stats.warnings}</p>
+                                <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest mb-1">Attention</p>
+                                <p className="text-3xl font-black text-slate-900 dark:text-white">{stats.warnings}</p>
                             </Card>
                         </motion.div>
                         <motion.div whileHover={{ y: -4 }}>
-                            <Card className="rounded-[2rem] border-[#E0E0E0] p-8 text-center bg-white shadow-sm">
+                            <Card className="rounded-[2rem] border-slate-200/60 dark:border-white/5 p-8 text-center bg-white dark:bg-white/5 shadow-2xl shadow-black/5">
                                 <Wind className="w-6 h-6 mx-auto mb-4 text-red-500" />
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Critical</p>
-                                <p className="text-3xl font-bold text-beeyield-charcoal">{stats.critical}</p>
+                                <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest mb-1">Critical</p>
+                                <p className="text-3xl font-black text-slate-900 dark:text-white">{stats.critical}</p>
                             </Card>
                         </motion.div>
                         <motion.div whileHover={{ y: -4 }}>
-                            <Card className="rounded-[2rem] border-none p-8 text-center bg-beeyield-forest text-white shadow-lg shadow-beeyield-forest/20">
-                                <Sprout className="w-6 h-6 mx-auto mb-4 text-emerald-300" />
-                                <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-1">Territory</p>
-                                <p className="text-3xl font-bold">{apiary.size_acres || 0} Ac</p>
+                            <Card className="rounded-[2rem] border-none p-8 text-center bg-amber-600 text-white shadow-xl shadow-amber-900/20">
+                                <Sprout className="w-6 h-6 mx-auto mb-4 text-amber-200" />
+                                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">Net Acreage</p>
+                                <p className="text-3xl font-black tracking-tighter">{apiary.size_acres || 0} Ac</p>
                             </Card>
                         </motion.div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                         {/* Left Panel: Hive Fleet Visualization */}
-                        <Card className="lg:col-span-4 rounded-[3rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-                            <div className="p-8 border-b border-[#F5F5F5] flex items-center justify-between">
-                                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Spatial Topology</h3>
-                                <div className="flex gap-1 bg-beeyield-sand/30 border border-[#E8E0D5] p-1.5 rounded-2xl">
+                        <Card className="lg:col-span-4 rounded-[2.5rem] border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden flex flex-col min-h-[500px]">
+                            <div className="p-8 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
+                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 dark:text-white/20 italic">Spatial Topology</h3>
+                                <div className="flex bg-slate-50 dark:bg-black/20 p-1.5 rounded-2xl gap-1">
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={cn("h-9 w-9 rounded-xl transition-all", viewMode === 'grid' ? "bg-white text-beeyield-forest shadow-sm" : "text-gray-400")}
+                                        className={cn("h-10 w-10 rounded-xl transition-all", viewMode === 'grid' ? "bg-white dark:bg-white/10 text-amber-600 shadow-sm" : "text-slate-400 dark:text-white/20")}
                                         onClick={() => setViewMode('grid')}
                                     >
                                         <LayoutGrid className="w-4 h-4" />
@@ -196,7 +196,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className={cn("h-9 w-9 rounded-xl transition-all", viewMode === 'list' ? "bg-white text-beeyield-forest shadow-sm" : "text-gray-400")}
+                                        className={cn("h-10 w-10 rounded-xl transition-all", viewMode === 'list' ? "bg-white dark:bg-white/10 text-amber-600 shadow-sm" : "text-slate-400 dark:text-white/20")}
                                         onClick={() => setViewMode('list')}
                                     >
                                         <ListIcon className="w-4 h-4" />
@@ -210,15 +210,15 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         {hives.map(hive => (
                                             <motion.div
                                                 key={hive.id}
-                                                whileHover={{ scale: 1.1 }}
+                                                whileHover={{ scale: 1.15, zIndex: 10 }}
                                                 className={cn(
-                                                    "aspect-square rounded-2xl flex items-center justify-center text-[10px] font-black text-white transition-all cursor-pointer shadow-sm relative group",
+                                                    "aspect-square rounded-xl flex items-center justify-center text-[10px] font-black text-white transition-all cursor-pointer shadow-sm relative group",
                                                     getStatusColor(hive.status)
                                                 )}
                                                 onClick={() => handleEditHive(hive)}
                                             >
                                                 {hive.hive_code.split('-').pop() || hive.hive_code.slice(-2)}
-                                                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity" />
+                                                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity" />
                                             </motion.div>
                                         ))}
                                     </div>
@@ -227,14 +227,14 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         {hives.slice(0, 50).map(hive => (
                                             <div
                                                 key={hive.id}
-                                                className="flex items-center justify-between p-5 rounded-2xl bg-beeyield-sand/10 border border-transparent hover:border-[#E8E0D5] hover:bg-white transition-all cursor-pointer group"
+                                                className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-transparent hover:border-amber-500/20 hover:bg-white dark:hover:bg-white/10 transition-all cursor-pointer group"
                                                 onClick={() => handleEditHive(hive)}
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <div className={cn("w-3 h-3 rounded-full shadow-sm", getStatusColor(hive.status))} />
-                                                    <span className="text-sm font-bold text-beeyield-charcoal">Hive #{hive.hive_code}</span>
+                                                    <span className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Hive <span className="text-amber-600">#{hive.hive_code}</span></span>
                                                 </div>
-                                                <div className="flex items-center gap-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                                                <div className="flex items-center gap-4 text-[11px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest">
                                                     <span className="flex items-center gap-2">
                                                         <Thermometer className="w-3.5 h-3.5 text-orange-500" />
                                                         {((hive as any).latest_temp)?.toFixed(1) || '--'}°
@@ -249,22 +249,22 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                         </Card>
 
                         {/* Right Panel: Detailed Hives List (Table) */}
-                        <Card className="lg:col-span-8 rounded-[3rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden min-h-[500px]">
+                        <Card className="lg:col-span-8 rounded-[2.5rem] border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden min-h-[500px]">
                             <CardContent className="p-0">
-                                <div className="p-10 border-b border-[#F5F5F5] flex items-center justify-between">
-                                    <h3 className="text-2xl font-bold text-beeyield-charcoal">Deployment Registry</h3>
+                                <div className="p-10 border-b border-slate-100 dark:border-white/10 flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.02]">
+                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Fleet Audit Registry</h3>
                                     <Button
                                         onClick={handleOpenAddHive}
-                                        className="h-12 px-6 rounded-2xl bg-beeyield-forest text-white gap-3 font-bold text-sm shadow-lg shadow-beeyield-forest/20"
+                                        className="h-12 px-8 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white gap-3 font-black text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 transition-all hover:scale-[1.02]"
                                     >
-                                        <Plus className="w-4.5 h-4.5" /> Deploy Hive
+                                        <Plus className="w-4.5 h-4.5" /> Deploy Asset
                                     </Button>
                                 </div>
 
                                 <div className="p-0">
                                     {hivesLoading ? (
                                         <div className="p-10 space-y-6">
-                                            {[1, 2, 3].map(i => <div key={i} className="h-16 rounded-2xl bg-beeyield-sand/20 animate-pulse" />)}
+                                            {[1, 2, 3].map(i => <div key={i} className="h-16 rounded-3xl bg-slate-50 dark:bg-white/5 animate-pulse" />)}
                                         </div>
                                     ) : (
                                         <HivesTable
@@ -518,25 +518,25 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     }
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-500">
+        <div className="space-y-12 pb-20 animate-in fade-in duration-500 honeycomb-bg min-h-screen p-8 -m-8">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                        <MapPin className="w-3.5 h-3.5 text-beeyield-forest" />
-                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Global Territory Matrix</span>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
+                <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-honey/10 text-honey rounded-full text-[10px] font-black uppercase tracking-widest border border-honey/20 backdrop-blur-sm">
+                        <MapPin className="w-3.5 h-3.5" />
+                        Industrial Global Topology
                     </div>
-                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Apiary Network</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-lg">
-                        Hierarchical management of your apiaries and bio-zones.
+                    <h1 className="text-6xl font-serif font-black text-honey tracking-tight leading-none">Apiary <span className="text-foreground">Network</span></h1>
+                    <p className="text-sm font-medium text-muted-foreground max-w-lg leading-relaxed uppercase tracking-wider opacity-70">
+                        Hierarchical management of your industrial apiaries and specialized bio-zones.
                     </p>
                 </div>
                 <Button
                     onClick={() => setIsAddingPlace(true)}
-                    className="h-14 px-8 rounded-2xl bg-beeyield-forest hover:opacity-90 text-white shadow-lg shadow-beeyield-forest/20 gap-3 font-bold text-sm tracking-wide"
+                    className="h-16 px-10 rounded-[2rem] bg-gradient-amber text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-xs uppercase tracking-widest shadow-xl shadow-honey/20 gap-3"
                 >
-                    <Plus className="w-5 h-5" />
-                    New Sector
+                    <Plus className="w-6 h-6" />
+                    Initialize Sector
                 </Button>
             </div>
 
@@ -568,41 +568,41 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 transition={{ duration: 0.4, delay: index * 0.1 }}
                             >
                                 <Card
-                                    className="group relative cursor-pointer hover:shadow-2xl hover:shadow-beeyield-forest/10 transition-all duration-500 rounded-[3rem] border-[#E0E0E0] bg-white border-b-8 border-b-beeyield-forest/5 hover:border-b-beeyield-forest overflow-hidden"
+                                    className="group relative cursor-pointer hover:shadow-2xl hover:shadow-honey/10 transition-all duration-500 rounded-[2.5rem] border-border bg-white/80 backdrop-blur-md border-b-8 border-b-muted hover:border-b-honey overflow-hidden"
                                     onClick={() => setViewingApiary(apiary)}
                                 >
                                     <CardContent className="p-10">
                                         <div className="flex justify-between items-start mb-10">
                                             <div className="flex-1">
-                                                <Badge className="bg-beeyield-sand/30 text-beeyield-forest border-[#E8E0D5] px-3.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-4">
-                                                    {apiary.type || 'Permanent'}
+                                                <Badge className="bg-muted text-muted-foreground border-border px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-4">
+                                                    {apiary.type || 'Permanent Sector'}
                                                 </Badge>
-                                                <h3 className="text-2xl font-bold text-beeyield-charcoal group-hover:text-beeyield-forest transition-colors leading-tight">
+                                                <h3 className="text-3xl font-serif font-black text-foreground group-hover:text-honey transition-colors leading-tight">
                                                     {apiary.name}
                                                 </h3>
-                                                <div className="flex items-center text-xs font-bold text-gray-400 mt-2 uppercase tracking-widest">
-                                                    <MapPin className="w-3.5 h-3.5 mr-2 text-beeyield-forest" />
-                                                    {apiary.location_name || 'Global Unassigned'}
+                                                <div className="flex items-center text-[10px] font-black text-muted-foreground mt-3 uppercase tracking-[0.15em] opacity-70">
+                                                    <MapPin className="w-3.5 h-3.5 mr-2 text-honey" />
+                                                    {apiary.location_name || 'Global Unassigned Coordinates'}
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col items-center justify-center w-20 h-20 rounded-[2rem] bg-beeyield-forest/5 border border-beeyield-forest/10 group-hover:bg-beeyield-forest group-hover:text-white transition-all duration-500">
+                                            <div className="flex flex-col items-center justify-center w-20 h-20 rounded-[1.75rem] bg-muted/50 border border-border group-hover:bg-gradient-amber group-hover:text-white transition-all duration-500 shadow-sm">
                                                 <span className="text-2xl font-black">{apiary.hive_count || 0}</span>
-                                                <p className="text-[8px] font-black uppercase tracking-widest">Hives</p>
+                                                <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Assets</p>
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-8 py-8 border-t border-[#F8F8F8]">
+                                        <div className="grid grid-cols-2 gap-8 py-8 border-t border-border">
                                             <div className="space-y-1">
-                                                <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1 flex items-center gap-2">
-                                                    <Sprout className="w-3 h-3 text-beeyield-forest" /> Primary Flora
+                                                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-2 flex items-center gap-2 opacity-70">
+                                                    <Sprout className="w-3 h-3 text-honey" /> Primary Flora
                                                 </p>
-                                                <p className="text-sm font-bold text-beeyield-charcoal truncate">{apiary.forage_type || 'Mixed Flora'}</p>
+                                                <p className="text-sm font-black text-foreground tracking-tight uppercase">{apiary.forage_type || 'Industrial Mix'}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1 flex items-center gap-2">
-                                                    <Target className="w-3 h-3 text-emerald-500" /> Sector Size
+                                                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-2 flex items-center gap-2 opacity-70">
+                                                    <Target className="w-3 h-3 text-honey" /> Sector Size
                                                 </p>
-                                                <p className="text-sm font-bold text-beeyield-charcoal">{apiary.size_acres || 0} Acres</p>
+                                                <p className="text-sm font-black text-foreground tracking-tight uppercase">{apiary.size_acres || 0} Acres</p>
                                             </div>
                                         </div>
 
@@ -612,7 +612,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
-                                                className="h-10 w-10 rounded-xl bg-white shadow-xl text-gray-400 hover:text-beeyield-forest hover:bg-emerald-50 border border-[#F0F0F0]"
+                                                className="h-12 w-12 rounded-xl bg-white dark:bg-white/10 shadow-2xl text-slate-400 hover:text-amber-600 border border-slate-200 dark:border-white/5"
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </Button>
@@ -620,16 +620,16 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => { e.stopPropagation(); handleDelete(apiary.id, e); }}
-                                                className="h-10 w-10 rounded-xl bg-white shadow-xl text-gray-400 hover:text-red-500 hover:bg-red-50 border border-[#F0F0F0]"
+                                                className="h-12 w-12 rounded-xl bg-white dark:bg-white/10 shadow-2xl text-slate-400 hover:text-red-500 border border-slate-200 dark:border-white/5"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
 
                                         <div className="mt-4 pt-4 flex items-center justify-between">
-                                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active Monitoring</span>
-                                            <div className="w-8 h-8 rounded-full bg-beeyield-sand/30 flex items-center justify-center text-beeyield-forest opacity-0 group-hover:opacity-100 transition-all duration-700">
-                                                <ArrowRight className="w-4 h-4" />
+                                            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Autonomous Monitoring Online</span>
+                                            <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 opacity-0 group-hover:opacity-100 group-hover:text-amber-600 transition-all duration-700">
+                                                <ArrowRight className="w-5 h-5" />
                                             </div>
                                         </div>
                                     </CardContent>
