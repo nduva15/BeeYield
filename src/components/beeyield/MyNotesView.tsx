@@ -133,7 +133,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             // Reset
             setTitle("");
             setDescription("");
-            setPriority("medium");
+            setPriority("Medium");
             setCategory("General");
         } catch (err) {
             console.error(err);

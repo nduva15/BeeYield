@@ -28,7 +28,7 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
-import BeeGPTView from '@/components/beeyield/BeeGPTView';
+import SmartAssistantView from '@/components/beeyield/SmartAssistantView';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
@@ -205,7 +205,8 @@ const BeeYieldDashboard: React.FC = () => {
     // Nav Items matching screenshot precisely - now filtered by module flags
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
-            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
+            { id: 'home', label: 'Home', icon: Home },
+            { id: 'assistant', label: 'BeeYield', icon: Hexagon },
         ];
 
         // 1. Agro & Meteo Module
@@ -342,10 +343,10 @@ const BeeYieldDashboard: React.FC = () => {
                 return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant':
                 return (
-                    <BeeGPTView
+                    <SmartAssistantView
+                        onTabChange={handleTabChange}
                         initialMessage={aiInitialMessage || undefined}
                         onInitialMessageConsumed={() => setAiInitialMessage(null)}
-                        onTabChange={handleTabChange}
                     />
                 );
             case 'agro-intelligence':
@@ -371,9 +372,11 @@ const BeeYieldDashboard: React.FC = () => {
                 return <PollinationIntelligence onTabChange={handleTabChange} />;
 
             case 'logistics-setup':
+            case 'orchard-mapper':
             case 'master-map':
                 return <MasterMapView />;
 
+            case 'fleet-security':
             case 'geospatial-security':
             case 'deployment':
                 return <HiveLogisticsSecurity onTabChange={handleTabChange} />;

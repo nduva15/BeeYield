@@ -61,153 +61,111 @@ const PollinationServices = () => {
 
     return (
         <div className="min-h-screen bg-background">
-            {/* Hero Section - Elite Precision Branding */}
-            <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-                {/* Master Background */}
-                <div className="absolute inset-0 bg-white">
-                    {/* Architectural Accents */}
-                    <div className="absolute top-0 right-0 w-[45%] h-full bg-neutral-900 pointer-events-none transform skew-x-[-12deg] translate-x-20 shadow-[-40px_0_80px_rgba(0,0,0,0.05)]" />
-                    <div className="absolute top-0 right-0 w-[45%] h-full bg-beeyield-green/[0.02] pointer-events-none transform skew-x-[-12deg] translate-x-10" />
+            {/* Hero Section - Zero-Trust Premium Theme */}
+            <section className="relative min-h-[90vh] flex items-center overflow-hidden py-24 sm:py-32">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
 
-                    {/* Animated Grid Mesh */}
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                        style={{ backgroundImage: 'radial-gradient(circle, #064e3b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-
-                    {/* Floating Vertical Label */}
+                    {/* Vertical Text Accent */}
                     <motion.div
-                        initial={{ opacity: 0, x: -40 }}
+                        initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
-                        className="absolute left-12 top-1/2 -translate-y-1/2 hidden 2xl:block pointer-events-none z-0"
+                        transition={{ duration: 1 }}
+                        className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
                     >
-                        <span className="text-[140px] font-black text-neutral-100 tracking-tighter leading-none select-none uppercase blur-[1px]" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                            Precision Pollination Core
+                        <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                            Partner in Pollination
                         </span>
                     </motion.div>
                 </div>
 
-                <div className="container mx-auto px-6 lg:px-12 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                <div className="container mx-auto px-4 sm:px-6 relative z-10">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 1, ease: "easeOut" }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
                         >
-                            <Badge className="bg-beeyield-green/10 text-beeyield-green mb-8 hover:bg-beeyield-green/20 transition-colors uppercase tracking-[0.4em] font-black text-[10px] px-6 py-2 rounded-full border border-beeyield-green/20 shadow-sm backdrop-blur-md">
-                                <Zap className="w-3 h-3 mr-2 animate-pulse" />
-                                Ecosystem Integration Active
-                            </Badge>
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
+                            >
+                                <Zap className="w-3.5 h-3.5" />
+                                Partner in Pollination
+                            </motion.div>
 
-                            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-neutral-900 mb-10 tracking-tighter leading-[0.8] uppercase italic">
-                                Smart <br />
-                                <span className="text-beeyield-green">Growth.</span> <br />
-                                <span className="text-beeyield-gold">Verified.</span>
+                            <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
+                                Your <span className="text-amber-600">Partner</span> <br />
+                                in <span className="text-green-700">Pollination.</span>
                             </h1>
 
-                            <p className="text-xl md:text-2xl text-neutral-500 mb-12 max-w-xl leading-relaxed font-medium tracking-tight">
-                                We've transformed pollination from a <span className="text-neutral-900 font-bold">seasonal gamble</span> into a <span className="text-beeyield-green font-bold italic underline decoration-beeyield-gold decoration-4 underline-offset-8">verifiable science</span>.
+                            <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-xl leading-relaxed font-medium">
+                                Professional pollination records for every field. We don't just supply bees; we provide clear proof of hive activity and colony health using reliable sensor technology.
                             </p>
 
-                            <div className="flex flex-wrap gap-6 mb-16">
-                                <Button size="lg" className="bg-neutral-900 hover:bg-beeyield-green text-white font-black rounded-3xl px-12 h-16 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)] uppercase tracking-widest text-[11px] transition-all hover:scale-105 active:scale-95 group" asChild>
-                                    <Link to="/pollination-request">
-                                        Secure Consultation <ArrowRight className="ml-3 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                    </Link>
+                            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white font-black rounded-2xl px-10 h-14 shadow-xl uppercase tracking-widest text-xs transition-all hover:scale-105" asChild>
+                                    <Link to="/pollination-request">Get Free Consultation</Link>
                                 </Button>
-                                <Button size="lg" variant="outline" className="border-2 border-neutral-100 text-neutral-900 hover:bg-neutral-50 font-black rounded-3xl px-12 h-16 uppercase tracking-widest text-[11px] transition-all backdrop-blur-sm" asChild>
-                                    <Link to="/precision-pollination">The Architecture</Link>
+                                <Button size="lg" variant="outline" className="border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 uppercase tracking-widest text-xs" asChild>
+                                    <Link to="/pollination-solutions">See How It Works</Link>
                                 </Button>
                             </div>
 
-                            {/* Tech Integration Badges */}
-                            <div className="flex items-center gap-10 pt-10 border-t border-neutral-100">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <div className="h-2 w-2 rounded-full bg-green-500 animate-ping" />
-                                        <p className="text-2xl font-black text-neutral-900 tracking-tighter italic uppercase">Live</p>
+                            {/* Premium Stats Row */}
+                            <div className="flex flex-wrap gap-8 pt-8 border-t border-neutral-100">
+                                {[
+                                    { label: "Yield Increase", value: "35%", color: "text-green-700" },
+                                    { label: "Managed Hives", value: "184+", color: "text-amber-600" },
+                                    { label: "Uptime", value: "99.9%", color: "text-green-700" }
+                                ].map((stat, i) => (
+                                    <div key={i}>
+                                        <p className={`text-4xl font-black ${stat.color} tracking-tighter`}>{stat.value}</p>
+                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{stat.label}</p>
                                     </div>
-                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Colony Pulse</p>
-                                </div>
-                                <div className="w-px h-12 bg-neutral-100" />
-                                <div>
-                                    <p className="text-2xl font-black text-neutral-900 tracking-tighter italic uppercase">100%</p>
-                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Traceable Supply</p>
-                                </div>
-                                <div className="w-px h-12 bg-neutral-100" />
-                                <div>
-                                    <p className="text-2xl font-black text-neutral-900 tracking-tighter italic uppercase">V2.4</p>
-                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Core Engine</p>
-                                </div>
+                                ))}
                             </div>
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
-                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                            transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-                            className="relative lg:ml-auto"
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 1, delay: 0.3 }}
+                            className="relative"
                         >
-                            <div className="relative z-10 w-full max-w-xl group">
-                                {/* Decorative Floating Elements */}
-                                <div className="absolute -top-12 -left-12 w-32 h-32 bg-beeyield-gold/20 rounded-full blur-3xl animate-pulse" />
-                                <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-beeyield-green/10 rounded-full blur-[80px] animate-pulse delay-700" />
+                            <div className="relative aspect-square rounded-[3rem] bg-neutral-900 overflow-hidden shadow-2xl group">
+                                <img
+                                    src="https://images.unsplash.com/photo-159742324403d-11424eb0429f?q=80&w=1000&auto=format&fit=crop"
+                                    alt="Sunflower Pollination"
+                                    className="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent opacity-90" />
 
-                                {/* Main Visual Block */}
-                                <div className="bg-neutral-900 rounded-[4rem] overflow-hidden shadow-[0_60px_100px_-20px_rgba(0,0,0,0.5)] transform transition-transform duration-700 group-hover:scale-[1.02] relative border border-white/5">
-                                    <img
-                                        src="https://images.unsplash.com/photo-159742324403d-11424eb0429f?q=80&w=1200&auto=format&fit=crop"
-                                        alt="Precision Apiary"
-                                        className="w-full h-[600px] object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700"
-                                    />
-
-                                    {/* Glass Overlay Module */}
-                                    <div className="absolute inset-x-6 bottom-6 bg-white/10 backdrop-blur-2xl p-8 rounded-[3rem] border border-white/20 shadow-2xl">
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <div className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 rounded text-[9px] font-black text-green-400 uppercase tracking-widest">Node: GEN-01</div>
-                                                    <div className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-neutral-300 uppercase tracking-widest">Status: Syncing</div>
-                                                </div>
-                                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Kibwezi Sanctuary</h3>
-                                                <p className="text-xs text-neutral-400 font-medium">Makueni County, East Africa</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-4xl font-black text-beeyield-gold tracking-tighter leading-none italic">184</p>
-                                                <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">Managed Hives</p>
-                                            </div>
-                                        </div>
+                                {/* Floating Overlay Info */}
+                                <div className="absolute bottom-10 left-10 text-white">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-green-500">Live Telemetry Active</span>
                                     </div>
-
-                                    {/* Scanline Animation */}
-                                    <motion.div
-                                        animate={{ y: ["0%", "100%", "0%"] }}
-                                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                                        className="absolute inset-0 bg-gradient-to-b from-transparent via-beeyield-green/10 to-transparent h-20 w-full pointer-events-none"
-                                    />
-                                </div>
-
-                                {/* Verified Badge Tag */}
-                                <div className="absolute -top-6 -right-6 bg-beeyield-green text-white p-6 rounded-[2.5rem] shadow-2xl font-black text-sm uppercase tracking-widest text-center transform rotate-6 border-4 border-white">
-                                    Trusted<br />
-                                    Partner
+                                    <p className="text-2xl font-black uppercase tracking-tighter">Genesis Node: KIB-01</p>
                                 </div>
                             </div>
 
-                            {/* Secondary Image Card */}
+                            {/* Floating Zero-Trust Badge */}
                             <motion.div
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 1, delay: 0.6 }}
-                                className="absolute -bottom-16 -left-16 w-56 h-64 bg-white rounded-[2.5rem] shadow-2xl p-4 border border-neutral-100 hidden xl:block"
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute -top-10 -right-10 bg-white/95 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-amber-100/50 flex flex-col items-center justify-center gap-2"
                             >
-                                <img
-                                    src="https://images.unsplash.com/photo-1589139260492-c0e862022421?q=80&w=800&auto=format&fit=crop"
-                                    alt="IoT Sensor"
-                                    className="w-full h-32 object-cover rounded-[1.8rem] mb-4"
-                                />
-                                <div className="space-y-1 px-2">
-                                    <p className="text-[10px] font-black text-beeyield-green uppercase tracking-widest">Real-time Data</p>
-                                    <h4 className="text-xs font-black text-neutral-900 leading-tight">HoneyChain™ Verification System</h4>
+                                <div className="relative w-12 h-12 bg-neutral-900 rounded-2xl flex items-center justify-center shadow-lg">
+                                    <Shield className="w-6 h-6 text-amber-500" />
+                                </div>
+                                <div className="text-center">
+                                    <span className="block text-xl font-black text-neutral-900">Verified</span>
+                                    <span className="block text-[9px] font-black text-amber-600 uppercase tracking-widest">Pollination Partner</span>
                                 </div>
                             </motion.div>
                         </motion.div>

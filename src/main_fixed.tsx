@@ -24,6 +24,7 @@ import '@/index.css'
 
 // Lazy load page imports
 const PollinationServices = lazy(() => import('@/pages/PollinationServices'))
+const About = lazy(() => import('@/pages/About'))
 const Contact = lazy(() => import('@/pages/Contact'))
 const Honey = lazy(() => import('@/pages/HoneyLanding'))
 const Shop = lazy(() => import('@/pages/Shop'))
@@ -85,6 +86,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                             <Suspense fallback={<PageLoader />}>
                                                 <Routes>
                                                     <Route path="/" element={<PollinationServices />} />
+                                                    <Route path="/about" element={<About />} />
                                                     <Route path="/contact" element={<Contact />} />
                                                     <Route path="/honey" element={<Honey />} />
                                                     <Route path="/shop" element={<Shop />} />
