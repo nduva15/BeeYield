@@ -28,7 +28,7 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
-import SmartAssistantView from '@/components/beeyield/SmartAssistantView';
+import BeeGPTView from '@/components/beeyield/BeeGPTView';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
@@ -205,8 +205,7 @@ const BeeYieldDashboard: React.FC = () => {
     // Nav Items matching screenshot precisely - now filtered by module flags
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
-            { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield', icon: Hexagon },
+            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
         ];
 
         // 1. Agro & Meteo Module
@@ -343,10 +342,10 @@ const BeeYieldDashboard: React.FC = () => {
                 return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant':
                 return (
-                    <SmartAssistantView
-                        onTabChange={handleTabChange}
+                    <BeeGPTView
                         initialMessage={aiInitialMessage || undefined}
                         onInitialMessageConsumed={() => setAiInitialMessage(null)}
+                        onTabChange={handleTabChange}
                     />
                 );
             case 'agro-intelligence':

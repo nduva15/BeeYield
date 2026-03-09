@@ -5,9 +5,9 @@ from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact,
     forms, shop, blog, careers, media,
-    services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters, beeyield, bee_data, pollination, inspections, reports, billing,
-    ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth,
+    services, jobs, analytics, notes, admin, iot,
+    admin_extended, meters, beeyield, pollination, inspections, reports, billing,
+    settings, payments, labels, bluetooth,
     requests, image_analysis, acoustic, routing, forage
 )
 
@@ -35,19 +35,6 @@ api_router.include_router(pollination.router, prefix="/pollination", tags=["Prec
 
 # Inspections endpoint
 api_router.include_router(inspections.router, prefix="/inspections", tags=["Inspections"])
-
-# AI Assistant endpoint (legacy)
-api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
-
-# AI Assistant v2 (comprehensive)
-api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["assistant"])
-api_router.include_router(bee_data.router, prefix="/bee-data", tags=["bee-data"])
-
-# AI Admin (sync, rebuild) — was orphaned, now mounted
-api_router.include_router(ai_admin.router, prefix="/ai/admin", tags=["AI Admin"])
-
-# Streaming Vector Search & Ingestion
-api_router.include_router(streaming.router, prefix="/search", tags=["Streaming Search"])
 
 # Analytics endpoint
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
