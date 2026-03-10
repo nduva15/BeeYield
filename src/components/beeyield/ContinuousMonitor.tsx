@@ -1,6 +1,8 @@
 import React from 'react';
-import { Clock, Activity, Zap, AlertTriangle, CheckCircle2, Thermometer, Hexagon, ArrowRight } from 'lucide-react';
+import { Clock, Activity, Zap, AlertTriangle, CheckCircle2, Thermometer, Hexagon, ArrowRight, ShieldAlert, Wifi, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ContinuousMonitorProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -27,10 +29,10 @@ const initialEvents: HiveEvent[] = [
     { id: 8, hive: 'HV-002', event: 'Flight traffic above hourly average', level: 'ok', time: '14:48:10' },
 ];
 
-const levelConfig: Record<EventLevel, { color: string; bg: string; icon: React.ElementType; dot: string }> = {
-    ok: { color: 'text-[#10b981]', bg: 'bg-[#10b981]/5', icon: CheckCircle2, dot: 'bg-[#10b981]' },
-    warn: { color: 'text-[#b45309]', bg: 'bg-[#facc15]/10', icon: AlertTriangle, dot: 'bg-[#facc15]' },
-    critical: { color: 'text-red-600', bg: 'bg-red-50', icon: AlertTriangle, dot: 'bg-red-500 animate-pulse' },
+const levelConfig: Record<EventLevel, { color: string; bg: string; icon: React.ElementType; dot: string; glow: string }> = {
+    ok: { color: 'text-emerald-500', bg: 'bg-emerald-500/5', icon: CheckCircle2, dot: 'bg-emerald-500', glow: 'shadow-emerald-500/20' },
+    warn: { color: 'text-amber-500', bg: 'bg-amber-500/5', icon: AlertTriangle, dot: 'bg-amber-500', glow: 'shadow-amber-500/20' },
+    critical: { color: 'text-red-500', bg: 'bg-red-500/5', icon: ShieldAlert, dot: 'bg-red-500 animate-pulse', glow: 'shadow-red-500/40' },
 };
 
 const heartbeatNodes = [
@@ -51,7 +53,6 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
         const timer = setInterval(() => {
             setLiveTime(new Date());
             setTick(t => t + 1);
-            // Occasionally add fake live events
             if (Math.random() > 0.6) {
                 const nodes = ['HV-001', 'HV-004', 'HV-005'];
                 const msgs = ['Heartbeat confirmed', 'Temp stable at 35.0°C', 'Activity nominal'];
@@ -73,38 +74,53 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
     const warnCount = events.filter(e => e.level === 'warn').length;
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={cn(glass.page, "p-8 -m-8 space-y-12 pb-20 min-h-screen")}
+        >
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center">
-                            <Activity className="w-6 h-6 text-[#facc15]" />
-                        </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Continuous <span className="text-[#10b981]">Monitor</span>
-                        </h1>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
+                <div className="space-y-4">
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                        <Wifi className="w-4 h-4 mr-2" />
+                        Live Synchronous Monitoring v5.0
                     </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        24/7 Hive Heartbeat Stream
+                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
+                        Continuous <span className="text-honey">Monitor</span>
+                    </h1>
+                    <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
+                        24/7 Hive Heartbeat Stream · Acoustic Analysis · Thermal Vitals
                     </p>
                 </div>
-                <div className="flex items-center gap-4">
-                    {criticalCount > 0 && (
-                        <div className="flex items-center gap-2 px-4 py-2 bg-red-500 border-2 border-red-700">
-                            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                            <span className="text-white font-black text-[10px] uppercase tracking-widest">{criticalCount} Critical</span>
-                        </div>
-                    )}
-                    {warnCount > 0 && (
-                        <div className="flex items-center gap-2 px-4 py-2 bg-[#facc15] border-2 border-[#b45309]">
-                            <span className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">{warnCount} Warnings</span>
-                        </div>
-                    )}
-                    <div className="flex items-center gap-2 px-5 py-2 bg-[#064e3b] border-4 border-[#064e3b]">
-                        <div className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse" />
-                        <Clock className="w-4 h-4 text-[#facc15]" />
-                        <span className="text-[#facc15] font-black text-xs tracking-widest tabular-nums">
+
+                <div className="flex flex-wrap items-center gap-4">
+                    <AnimatePresence mode="popLayout">
+                        {criticalCount > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                className={cn(glass.badge, "bg-red-500 text-white border-transparent px-4 py-2 shadow-lg shadow-red-500/20 animate-pulse")}
+                            >
+                                <ShieldAlert className="w-4 h-4 mr-2" /> {criticalCount} Critical
+                            </motion.div>
+                        )}
+                        {warnCount > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                className={cn(glass.badge, "bg-amber-500 text-white border-transparent px-4 py-2 shadow-lg shadow-amber-500/20")}
+                            >
+                                <AlertTriangle className="w-4 h-4 mr-2" /> {warnCount} Warnings
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                    <div className={cn(glass.badge, "bg-white/40 dark:bg-black/20 border-honey/30 px-6 py-2 shadow-inner group")}>
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                        <Clock className="w-4 h-4 text-honey mr-2 group-hover:rotate-12 transition-transform" />
+                        <span className="text-honey font-bold text-sm tracking-widest tabular-nums">
                             {liveTime.toLocaleTimeString()}
                         </span>
                     </div>
@@ -112,80 +128,146 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
             </div>
 
             {/* Heartbeat Grid */}
-            <div className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Fleet Heartbeat</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {heartbeatNodes.map(node => {
-                        const dotColor = node.status === 'ok' ? 'bg-[#10b981]' : node.status === 'warn' ? 'bg-[#facc15] animate-pulse' : 'bg-red-500 animate-pulse';
-                        const borderColor = node.status === 'ok' ? 'border-[#064e3b]/20' : node.status === 'warn' ? 'border-[#facc15]' : 'border-red-500';
-                        const barColor = node.status === 'ok' ? 'bg-[#10b981]' : node.status === 'warn' ? 'bg-[#facc15]' : 'bg-red-400';
-                        // Shift pattern on each tick for live feel
+            <div className="space-y-6">
+                <div className="flex items-center gap-3 px-2">
+                    <Activity className="w-5 h-5 text-honey" />
+                    <h3 className={cn(glass.microLabel, "font-bold opacity-60 uppercase tracking-[0.3em]")}>Fleet Heartbeat</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {heartbeatNodes.map((node, nodeIdx) => {
+                        const cfg = levelConfig[node.status as EventLevel];
                         const shifted = [...node.pattern.slice(tick % node.pattern.length), ...node.pattern.slice(0, tick % node.pattern.length)];
                         return (
-                            <div key={node.id} className={cn("border-4 bg-white p-6 space-y-4", borderColor)}>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn("w-2.5 h-2.5 rounded-full", dotColor)} />
+                            <motion.div
+                                key={node.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: nodeIdx * 0.05 }}
+                                className={cn(
+                                    glass.card,
+                                    "p-8 space-y-6 shadow-xl hover:shadow-2xl transition-all border-honey/10 relative overflow-hidden group",
+                                    node.status === 'critical' ? 'border-red-500/30' : node.status === 'warn' ? 'border-amber-500/30' : ''
+                                )}
+                            >
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-honey/5 rounded-full blur-xl pointer-events-none group-hover:bg-honey/10 transition-colors" />
+
+                                <div className="flex items-center justify-between relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className={cn("w-3 h-3 rounded-full shadow-lg", cfg.dot, cfg.glow)} />
                                         <div>
-                                            <p className="text-xs font-black uppercase text-[#064e3b]">{node.id}</p>
-                                            <p className="text-[9px] font-bold uppercase text-[#064e3b]/40">{node.temp}°C</p>
+                                            <p className={cn(glass.sectionTitle, "text-xl normal-case italic opacity-80")}>{node.id}</p>
+                                            <p className={cn(glass.microLabel, "opacity-40 font-bold mt-1")}>{node.temp}°C · VITALS</p>
                                         </div>
                                     </div>
-                                    <span className={cn(
-                                        "px-2 py-1 text-[9px] font-black uppercase tracking-widest",
-                                        node.status === 'ok' ? "bg-[#10b981]/10 text-[#10b981]" :
-                                            node.status === 'warn' ? "bg-[#facc15]/30 text-[#b45309]" :
-                                                "bg-red-50 text-red-600"
-                                    )}>
-                                        {node.status === 'ok' ? 'Nominal' : node.status === 'warn' ? 'Warning' : 'Critical'}
-                                    </span>
+                                    <div className={cn(glass.badge, "px-3 py-1", cfg.bg, cfg.color, "border-transparent text-[10px] font-bold")}>
+                                        {node.status === 'ok' ? 'NOMINAL' : node.status === 'warn' ? 'WARNING' : 'CRITICAL'}
+                                    </div>
                                 </div>
-                                {/* Live bar waveform */}
-                                <div className="flex items-end gap-0.5 h-12">
+
+                                {/* Live visualizer */}
+                                <div className="flex items-end gap-1 h-16 relative z-10">
                                     {shifted.map((val, i) => (
-                                        <div
+                                        <motion.div
                                             key={i}
-                                            style={{ height: `${val}%` }}
-                                            className={cn("flex-1 transition-all duration-700", barColor)}
+                                            initial={{ height: 0 }}
+                                            animate={{ height: `${val}%` }}
+                                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                            className={cn(
+                                                "flex-1 rounded-full opacity-30 group-hover:opacity-60 transition-opacity",
+                                                node.status === 'ok' ? 'bg-emerald-500' :
+                                                    node.status === 'warn' ? 'bg-amber-500' : 'bg-red-500'
+                                            )}
                                         />
                                     ))}
                                 </div>
-                            </div>
+                            </motion.div>
                         );
                     })}
                 </div>
             </div>
 
             {/* Live Event Feed */}
-            <div className="space-y-4">
-                <div className="flex items-center justify-between border-b-4 border-[#064e3b] pb-4">
+            <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border/50 pb-6 gap-4 px-2">
                     <div className="flex items-center gap-4">
-                        <Zap className="w-5 h-5 text-[#10b981]" />
-                        <h3 className="text-3xl font-black uppercase tracking-tighter">Activity Ledger</h3>
+                        <div className="w-12 h-12 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-sm">
+                            <Zap className="w-6 h-6 text-honey" />
+                        </div>
+                        <div>
+                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Activity <span className="text-honey">Ledger</span></h3>
+                            <p className={cn(glass.microLabel, "normal-case italic opacity-60 mt-1")}>Recursive real-time event indexing</p>
+                        </div>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30">{events.length} events</span>
+                    <div className={cn(glass.badge, "bg-white/40 dark:bg-black/20 border-border px-4 py-2 shadow-sm font-bold")}>
+                        {events.length} EVENTS_BUFFERED
+                    </div>
                 </div>
-                <div className="border-4 border-[#064e3b] divide-y-2 divide-[#064e3b]/5 max-h-[480px] overflow-y-auto shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
-                    {events.map(event => {
-                        const cfg = levelConfig[event.level];
-                        const Icon = cfg.icon;
-                        return (
-                            <div key={event.id} className={cn("flex items-start gap-4 px-6 py-4", cfg.bg)}>
-                                <div className={cn("w-1.5 h-full min-h-[24px] rounded-full shrink-0 self-stretch mt-1", cfg.dot)} style={{ width: '3px' }} />
-                                <Icon className={cn("w-4 h-4 shrink-0 mt-0.5", cfg.color)} />
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-3 mb-0.5">
-                                        <span className="text-[10px] font-black text-[#064e3b] uppercase tracking-wider">{event.hive}</span>
-                                        <span className="text-[9px] font-bold text-[#064e3b]/30 tabular-nums">{event.time}</span>
-                                    </div>
-                                    <p className={cn("text-xs font-bold", cfg.color)}>{event.event}</p>
-                                </div>
-                            </div>
-                        );
-                    })}
+
+                <div className={cn(glass.card, "p-0 shadow-2xl overflow-hidden border-border/50 relative")}>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+
+                    <div className="max-h-[550px] overflow-y-auto divide-y divide-border/20 custom-scrollbar relative z-10">
+                        <AnimatePresence initial={false}>
+                            {events.map((event, idx) => {
+                                const cfg = levelConfig[event.level];
+                                const Icon = cfg.icon;
+                                return (
+                                    <motion.div
+                                        key={event.id}
+                                        initial={{ opacity: 0, x: -20, height: 0 }}
+                                        animate={{ opacity: 1, x: 0, height: 'auto' }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.3 }}
+                                        className={cn("flex items-start gap-6 px-10 py-6 hover:bg-white/40 dark:hover:bg-black/20 transition-all group overflow-hidden")}
+                                    >
+                                        <div className={cn("w-1.5 h-12 rounded-full shrink-0 group-hover:scale-y-110 transition-transform", cfg.dot, "shadow-sm")} />
+                                        <div className={cn("w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm group-hover:border-honey transition-colors")}>
+                                            <Icon className={cn("w-6 h-6", cfg.color)} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-4 mb-2">
+                                                <span className={cn(glass.microLabel, "text-sm font-bold opacity-80")}>{event.hive}</span>
+                                                <div className="w-1 h-1 rounded-full bg-border" />
+                                                <span className={cn(glass.microLabel, "opacity-40 tabular-nums")}>{event.time}</span>
+                                            </div>
+                                            <p className={cn("text-base font-medium leading-relaxed italic opacity-80 group-hover:opacity-100 transition-opacity", cfg.color)}>
+                                                {event.event}
+                                            </p>
+                                        </div>
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                                            <button className={cn(glass.btnSecondary, "h-10 px-4 text-[10px] uppercase font-bold")}>View Details</button>
+                                            <button className={cn(glass.btnSecondary, "h-10 w-10 p-0 flex items-center justify-center")}><ArrowRight className="w-4 h-4" /></button>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            {/* AI Summary Banner */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className={cn(glass.card, "p-8 shadow-xl bg-gradient-to-br from-honey/10 to-transparent border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+            >
+                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/15 rounded-full blur-[80px] pointer-events-none group-hover:bg-honey/25 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-honey" />
+                </div>
+                <div className="relative z-10 text-center md:text-left">
+                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Continuous Monitoring Insight</h5>
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
+                        Our recursive monitoring engine analyzes biometric signals across the entire fleet in real-time.
+                        Thermal anomalies in HV-003 and HV-002 require immediate inspection to prevent colony loss or unintended swarming.
+                        Overall fleet stability remains at 94.2% nominal uptime.
+                    </p>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 };
 

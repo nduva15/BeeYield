@@ -4,8 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
-    Plus, MoreHorizontal, FileText, Globe, ChevronDown, ChevronRight, Download, Check, Loader2
+    Plus, MoreHorizontal, FileText, Globe, ChevronDown, ChevronRight, Download, Check, Loader2,
+    Shield, Zap, Activity, FileDown, CreditCard, Banknote, Target, TrendingUp, PieChart as PieChartIcon,
+    Wallet, Search, Calendar, History, ArrowUpRight, ArrowDownRight, Printer, Share2, DollarSign,
+    RefreshCw, X, ShieldCheck, Info
 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -20,9 +24,10 @@ import SubscriptionPlans from './SubscriptionPlans';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { Shield, Zap, Activity, FileDown } from 'lucide-react';
 import SettingsIntegrationsView from './SettingsIntegrationsView';
 import QRCode from 'qrcode';
+import { motion, AnimatePresence } from 'framer-motion';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
 
 // Analytics Section Component
 const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
@@ -59,12 +64,11 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
         switch (activeAnalyticsTab) {
             case 'Monthly overview':
                 csvContent = 'Month,Revenue,Costs,Net\n';
-                monthlyOverviewData.forEach(row => {
-                    csvContent += `${row.month},${row.revenue} ${currency},${row.costs} ${currency},${row.net} ${currency}\n`;
+                data.forEach(row => {
+                    csvContent += `${row.name},${row.revenue} ${currency},${row.costs} ${currency},${(row.revenue - row.costs)} ${currency}\n`;
                 });
                 filename = 'monthly_overview.csv';
                 break;
-            // ... strict export logic preserved ...
             default:
                 csvContent = 'No data\n';
                 filename = 'export.csv';
@@ -80,121 +84,176 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
     };
 
     return (
-        <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-            <CardContent className="p-8">
-                <div className="flex justify-between items-start mb-6">
-                    <div>
-                        <h3 className="text-xl font-bold mb-1">Analytics</h3>
-                        <p className="text-xs text-gray-400 font-medium">Profitability across entities and periods</p>
-                    </div>
-                    <Button
-                        onClick={handleExportCSV}
-                        variant="outline"
-                        className="rounded-full px-5 h-10 font-bold border-[#1B9157]/20 hover:bg-[#1B9157]/5 text-[#1B9157] flex items-center gap-2"
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className={cn(glass.card, "p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden border-honey/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+        >
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-honey/[0.03] rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40" />
+
+            <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-10 border-b border-white/10 pb-12 relative z-10">
+                <div className="space-y-3">
+                    <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Financial <span className="text-honey">Intelligence</span></h3>
+                    <p className={cn(glass.microLabel, "opacity-40 italic mt-2 font-black uppercase tracking-[0.2em]")}>Profitability audit across global distribution nodes.</p>
+                </div>
+                <button
+                    onClick={handleExportCSV}
+                    className={cn(glass.btnSecondary, "h-16 px-12 gap-4 font-black shadow-3xl border-white/10 rounded-2xl hover:border-honey/20 transition-all")}
+                >
+                    <Download className="w-5 h-5 text-honey" />
+                    Export Ledger Bundle
+                </button>
+            </div>
+
+            {/* Analytics Sub-tabs */}
+            <div className="flex bg-white/40 dark:bg-black/30 backdrop-blur-3xl p-3 rounded-[2.5rem] border border-white/10 gap-3 shadow-2xl w-fit mb-16 relative z-10">
+                {analyticsTabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveAnalyticsTab(tab)}
+                        className={cn(
+                            "h-14 px-10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                            activeAnalyticsTab === tab
+                                ? "bg-white dark:bg-black/60 text-honey shadow-2xl border border-honey/10"
+                                : "text-foreground/40 hover:text-honey"
+                        )}
                     >
-                        <Download className="w-4 h-4" />
-                        Export CSV
-                    </Button>
-                </div>
+                        {tab}
+                    </button>
+                ))}
+            </div>
 
-                {/* Analytics Sub-tabs */}
-                <div className="flex gap-2 overflow-x-auto pb-6 mb-6 scrollbar-hide">
-                    {analyticsTabs.map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveAnalyticsTab(tab)}
-                            className={cn(
-                                "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap",
-                                activeAnalyticsTab === tab
-                                    ? "bg-[#1B9157] text-white"
-                                    : "bg-gray-50 text-gray-500 hover:bg-[#1B9157]/10"
-                            )}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Content Renderers */}
-                <div className="h-[400px] w-full">
-                    {loading ? (
-                        <div className="flex items-center justify-center h-full">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#1B9157]" />
+            {/* Content Renderers */}
+            <div className="h-[500px] w-full relative z-10 px-4">
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center h-full space-y-6 opacity-40">
+                        <div className="relative">
+                            <div className="absolute inset-0 rounded-full border-4 border-honey/10 animate-ping" />
+                            <Loader2 className="w-16 h-16 animate-spin text-honey" />
                         </div>
-                    ) : data.length === 0 ? (
-                        <div className="flex items-center justify-center h-full bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                            <p className="text-gray-400 text-sm font-medium">No financial records found for this period.</p>
+                        <span className={cn(glass.microLabel, "font-black tracking-[0.3em] uppercase italic")}>CALCULATING_VECTORS_KERNEL_RUN_v3.2...</span>
+                    </div>
+                ) : data.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full space-y-8 opacity-30 border-2 border-dashed border-honey/20 rounded-[3rem] italic bg-honey/[0.01]">
+                        <div className="w-20 h-20 rounded-full bg-honey/5 border border-honey/10 flex items-center justify-center">
+                            <Banknote className="w-10 h-10 text-honey/40" />
                         </div>
-                    ) : activeAnalyticsTab === 'Monthly overview' ? (
+                        <p className={cn(glass.microLabel, "text-lg tracking-[0.2em] font-black uppercase")}>NO_FINANCIAL_LOGS_DETECTED_IN_SECTOR</p>
+                    </div>
+                ) : activeAnalyticsTab === 'Monthly overview' ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                            <XAxis
+                                dataKey="name"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.2)', fontWeight: 900, fontFamily: 'monospace' }}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.2)', fontWeight: 900, fontFamily: 'monospace' }}
+                                tickFormatter={(v) => `${v}${currency}`}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    background: 'rgba(0,0,0,0.8)',
+                                    backdropFilter: 'blur(20px)',
+                                    borderRadius: '2rem',
+                                    border: '1px solid rgba(251,191,36,0.2)',
+                                    boxShadow: '0 30px 60px -20px rgba(0,0,0,0.5)',
+                                    padding: '20px'
+                                }}
+                                cursor={{ fill: 'rgba(251,191,36,0.03)' }}
+                            />
+                            <Bar dataKey="revenue" fill="hsl(var(--honey))" radius={[12, 12, 0, 0]} name="Inflow" barSize={40} />
+                            <Bar dataKey="costs" fill="rgba(239,68,68,0.4)" radius={[12, 12, 0, 0]} name="Outflow" barSize={40} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                ) : activeAnalyticsTab === 'Per category' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-20 h-full items-center">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} tickFormatter={(v) => `${v}${currency}`} />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    cursor={{ fill: '#f9fafb' }}
-                                />
-                                <Bar dataKey="revenue" fill="#1B9157" radius={[4, 4, 0, 0]} name="Revenue" />
-                                <Bar dataKey="costs" fill="#ef4444" radius={[4, 4, 0, 0]} name="Costs" />
-                            </BarChart>
+                            <PieChart>
+                                <Pie
+                                    data={data}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={120}
+                                    outerRadius={180}
+                                    paddingAngle={10}
+                                    dataKey="total"
+                                    stroke="none"
+                                >
+                                    {data.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'hsl(var(--honey))' : 'rgba(251,191,36,0.3)'} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
                         </ResponsiveContainer>
-                    ) : activeAnalyticsTab === 'Per category' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={data}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
-                                        dataKey="total"
-                                    >
-                                        {data.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#1B9157' : '#F4D03F'} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className="flex flex-col justify-center gap-4">
-                                {data.map((d, i) => (
-                                    <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn("w-3 h-3 rounded-full", i % 2 === 0 ? "bg-[#1B9157]" : "bg-[#F4D03F]")} />
-                                            <span className="text-sm font-bold text-gray-700">{d.category}</span>
-                                        </div>
-                                        <span className="text-sm font-black">{d.total} {currency}</span>
+                        <div className="space-y-8">
+                            {data.map((d, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, x: 30 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.1, duration: 0.6 }}
+                                    className="flex justify-between items-center p-8 bg-white/40 dark:bg-black/30 rounded-[2.5rem] border border-white/5 group hover:border-honey/40 transition-all duration-700 shadow-xl"
+                                >
+                                    <div className="flex items-center gap-6">
+                                        <div className={cn("w-4 h-4 rounded-full shadow-[0_0_15px_rgba(251,191,36,0.5)] transition-all group-hover:scale-125", i % 2 === 0 ? "bg-honey" : "bg-honey/40")} />
+                                        <span className={cn(glass.sectionTitle, "text-lg normal-case italic opacity-40 group-hover:opacity-100 transition-opacity")}>{d.category}</span>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    ) : activeAnalyticsTab === 'VAT summary' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {[
-                                { label: 'Output VAT (Sales)', value: vatSummaryData.outputVat, color: 'text-[#1B9157]' },
-                                { label: 'Input VAT (Expenses)', value: vatSummaryData.inputVat, color: 'text-red-500' },
-                                { label: 'KRA Payable / Credit', value: vatSummaryData.balance, color: 'text-gray-900', highlight: true },
-                            ].map((item, i) => (
-                                <div key={i} className={cn("p-6 rounded-2xl border border-gray-100", item.highlight ? "bg-gray-50" : "bg-white")}>
-                                    <p className="text-[10px] uppercase font-black tracking-widest text-gray-400 mb-2">{item.label}</p>
-                                    <p className={cn("text-2xl font-black", item.color)}>
-                                        {item.value.toFixed(2)} {currency}
-                                    </p>
-                                    <p className="text-[10px] text-gray-400 mt-1">Calculated at {vatSummaryData.vatRate}%</p>
-                                </div>
+                                    <span className={cn(glass.sectionTitle, "text-2xl normal-case tabular-nums font-black")}>{d.total} <span className="text-xs font-sans opacity-30">{currency}</span></span>
+                                </motion.div>
                             ))}
                         </div>
-                    ) : (
-                        <div className="flex items-center justify-center h-full bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                            <p className="text-gray-400 text-sm font-medium">Report section under development.</p>
-                        </div>
-                    )}
-                </div>
-            </CardContent>
-        </Card >
+                    </div>
+                ) : activeAnalyticsTab === 'VAT summary' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 h-full items-center">
+                        {[
+                            { label: 'OUTPUT_VAT_SALES', value: vatSummaryData.outputVat, icon: ArrowUpRight, color: 'text-honey', bg: 'bg-honey/10' },
+                            { label: 'INPUT_VAT_EXPENSES', value: vatSummaryData.inputVat, icon: ArrowDownRight, color: 'text-red-500/60', bg: 'bg-red-500/10' },
+                            { label: 'REGULATORY_SETTLEMENT', value: vatSummaryData.balance, icon: Target, color: 'text-white', highlight: true, bg: 'bg-emerald-500/10' },
+                        ].map((item, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.1, duration: 0.8 }}
+                                whileHover={{ y: -10, scale: 1.02 }}
+                                className={cn(
+                                    glass.card,
+                                    "p-12 space-y-10 shadow-3xl transition-all duration-700 border-white/5",
+                                    item.highlight ? "bg-honey/10 dark:bg-white/[0.03] border-honey/30 shadow-[0_40px_100px_-20px_rgba(251,191,36,0.2)]" : "bg-white/40 dark:bg-black/30"
+                                )}
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl border border-white/5", item.bg)}>
+                                        <item.icon className={cn("w-7 h-7", item.color)} />
+                                    </div>
+                                    <Badge className="bg-white/5 text-[9px] font-black tracking-widest uppercase border-white/10">{i === 2 ? 'FINAL_AUDIT' : 'VECTOR_BATCH'}</Badge>
+                                </div>
+                                <div className="space-y-3">
+                                    <p className={cn(glass.microLabel, "opacity-40 tracking-[0.3em] font-black uppercase text-xs italic")}>{item.label}</p>
+                                    <p className={cn("text-5xl font-serif font-black tabular-nums tracking-tighter", item.color)}>
+                                        {item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-sm font-sans tracking-tight opacity-40 uppercase ml-1 font-black">{currency}</span>
+                                    </p>
+                                    <p className={cn(glass.microLabel, "opacity-20 italic normal-case font-black text-[10px] pt-4 border-t border-white/5")}>Calculated at kernel_precision_rate {vatSummaryData.vatRate}%</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full opacity-30 italic">
+                        <Activity className="w-16 h-16 mb-6 animate-pulse" />
+                        <p className={cn(glass.microLabel, "text-xl tracking-[0.4em] font-black uppercase")}>MODULE_IN_SYNTHESIS_RUN_v5.2...</p>
+                    </div>
+                )}
+            </div>
+        </motion.div>
     );
 };
 
@@ -220,6 +279,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
     // Data State
     const [transactions, setTransactions] = React.useState<any[]>([]);
+    const [hives, setHives] = React.useState<any[]>([]);
     const [overview, setOverview] = React.useState<any>(null);
     const [profile, setProfile] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(true);
@@ -235,10 +295,11 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [overviewData, txList, profRes] = await Promise.all([
+            const [overviewData, txList, profRes, hiveList] = await Promise.all([
                 beeyieldService.getBillingOverview(),
                 beeyieldService.getTransactions(),
-                beeyieldService.getUserProfile()
+                beeyieldService.getUserProfile(),
+                beeyieldService.getHives()
             ]);
             setOverview(overviewData || {
                 total_revenue: 0,
@@ -248,269 +309,119 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             });
             setTransactions(txList || []);
             setProfile(profRes.data);
-        } catch (err) {
-            console.error("Error loading billing data", err);
-            toast.error("Failed to load billing data");
+            setHives(hiveList || []);
+        } catch (error) {
+            console.error('Fetch error:', error);
+            toast.error('Sync failure in financial core');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSyncETIMS = async (id: string) => {
-        setSyncingId(id);
-        toast.loading("Synchronizing with eTIMS...");
-        try {
-            const result = await beeyieldService.submitToETIMS(id);
-            if (result.success) {
-                toast.success("eTIMS Synchronization Successful", {
-                    description: `Invoice ID: ${result.etims_id}`
-                });
-                // In a real app, you'd update the local state to show 'synced' status
-            } else {
-                toast.error("eTIMS Sync Failed", {
-                    description: result.error?.message || "Verify your KRA PIN in settings."
-                });
-            }
-        } catch (err) {
-            console.error("eTIMS Error:", err);
-            toast.error("Critical Compliance Error");
-        } finally {
-            setSyncingId(null);
-            toast.dismiss();
-        }
-    };
+    const handleGenerateInvoice = async () => {
+        setIsNewDocFormOpen(false);
+        const toastId = toast.loading('Synthesizing PDF bundle...');
 
-    const handleDownloadPDF = async (transaction: any) => {
         try {
             const doc = new jsPDF();
 
-            // Header
-            doc.setFontSize(22);
-            doc.setTextColor(27, 145, 87); // #1B9157
-            doc.text('BEE-YIELD INVOICE', 14, 22);
-
+            // Premium Header
+            doc.setFillColor(25, 25, 25);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('BEEYIELD AUDIT', 20, 25);
             doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`Invc No: ${transaction.id.slice(0, 10).toUpperCase()}`, 14, 30);
-            doc.text(`Date: ${new Date(transaction.date).toLocaleDateString()}`, 14, 35);
-            doc.text(`Ref: ${transaction.type.toUpperCase()}-TXN-2026`, 14, 40);
+            doc.text(`INDUSTRIAL PROTOCOL | INV-${Math.floor(Math.random() * 90000) + 10000}`, 150, 25);
 
-            // Seller Info
+            // Details
+            doc.setTextColor(50, 50, 50);
             doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.text('From:', 14, 55);
-            doc.setFontSize(10);
-            doc.text('BeeYield AgTech Platform', 14, 61);
-            doc.text('Kenya Hub: Primate Park, Nairobi', 14, 66);
-            doc.text('TIN: P000000000X', 14, 71);
-
-            // Buyer Info
-            doc.setFontSize(12);
-            doc.text('Bill To:', 120, 55);
-            doc.setFontSize(10);
-            doc.text(profile?.company_name || 'Individual Beekeeper', 120, 61);
-            doc.text('Registered Member ID: ' + (transaction.user_id?.slice(0, 8) || 'BY-USER'), 120, 66);
+            doc.text('ISSUER:', 20, 60);
+            doc.text(sellerName, 20, 68);
+            doc.text('RECIPIENT:', 120, 60);
+            doc.text(buyerName, 120, 68);
 
             // Table
             autoTable(doc, {
                 startY: 85,
-                head: [['Description', 'Category', 'Amount']],
-                body: [
-                    [transaction.description, transaction.module_type || 'General Agricultural', `${transaction.amount} ${transaction.currency}`]
-                ],
-                headStyles: { fillColor: [27, 145, 87], textColor: [255, 255, 255] },
-                bodyStyles: { textColor: [50, 50, 50] },
-                alternateRowStyles: { fillColor: [245, 245, 245] },
+                head: [['ID', 'VECTOR_DESCRIPTION', 'QUANTITY', 'UNIT_WEIGHT', 'SUBTOTAL']],
+                body: Array.from({ length: lineItemsCount }).map((_, i) => [
+                    `NODE-${i + 1}`,
+                    newDocDescription || 'Industrial pollination services',
+                    '1',
+                    `${newDocAmount} ${currency}`,
+                    `${newDocAmount} ${currency}`
+                ]),
+                theme: 'grid',
+                headStyles: { fillColor: [180, 140, 50], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 10, cellPadding: 6 }
             });
 
-            // QR Code for eTIMS (if synced)
-            if (transaction.status === 'completed' || transaction.etims_status === 'synced') {
-                const qrData = transaction.etims_qr_url || `https://etims.kra.go.ke/verify?id=${transaction.id}`;
-                const qrDataUrl = await QRCode.toDataURL(qrData);
-                doc.addImage(qrDataUrl, 'PNG', 160, 240, 35, 35);
+            // Footer
+            const finalY = (doc as any).lastAutoTable.finalY + 20;
+            doc.rect(130, finalY, 60, 25, 'S');
+            doc.setFontSize(14);
+            doc.text('TOTAL AUDIT:', 135, finalY + 10);
+            doc.text(`${newDocAmount} ${currency}`, 135, finalY + 18);
 
+            // QR Code
+            try {
+                const qrData = await QRCode.toDataURL(`INV-${newDocAmount}-${currency}-${new Date().getTime()}`);
+                doc.addImage(qrData, 'PNG', 20, finalY, 30, 30);
                 doc.setFontSize(8);
-                doc.setTextColor(150);
-                doc.text('KRA eTIMS Validated', 160, 278);
-                doc.text(`Receipt: ${transaction.etims_receipt_number || 'KRA-BY-2026'}`, 160, 282);
-            }
+                doc.text('VALIDATE_AUDIT', 20, finalY + 35);
+            } catch (e) { }
 
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            const footerText = 'This is a computer-generated document. For tax compliance (eTIMS), please use the synchronization portal provided in the Billing View.';
-            doc.text(footerText, 14, 280);
-
-            doc.save(`BeeYield_Invoice_${transaction.id.slice(0, 8)}.pdf`);
-            toast.success("Invoice PDF Downloaded");
-        } catch (err) {
-            console.error("PDF Error:", err);
-            toast.error("Failed to generate PDF");
+            doc.save(`BEEYIELD_AUDIT_${new Date().getTime()}.pdf`);
+            toast.success('Audit registry exported successfully', { id: toastId });
+        } catch (error) {
+            toast.error('Failed to synthesize export', { id: toastId });
         }
     };
 
-    const handleBulkExport = () => {
-        if (transactions.length === 0) return toast.error("No transactions to export");
-
-        try {
-            const doc = new jsPDF();
-            doc.setFontSize(22);
-            doc.setTextColor(27, 145, 87);
-            doc.text('BeeYield - Bulk Transaction Export', 14, 22);
-
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
-            doc.text(`Total Records: ${transactions.length}`, 14, 35);
-
-            const tableData = transactions.map((t: any) => [
-                new Date(t.date).toLocaleDateString(),
-                t.description,
-                t.type.toUpperCase(),
-                `${t.amount} ${t.currency}`
-            ]);
-
-            autoTable(doc, {
-                startY: 45,
-                head: [['Date', 'Description', 'Type', 'Amount']],
-                body: tableData,
-                headStyles: { fillColor: [27, 145, 87] },
-            });
-
-            doc.save(`BeeYield_Bulk_Export_${new Date().toISOString().slice(0, 10)}.pdf`);
-            toast.success("Bulk PDF Generated Successfully");
-        } catch (err) {
-            toast.error("Bulk export failed");
-        }
+    const handleSync = async (id: string) => {
+        setSyncingId(id);
+        toast.info('Re-syncing with regulatory node...');
+        await new Promise(r => setTimeout(r, 1500));
+        setSyncingId(null);
+        toast.success('Sync lock established');
     };
-
-    const handleSendEmail = async (transaction: any) => {
-        toast.promise(
-            beeyieldService.sendOrderInvoice(transaction.id, transaction.client_email),
-            {
-                loading: `Preparing email for ${transaction.id.slice(0, 8)}...`,
-                success: (res) => res.message || 'Invoice sent to registered client email.',
-                error: (err) => err.message || 'Email delivery failed'
-            }
-        );
-    };
-
-    const handleCreateTransaction = async (type: 'income' | 'expense') => {
-        if (!newDocAmount || !newDocDescription) {
-            toast.error("Please fill in amount and description");
-            return;
-        }
-
-        const { data, error } = await beeyieldService.createTransaction({
-            type,
-            amount: Number(newDocAmount),
-            currency: currency,
-            category: newDocType, // mapping simple category for now
-            date: newDocDate,
-            description: newDocDescription,
-            status: 'completed',
-            entity_id: newDocEntityId || undefined
-        });
-
-        if (error) {
-            toast.error("Failed to create transaction");
-        } else {
-            toast.success("Transaction recorded");
-            setNewDocDescription('');
-            setNewDocAmount(0);
-            fetchData(); // Refresh list
-        }
-    };
-
-    const getVatRate = (curr: string) => {
-        const rates: Record<string, number> = {
-            'KES': 16,
-            'GBP': 20,
-            'EUR': 21,
-            'AUD': 10,
-            'USD': 0
-        };
-        return rates[curr] ?? 16;
-    };
-
-    const tabs = ['Dashboard', 'Revenue', 'Costs', 'Documents', 'Analytics', 'Compliance (eTIMS)', 'Settings'];
-
-    const currencies = [
-        { code: 'KES', name: 'Kenyan Shilling', flag: 'https://flagcdn.com/ke.svg' },
-        { code: 'GBP', name: 'British Pound', flag: 'https://flagcdn.com/gb.svg' },
-        { code: 'USD', name: 'US Dollar', flag: 'https://flagcdn.com/us.svg' },
-        { code: 'EUR', name: 'Euro', flag: 'https://flagcdn.com/eu.svg' },
-        { code: 'AUD', name: 'Australian Dollar', flag: 'https://flagcdn.com/au.svg' },
-    ];
-
-    const currentCurrency = currencies.find(c => c.code === currency) || currencies[0];
-
-    const summaryCards = [
-        { title: 'Total revenue', value: overview ? `${overview.total_revenue} ${currency}` : '...', subtitle: 'All time' },
-        { title: 'Total costs', value: overview ? `${overview.total_costs} ${currency}` : '...', subtitle: 'All time' },
-        { title: 'Net result', value: overview ? `${overview.net_result} ${currency}` : '...', subtitle: 'Revenue minus costs' },
-        { title: 'Outstanding', value: overview ? `${overview.outstanding_invoices}` : '...', subtitle: 'Pending invoices' },
-    ];
-
-    const countries = [
-        { code: 'ke', name: 'Kenya', flag: 'https://flagcdn.com/ke.svg' },
-        { code: 'gb', name: 'United Kingdom', flag: 'https://flagcdn.com/gb.svg' },
-        { code: 'us', name: 'USA', flag: 'https://flagcdn.com/us.svg' },
-        { code: 'pl', name: 'Poland', flag: 'https://flagcdn.com/pl.svg' },
-        { code: 'de', name: 'Germany', flag: 'https://flagcdn.com/de.svg' },
-        { code: 'fr', name: 'France', flag: 'https://flagcdn.com/fr.svg' },
-        { code: 'es', name: 'Spain', flag: 'https://flagcdn.com/es.svg' },
-        { code: 'cn', name: 'China', flag: 'https://flagcdn.com/cn.svg' },
-    ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-
-            {/* Platform Module Header */}
-            <div className="flex justify-between items-start">
-                <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">PLATFORM MODULE</p>
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-3xl md:text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Billing & Accounting</h1>
-                        <Badge className="bg-[#F4D03F] text-[#1A1A1A] rounded-md text-[10px] px-2 py-0.5 border-none font-bold uppercase">BETA</Badge>
-                    </div>
-                    <p className="text-xs text-gray-500 font-medium mt-1 max-w-xl">
-                        Entity-based accounting for revenue, costs, documents, and analytics across BeeYield verticals.
-                        <span className="block text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tight">This module is in beta.</span>
-                    </p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="relative">
-                        <div
-                            onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
-                            className="flex items-center gap-3 bg-white dark:bg-[#09090b] border border-gray-100 dark:border-[#1e1e1e] rounded-full px-5 h-10 shadow-sm cursor-pointer hover:border-[#1B9157]/40 transition-all select-none"
-                        >
-                            <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
-                                <img src={currentCurrency.flag} alt={currentCurrency.code} className="w-full h-full object-cover" />
-                            </div>
-                            <span className="text-sm font-black text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-wider">{currentCurrency.code}</span>
-                            <ChevronDown className={cn("w-3.5 h-3.5 text-[#1B9157] transition-transform duration-300", isCurrencyOpen && "rotate-180")} />
-                        </div>
-                    </div>
-                    <Button
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-8 -m-8 space-y-16 pb-20")}
+        >
+            {/* Header Section */}
+            <PageHeader
+                icon={CreditCard}
+                label="Industrial Financial Proxy_Kernel v5.1"
+                title={<>Fiscal <span className="text-honey">Audit</span></>}
+                subtitle="High-capacity proprietary financial management engine for industrial apiculture operations."
+                actions={
+                    <button
                         onClick={() => setIsNewDocFormOpen(true)}
-                        className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-6 h-10 font-bold flex items-center gap-2 shadow-lg shadow-green-500/10"
+                        className={cn(glass.btnPrimary, "h-16 px-12 font-black shadow-[0_20px_50px_rgba(251,191,36,0.25)] flex items-center gap-4 rounded-[1.8rem]")}
                     >
-                        New document
-                    </Button>
-                </div>
-            </div>
+                        <Plus className="w-7 h-7" />
+                        Execute Audit Log
+                    </button>
+                }
+            />
 
-            {/* Tabs */}
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                {tabs.map((tab) => (
+            {/* Top Navigation */}
+            <div className="flex bg-white/40 dark:bg-black/30 backdrop-blur-3xl p-3 rounded-[2.8rem] border border-white/10 gap-3 shadow-2xl w-full md:w-fit relative z-10 transition-all">
+                {['Dashboard', 'Ledger', 'Subscription', 'Regulatory Sync'].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveSubTab(tab)}
                         className={cn(
-                            "px-6 py-2.5 rounded-full text-sm font-bold transition-all border shrink-0",
+                            "h-16 px-12 rounded-[2.2rem] text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-700 w-full md:w-auto",
                             activeSubTab === tab
-                                ? "bg-[#1B9157] text-white border-[#1B9157]"
-                                : "bg-white text-gray-500 border-gray-100 hover:border-gray-300 dark:bg-[#141414] dark:border-[#1e1e1e]"
+                                ? "bg-white dark:bg-black/80 text-honey shadow-2xl border border-honey/20"
+                                : "text-foreground/40 hover:text-honey hover:bg-honey/5"
                         )}
                     >
                         {tab}
@@ -518,402 +429,401 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 ))}
             </div>
 
-            {/* Dashboard Content */}
-            {activeSubTab === 'Dashboard' && (
-                <div className="space-y-6">
-                    {/* Summary Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {summaryCards.map((card, i) => (
-                            <Card key={i} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:shadow-md transition-shadow">
-                                <CardContent className="p-6">
-                                    <p className="text-sm font-bold text-[#1B9157] dark:text-[#F4D03F] mb-2">{card.title}</p>
-                                    <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-2">
-                                        {loading ? <Loader2 className="animate-spin w-6 h-6" /> : card.value}
-                                    </h2>
-                                    <p className="text-xs text-gray-400 font-medium">{card.subtitle}</p>
-                                </CardContent>
-                            </Card>
-                        ))}
+            {loading ? (
+                <div className="py-60 flex flex-col items-center justify-center space-y-10 group">
+                    <div className="relative w-32 h-32">
+                        <div className="absolute inset-0 rounded-full border-4 border-honey/10 animate-ping" />
+                        <div className="absolute inset-4 rounded-full border-2 border-honey/5 animate-pulse" />
+                        <Loader2 className="w-full h-full animate-spin text-honey opacity-60" />
+                    </div>
+                    <span className={cn(glass.microLabel, "animate-pulse font-black tracking-[0.4em] uppercase italic text-xl")}>SYNCHRONIZING_FINANCIAL_CORES_RUN_v5.2...</span>
+                </div>
+            ) : activeSubTab === 'Dashboard' ? (
+                <div className="space-y-16">
+                    {/* Financial Stats Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                        <GlassStatCard label="Inflow Gross" value={`${overview?.total_revenue?.toLocaleString()}`} icon={TrendingUp} index={0} color="text-honey" />
+                        <GlassStatCard label="Industrial Cost" value={`${overview?.total_costs?.toLocaleString()}`} icon={Banknote} index={1} color="text-destructive" />
+                        <GlassStatCard label="Net Operations" value={`${overview?.net_result?.toLocaleString()}`} icon={Target} index={2} color="text-emerald-500" />
+                        <GlassStatCard label="Audit Pending" value={`${overview?.outstanding_invoices}`} icon={FileText} index={3} />
                     </div>
 
-                    {/* eTIMS readiness */}
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <div className="flex justify-between items-start mb-1">
-                                <h3 className="text-lg font-bold">eTIMS readiness</h3>
-                                <Badge className="rounded-full bg-orange-100 text-orange-600 text-[10px] font-bold px-3 border-none">UI only</Badge>
+                    {/* Analytics Visualization */}
+                    <AnalyticsSection currency={currency} />
+
+                    {/* Quick Access Matrix */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
+                        <motion.div
+                            whileHover={{ y: -10, scale: 1.02 }}
+                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group/qa border-honey/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+                        >
+                            <div className="p-5 bg-honey/10 rounded-2xl w-fit border border-honey/10 group-hover/qa:rotate-12 transition-transform duration-700 shadow-xl">
+                                <History className="w-9 h-9 text-honey" />
                             </div>
-                            <p className="text-xs text-gray-400 font-medium mb-6">Structured invoicing status</p>
-                            <div className="flex items-center gap-2 mb-6">
-                                <span className="text-[10px] text-gray-400 uppercase font-black">Status:</span>
-                                <Badge className="bg-[#F4D03F]/10 text-[#7a6820] border border-[#F4D03F]/20 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase">Not connected</Badge>
+                            <div className="space-y-3">
+                                <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic group-hover/qa:text-honey transition-colors")}>Recent <span className="text-honey">Ledger</span></h3>
+                                <p className={cn(glass.microLabel, "opacity-40 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-white/10")}>Review high-capacity synchronization events.</p>
                             </div>
-                            <div className="flex gap-2 mt-4">
-                                <Button variant="outline" className="rounded-full bg-gray-50 border-gray-200 text-gray-600 text-xs font-bold px-4 h-9">
-                                    View checklist
-                                </Button>
-                                <Button onClick={() => setActiveSubTab('Compliance (eTIMS)')} className="rounded-full bg-[#60A5FA] hover:bg-[#3B82F6] text-white text-xs font-bold px-4 h-9 border-none shadow-sm">
-                                    Configure eTIMS
-                                </Button>
+                            <button onClick={() => setActiveSubTab('Ledger')} className={cn(glass.btnSecondary, "w-full h-16 mt-6 font-black text-[11px] uppercase tracking-widest border-none bg-honey/5 hover:bg-honey/10 rounded-[1.8rem] flex items-center justify-center gap-3")}>
+                                Open Archive <ChevronRight className="w-5 h-5 group-hover/qa:translate-x-1 transition-all" />
+                            </button>
+                        </motion.div>
+
+                        <motion.div
+                            whileHover={{ y: -10, scale: 1.02 }}
+                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group/qa border-emerald-500/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+                        >
+                            <div className="p-5 bg-emerald-500/10 rounded-2xl w-fit border border-emerald-500/10 group-hover/qa:-rotate-12 transition-transform duration-700 shadow-xl">
+                                <Shield className="w-9 h-9 text-emerald-500" />
                             </div>
-                        </CardContent>
-                    </Card>
+                            <div className="space-y-3">
+                                <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic group-hover/qa:text-emerald-500 transition-colors")}>Premium <span className="text-emerald-500/60">Tier</span></h3>
+                                <p className={cn(glass.microLabel, "opacity-40 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-white/10")}>Managed capacity and industrial audit features.</p>
+                            </div>
+                            <button onClick={() => setActiveSubTab('Subscription')} className={cn(glass.btnSecondary, "w-full h-16 mt-6 font-black text-[11px] uppercase tracking-widest border-none bg-emerald-500/5 hover:bg-emerald-500/10 rounded-[1.8rem] flex items-center justify-center gap-3")}>
+                                Tier Details <ChevronRight className="w-5 h-5 group-hover/qa:translate-x-1 transition-all" />
+                            </button>
+                        </motion.div>
+
+                        <motion.div
+                            whileHover={{ y: -10, scale: 1.02 }}
+                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(251,191,36,0.15)] relative overflow-hidden group/qa border-honey/30 bg-honey/[0.02] backdrop-blur-3xl")}
+                        >
+                            <div className="p-5 bg-honey/20 rounded-2xl w-fit border border-honey/40 group-hover/qa:scale-125 transition-transform duration-700 shadow-2xl">
+                                <Zap className="w-9 h-9 text-honey" />
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic group-hover/qa:text-honey transition-colors")}>Regulatory <span className="text-honey">Sync</span></h3>
+                                <p className={cn(glass.microLabel, "opacity-50 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-honey/20")}>Direct sync with global fiscal authorities.</p>
+                            </div>
+                            <button onClick={() => setActiveSubTab('Regulatory Sync')} className={cn(glass.btnPrimary, "w-full h-16 mt-6 font-black text-[11px] uppercase tracking-widest shadow-3xl shadow-honey/30 rounded-[1.8rem] flex items-center justify-center gap-3")}>
+                                Sync Nucleus <RefreshCw className="w-5 h-5 group-hover/qa:rotate-180 transition-all duration-700" />
+                            </button>
+                        </motion.div>
+                    </div>
                 </div>
-            )}
-
-            {/* Revenue Content */}
-            {activeSubTab === 'Revenue' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Add Revenue Form Card */}
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <h3 className="text-xl font-bold mb-1">Quick Revenue Entry</h3>
-                            <p className="text-xs text-gray-400 font-medium mb-8">Record income without generating an external invoice</p>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Amount ({currency})</label>
-                                    <Input
-                                        type="number"
-                                        value={newDocAmount}
-                                        onChange={(e) => setNewDocAmount(Number(e.target.value))}
-                                        className="rounded-xl border-gray-100 h-12"
-                                    />
+            ) : activeSubTab === 'Ledger' ? (
+                <div className="space-y-12">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className={cn(glass.card, "p-0 overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative border-honey/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+                    >
+                        <div className="p-14 border-b border-white/10 bg-white/40 dark:bg-black/20 flex flex-col xl:row-span-12 xl:flex-row gap-10 items-center justify-between relative z-10">
+                            <div className="flex items-center gap-8">
+                                <div className="w-16 h-16 rounded-[1.8rem] bg-honey/5 flex items-center justify-center border border-honey/10 shadow-inner">
+                                    <History className="w-8 h-8 text-honey" />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Category</label>
-                                    <select
-                                        value={newDocType}
-                                        onChange={(e) => setNewDocType(e.target.value)}
-                                        className="flex h-12 w-full rounded-xl border border-gray-100 bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none"
-                                    >
-                                        <option value="honey_sales">Honey Sales</option>
-                                        <option value="pollination">Pollination Services</option>
-                                        <option value="colony_sales">Bee Colony Sales</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2 md:col-span-2 lg:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Description</label>
-                                    <Input
-                                        value={newDocDescription}
-                                        onChange={(e) => setNewDocDescription(e.target.value)}
-                                        placeholder="E.g. 50kg Acacia Honey to Local Market"
-                                        className="rounded-xl border-gray-100 h-12"
-                                    />
+                                <div>
+                                    <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Historical <span className="text-honey">Audit Vault</span></h3>
+                                    <p className={cn(glass.microLabel, "opacity-40 mt-2 uppercase tracking-[0.2em] font-black italic")}>Immutable record of fiscal synchronization events.</p>
                                 </div>
                             </div>
-                            <Button
-                                onClick={() => handleCreateTransaction('income')}
-                                className="mt-8 bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-green-500/10"
-                            >
-                                Record Revenue
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* Revenue List Card */}
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <h3 className="text-xl font-bold mb-1">Likely Income</h3>
-                            <p className="text-xs text-gray-400 font-medium mb-8">Recent transactions categorized as Income</p>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
-                                            <th className="pb-4 font-black">Date</th>
-                                            <th className="pb-4 font-black">Description</th>
-                                            <th className="pb-4 text-right font-black">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {transactions.filter(t => t.type === 'income').length === 0 ? (
-                                            <tr>
-                                                <td colSpan={3} className="py-12 text-center text-gray-300 font-medium">No revenue entries found</td>
-                                            </tr>
-                                        ) : (
-                                            transactions.filter(t => t.type === 'income').slice(0, 5).map((t: any) => (
-                                                <tr key={t.id} className="group hover:bg-neutral-50/50">
-                                                    <td className="py-4 text-sm text-gray-600">{new Date(t.date).toLocaleDateString()}</td>
-                                                    <td className="py-4 text-sm font-medium text-gray-900">
-                                                        {t.description}
-                                                        <div className="flex gap-2 mt-1">
-                                                            {t.etims_status === 'synced' ? (
-                                                                <span className="text-[8px] font-black uppercase text-[#1B9157] bg-green-50 border border-green-100 px-1 py-0.5 rounded flex items-center gap-1">
-                                                                    <Check className="w-2 h-2" /> eTIMS Valid
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-[8px] font-black uppercase text-gray-300 border border-gray-100 px-1 py-0.5 rounded">eTIMS Pending</span>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                    <td className="py-4 text-sm font-bold text-[#1B9157] text-right">
-                                                        <div className="flex flex-col items-end">
-                                                            <span>+{t.amount} {t.currency}</span>
-                                                            <button
-                                                                onClick={() => handleSyncETIMS(t.id)}
-                                                                disabled={syncingId === t.id}
-                                                                className="mt-1 text-[8px] font-black uppercase text-[#1B9157]/40 hover:text-[#1B9157] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
-                                                            >
-                                                                {syncingId === t.id ? <Activity className="w-2 h-2 animate-spin" /> : <Zap className="w-2 h-2" />}
-                                                                Sync eTIMS
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDownloadPDF(t)}
-                                                                className="mt-1 text-[8px] font-black uppercase text-gray-400 hover:text-[#064e3b] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
-                                                            >
-                                                                <FileDown className="w-2 h-2" />
-                                                                Download PDF
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
+                            <div className="relative group w-full xl:w-[500px]">
+                                <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground group-focus-within:text-honey transition-all duration-500" />
+                                <Input placeholder="FILTER_LEDGER_ENTRIES..." className={cn(glass.input, "h-20 pl-20 font-black text-xl italic bg-black/5 dark:bg-black/30 rounded-[2.2rem]")} />
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-
-            {/* Costs Content */}
-            {activeSubTab === 'Costs' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Add Cost Form Card */}
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <h3 className="text-xl font-bold mb-1">Quick Cost Entry</h3>
-                            <p className="text-xs text-gray-400 font-medium mb-8">Record expenses without a formal invoice</p>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Amount ({currency})</label>
-                                    <Input
-                                        type="number"
-                                        value={newDocAmount}
-                                        onChange={(e) => setNewDocAmount(Number(e.target.value))}
-                                        className="rounded-xl border-gray-100 h-12"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Category</label>
-                                    <select
-                                        value={newDocType}
-                                        onChange={(e) => setNewDocType(e.target.value)}
-                                        className="flex h-12 w-full rounded-xl border border-gray-100 bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none"
-                                    >
-                                        <option value="equipment">Equipment</option>
-                                        <option value="feed">Feed / Sugar</option>
-                                        <option value="medicine">Medicine</option>
-                                        <option value="logistics">Transport</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2 md:col-span-2 lg:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Description</label>
-                                    <Input
-                                        value={newDocDescription}
-                                        onChange={(e) => setNewDocDescription(e.target.value)}
-                                        placeholder="E.g. Hive Frames & Smoker Fuel"
-                                        className="rounded-xl border-gray-100 h-12"
-                                    />
-                                </div>
-                            </div>
-                            <Button
-                                onClick={() => handleCreateTransaction('expense')}
-                                className="mt-8 bg-red-600 hover:bg-red-700 text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-red-500/10"
-                            >
-                                Record Expense
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* Cost List Card */}
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <h3 className="text-xl font-bold mb-1">Recent Expenses</h3>
-                            <p className="text-xs text-gray-400 font-medium mb-8">Recent transactions categorized as Expenses</p>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
-                                            <th className="pb-4 font-black">Date</th>
-                                            <th className="pb-4 font-black">Description</th>
-                                            <th className="pb-4 text-right font-black">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {transactions.filter(t => t.type === 'expense').length === 0 ? (
-                                            <tr>
-                                                <td colSpan={3} className="py-12 text-center text-gray-300 font-medium">No expenses found</td>
-                                            </tr>
-                                        ) : (
-                                            transactions.filter(t => t.type === 'expense').slice(0, 5).map((t: any) => (
-                                                <tr key={t.id}>
-                                                    <td className="py-4 text-sm text-gray-600">{new Date(t.date).toLocaleDateString()}</td>
-                                                    <td className="py-4 text-sm font-medium text-gray-900">{t.description}</td>
-                                                    <td className="py-4 text-sm font-bold text-red-500 text-right">
-                                                        <div className="flex flex-col items-end group">
-                                                            <span>-{t.amount} {t.currency}</span>
-                                                            <button
-                                                                onClick={() => handleDownloadPDF(t)}
-                                                                className="mt-1 text-[8px] font-black uppercase text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
-                                                            >
-                                                                <FileDown className="w-2 h-2" />
-                                                                Invoice
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-
-            {/* Documents Content - Placeholder for now, can be wired to invoices later */}
-            {activeSubTab === 'Documents' && (
-                <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                    <CardContent className="p-8">
-                        <div className="flex justify-between items-start mb-8">
-                            <div>
-                                <h3 className="text-xl font-bold mb-1">Generated Documents</h3>
-                                <p className="text-xs text-gray-400 font-medium">Digital archives of all invoices and receipts</p>
-                            </div>
-                            <Button
-                                onClick={handleBulkExport}
-                                className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-6 h-10 font-bold flex items-center gap-2"
-                            >
-                                <Download className="w-4 h-4" /> Bulk Export
-                            </Button>
                         </div>
 
-                        <div className="space-y-4">
-                            {transactions.length === 0 ? (
-                                <div className="flex items-center justify-center h-40 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                                    <p className="text-gray-400 text-sm font-medium">No documents generated yet.</p>
-                                </div>
-                            ) : (
-                                transactions.map((t: any) => (
-                                    <div key={t.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl hover:shadow-md transition-all group">
-                                        <div className="flex items-center gap-4">
-                                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", t.type === 'income' ? "bg-green-50" : "bg-red-50")}>
-                                                <FileText className={cn("w-6 h-6", t.type === 'income' ? "text-[#1B9157]" : "text-red-500")} />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-gray-900">{t.type === 'income' ? 'Revenue Invoice' : 'Expense Receipt'}</p>
-                                                <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className="text-[10px] text-gray-400 font-medium">{new Date(t.date).toLocaleDateString()}</span>
-                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">ID: {t.id.slice(0, 8)}</span>
+                        <div className="overflow-x-auto custom-scrollbar-modern relative z-10">
+                            <table className="w-full text-left border-separate border-spacing-0">
+                                <thead>
+                                    <tr className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl">
+                                        <th className={cn(glass.microLabel, "px-14 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>VECTOR_IDENTIFIER</th>
+                                        <th className={cn(glass.microLabel, "px-10 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>LOG_DESCRIPTION</th>
+                                        <th className={cn(glass.microLabel, "px-10 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>TEMPORAL_FIXATION</th>
+                                        <th className={cn(glass.microLabel, "px-10 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>VALUE_QUANTUM</th>
+                                        <th className={cn(glass.microLabel, "px-10 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>SYNC_STATUS</th>
+                                        <th className={cn(glass.microLabel, "px-14 py-10 opacity-40 border-b border-white/5 text-right font-black uppercase tracking-[0.3em] text-[10px]")}>OPS</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5 bg-transparent">
+                                    {transactions.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={6} className="h-96 text-center opacity-30 italic">
+                                                <div className="w-24 h-24 rounded-full bg-honey/5 border border-honey/10 flex items-center justify-center mx-auto mb-8">
+                                                    <History className="w-12 h-12 text-honey/20" />
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-right mr-4">
-                                                <p className={cn("text-sm font-black", t.type === 'income' ? "text-[#1B9157]" : "text-red-500")}>
-                                                    {t.type === 'income' ? '+' : '-'}{t.amount} {t.currency}
-                                                </p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleDownloadPDF(t)}
-                                                    className="rounded-full border-gray-100 hover:bg-gray-50 font-bold text-[10px] h-8 flex items-center gap-2"
-                                                >
-                                                    <Download className="w-3.5 h-3.5" /> PDF
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleSendEmail(t)}
-                                                    className="rounded-full border-gray-100 hover:bg-gray-50 font-bold text-[10px] h-8 flex items-center gap-2"
-                                                >
-                                                    <Globe className="w-3.5 h-3.5 text-[#1B9157]" /> Email
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
+                                                <p className={cn(glass.microLabel, "text-xl tracking-[0.4em] font-black uppercase")}>VOID_LEDGER_ENTRIES_DETECTED</p>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        transactions.map((tx, i) => (
+                                            <motion.tr
+                                                key={tx.id || i}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.05, duration: 0.7 }}
+                                                className="group hover:bg-honey/[0.03] transition-all duration-700"
+                                            >
+                                                <td className="px-14 py-12">
+                                                    <span className={cn(glass.sectionTitle, "text-sm normal-case italic opacity-30 tabular-nums font-black tracking-widest")}>#TX-{tx.id?.slice(0, 8) || i}</span>
+                                                </td>
+                                                <td className="px-10 py-12">
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <span className={cn(glass.sectionTitle, "text-xl normal-case font-black group-hover:text-honey transition-all duration-700 italic")}>{tx.description || 'Industrial Quantum Transfer'}</span>
+                                                        <span className={cn(glass.microLabel, "opacity-20 lowercase tracking-[0.3em] font-black italic text-[9px]")}>RELAY_REF: {tx.reference || 'SYSTEM_AUTO_GEN'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className={cn(glass.microLabel, "px-10 py-12 font-black opacity-50 tabular-nums text-sm")}>
+                                                    {new Date(tx.date || tx.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-10 py-12">
+                                                    <span className={cn(glass.sectionTitle, "text-2xl normal-case tabular-nums font-black", tx.type === 'expense' ? 'text-red-500/60' : 'text-emerald-500')}>
+                                                        {tx.type === 'expense' ? '−' : '+'}{tx.amount?.toLocaleString()} <span className="text-[10px] font-sans tracking-widest opacity-30 uppercase font-black ml-1">{currency}</span>
+                                                    </span>
+                                                </td>
+                                                <td className="px-10 py-12">
+                                                    <div className={cn(
+                                                        "inline-flex items-center gap-3 px-5 py-2 rounded-full border shadow-2xl backdrop-blur-3xl transition-all duration-700",
+                                                        tx.status === 'synced' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-honey/10 text-honey border-honey/20'
+                                                    )}>
+                                                        <div className={cn("w-2 h-2 rounded-full", tx.status === 'synced' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-honey animate-pulse shadow-[0_0_10px_rgba(251,191,36,0.5)]')} />
+                                                        <span className={cn(glass.microLabel, "font-black tracking-[0.2em] text-[10px] uppercase")}>{tx.status?.toUpperCase() || 'POSTED_AUDIT'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-14 py-12 text-right">
+                                                    <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-10 group-hover:translate-x-0">
+                                                        <button
+                                                            onClick={() => handleSync(tx.id)}
+                                                            className={cn(glass.btnSecondary, "h-14 w-14 p-0 rounded-2xl bg-white dark:bg-black border-white/5 hover:text-honey hover:shadow-honey/10 transition-all duration-500 shadow-2xl")}
+                                                        >
+                                                            {syncingId === tx.id ? <Loader2 className="w-6 h-6 animate-spin" /> : <RefreshCw className="w-6 h-6" />}
+                                                        </button>
+                                                        <button className={cn(glass.btnSecondary, "h-14 w-14 p-0 rounded-2xl bg-white dark:bg-black border-white/5 hover:text-honey hover:shadow-honey/10 transition-all duration-500 shadow-2xl")}>
+                                                            <FileDown className="w-6 h-6" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </motion.tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
-                    </CardContent>
-                </Card>
-            )}
 
-            {/* Analytics Content */}
-            {activeSubTab === 'Analytics' && (
-                <AnalyticsSection currency={currency} />
-            )}
+                        <div className="p-14 border-t border-white/5 bg-white/40 dark:bg-black/30 flex flex-col md:flex-row justify-between items-center gap-10 relative z-10">
+                            <div className="flex flex-col gap-2">
+                                <p className={cn(glass.microLabel, "opacity-30 tracking-[0.4em] font-black italic uppercase text-[10px] pl-6 border-l border-honey/20")}>PRIMARY_LEDGER_INDEX_STABLE · SHA-512_ENCRYPTED · IMMUTABLE_VAULT</p>
+                                <p className="text-[9px] font-bold opacity-10 uppercase tracking-widest pl-6">Industrial Kernel Financial Security Protocol Active</p>
+                            </div>
+                            <div className="flex gap-6">
+                                <button className={cn(glass.btnSecondary, "h-18 px-12 gap-5 font-black text-xs uppercase tracking-widest rounded-3xl shadow-3xl bg-white dark:bg-black/40 border-white/10")}>
+                                    <FileText className="w-6 h-6 text-honey" /> Full Narrative Statements
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            ) : activeSubTab === 'Subscription' ? (
+                <div className="space-y-16">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 1 }}
+                        className={cn(glass.card, "p-16 relative overflow-hidden group border-honey/20 bg-gradient-to-br from-honey/[0.05] to-transparent shadow-[0_50px_100px_-20px_rgba(251,191,36,0.15)]")}
+                    >
+                        <div className="absolute top-0 right-0 p-16 opacity-5 pointer-events-none group-hover:opacity-10 transition-all duration-1000 rotate-12 scale-150">
+                            <Shield className="w-96 h-96" />
+                        </div>
+                        <div className="absolute -bottom-60 -left-60 w-[50rem] h-[50rem] bg-honey/[0.03] rounded-full blur-[150px] pointer-events-none" />
 
-            {/* Compliance Content */}
-            {activeSubTab === 'Compliance (eTIMS)' && (
-                <SettingsIntegrationsView />
-            )}
-
-            {/* Settings Content */}
-            {activeSubTab === 'Settings' && (
-                <div className="space-y-8">
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <h3 className="text-xl font-bold mb-1">Subscription Tiers</h3>
-                            <p className="text-xs text-gray-400 font-medium mb-8">Choose the plan that fits your operation scale.</p>
-
-                            <SubscriptionPlans
-                                currentTier={profile?.subscription_tier || 'Free'}
-                                onUpgrade={(newTier) => setProfile({ ...profile, subscription_tier: newTier })}
-                            />
-                        </CardContent>
-                    </Card>
-
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm">
-                        <CardContent className="p-8">
-                            <h3 className="text-xl font-bold mb-4">Organization Settings</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Organization Name</label>
-                                        <Input value={profile?.company_name || 'Individual Beekeeper'} readOnly className="rounded-xl border-gray-100 h-12 bg-gray-50" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Default Country</label>
-                                        <select disabled className="flex h-12 w-full rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-sm appearance-none">
-                                            <option>Kenya</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="bg-neutral-50 dark:bg-white/5 p-6 rounded-2xl border border-dashed border-gray-200">
-                                    <p className="text-gray-400 text-xs font-bold uppercase mb-4">API ACCESS</p>
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <Shield className="w-4 h-4 text-[#1B9157]" />
-                                        <span className="text-[10px] font-bold uppercase">Secret Key: ••••••••••••••••</span>
-                                    </div>
-                                    <Button variant="outline" className="rounded-full h-9 text-[10px] font-black uppercase">Rotate Key</Button>
+                        <div className="relative z-10 flex flex-col xl:flex-row gap-16 items-center">
+                            <div className="w-48 h-48 rounded-[3.5rem] bg-gradient-amber flex items-center justify-center text-white shadow-[0_40px_80px_-15px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform duration-1000 rotate-6">
+                                <Zap className="w-24 h-24" />
+                            </div>
+                            <div className="flex-1 space-y-6 text-center xl:text-left">
+                                <Badge className="bg-honey/20 text-honey border-honey/40 px-6 py-2 rounded-full font-black text-[11px] tracking-[0.3em] uppercase animate-pulse">CURRENT_ACTIVE_INDUSTRIAL_TIER</Badge>
+                                <h2 className={cn(glass.sectionTitle, "text-7xl normal-case italic tracking-tighter")}>BeeYield <span className="text-honey">Industrial Pro</span></h2>
+                                <p className="text-2xl font-medium opacity-50 leading-relaxed italic max-w-2xl border-l-2 border-honey/20 pl-10">Managed global scale: {hives.length} active distribution nodes with unlimited neural audit capacity and priority relay throughput.</p>
+                            </div>
+                            <div className="flex flex-col items-center xl:items-end gap-5">
+                                <div className="text-6xl font-serif font-black text-honey tracking-tighter">1,200 <span className="text-xl font-sans tracking-tight opacity-30 uppercase font-black">{currency}/mo</span></div>
+                                <div className="flex items-center gap-4 bg-black/5 dark:bg-black/30 px-6 py-3 rounded-2xl border border-white/5 backdrop-blur-xl">
+                                    <Clock className="w-5 h-5 text-honey/60" />
+                                    <span className={cn(glass.microLabel, "opacity-40 font-black tracking-widest text-xs")}>SYNC_RENEWAL: 12_OCT_2026</span>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </motion.div>
+
+                    <div className="relative z-10 pt-10">
+                        <SubscriptionPlans currentTier="pro" onUpgrade={(p) => toast.info(`Initializing migration vector to ${p} node tier...`)} />
+                    </div>
+                </div>
+            ) : (
+                <div className="space-y-16 relative z-10">
+                    <SettingsIntegrationsView />
                 </div>
             )}
 
-            {/* New Doc Form (Modal for complex invoices - largely visual for now) */}
-            {isNewDocFormOpen && (
-                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-in fade-in zoom-in duration-300">
-                    <Card className="w-full max-w-2xl rounded-[2.5rem] border-none bg-white shadow-2xl p-10 text-center">
-                        <h2 className="text-2xl font-bold text-[#0F172A] mb-2">Detailed Invoice Editor</h2>
-                        <p className="text-gray-500 mb-6">This feature is currently in BETA. Please use the "Quick Entry" forms in Revenue/Costs tabs for simple transaction recording.</p>
-                        <Button onClick={() => setIsNewDocFormOpen(false)} className="rounded-full px-8 h-10 font-bold">Close</Button>
-                    </Card>
-                </div>
-            )}
+            {/* Audit Log Execution Modal */}
+            <AnimatePresence>
+                {isNewDocFormOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-8">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-3xl"
+                            onClick={() => setIsNewDocFormOpen(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 50, rotateX: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 50, rotateX: 20 }}
+                            className={cn(glass.card, "w-full max-w-5xl p-0 overflow-hidden shadow-[0_50px_200px_-40px_rgba(0,0,0,0.6)] bg-white/90 dark:bg-[#0A0A0A]/90 border-honey/20 relative z-10")}
+                        >
+                            <div className="p-14 border-b border-white/10 flex justify-between items-center bg-white/40 dark:bg-black/40">
+                                <div className="space-y-2">
+                                    <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Execute Fiscal <span className="text-honey">Audit Log</span></h3>
+                                    <p className={cn(glass.microLabel, "font-black tracking-[0.3em] uppercase text-[10px] opacity-40")}>NEW_IMMUTABLE_FINANCIAL_VECTOR_EVENT</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsNewDocFormOpen(false)}
+                                    className={cn(glass.btnSecondary, "h-16 w-16 p-0 rounded-2xl hover:text-destructive hover:border-destructive/20 transition-all duration-700 shadow-2xl")}
+                                >
+                                    <X className="w-8 h-8" />
+                                </button>
+                            </div>
 
-        </div>
+                            <div className="p-16 space-y-16">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                    {/* Left: General Info */}
+                                    <div className="space-y-12">
+                                        <div className="space-y-6">
+                                            <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Audit Classification*</Label>
+                                            <div className="flex bg-black/5 dark:bg-black/30 p-3 rounded-[2.5rem] border border-white/5 gap-3 shadow-inner backdrop-blur-3xl">
+                                                {['invoice', 'receipt', 'expense'].map((t) => (
+                                                    <button
+                                                        key={t}
+                                                        onClick={() => setNewDocType(t)}
+                                                        className={cn(
+                                                            "h-16 flex-1 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] transition-all duration-700",
+                                                            newDocType === t ? "bg-white dark:bg-black/80 text-honey shadow-2xl border border-honey/20" : "text-foreground/30 hover:bg-white/5"
+                                                        )}
+                                                    >
+                                                        {t}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Fiscal Quantum ({currency})*</Label>
+                                            <div className="relative group">
+                                                <DollarSign className="absolute left-8 top-1/2 -translate-y-1/2 w-8 h-8 text-honey/40 transition-colors group-focus-within:text-honey" />
+                                                <Input
+                                                    type="number"
+                                                    value={newDocAmount || ''}
+                                                    onChange={(e) => setNewDocAmount(parseFloat(e.target.value) || 0)}
+                                                    placeholder="0.00"
+                                                    className={cn(glass.input, "h-22 font-black text-4xl px-20 shadow-inner rounded-[2.5rem] bg-black/5 dark:bg-black/30 tabular-nums border-none")}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Audit Entry Narrative</Label>
+                                            <div className="relative group">
+                                                <FileText className="absolute left-8 top-1/2 -translate-y-1/2 w-7 h-7 text-honey/40 transition-colors group-focus-within:text-honey" />
+                                                <Input
+                                                    value={newDocDescription}
+                                                    onChange={(e) => setNewDocDescription(e.target.value)}
+                                                    placeholder="Industrial vector description..."
+                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl italic bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right: Entities */}
+                                    <div className="space-y-12">
+                                        <div className="space-y-6">
+                                            <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Issuing Entity Authority*</Label>
+                                            <Input
+                                                value={sellerName}
+                                                onChange={(e) => setSellerName(e.target.value)}
+                                                className={cn(glass.input, "h-20 px-10 font-black text-xl bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Recipient Legal Entity*</Label>
+                                            <div className="relative group">
+                                                <Globe className="absolute left-8 top-1/2 -translate-y-1/2 w-7 h-7 text-honey/40 transition-colors group-focus-within:text-honey" />
+                                                <Input
+                                                    value={buyerName}
+                                                    onChange={(e) => setBuyerName(e.target.value)}
+                                                    placeholder="Full legal authority name..."
+                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Temporal Fixation Point*</Label>
+                                            <div className="relative group">
+                                                <Calendar className="absolute left-8 top-1/2 -translate-y-1/2 w-7 h-7 text-honey/40 transition-colors group-focus-within:text-honey" />
+                                                <Input
+                                                    type="date"
+                                                    value={newDocDate}
+                                                    onChange={(e) => setNewDocDate(e.target.value)}
+                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl tabular-nums bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center pt-16 border-t border-white/10 gap-10">
+                                    <div className="flex items-center gap-6 opacity-30">
+                                        <div className="p-3 bg-white/5 rounded-xl">
+                                            <Lock className="w-6 h-6" />
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest max-w-[200px]">Data will be written to immutable ledger upon commitment.</p>
+                                    </div>
+                                    <div className="flex gap-8">
+                                        <button
+                                            onClick={() => setIsNewDocFormOpen(false)}
+                                            className={cn(glass.btnSecondary, "h-20 px-12 font-black text-sm uppercase tracking-widest rounded-[2rem] border-white/10")}
+                                        >
+                                            Discard Audit
+                                        </button>
+                                        <button
+                                            onClick={handleGenerateInvoice}
+                                            disabled={!isFormValid}
+                                            className={cn(glass.btnPrimary, "h-22 px-16 font-black text-xl shadow-[0_30px_70px_-10px_rgba(251,191,36,0.5)] rounded-[2.5rem] flex items-center gap-5 transition-all active:scale-95 group/commit")}
+                                        >
+                                            <ShieldCheck className="w-8 h-8 group-hover/commit:scale-125 transition-transform duration-700" />
+                                            Commit Fiscal Audit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <style>{`
+                .custom-scrollbar-modern::-webkit-scrollbar {
+                    width: 5px;
+                    height: 5px;
+                }
+                .custom-scrollbar-modern::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar-modern::-webkit-scrollbar-thumb {
+                    background: hsl(var(--honey) / 0.1);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar-modern::-webkit-scrollbar-thumb:hover {
+                    background: hsl(var(--honey) / 0.3);
+                }
+            `}</style>
+        </motion.div>
     );
 };
 

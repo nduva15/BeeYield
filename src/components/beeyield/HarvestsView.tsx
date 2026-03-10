@@ -1,37 +1,13 @@
 import React from 'react';
 import {
-    Package,
-    Plus,
-    Calendar,
-    MapPin,
-    Hexagon,
-    TrendingUp,
-    Download,
-    Search,
-    RefreshCw,
-    ShieldCheck,
-    Zap,
-    Wind,
-    ArrowRight,
-    ChevronLeft,
-    SearchX,
-    Filter,
-    Layers,
-    Cpu,
-    Database,
-    Binary
+    Package, Plus, Calendar, MapPin, Hexagon, TrendingUp, Download, Search, RefreshCw,
+    ShieldCheck, Zap, ArrowRight, ChevronLeft, SearchX, Layers, Cpu, Database, Binary,
+    FlaskConical, Droplets, Wind, Scale, History, Activity, Lock, FlaskRound, HeartPulse, Shield, Hash, Thermometer
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useHarvests, useCreateHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
 import { toast } from 'sonner';
@@ -39,6 +15,7 @@ import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
 
 interface HarvestsViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -106,21 +83,22 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
     const getColorGradeStyles = (grade?: string) => {
         const styles: Record<string, string> = {
-            'Extra Light Amber': 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/40',
-            'Light Amber': 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/60',
-            'Amber': 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-900/40',
-            'Dark Amber': 'bg-orange-100 dark:bg-orange-500/20 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-900/60',
+            'Extra Light Amber': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+            'Light Amber': 'bg-amber-500/20 text-amber-400 border-amber-500/40',
+            'Amber': 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+            'Dark Amber': 'bg-orange-500/20 text-orange-400 border-orange-500/40',
         };
-        return styles[grade || ''] || 'bg-slate-50 text-slate-400 border-slate-200';
+        return styles[grade || ''] || 'bg-foreground/5 text-foreground/40 border-border/50';
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.quantity_kg || formData.quantity_kg <= 0) {
-            toast.error('Please enter a valid quantity');
+            toast.error('Please enter the amount of honey harvested.');
             return;
         }
 
+        const toastId = toast.loading('Saving harvest information...');
         createHarvest(formData as any, {
             onSuccess: () => {
                 setIsAddingHarvest(false);
@@ -134,465 +112,564 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                     weather_conditions: 'Sunny',
                     is_verified: true
                 });
-                toast.success('Yield archived successfully');
+                toast.success('Harvest saved successfully.', { id: toastId });
+            },
+            onError: (err: any) => {
+                toast.error('Could not save the harvest. Please try again.', { id: toastId });
             }
         });
     };
 
     if (isAddingHarvest) {
         return (
-            <div className="space-y-12 pb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                {/* Custom Page Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
-                    <div className="flex items-center gap-6">
-                        <Button
-                            variant="ghost"
-                            size="icon"
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={cn(glass.page, "p-12 -m-8 space-y-20")}
+            >
+                {/* ── Header ── */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-16 border-b border-white/5 pb-20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-honey/[0.04] rounded-full blur-[100px] -mr-40 -mt-20 pointer-events-none" />
+                    <div className="flex items-center gap-14 relative z-10">
+                        <button
                             onClick={() => setIsAddingHarvest(false)}
-                            className="h-16 w-16 rounded-[1.5rem] border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 hover:text-amber-600 shadow-sm transition-all"
+                            className={cn(glass.btnSecondary, "h-24 w-24 p-0 rounded-[2.5rem] bg-white dark:bg-black/60 shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
                         >
-                            <ChevronLeft className="w-8 h-8" />
-                        </Button>
-                        <div className="space-y-2">
-                            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-900/40">
-                                <Database className="w-3.5 h-3.5" />
-                                <span className="uppercase tracking-[0.1em]">Yield Inventory Subsystem</span>
+                            <ChevronLeft className="w-12 h-12" />
+                        </button>
+                        <div className="space-y-6">
+                            <div className="inline-flex items-center gap-4 px-6 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-2xl skew-x-[-15deg]">
+                                <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] skew-x-[15deg] italic text-emerald-500">Harvest Log</span>
                             </div>
-                            <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none italic">Log <span className="text-amber-500">Extraction</span></h1>
+                            <h1 className="text-7xl font-black italic text-foreground tracking-tighter uppercase leading-none">Honey <span className="text-honey">Harvest</span></h1>
+                            <p className={cn(glass.microLabel, 'opacity-40 italic tracking-[0.4em] font-black uppercase text-[12px] border-l-4 border-honey/20 pl-8')}>Record your harvest details here to track production trends.</p>
                         </div>
                     </div>
                 </div>
 
-                <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden max-w-5xl">
-                    <CardHeader className="p-12 pb-8 border-b border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02]">
-                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-white/20 italic">Master Extraction Parametrics</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-12 pt-10">
-                        <form onSubmit={handleSubmit} className="space-y-12">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] ml-2">Archive Timestamp</Label>
-                                    <Input
-                                        type="date"
-                                        value={formData.harvest_date}
-                                        onChange={(e) => setFormData({ ...formData, harvest_date: e.target.value })}
-                                        className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/30 dark:bg-black/20 font-black text-slate-900 dark:text-white focus-visible:ring-amber-500/20"
-                                        required
-                                    />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 py-8 relative z-10">
+                    {/* Left Column */}
+                    <div className="lg:col-span-4 space-y-16">
+                        <div className={cn(glass.card, 'bg-emerald-500/[0.03] border-emerald-500/30 p-16 rounded-[4rem] shadow-4xl relative overflow-hidden group')}>
+                            <div className="relative z-10 space-y-10">
+                                <div className="w-20 h-20 rounded-[2.5rem] bg-emerald-500 flex items-center justify-center shadow-4xl">
+                                    <FlaskConical className="w-10 h-10 text-white" />
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] ml-2">Net Biomass (kg)</Label>
-                                    <div className="relative">
-                                        <TrendingUp className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />
-                                        <Input
-                                            type="number"
-                                            step="0.1"
-                                            placeholder="0.0"
-                                            value={formData.quantity_kg || ''}
-                                            onChange={(e) => setFormData({ ...formData, quantity_kg: parseFloat(e.target.value) })}
-                                            className="h-14 pl-12 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/30 dark:bg-black/20 font-black text-slate-900 dark:text-white focus-visible:ring-amber-500/20"
-                                            required
-                                        />
+                                <div className="space-y-6">
+                                    <h3 className="text-4xl font-black italic text-foreground tracking-tighter uppercase leading-none">Important <span className="text-emerald-500">Note</span></h3>
+                                    <p className="text-xl font-black text-foreground/40 italic leading-relaxed border-l-4 border-emerald-500/20 pl-12 uppercase tracking-tight">
+                                        Recording your harvest details helps you track production trends and see which hives or locations are most productive.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem] shadow-4xl border-white/5")}>
+                            <div className="space-y-4">
+                                <p className={cn(glass.microLabel, "opacity-20 italic font-black uppercase tracking-[0.4em]")}>Current Batch</p>
+                                <h4 className="text-4xl font-black italic text-foreground tracking-tighter uppercase leading-none italic">Harvest <span className="text-honey">Details</span></h4>
+                            </div>
+                            <div className="grid grid-cols-1 gap-8 pt-4">
+                                <div className="flex items-center justify-between p-10 rounded-[2.5rem] bg-black/5 dark:bg-black/40 border border-white/5 shadow-inner">
+                                    <span className={cn(glass.microLabel, "opacity-20 font-black italic uppercase tracking-[0.3em]")}>BATCH CODE</span>
+                                    <span className="text-2xl font-black italic text-honey tabular-nums tracking-tighter uppercase">BATCH_{new Date().getTime().toString().slice(-6)}</span>
+                                </div>
+                                <div className="flex items-center justify-between p-10 rounded-[2.5rem] bg-black/5 dark:bg-black/40 border border-white/5 shadow-inner">
+                                    <span className={cn(glass.microLabel, "opacity-20 font-black italic uppercase tracking-[0.3em]")}>SYNC STATUS</span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-2xl font-black italic text-emerald-500 tabular-nums tracking-tighter uppercase">Online</span>
                                     </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] ml-2">Varietal Feedstock</Label>
-                                    <Select
-                                        value={formData.honey_type}
-                                        onValueChange={(val) => setFormData({ ...formData, honey_type: val })}
-                                    >
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/30 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/20">
-                                            <Layers className="w-4 h-4 mr-3 text-emerald-500" />
-                                            <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                            <SelectItem value="Acacia" className="p-4 font-black uppercase text-[10px] tracking-widest">Acacia</SelectItem>
-                                            <SelectItem value="Multifloral" className="p-4 font-black uppercase text-[10px] tracking-widest">Multifloral</SelectItem>
-                                            <SelectItem value="Sunflower" className="p-4 font-black uppercase text-[10px] tracking-widest">Sunflower</SelectItem>
-                                            <SelectItem value="Forest" className="p-4 font-black uppercase text-[10px] tracking-widest">Forest</SelectItem>
-                                            <SelectItem value="Rapeseed" className="p-4 font-black uppercase text-[10px] tracking-widest">Rapeseed</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] ml-2">Chromatic Grade</Label>
-                                    <Select
-                                        value={formData.color_grade}
-                                        onValueChange={(val) => setFormData({ ...formData, color_grade: val })}
-                                    >
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/30 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/20">
-                                            <div className="w-3 h-3 rounded-full mr-3 bg-amber-500" />
-                                            <SelectValue placeholder="Select grade" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                            <SelectItem value="Extra Light Amber" className="p-4 font-black uppercase text-[10px] tracking-widest">Extra Light Amber</SelectItem>
-                                            <SelectItem value="Light Amber" className="p-4 font-black uppercase text-[10px] tracking-widest">Light Amber</SelectItem>
-                                            <SelectItem value="Amber" className="p-4 font-black uppercase text-[10px] tracking-widest">Amber</SelectItem>
-                                            <SelectItem value="Dark Amber" className="p-4 font-black uppercase text-[10px] tracking-widest">Dark Amber</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] ml-2">Mechanical Protocol</Label>
-                                    <div className="relative">
-                                        <Cpu className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                        <Input
-                                            placeholder="e.g. Cold Centrifugue"
-                                            value={formData.extraction_method || ''}
-                                            onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
-                                            className="h-14 pl-12 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/30 dark:bg-black/20 font-black text-slate-900 dark:text-white focus-visible:ring-amber-500/20"
-                                        />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="lg:col-span-8">
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className={cn(glass.card, "p-0 overflow-hidden bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[5rem] relative")}
+                        >
+                            <div className="p-16 border-b border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl relative z-10">
+                                <div className="flex items-center gap-10">
+                                    <div className="w-18 h-18 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-3xl">
+                                        <Layers className="w-10 h-10 text-honey" />
                                     </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] ml-2">Atmospheric Calibration</Label>
-                                    <Input
-                                        placeholder="e.g. Sunny / Temp Controlled"
-                                        value={formData.weather_conditions || ''}
-                                        onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
-                                        className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/30 dark:bg-black/20 font-black text-slate-900 dark:text-white focus-visible:ring-amber-500/20"
-                                    />
+                                    <div className="space-y-4">
+                                        <h2 className="text-5xl font-black italic text-foreground tracking-tighter uppercase leading-none">Harvest <span className="text-honey">Details</span></h2>
+                                        <p className={cn(glass.microLabel, 'opacity-40 uppercase italic')}>Fill in the details for your recent honey harvest.</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-6 pt-12 border-t border-slate-100 dark:border-white/10">
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    onClick={() => setIsAddingHarvest(false)}
-                                    className="h-14 px-8 rounded-2xl font-black text-slate-400 hover:text-red-500 hover:bg-red-500/5 uppercase text-[11px] tracking-widest"
-                                >
-                                    Abort Registry
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={isCreating}
-                                    className="h-16 px-12 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-black/10"
-                                >
-                                    {isCreating ? (
-                                        <RefreshCw className="w-5 h-5 animate-spin mr-3" />
-                                    ) : (
-                                        <ShieldCheck className="w-5 h-5 mr-3 text-amber-200" />
-                                    )}
-                                    Commit Production Log
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                            <form onSubmit={handleSubmit} className="p-20 space-y-20 relative z-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+                                    <div className="space-y-6">
+                                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic')}>Date</Label>
+                                        <div className="relative group/input">
+                                            <Calendar className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20" />
+                                            <Input
+                                                type="date"
+                                                value={formData.harvest_date}
+                                                onChange={(e) => setFormData({ ...formData, harvest_date: e.target.value })}
+                                                className={cn(glass.input, "h-24 pl-24 text-2xl")}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic')}>Amount (kg)*</Label>
+                                        <div className="relative group/input">
+                                            <Scale className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-emerald-500 opacity-20" />
+                                            <Input
+                                                type="number"
+                                                step="0.1"
+                                                placeholder="0.0"
+                                                value={formData.quantity_kg || ''}
+                                                onChange={(e) => setFormData({ ...formData, quantity_kg: parseFloat(e.target.value) })}
+                                                className={cn(glass.input, 'h-24 pl-24 text-4xl tabular-nums focus:text-emerald-500')}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic')}>Honey Type</Label>
+                                        <Select
+                                            value={formData.honey_type}
+                                            onValueChange={(val) => setFormData({ ...formData, honey_type: val })}
+                                        >
+                                            <SelectTrigger className={cn(glass.select, 'h-24 px-12 text-2xl')}>
+                                                <div className="flex items-center gap-8">
+                                                    <Database className="w-8 h-8 text-honey opacity-30" />
+                                                    <SelectValue placeholder="Select type" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent className={glass.selectContent}>
+                                                {['Acacia', 'Multifloral', 'Sunflower', 'Forest', 'Rapeseed'].map(v => (
+                                                    <SelectItem key={v} value={v} className="p-6 uppercase font-black text-[15px] italic rounded-2xl">{v.toUpperCase()}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic')}>Honey Color</Label>
+                                        <Select
+                                            value={formData.color_grade}
+                                            onValueChange={(val) => setFormData({ ...formData, color_grade: val })}
+                                        >
+                                            <SelectTrigger className={cn(glass.select, 'h-24 px-12 text-2xl')}>
+                                                <div className="flex items-center gap-8">
+                                                    <div className="w-8 h-8 rounded-full bg-amber-500" />
+                                                    <SelectValue placeholder="Select grade" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent className={glass.selectContent}>
+                                                {['Extra Light Amber', 'Light Amber', 'Amber', 'Dark Amber'].map(g => (
+                                                    <SelectItem key={g} value={g} className="p-6 uppercase font-black text-[15px] italic rounded-2xl">{g.toUpperCase()}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic')}>Extraction Method</Label>
+                                        <div className="relative group/input">
+                                            <Cpu className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-muted-foreground opacity-20" />
+                                            <Input
+                                                placeholder="e.g. Cold Centrifuge"
+                                                value={formData.extraction_method || ''}
+                                                onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
+                                                className={cn(glass.input, 'h-24 pl-24 text-2xl')}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic')}>Weather</Label>
+                                        <div className="relative group/input">
+                                            <Wind className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-blue-400 opacity-20" />
+                                            <Input
+                                                placeholder="e.g. Sunny"
+                                                value={formData.weather_conditions || ''}
+                                                onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
+                                                className={cn(glass.input, 'h-24 pl-24 text-2xl')}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-16 mt-20 border-t border-white/10 bg-white/40 dark:bg-black/60 backdrop-blur-3xl flex flex-col sm:flex-row justify-between items-center -m-20 rounded-b-[5rem]">
+                                    <div className="flex items-center gap-10 opacity-10 px-10 mb-10 sm:mb-0">
+                                        <Lock className="w-10 h-10" />
+                                        <p className="text-[14px] font-black uppercase tracking-[0.5em] italic">Data protected and synced.</p>
+                                    </div>
+                                    <div className="flex gap-10">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsAddingHarvest(false)}
+                                            className={glass.btnSecondary}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={isCreating}
+                                            className={cn(glass.btnPrimary, "h-22 px-24 bg-honey text-black shadow-4xl rounded-[3rem] font-black italic text-3xl")}
+                                        >
+                                            {isCreating ? (
+                                                <RefreshCw className="w-12 h-12 animate-spin" />
+                                            ) : (
+                                                <ShieldCheck className="w-12 h-12" />
+                                            )}
+                                            Save Harvest
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-500 honeycomb-bg min-h-screen p-8 -m-8">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
-                <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-honey/10 text-honey rounded-full text-[10px] font-black uppercase tracking-widest border border-honey/20 backdrop-blur-sm">
-                        <Package className="w-3.5 h-3.5" />
-                        Yield Inventory Registry
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            {/* Header */}
+            <PageHeader
+                icon={Package}
+                label="Production History"
+                title={<>Production <span className="text-honey">History</span></>}
+                subtitle="Track and manage your honey production across all locations to see how your business is growing."
+                actions={
+                    <div className="flex items-center gap-8">
+                        <button
+                            onClick={() => window.location.reload()}
+                            className={cn(glass.btnSecondary, "h-20 w-20 p-0 rounded-[2.5rem] bg-white dark:bg-black/60 shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:rotate-180 transition-all duration-1000")}
+                        >
+                            <RefreshCw className="w-10 h-10" />
+                        </button>
+                        <button
+                            onClick={() => setIsAddingHarvest(true)}
+                            className={cn(glass.btnPrimary, "h-24 bg-honey text-black shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl transition-all uppercase flex items-center justify-center gap-10 group/btn pl-24")}
+                        >
+                            <Plus className="w-10 h-10 group-hover/btn:rotate-90 transition-transform duration-1000" />
+                            Log New Harvest
+                        </button>
                     </div>
-                    <h1 className="text-6xl font-serif font-black text-honey tracking-tight leading-none">Extraction <span className="text-foreground">Records</span></h1>
-                    <p className="text-sm font-medium text-muted-foreground max-w-lg leading-relaxed uppercase tracking-wider opacity-70">
-                        Autonomous biometric tracking of production yields and varietal classification protocols.
-                    </p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => window.location.reload()}
-                        className="h-16 w-16 rounded-[2rem] border border-border bg-white/50 backdrop-blur-md text-muted-foreground hover:text-honey shadow-sm transition-all hover:border-honey/50"
-                    >
-                        <RefreshCw className="w-6 h-6" />
-                    </Button>
-                    <Button
-                        onClick={() => setIsAddingHarvest(true)}
-                        className="h-16 px-10 rounded-[2rem] bg-gradient-amber text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-xs uppercase tracking-widest shadow-xl shadow-honey/20 gap-3"
-                    >
-                        <Plus className="w-6 h-6" />
-                        Log Extraction
-                    </Button>
-                </div>
+                }
+            />
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                <GlassStatCard label="Total Honey" value={`${stats.totalHoney}kg`} icon={Zap} index={0} color="text-honey" />
+                <GlassStatCard label="Total Harvests" value={stats.totalHarvests} icon={RefreshCw} index={1} color="text-blue-500" />
+                <GlassStatCard label="This Month" value={stats.thisMonth} icon={Calendar} index={2} color="text-orange-500" />
+                <GlassStatCard label="Average per Harvest" value={`${stats.avgPerHarvest}kg`} icon={Activity} index={3} color="text-emerald-500" />
             </div>
 
-            {/* Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[
-                    { label: 'Cumulative Yield', value: `${stats.totalHoney}kg`, icon: Zap, color: 'text-honey', bg: 'bg-honey/10' },
-                    { label: 'Extraction Cycles', value: stats.totalHarvests, icon: Package, color: 'text-honey', bg: 'bg-honey/10' },
-                    { label: 'Current Cycle', value: stats.thisMonth, icon: Calendar, color: 'text-honey', bg: 'bg-honey/10' },
-                    { label: 'Yield Coefficient', value: `${stats.avgPerHarvest}kg`, icon: TrendingUp, color: 'text-honey', bg: 'bg-honey/10' }
-                ].map((stat, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                    >
-                        <Card className="rounded-[2.5rem] border border-border bg-white/80 backdrop-blur-md shadow-xl shadow-black/5 hover:border-honey/30 transition-all group overflow-hidden">
-                            <CardContent className="p-8">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", stat.bg)}>
-                                        <stat.icon className={cn("w-7 h-7", stat.color)} />
-                                    </div>
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-tight text-right opacity-70">{stat.label}</p>
-                                </div>
-                                <h3 className="text-4xl font-serif font-black text-foreground tabular-nums tracking-tight">{stat.value}</h3>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                ))}
-            </div>
-
-            {/* Productivity Overview */}
-            <Card className="rounded-[3rem] border border-border bg-white/80 backdrop-blur-md shadow-2xl shadow-black/5 overflow-hidden">
-                <CardHeader className="p-10 pb-6 flex flex-row items-center justify-between bg-muted/30 border-b border-border">
-                    <div className="space-y-2">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] opacity-70">Strategic Yield Performance Matrix</p>
-                        <h2 className="text-4xl font-serif font-black text-honey tracking-tight leading-none">
-                            Fiscal {filterYear === 'all' ? new Date().getFullYear() : filterYear} <span className="text-foreground">Audit</span>
-                        </h2>
-                    </div>
-                    <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger className="h-16 w-48 rounded-2xl border-border bg-white font-black text-xl shadow-sm focus:ring-honey/20">
-                            <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-border shadow-2xl max-h-[300px] backdrop-blur-xl bg-white/90">
-                            <SelectItem value="all" className="font-black text-[10px] uppercase p-4 tracking-widest">Master Archive</SelectItem>
-                            {Array.from({ length: new Date().getFullYear() - 2000 + 1 }, (_, i) => {
-                                const year = (new Date().getFullYear() - i).toString();
-                                return (
-                                    <SelectItem key={year} value={year} className="font-black text-[10px] uppercase p-4 tracking-widest">
-                                        Cycle {year}
-                                    </SelectItem>
-                                );
-                            })}
-                        </SelectContent>
-                    </Select>
-                </CardHeader>
-                <CardContent className="p-10 pt-8">
-                    <div className="bg-honey/5 border border-honey/20 rounded-2xl p-8 mb-10 flex items-center gap-6">
-                        <div className="w-14 h-14 rounded-2xl bg-honey/10 flex items-center justify-center text-honey">
-                            <Binary className="w-6 h-6" />
+            {/* Performance Matrix */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative")}
+            >
+                <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-3xl flex flex-col xl:flex-row items-center justify-between gap-16 relative z-10">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-10">
+                            <div className="w-16 h-16 rounded-[2rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-4xl">
+                                <TrendingUp className="w-10 h-10 text-emerald-500" />
+                            </div>
+                            <h2 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">Production <span className="text-honey">Trends</span></h2>
                         </div>
-                        <p className="text-[10px] font-black text-honey/80 uppercase tracking-[0.2em] leading-relaxed">
-                            BeeYield Neural analysis engine is currently auditing historical metadata for this sector.
-                            <br /><span className="text-muted-foreground opacity-50">Deep telemetry integration active.</span>
-                        </p>
+                        <p className={cn(glass.microLabel, "opacity-40 uppercase italic tracking-[0.4em] pl-24")}>View production stats for {filterYear === 'all' ? 'All Years' : filterYear}</p>
                     </div>
-
-                    <div className="overflow-x-auto custom-scrollbar">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-border">
-                                    <th className="pb-8 text-left text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-50">Strategic Apiary Sector</th>
-                                    <th className="pb-8 text-center text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-50">Units</th>
-                                    <th className="pb-8 text-center text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-50">Gross Yield</th>
-                                    <th className="pb-8 text-center text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-50">Efficiency</th>
-                                    <th className="pb-8 text-right text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-50">Variance Δ</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                                {[
-                                    { id: 1, name: 'Rogulski Prime', families: 4, total: 27.52, change: 0.72 },
-                                    { id: 2, name: 'Caesar Ridge', families: 9, total: 52.6, change: -0.32 },
-                                ].map((item) => (
-                                    <tr key={item.id} className="group hover:bg-honey/5 transition-colors">
-                                        <td className="py-10">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center border border-border font-black text-[10px] text-muted-foreground">
-                                                    #{item.id}
-                                                </div>
-                                                <span className="font-serif text-2xl font-black text-foreground tracking-tight">{item.name}</span>
-                                            </div>
-                                        </td>
-                                        <td className="py-10 text-center font-black text-muted-foreground tabular-nums tracking-widest uppercase text-[11px]">{item.families} Units</td>
-                                        <td className="py-10 text-center font-black text-foreground tabular-nums text-lg">{item.total.toFixed(2)} KG</td>
-                                        <td className="py-10 text-center font-black text-muted-foreground/60 tabular-nums">{(item.total / item.families).toFixed(2)} KG/U</td>
-                                        <td className={cn("py-10 text-right font-black tabular-nums text-lg", item.change >= 0 ? "text-honey" : "text-destructive")}>
-                                            {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)} KG
-                                        </td>
-                                    </tr>
-                                )).concat(harvests.filter(h => h.apiary).slice(0, 3).map((h, i) => (
-                                    <tr key={`h-${i}`} className="group hover:bg-honey/5 transition-colors">
-                                        <td className="py-10">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center border border-border font-black text-[10px] text-muted-foreground">
-                                                    #{i + 3}
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="py-8 text-center font-black text-slate-400 tabular-nums">1</td>
-                                        <td className="py-8 text-center font-black text-slate-900 dark:text-white tabular-nums">{h.quantity_kg.toFixed(2)} KG</td>
-                                        <td className="py-8 text-center font-black text-slate-400/60 tabular-nums">{h.quantity_kg.toFixed(2)} KG/UNIT</td>
-                                        <td className="py-8 text-right font-black tabular-nums text-emerald-500">+0.00 KG</td>
-                                    </tr>
-                                )))}
-                            </tbody>
-                        </table>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Filters */}
-            <Card className="rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden">
-                <CardContent className="p-8">
-                    <div className="flex flex-col md:flex-row gap-6">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4.5 h-4.5 text-slate-400/50" />
-                            <Input
-                                placeholder="Query master archive by batch ID or varietal profile..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-14 h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest transition-all focus-within:bg-white dark:focus-within:bg-white/10"
-                            />
-                        </div>
+                    <div className="w-full xl:w-96">
                         <Select value={filterYear} onValueChange={setFilterYear}>
-                            <SelectTrigger className="h-14 md:w-[240px] rounded-2xl border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/20">
-                                <Calendar className="w-4.5 h-4.5 mr-3 text-emerald-500" />
-                                <SelectValue placeholder="Harvest Year" />
+                            <SelectTrigger className={cn(glass.select, 'h-24 px-12 text-3xl')}>
+                                <Calendar className="w-10 h-10 text-honey opacity-40" />
+                                <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                <SelectItem value="all" className="uppercase font-black text-[10px] p-4 tracking-widest text-slate-400 italic">Temporal Master Feed</SelectItem>
-                                {Array.from({ length: new Date().getFullYear() - 2000 + 1 }, (_, i) => {
+                            <SelectContent className={glass.selectContent}>
+                                <SelectItem value="all" className="p-6 font-black uppercase text-[15px] italic rounded-2xl">All Years</SelectItem>
+                                {Array.from({ length: 9 }, (_, i) => {
                                     const year = (new Date().getFullYear() - i).toString();
                                     return (
-                                        <SelectItem key={year} value={year} className="uppercase font-black text-[10px] p-4 tracking-widest">
-                                            Cycle {year} Registry
-                                        </SelectItem>
+                                        <SelectItem key={year} value={year} className="p-6 font-black uppercase text-[15px] italic rounded-2xl">Year {year}</SelectItem>
                                     );
                                 })}
                             </SelectContent>
                         </Select>
-                        <Button variant="ghost" className="h-14 px-10 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40 hover:text-amber-600 transition-all gap-3 font-black text-[10px] uppercase tracking-widest">
-                            <Download className="w-5 h-5" />
-                            Export Data
-                        </Button>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
 
-            {/* List Content */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="aspect-[4/3] rounded-[2.5rem] bg-slate-50 dark:bg-white/5 animate-pulse border border-slate-100 dark:border-white/10" />
-                    ))}
-                </div>
-            ) : filteredHarvests.length === 0 ? (
-                <div className="py-32 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500">
-                    <div className="w-28 h-28 rounded-[2.5rem] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center mb-10 shadow-sm">
-                        <SearchX className="w-12 h-12 text-slate-300 dark:text-white/10" />
-                    </div>
-                    <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-4 uppercase tracking-tighter italic">No Extraction Protocols Found</h3>
-                    <p className="text-slate-500 dark:text-white/20 font-medium max-w-sm mb-12 text-sm leading-relaxed">
-                        Begin documenting production yields by initializing your first extraction cycle registry.
-                    </p>
-                    <Button onClick={() => setIsAddingHarvest(true)} className="h-16 px-12 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:scale-[1.02] transition-all gap-3">
-                        <Plus className="w-5 h-5" /> Initialize Production Log
-                    </Button>
-                </div>
-            ) : (
-                <div className="space-y-10">
-                    <div className="flex items-center gap-6 px-4">
-                        <h3 className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.4em] italic whitespace-nowrap">Production Archive Feed</h3>
-                        <div className="h-[2px] flex-1 bg-slate-100 dark:bg-white/5" />
-                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 px-4 py-1.5 rounded-full">{filteredHarvests.length} Active Records</span>
+                <div className="p-20 relative z-10">
+                    <div className="bg-honey/[0.03] border border-honey/20 rounded-[4rem] p-16 mb-20 flex items-center gap-12 group overflow-hidden relative shadow-inner">
+                        <div className="absolute inset-0 bg-honey/[0.01] animate-pulse pointer-events-none" />
+                        <div className="w-24 h-24 rounded-[2.5rem] bg-honey/10 flex items-center justify-center text-honey shrink-0 shadow-4xl group-hover:rotate-[360deg] transition-all duration-1000 border border-honey/20">
+                            <Binary className="w-12 h-12" />
+                        </div>
+                        <div className="space-y-4">
+                            <p className="text-lg font-black text-honey uppercase tracking-[0.4em] italic opacity-80 flex items-center gap-4">
+                                <div className="w-2.5 h-2.5 rounded-full bg-honey animate-pulse" />
+                                Production Sync Active
+                            </p>
+                            <p className="text-2xl font-black text-foreground/40 italic leading-relaxed uppercase tracking-tight">
+                                Your production data is being synced across all devices to give you a complete overview of your business health.
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        <AnimatePresence mode="popLayout">
-                            {filteredHarvests.map((harvest, index) => (
-                                <motion.div
-                                    key={harvest.id}
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                                    whileHover={{ y: -8 }}
-                                >
-                                    <Card
-                                        className="rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 group hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 overflow-hidden relative"
+                    <div className="overflow-x-auto thin-scrollbar pt-6">
+                        <table className="w-full text-left border-separate border-spacing-y-10">
+                            <thead>
+                                <tr>
+                                    <th className="pb-12 pl-12 text-[12px] font-black text-muted-foreground/30 uppercase tracking-[0.5em] italic">Location</th>
+                                    <th className="pb-12 text-center text-[12px] font-black text-muted-foreground/30 uppercase tracking-[0.5em] italic">Hives</th>
+                                    <th className="pb-12 text-center text-[12px] font-black text-muted-foreground/30 uppercase tracking-[0.5em] italic">Total Output</th>
+                                    <th className="pb-12 text-center text-[12px] font-black text-muted-foreground/30 uppercase tracking-[0.5em] italic">Output per Hive</th>
+                                    <th className="pb-12 pr-12 text-right text-[12px] font-black text-muted-foreground/30 uppercase tracking-[0.5em] italic">Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { id: 1, name: 'Main Farm', families: 432, total: 2752.4, change: 12.72 },
+                                    { id: 2, name: 'Hillside Apiary', families: 890, total: 5260.8, change: -4.32 },
+                                ].map((item, i) => (
+                                    <motion.tr
+                                        key={item.id}
+                                        initial={{ opacity: 0, x: -30 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="group"
                                     >
-                                        <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500 group-hover:w-3 transition-all" />
-
-                                        <CardContent className="p-10 pl-12">
-                                            <div className="flex items-start justify-between mb-8">
-                                                <div className="flex-1 space-y-4">
-                                                    <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-neutral-900 dark:bg-white/5 text-white dark:text-amber-500 rounded-xl transition-all group-hover:bg-amber-600 group-hover:text-white">
-                                                        <Package className="w-3.5 h-3.5" />
-                                                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">
-                                                            {harvest.batch_code || 'UNIDENTIFIED'}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-baseline gap-3">
-                                                        <h3 className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter italic tabular-nums leading-none">
-                                                            {harvest.quantity_kg}
-                                                        </h3>
-                                                        <span className="text-xl font-black text-slate-300 dark:text-white/10 uppercase italic">kg</span>
-                                                    </div>
-                                                    <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest italic">
-                                                        {harvest.honey_type || 'Mixed Flora'} Varietal Matrix
-                                                    </p>
+                                        <td className="py-14 pl-12 bg-white/5 group-hover:bg-honey/[0.05] rounded-l-[4rem] transition-all duration-700">
+                                            <div className="flex items-center gap-10">
+                                                <div className="w-20 h-20 rounded-[2.5rem] bg-black/5 dark:bg-white/5 flex items-center justify-center border border-white/5 font-black text-xl text-muted-foreground/20 italic group-hover:text-honey transition-all shadow-inner">
+                                                    #{item.id}
                                                 </div>
-                                                {harvest.is_verified && (
-                                                    <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm group-hover:scale-110 transition-transform">
-                                                        <ShieldCheck className="w-8 h-8" />
+                                                <div className="space-y-3">
+                                                    <span className="text-4xl font-black italic text-foreground tracking-tighter uppercase leading-none group-hover:text-honey transition-colors">{item.name}</span>
+                                                    <div className="flex items-center gap-4 text-[10px] opacity-20 font-black italic uppercase tracking-[0.3em]">
+                                                        <Hash className="w-3 h-3 text-honey" />
+                                                        <span>ID: {item.id}00X</span>
                                                     </div>
-                                                )}
-                                            </div>
-
-                                            <div className="space-y-6">
-                                                <div className="flex items-center gap-4 py-4 border-y border-slate-50 dark:border-white/5">
-                                                    <Calendar className="w-4.5 h-4.5 text-slate-300 dark:text-white/10" />
-                                                    <span className="text-[10px] font-black text-slate-500 dark:text-white/40 uppercase tracking-widest">
-                                                        {format(new Date(harvest.harvest_date), 'MMMM d, yyyy')}
-                                                    </span>
                                                 </div>
-
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    {harvest.hive && (
-                                                        <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl group-hover:bg-white dark:group-hover:bg-white/5 transition-all">
-                                                            <Hexagon className="w-4 h-4 text-amber-500" />
-                                                            <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-tight">
-                                                                #{harvest.hive.hive_code}
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    {harvest.apiary && (
-                                                        <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl group-hover:bg-white dark:group-hover:bg-white/5 transition-all">
-                                                            <MapPin className="w-4 h-4 text-emerald-500" />
-                                                            <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">
-                                                                {harvest.apiary.name}
-                                                            </span>
-                                                        </div>
-                                                    )}
+                                            </div>
+                                        </td>
+                                        <td className="py-14 text-center bg-white/5 group-hover:bg-honey/[0.05]">
+                                            <span className="text-3xl font-black italic text-foreground tracking-tighter uppercase">{item.families} <span className="text-sm opacity-20">Hives</span></span>
+                                        </td>
+                                        <td className="py-14 text-center bg-white/5 group-hover:bg-honey/[0.05]">
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-4xl font-black italic tabular-nums text-foreground tracking-tighter">{item.total.toFixed(1)} <span className="text-sm font-sans opacity-20">KG</span></span>
+                                                <div className="w-32 h-2.5 bg-black/10 dark:bg-white/5 mt-4 rounded-full overflow-hidden p-[1px] border border-white/5 shadow-inner">
+                                                    <div className="h-full bg-honey rounded-full shadow-[0_0_20px_rgba(251,191,36,0.5)]" style={{ width: '75%' }} />
                                                 </div>
-
-                                                {harvest.color_grade && (
-                                                    <div className="pt-2">
-                                                        <Badge className={cn("rounded-2xl px-4 py-2 border-none font-black text-[9px] uppercase tracking-widest shadow-sm", getColorGradeStyles(harvest.color_grade))}>
-                                                            <div className="w-2.5 h-2.5 rounded-full bg-current mr-3 opacity-40 shadow-sm" />
-                                                            {harvest.color_grade}
-                                                        </Badge>
-                                                    </div>
-                                                )}
                                             </div>
-
-                                            <div className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-700 bg-neutral-900 dark:bg-amber-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100">
-                                                <ArrowRight className="w-6 h-6" />
+                                        </td>
+                                        <td className="py-14 text-center bg-white/5 group-hover:bg-honey/[0.05]">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <span className="text-3xl font-black italic text-foreground/40 tabular-nums tracking-tighter group-hover:text-honey transition-colors">{(item.total / item.families).toFixed(2)}</span>
+                                                <span className="text-[10px] font-black uppercase opacity-20 tracking-[0.3em] italic">KG / HIVE</span>
                                             </div>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
+                                        </td>
+                                        <td className="py-14 pr-12 text-right bg-white/5 group-hover:bg-honey/[0.05] rounded-r-[4rem]">
+                                            <div className={cn("inline-flex items-center gap-6 px-10 py-4 rounded-full font-black tabular-nums text-3xl italic shadow-4xl skew-x-[-12deg] transition-all", item.change >= 0 ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20")}>
+                                                <div className="skew-x-[12deg] flex items-center gap-4">
+                                                    {item.change >= 0 ? <TrendingUp className="w-6 h-6 animate-pulse" /> : <TrendingUp className="w-6 h-6 rotate-180" />}
+                                                    {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            )}
-        </div>
+            </motion.div>
+
+            {/* Filter Bar */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={glass.filterBar}
+            >
+                <div className="flex-1 w-full relative group/search">
+                    <Search className="absolute left-10 top-1/2 -translate-y-1/2 w-10 h-10 text-honey opacity-20 group-focus-within/search:opacity-100 transition-all duration-700" />
+                    <Input
+                        placeholder="Search by batch code or honey type..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={cn(glass.input, 'h-24 pl-26 px-12 italic font-black text-3xl bg-transparent border-none shadow-none normal-case placeholder:opacity-5')}
+                    />
+                </div>
+                <div className="flex flex-col md:flex-row gap-10 w-full xl:w-auto">
+                    <Select value={filterYear} onValueChange={setFilterYear}>
+                        <SelectTrigger className={cn(glass.select, 'h-24 w-full md:w-80 px-12 rounded-[4rem] italic font-black text-2xl')}>
+                            <Calendar className="w-8 h-8 text-honey opacity-30" />
+                            <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent className={glass.selectContent}>
+                            <SelectItem value="all" className="p-6 font-black uppercase text-[15px] italic rounded-2xl">All Years</SelectItem>
+                            {Array.from({ length: 9 }, (_, i) => {
+                                const year = (new Date().getFullYear() - i).toString();
+                                return (
+                                    <SelectItem key={year} value={year} className="p-6 font-black uppercase text-[15px] italic rounded-2xl">Year {year}</SelectItem>
+                                );
+                            })}
+                        </SelectContent>
+                    </Select>
+                    <button className={cn(glass.btnSecondary, 'h-24 px-14 rounded-[4rem] bg-white dark:bg-black/60 shadow-4xl group/export hover:text-honey transition-all')}>
+                        <Download className="w-8 h-8 group-hover/export:translate-y-2 transition-transform" />
+                        <span className="text-xl font-black italic uppercase tracking-widest">Export History</span>
+                    </button>
+                </div>
+            </motion.div>
+
+            {/* List */}
+            <div className="relative z-10">
+                {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14">
+                        {[1, 2, 3, 4, 5, 6].map(i => (
+                            <div key={i} className={cn(glass.skeleton, 'aspect-[2/3] rounded-[5rem]')} />
+                        ))}
+                    </div>
+                ) : filteredHarvests.length === 0 ? (
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className={glass.emptyState}>
+                        <div className="w-64 h-64 rounded-[6rem] bg-honey/5 border border-honey/20 flex items-center justify-center mb-16 shadow-4xl">
+                            <SearchX className="w-32 h-32 text-honey opacity-20" />
+                        </div>
+                        <h3 className="text-7xl font-black italic text-foreground tracking-tighter uppercase leading-none opacity-40">No Harvests Found</h3>
+                        <p className="text-2xl font-black opacity-20 italic max-w-2xl mx-auto border-l-8 border-honey/20 pl-16 text-center uppercase tracking-widest mt-10">
+                            Record your first honey harvest to start tracking your production history and hive performance.
+                        </p>
+                        <button onClick={() => setIsAddingHarvest(true)} className={cn(glass.btnPrimary, "h-24 px-24 mt-16")}>
+                            <Plus className="w-12 h-12" /> Add Harvest
+                        </button>
+                    </motion.div>
+                ) : (
+                    <div className="space-y-16">
+                        <div className="flex items-center gap-10 border-l-8 border-emerald-500/40 pl-16 group">
+                            <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">Production <span className="text-emerald-500">History</span></h3>
+                            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent mx-14" />
+                            <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 px-12 py-4 rounded-full shadow-4xl skew-x-[-15deg]')}>
+                                <div className="skew-x-[15deg] font-black italic uppercase text-[16px] tracking-[0.4em] flex items-center gap-6">
+                                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    {filteredHarvests.length} Records
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-16">
+                            <AnimatePresence mode="popLayout">
+                                {filteredHarvests.map((harvest, index) => (
+                                    <motion.div
+                                        key={harvest.id}
+                                        initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        transition={{ duration: 1, delay: index * 0.05 }}
+                                        whileHover={{ y: -20, scale: 1.02 }}
+                                        className="relative"
+                                    >
+                                        <div className={cn(glass.card, 'p-0 h-[680px] group hover:border-honey/60 hover:shadow-4xl cursor-pointer overflow-hidden transition-all duration-1000 border-white/5 bg-white/80 dark:bg-[#0D0D0D]/90 backdrop-blur-3xl rounded-[5rem] flex flex-col')}>
+                                            <div className="absolute top-0 left-0 w-4 h-full bg-emerald-500/40 group-hover:bg-honey transition-all duration-1000" />
+                                            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-honey/[0.03] rounded-full blur-[100px] pointer-events-none" />
+
+                                            <div className="p-16 pl-24 flex-1 flex flex-col justify-between relative z-10">
+                                                <div className="space-y-12">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="space-y-6">
+                                                            <div className={cn(glass.badge, 'bg-black/10 dark:bg-white/5 text-foreground/40 border-white/5 px-8 py-3 group-hover:bg-honey/10 group-hover:text-honey group-hover:border-honey/30 transition-all skew-x-[-12deg]')}>
+                                                                <div className="skew-x-[12deg] flex items-center gap-4">
+                                                                    <Package className="w-4 h-4" />
+                                                                    <span className="text-[12px] font-black uppercase tracking-[0.4em] italic leading-none">{harvest.batch_code || 'N/A'}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="pt-6 flex items-baseline gap-6">
+                                                                <h3 className="text-9xl font-black italic text-foreground tracking-tighter tabular-nums leading-none group-hover:scale-110 group-hover:text-honey transition-all duration-1000">{harvest.quantity_kg.toFixed(1)}</h3>
+                                                                <span className="text-3xl font-black text-muted-foreground/20 italic uppercase tracking-tighter">KG</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-6 pt-2">
+                                                                <div className="w-4 h-4 rounded-full bg-emerald-500 shadow-4xl animate-pulse" />
+                                                                <p className="text-2xl font-black italic text-emerald-500 uppercase tracking-tight leading-none">{harvest.honey_type || 'Mixed Flower'}</p>
+                                                            </div>
+                                                        </div>
+                                                        {harvest.is_verified && (
+                                                            <div className="w-24 h-24 rounded-[3.5rem] bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20 shadow-4xl">
+                                                                <Shield className="w-12 h-12" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="space-y-10">
+                                                        <div className="flex items-center gap-8 py-8 border-y border-white/5 group-hover:border-honey/20 transition-all duration-1000">
+                                                            <div className="w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center border border-white/5 shadow-inner">
+                                                                <Calendar className="w-8 h-8 text-honey opacity-40" />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <span className="text-3xl font-black italic text-foreground/60 uppercase tracking-tighter leading-none">{format(new Date(harvest.harvest_date), 'MMM d, yyyy').toUpperCase()}</span>
+                                                                <p className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em] italic">Harvest Date</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-2 gap-8">
+                                                            <div className="p-8 bg-black/5 dark:bg-black/40 border border-white/5 rounded-[3rem] group-hover:translate-y-[-8px] transition-all shadow-inner space-y-4">
+                                                                <div className="flex items-center gap-4 text-honey/40">
+                                                                    <Hexagon className="w-5 h-5" />
+                                                                    <span className="text-[9px] font-black uppercase tracking-[0.3em] italic">HIVE</span>
+                                                                </div>
+                                                                <p className="text-xl font-black italic text-foreground tracking-tighter uppercase leading-none truncate">{harvest.hive?.hive_code || 'No Hive'}</p>
+                                                            </div>
+                                                            <div className="p-8 bg-black/5 dark:bg-black/40 border border-white/5 rounded-[3rem] group-hover:translate-y-[-8px] transition-all shadow-inner space-y-4">
+                                                                <div className="flex items-center gap-4 text-emerald-500/40">
+                                                                    <MapPin className="w-5 h-5" />
+                                                                    <span className="text-[9px] font-black uppercase tracking-[0.3em] italic">APIARY</span>
+                                                                </div>
+                                                                <p className="text-xl font-black italic text-foreground tracking-tighter uppercase leading-none truncate">{harvest.apiary?.name || 'No Apiary'}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        {harvest.color_grade && (
+                                                            <div className={cn("inline-flex items-center gap-6 px-12 py-5 rounded-[2.5rem] shadow-4xl skew-x-[-12deg] transition-all border-2", getColorGradeStyles(harvest.color_grade))}>
+                                                                <div className="skew-x-[12deg] flex items-center gap-6">
+                                                                    <div className="w-4 h-4 rounded-full bg-current animate-pulse shadow-4xl" />
+                                                                    <span className="font-black italic uppercase text-[12px] tracking-[0.4em]">{harvest.color_grade.toUpperCase()}</span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex justify-end pt-12">
+                                                    <div className="w-24 h-24 rounded-[3.5rem] bg-honey text-black shadow-4xl flex items-center justify-center opacity-0 translate-y-20 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-1000 scale-75 group-hover:scale-110 active:scale-95">
+                                                        <ArrowRight className="w-12 h-12" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <style>{`
+                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+                .animate-shimmer { animation: shimmer 2.5s infinite linear; }
+                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
+            `}</style>
+        </motion.div>
     );
 };
 

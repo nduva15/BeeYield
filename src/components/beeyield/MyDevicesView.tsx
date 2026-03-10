@@ -2,15 +2,20 @@ import React from 'react';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import {
     Plus, Battery, Signal, Search, Smartphone, RefreshCw, Wifi,
-    FileSearch, Settings, ArrowRight, Cpu, Network, ShieldCheck, Download
+    FileSearch, Settings, ArrowRight, Cpu, Network, ShieldCheck, Download,
+    Waves, Activity, Zap, Layers, ChevronRight, SearchCode, Database,
+    Info, Filter, MoreVertical, Trash2, Edit, Check, AlertCircle, Loader2, MapPin, Binary
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
-import StatCard from './StatCard';
 import { Button } from '@/components/ui/button';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { Input } from '@/components/ui/input';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Label } from '@/components/ui/label';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -37,13 +42,12 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             if (error) throw error;
             if (data) {
                 setLocalDevices([data, ...localDevices]);
-                toast.success(`Node ${data.device_code} Added`);
+                toast.success(`Device ${data.device_code} Added`);
             }
         } catch (error) {
             console.error('Add error:', error);
-            // Even if offline, we show it in local for better DX
             setLocalDevices([newDeviceData, ...localDevices]);
-            toast.info(`Cached: Node ${newDeviceData.device_code}`);
+            toast.info(`Device ${newDeviceData.device_code} cached locally.`);
         }
     };
 
@@ -65,10 +69,10 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     };
 
     const timeAgo = (dateString?: string) => {
-        if (!dateString) return '-';
+        if (!dateString) return 'Never';
         const date = new Date(dateString);
         const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-        if (seconds < 60) return 'Online';
+        if (seconds < 60) return 'Online Now';
         const minutes = Math.floor(seconds / 60);
         if (minutes < 60) return `${minutes}m ago`;
         const hours = Math.floor(minutes / 60);
@@ -82,184 +86,194 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const offlineCount = localDevices.filter(d => !readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 3))).length;
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-700 pb-20">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
-                <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-900/40">
-                        <Cpu className="w-3.5 h-3.5" />
-                        Hardware Inventory Management
-                    </div>
-                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic uppercase">Node <span className="text-amber-500">Registry</span></h1>
-                    <p className="text-sm font-medium text-slate-500 dark:text-white/30 max-w-md px-1 lowercase italic">
-                        provisioning, tracking and signal monitoring for all active IoT clusters.
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <Button
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            {/* Header */}
+            <PageHeader
+                icon={Cpu}
+                label="Sensor Management"
+                title={<>Device <span className="text-honey">Management</span></>}
+                subtitle="Manage all your IoT sensors and hardware in one place to keep your apiary connected."
+                actions={
+                    <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="h-16 px-10 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] gap-4"
+                        className={cn(glass.btnPrimary, "h-24 bg-honey text-black shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl uppercase flex items-center justify-center gap-10 group/btn pl-24")}
                     >
-                        <Plus className="w-5 h-5" />
-                        Initialize Node
-                    </Button>
-                </div>
+                        <Plus className="w-10 h-10 group-hover/btn:rotate-90 transition-transform" />
+                        Add Device
+                    </button>
+                }
+            />
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
+                <GlassStatCard label="Total Devices" value={localDevices.length} icon={Smartphone} index={0} />
+                <GlassStatCard label="Active (24h)" value={measured24h} icon={RefreshCw} index={1} color="text-emerald-500" />
+                <GlassStatCard label="Offline" value={offlineCount} icon={Wifi} index={2} color="text-destructive" />
+                <GlassStatCard label="Low Battery" value={localDevices.filter(d => d.battery_level < 20).length} icon={Battery} index={3} color="text-amber-500" />
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <StatCard title="Total Units" value={localDevices.length} icon={Smartphone} />
-                <StatCard title="Sync 24h" value={measured24h} icon={RefreshCw} />
-                <StatCard
-                    title="Offline Nodes"
-                    value={offlineCount}
-                    icon={Wifi}
-                    trendType={offlineCount > 0 ? "negative" : "positive"}
-                    trend={offlineCount > 0 ? 'CRITICAL' : 'MAX'}
-                />
-                <StatCard
-                    title="Low Battery"
-                    value={localDevices.filter(d => d.battery_level < 20).length}
-                    icon={Battery}
-                    trendType="neutral"
-                    trend="Checkups"
-                />
-            </div>
-
-            {/* Content Card */}
-            <div className="bg-white dark:bg-white/5 rounded-[3rem] border border-slate-200/60 dark:border-white/5 shadow-2xl shadow-black/5 overflow-hidden">
-                {/* Control Bar */}
-                <div className="p-10 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
-                    <div className="flex flex-col md:flex-row gap-6">
-                        <div className="flex-1 relative group">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
-                            <input
+            {/* Device Registry */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative")}
+            >
+                {/* Search and Filters */}
+                <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/20 backdrop-blur-3xl flex flex-col xl:flex-row gap-16 items-center relative z-10">
+                    <div className="flex-1 w-full relative">
+                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic mb-4 block')}>Search Devices</Label>
+                        <div className="relative">
+                            <Search className="absolute left-10 top-1/2 -translate-y-1/2 w-10 h-10 text-honey opacity-20" />
+                            <Input
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="SEARCH REGISTRY..."
-                                className="w-full h-14 pl-12 pr-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500/50 transition-all outline-none"
+                                placeholder="Search by code or location..."
+                                className={cn(glass.input, "h-24 pl-26 text-3xl")}
                             />
                         </div>
-                        <div className="w-full md:w-80">
-                            <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                <SelectTrigger className="h-14 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/10 focus:border-amber-500/50">
-                                    <SelectValue placeholder="All Sectors" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                    <SelectItem value="all" className="p-4 font-black uppercase text-[10px] tracking-widest">All Industrial Sectors</SelectItem>
-                                    {apiaries.map(apiary => (
-                                        <SelectItem key={apiary.id} value={apiary.id} className="p-4 font-black uppercase text-[10px] tracking-widest">{apiary.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    </div>
+                    <div className="w-full xl:w-[450px]">
+                        <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic mb-4 block')}>Location</Label>
+                        <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                            <SelectTrigger className={cn(glass.select, 'h-24 px-12 text-2xl')}>
+                                <div className="flex items-center gap-8">
+                                    <Layers className="w-8 h-8 text-blue-400" />
+                                    <SelectValue placeholder="All Locations" />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent className={glass.selectContent}>
+                                <SelectItem value="all" className="p-6 font-black uppercase text-[15px] italic rounded-2xl">All Locations</SelectItem>
+                                {apiaries.map(apiary => (
+                                    <SelectItem key={apiary.id} value={apiary.id} className="p-6 font-black uppercase text-[15px] italic rounded-2xl">{apiary.name.toUpperCase()}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
-                {/* Device Table */}
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                {/* Table */}
+                <div className="overflow-x-auto thin-scrollbar relative z-10">
+                    <table className="w-full text-left border-separate border-spacing-0">
                         <thead>
-                            <tr className="bg-slate-50/50 dark:bg-white/[0.01] h-16 font-black uppercase text-[9px] tracking-[0.3em] text-slate-400 italic">
-                                <th className="px-10 border-b border-slate-100 dark:border-white/5">Signal Status</th>
-                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Hardware ID</th>
-                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Deployment Sector</th>
-                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Target Hive</th>
-                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Battery Charge</th>
-                                <th className="px-8 border-b border-slate-100 dark:border-white/5">Last Pulse</th>
-                                <th className="px-10 border-b border-slate-100 dark:border-white/5 text-right font-black">Control</th>
+                            <tr className="bg-white/40 dark:bg-black/40">
+                                <th className={cn(glass.microLabel, "px-14 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Status</th>
+                                <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Device</th>
+                                <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Location</th>
+                                <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Hive</th>
+                                <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Battery</th>
+                                <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Last Seen</th>
+                                <th className={cn(glass.microLabel, "px-14 py-12 opacity-40 border-b border-white/5 text-right uppercase italic")}>Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                            {filteredDevices.length === 0 ? (
-                                <tr>
-                                    <td colSpan={7} className="py-32 text-center">
-                                        <div className="flex flex-col items-center gap-4">
-                                            <div className="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-200 mb-2">
-                                                <Network className="w-8 h-8" />
-                                            </div>
-                                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-300 italic">Registry Void</span>
-                                            <Button
-                                                variant="ghost"
-                                                onClick={() => setIsAddModalOpen(true)}
-                                                className="text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-widest"
-                                            >
-                                                Initialize First Node →
-                                            </Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredDevices.map(device => (
-                                    <tr key={device.id} className="hover:bg-amber-500/[0.02] dark:hover:bg-amber-500/[0.03] transition-colors group">
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-3">
-                                                <div className={cn(
-                                                    "w-2.5 h-2.5 rounded-full",
-                                                    device.status === 'active' ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'
-                                                )} />
-                                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">{device.status}</span>
+                        <tbody className="divide-y divide-white/5">
+                            <AnimatePresence mode="popLayout">
+                                {filteredDevices.length === 0 ? (
+                                    <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                        <td colSpan={7} className="h-[500px] text-center">
+                                            <div className="flex flex-col items-center justify-center space-y-10 group/null opacity-20">
+                                                <SearchCode className="w-24 h-24" />
+                                                <h3 className="text-5xl font-black italic tracking-tighter uppercase">No Devices Found</h3>
+                                                <p className="text-xl italic uppercase tracking-widest">Connect your first sensor to start monitoring.</p>
+                                                <button onClick={() => setIsAddModalOpen(true)} className={cn(glass.btnPrimary, "h-22 px-14 mt-12 bg-honey text-black")}>
+                                                    Add Device <ArrowRight className="w-8 h-8 ml-4" />
+                                                </button>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-8">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-black text-slate-900 dark:text-white tracking-widest group-hover:text-amber-500 transition-colors">{device.device_code}</span>
-                                                <span className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest">IOT_v2.41</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-8 text-[11px] font-black uppercase text-slate-500 dark:text-white/40 tracking-widest italic leading-none">
-                                            {getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}
-                                        </td>
-                                        <td className="px-8 py-8">
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-100 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-white/60">
-                                                <ShieldCheck className="w-3.5 h-3.5" />
-                                                {getHiveName(device.hive_id)}
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-8">
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-sm font-black tabular-nums text-slate-900 dark:text-white min-w-[3ch]">{device.battery_level}%</span>
-                                                <div className="w-20 h-2 bg-slate-100 dark:bg-black/20 rounded-full overflow-hidden p-0.5">
-                                                    <div
-                                                        className={cn(
-                                                            "h-full rounded-full transition-all duration-700",
-                                                            device.battery_level > 60 ? 'bg-emerald-500' : device.battery_level > 20 ? 'bg-amber-500' : 'bg-red-500'
-                                                        )}
-                                                        style={{ width: `${device.battery_level}%` }}
-                                                    />
+                                    </motion.tr>
+                                ) : (
+                                    filteredDevices.map((device, i) => (
+                                        <motion.tr
+                                            key={device.id}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            className="group hover:bg-honey/[0.04] transition-all duration-700 cursor-default"
+                                        >
+                                            <td className="px-14 py-14">
+                                                <div className="flex items-center gap-6">
+                                                    <div className={cn("w-4 h-4 rounded-full border-2 border-white/20 shadow-4xl", device.status === 'active' ? 'bg-emerald-500' : 'bg-red-500')} />
+                                                    <span className={cn(glass.microLabel, "font-black italic text-[14px]", device.status === 'active' ? 'text-emerald-500' : 'text-red-500')}>{device.status === 'active' ? 'Online' : 'Offline'}</span>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-8 text-[11px] font-black uppercase text-slate-400 dark:text-white/20 tracking-widest tabular-nums italic">
-                                            {timeAgo(device.last_ping)}
-                                        </td>
-                                        <td className="px-10 py-8 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
-                                                <Button variant="ghost" className="w-10 h-10 p-0 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5">
-                                                    <FileSearch className="w-4 h-4 text-slate-400" />
-                                                </Button>
-                                                <Button variant="ghost" className="w-10 h-10 p-0 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5">
-                                                    <Settings className="w-4 h-4 text-slate-400" />
-                                                </Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
+                                            </td>
+                                            <td className="px-10 py-14">
+                                                <div className="flex items-center gap-10">
+                                                    <div className="w-20 h-20 rounded-[2rem] bg-white/40 dark:bg-black/60 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:text-honey transition-all">
+                                                        <Cpu className="w-10 h-10" />
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="text-3xl font-black italic text-foreground tracking-tighter uppercase group-hover:text-honey">{device.device_code}</span>
+                                                        <span className="text-[12px] font-black text-honey/20 uppercase italic">v5.2</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-14">
+                                                <div className="flex items-center gap-5">
+                                                    <MapPin className="w-6 h-6 text-honey opacity-40" />
+                                                    <span className="text-lg font-black italic text-foreground/40 group-hover:text-foreground transition-colors uppercase">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-14">
+                                                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 px-10 py-3 skew-x-[-12deg]')}>
+                                                    <div className="flex items-center gap-4 skew-x-[12deg]">
+                                                        <ShieldCheck className="w-5 h-5" />
+                                                        <span className="font-black italic uppercase text-[15px]">{getHiveName(device.hive_id)}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-14">
+                                                <div className="flex items-center gap-8">
+                                                    <div className="flex flex-col items-end gap-3 min-w-[120px]">
+                                                        <span className="text-2xl font-black italic tabular-nums text-foreground/70">{device.battery_level}%</span>
+                                                        <div className="w-full h-2.5 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[1px] border border-white/5">
+                                                            <div className={cn("h-full rounded-full", device.battery_level > 60 ? "bg-emerald-500" : device.battery_level > 20 ? "bg-honey" : "bg-red-500 animate-pulse")} style={{ width: `${device.battery_level}%` }} />
+                                                        </div>
+                                                    </div>
+                                                    <Battery className={cn("w-8 h-8 transition-all", device.battery_level < 20 ? "text-red-500 animate-pulse" : "text-honey opacity-30")} />
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-14">
+                                                <div className="flex items-center gap-5">
+                                                    <Activity className="w-5 h-5 text-honey/20" />
+                                                    <span className="text-[14px] font-black text-foreground/30 uppercase italic">{timeAgo(device.last_ping)}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-14 py-14 text-right">
+                                                <div className="flex items-center justify-end gap-6 opacity-0 group-hover:opacity-100 transition-all translate-x-12 group-hover:translate-x-0">
+                                                    <button className={cn(glass.btnSecondary, "h-18 w-18 p-0 border-white/5 hover:text-honey")}>
+                                                        <FileSearch className="w-8 h-8" />
+                                                    </button>
+                                                    <button className={cn(glass.btnSecondary, "h-18 w-18 p-0 border-white/5 hover:text-honey")}>
+                                                        <Settings className="w-8 h-8" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))
+                                )}
+                            </AnimatePresence>
                         </tbody>
                     </table>
                 </div>
 
-                {/* Footer / Pagination */}
-                <div className="p-10 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-white/[0.01] flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.3em] italic">INDUSTRIAL HARDWARE REGISTRY SYSTEM v4.2 · ENCRYPTED_SYNC_ACTIVE</p>
-                    <Button variant="outline" className="h-12 px-8 rounded-xl border-slate-200 dark:border-white/10 font-black uppercase text-[10px] tracking-widest gap-3 transition-all hover:scale-[1.02]">
-                        <Download className="w-4 h-4" />
-                        Download Registry Bundle (.CSV)
-                    </Button>
+                {/* Footer */}
+                <div className="p-14 border-t border-white/5 bg-white/40 dark:bg-black/30 backdrop-blur-3xl flex flex-col md:flex-row justify-between items-center gap-12 relative z-10">
+                    <div className="flex items-center gap-10">
+                        <Database className="w-10 h-10 text-honey opacity-40" />
+                        <div className="flex flex-col">
+                            <p className="text-[14px] font-black text-foreground uppercase italic leading-none">System Registry</p>
+                            <span className="text-[10px] font-black text-muted-foreground/30 uppercase italic mt-1">Version 5.2.0 · Secured</span>
+                        </div>
+                    </div>
+                    <button className={cn(glass.btnSecondary, "h-22 px-14 flex items-center gap-8 rounded-[3rem]")}>
+                        <Download className="w-8 h-8" />
+                        Export Device Log
+                    </button>
                 </div>
-            </div>
+            </motion.div>
 
             <AddDeviceModal
                 open={isAddModalOpen}
@@ -268,7 +282,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 apiaries={apiaries}
                 hives={hives}
             />
-        </div>
+
+            <style>{`
+                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
+            `}</style>
+        </motion.div>
     );
 };
 

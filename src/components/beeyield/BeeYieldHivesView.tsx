@@ -4,24 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from '@/components/ui/textarea';
 import {
-    Plus,
-    Hexagon,
-    Box,
-    MapPin,
-    Loader2,
-    FileSpreadsheet,
-    Activity,
-    Zap,
-    X,
-    ShieldCheck,
-    Radio,
-    Search,
-    Cpu,
-    TrendingUp,
-    HeartPulse
+    Plus, Hexagon, Box, MapPin, Loader2, FileSpreadsheet, Activity, Zap, X, ShieldCheck, Radio, Search, Cpu, TrendingUp, HeartPulse, Binary, Download, Send, Calendar, AlertCircle, RefreshCw, Layers, ChevronRight, Hash, Shield, Battery
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -31,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useHives, useDeleteHive, useUpdateHive, useApiaries } from '@/hooks/useHives';
 import HiveFormModal from './HiveFormModal';
 import FlipCardHive from './FlipCardHive';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -69,7 +55,6 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     // Data Hooks
     const { data: hives = [], isLoading: hivesLoading } = useHives();
     const { data: apiaries = [], isLoading: apiariesLoading } = useApiaries();
-    const deleteHive = useDeleteHive();
     const updateHiveMutation = useUpdateHive();
     const [devices, setDevices] = React.useState<IoTDevice[]>([]);
 
@@ -97,8 +82,6 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             return matchesPlace && matchesSearch;
         });
     }, [hives, selectedPlace, searchQuery]);
-
-    const activeDevices = devices.filter(d => d.status === 'active');
 
     // Stats
     const stats = React.useMemo(() => {
@@ -155,6 +138,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
 
     const handleSaveNotes = async () => {
         if (!activeHive) return;
+        const toastId = toast.loading("Saving your notes...");
         setIsSavingNotes(true);
         try {
             await updateHiveMutation.mutateAsync({
@@ -162,19 +146,18 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 data: { notes: hiveNotes }
             });
             setIsNotesModalOpen(false);
-            toast.success("Notes saved to archive");
+            toast.success("Notes saved successfully", { id: toastId });
         } catch (error) {
-            console.error(error);
-            toast.error("Failed to save notes");
+            toast.error("Could not save notes. Please try again.", { id: toastId });
         } finally {
             setIsSavingNotes(false);
         }
     };
 
     const submitInspectionRequest = async () => {
+        const toastId = toast.loading("Scheduling inspection...");
         setIsSavingTask(true);
         try {
-            let dueDate = inspectionTaskForm.due_date;
             const { error } = await beeyieldService.createTask({
                 title: inspectionTaskForm.title,
                 description: inspectionTaskForm.description,
@@ -182,19 +165,18 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 priority: inspectionTaskForm.priority === 'high' ? 'High' : inspectionTaskForm.priority === 'low' ? 'Low' : 'Medium',
                 type: 'Inspection',
                 category: 'Inspection',
-                due_date: new Date(dueDate).toISOString(),
+                due_date: new Date(inspectionTaskForm.due_date).toISOString(),
                 hive_id: inspectionTaskForm.hive_id,
                 apiary_id: inspectionTaskForm.apiary_id,
                 is_completed: false
             });
 
             if (!error) {
-                toast.success('Inspection requested successfully');
+                toast.success('Inspection scheduled', { id: toastId });
                 setIsRequestingInspection(false);
             }
         } catch (e) {
-            console.error(e);
-            toast.error('Failed to request inspection');
+            toast.error('Failed to schedule inspection', { id: toastId });
         } finally {
             setIsSavingTask(false);
         }
@@ -202,6 +184,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
 
     const handleExportExcel = async () => {
         setIsExporting(true);
+        const toastId = toast.loading("Preparing your data...");
         try {
             const exportData = filteredHives.map(h => ({
                 hive_id: h.hive_code,
@@ -215,378 +198,309 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
 
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Hives Data');
+            XLSX.utils.book_append_sheet(wb, ws, 'Hives');
             XLSX.writeFile(wb, `BeeYield_Hives_${new Date().toISOString().split('T')[0]}.xlsx`);
-            toast.success('Export successful');
+            toast.success('Data exported successfully', { id: toastId });
         } catch (error) {
-            console.error('Export failed:', error);
-            toast.error('Failed to export data');
+            toast.error('Export failed. Please try again.', { id: toastId });
         } finally {
             setIsExporting(false);
         }
     };
 
     return (
-        <div className="space-y-8 pb-20 animate-in fade-in duration-500">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
-                <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200/50 dark:border-amber-900/30">
-                        <Hexagon className="w-3.5 h-3.5" />
-                        Management Protocol
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            {/* ── Header ── */}
+            <PageHeader
+                icon={Hexagon}
+                label="Hive Management"
+                title={<>Hive <span className="text-honey">Inventory</span></>}
+                subtitle="Track your hives, monitor equipment health, and manage colony weight data in real-time."
+                actions={
+                    <div className="flex items-center gap-6">
+                        <button
+                            onClick={handleExportExcel}
+                            disabled={isExporting}
+                            className={cn(glass.btnSecondary, "h-20 w-20 p-0 rounded-[2.5rem] bg-white dark:bg-black/60 shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
+                            title="Export to Excel"
+                        >
+                            {isExporting ? <RefreshCw className="w-10 h-10 animate-spin" /> : <Download className="w-10 h-10" />}
+                        </button>
+                        <button
+                            onClick={handleOpenAddHive}
+                            className={cn(glass.btnPrimary, "h-24 bg-[#FBBE24] text-black shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl transition-all uppercase flex items-center justify-center gap-8 group/btn pl-24")}
+                        >
+                            <Plus className="w-10 h-10 group-hover/btn:rotate-90 transition-transform duration-1000" />
+                            Add New Hive
+                        </button>
                     </div>
-                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Fleet <span className="text-emerald-600">Assets</span></h1>
-                    <p className="text-sm font-medium text-slate-500 dark:text-white/30 max-w-md">
-                        Real-time telemetry and industrial productivity audit for your entire colony network.
-                    </p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        onClick={handleExportExcel}
-                        disabled={isExporting}
-                        className="h-14 w-14 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 text-slate-400 hover:text-amber-600 transition-all shadow-sm"
-                    >
-                        {isExporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSpreadsheet className="w-5 h-5" />}
-                    </Button>
-                    <Button
-                        onClick={handleOpenAddHive}
-                        className="h-14 px-10 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 dark:shadow-amber-900/20 flex items-center gap-3"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Register Asset
-                    </Button>
-                </div>
+                }
+            />
+
+            {/* ── Quick Stats ── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                <GlassStatCard label="Total Hives" value={stats.total} icon={Box} index={0} />
+                <GlassStatCard label="Online" value={stats.active} icon={ShieldCheck} index={1} color="text-emerald-500" />
+                <GlassStatCard label="Alerts" value={stats.critical} icon={HeartPulse} index={2} color="text-destructive" />
+                <GlassStatCard label="Average Weight" value={`${stats.avgWeight}kg`} icon={Zap} index={3} color="text-honey" />
             </div>
 
-            {/* Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { label: 'Total Fleet', value: stats.total, icon: Box, color: 'text-amber-500' },
-                    { label: 'Nodes Online', value: stats.active, icon: ShieldCheck, color: 'text-emerald-500' },
-                    { label: 'Active Alerts', value: stats.critical, icon: HeartPulse, color: 'text-red-500' },
-                    { label: 'Mean Hive Payload', value: `${stats.avgWeight}kg`, icon: Zap, color: 'text-amber-600' }
-                ].map((stat, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                    >
-                        <Card className="rounded-[2rem] border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 hover:border-amber-500/30 transition-all group overflow-hidden relative">
-                            <CardContent className="p-8">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-900 dark:text-white group-hover:scale-110 transition-transform">
-                                        <stat.icon className={cn("w-5 h-5", stat.color)} />
-                                    </div>
-                                    <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">{stat.label}</p>
-                                </div>
-                                <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">{stat.value}</h3>
-                                {/* Decorative background element */}
-                                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-transparent to-black/[0.01] pointer-events-none" />
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                ))}
-            </div>
-
-            {/* View Switching & Filters */}
+            {/* ── Filter Bar ── */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white dark:bg-white/5 border border-slate-200/60 dark:border-white/5 rounded-[2.5rem] p-4 shadow-xl shadow-black/5"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={glass.filterBar}
             >
-                <div className="flex flex-col lg:flex-row gap-6 justify-between items-center">
-                    <div className="flex bg-slate-50 dark:bg-black/20 p-1.5 rounded-[1.25rem] gap-1 w-full lg:w-auto">
-                        <Button
-                            variant="ghost"
+                <div className="relative z-10 flex flex-col xl:flex-row gap-12 justify-between items-center">
+                    <div className="flex bg-black/5 dark:bg-white/5 p-4 rounded-[3.5rem] gap-4 border border-white/10 shadow-inner w-full xl:w-auto">
+                        <button
                             onClick={() => setViewMode('hives')}
-                            className={cn('flex-1 lg:flex-initial h-11 px-8 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all',
-                                viewMode === 'hives' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-900 dark:hover:text-white'
+                            className={cn('flex-1 xl:flex-initial h-20 px-16 rounded-[2.8rem] text-lg font-black uppercase tracking-widest italic transition-all duration-700 flex items-center gap-6 justify-center',
+                                viewMode === 'hives' ? 'bg-white dark:bg-black/80 text-honey shadow-4xl border border-honey/20' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
                             )}
                         >
-                            <Box className="w-4 h-4 mr-2" /> Hive Inventory
-                        </Button>
-                        <Button
-                            variant="ghost"
+                            <Layers className="w-7 h-7" /> Hive List
+                        </button>
+                        <button
                             onClick={() => setViewMode('devices')}
-                            className={cn('flex-1 lg:flex-initial h-11 px-8 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all',
-                                viewMode === 'devices' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-900 dark:hover:text-white'
+                            className={cn('flex-1 xl:flex-initial h-20 px-16 rounded-[2.8rem] text-lg font-black uppercase tracking-widest italic transition-all duration-700 flex items-center gap-6 justify-center',
+                                viewMode === 'devices' ? 'bg-white dark:bg-black/80 text-honey shadow-4xl border border-honey/20' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
                             )}
                         >
-                            <Cpu className="w-4 h-4 mr-2" /> Hardware Fleet
-                        </Button>
+                            <Cpu className="w-7 h-7" /> Equipment
+                        </button>
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-4 w-full lg:flex-1 lg:justify-end">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-300 dark:text-white/10" />
+                    <div className="flex flex-col md:flex-row gap-8 w-full xl:flex-1 xl:justify-end">
+                        <div className="relative flex-1 max-w-xl group/search">
+                            <Search className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/search:opacity-100 transition-opacity duration-700" />
                             <Input
-                                placeholder="Search asset registry..."
+                                placeholder="Search hives..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 font-medium text-sm focus:ring-amber-500/20"
+                                className={cn(glass.input, 'h-24 pl-24 px-12 rounded-[3.5rem] italic font-black text-2xl bg-black/5 dark:bg-black/30 border-none shadow-inner normal-case placeholder:opacity-5')}
                             />
                         </div>
-                        <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                            <SelectTrigger className="h-12 md:w-[220px] rounded-2xl border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 font-black text-[10px] uppercase tracking-widest focus:ring-amber-500/20">
-                                <MapPin className="w-4 h-4 mr-2 text-amber-500" />
-                                <SelectValue placeholder="All Sectors" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl p-0">
-                                <SelectItem value="all" className="p-4 font-black uppercase text-[10px] tracking-widest">All Industrial Sectors</SelectItem>
-                                {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="p-4 font-black uppercase text-[10px] tracking-widest">{a.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                        <div className="w-full md:w-[350px]">
+                            <Select value={selectedPlace} onValueChange={setSelectedPlace}>
+                                <SelectTrigger className={cn(glass.select, 'h-24 px-10 rounded-[3.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner')}>
+                                    <div className="flex items-center gap-6">
+                                        <MapPin className="w-8 h-8 text-honey opacity-30" />
+                                        <SelectValue placeholder="All Locations" />
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent className={glass.selectContent}>
+                                    <SelectItem value="all" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">All Locations</SelectItem>
+                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">{a.name.toUpperCase()}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </div>
             </motion.div>
 
-            {/* List Content */}
-            {viewMode === 'hives' ? (
-                isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="aspect-[4/5] border-2 border-neutral-200 animate-pulse bg-neutral-50" />
-                        ))}
-                    </div>
-                ) : filteredHives.length === 0 ? (
-                    <div className="py-20 text-center border-2 border-dashed border-neutral-300">
-                        <Hexagon className="w-12 h-12 text-neutral-200 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-black uppercase mb-2">No Hives</h3>
-                        <p className="text-neutral-400 font-bold mb-6 uppercase text-[10px]">No results match your criteria.</p>
-                        <Button onClick={handleOpenAddHive} className="h-10 px-6 rounded-none bg-black text-white font-bold text-[10px] uppercase">
-                            Add Hive
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredHives.map((hive) => (
-                            <FlipCardHive
-                                key={hive.id}
-                                hive={{
-                                    id: hive.id,
-                                    name: hive.hive_code,
-                                    weight: hive.latest_weight || 0,
-                                    temp: hive.latest_temp || 0,
-                                    humidity: hive.latest_humidity || 0,
-                                    status: hive.status === 'ACTIVE' ? 'ok' : hive.status?.toUpperCase() === 'MAINTENANCE' ? 'warning' : 'critical'
-                                }}
-                                onViewHistory={() => handleOpenQuickDetails(hive)}
-                                onMarkInspection={() => handleRequestInspection(hive, {} as any)}
-                            />
-                        ))}
-                    </div>
-                )
-            ) : (
-                /* Devices View */
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Cpu className="w-6 h-6 text-amber-500" />
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">Hardware Infrastructure</h3>
+            {/* ── Main Content ── */}
+            <div className="relative z-10">
+                {viewMode === 'hives' ? (
+                    isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                <div key={i} className={cn(glass.skeleton, 'aspect-[3/4] rounded-[4rem] animate-pulse')} />
+                            ))}
                         </div>
-                        <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-lg">Operational</span>
-                    </div>
+                    ) : filteredHives.length === 0 ? (
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={glass.emptyState}>
+                            <div className="w-56 h-56 rounded-[4rem] bg-honey/5 border border-honey/20 flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 shadow-4xl">
+                                <Hexagon className="w-28 h-28 text-honey opacity-20" />
+                            </div>
+                            <div className="space-y-6">
+                                <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none opacity-40">No Hives Found</h3>
+                                <p className={cn(glass.microLabel, "max-w-xl mx-auto")}>Add your first hive to start monitoring your colonies.</p>
+                            </div>
+                            <button onClick={handleOpenAddHive} className={cn(glass.btnPrimary, "h-24 bg-honey text-black mt-16 px-20 rounded-[3.5rem]")}>
+                                <Plus className="w-10 h-10 mr-6" /> Add Hive
+                            </button>
+                        </motion.div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+                            <AnimatePresence>
+                                {filteredHives.map((hive, i) => (
+                                    <FlipCardHive
+                                        key={hive.id}
+                                        hive={{
+                                            id: hive.id,
+                                            name: hive.hive_code,
+                                            weight: hive.latest_weight || 0,
+                                            temp: hive.latest_temp || 0,
+                                            humidity: hive.latest_humidity || 0,
+                                            status: hive.status === 'ACTIVE' ? 'ok' : hive.status?.toUpperCase() === 'MAINTENANCE' ? 'warning' : 'critical'
+                                        }}
+                                        onViewHistory={() => handleOpenQuickDetails(hive)}
+                                        onMarkInspection={() => handleRequestInspection(hive, {} as any)}
+                                    />
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )
+                ) : (
+                    /* ── Equipment Table ── */
+                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={glass.table}>
+                        <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-3xl flex items-center justify-between">
+                            <div className="flex items-center gap-8">
+                                <div className="w-18 h-18 rounded-[1.5rem] bg-honey/20 flex items-center justify-center border border-honey/40 shadow-4xl">
+                                    <Cpu className="w-10 h-10 text-honey" />
+                                </div>
+                                <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">Equipment <span className="text-honey">Fleet</span></h3>
+                            </div>
+                            <p className={glass.microLabel}>Monitor your hardware health and batteries</p>
+                        </div>
 
-                    <div className="bg-white dark:bg-white/5 border border-slate-200/60 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/5">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-[10px] text-left uppercase font-black tracking-widest">
-                                <thead className="bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-white/20 border-b border-slate-100 dark:border-white/10 uppercase">
+                        <div className="overflow-x-auto thin-scrollbar">
+                            <table className="w-full text-left border-separate border-spacing-0">
+                                <thead>
                                     <tr>
-                                        <th className="px-8 py-6">Hardware Identifier</th>
-                                        <th className="px-8 py-6">Deployed Asset</th>
-                                        <th className="px-8 py-6">Telemetry Status</th>
-                                        <th className="px-8 py-6">Power Core</th>
-                                        <th className="px-8 py-6 text-right">Registry Audit</th>
+                                        <th className={glass.tableHead}>Device Code</th>
+                                        <th className={glass.tableHead}>Assigned Hive</th>
+                                        <th className={glass.tableHead}>Status</th>
+                                        <th className={glass.tableHead}>Battery</th>
+                                        <th className={cn(glass.tableHead, "text-right")}>Last Seen</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                                    {devices.map((device) => {
+                                <tbody className="divide-y divide-white/5">
+                                    {devices.map((device, i) => {
                                         const linkedHive = hives.find(h => h.id === device.hive_id || h.hive_code === device.device_code);
                                         return (
-                                            <tr key={device.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-all group">
-                                                <td className="px-8 py-6 font-black font-mono text-amber-600 dark:text-amber-400">{device.device_code}</td>
-                                                <td className="px-8 py-6">
+                                            <motion.tr
+                                                key={device.id}
+                                                initial={{ opacity: 0, x: -30 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.05, duration: 0.8 }}
+                                                className={glass.tableRow}
+                                            >
+                                                <td className="px-16 py-14">
+                                                    <div className="flex items-center gap-10">
+                                                        <div className="w-20 h-20 rounded-[2.5rem] bg-black/5 dark:bg-white/5 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-125 group-hover:rotate-12 transition-all">
+                                                            <Hash className="w-10 h-10 text-honey opacity-40 group-hover:opacity-100" />
+                                                        </div>
+                                                        <span className="text-3xl font-black italic text-foreground tracking-tighter group-hover:text-honey transition-colors">{device.device_code}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-12 py-14">
                                                     {linkedHive ? (
-                                                        <span className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-lg text-[9px] font-black border border-emerald-100 dark:border-emerald-900/40 tracking-[0.15em]">#{linkedHive.hive_code}</span>
+                                                        <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 px-12 py-4 shadow-3xl skew-x-[-15deg] max-w-fit')}>
+                                                            <div className="flex items-center gap-6 skew-x-[15deg]">
+                                                                <ShieldCheck className="w-6 h-6" />
+                                                                <span className="font-black italic uppercase text-lg">Hive: {linkedHive.hive_code}</span>
+                                                            </div>
+                                                        </div>
                                                     ) : (
-                                                        <span className="text-slate-300 dark:text-white/10 italic">Awaiting Deployment</span>
+                                                        <span className="italic font-black text-xl opacity-20 uppercase tracking-widest">Unassigned</span>
                                                     )}
                                                 </td>
-                                                <td className="px-8 py-6">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-slate-300")} />
-                                                        <span className={cn("text-[10px] font-black", device.status === 'active' ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400")}>
-                                                            {device.status}
+                                                <td className="px-12 py-14">
+                                                    <div className="flex items-center gap-8">
+                                                        <div className={cn("w-5 h-5 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.8)] animate-pulse", device.status === 'active' ? 'bg-emerald-500' : 'bg-red-500')} />
+                                                        <span className={cn("text-2xl font-black uppercase italic", device.status === 'active' ? "text-emerald-500" : "text-foreground/30")}>
+                                                            {device.status === 'active' ? 'Online' : 'Offline'}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-20 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                                            <div
-                                                                className={cn("h-full transition-all duration-500", device.battery_level > 20 ? "bg-emerald-500" : "bg-red-500")}
-                                                                style={{ width: `${device.battery_level}%` }}
-                                                            />
+                                                <td className="px-12 py-14">
+                                                    <div className="flex items-center gap-10">
+                                                        <div className="flex flex-col items-end gap-3 min-w-[160px]">
+                                                            <span className="text-4xl font-black italic text-foreground tracking-tighter tabular-nums">{device.battery_level}%</span>
+                                                            <div className="w-full h-3 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[1.5px] border border-white/5">
+                                                                <motion.div
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: `${device.battery_level}%` }}
+                                                                    className={cn("h-full rounded-full animate-shimmer", device.battery_level > 60 ? "bg-emerald-500" : device.battery_level > 20 ? "bg-honey" : "bg-red-500")}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <span className="text-slate-900 dark:text-white">{device.battery_level}%</span>
+                                                        <Battery className={cn("w-12 h-12", device.battery_level < 20 ? "text-red-500 animate-pulse" : "text-honey opacity-20")} />
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6 text-right text-slate-400 dark:text-white/30 lowercase tabular-nums">
-                                                    {new String(new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })).toLowerCase()}
+                                                <td className="px-16 py-14 text-right">
+                                                    <span className="text-2xl font-black italic text-foreground tracking-tighter uppercase">{new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).toUpperCase()}</span>
                                                 </td>
-                                            </tr>
+                                            </motion.tr>
                                         );
                                     })}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </div>
 
-            {/* Modals & Overlays */}
+            {/* ── Modals & Overlays ── */}
+
             <HiveFormModal
                 isOpen={isHiveModalOpen}
                 onClose={() => setIsHiveModalOpen(false)}
                 editingHive={editingHive}
             />
 
-            {/* Inspection Request Overlay */}
+            {/* Inspection Request */}
             <AnimatePresence>
                 {isRequestingInspection && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#064e3b]/40 backdrop-blur-sm">
-                        <div className="w-full max-w-xl">
-                            <Card className="rounded-none border-4 border-[#064e3b] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden bg-white">
-                                <CardHeader className="p-8 border-b-4 border-[#064e3b] bg-white text-[#064e3b]">
-                                    <div className="flex justify-between items-center">
-                                        <CardTitle className="text-4xl font-black uppercase tracking-tighter">Schedule audit</CardTitle>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => setIsRequestingInspection(false)}
-                                            className="rounded-none hover:bg-[#facc15]/10 border-2 border-transparent hover:border-[#064e3b] transition-none"
-                                        >
-                                            <X className="w-6 h-6" />
-                                        </Button>
-                                    </div>
-                                    <p className="text-[#064e3b]/30 font-black uppercase text-[10px] mt-2 tracking-[0.2em]">Asset verification protocol.</p>
-                                </CardHeader>
-                                <CardContent className="p-8 space-y-6 bg-white">
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest">Protocol Title</Label>
-                                        <Input
-                                            value={inspectionTaskForm.title}
-                                            onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })}
-                                            className="h-12 rounded-none border-4 border-[#064e3b] bg-white text-sm font-black uppercase focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5 transition-none"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest">Audit Deadline</Label>
-                                        <Input
-                                            type="date"
-                                            value={inspectionTaskForm.due_date}
-                                            onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })}
-                                            className="h-12 rounded-none border-4 border-[#064e3b] bg-white text-sm font-black uppercase focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5 transition-none"
-                                        />
-                                    </div>
-                                    <div className="pt-6 flex gap-4">
-                                        <Button
-                                            variant="ghost"
-                                            className="flex-1 h-12 rounded-none font-black text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-neutral-50 uppercase text-[10px] tracking-widest transition-none"
-                                            onClick={() => setIsRequestingInspection(false)}
-                                        >
-                                            Abort Operation
-                                        </Button>
-                                        <Button
-                                            onClick={submitInspectionRequest}
-                                            disabled={isSavingTask}
-                                            className="flex-1 h-12 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] gap-3 font-black uppercase text-[10px] tracking-widest transition-none border-2 border-[#064e3b] shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
-                                        >
-                                            {isSavingTask ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
-                                            Log Audit Request
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Quick Details Overlay */}
-            <AnimatePresence>
-                {isQuickDetailsOpen && activeHive && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#064e3b]/40 backdrop-blur-sm">
-                        <div className="w-full max-w-4xl">
-                            <Card className="rounded-none border-4 border-[#064e3b] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden bg-white">
-                                <CardContent className="p-10">
-                                    <div className="flex justify-between items-start mb-8">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-16 h-16 border-2 border-[#10b981] bg-[#064e3b] flex items-center justify-center text-[#facc15]">
-                                                <Hexagon className="w-8 h-8" />
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-4">
-                                                    <h2 className="text-4xl font-black text-[#064e3b] uppercase tracking-tighter leading-none">{activeHive.hive_code}</h2>
-                                                    <span className="bg-[#facc15]/10 border-2 border-[#facc15] px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#064e3b]">{activeHive.status}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 mt-2">
-                                                    <MapPin className="w-4 h-4 text-[#cc9c00]" />
-                                                    <span className="text-[#064e3b]/30 font-black uppercase text-[10px] tracking-widest">{apiaries.find(a => a.id === activeHive.apiary_id)?.name}</span>
-                                                </div>
-                                            </div>
+                    <div className={glass.modalOverlay} onClick={() => setIsRequestingInspection(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 100 }}
+                            className={glass.modalCard}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className={glass.modalHeader}>
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-6">
+                                        <div className="inline-flex items-center gap-6 px-8 py-3 bg-honey/10 rounded-full border border-honey/30 shadow-4xl skew-x-[-15deg]">
+                                            <Calendar className="w-6 h-6 text-honey skew-x-[15deg]" />
+                                            <span className="text-[12px] font-black uppercase tracking-[0.5em] skew-x-[15deg] italic">Task Management</span>
                                         </div>
-                                        <Button variant="ghost" size="icon" onClick={() => setIsQuickDetailsOpen(false)} className="rounded-none h-12 w-12 hover:bg-[#facc15]/10 border-4 border-transparent hover:border-[#064e3b] transition-none">
-                                            <X className="w-6 h-6 text-[#064e3b]/40" />
-                                        </Button>
+                                        <h2 className="text-6xl font-black text-foreground tracking-tighter uppercase italic leading-none">Schedule <span className="text-honey">Inspection</span></h2>
+                                        <p className="text-xl font-black text-foreground/30 uppercase italic border-l-4 border-honey/20 pl-10">Set a reminder to check on this colony soon.</p>
                                     </div>
-
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                                        {[
-                                            { label: 'Thermal', value: activeHive.latest_temp ? `${activeHive.latest_temp}°C` : '--', icon: Activity, color: 'text-orange-500' },
-                                            { label: 'Mass', value: activeHive.latest_weight ? `${activeHive.latest_weight}kg` : '--', icon: TrendingUp, color: 'text-emerald-600' },
-                                            { label: 'Saturation', value: activeHive.latest_humidity ? `${activeHive.latest_humidity}%` : '--', icon: Radio, color: 'text-blue-500' },
-                                            { label: 'Biometrics', value: 'OPTIMAL', icon: ShieldCheck, color: 'text-[#064e3b]' }
-                                        ].map((item, i) => (
-                                            <div key={i} className="bg-neutral-50/50 border-4 border-[#064e3b] p-6 text-center">
-                                                <item.icon className={cn("w-5 h-5 mx-auto mb-3", item.color)} />
-                                                <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-                                                <p className="font-black text-xl text-[#064e3b] uppercase">{item.value}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="bg-[#facc15]/5 border-4 border-[#064e3b] p-8 mb-8">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <Label className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">Registry Notes</Label>
-                                            <div className="h-[2px] flex-1 bg-[#064e3b]/10" />
-                                        </div>
-                                        <p className="text-xl font-black text-[#064e3b] leading-tight uppercase tracking-tight">{activeHive.notes || 'No registry entries recorded.'}</p>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <Button
-                                            className="h-14 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] gap-3 font-black text-xs uppercase tracking-widest transition-none border-2 border-[#064e3b] shadow-[6px_6px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
-                                            onClick={() => {
-                                                setIsQuickDetailsOpen(false);
-                                                onTabChange('inspections', `Filtering for ${activeHive.hive_code}`, `filter_hive:${activeHive.id}`);
-                                            }}
-                                        >
-                                            <Activity className="w-5 h-5" />
-                                            Master Data
-                                        </Button>
-                                        <Button className="h-14 rounded-none border-4 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#facc15]/10 gap-3 font-black text-xs uppercase tracking-widest transition-none" variant="outline" onClick={() => { setIsQuickDetailsOpen(false); handleOpenNotes(activeHive); }}>
-                                            Record Observation
-                                        </Button>
-                                        <Button className="h-14 rounded-none border-4 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#facc15]/10 gap-3 font-black text-xs uppercase tracking-widest transition-none" variant="outline" onClick={() => { setIsQuickDetailsOpen(false); handleEditHive(activeHive); }}>
-                                            Modify Asset
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                    <button onClick={() => setIsRequestingInspection(false)} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 transition-all duration-700">
+                                        <X className="w-10 h-10" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-20 space-y-16">
+                                <div className="space-y-8">
+                                    <Label className={glass.microLabel}>Inspection Title</Label>
+                                    <Input
+                                        value={inspectionTaskForm.title}
+                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })}
+                                        className={glass.input}
+                                        placeholder="Routine Health Check"
+                                    />
+                                </div>
+                                <div className="space-y-8">
+                                    <Label className={glass.microLabel}>Due Date</Label>
+                                    <Input
+                                        type="date"
+                                        value={inspectionTaskForm.due_date}
+                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })}
+                                        className={glass.input}
+                                    />
+                                </div>
+                                <div className="pt-12 flex gap-12">
+                                    <button className={glass.btnSecondary} onClick={() => setIsRequestingInspection(false)}>
+                                        Cancel
+                                    </button>
+                                    <button onClick={submitInspectionRequest} disabled={isSavingTask} className={cn(glass.btnPrimary, "flex-1")}>
+                                        {isSavingTask ? <RefreshCw className="w-12 h-12 animate-spin" /> : <ShieldCheck className="w-12 h-12" />}
+                                        Save Inspection
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 )}
             </AnimatePresence>
@@ -594,36 +508,51 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             {/* Notes Overlay */}
             <AnimatePresence>
                 {isNotesModalOpen && activeHive && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#064e3b]/40 backdrop-blur-sm">
-                        <div className="w-full max-w-2xl">
-                            <Card className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden bg-white">
-                                <CardHeader className="p-8 border-b-4 border-[#064e3b] flex flex-row items-center justify-between text-[#064e3b]">
-                                    <div>
-                                        <CardTitle className="text-3xl font-black uppercase tracking-tighter">Asset Observation</CardTitle>
-                                        <p className="text-[#064e3b]/30 font-black uppercase text-[10px] mt-2 tracking-[0.2em]">Asset #{activeHive.hive_code}</p>
+                    <div className={glass.modalOverlay} onClick={() => setIsNotesModalOpen(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 100 }}
+                            className={glass.modalCard}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className={glass.modalHeader}>
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-6">
+                                        <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-none">Hive <span className="text-honey">Notes</span></h2>
+                                        <p className="text-2xl font-black text-foreground/30 uppercase italic border-l-4 border-honey/20 pl-10">Archive observations for hive #{activeHive.hive_code}.</p>
                                     </div>
-                                    <Button variant="ghost" size="icon" onClick={() => setIsNotesModalOpen(false)} className="rounded-none h-12 w-12 hover:bg-[#facc15]/10 border-2 border-transparent hover:border-[#064e3b] transition-none">
-                                        <X className="w-6 h-6" />
-                                    </Button>
-                                </CardHeader>
-                                <CardContent className="p-8 space-y-6">
-                                    <Textarea
-                                        value={hiveNotes}
-                                        onChange={(e) => setHiveNotes(e.target.value)}
-                                        className="min-h-[250px] rounded-none border-4 border-[#064e3b] bg-neutral-50 p-6 font-black text-lg focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5 transition-none resize-none uppercase tracking-tight placeholder:text-neutral-300"
-                                        placeholder="INPUT OBSERVATION DATA..."
-                                    />
-                                    <Button onClick={handleSaveNotes} disabled={isSavingNotes} className="w-full h-14 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] gap-3 font-black text-xs uppercase tracking-widest transition-none border-2 border-[#064e3b] shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
-                                        {isSavingNotes ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShieldCheck className="w-6 h-6" />}
-                                        Store in Registry
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                    <button onClick={() => setIsNotesModalOpen(false)} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 transition-all duration-700">
+                                        <X className="w-10 h-10" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-20 space-y-16">
+                                <Textarea
+                                    value={hiveNotes}
+                                    onChange={(e) => setHiveNotes(e.target.value)}
+                                    className="min-h-[400px] p-16 rounded-[4rem] font-black italic text-4xl leading-relaxed bg-black/5 dark:bg-black/40 border-white/10 shadow-inner resize-none focus:ring-honey/20"
+                                    placeholder="Write your observations here..."
+                                />
+                                <button onClick={handleSaveNotes} disabled={isSavingNotes} className={cn(glass.btnPrimary, "w-full h-28 text-3xl")}>
+                                    {isSavingNotes ? <RefreshCw className="w-16 h-16 animate-spin" /> : <ShieldCheck className="w-16 h-16" />}
+                                    Save Notes
+                                </button>
+                            </div>
+                        </motion.div>
                     </div>
                 )}
             </AnimatePresence>
-        </div>
+
+            <style>{`
+                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+                .animate-shimmer { animation: shimmer 3s infinite linear; }
+                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
+                .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.2); }
+            `}</style>
+        </motion.div>
     );
 };
 

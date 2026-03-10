@@ -1,36 +1,15 @@
 import React from 'react';
 import {
-    Thermometer,
-    Droplets,
-    Activity,
-    AlertTriangle,
-    CheckCircle2,
-    Volume2,
-    Cpu,
-    ChevronLeft,
-    ChevronRight,
-    Clock,
-    Zap,
-    Shield,
-    ArrowUp,
-    ArrowDown,
-    Minus
+    Thermometer, Droplets, Activity, AlertTriangle, CheckCircle2, Volume2, Cpu, ChevronLeft, ChevronRight, Clock, Zap, Shield, ArrowUp, ArrowDown, Minus
 } from 'lucide-react';
 import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    ReferenceLine,
-    ComposedChart,
-    Bar
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Bar
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import beeyieldService, { ActivityLog, SensorAlert, Hive } from '@/services/beeyieldService';
 import { formatDistanceToNow } from 'date-fns';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -39,7 +18,7 @@ interface SensorHealthViewProps {
 // --- Mock Data ---
 const generateHistoryData = (months: number) => {
     const data: any[] = [];
-    const now = new Date(2026, 1, 20); // Feb 2026
+    const now = new Date();
     for (let i = months - 1; i >= 0; i--) {
         const d = new Date(now);
         d.setMonth(d.getMonth() - i);
@@ -55,48 +34,13 @@ const generateHistoryData = (months: number) => {
     return data;
 };
 
-const hiveNodes = [
-    { id: 'HV-001', name: 'Hive Alpha', temp: 35.2, humidity: 62, acoustic: 'Healthy', alert: null, lastSeen: '2m ago' },
-    { id: 'HV-002', name: 'Hive Bravo', temp: 37.8, humidity: 58, acoustic: 'Swarm Risk', alert: 'TEMP_HIGH', lastSeen: '1m ago' },
-    { id: 'HV-003', name: 'Hive Charlie', temp: 28.4, humidity: 71, acoustic: 'Queenless', alert: 'TEMP_LOW', lastSeen: '5m ago' },
-    { id: 'HV-004', name: 'Hive Delta', temp: 34.8, humidity: 60, acoustic: 'Healthy', alert: null, lastSeen: '3m ago' },
-    { id: 'HV-005', name: 'Hive Echo', temp: 35.0, humidity: 63, acoustic: 'Healthy', alert: null, lastSeen: '2m ago' },
-    { id: 'HV-006', name: 'Hive Foxtrot', temp: 36.1, humidity: 57, acoustic: 'Healthy', alert: null, lastSeen: '4m ago' },
-];
-
 const acousticConfig: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-    'Healthy': { label: 'Queen Present', color: 'text-[#10b981]', bg: 'bg-[#10b981]', icon: CheckCircle2 },
-    'Queenless': { label: 'Queenless Detected', color: 'text-red-500', bg: 'bg-red-500', icon: AlertTriangle },
-    'Swarm Risk': { label: 'Pre-Swarm Pattern', color: 'text-[#facc15]', bg: 'bg-[#facc15]', icon: Zap },
+    'Healthy': { label: 'Normal Activity', color: 'text-emerald-500', bg: 'bg-emerald-500', icon: CheckCircle2 },
+    'Queenless': { label: 'Queen Issues', color: 'text-destructive', bg: 'bg-destructive', icon: AlertTriangle },
+    'Swarm Risk': { label: 'Swarm Risk', color: 'text-amber-500', bg: 'bg-amber-500', icon: Zap },
 };
 
 // --- Sub-components ---
-
-const AlertBanner: React.FC<{ hive: typeof hiveNodes[0] }> = ({ hive }) => {
-    if (!hive.alert) return null;
-    const isHigh = hive.alert === 'TEMP_HIGH';
-    return (
-        <div className={cn(
-            "flex items-start gap-4 p-4 border-l-8 border-4",
-            isHigh
-                ? "bg-[#facc15]/10 border-[#facc15] border-l-[#facc15]"
-                : "bg-red-50 border-red-400 border-l-red-500"
-        )}>
-            <AlertTriangle className={cn("w-5 h-5 mt-0.5 shrink-0", isHigh ? "text-[#facc15]" : "text-red-500")} />
-            <div>
-                <p className={cn("text-xs font-black uppercase tracking-widest", isHigh ? "text-[#b45309]" : "text-red-700")}>
-                    {isHigh ? '⚠ Swarm Risk — Temperature Elevated' : '⚠ Cluster Loss Warning — Temperature Drop Detected'}
-                </p>
-                <p className="text-[10px] font-bold text-neutral-500 mt-1">
-                    {isHigh
-                        ? `${hive.name} is reading ${hive.temp}°C. Target range: 34–36°C. Inspect hive for swarm cells immediately.`
-                        : `${hive.name} is reading ${hive.temp}°C — below cluster threshold. Risk of colony collapse.`
-                    }
-                </p>
-            </div>
-        </div>
-    );
-};
 
 const VitalsCard: React.FC<{
     label: string;
@@ -107,39 +51,39 @@ const VitalsCard: React.FC<{
     status: 'ok' | 'warn' | 'critical';
     trend: 'up' | 'down' | 'stable';
 }> = ({ label, value, unit, target, icon: Icon, status, trend }) => {
-    const statusColors = {
-        ok: 'border-[#10b981] shadow-[6px_6px_0px_0px_rgba(16,185,129,0.4)]',
-        warn: 'border-[#facc15] shadow-[6px_6px_0px_0px_rgba(250,204,21,0.4)]',
-        critical: 'border-red-500 shadow-[6px_6px_0px_0px_rgba(239,68,68,0.4)]',
-    };
     const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
     const trendColor = status === 'ok'
-        ? 'text-[#10b981]'
-        : status === 'warn' ? 'text-[#facc15]' : 'text-red-500';
+        ? 'text-emerald-500 bg-emerald-500/10'
+        : status === 'warn' ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10';
 
     return (
-        <div className={cn("border-4 bg-white p-8 flex flex-col justify-between", statusColors[status])}>
-            <div className="flex items-start justify-between mb-6">
-                <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">{label}</p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-6xl font-black text-[#064e3b] leading-none">{value}</span>
-                        <span className="text-xl font-black text-[#064e3b]/40 mb-1">{unit}</span>
-                        <TrendIcon className={cn("w-5 h-5 mb-2", trendColor)} />
+        <div className={cn(glass.card, "p-10 flex flex-col justify-between group transition-all h-full")}>
+            <div className="flex items-start justify-between mb-8">
+                <div className="space-y-4">
+                    <p className={cn(glass.microLabel, "opacity-60 uppercase italic")}>{label}</p>
+                    <div className="flex items-end gap-3">
+                        <span className={cn("text-7xl font-black italic tracking-tighter leading-none", status === 'ok' ? 'text-foreground' : status === 'warn' ? 'text-amber-500' : 'text-red-500')}>{value}</span>
+                        <span className="text-2xl font-black italic opacity-30 mb-2">{unit}</span>
                     </div>
                 </div>
                 <div className={cn(
-                    "w-14 h-14 border-2 flex items-center justify-center",
-                    status === 'ok' ? "bg-[#064e3b] border-[#064e3b]" :
-                        status === 'warn' ? "bg-[#facc15] border-[#b45309]" :
-                            "bg-red-500 border-red-700"
+                    "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all",
+                    status === 'ok' ? "bg-emerald-500/10 text-emerald-500" :
+                        status === 'warn' ? "bg-amber-500/10 text-amber-500" :
+                            "bg-red-500/10 text-red-500"
                 )}>
-                    <Icon className="w-7 h-7 text-white" />
+                    <Icon className="w-10 h-10" />
                 </div>
             </div>
-            <div className="flex items-center justify-between border-t-2 border-[#064e3b]/10 pt-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30">Target</span>
-                <span className="text-xs font-black text-[#064e3b]">{target}</span>
+            <div className="flex items-center justify-between border-t border-white/5 pt-6 mt-auto">
+                <div className="flex items-center gap-4">
+                    <span className={cn(glass.microLabel, "opacity-40 italic")}>Target</span>
+                    <span className="text-lg font-black italic text-foreground/60">{target}</span>
+                </div>
+                <div className={cn("px-4 py-1.5 rounded-full flex items-center gap-2", trendColor)}>
+                    <TrendIcon className="w-4 h-4" />
+                    <span className="text-[12px] font-black uppercase italic tracking-widest">{trend}</span>
+                </div>
             </div>
         </div>
     );
@@ -150,7 +94,7 @@ const VitalsCard: React.FC<{
 const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     const [realHives, setRealHives] = React.useState<any[]>([]);
     const [selectedHive, setSelectedHive] = React.useState<any>(null);
-    const [historyRange, setHistoryRange] = React.useState(12);
+    const [historyRange, setHistoryRange] = React.useState(6);
     const [historyData, setHistoryData] = React.useState(() => generateHistoryData(12));
     const [liveTime, setLiveTime] = React.useState(new Date());
     const [realAlerts, setRealAlerts] = React.useState<SensorAlert[]>([]);
@@ -160,27 +104,25 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         const loadInitialData = async () => {
             setLoading(true);
             try {
-                // Fetch hives and alerts in parallel
                 const [hives, alerts] = await Promise.all([
                     beeyieldService.getHives(),
                     beeyieldService.getSensorAlerts(false, 10)
                 ]);
 
-                // Fetch latest readings for these hives
                 const readings = await beeyieldService.getSensorReadings(undefined, 100);
 
                 const mappedHives = hives.map(h => {
                     const latest = readings.find(r => r.hive_id === h.id);
-                    // Check if there's an active alert for this hive
                     const hasAlert = alerts.some(a => a.hive_id === h.id && !a.resolved);
 
                     return {
                         id: h.id,
                         name: h.name,
+                        code: h.hive_code || h.id.slice(0, 8),
                         temp: latest?.temperature || 35.0,
                         humidity: latest?.humidity || 60,
                         acoustic: h.health_status || 'Healthy',
-                        alert: hasAlert ? 'CRITICAL' : null,
+                        alert: hasAlert,
                         lastSeen: latest ? formatDistanceToNow(new Date(latest.created_at), { addSuffix: true }) : 'No signal'
                     };
                 });
@@ -202,132 +144,125 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         return () => clearInterval(timer);
     }, []);
 
-    // Fetch history when hive changes
-    React.useEffect(() => {
-        if (!selectedHive) return;
-
-        const fetchHistory = async () => {
-            try {
-                const history = await beeyieldService.getSensorReadings(selectedHive.id, 24);
-                if (history.length > 0) {
-                    // Map real history to chart format if needed, or keep mock for now if real data is sparse
-                    // setHistoryData(...)
-                }
-            } catch (err) {
-                console.error("History fetch error", err);
-            }
-        };
-        fetchHistory();
-    }, [selectedHive?.id]);
-
     if (loading || !selectedHive) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-white">
-                <div className="text-center space-y-4">
-                    <Zap className="w-12 h-12 text-[#064e3b] animate-pulse mx-auto" />
-                    <p className="font-black uppercase tracking-widest text-[#064e3b]">Synchronizing Vitals...</p>
+            <div className={cn(glass.page, "flex items-center justify-center min-h-[60vh]")}>
+                <div className="text-center space-y-10">
+                    <div className="w-32 h-32 rounded-[4rem] bg-honey/10 mx-auto flex items-center justify-center relative">
+                        <div className="absolute inset-0 rounded-[4rem] border-2 border-honey/30 animate-ping" />
+                        <Zap className="w-16 h-16 text-honey animate-pulse" />
+                    </div>
+                    <h3 className="text-4xl font-black italic tracking-tighter uppercase animate-pulse">Loading Sensor Data...</h3>
                 </div>
             </div>
         );
     }
 
     const visibleData = historyData.slice(12 - historyRange);
-
     const tempStatus = selectedHive.temp < 32 ? 'critical' : selectedHive.temp > 36.5 ? 'warn' : 'ok';
     const humidStatus = selectedHive.humidity < 50 ? 'warn' : selectedHive.humidity > 70 ? 'warn' : 'ok';
     const acoustic = acousticConfig[selectedHive.acoustic] ?? acousticConfig['Healthy'];
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
-
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-8 -m-8 pb-24 space-y-16")}
+        >
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center">
-                            <Thermometer className="w-6 h-6 text-[#facc15]" />
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 pb-12 border-b border-white/5">
+                <div className="space-y-6">
+                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
+                        <div className="flex items-center gap-4 skew-x-[12deg]">
+                            <Activity className="w-5 h-5" />
+                            <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Live Monitoring</span>
                         </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Hive <span className="text-[#10b981]">Health</span>
-                        </h1>
                     </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Temperature and Humidity monitoring — 24/7
-                    </p>
+                    <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
+                        Hive <span className="text-honey">Health</span>
+                    </h1>
+                    <p className={cn(glass.microLabel, 'opacity-40 italic font-black uppercase tracking-[0.4em] ml-2')}>Track hive conditions in real-time.</p>
                 </div>
-                <div className="flex items-center gap-3 px-5 py-3 border-4 border-[#064e3b] bg-[#064e3b]">
-                    <div className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse" />
-                    <Clock className="w-4 h-4 text-[#facc15]" />
-                    <span className="text-[#facc15] font-black text-xs tracking-widest uppercase tabular-nums">
-                        {liveTime.toLocaleTimeString()} — LIVE
-                    </span>
+                <div className="flex items-center gap-6 bg-white/40 dark:bg-black/60 backdrop-blur-3xl px-8 py-4 rounded-full border border-white/10 shadow-4xl">
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
+                    <span className="text-xl font-black italic tabular-nums text-foreground/80 tracking-widest">{liveTime.toLocaleTimeString()} — LIVE</span>
                 </div>
             </div>
 
-            {/* Alert Banners */}
-            {(hiveNodes.filter(h => h.alert).length > 0 || realAlerts.length > 0) && (
-                <div className="space-y-3">
-                    {hiveNodes.filter(h => h.alert).map(h => (
-                        <AlertBanner key={h.id} hive={h} />
-                    ))}
-                    {realAlerts.map(alert => (
-                        <div key={alert.id} className={cn(
-                            "flex items-start gap-4 p-4 border-l-8 border-4",
-                            alert.severity === 'critical'
-                                ? "bg-red-50 border-red-400 border-l-red-500"
-                                : "bg-[#facc15]/10 border-[#facc15] border-l-[#facc15]"
-                        )}>
-                            <AlertTriangle className={cn("w-5 h-5 mt-0.5 shrink-0", alert.severity === 'critical' ? "text-red-500" : "text-[#facc15]")} />
-                            <div>
-                                <p className={cn("text-xs font-black uppercase tracking-widest", alert.severity === 'critical' ? "text-red-700" : "text-[#b45309]")}>
-                                    ⚠ {alert.alert_type.toUpperCase()} DETECTED — {alert.severity.toUpperCase()}
-                                </p>
-                                <p className="text-[10px] font-bold text-neutral-500 mt-1">
-                                    {alert.message} (Reading: {alert.reading_value})
-                                </p>
-                                <p className="text-[8px] font-mono text-neutral-400 mt-1">
-                                    {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}
-                                </p>
+            {/* Alerts */}
+            {realAlerts.filter(a => !a.resolved).length > 0 && (
+                <div className="space-y-6">
+                    {realAlerts.filter(a => !a.resolved).map(alert => (
+                        <motion.div
+                            key={alert.id}
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            className={cn(
+                                glass.card,
+                                "p-8 border-l-[12px] flex items-center gap-10 bg-white/40 dark:bg-black/40",
+                                alert.severity === 'critical' ? "border-red-500" : "border-amber-500"
+                            )}
+                        >
+                            <div className={cn("w-20 h-20 rounded-[2.5rem] flex items-center justify-center shadow-4xl", alert.severity === 'critical' ? "bg-red-500/10 text-red-500" : "bg-amber-500/10 text-amber-500")}>
+                                <AlertTriangle className="w-10 h-10" />
                             </div>
-                        </div>
+                            <div className="flex-1 space-y-2">
+                                <h4 className={cn("text-3xl font-black italic uppercase tracking-tighter", alert.severity === 'critical' ? "text-red-500" : "text-amber-500")}>
+                                    Attention Needed: {alert.alert_type}
+                                </h4>
+                                <p className="text-xl font-black italic text-foreground/60">{alert.message}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-lg font-black italic opacity-30 uppercase">{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</p>
+                            </div>
+                        </motion.div>
                     ))}
                 </div>
             )}
 
-            {/* Hive Node Selector */}
-            <div className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Select Hive</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Hive Selector */}
+            <div className="space-y-8">
+                <div className="flex items-center gap-6">
+                    <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20">
+                        <Layers className="w-6 h-6 text-honey" />
+                    </div>
+                    <h3 className={cn(glass.microLabel, "opacity-60 uppercase italic font-black tracking-[0.4em]")}>Select Hive</h3>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-6 gap-8">
                     {realHives.map(hive => {
-                        const ac = acousticConfig[hive.acoustic] ?? acousticConfig['Healthy'];
                         const isSelected = hive.id === selectedHive.id;
                         return (
                             <button
                                 key={hive.id}
                                 onClick={() => setSelectedHive(hive)}
                                 className={cn(
-                                    "p-4 border-4 text-left transition-none space-y-2",
-                                    isSelected
-                                        ? "bg-[#064e3b] border-[#064e3b] shadow-[4px_4px_0px_0px_#10b981]"
-                                        : "bg-white border-[#064e3b]/20 hover:border-[#064e3b]",
-                                    hive.alert && !isSelected && "border-[#facc15]"
+                                    glass.card,
+                                    "p-8 text-left transition-all relative overflow-hidden group border-white/5",
+                                    isSelected ? "bg-honey text-black border-honey shadow-4xl scale-110 z-10" : "hover:border-honey/40 hover:bg-honey/10"
                                 )}
                             >
-                                <div className={cn("w-2.5 h-2.5 rounded-full", ac.bg)} />
-                                <p className={cn("text-[10px] font-black uppercase tracking-wider", isSelected ? "text-white" : "text-[#064e3b]")}>
-                                    {hive.id.slice(0, 8)}
-                                </p>
-                                <p className={cn("text-[10px] font-bold", isSelected ? "text-[#10b981]" : "text-[#064e3b]/40")}>
-                                    {hive.temp}°C
-                                </p>
+                                <div className="space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center">
+                                        <span className={cn("text-4xl font-black italic tracking-tighter uppercase", isSelected ? "text-black" : "text-foreground")}>{hive.code}</span>
+                                        {hive.alert && <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-4xl" />}
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className={cn("text-lg font-black italic", isSelected ? "text-black/60" : "text-foreground/40")}>{hive.temp}°C</span>
+                                        <div className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-black/20" : "bg-white/10")} />
+                                        <span className={cn("text-lg font-black italic", isSelected ? "text-black/60" : "text-foreground/40")}>{hive.humidity}%</span>
+                                    </div>
+                                </div>
+                                {isSelected && (
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
+                                )}
                             </button>
                         );
                     })}
                 </div>
             </div>
 
-            {/* Vitals Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Vitals Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <VitalsCard
                     label="Internal Temperature"
                     value={selectedHive.temp}
@@ -346,195 +281,128 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     status={humidStatus}
                     trend="stable"
                 />
-                {/* Acoustic Signature Card */}
-                <div className={cn(
-                    "border-4 bg-white p-8 flex flex-col justify-between",
-                    selectedHive.acoustic === 'Healthy'
-                        ? 'border-[#10b981] shadow-[6px_6px_0px_0px_rgba(16,185,129,0.4)]'
-                        : selectedHive.acoustic === 'Swarm Risk'
-                            ? 'border-[#facc15] shadow-[6px_6px_0px_0px_rgba(250,204,21,0.4)]'
-                            : 'border-red-500 shadow-[6px_6px_0px_0px_rgba(239,68,68,0.4)]'
-                )}>
-                    <div className="flex items-start justify-between mb-6">
-                        <div className="space-y-2">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Hive Sound</p>
-                            <p className={cn("text-3xl font-black uppercase tracking-tight", acoustic.color)}>
+                <div className={cn(glass.card, "p-10 flex flex-col justify-between group transition-all")}>
+                    <div className="flex items-start justify-between mb-8">
+                        <div className="space-y-4">
+                            <p className={cn(glass.microLabel, "opacity-60 uppercase italic")}>Hive Sound</p>
+                            <h3 className={cn("text-5xl font-black italic tracking-tighter uppercase", acoustic.color)}>
                                 {selectedHive.acoustic}
-                            </p>
-                            <p className="text-xs font-bold text-[#064e3b]/50">{acoustic.label}</p>
+                            </h3>
+                            <p className="text-xl font-black italic opacity-40">{acoustic.label}</p>
                         </div>
-                        <div className={cn("w-14 h-14 border-2 border-[#064e3b] flex items-center justify-center", acoustic.bg)}>
-                            <Volume2 className="w-7 h-7 text-white" />
+                        <div className={cn(
+                            "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all",
+                            selectedHive.acoustic === 'Healthy' ? "bg-emerald-500/10 text-emerald-500" :
+                                selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-500/10 text-amber-500" :
+                                    "bg-red-500/10 text-red-500"
+                        )}>
+                            <Volume2 className="w-10 h-10" />
                         </div>
                     </div>
-                    {/* Fake waveform bars */}
-                    <div className="flex items-end gap-1 h-10 border-t-2 border-[#064e3b]/10 pt-4">
-                        {Array.from({ length: 24 }).map((_, i) => {
-                            const h = selectedHive.acoustic === 'Healthy'
-                                ? 30 + Math.sin(i * 0.8) * 20 + Math.random() * 10
-                                : selectedHive.acoustic === 'Swarm Risk'
-                                    ? 20 + Math.abs(Math.sin(i * 1.5)) * 40
-                                    : 10 + Math.random() * 15;
-                            return (
-                                <div
-                                    key={i}
-                                    style={{ height: `${Math.max(4, h)}%` }}
-                                    className={cn(
-                                        "flex-1",
-                                        selectedHive.acoustic === 'Healthy' ? "bg-[#10b981]" :
-                                            selectedHive.acoustic === 'Swarm Risk' ? "bg-[#facc15]" : "bg-red-400"
-                                    )}
-                                />
-                            );
-                        })}
+                    <div className="flex items-end gap-2 h-20 border-t border-white/5 pt-6 mt-auto">
+                        {Array.from({ length: 32 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={cn("flex-1 rounded-t-lg transition-all duration-300",
+                                    selectedHive.acoustic === 'Healthy' ? "bg-emerald-500" :
+                                        selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-500" : "bg-red-500"
+                                )}
+                                style={{
+                                    height: `${Math.random() * (selectedHive.acoustic === 'Healthy' ? 60 : selectedHive.acoustic === 'Swarm Risk' ? 100 : 30)}%`,
+                                    opacity: 0.3 + (Math.random() * 0.7)
+                                }}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
 
-            {/* Historical Scrubber */}
-            <div className="space-y-6">
-                <div className="flex items-center justify-between border-b-4 border-[#064e3b] pb-4">
-                    <div className="flex items-center gap-4">
-                        <Activity className="w-6 h-6 text-[#10b981]" />
-                        <h3 className="text-3xl font-black uppercase tracking-tighter">12-Month Trend</h3>
+            {/* Trends Section */}
+            <div className="space-y-10">
+                <div className="flex flex-col md:flex-row items-center justify-between border-b border-white/5 pb-10 gap-10">
+                    <div className="flex items-center gap-8">
+                        <div className="w-16 h-16 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl">
+                            <Activity className="w-10 h-10 text-honey" />
+                        </div>
+                        <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-none">History <span className="text-honey">Trends</span></h2>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40">
-                            Showing last {historyRange} months
-                        </span>
-                        <div className="flex items-center gap-1">
-                            <button
-                                onClick={() => setHistoryRange(r => Math.max(1, r - 1))}
-                                className="w-8 h-8 border-2 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-white transition-none"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => setHistoryRange(r => Math.min(12, r + 1))}
-                                className="w-8 h-8 border-2 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-white transition-none"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
+                    <div className="flex items-center gap-8 bg-white/40 dark:bg-black/60 p-4 rounded-[3.5rem] border border-white/10 shadow-4xl">
+                        <span className={cn(glass.microLabel, "px-6 opacity-40 italic uppercase")}>Past {historyRange} months</span>
+                        <div className="flex items-center gap-4">
+                            <button onClick={() => setHistoryRange(r => Math.max(1, r - 1))} className={cn(glass.btnSecondary, "h-14 w-14 rounded-2xl")}><ChevronLeft className="w-6 h-6" /></button>
+                            <button onClick={() => setHistoryRange(r => Math.min(12, r + 1))} className={cn(glass.btnSecondary, "h-14 w-14 rounded-2xl")}><ChevronRight className="w-6 h-6" /></button>
                         </div>
                     </div>
                 </div>
 
-                <div className="border-4 border-[#064e3b] bg-white p-8 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                    <div className="h-[280px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
-                            <ComposedChart data={visibleData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                <div className={cn(glass.card, "p-12 relative overflow-hidden")}>
+                    <div className="h-[450px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={visibleData}>
                                 <defs>
-                                    <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                    <linearGradient id="tempGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#FBBE24" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#FBBE24" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid vertical={false} stroke="#064e3b" strokeOpacity={0.05} />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }} />
-                                <YAxis yAxisId="temp" domain={[25, 40]} axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }} />
-                                <YAxis yAxisId="humid" orientation="right" domain={[40, 80]} axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }} />
+                                <CartesianGrid vertical={false} stroke="currentColor" strokeOpacity={0.05} />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 14, fontWeight: 'black', fontStyle: 'italic' }} dy={20} />
+                                <YAxis yAxisId="temp" domain={[20, 40]} axisLine={false} tickLine={false} tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 14, fontWeight: 'black' }} dx={-20} />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#064e3b', border: '4px solid #10b981', borderRadius: 0, padding: '10px' }}
-                                    itemStyle={{ color: '#fff', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase' }}
-                                    labelStyle={{ color: '#facc15', fontWeight: 900, marginBottom: '4px' }}
+                                    cursor={{ stroke: '#FBBE24', strokeWidth: 2, strokeDasharray: '10 10' }}
+                                    contentStyle={{ background: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '2rem', padding: '20px', backdropFilter: 'blur(20px)', color: 'white' }}
+                                    itemStyle={{ fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase' }}
                                 />
-                                <ReferenceLine yAxisId="temp" y={34} stroke="#facc15" strokeDasharray="6 4" strokeWidth={2} label={{ value: 'MIN', fill: '#b45309', fontSize: 9, fontWeight: 900 }} />
-                                <ReferenceLine yAxisId="temp" y={36} stroke="#facc15" strokeDasharray="6 4" strokeWidth={2} label={{ value: 'MAX', fill: '#b45309', fontSize: 9, fontWeight: 900 }} />
-                                <Area yAxisId="temp" type="monotone" dataKey="temp" stroke="#10b981" strokeWidth={3} fill="url(#tempGrad)" name="Temp (°C)" />
-                                <Bar yAxisId="humid" dataKey="humidity" fill="#064e3b" fillOpacity={0.1} name="Humidity (%)" />
+                                <Area yAxisId="temp" type="monotone" dataKey="temp" stroke="#FBBE24" strokeWidth={6} fill="url(#tempGradient)" />
+                                <Bar yAxisId="temp" dataKey="humidity" fill="#10B981" fillOpacity={0.1} radius={[20, 20, 0, 0]} barSize={40} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="flex items-center gap-8 pt-4 border-t-2 border-[#064e3b]/10 mt-4">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-1 bg-[#10b981]" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40">Temp (°C)</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 bg-[#064e3b]/10 border border-[#064e3b]/20" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40">Humidity (%)</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-0.5 bg-[#facc15]" style={{ borderTop: '2px dashed #facc15' }} />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/40">Target Band</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            {/* Fleet Summary Table */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-4 border-b-4 border-[#064e3b] pb-4">
-                    <Shield className="w-5 h-5 text-[#10b981]" />
-                    <h3 className="text-3xl font-black uppercase tracking-tighter">All Hive Health</h3>
+            {/* List Table */}
+            <div className="space-y-10">
+                <div className="flex items-center gap-8 border-b border-white/5 pb-8">
+                    <Shield className="w-10 h-10 text-emerald-500" />
+                    <h3 className="text-5xl font-black italic tracking-tighter uppercase">Global Status</h3>
                 </div>
-                <div className="border-4 border-[#064e3b] overflow-hidden shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
-                    <table className="w-full">
-                        <thead className="bg-[#064e3b]">
-                            <tr>
-                                {['Node', 'Temp', 'Humidity', 'Acoustic', 'Last Seen', 'Status'].map(h => (
-                                    <th key={h} className="px-6 py-4 text-left text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y-2 divide-[#064e3b]/5">
-                            {realHives.map(hive => {
-                                const ac = acousticConfig[hive.acoustic] ?? acousticConfig['Healthy'];
-                                const tStatus = hive.temp < 32 ? 'critical' : hive.temp > 36.5 ? 'warn' : 'ok';
-                                return (
-                                    <tr
-                                        key={hive.id}
-                                        onClick={() => setSelectedHive(hive)}
-                                        className={cn(
-                                            "cursor-pointer hover:bg-[#064e3b]/5 transition-none",
-                                            selectedHive.id === hive.id && "bg-[#10b981]/5"
-                                        )}
-                                    >
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className={cn("w-2.5 h-2.5 rounded-full", ac.bg)} />
-                                                <div>
-                                                    <p className="text-xs font-black text-[#064e3b]">{hive.id.slice(0, 8)}</p>
-                                                    <p className="text-[9px] font-bold text-[#064e3b]/40 uppercase">{hive.name}</p>
-                                                </div>
+                <div className={cn(glass.card, "p-0 overflow-hidden shadow-4xl")}>
+                    <div className="overflow-x-auto thin-scrollbar">
+                        <table className="w-full">
+                            <thead className="bg-white/40 dark:bg-black/40">
+                                <tr>
+                                    {['Hive', 'Temp', 'Humidity', 'Sound', 'Signal', 'Status'].map(h => (
+                                        <th key={h} className={cn(glass.microLabel, "px-10 py-10 opacity-40 uppercase italic text-left")}>{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {realHives.map(hive => (
+                                    <tr key={hive.id} onClick={() => setSelectedHive(hive)} className={cn("hover:bg-honey/10 transition-colors cursor-pointer group", selectedHive.id === hive.id && "bg-honey/5")}>
+                                        <td className="px-10 py-10">
+                                            <div className="flex items-center gap-6">
+                                                <div className={cn("w-3 h-3 rounded-full", acousticConfig[hive.acoustic]?.bg || "bg-emerald-500")} />
+                                                <span className="text-3xl font-black italic tracking-tighter group-hover:text-honey">{hive.code}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <span className={cn(
-                                                "text-sm font-black tabular-nums",
-                                                tStatus === 'ok' ? 'text-[#064e3b]' : tStatus === 'warn' ? 'text-[#b45309]' : 'text-red-600'
-                                            )}>{hive.temp}°C</span>
+                                        <td className="px-10 py-10 text-2xl font-black italic opacity-60 tabular-nums">{hive.temp}°C</td>
+                                        <td className="px-10 py-10 text-2xl font-black italic opacity-60 tabular-nums">{hive.humidity}%</td>
+                                        <td className="px-10 py-10">
+                                            <span className={cn(glass.badge, "border-transparent", acousticConfig[hive.acoustic]?.color, acousticConfig[hive.acoustic]?.bg + "/10")}>{hive.acoustic}</span>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <span className="text-sm font-black text-[#064e3b] tabular-nums">{hive.humidity}%</span>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className={cn("text-[10px] font-black uppercase tracking-widest", ac.color)}>
-                                                {ac.label}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className="text-[10px] font-bold text-[#064e3b]/40">{hive.lastSeen}</span>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            {hive.alert ? (
-                                                <span className="px-3 py-1.5 bg-[#facc15] text-[#064e3b] text-[9px] font-black uppercase tracking-widest">
-                                                    ALERT
-                                                </span>
-                                            ) : (
-                                                <span className="px-3 py-1.5 bg-[#10b981]/10 text-[#10b981] text-[9px] font-black uppercase tracking-widest">
-                                                    OK
-                                                </span>
-                                            )}
+                                        <td className="px-10 py-10 text-xl font-black italic opacity-30 uppercase">{hive.lastSeen}</td>
+                                        <td className="px-10 py-10">
+                                            {hive.alert ? <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">Alert</span> : <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">OK</span>}
                                         </td>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

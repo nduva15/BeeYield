@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { ShieldCheck, Camera, Activity, FileCheck, Info, Award, CheckCircle2, XCircle, Search, Cpu, Upload } from 'lucide-react';
+import { ShieldCheck, Camera, Activity, FileCheck, Info, Award, CheckCircle2, XCircle, Search, Cpu, Upload, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { glass, PageHeader } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface DigitalHealthAuditProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -44,24 +46,29 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
     };
 
     return (
-        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-white min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_#facc15]">
-                            <ShieldCheck className="w-6 h-6 text-[#facc15]" />
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-8 -m-8 space-y-20 pb-24")}
+        >
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 pb-12 border-b border-white/5">
+                <div className="space-y-6">
+                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
+                        <div className="flex items-center gap-4 skew-x-[12deg]">
+                            <Camera className="w-5 h-5" />
+                            <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Photo Inspection</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Health <span className="text-[#10b981]">Check</span>
-                        </h1>
                     </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Bee Density · Photo History · Health Badge
+                    <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
+                        Health <span className="text-honey">Check</span>
+                    </h1>
+                    <p className={cn(glass.microLabel, "opacity-40 italic font-black uppercase tracking-[0.4em] ml-2")}>
+                        Check bee numbers and hive health using your camera.
                     </p>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-6">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -71,168 +78,219 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                     />
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center gap-4 px-6 py-4 border-4 border-[#064e3b] font-black text-xs uppercase tracking-widest bg-white text-[#064e3b] shadow-[4px_4px_0px_0px_#facc15]"
+                        className={cn(glass.btnSecondary, "h-20 px-12 font-black italic uppercase rounded-full shadow-4xl flex items-center gap-6 border-white/10 hover:bg-white/5")}
                     >
-                        <Upload className="w-5 h-5" />
-                        {selectedFile ? selectedFile.name.substring(0, 15) : "Select Image"}
+                        <Upload className="w-8 h-8" />
+                        {selectedFile ? selectedFile.name.substring(0, 15) : "Select Photo"}
                     </button>
                     <button
                         onClick={handleScan}
                         disabled={isScanning || !selectedFile}
                         className={cn(
-                            "flex items-center gap-4 px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
-                            isScanning || !selectedFile ? "bg-gray-100 text-gray-400 border-gray-200" : "bg-[#064e3b] text-white border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
+                            glass.btnPrimary,
+                            "h-20 px-16 font-black italic uppercase text-2xl shadow-4xl shadow-honey/20 rounded-full min-w-[320px] flex items-center justify-center gap-6 disabled:opacity-20 transition-all",
+                            isScanning ? "animate-pulse" : ""
                         )}
                     >
-                        {isScanning ? <Activity className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
-                        {isScanning ? "Photo Scan..." : "Start Photo Scan"}
+                        {isScanning ? <Loader2 className="w-8 h-8 animate-spin" /> : <Sparkles className="w-8 h-8" />}
+                        {isScanning ? "Scanning..." : "Start Scan"}
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* CV Validation Viewport */}
-                <div className="lg:col-span-8 space-y-8">
-                    <div className="border-8 border-[#064e3b] bg-gray-900 h-[500px] relative overflow-hidden shadow-[15px_15px_0px_0px_#064e3b]">
-                        {/* Simulated Camera Feed / CV UI */}
-                        <div className="absolute inset-0 opacity-40 mix-blend-screen bg-gradient-to-b from-[#10b981]/20 to-transparent" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                {/* Main Viewport */}
+                <div className="lg:col-span-8 space-y-16">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={cn(glass.card, "bg-black h-[700px] relative overflow-hidden rounded-[6rem] shadow-4xl border-white/5 border-8")}
+                    >
+                        <div className="absolute inset-0 opacity-20 mix-blend-screen bg-gradient-to-b from-honey/20 to-transparent pointer-events-none" />
 
-                        {isScanning ? (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-64 h-64 border-4 border-dashed border-[#10b981] animate-pulse rounded-full flex items-center justify-center">
-                                    <div className="w-48 h-1 bg-[#10b981] absolute animate-scan" />
-                                    <span className="text-[#10b981] font-black text-[10px] uppercase tracking-[0.5em]">Scanning</span>
-                                </div>
-                            </div>
-                        ) : scanResults ? (
-                            <div className="absolute inset-0 p-12 bg-[#064e3b]/95 text-white flex flex-col justify-center items-center text-center overflow-y-auto">
-                                <Award className="w-20 h-20 text-[#facc15] mb-4" />
-                                <h3 className="text-4xl font-black uppercase tracking-tighter mb-4">Inspection Complete</h3>
-
-                                <div className="grid grid-cols-3 gap-6 border-y-2 border-white/10 py-6 my-4 w-full">
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase text-white/40">Mite Count</p>
-                                        <p className="text-3xl font-black text-red-400">{scanResults.mite_count}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase text-white/40">Brood Area</p>
-                                        <p className="text-3xl font-black">{scanResults.brood_area_pct}%</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase text-white/40">Health Score</p>
-                                        <p className="text-3xl font-black text-[#10b981]">{scanResults.health_score}</p>
-                                    </div>
-                                </div>
-
-                                <div className="text-left w-full mt-4 bg-black/20 p-4 border border-white/10">
-                                    <p className="text-[10px] font-black uppercase text-white/40 mb-2">BeeYield Insights</p>
-                                    <ul className="space-y-1">
-                                        {scanResults.detections?.slice(0, 3).map((d: any, i: number) => (
-                                            <li key={i} className="text-[9px] font-bold uppercase flex justify-between">
-                                                <span>{d.label}</span>
-                                                <span className="text-[#facc15]">{Math.round(d.confidence * 100)}% Conf.</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                <button
-                                    onClick={() => setScanResults(null)}
-                                    className="mt-8 px-8 py-3 bg-[#10b981] text-white font-black text-[10px] uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]"
+                        <AnimatePresence mode="wait">
+                            {isScanning ? (
+                                <motion.div
+                                    key="scanning"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute inset-0 flex flex-col items-center justify-center gap-12"
                                 >
-                                    New Scan
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
-                                <Search className="w-20 h-20 mb-4" />
-                                <p className="text-[10px] font-black uppercase tracking-widest italic">Ready to scan. Please hold steady...</p>
-                            </div>
-                        )}
+                                    <div className="w-80 h-80 border-4 border-dashed border-honey/40 rounded-full flex items-center justify-center relative">
+                                        <motion.div
+                                            animate={{ top: ['0%', '100%', '0%'] }}
+                                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                            className="w-full h-2 bg-honey/60 absolute blur-md rounded-full shadow-[0_0_30px_rgba(251,191,36,0.8)]"
+                                        />
+                                        <div className="flex flex-col items-center gap-4">
+                                            <Loader2 className="w-16 h-16 text-honey animate-spin" />
+                                            <span className="text-xl font-black italic text-honey uppercase tracking-[0.5em]">Analyzing</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest text-white text-center px-12">
+                                        Identifying bees and counting markers...
+                                    </p>
+                                </motion.div>
+                            ) : scanResults ? (
+                                <motion.div
+                                    key="results"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="absolute inset-0 p-20 bg-honey text-black flex flex-col justify-center items-center text-center overflow-y-auto"
+                                >
+                                    <div className="w-32 h-32 bg-black rounded-[2.5rem] flex items-center justify-center mb-10 shadow-4xl">
+                                        <Award className="w-16 h-16 text-honey" />
+                                    </div>
+                                    <h3 className="text-7xl font-black italic uppercase tracking-tighter mb-12 leading-none">Healthy <span className="text-white">Colony</span></h3>
 
-                        {/* CV Corner Overlays */}
-                        <div className="absolute top-8 left-8 border-t-4 border-l-4 border-white/20 w-12 h-12" />
-                        <div className="absolute top-8 right-8 border-t-4 border-r-4 border-white/20 w-12 h-12" />
-                        <div className="absolute bottom-8 left-8 border-b-4 border-l-4 border-white/20 w-12 h-12" />
-                        <div className="absolute bottom-8 right-8 border-b-4 border-r-4 border-white/20 w-12 h-12" />
-                    </div>
+                                    <div className="grid grid-cols-3 gap-16 border-y-4 border-black/10 py-12 my-8 w-full">
+                                        <div className="space-y-2">
+                                            <p className="text-[14px] font-black italic uppercase opacity-40">Mite Check</p>
+                                            <p className="text-6xl font-black text-red-600 italic tracking-tighter tabular-nums">{scanResults.mite_count}</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-[14px] font-black italic uppercase opacity-40">Brood Area</p>
+                                            <p className="text-6xl font-black italic tracking-tighter tabular-nums">{scanResults.brood_area_pct}%</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-[14px] font-black italic uppercase opacity-40">Score</p>
+                                            <p className="text-6xl font-black italic tracking-tighter tabular-nums border-b-8 border-black/10 inline-block">{scanResults.health_score}</p>
+                                        </div>
+                                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="border-4 border-[#064e3b] p-8 bg-white shadow-[10px_10px_0px_0px_#10b981]">
-                            <div className="flex items-center gap-3 mb-6 font-black uppercase text-[#064e3b]">
-                                <Cpu className="w-5 h-5 text-[#10b981]" />
-                                Photo Check
+                                    <div className="text-left w-full mt-10 bg-black/5 p-10 rounded-[3rem] border-2 border-black/10">
+                                        <div className="flex items-center gap-6 mb-8">
+                                            <Activity className="w-8 h-8 opacity-40" />
+                                            <p className="text-[14px] font-black italic uppercase tracking-[0.4em] opacity-40">Detections</p>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {scanResults.detections?.slice(0, 4).map((d: any, i: number) => (
+                                                <div key={i} className="flex justify-between items-center bg-white/20 p-6 rounded-3xl border border-black/5">
+                                                    <span className="text-xl font-black italic uppercase tracking-widest">{d.label}</span>
+                                                    <span className="text-[12px] font-black italic bg-black/10 px-4 py-1 rounded-full">{Math.round(d.confidence * 100)}% Match</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => setScanResults(null)}
+                                        className="mt-16 h-20 px-16 bg-black text-white rounded-full font-black italic text-2xl uppercase tracking-widest shadow-4xl hover:scale-105 active:scale-95 transition-all flex items-center gap-6"
+                                    >
+                                        <Camera className="w-8 h-8" />
+                                        New Scan
+                                    </button>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="idle"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="absolute inset-0 flex flex-col items-center justify-center text-white/10 gap-10"
+                                >
+                                    <div className="w-40 h-40 border-8 border-white/5 rounded-full flex items-center justify-center">
+                                        <Search className="w-20 h-20" />
+                                    </div>
+                                    <p className="text-2xl font-black italic uppercase tracking-[0.5em] text-center px-20">Ready to recognize. Please upload a photo...</p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Decoration Elements */}
+                        <div className="absolute top-16 left-16 border-t-8 border-l-8 border-white/10 w-24 h-24 rounded-tl-[3.5rem]" />
+                        <div className="absolute top-16 right-16 border-t-8 border-r-8 border-white/10 w-24 h-24 rounded-tr-[3.5rem]" />
+                        <div className="absolute bottom-16 left-16 border-b-8 border-l-8 border-white/10 w-24 h-24 rounded-bl-[3.5rem]" />
+                        <div className="absolute bottom-16 right-16 border-b-8 border-r-8 border-white/10 w-24 h-24 rounded-br-[3.5rem]" />
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className={cn(glass.card, "p-12 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4rem] border-white/5 group hover:border-honey/20 transition-all")}>
+                            <div className="flex items-center gap-8 mb-8">
+                                <div className="w-16 h-16 bg-honey/10 rounded-3xl flex items-center justify-center border border-honey/20 shadow-4xl group-hover:scale-110 transition-transform">
+                                    <Cpu className="w-8 h-8 text-honey" />
+                                </div>
+                                <h3 className="text-3xl font-black italic uppercase tracking-tighter">AI Analysis</h3>
                             </div>
-                            <p className="text-[10px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
-                                Our camera tool checks bee numbers and hive health automatically. No more manual counting or guessing.
+                            <p className="text-xl font-black italic opacity-60 leading-relaxed uppercase pl-4 border-l-4 border-honey/20">
+                                Our tool automatically checks your bees. No more manual counting or guessing.
                             </p>
                         </div>
-                        <div className="border-4 border-[#064e3b] p-8 bg-[#064e3b] text-white shadow-[10px_10px_0px_0px_#facc15]">
-                            <div className="flex items-center gap-3 mb-6 font-black uppercase">
-                                <ShieldCheck className="w-5 h-5 text-[#facc15]" />
-                                Health Badge
+                        <div className={cn(glass.card, "p-12 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4rem] border-white/5 group hover:border-honey/20 transition-all")}>
+                            <div className="flex items-center gap-8 mb-8">
+                                <div className="w-16 h-16 bg-honey/10 rounded-3xl flex items-center justify-center border border-honey/20 shadow-4xl group-hover:scale-110 transition-transform">
+                                    <Award className="w-8 h-8 text-honey" />
+                                </div>
+                                <h3 className="text-3xl font-black italic uppercase tracking-tighter">Health Badge</h3>
                             </div>
-                            <p className="text-[10px] font-bold text-white/60 leading-relaxed uppercase">
-                                Every check gives you a **Health Badge**, showing that your bees are healthy and ready for work.
+                            <p className="text-xl font-black italic opacity-60 leading-relaxed uppercase pl-4 border-l-4 border-honey/20">
+                                Get a Health Badge to show that your colony is ready for pollination.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Audit Ledger Sidebar */}
-                <div className="lg:col-span-4 space-y-8">
-                    <div className="border-4 border-[#064e3b] p-8 bg-white shadow-[10px_10px_0px_0px_#10b981]">
-                        <div className="flex items-center justify-between mb-8 border-b-2 border-[#064e3b]/10 pb-4">
-                            <h3 className="text-xl font-black uppercase tracking-tight text-[#064e3b]">Check History</h3>
-                            <FileCheck className="w-5 h-5 text-[#10b981]" />
+                {/* Sidebar */}
+                <div className="lg:col-span-4 space-y-12">
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={cn(glass.card, "p-12 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4.5rem] border-white/5 relative overflow-hidden group")}
+                    >
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-honey/5 rounded-full blur-[80px] -mr-24 -mt-24 pointer-events-none group-hover:bg-honey/10 transition-all" />
+
+                        <div className="flex items-center justify-between mb-12 border-b-4 border-white/5 pb-8 relative z-10">
+                            <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none">History</h3>
+                            <div className="w-12 h-12 bg-black/5 rounded-2xl flex items-center justify-center border border-white/5 shadow-inner">
+                                <FileCheck className="w-6 h-6 text-honey" />
+                            </div>
                         </div>
-                        <div className="space-y-6">
+
+                        <div className="space-y-10 relative z-10">
                             {[
-                                { date: '2026.02.15', orchard: 'Block A', status: 'PASS', score: '8.4 Score' },
-                                { date: '2026.02.12', orchard: 'Block C', status: 'PASS', score: '8.1 Score' },
-                                { date: '2026.02.08', orchard: 'North Edge', status: 'RE-CHECK', score: '6.2 Score' },
+                                { date: '2026.02.15', orchard: 'Apple Block', status: 'PASS', score: '8.4 AI' },
+                                { date: '2026.02.12', orchard: 'Cherry Field', status: 'PASS', score: '8.1 AI' },
+                                { date: '2026.02.08', orchard: 'Almond Edge', status: 'ALERT', score: '6.2 AI' },
                             ].map((audit, i) => (
-                                <div key={i} className="flex justify-between items-center group cursor-pointer hover:bg-[#064e3b]/5 p-2 transition-none -mx-2">
-                                    <div>
-                                        <p className="text-[8px] font-black uppercase text-[#064e3b]/30">{audit.date}</p>
-                                        <p className="text-[11px] font-black text-[#064e3b]">{audit.orchard}</p>
+                                <div key={i} className="flex justify-between items-center group/item cursor-pointer hover:bg-white/5 p-6 rounded-[2.5rem] border-2 border-transparent hover:border-white/5 transition-all">
+                                    <div className="space-y-2">
+                                        <p className="text-[12px] font-black italic uppercase tracking-widest opacity-30">{audit.date}</p>
+                                        <p className="text-2xl font-black italic text-foreground tracking-tighter">{audit.orchard}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className={cn("text-[9px] font-black border-2 px-2 py-0.5", audit.status === 'PASS' ? "bg-[#10b981] text-white border-[#10b981]" : "bg-red-500 text-white border-red-500")}>
+                                    <div className="text-right space-y-3">
+                                        <div className={cn(
+                                            "inline-block px-6 py-1.5 rounded-full text-[12px] font-black italic tracking-[0.2em] shadow-4xl",
+                                            audit.status === 'PASS' ? "bg-emerald-500 text-black" : "bg-red-500 text-white"
+                                        )}>
                                             {audit.status}
-                                        </p>
-                                        <p className="text-[10px] font-black text-[#064e3b] mt-1">{audit.score}</p>
+                                        </div>
+                                        <p className="text-xl font-black italic tracking-tighter opacity-40">{audit.score}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <button className="w-full mt-10 py-4 border-4 border-[#064e3b] text-[#064e3b] font-black text-[10px] uppercase tracking-widest hover:bg-[#064e3b] hover:text-white transition-all">
-                            View Full History
-                        </button>
-                    </div>
 
-                    <div className="p-8 border-4 border-[#facc15] bg-[#facc15]/10 shadow-[10px_10px_0px_0px_#facc15]">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Info className="w-6 h-6 text-[#064e3b]" />
-                            <h4 className="text-xl font-black uppercase tracking-tight text-[#064e3b]">Health Info</h4>
+                        <button className="w-full mt-16 h-20 bg-black text-honey rounded-[2.5rem] font-black italic text-xl uppercase tracking-widest shadow-4xl hover:scale-105 transition-all flex items-center justify-center gap-6 group/all">
+                            View All
+                            <ArrowRight className="w-8 h-8 group-hover/all:translate-x-3 transition-transform" />
+                        </button>
+                    </motion.div>
+
+                    <div className={cn(glass.card, "p-12 shadow-4xl bg-honey/10 border-honey/20 rounded-[4rem] group hover:bg-honey/15 transition-all relative overflow-hidden")}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="flex items-center gap-6 mb-8 relative z-10">
+                            <div className="w-16 h-16 bg-white/60 dark:bg-black/60 rounded-[1.5rem] flex items-center justify-center border-2 border-honey shadow-4xl">
+                                <Info className="w-8 h-8 text-honey" />
+                            </div>
+                            <h4 className="text-3xl font-black italic uppercase tracking-tighter leading-none">Healthy standards</h4>
                         </div>
-                        <p className="text-[10px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
-                            Health checks follow official bee standards. Your certificates are valid for 30 days and can be shared with farmers easily.
+                        <p className="text-xl font-black italic opacity-60 leading-normal uppercase pl-4 border-l-4 border-honey/40 relative z-10">
+                            Health checks follow official bee standards. Your certificates are valid for 30 days.
                         </p>
                     </div>
                 </div>
             </div>
-
-            <style>{`
-                @keyframes scan {
-                    0% { top: -10%; }
-                    100% { top: 110%; }
-                }
-                .animate-scan {
-                    animation: scan 2s ease-in-out infinite;
-                }
-            `}</style>
-        </div>
+        </motion.div>
     );
 };
 

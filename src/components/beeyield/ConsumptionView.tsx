@@ -1,164 +1,251 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { FileText, FileSpreadsheet, Search, Sun, Bell, Headset, Wifi, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { FileText, FileSpreadsheet, Search, Info, Settings2, Zap, Activity, Droplets, Thermometer } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
+import { motion } from 'framer-motion';
 
 const consumptionData = [
-    { name: 'Water', value: 320, color: '#2563EB' },
+    { name: 'Water', value: 320, color: 'var(--honey)' },
     { name: 'Heat', value: 210, color: '#EA580C' },
-    { name: 'Energy', value: 410, color: '#EAB308' },
-    { name: 'Other', value: 100, color: '#64748B' },
+    { name: 'Energy', value: 410, color: '#10B981' },
+    { name: 'Other', value: 100, color: '#6366F1' },
 ];
 
 const summaryItems = [
-    { label: 'Water', value: '320 m3', subtext: 'last month' },
-    { label: 'Heat', value: '210 GJ', subtext: 'last month' },
-    { label: 'Energy', value: '410 kWh', subtext: 'last month' },
+    { label: 'Water', value: '320 m3', icon: Droplets, color: 'text-blue-500' },
+    { label: 'Heat', value: '210 GJ', icon: Thermometer, color: 'text-orange-500' },
+    { label: 'Energy', value: '410 kWh', icon: Zap, color: 'text-emerald-500' },
 ];
 
 const ConsumptionView: React.FC = () => {
     return (
-        <div className="space-y-10 animate-in fade-in duration-500">
+        <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={cn(glass.page, "p-8 -m-8 space-y-12 pb-20 min-h-screen")}
+        >
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
+                <div className="space-y-4">
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                        <Activity className="w-4 h-4 mr-2" />
+                        Usage Volumetric Engine v4.2
+                    </div>
+                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
+                        Consumption <span className="text-honey">Density</span>
+                    </h1>
+                    <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
+                        Resource Utilization · Volumetric Analysis · Live Signal Processing
+                    </p>
+                </div>
+            </div>
+
             {/* Filters Section */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                <CardContent className="p-8">
-                    <h3 className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mb-6">Aggregate Parameters</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Area_Zone</label>
-                            <Input
-                                defaultValue="Kibwezi Main Area A"
-                                className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Logic_Type</label>
-                            <Select defaultValue="water">
-                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
-                                    <SelectValue placeholder="Select type" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                    <SelectItem value="water" className="uppercase font-black text-[10px]">Water</SelectItem>
-                                    <SelectItem value="heat" className="uppercase font-black text-[10px]">Heat</SelectItem>
-                                    <SelectItem value="energy" className="uppercase font-black text-[10px]">Energy</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Temporal_Bin</label>
-                            <Select defaultValue="7days">
-                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
-                                    <SelectValue placeholder="Select range" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                    <SelectItem value="7days" className="uppercase font-black text-[10px]">Last 7 days</SelectItem>
-                                    <SelectItem value="30days" className="uppercase font-black text-[10px]">Last 30 days</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Recursive_Comp</label>
-                            <Select defaultValue="main">
-                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
-                                    <SelectValue placeholder="Select comparison" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                    <SelectItem value="main" className="uppercase font-black text-[10px]">Main Area</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Archive_Desk</label>
-                            <div className="flex gap-2">
-                                <Button variant="outline" className="flex-1 rounded-none h-12 border-2 border-[#064e3b] bg-white font-black text-[10px] uppercase text-[#064e3b] tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[3px_3px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
-                                    CSV
-                                </Button>
-                                <Button variant="outline" className="flex-1 rounded-none h-12 border-2 border-[#064e3b] bg-white font-black text-[10px] uppercase text-[#064e3b] tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[3px_3px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
-                                    XLS
-                                </Button>
-                            </div>
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className={cn(glass.card, "p-8 shadow-xl")}
+            >
+                <div className="flex items-center gap-3 mb-8">
+                    <Settings2 className="w-5 h-5 text-honey" />
+                    <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Aggregate Parameters</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <div className="space-y-2">
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Geospatial Zone</label>
+                        <Input
+                            defaultValue="Kibwezi Main Area A"
+                            className={cn(glass.input, "h-12 text-sm font-semibold")}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Logic_Type</label>
+                        <Select defaultValue="water">
+                            <SelectTrigger className={cn(glass.input, "h-12 text-sm font-semibold")}>
+                                <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
+                                <SelectItem value="water">Water</SelectItem>
+                                <SelectItem value="heat">Heat</SelectItem>
+                                <SelectItem value="energy">Energy</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Temporal_Bin</label>
+                        <Select defaultValue="7days">
+                            <SelectTrigger className={cn(glass.input, "h-12 text-sm font-semibold")}>
+                                <SelectValue placeholder="Select range" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
+                                <SelectItem value="7days">Last 7 days</SelectItem>
+                                <SelectItem value="30days">Last 30 days</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Recursive_Comp</label>
+                        <Select defaultValue="main">
+                            <SelectTrigger className={cn(glass.input, "h-12 text-sm font-semibold")}>
+                                <SelectValue placeholder="Select comparison" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
+                                <SelectItem value="main">Main Area</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-honey")}>Archival Export</label>
+                        <div className="flex gap-2">
+                            <button className={cn(glass.btnSecondary, "flex-1 h-12 justify-center text-[10px] font-bold")}>
+                                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                                CSV
+                            </button>
+                            <button className={cn(glass.btnSecondary, "flex-1 h-12 justify-center text-[10px] font-bold")}>
+                                <FileText className="w-4 h-4 mr-2" />
+                                XLS
+                            </button>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
-
+                </div>
+            </motion.div>
 
             {/* Chart Section */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden min-h-[500px]">
-                <div className="p-8 border-b-4 border-[#064e3b]/10 bg-neutral-50/30 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Search className="w-5 h-5 text-[#10b981]" />
-                        <p className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Usage Volumetric Density</p>
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative min-h-[550px]")}
+            >
+                <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+
+                <div className="p-10 pb-4 border-b border-border bg-white/40 dark:bg-black/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                            <Search className="w-6 h-6 text-honey" />
+                        </div>
+                        <div>
+                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Volumetric <span className="text-honey">Density</span></h3>
+                            <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Live usage signal array benchmarking</p>
+                        </div>
                     </div>
-                    <div className="px-3 py-1 border-2 border-[#064e3b] bg-[#facc15] text-[10px] font-black uppercase tracking-widest">
+                    <div className={cn(glass.badge, "bg-honey text-white border-transparent px-4 py-2 shadow-lg animate-pulse")}>
                         LIVE_SIGNAL_ARRAY
                     </div>
                 </div>
-                <CardContent className="p-10">
-                    <div className="h-[400px] w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
-                            <BarChart data={consumptionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
+
+                <div className="p-10 pb-12 relative z-10">
+                    <div className="h-[420px] w-full">
+                        <ResponsiveContainer width="100%" height="100%" debounce={50}>
+                            <BarChart data={consumptionData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#064e3b', fontSize: 11, fontWeight: 900 }}
-                                    dy={10}
+                                    tick={{ fill: 'hsl(var(--foreground) / 0.6)', fontSize: 12, fontWeight: 700 }}
+                                    dy={15}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#064e3b', fontSize: 11, fontWeight: 900 }}
-                                    dx={-10}
+                                    tick={{ fill: 'hsl(var(--foreground) / 0.6)', fontSize: 12, fontWeight: 700 }}
+                                    dx={-15}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: '#facc15', fillOpacity: 0.1 }}
+                                    cursor={{ fill: 'hsl(var(--foreground) / 0.05)' }}
                                     contentStyle={{
-                                        borderRadius: '0px',
-                                        border: '4px solid #064e3b',
-                                        boxShadow: '8px 8px 0px 0px rgba(6,78,59,0.1)',
-                                        padding: '12px',
-                                        fontSize: '11px',
-                                        fontWeight: 900,
-                                        textTransform: 'uppercase'
+                                        backgroundColor: 'hsl(var(--background) / 0.8)',
+                                        backdropFilter: 'blur(12px)',
+                                        borderRadius: '1rem',
+                                        border: '1px solid hsl(var(--border))',
+                                        boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+                                        padding: '16px',
                                     }}
+                                    itemStyle={{ fontWeight: 600, fontSize: '12px' }}
+                                    labelStyle={{ fontWeight: 700, marginBottom: '8px', fontSize: '13px' }}
                                 />
-                                <Bar dataKey="value" radius={0} barSize={140} stroke="#064e3b" strokeWidth={4}>
+                                <Bar dataKey="value" radius={[12, 12, 0, 0]} barSize={100} animationDuration={2500}>
                                     {consumptionData.map((entry, index) => (
                                         <Cell
                                             key={`cell-${index}`}
-                                            fill={entry.name === 'Energy' ? '#facc15' : entry.name === 'Water' ? '#10b981' : '#064e3b'}
+                                            fill={entry.color === 'var(--honey)' ? 'hsl(var(--honey))' : entry.color}
+                                            className="opacity-80 hover:opacity-100 transition-opacity"
                                         />
                                     ))}
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </motion.div>
 
-            <div className="space-y-6">
-                <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tighter px-2">Recursive Summary <span className="text-[#10b981]">Log</span></h3>
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] divide-y-4 divide-neutral-50 overflow-hidden">
+            {/* Recursive Summary Log */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-6"
+            >
+                <div className="flex items-center gap-4 px-2">
+                    <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-sm">
+                        <Activity className="w-5 h-5 text-honey" />
+                    </div>
+                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Recursive Summary <span className="text-honey">Log</span></h3>
+                </div>
+
+                <div className={cn(glass.card, "p-4 space-y-4 shadow-xl divide-y divide-border/30 overflow-hidden")}>
                     {summaryItems.map((item, idx) => (
-                        <div key={idx} className="p-6 flex items-center justify-between hover:bg-[#facc15]/5 transition-none group">
-                            <div>
-                                <p className="text-lg font-black text-[#064e3b] uppercase tracking-tighter italic">{item.label}</p>
-                                <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mt-0.5">{item.subtext}_BIN</p>
+                        <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.4 + (idx * 0.1) }}
+                            className="p-6 pt-8 flex items-center justify-between hover:bg-white/40 dark:hover:bg-black/20 rounded-2xl transition-all group first:pt-6"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className={cn("w-14 h-14 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
+                                    <item.icon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className={cn(glass.sectionTitle, "text-xl normal-case italic opacity-80 group-hover:opacity-100 transition-opacity")}>{item.label}</p>
+                                    <p className={cn(glass.microLabel, "opacity-40 font-bold")}>LAST_MONTH_BIN</p>
+                                </div>
                             </div>
-                            <div className="bg-[#064e3b] px-6 py-2 rounded-none border-2 border-[#10b981] shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
-                                <p className="text-sm font-black text-white uppercase tracking-widest">{item.value}</p>
+                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-white dark:bg-black text-honey border-honey/30 shadow-lg group-hover:scale-105 transition-transform")}>
+                                {item.value}
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </Card>
-            </div>
-        </div>
+                </div>
+            </motion.div>
+
+            {/* AI Summary Banner */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+            >
+                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-honey" />
+                </div>
+                <div className="relative z-10 text-center md:text-left">
+                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Volumetric Diagnostic Summary</h5>
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
+                        Recursive volumetric analysis indicates balanced density across Water, Heat, and Energy sectors. The Energy sector shows
+                        a 12% peak increase compared to the previous bin, while Water remains within historical baseline thresholds.
+                    </p>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 };
 

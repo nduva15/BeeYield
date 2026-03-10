@@ -3,11 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Bell, Clock, Activity, Loader2, AlertTriangle, CheckCircle2, ShieldAlert
+    Bell, Clock, Activity, Loader2, AlertTriangle, CheckCircle2, ShieldAlert, RefreshCw, Layers
 } from 'lucide-react';
 import beeyieldService, { SensorAlert, Hive, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SensorAlertsView: React.FC = () => {
     const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
@@ -30,7 +32,7 @@ const SensorAlertsView: React.FC = () => {
             setApiaries(apiaryData);
         } catch (error) {
             console.error('Failed to load sensor alerts', error);
-            toast.error('Failed to load alert feed');
+            toast.error('Could not load alerts.');
         } finally {
             setLoading(false);
         }
@@ -38,7 +40,6 @@ const SensorAlertsView: React.FC = () => {
 
     React.useEffect(() => {
         loadData();
-        // Set up interval for "real-time" updates every 30 seconds
         const interval = setInterval(loadData, 30000);
         return () => clearInterval(interval);
     }, [filter]);
@@ -50,11 +51,11 @@ const SensorAlertsView: React.FC = () => {
 
     const getApiaryName = (apiaryId: string) => {
         const apiary = apiaries.find(a => a.id === apiaryId);
-        return apiary ? apiary.name : 'Unknown Apiary';
+        return apiary ? apiary.name : 'Unknown Location';
     };
 
     const handleResolve = async (alertId: string) => {
-        const { success } = await beeyieldService.resolveSensorAlert(alertId, 'Resolved via Tactical Dashboard');
+        const { success } = await beeyieldService.resolveSensorAlert(alertId, 'Resolved from dashboard');
         if (success) {
             setAlerts(prev => prev.filter(a => a.id !== alertId));
             loadData();
@@ -62,26 +63,33 @@ const SensorAlertsView: React.FC = () => {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
-                        <ShieldAlert className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Priority Sensor Protocol</span>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-8 -m-8 pb-24 space-y-16")}
+        >
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 pb-12 border-b border-white/5">
+                <div className="space-y-6">
+                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
+                        <div className="flex items-center gap-4 skew-x-[12deg]">
+                            <ShieldAlert className="w-5 h-5" />
+                            <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">System Alerts</span>
+                        </div>
                     </div>
-                    <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
-                        Live <span className="text-[#10b981]">Alerts</span>
+                    <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
+                        Alert <span className="text-honey">Feed</span>
                     </h1>
                 </div>
 
-                <div className="flex bg-white border-4 border-[#064e3b] p-1 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                <div className="flex bg-white/40 dark:bg-black/60 p-3 rounded-[3rem] border border-white/10 gap-3 shadow-4xl relative overflow-hidden group">
                     {(['active', 'resolved', 'all'] as const).map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
                             className={cn(
-                                "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-none",
-                                filter === f ? "bg-[#064e3b] text-white" : "text-[#064e3b] hover:bg-[#facc15]/10"
+                                "px-10 py-3 rounded-full text-[12px] font-black uppercase tracking-[0.2em] italic transition-all duration-700 relative z-10",
+                                filter === f ? "bg-white dark:bg-black text-honey shadow-4xl" : "text-muted-foreground/30 hover:text-honey hover:bg-honey/5"
                             )}
                         >
                             {f}
@@ -90,149 +98,175 @@ const SensorAlertsView: React.FC = () => {
                 </div>
             </div>
 
-            {/* Main Alerts Log */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                <CardHeader className="p-8 pb-4 border-b-4 border-[#064e3b]/10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981]">
-                            <Bell className="w-5 h-5 text-[#facc15]" />
+            {/* Alert List */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative")}
+            >
+                <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/20 flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-8">
+                        <div className="w-16 h-16 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl">
+                            <Bell className="w-8 h-8 text-honey" />
                         </div>
-                        <CardTitle className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Active Incident Log</CardTitle>
+                        <h2 className="text-5xl font-black italic tracking-tighter uppercase">Notifications</h2>
                     </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                </div>
+
+                <div className="divide-y divide-white/5 bg-white/20 dark:bg-black/10">
+                    <AnimatePresence mode="popLayout">
                         {loading && alerts.length === 0 ? (
-                            <div className="p-12 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-gray-300" /></div>
+                            <div className="p-48 flex flex-col items-center justify-center gap-10">
+                                <Loader2 className="w-16 h-16 animate-spin text-honey" />
+                                <span className="text-xl font-black italic uppercase opacity-40">Syncing data...</span>
+                            </div>
                         ) : alerts.length === 0 ? (
-                            <div className="p-12 text-center text-gray-400 font-black uppercase tracking-widest text-xs py-20">
-                                No {filter !== 'all' ? filter : ''} alerts detected in the field.
+                            <div className="p-48 flex flex-col items-center justify-center space-y-10 group/null opacity-20">
+                                <CheckCircle2 className="w-32 h-32" />
+                                <h3 className="text-6xl font-black italic tracking-tighter uppercase">All Clear</h3>
+                                <p className="text-2xl italic uppercase tracking-widest pl-4 border-l-8 border-white/20">No {filter !== 'all' ? filter : ''} items to show.</p>
                             </div>
                         ) : (
                             alerts.map((alert) => (
-                                <div key={alert.id} className="p-8 flex flex-col md:flex-row md:items-center justify-between hover:bg-[#facc15]/5 transition-none cursor-default group border-b-2 border-neutral-50 last:border-0">
-                                    <div className="space-y-2 mb-6 md:mb-0">
-                                        <div className="flex items-center gap-3">
-                                            {alert.resolved ? (
-                                                <div className="w-6 h-6 rounded-none bg-[#10b981] flex items-center justify-center border-2 border-[#064e3b] shadow-[2px_2px_0px_0px_rgba(6,78,59,1)]">
-                                                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-                                                </div>
-                                            ) : (
+                                <motion.div
+                                    layout
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    key={alert.id}
+                                    className="p-12 flex flex-col xl:flex-row xl:items-center justify-between hover:bg-honey/5 transition-all duration-700 group relative overflow-hidden"
+                                >
+                                    <div className="flex items-start gap-10 flex-1">
+                                        <div className={cn("w-2.5 h-20 rounded-full", alert.resolved ? "bg-emerald-500" : alert.severity === 'critical' ? "bg-red-500" : "bg-amber-500")} />
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-6">
                                                 <div className={cn(
-                                                    "w-6 h-6 rounded-none flex items-center justify-center border-2 border-[#064e3b] shadow-[2px_2px_0px_0px_rgba(6,78,59,1)]",
-                                                    alert.severity === 'critical' ? "bg-red-500" : "bg-amber-500"
+                                                    "w-12 h-12 rounded-2xl flex items-center justify-center border-2 shadow-4xl",
+                                                    alert.resolved ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" : alert.severity === 'critical' ? "bg-red-500/10 border-red-500/20 text-red-500 shadow-red-500/20" : "bg-amber-500/10 border-amber-500/20 text-amber-500 shadow-amber-500/20"
                                                 )}>
-                                                    <AlertTriangle className="w-3.5 h-3.5 text-white" />
+                                                    {alert.resolved ? <CheckCircle2 className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
                                                 </div>
-                                            )}
-                                            <h4 className="font-black text-[#064e3b] uppercase tracking-tighter text-lg">{alert.alert_type} Breach</h4>
-                                        </div>
-                                        <p className="text-xs font-black text-[#064e3b]/60 uppercase tracking-tight">{alert.message}</p>
-                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                                            <span className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">{getHiveName(alert.hive_id)} @ {getApiaryName(alert.apiary_id)}</span>
-                                            <span className="text-[9px] font-black text-[#10b981] uppercase tracking-[0.2em]">TIMESTAMP: {new Date(alert.created_at).toLocaleString()}</span>
-                                            {alert.reading_value !== undefined && (
-                                                <span className="text-[9px] font-black text-[#064e3b] uppercase tracking-[0.2em]">Value: {alert.reading_value} (Target: {alert.threshold_value})</span>
-                                            )}
+                                                <h4 className="text-4xl font-black italic uppercase tracking-tighter group-hover:text-honey transition-colors">{alert.alert_type} Alert</h4>
+                                            </div>
+                                            <p className="text-2xl font-black italic text-foreground opacity-60 leading-tight pl-2 border-l-8 border-white/5">{alert.message}</p>
+                                            <div className="flex flex-wrap items-center gap-4 pt-2">
+                                                <span className={cn(glass.badge, "bg-white/40 dark:bg-black/60 shadow-4xl px-8 py-2.5 skew-x-[-12deg]")}>
+                                                    <span className="skew-x-[12deg] font-black italic uppercase text-[12px] opacity-40">{getHiveName(alert.hive_id)} · {getApiaryName(alert.apiary_id)}</span>
+                                                </span>
+                                                <span className="text-[14px] font-black italic opacity-20 uppercase tracking-widest">{new Date(alert.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-6">
+
+                                    <div className="flex flex-row items-center gap-8 mt-10 xl:mt-0 xl:pl-0 shrink-0">
                                         <div className="flex gap-4">
-                                            <Badge className={cn("rounded-none border-2 px-3 py-1 font-black text-[9px] uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(6,78,59,1)]",
-                                                alert.severity === 'critical' ? "bg-red-500 text-white border-[#064e3b]" :
-                                                    alert.severity === 'warning' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-white border-[#10b981]"
+                                            <div className={cn("px-8 py-3 rounded-full font-black italic text-[12px] uppercase shadow-4xl",
+                                                alert.severity === 'critical' ? "bg-red-500 text-white" : alert.severity === 'warning' ? "bg-amber-500 text-black" : "bg-emerald-500 text-white"
                                             )}>
                                                 {alert.severity}
-                                            </Badge>
-                                            <Badge className={cn("rounded-none border-2 px-3 py-1 font-black text-[9px] uppercase tracking-[0.2em] items-center gap-2",
-                                                alert.resolved ? 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/20' : 'bg-red-500 text-white border-[#064e3b] animate-pulse'
+                                            </div>
+                                            <div className={cn("px-8 py-3 rounded-full font-black italic text-[12px] uppercase border shadow-4xl",
+                                                alert.resolved ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
                                             )}>
-                                                {alert.resolved ? 'RESOLVED' : 'ACTIVE_INCIDENT'}
-                                            </Badge>
+                                                {alert.resolved ? 'RESOLVED' : 'URGENT'}
+                                            </div>
                                         </div>
                                         {!alert.resolved && (
-                                            <Button
+                                            <button
                                                 onClick={() => handleResolve(alert.id)}
-                                                variant="ghost"
-                                                size="sm"
-                                                className="hidden md:flex rounded-none border-4 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#10b981] hover:text-white font-black text-[10px] uppercase tracking-widest h-12 px-6 transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                                                className={cn(glass.btnSecondary, "h-14 px-10 text-[12px] font-black uppercase italic rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-emerald-500 hover:text-white border-white/5")}
                                             >
-                                                COMMAND RESOLVE
-                                            </Button>
+                                                Resolve
+                                            </button>
                                         )}
                                     </div>
-                                </div>
+                                </motion.div>
                             ))
                         )}
-                        <div className="p-6 bg-neutral-50/50 border-t-4 border-[#064e3b]/5 text-center">
-                            <span
-                                onClick={loadData}
-                                className="text-[10px] font-black text-[#064e3b] hover:text-[#10b981] uppercase tracking-[0.3em] cursor-pointer transition-none border-b-2 border-transparent hover:border-[#10b981]"
-                            >
-                                {loading ? 'SYNCING DATASTREAM...' : 'FORCE CLOUD SYNC'}
-                            </span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+                    </AnimatePresence>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Stats Card */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                    <CardHeader className="p-8 pb-4 border-b-4 border-[#064e3b]/10 bg-neutral-50/30">
-                        <CardTitle className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Incident Metrics</CardTitle>
-                        <CardDescription className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-widest mt-1">Telemetry stratification by urgency</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-8">
-                        <div className="space-y-6">
-                            {(['critical', 'warning', 'info'] as const).map(s => {
-                                const count = alerts.filter(e => e.severity === s).length;
-                                const total = alerts.length || 1;
-                                const pct = (count / total) * 100;
-                                return (
-                                    <div key={s} className="space-y-3">
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-[10px] font-black text-[#064e3b] uppercase tracking-widest">Urgency: {s}</span>
-                                            <span className="text-2xl font-black text-[#064e3b] tracking-tighter">{count}</span>
-                                        </div>
-                                        <div className="h-4 w-full bg-neutral-100 rounded-none border-2 border-[#064e3b]/10 p-0.5">
-                                            <div
-                                                className={cn("h-full transition-all duration-1000",
-                                                    s === 'critical' ? "bg-red-500" : s === 'warning' ? "bg-[#facc15]" : "bg-[#10b981]"
-                                                )}
-                                                style={{ width: `${pct}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Info Card */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[8px_8px_0px_0px_rgba(250,204,21,1)] overflow-hidden">
-                    <CardHeader className="p-8">
-                        <CardTitle className="text-xl font-black text-white uppercase tracking-tighter italic">Hive Integrity Status</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8 pt-0 space-y-8">
-                        <div className="p-6 rounded-none bg-white border-4 border-[#10b981] flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(16,185,129,0.2)]">
-                            <div>
-                                <h4 className="text-xs font-black text-[#064e3b] uppercase tracking-widest">Protocol Nominal</h4>
-                                <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-tight mt-1">Resolution benchmarks exceeding targets.</p>
-                            </div>
-                            <CheckCircle2 className="w-8 h-8 text-[#10b981]" />
-                        </div>
-                        <Button
+                    <div className="p-10 bg-white/40 dark:bg-black/20 flex justify-center border-t border-white/5">
+                        <button
                             onClick={loadData}
-                            className="w-full h-14 rounded-none bg-[#facc15] text-[#064e3b] hover:bg-white border-4 border-[#064e3b] font-black text-xs uppercase tracking-[0.2em] transition-none shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                            className={cn(glass.btnSecondary, "h-16 px-12 rounded-full text-xs font-black uppercase italic border-white/5 opacity-40 hover:opacity-100 hover:text-honey transition-all flex items-center gap-4")}
                         >
-                            RE-SCAN TELEMETRY
-                        </Button>
-                    </CardContent>
-                </Card>
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+                            {loading ? 'Syncing...' : 'Refresh Feed'}
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Metrics */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-8">
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem]")}>
+                    <div className="p-12 border-b border-white/5 bg-white/40 dark:bg-black/20">
+                        <h3 className="text-4xl font-black italic tracking-tighter uppercase">Alert Summary</h3>
+                        <p className={cn(glass.microLabel, "opacity-40 italic mt-2")}>Alerts by priority</p>
+                    </div>
+                    <div className="p-16 space-y-12 bg-white/20 dark:bg-black/10">
+                        {(['critical', 'warning', 'info'] as const).map(s => {
+                            const count = alerts.filter(e => e.severity === s).length;
+                            const total = alerts.length || 1;
+                            const pct = (count / total) * 100;
+                            return (
+                                <div key={s} className="space-y-6">
+                                    <div className="flex justify-between items-end">
+                                        <span className={cn("text-[14px] font-black italic uppercase tracking-widest opacity-40", s === 'critical' ? 'text-red-500' : s === 'warning' ? 'text-amber-500' : 'text-emerald-500')}>Priority: {s}</span>
+                                        <span className={cn("text-5xl font-black italic tracking-tighter leading-none", s === 'critical' ? 'text-red-500' : s === 'warning' ? 'text-amber-500' : 'text-emerald-500')}>{count}</span>
+                                    </div>
+                                    <div className="h-4 w-full bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[2px] border border-white/5">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${pct}%` }}
+                                            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                                            className={cn("h-full rounded-full shadow-2xl relative",
+                                                s === 'critical' ? "bg-red-500" : s === 'warning' ? "bg-amber-500" : "bg-emerald-500"
+                                            )}
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                                        </motion.div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+
+                <div className={cn(glass.card, "p-0 overflow-hidden relative bg-honey text-black rounded-[4rem] group")}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-honey to-honey-dark opacity-90 group-hover:scale-110 transition-transform duration-1000" />
+                    <div className="relative z-10 p-12 border-b border-black/10">
+                        <h3 className="text-4xl font-black italic tracking-tighter uppercase">System Health</h3>
+                    </div>
+                    <div className="relative z-10 p-16 space-y-12 flex flex-col h-full justify-between">
+                        <div className="p-10 rounded-[3rem] bg-white/20 border border-white/40 flex items-center justify-between shadow-4xl group-hover:scale-105 transition-transform">
+                            <div className="space-y-2">
+                                <h4 className="text-3xl font-black italic uppercase">All Systems Normal</h4>
+                                <p className="text-lg font-black italic opacity-60">No urgent issues detected.</p>
+                            </div>
+                            <div className="w-20 h-20 rounded-[2.5rem] bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
+                                <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+                            </div>
+                        </div>
+                        <button
+                            onClick={loadData}
+                            className="w-full h-24 bg-black text-honey rounded-[3.5rem] font-black italic text-3xl uppercase shadow-4xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-10"
+                        >
+                            <RefreshCw className="w-10 h-10" />
+                            Check Status
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <style>{`
+                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+                .animate-shimmer { animation: shimmer 2.5s infinite linear; }
+                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
+            `}</style>
+        </motion.div>
     );
 };
 

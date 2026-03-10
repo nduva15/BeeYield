@@ -637,6 +637,18 @@ All colors MUST be HSL.
   .text-honey {
     color: #f59e0b;
   }
+
+  .text-honey-deep {
+    color: #d97706;
+  }
+
+  .shadow-honey {
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.08);
+  }
+
+  .border-honey {
+    border-color: rgba(245, 158, 11, 0.3);
+  }
 }
 
 /* ===== RESPONSIVE TYPOGRAPHY ===== */

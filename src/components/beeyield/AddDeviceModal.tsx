@@ -1,13 +1,15 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Apiary, Hive } from '@/services/beeyieldService';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Label } from "@/components/ui/label";
-import { Cpu, Database, Network, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Cpu, Database, Network, ShieldCheck, RefreshCw, X, Info, Zap, Binary, Activity, Command, Shield } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AddDeviceModalProps {
     open: boolean;
@@ -36,6 +38,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
             return;
         }
 
+        const toastId = toast.loading("Executing hardware integration protocol...");
         setIsSubmitting(true);
         try {
             const newDevice = {
@@ -61,10 +64,10 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
             setSelectedApiaryId("");
             setSelectedHiveId("");
             onOpenChange(false);
-            toast.success("Device successfully integrated into the registry");
+            toast.success("Node successfully synchronized with registry", { id: toastId });
         } catch (error) {
             console.error(error);
-            toast.error("Integration failed");
+            toast.error("Hardware handshake failed", { id: toastId });
         } finally {
             setIsSubmitting(false);
         }
@@ -72,125 +75,182 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[700px] bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-[3rem] p-0 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                <div className="bg-slate-50 dark:bg-white/[0.02] px-12 py-10 border-b border-slate-100 dark:border-white/5">
-                    <DialogHeader className="p-0 space-y-3">
-                        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-900/40 w-fit">
-                            <Cpu className="w-3.5 h-3.5" />
-                            Hardware Integration Logic
-                        </div>
-                        <DialogTitle className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">
-                            Initialize <span className="text-amber-500">Node</span>
-                        </DialogTitle>
-                        <DialogDescription className="text-slate-400 dark:text-white/20 font-black uppercase text-[10px] tracking-[0.3em] italic">
-                            Pairing industrial IOT hardware with current sector registry.
-                        </DialogDescription>
-                    </DialogHeader>
-                </div>
+            <DialogContent className="max-w-3xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl border-white/5 rounded-[4rem] shadow-[0_100px_200px_-50px_rgba(0,0,0,0.5)] p-0 overflow-hidden antialiased outline-none thin-scrollbar">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98, y: 30 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 1.02, y: -30 }}
+                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                >
+                    <div className="bg-gradient-to-br from-[#121212] to-black px-14 py-16 text-white relative overflow-hidden border-b border-white/10">
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-honey/10 rounded-full -mr-40 -mt-20 blur-[120px] animate-pulse pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-60 h-60 bg-emerald-500/5 rounded-full -ml-30 -mb-20 blur-[80px] pointer-events-none" />
 
-                <form onSubmit={handleSubmit} className="p-12 space-y-10">
-                    <div className="grid grid-cols-2 gap-10">
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Hardware Signature ID</Label>
+                        <div className="relative z-10 flex justify-between items-start">
+                            <div className="space-y-8">
+                                <div className="flex items-center gap-6">
+                                    <div className="inline-flex items-center gap-4 px-6 py-2 bg-honey/10 rounded-full border border-honey/20 shadow-2xl skew-x-[-12deg]">
+                                        <Cpu className="w-5 h-5 text-honey" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] skew-x-[12deg] italic">Hardware Protocol v4.4_X</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20 shadow-inner">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic font-mono">LINK: STANDBY</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">
+                                        Initialize <span className="text-honey">Node</span>
+                                    </h2>
+                                    <p className="text-white/30 font-black text-[11px] uppercase tracking-[0.4em] mt-3 italic border-l-2 border-honey/20 pl-8 max-w-sm">
+                                        Pairing industrial IOT hardware with strategic sector registry hub_v4
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => onOpenChange(false)}
+                                className="w-16 h-16 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-500 transition-all duration-700 shadow-2xl group"
+                            >
+                                <X className="w-8 h-8 group-hover:rotate-90 transition-transform" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="p-14 space-y-12 relative z-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="space-y-6 group">
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-honey/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Hardware Signature ID</Label>
+                                <div className="relative">
+                                    <Network className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-honey transition-colors group-focus-within:text-foreground" />
+                                    <Input
+                                        placeholder="E.G. HUB_KIB_PRIME_001"
+                                        value={deviceCode}
+                                        onChange={(e) => setDeviceCode(e.target.value)}
+                                        className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-2xl bg-black/5 dark:bg-black/30 border-none shadow-inner normal-case placeholder:opacity-10")}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Node Classification</Label>
+                                <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
+                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner')}>
+                                        <div className="flex items-center gap-6">
+                                            <Zap className="w-6 h-6 text-blue-400" />
+                                            <SelectValue />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent className={glass.selectContent}>
+                                        <SelectItem value="inland" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Industrial_Master_Hub</SelectItem>
+                                        <SelectItem value="infield" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Regional_Tactical_Station</SelectItem>
+                                        <SelectItem value="disease" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Bio_Spectral_Monitor</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="space-y-6">
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-honey/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Strategic Sector</Label>
+                                <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner')}>
+                                        <div className="flex items-center gap-6">
+                                            <Database className="w-6 h-6 text-honey" />
+                                            <SelectValue placeholder="LOCATE_SECTOR..." />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent className={glass.selectContent}>
+                                        {apiaries.map(apiary => (
+                                            <SelectItem key={apiary.id} value={apiary.id} className="p-5 font-black uppercase text-[11px] tracking-widest italic">
+                                                {apiary.name.toUpperCase()}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-6">
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-emerald-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Target Registry ID</Label>
+                                <Select
+                                    value={selectedHiveId}
+                                    onValueChange={setSelectedHiveId}
+                                    disabled={!selectedApiaryId}
+                                >
+                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner disabled:opacity-20')}>
+                                        <div className="flex items-center gap-6">
+                                            <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                                            <SelectValue placeholder="SELECT_UNIT_ID..." />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent className={glass.selectContent}>
+                                        {filteredHives.map(hive => (
+                                            <SelectItem key={hive.id} value={hive.id} className="p-5 font-black uppercase text-[11px] tracking-widest italic">
+                                                {hive.hive_code.toUpperCase()}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6 group">
+                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-honey/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Human-Readable Neural Alias</Label>
                             <div className="relative">
-                                <Network className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
+                                <Binary className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-honey opacity-20 group-hover:opacity-100 transition-opacity" />
                                 <Input
-                                    placeholder="E.G. HUB-KIB-001"
-                                    value={deviceCode}
-                                    onChange={(e) => setDeviceCode(e.target.value)}
-                                    className="h-14 pl-12 border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-black/20 font-black text-xs uppercase tracking-widest focus-visible:ring-amber-500/20"
+                                    id="device-name"
+                                    name="device_name"
+                                    value={deviceName}
+                                    onChange={(e) => setDeviceName(e.target.value)}
+                                    placeholder="E.G. ALPHA_GATEWAY_PRIME"
+                                    className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner normal-case placeholder:opacity-10")}
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Node Classification</Label>
-                            <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
-                                <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-[10px] font-black uppercase tracking-widest focus:ring-amber-500/20">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                    <SelectItem value="inland" className="text-[10px] font-black uppercase p-4 tracking-widest">Master Hive Hub</SelectItem>
-                                    <SelectItem value="infield" className="text-[10px] font-black uppercase p-4 tracking-widest">Regional Station</SelectItem>
-                                    <SelectItem value="disease" className="text-[10px] font-black uppercase p-4 tracking-widest">Spectral Monitor</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-10">
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Sector Assignment</Label>
-                            <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-[10px] font-black uppercase tracking-widest focus:ring-amber-500/20">
-                                    <SelectValue placeholder="SELECT SECTOR" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                    {apiaries.map(apiary => (
-                                        <SelectItem key={apiary.id} value={apiary.id} className="text-[10px] font-black uppercase p-4 tracking-widest">
-                                            {apiary.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Target Registry ID</Label>
-                            <Select
-                                value={selectedHiveId}
-                                onValueChange={setSelectedHiveId}
-                                disabled={!selectedApiaryId}
+                        <div className="p-14 bg-white/40 dark:bg-black/60 border-t border-white/5 flex gap-10 rounded-[3rem] shadow-inner mt-10">
+                            <button
+                                type="button"
+                                onClick={() => onOpenChange(false)}
+                                className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic uppercase text-lg tracking-widest transition-all bg-white/40 dark:bg-black/20")}
                             >
-                                <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-[10px] font-black uppercase tracking-widest focus:ring-amber-500/20 disabled:opacity-30">
-                                    <SelectValue placeholder="SELECT HIVE" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl">
-                                    {filteredHives.map(hive => (
-                                        <SelectItem key={hive.id} value={hive.id} className="text-[10px] font-black uppercase p-4 tracking-widest">
-                                            {hive.hive_code}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                                Abort Protocol
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting || !deviceCode}
+                                className={cn(glass.btnPrimary, "flex-[2] h-22 bg-[#FBBE24] text-black shadow-[0_45px_100px_-20px_rgba(251,191,36,0.6)] rounded-[2.5rem] px-14 font-black italic text-2xl transition-all uppercase flex items-center justify-center gap-6 group/commit pl-20")}
+                            >
+                                {isSubmitting ? (
+                                    <RefreshCw className="w-10 h-10 animate-spin" />
+                                ) : (
+                                    <ShieldCheck className="w-10 h-10 group-hover/commit:scale-125 transition-all duration-1000 text-black fill-current" />
+                                )}
+                                Commit Registry
+                            </button>
                         </div>
-                    </div>
+                    </form>
 
-                    <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Human-Readable Alias</Label>
-                        <Input
-                            id="device-name"
-                            name="device_name"
-                            value={deviceName}
-                            onChange={(e) => setDeviceName(e.target.value)}
-                            placeholder="E.G. ALPHA_GATEWAY_PRIME"
-                            className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 font-black text-xs uppercase tracking-widest px-6 focus-visible:ring-amber-500/20"
-                        />
-                    </div>
-
-                    <div className="flex justify-end gap-6 pt-10 border-t border-slate-100 dark:border-white/5">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => onOpenChange(false)}
-                            className="h-16 px-10 rounded-2xl font-black text-[11px] uppercase tracking-widest text-slate-400 hover:text-red-500 hover:bg-red-500/5 transition-all"
+                    {/* Industrial Logic Banner */}
+                    <div className="px-14 pb-14">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={cn(glass.card, "p-10 bg-honey/[0.03] border-honey/20 flex items-center gap-10 relative overflow-hidden group rounded-[3rem]")}
                         >
-                            Abort Process
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={isSubmitting || !deviceCode}
-                            className="h-16 px-14 rounded-2xl bg-neutral-900 dark:bg-amber-600 text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-black/10 dark:shadow-amber-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-4 border-none"
-                        >
-                            {isSubmitting ? (
-                                <RefreshCw className="w-5 h-5 animate-spin" />
-                            ) : (
-                                <ShieldCheck className="w-5 h-5 text-amber-200" />
-                            )}
-                            Initialize Node
-                        </Button>
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-honey/10 blur-3xl pointer-events-none" />
+                            <div className="w-16 h-16 rounded-2xl bg-white/40 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey/20 shadow-4xl group-hover:rotate-[360deg] transition-transform duration-1000 relative z-10">
+                                <Info className="w-8 h-8 text-honey" />
+                            </div>
+                            <div className="relative z-10 space-y-2">
+                                <p className="text-xl italic font-black text-foreground tracking-tighter uppercase">Deployment Logic</p>
+                                <p className="text-[13px] italic font-medium opacity-40 leading-relaxed text-foreground max-w-xl">
+                                    Initializing a node links hardware telemetry to specific hive assets. Ensure the HUB_ID matches the cryptographic sticker on the device for recursive data integrity.
+                                </p>
+                            </div>
+                        </motion.div>
                     </div>
-                </form>
+                </motion.div>
             </DialogContent>
         </Dialog>
     );

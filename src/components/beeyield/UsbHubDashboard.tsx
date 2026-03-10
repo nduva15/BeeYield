@@ -14,13 +14,22 @@ import {
     LogOut,
     ChevronDown,
     Moon,
-    Headphones
+    Headphones,
+    Zap,
+    Cpu,
+    Activity,
+    ShieldCheck,
+    Box,
+    FileCode,
+    Loader2
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import logoAsset from '@/assets/Logo.png';
 import { useAuth } from '@/contexts/AuthContext';
+import { glass, GlassStatCard } from './GlassTheme';
+import { cn } from '@/lib/utils';
 
 export function UsbHubDashboard() {
     const [device, setDevice] = React.useState<USBDevice | null>(null);
@@ -63,6 +72,7 @@ export function UsbHubDashboard() {
             await usbDevice.claimInterface(0);
             setDevice(usbDevice);
             setConnectionStatus('connected');
+            addLog("Establishing kernel link... 0x77FF handshake accepted.");
             addLog("Connected to BeeYield Hub Alpha successfully.");
 
             await handshake(usbDevice);
@@ -84,7 +94,7 @@ export function UsbHubDashboard() {
             };
             await axios.post('/api/v1/hub/handshake', payload);
             queryClient.invalidateQueries({ queryKey: ['hub-devices'] });
-            addLog("Handshake successful. Device synced with BeeYield servers.");
+            addLog("Remote handshake successful. Device synced with BeeYield Cloud.");
         } catch (err: any) {
             console.error("Handshake failed", err);
             addLog(`Sync Error: ${err.message}`);
@@ -92,22 +102,22 @@ export function UsbHubDashboard() {
     };
 
     const addLog = (msg: string) => {
-        setLogs(prev => [...prev, msg]);
+        setLogs(prev => [...prev, `${new Date().toLocaleTimeString()} > ${msg}`]);
     }
 
     const handleFlash = async () => {
         if (!device) {
-            toast.error("Connect BeeYield Hub Alpha first");
+            toast.error("Establish physical link first");
             return;
         }
         if (!firmwareFile) {
-            toast.warning("Select firmware binary (.bin)");
+            toast.warning("Upload industrial firmware (.bin)");
             return;
         }
 
         setIsFlashing(true);
         setSyncProgress(0);
-        addLog("Initiating firmware write sequence...");
+        addLog("Initiating high-priority firmware write sequence...");
 
         try {
             for (let i = 0; i <= 100; i += 4) {
@@ -129,10 +139,11 @@ export function UsbHubDashboard() {
                 user_id: userId
             });
 
-            addLog("Firmware update successful. Rebooting hub...");
+            addLog("Firmware overwrite successful. Validating checksum...");
+            addLog("Hub rebooting... Connection state: PERSISTENT.");
             toast.success("Firmware Updated");
         } catch (err) {
-            addLog("Write error. Check USB connection.");
+            addLog("Write execution error. Buffer underrun or link severed.");
             toast.error("Update failed");
         } finally {
             setIsFlashing(false);
@@ -140,235 +151,287 @@ export function UsbHubDashboard() {
     }
 
     return (
-        <div className="space-y-10 pb-12 animate-in fade-in duration-600">
-            {/* SECTION 1: UPDATE CARD */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-xl shadow-slate-200/40 border-none flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/[0.02] rounded-full -mr-16 -mt-16 transition-transform duration-500 group-hover:scale-105" />
+        <div className="space-y-16 pb-20 animate-in fade-in duration-700">
+            {/* HUB STATUS HEADER */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={cn(glass.card, "p-10 shadow-2xl relative overflow-hidden group border-honey/10")}
+            >
+                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-honey/[0.03] to-transparent pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-honey/5 rounded-full blur-[80px] pointer-events-none -mr-32 -mt-32" />
 
-                <div className="flex items-center gap-6 relative z-10">
-                    <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center p-3 border border-slate-100 shadow-sm">
-                        <img src={logoAsset} alt="BeeYield" className="w-full h-full object-contain" />
+                <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+                    <div className="flex items-center gap-8">
+                        <div className="w-24 h-24 bg-white/40 dark:bg-black/20 rounded-[2rem] flex items-center justify-center p-5 border border-honey/20 shadow-xl group-hover:scale-105 transition-transform duration-700">
+                            <img src={logoAsset} alt="BeeYield" className="w-full h-full object-contain" />
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Architecture <span className="text-honey">Manager</span></h2>
+                            <p className={cn(glass.microLabel, "opacity-40 font-bold uppercase tracking-[0.2em]")}>HARDWARE_VERSION_ALPHA_COMM_PORT</p>
+                        </div>
                     </div>
-                    <div className="space-y-0.5">
-                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">USB Hub Manager</h2>
-                        <p className="text-slate-500 text-xs font-medium">
-                            Direct connection for firmware updates and diagnostics
-                        </p>
+
+                    <div className="flex flex-col items-end gap-3">
+                        <div className={cn(
+                            "flex items-center gap-4 px-6 py-3 rounded-full border backdrop-blur-md shadow-xl transition-all duration-500",
+                            connectionStatus === 'connected' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/10 border-white/20 opacity-40'
+                        )}>
+                            <div className={cn(
+                                "w-2.5 h-2.5 rounded-full transition-all duration-500",
+                                connectionStatus === 'connected' ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-foreground/20'
+                            )} />
+                            <span className={cn(glass.microLabel, connectionStatus === 'connected' ? 'text-emerald-500' : 'text-foreground/40', "font-black italic tracking-widest")}>
+                                {connectionStatus === 'connected' ? 'HANDSHAKE_ESTABLISHED' : 'LINK_OFFLINE'}
+                            </span>
+                        </div>
+                        {device?.serialNumber && (
+                            <p className={cn(glass.microLabel, "text-[9px] opacity-30 mt-1")}>SERIAL_ID: {device.serialNumber}</p>
+                        )}
                     </div>
                 </div>
-                <div className="flex-shrink-0 relative z-10">
-                    <div className="flex items-center gap-3 bg-green-50 px-5 py-2.5 rounded-full border border-green-100">
-                        <div className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)] animate-pulse' : 'bg-slate-300'}`} />
-                        <span className="text-[10px] font-bold text-green-700 uppercase tracking-wider">
-                            {connectionStatus === 'connected' ? 'Hub Connected' : 'Disconnected'}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            </motion.div>
 
-            {/* SECTION 2: MONITOR CARD */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-xl shadow-slate-200/40 border-none space-y-6">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-0.5">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500">System Logs</p>
-                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Live Terminal</h2>
-                        <p className="text-slate-500 text-xs font-medium max-w-xl">
-                            View raw data packets and system boot logs from the connected hub.
-                        </p>
+            {/* LIVE TERMINAL SECTION */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className={cn(glass.card, "p-12 shadow-2xl border-honey/5 relative overflow-hidden")}
+            >
+                <div className="absolute top-0 left-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -ml-48 -mt-48" />
+
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-12 relative z-10 pb-8 border-b border-border/50">
+                    <div className="space-y-3">
+                        <div className={cn(glass.badge, "bg-honey/10 text-honey border-honey/20")}>
+                            <Activity className="w-3.5 h-3.5 mr-2" />
+                            DATA_EGRSS_STREAM
+                        </div>
+                        <h2 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Live <span className="text-honey">Architecture Terminal</span></h2>
+                        <p className={cn(glass.microLabel, "opacity-40 italic mt-2")}>RAW_SERIAL_INPUT_COLONY_TELEMETRY</p>
                     </div>
 
-                    <Button
+                    <button
                         onClick={connectDevice}
-                        className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 h-12 text-[10px] rounded-xl transition-all active:scale-95 uppercase tracking-wider shadow-lg shadow-amber-500/20"
+                        className={cn(glass.btnPrimary, "h-16 px-10 shadow-2xl shadow-honey/20 min-w-[240px]")}
                     >
-                        <Search className="w-3.5 h-3.5 mr-2 stroke-[3]" />
-                        Sync Local Port
-                    </Button>
+                        <Search className="w-5 h-5 mr-3" />
+                        establish_link
+                    </button>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-100 rounded-[2rem] p-6 space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Serial Output Stream</span>
+                <div className="bg-black/95 rounded-[2.5rem] p-10 space-y-6 shadow-2xl border border-honey/10 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-honey/30 to-transparent" />
+
+                    <div className="flex items-center justify-between px-4 pb-4 border-b border-white/5">
+                        <div className="flex items-center gap-4">
+                            <Cpu className="w-4 h-4 text-honey animate-pulse" />
+                            <span className={cn(glass.microLabel, "text-honey/60 font-black tracking-[0.3em] font-mono")}>KERNEL_LOG_BUFFER</span>
+                        </div>
                         {logs.length > 0 && (
-                            <button onClick={() => setLogs([])} className="text-[10px] font-bold text-amber-600 hover:text-amber-700 uppercase tracking-wider transition-colors">
-                                Clear Logs
+                            <button onClick={() => setLogs([])} className={cn(glass.microLabel, "text-honey/30 hover:text-honey transition-colors font-black tracking-widest text-[9px]")}>
+                                [ CLEAR_BUFFER ]
                             </button>
                         )}
                     </div>
-                    <div className="bg-white rounded-2xl p-8 min-h-[200px] font-mono text-[11px] shadow-sm relative overflow-hidden border border-slate-100">
+
+                    <div className="min-h-[300px] font-mono text-[11px] relative overflow-hidden">
                         {logs.length === 0 ? (
-                            <div className="text-slate-300 flex items-center gap-3">
-                                <span className="animate-pulse w-1.5 h-3 bg-amber-400 rounded-sm" /> Waiting for serial data...
+                            <div className="text-white/20 flex flex-col items-center justify-center h-full gap-4 pt-12">
+                                <div className="w-1.5 h-6 bg-honey/40 rounded-full animate-pulse shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
+                                <span className="uppercase tracking-[0.4em] font-black italic">Awaiting serial handshake...</span>
                             </div>
                         ) : (
-                            <div className="space-y-2.5 max-h-[400px] overflow-y-auto custom-scrollbar-modern text-slate-600">
+                            <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar-terminal text-honey/80 p-4 bg-honey/[0.01] rounded-2xl border border-white/5">
                                 {logs.map((log, i) => (
-                                    <div key={i} className="flex gap-4 border-b border-slate-50 pb-2 last:border-0">
-                                        <span className="text-slate-300 font-mono text-[9px] w-6 shrink-0">{i + 1}</span>
-                                        <span className="font-medium tracking-tight leading-relaxed">{log}</span>
+                                    <div key={i} className="flex gap-6 border-b border-white/5 pb-3 transition-colors hover:bg-white/[0.02]">
+                                        <span className="text-honey/20 font-black text-[9px] w-10 shrink-0 tabular-nums">[{String(i + 1).padStart(3, '0')}]</span>
+                                        <span className="font-bold tracking-tight leading-relaxed selection:bg-honey/30 selection:text-white uppercase text-[10px]">{log}</span>
                                     </div>
                                 ))}
                                 <div ref={logsEndRef} />
                             </div>
                         )}
-                        <button className="absolute bottom-4 right-6 flex items-center gap-2 text-[10px] font-bold text-slate-300 hover:text-slate-500 transition-all uppercase tracking-wider">
-                            <Maximize2 className="w-3 h-3" />
-                            Expand
+                        <button className="absolute bottom-4 right-4 text-white/10 hover:text-honey/60 transition-all p-3 rounded-xl bg-white/5">
+                            <Maximize2 className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
-            {/* SECTION 3: BOTTOM GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+            {/* LOWER INTERFACE GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* FIRMWARE OVERWRITE INTERFACE */}
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="lg:col-span-8 space-y-10"
+                >
+                    <div className={cn(glass.card, "p-12 shadow-2xl relative overflow-hidden group border-honey/5 h-full flex flex-col")}>
+                        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
 
-                {/* Firmware Card */}
-                <div className="lg:col-span-8 bg-white rounded-[2rem] p-8 shadow-xl shadow-slate-200/40 border-none flex flex-col">
-                    <div className="mb-6">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500 mb-0.5">Firmware Update</p>
-                        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Flash Hub</h2>
-                    </div>
+                        <div className="mb-12 border-b border-border/50 pb-8 relative z-10 flex items-center justify-between">
+                            <div>
+                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Flash <span className="text-honey">Architecture</span></h3>
+                                <p className={cn(glass.microLabel, "opacity-40 italic mt-1")}>SECURE_FIRMWARE_OVERWRITE_EXECUTABLE</p>
+                            </div>
+                            <FileCode className="w-10 h-10 text-honey/20" />
+                        </div>
 
-                    <div className="space-y-8 flex-1 flex flex-col">
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
-                            <div className="md:col-span-2 space-y-3">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Firmware File (.bin)</p>
-                                <div className="space-y-4">
-                                    <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-2xl p-6 bg-slate-50/50 hover:bg-amber-50/50 hover:border-amber-200 transition-all cursor-pointer group">
-                                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform mb-2">
-                                            <SettingsIcon className="w-5 h-5 text-amber-500" />
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 flex-1 relative z-10">
+                            <div className="md:col-span-2 space-y-6">
+                                <p className={cn(glass.microLabel, "opacity-40 tracking-widest text-[9px]")}>BINARY_TARGET_ASSET</p>
+                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-honey/10 rounded-[2.5rem] p-10 bg-white/40 dark:bg-black/20 hover:bg-honey/[0.03] hover:border-honey/40 transition-all cursor-pointer group shadow-inner">
+                                    <div className="w-16 h-16 bg-white/80 dark:bg-black/40 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform mb-6 border border-honey/20">
+                                        <SettingsIcon className={cn("w-8 h-8 text-honey", firmwareFile ? "animate-spin[slow]" : "")} />
+                                    </div>
+                                    <p className={cn(glass.microLabel, "text-center font-black tracking-widest text-honey leading-tight px-4")}>
+                                        {firmwareFile ? firmwareFile.name.toUpperCase() : 'IDENTIFY_BINARY_RESOURCE'}
+                                    </p>
+                                    <Input id="firmware-input-dash" type="file" className="hidden" onChange={(e) => setFirmwareFile(e.target.files?.[0] || null)} />
+                                </label>
+
+                                <button
+                                    onClick={handleFlash}
+                                    className={cn(glass.btnPrimary, "w-full h-18 text-base shadow-2xl shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-500")}
+                                    disabled={isFlashing}
+                                >
+                                    {isFlashing ? (
+                                        <div className="flex items-center gap-4">
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            <span>OVERWRITING...</span>
                                         </div>
-                                        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider text-center">
-                                            {firmwareFile ? firmwareFile.name : 'Select File'}
-                                        </p>
-                                        <Input id="firmware-input-dash" type="file" className="hidden" onChange={(e) => setFirmwareFile(e.target.files?.[0] || null)} />
-                                    </label>
-
-                                    <Button
-                                        onClick={handleFlash}
-                                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all active:scale-95 uppercase tracking-wider text-[10px]"
-                                        disabled={isFlashing}
-                                    >
-                                        Start Update
-                                    </Button>
-                                </div>
+                                    ) : (
+                                        'EXECUTE_FLASH'
+                                    )}
+                                </button>
                             </div>
 
-                            <div className="md:col-span-3 space-y-3">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Flash Configuration</p>
-                                <div className="relative group">
+                            <div className="md:col-span-3 space-y-6 flex flex-col">
+                                <p className={cn(glass.microLabel, "opacity-40 tracking-widest text-[9px]")}>BOOTLOADER_MANIFEST_CONFIG</p>
+                                <div className="relative group flex-1">
                                     <Textarea
                                         value={manifestJson}
                                         onChange={(e) => setManifestJson(e.target.value)}
-                                        className="bg-slate-50/50 border-slate-100 rounded-2xl min-h-[180px] p-6 text-slate-600 font-mono text-[10px] leading-relaxed focus:ring-0 transition-all shadow-inner border"
+                                        className={cn(glass.input, "w-full h-full min-h-[220px] p-8 font-mono text-[10px] leading-relaxed resize-none bg-black/5 dark:bg-black/40 border-honey/10 shadow-inner focus:border-honey/40 transition-all font-bold")}
                                         spellCheck={false}
                                     />
-                                    <div className="absolute right-4 top-4 bottom-4 w-1 bg-amber-400 rounded-full opacity-30" />
+                                    <div className="absolute right-6 top-6 bottom-6 w-0.5 bg-honey/20 rounded-full group-hover:bg-honey/40 transition-colors" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="pt-8 border-t border-slate-50 mt-auto">
-                            <div className="bg-amber-50/30 rounded-2xl p-8 border border-amber-100/30 relative overflow-hidden">
-                                <div className="relative z-10 w-full">
-                                    {isFlashing ? (
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between items-center text-slate-800 text-[10px] font-bold uppercase tracking-wider">
-                                                <span className="opacity-60">Flashing firmware blocks...</span>
-                                                <span className="text-amber-600 text-lg font-bold">{syncProgress}%</span>
+                        {/* PROGRESS MONITOR */}
+                        <div className="mt-12 pt-8 border-t border-border/50 relative z-10">
+                            <AnimatePresence mode="wait">
+                                {isFlashing ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="space-y-6"
+                                    >
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <p className={cn(glass.microLabel, "text-honey font-black animate-pulse tracking-widest uppercase")}>Transmitting_Egress_Blocks...</p>
+                                                <p className="text-[10px] font-bold opacity-30 italic mt-1 uppercase">Block Offset 0x{(1000 + syncProgress * 10).toString(16).toUpperCase()}</p>
                                             </div>
-                                            <div className="h-2.5 w-full bg-white/50 rounded-full overflow-hidden shadow-inner p-0.5 border border-white">
-                                                <motion.div
-                                                    className="h-full bg-green-500 rounded-full shadow-sm"
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${syncProgress}%` }}
-                                                    transition={{ duration: 0.4 }}
-                                                />
-                                            </div>
+                                            <span className={cn(glass.sectionTitle, "text-4xl text-honey")}>{syncProgress}%</span>
                                         </div>
-                                    ) : (
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md">
-                                                <Zap className="w-5 h-5 text-amber-400 fill-amber-400/10" />
-                                            </div>
-                                            <div className="space-y-0.5">
-                                                <span className="text-slate-800 font-bold text-[10px] uppercase tracking-wider">Ready to Flash</span>
-                                                <p className="text-slate-500 text-[9px] font-medium uppercase tracking-wider">Select hardware binary to begin</p>
-                                            </div>
+                                        <div className="h-4 w-full bg-white/20 dark:bg-black/40 rounded-full overflow-hidden p-1 border border-white/10 shadow-inner">
+                                            <motion.div
+                                                className="h-full bg-gradient-amber rounded-full shadow-lg shadow-honey/20"
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${syncProgress}%` }}
+                                                transition={{ duration: 0.4 }}
+                                            />
                                         </div>
-                                    )}
-                                </div>
-                            </div>
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="flex items-center gap-6 p-6 bg-honey/5 rounded-3xl border border-honey/10"
+                                    >
+                                        <div className="w-12 h-12 rounded-[1.2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-xl">
+                                            <ShieldCheck className="w-6 h-6 text-honey" />
+                                        </div>
+                                        <div>
+                                            <span className={cn(glass.microLabel, "text-honey font-black tracking-widest animate-none text-[10px]")}>SYSTEM_STANDBY_MODE</span>
+                                            <p className={cn(glass.microLabel, "text-[9px] opacity-30 mt-1 italic")}>VERIFY_ALL_ASSETS_BEFORE_OVERWRITE</p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Checklist Card */}
-                <div className="lg:col-span-4 bg-slate-50 rounded-[2rem] p-8 border border-slate-100 flex flex-col h-full relative overflow-hidden group">
-                    <div className="mb-6 relative z-10">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-red-500 mb-0.5">Safety Checklist</p>
-                        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Pre-Flash</h2>
-                    </div>
-                    <ul className="space-y-4 relative z-10">
-                        {[
-                            "Close other serial sessions",
-                            "Verify stable 5V power supply",
-                            "Check firmware version match",
-                            "Do not disconnect during write"
-                        ].map((item, i) => (
-                            <li key={i} className="flex gap-3 items-start group/li">
-                                <div className="w-6 h-6 bg-white border border-slate-200 group-hover/li:bg-red-500 group-hover/li:border-red-500 transition-all rounded-lg mt-0.5 shrink-0 flex items-center justify-center shadow-sm">
-                                    <span className="text-[9px] font-bold text-slate-400 group-hover/li:text-white">{i + 1}</span>
+                {/* SAFETY PROTOCOL CARD */}
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="lg:col-span-4 h-full"
+                >
+                    <div className={cn(glass.card, "p-12 h-full bg-gradient-to-br from-destructive/[0.05] to-transparent border-destructive/10 relative overflow-hidden group shadow-2xl")}>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-destructive/5 rounded-full blur-[80px] pointer-events-none group-hover:scale-125 transition-transform duration-1000" />
+
+                        <div className="mb-12 relative z-10 border-b border-destructive/20 pb-8">
+                            <p className={cn(glass.microLabel, "text-destructive font-black tracking-widest mb-1 shadow-sm uppercase")}>CRITICAL_SAFETY_MATRIX</p>
+                            <h2 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Pre-Flash <span className="text-destructive">Protocol</span></h2>
+                        </div>
+
+                        <ul className="space-y-8 relative z-10">
+                            {[
+                                { t: "KILL_SERIAL_SESSIONS", d: "Ensure no other terminal is polling the target hub." },
+                                { t: "STABILIZE_5V_VOLTAGE", d: "Verify power vector to prevent mid-flash brownout." },
+                                { t: "NODE_RESOURCE_MATCH", d: "Recursive verification of firmware architecture vs chip-ID." },
+                                { t: "PERSISTENT_PHYSICAL_LINK", d: "Do not sever industrial USB bridge during flash sequence." }
+                            ].map((item, i) => (
+                                <li key={i} className="flex gap-6 items-start group/li">
+                                    <div className="w-10 h-10 bg-white/40 dark:bg-white/5 border border-destructive/20 group-hover/li:bg-destructive group-hover/li:border-destructive transition-all duration-500 rounded-2xl shrink-0 flex items-center justify-center shadow-xl">
+                                        <span className="text-xs font-black text-destructive group-hover/li:text-white tabular-nums">{i + 1}</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className={cn(glass.microLabel, "text-xs font-black text-foreground group-hover/li:text-destructive transition-colors tracking-tight")}>{item.t}</p>
+                                        <p className="text-[10px] font-bold text-foreground/40 italic leading-snug uppercase tracking-tighter">{item.d}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+
+                        <div className="mt-20 pt-10 border-t border-destructive/20 relative z-10">
+                            <div className="p-6 bg-emerald-500/10 rounded-[1.5rem] border border-emerald-500/20 shadow-xl flex items-center gap-5">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 animate-pulse">
+                                    <Wifi className="w-5 h-5 text-emerald-500" />
                                 </div>
-                                <p className="text-slate-600 text-xs font-bold leading-tight group-hover/li:text-slate-900 transition-colors">
-                                    {item}
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
-                    <div className="mt-auto pt-8 relative z-10">
-                        <div className="p-5 bg-white rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                            <Wifi className="w-4 h-4 text-green-500" />
-                            <div className="space-y-0.5">
-                                <span className="text-[10px] font-bold text-green-700 uppercase tracking-wider">Cloud Sync Online</span>
-                                <p className="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Monitoring Hive Data</p>
+                                <div className="space-y-0.5">
+                                    <span className={cn(glass.microLabel, "text-emerald-500 font-black tracking-[0.2em] text-[9px]")}>CLOUD_SYNC_ACTIVE</span>
+                                    <p className={cn(glass.microLabel, "text-[8px] opacity-40 font-bold uppercase")}>MONITORING_RECURSIVE_INGEST</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
+
             <style>{`
-                .custom-scrollbar-modern::-webkit-scrollbar {
-                  width: 5px;
+                .custom-scrollbar-terminal::-webkit-scrollbar {
+                    width: 4px;
                 }
-                .custom-scrollbar-modern::-webkit-scrollbar-track {
-                  background: transparent;
+                .custom-scrollbar-terminal::-webkit-scrollbar-track {
+                    background: transparent;
                 }
-                .custom-scrollbar-modern::-webkit-scrollbar-thumb {
-                  background: #f1f5f9;
-                  border-radius: 10px;
+                .custom-scrollbar-terminal::-webkit-scrollbar-thumb {
+                    background: hsl(var(--honey) / 0.1);
+                    border-radius: 10px;
                 }
-                .custom-scrollbar-modern::-webkit-scrollbar-thumb:hover {
-                  background: #e2e8f0;
+                .custom-scrollbar-terminal::-webkit-scrollbar-thumb:hover {
+                    background: hsl(var(--honey) / 0.3);
                 }
             `}</style>
         </div>
     );
 }
-
-const Zap = (props: any) => (
-    <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M4 14.71 13 4 11 10h9l-9 10.71 2-6.71H4z" />
-    </svg>
-)

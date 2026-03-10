@@ -12,9 +12,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown, Battery, Thermometer, Weight, Activity, Search, Scale, Droplets } from 'lucide-react';
+import { ArrowUpDown, Battery, Thermometer, Weight, Activity, Search, Scale, Droplets, ChevronLeft, ChevronRight, Hash, Binary, SearchCode, ShieldCheck, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Hive } from '@/services/beeyieldService';
+import { glass } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface HivesTableProps {
     data: Hive[];
@@ -30,21 +32,33 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             accessorKey: 'hive_code',
             header: ({ column }) => {
                 return (
-                    <Button
-                        variant="ghost"
+                    <button
                         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                        className="hover:bg-transparent pl-0 text-left font-black uppercase text-[10px] tracking-widest text-slate-400"
+                        className="group flex items-center gap-4 hover:text-honey transition-colors py-4 px-6 rounded-2xl hover:bg-honey/5"
                     >
-                        Registry ID
-                        <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-                    </Button>
+                        <span className={cn(glass.microLabel, "text-foreground/40 group-hover:text-honey transition-colors italic font-black uppercase tracking-[0.3em]")}>REGISTRY_ID</span>
+                        <ArrowUpDown className="w-4 h-4 text-honey/20 group-hover:text-honey transition-colors" />
+                    </button>
                 );
             },
-            cell: ({ row }) => <div className="font-black text-slate-900 dark:text-white uppercase tracking-tight">{row.getValue('hive_code')}</div>,
+            cell: ({ row }) => (
+                <div className="flex items-center gap-8 pl-6">
+                    <div className="w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/5 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-125 group-hover:rotate-6 group-hover:bg-honey/10 group-hover:border-honey/40 transition-all duration-1000">
+                        <Hash className="w-6 h-6 text-honey group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <span className="text-3xl font-black italic text-foreground tracking-tighter tabular-nums group-hover:text-honey transition-colors uppercase leading-none">{row.getValue('hive_code')}</span>
+                        <div className="flex items-center gap-3">
+                            <Binary className="w-3.5 h-3.5 text-honey/20" />
+                            <span className="text-[9px] font-black text-honey/20 uppercase tracking-[0.4em] italic font-mono leading-none">NODE_v5.2.0</span>
+                        </div>
+                    </div>
+                </div>
+            ),
         },
         {
             accessorKey: 'status',
-            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400">Health Status</span>,
+            header: ({ column }) => <span className={cn(glass.microLabel, "text-foreground/40 py-4 block italic font-black uppercase tracking-[0.3em] pl-6")}>HEALTH_STATUS</span>,
             cell: ({ row }) => {
                 const status = (row.getValue('status') as string || '').toLowerCase();
                 const isHealthy = status.includes('healthy') || status.includes('active') || status === 'ok';
@@ -52,59 +66,98 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                 const isCritical = status.includes('critical') || status.includes('abandoned');
 
                 return (
-                    <Badge className={cn(
-                        "rounded-full px-3 py-1 font-black text-[9px] uppercase tracking-widest border-none shadow-sm",
-                        isHealthy ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' :
-                            isWarning ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' :
-                                isCritical ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400' :
-                                    'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-white/20'
-                    )}>
-                        {row.getValue('status') || 'Unknown Source'}
-                    </Badge>
+                    <div className="pl-6">
+                        <div className={cn(
+                            "inline-flex items-center gap-4 px-8 py-2.5 rounded-full border shadow-3xl backdrop-blur-3xl skew-x-[-12deg] transition-all duration-700",
+                            isHealthy ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                isWarning ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                    isCritical ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                        'bg-foreground/5 text-foreground/40 border-border/50'
+                        )}>
+                            <div className="flex items-center gap-4 skew-x-[12deg]">
+                                <div className={cn("w-2.5 h-2.5 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]",
+                                    isHealthy ? 'bg-emerald-500 shadow-emerald-500/80 animate-pulse' :
+                                        isWarning ? 'bg-amber-500 shadow-amber-500/80 animate-pulse' :
+                                            isCritical ? 'bg-red-500 shadow-red-500/80 animate-pulse' :
+                                                'bg-foreground/40'
+                                )} />
+                                <span className={cn(glass.microLabel, "font-black tracking-[0.2em] italic uppercase text-[11px]")}>{row.getValue('status') || 'UNKNOWN'}</span>
+                            </div>
+                        </div>
+                    </div>
                 )
             }
         },
         {
             accessorKey: 'latest_weight',
-            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400 text-center block">Biomass</span>,
+            header: ({ column }) => <span className={cn(glass.microLabel, "text-foreground/40 py-4 text-center block italic font-black uppercase tracking-[0.3em]")}>BIOMASS_INDEX</span>,
             cell: ({ row }) => {
                 const hive = row.original;
                 const weight = hive.latest_weight || (hive as any).weight;
                 return (
-                    <div className="flex items-center gap-2 justify-center">
-                        <Scale className="w-3.5 h-3.5 text-slate-300" />
-                        <span className="font-black text-slate-900 dark:text-white tabular-nums italic">
-                            {weight ? `${weight.toFixed(1)}kg` : '---'}
-                        </span>
+                    <div className="flex flex-col items-center gap-2 group/cell">
+                        <div className="flex items-center gap-4">
+                            <Scale className="w-5 h-5 text-honey opacity-20 group-hover/cell:opacity-100 group-hover/cell:scale-125 transition-all duration-700" />
+                            <span className="text-3xl font-black italic tabular-nums text-foreground/80 group-hover/cell:text-honey transition-colors">
+                                {weight ? weight.toFixed(1) : '---'}<span className="text-sm opacity-20 ml-1 font-black uppercase align-baseline">kg</span>
+                            </span>
+                        </div>
                     </div>
                 )
             }
         },
         {
             accessorKey: 'latest_temp',
-            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400 text-center block">Internal Temp</span>,
+            header: ({ column }) => <span className={cn(glass.microLabel, "text-foreground/40 py-4 text-center block italic font-black uppercase tracking-[0.3em]")}>THERMAL_TRACE</span>,
             cell: ({ row }) => {
                 const hive = row.original;
                 const temp = hive.latest_temp || (hive as any).temp;
                 return (
-                    <div className="flex items-center gap-2 justify-center">
-                        <Thermometer className="w-3.5 h-3.5 text-slate-300" />
-                        <span className={cn("font-black tabular-nums italic", temp && temp > 36 ? 'text-red-500' : 'text-slate-900 dark:text-white')}>
-                            {temp ? `${temp.toFixed(1)}°C` : '---'}
-                        </span>
+                    <div className="flex flex-col items-center gap-2 group/cell">
+                        <div className="flex items-center gap-4">
+                            <Thermometer className={cn("w-5 h-5 transition-all duration-700 group-hover/cell:scale-125",
+                                temp && temp > 36 ? 'text-red-500' : 'text-honey opacity-20 group-hover/cell:opacity-100'
+                            )} />
+                            <span className={cn("text-3xl font-black italic tabular-nums text-foreground/80 transition-colors",
+                                temp && temp > 36 ? 'text-red-500' : 'group-hover/cell:text-honey'
+                            )}>
+                                {temp ? temp.toFixed(1) : '---'}<span className="text-sm opacity-20 ml-1 font-black uppercase align-baseline">°C</span>
+                            </span>
+                        </div>
                     </div>
                 )
             }
         },
         {
             id: 'battery',
-            header: ({ column }) => <span className="font-black uppercase text-[10px] tracking-widest text-slate-400 text-right block">Connectivity</span>,
+            header: ({ column }) => <span className={cn(glass.microLabel, "text-foreground/40 py-4 text-right block italic font-black uppercase tracking-[0.3em] pr-12")}>SIGNAL_UPLINK</span>,
             cell: ({ row }) => {
                 const battery = (row.original as any).battery;
+                const batVal = battery || 95;
                 return (
-                    <div className="flex items-center gap-2 justify-end">
-                        <Battery className={cn("w-3.5 h-3.5", battery && battery < 20 ? "text-red-500" : "text-emerald-500")} />
-                        <span className="text-[10px] font-black text-slate-400 tabular-nums uppercase">{battery ? `${battery.toFixed(0)}%` : '95%'}</span>
+                    <div className="flex items-center gap-8 justify-end pr-12 group/bat">
+                        <div className="flex flex-col items-end gap-3">
+                            <div className="flex items-center gap-4">
+                                <span className="text-[9px] font-black text-foreground/20 uppercase tracking-[0.4em] italic leading-none group-hover/bat:text-honey/60 transition-colors">PWR_LVL: </span>
+                                <span className="text-2xl font-black tabular-nums italic text-foreground tracking-tighter leading-none">{batVal}%</span>
+                            </div>
+                            <div className="w-24 h-2 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[1px] border border-white/5">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${batVal}%` }}
+                                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                                    className={cn("h-full rounded-full shadow-4xl relative overflow-hidden",
+                                        batVal < 20 ? "bg-red-500" : "bg-honey"
+                                    )}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                                </motion.div>
+                            </div>
+                        </div>
+                        <Battery className={cn("w-8 h-8 transition-all duration-1000",
+                            batVal < 20 ? "text-red-500 animate-pulse scale-125 shadow-[0_0_20px_rgba(239,68,68,0.5)]" :
+                                "text-honey opacity-20 group-hover/bat:opacity-100 group-hover/bat:scale-125 group-hover/bat:rotate-12"
+                        )} />
                     </div>
                 )
             }
@@ -127,88 +180,129 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
     });
 
     return (
-        <div className="space-y-6">
-            {/* Full component with search and table */}
-            <div className="flex items-center gap-4 bg-muted/50 backdrop-blur-md px-6 py-3 rounded-2xl border border-border shadow-inner">
-                <Search className="w-5 h-5 text-honey" />
-                <Input
-                    placeholder="Search master registry..."
-                    value={globalFilter ?? ''}
-                    onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="border-none bg-transparent h-10 focus-visible:ring-0 text-[11px] font-black uppercase tracking-widest text-foreground placeholder:text-muted-foreground/50"
-                />
-            </div>
+        <div className="space-y-12">
+            {/* ── High-Intensity Multi-plex Search ── */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={cn(glass.card, "p-4 px-12 shadow-4xl border-white/5 flex flex-col md:flex-row items-center gap-10 group bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[3.5rem]")}
+            >
+                <div className="flex-1 w-full relative group/search">
+                    <Search className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/search:opacity-100 transition-opacity duration-700" />
+                    <Input
+                        placeholder="QUERY_INDUSTRIAL_FLEET_REGISTRY..."
+                        value={globalFilter ?? ''}
+                        onChange={(event) => setGlobalFilter(event.target.value)}
+                        className={cn(glass.input, "border-none bg-transparent h-20 pl-24 focus-visible:ring-0 text-xl font-black uppercase tracking-[0.3em] italic placeholder:opacity-5 flex-1 shadow-none rounded-[2rem]")}
+                    />
+                </div>
+                <div className="flex items-center gap-6 pr-6">
+                    <div className={cn(glass.badge, "bg-honey/10 text-honey border-honey/20 px-8 py-3 shadow-3xl skew-x-[-12deg]")}>
+                        <div className="flex items-center gap-4 skew-x-[12deg]">
+                            <Activity className="w-5 h-5 animate-pulse" />
+                            <span className="font-black italic uppercase text-[11px] tracking-widest">Live_Telemetry_Link</span>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
 
-            <div className="rounded-[2.5rem] border border-border bg-white/80 backdrop-blur-md overflow-hidden shadow-xl shadow-black/5">
-                <table className="w-full text-sm text-left border-separate border-spacing-0">
-                    <thead className="bg-muted/30 border-b border-border">
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th key={header.id} className="px-10 py-8 first:rounded-tl-[2.5rem] last:rounded-tr-[2.5rem]">
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        {table.getRowModel().rows.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <tr
-                                    key={row.id}
-                                    className={cn(
-                                        "group hover:bg-honey/5 transition-colors",
-                                        onRowClick && "cursor-pointer"
-                                    )}
-                                    onClick={() => onRowClick && onRowClick(row.original)}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <td key={cell.id} className="px-10 py-8 align-middle">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
+            {/* ── Master Asset Table Matrix ── */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className={cn(glass.card, "p-0 overflow-hidden shadow-4xl border-white/5 relative bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem]")}
+            >
+                <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-honey/[0.04] rounded-full blur-[150px] pointer-events-none -mr-80 -mt-80" />
+
+                <div className="overflow-x-auto thin-scrollbar">
+                    <table className="w-full text-left border-separate border-spacing-0">
+                        <thead className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl">
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <th key={header.id} className="py-14 border-b border-white/5 first:pl-6 last:pr-6 align-middle">
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                        </th>
                                     ))}
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={columns.length} className="h-40 text-center text-muted-foreground font-black uppercase text-[10px] tracking-widest opacity-50 italic">
-                                    No registry entries found in current scope.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            ))}
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            <AnimatePresence mode="popLayout">
+                                {table.getRowModel().rows.length ? (
+                                    table.getRowModel().rows.map((row, i) => (
+                                        <motion.tr
+                                            key={row.id}
+                                            initial={{ opacity: 0, x: -30 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                            className={cn(
+                                                "group hover:bg-honey/[0.06] transition-all duration-700",
+                                                onRowClick && "cursor-pointer"
+                                            )}
+                                            onClick={() => onRowClick && onRowClick(row.original)}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <td key={cell.id} className="py-14 align-middle transition-all duration-700 first:pl-6 last:pr-6">
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </td>
+                                            ))}
+                                        </motion.tr>
+                                    ))
+                                ) : (
+                                    <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                                        <td colSpan={columns.length} className="h-[500px] text-center">
+                                            <div className="flex flex-col items-center justify-center space-y-12 group/null">
+                                                <div className="w-40 h-40 rounded-[4rem] bg-honey/5 border border-honey/20 flex items-center justify-center mb-6 group-hover/null:scale-110 group-hover/null:rotate-12 transition-all duration-1000 shadow-4xl">
+                                                    <SearchCode className="w-20 h-20 text-honey opacity-20 group-hover/null:opacity-100 transition-opacity" />
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <p className="text-4xl font-black italic text-foreground tracking-tighter uppercase leading-none">Null_Registry_Results</p>
+                                                    <p className="text-[14px] opacity-40 font-black tracking-widest uppercase italic italic">Revise query parameters or establish first node link</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </motion.tr>
+                                )}
+                            </AnimatePresence>
+                        </tbody>
+                    </table>
+                </div>
+            </motion.div>
 
-            {/* Pagination if needed */}
+            {/* ── Industrial Pagination Matrix ── */}
             {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-between px-6 pt-4">
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-6 py-3 bg-white/50 backdrop-blur-md rounded-full border border-border shadow-sm">
-                        Network Page {table.getState().pagination.pageIndex + 1} // {table.getPageCount()}
-                    </p>
-                    <div className="flex items-center gap-3">
-                        <Button
-                            variant="ghost"
-                            size="sm"
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-10">
+                    <div className={cn(glass.card, "bg-white/40 dark:bg-black/60 text-foreground border-white/5 py-4 px-12 h-18 shadow-4xl backdrop-blur-3xl rounded-[2.5rem] font-black tracking-[0.4em] italic text-[11px] uppercase flex items-center gap-6")}>
+                        <div className="w-2.5 h-2.5 rounded-full bg-honey animate-pulse" />
+                        Segment {table.getState().pagination.pageIndex + 1} <span className="opacity-20">/</span> {table.getPageCount()}
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <button
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
-                            className="h-12 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-muted-foreground hover:text-honey border border-border bg-white/50 backdrop-blur-md shadow-sm disabled:opacity-30 transition-all active:scale-95"
+                            className={cn(glass.btnSecondary, "h-18 px-12 font-black italic uppercase tracking-widest text-xs rounded-[2rem] disabled:opacity-10 disabled:cursor-not-allowed bg-white/40 dark:bg-black/60 shadow-4xl border-white/5 hover:bg-honey hover:text-black transition-all duration-700")}
                         >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
+                            <ChevronLeft className="w-6 h-6 mr-4" />
+                            Prev_Seg
+                        </button>
+                        <button
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
-                            className="h-12 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-muted-foreground hover:text-honey border border-border bg-white/50 backdrop-blur-md shadow-sm disabled:opacity-30 transition-all active:scale-95"
+                            className={cn(glass.btnPrimary, "h-18 px-12 bg-honey text-black font-black italic uppercase tracking-widest text-xs shadow-[0_30px_60px_-10px_rgba(251,191,36,0.3)] rounded-[2rem] disabled:opacity-10 disabled:cursor-not-allowed transition-all duration-700")}
                         >
-                            Next
-                        </Button>
+                            Next_Seg
+                            <ChevronRight className="w-6 h-6 ml-4" />
+                        </button>
                     </div>
                 </div>
             )}
+
+            <style>{`
+                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+                .animate-shimmer { animation: shimmer 2.5s infinite linear; }
+            `}</style>
         </div>
     );
 };
