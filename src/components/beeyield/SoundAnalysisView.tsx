@@ -1,23 +1,11 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import {
-    Mic2,
-    Upload,
-    RefreshCw,
-    Play,
-    Square,
-    CheckCircle2,
-    AlertCircle,
-    Activity,
-    Database,
-    ShieldCheck,
-    Cpu,
-    ArrowRight,
-    Terminal,
-    Hexagon,
-    Zap
+    Mic2, Upload, RefreshCw, Play, Square, CheckCircle2, AlertCircle, Activity, Database, ShieldCheck, Cpu, ArrowRight, Terminal, Hexagon, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { glass } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SoundAnalysisViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -54,118 +42,159 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
     };
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <div className={cn(glass.page, "p-8 -m-8 min-h-screen")}>
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
                 <div className="space-y-4">
-                    <h1 className="text-7xl font-black tracking-tighter uppercase leading-[0.8]">
-                        Acoustic <span className="text-[#10b981]">Audit</span>
+                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20')}>
+                        <Zap className="w-3.5 h-3.5" />
+                        <span className="uppercase tracking-[0.1em]">Frequency Variance & Anomaly Detection</span>
+                    </div>
+                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
+                        Acoustic <span className="text-honey">Audit</span>
                     </h1>
-                    <p className="text-[#064e3b]/40 font-black uppercase text-[10px] tracking-[0.2em] mt-4">
-                        Frequency variance and anomaly detection protocols.
+                    <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
+                        Spectral monitoring protocols
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="px-6 py-3 border-4 border-[#064e3b] bg-[#064e3b] text-white font-black text-[10px] uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(16,185,129,1)]">
+                    <div className={cn(glass.badge, "px-6 py-3 border-emerald-500/20 bg-emerald-500/10 text-emerald-500 shadow-lg shadow-emerald-500/5")}>
                         SPECTRUM: 100-800HZ
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Control Panel */}
-                <div className="lg:col-span-5 space-y-10">
-                    <div className="border-4 border-[#064e3b] p-10 bg-white space-y-8 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <div className="flex items-center gap-4 mb-4">
-                            <Terminal className="w-8 h-8 text-[#10b981]" />
-                            <h3 className="text-4xl font-black uppercase tracking-tighter">Audio Node</h3>
+                <div className="lg:col-span-5 space-y-8 flex flex-col">
+                    <div className={cn(glass.card, "p-8 flex flex-col gap-8")}>
+                        <div className="flex items-center gap-4 border-b border-border pb-6">
+                            <div className="w-12 h-12 rounded-[1.5rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-inner">
+                                <Terminal className="w-6 h-6 text-honey" />
+                            </div>
+                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Audio Node</h3>
                         </div>
 
-                        <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-[0.2em] leading-relaxed">
-                            CAPTURE ASSET ACOUSTICS FOR FREQUENCY ANALYSIS. MINIMUM 3.0S SAMPLE DURATION REQUIRED.
+                        <p className={cn(glass.microLabel, "text-muted-foreground leading-relaxed italic border-l-2 border-honey/50 pl-4")}>
+                            Capture asset acoustics for frequency analysis. Minimum 3.0s sample duration required.
                         </p>
 
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 mt-auto">
                             <button
                                 onClick={handleRecord}
                                 disabled={recording || analyzing}
                                 className={cn(
-                                    "h-20 w-full border-4 border-[#064e3b] font-black uppercase text-xs tracking-widest transition-none flex items-center justify-center gap-4 shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1",
-                                    recording ? "bg-[#064e3b] text-white" : "bg-white text-[#064e3b] hover:bg-[#facc15]/10"
+                                    glass.btnPrimary,
+                                    "w-full h-20 text-sm gap-4 transition-all duration-300",
+                                    recording ? "bg-destructive text-white border-destructive hover:bg-destructive shadow-destructive/20 scale-[0.98] ring-4 ring-destructive/20" : "hover:border-honey hover:shadow-xl hover:shadow-honey/10"
                                 )}
                             >
-                                {recording ? <Square className="fill-current text-[#facc15]" /> : <Mic2 className="w-6 h-6 text-[#10b981]" />}
+                                {recording ? <Square className="fill-current w-5 h-5 drop-shadow-md" /> : <Mic2 className="w-6 h-6 shrink-0" />}
                                 {recording ? "RECORDING..." : "REC_START"}
                             </button>
-                            <button className="h-14 w-full border-4 border-[#064e3b] bg-white text-[#064e3b] font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#facc15]/10 transition-none flex items-center justify-center gap-3">
-                                <Upload className="w-4 h-4" /> UPLOAD_DATA_STREAM
+                            <button className={cn(glass.btnSecondary, "h-14 w-full text-xs")}>
+                                <Upload className="w-4 h-4 ml-[-4px]" /> Upload Data Stream
                             </button>
                         </div>
                     </div>
 
                     {/* Progress Monitor */}
-                    {analyzing && (
-                        <div className="border-4 border-[#064e3b] p-10 bg-white space-y-6 shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">PROCESSING SIGNAL</span>
-                                <span className="text-2xl font-black text-[#064e3b]">{progress}%</span>
-                            </div>
-                            <div className="h-8 border-4 border-[#064e3b] bg-neutral-50/50 p-1">
-                                <div className="h-full bg-[#10b981] transition-none" style={{ width: `${progress}%` }} />
-                            </div>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {analyzing && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                                exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                                className={cn(glass.card, "p-8 overflow-hidden")}
+                            >
+                                <div className="flex justify-between items-end mb-4">
+                                    <span className={cn(glass.microLabel, "text-muted-foreground animate-pulse")}>Processing Signal...</span>
+                                    <span className={cn(glass.sectionTitle, "text-3xl tabular-nums leading-none text-honey")}>{progress}%</span>
+                                </div>
+                                <div className="h-4 w-full bg-muted/50 rounded-full overflow-hidden border border-border">
+                                    <motion.div
+                                        className="h-full bg-gradient-to-r from-honey to-amber-500 rounded-full"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${progress}%` }}
+                                        transition={{ duration: 0.2 }}
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Results Tray */}
-                    {result && !analyzing && (
-                        <div className={cn(
-                            "border-4 p-10 space-y-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]",
-                            result === 'Healthy' ? "border-[#064e3b] bg-emerald-50/30" : "border-red-500 bg-red-500/5"
-                        )}>
-                            <div className="flex items-center gap-4">
-                                {result === 'Healthy' ? <ShieldCheck className="w-8 h-8 text-[#10b981]" /> : <AlertCircle className="w-8 h-8 text-red-500" />}
-                                <h4 className="text-4xl font-black uppercase tracking-tighter">Status: {result}</h4>
-                            </div>
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/60 leading-relaxed tracking-[0.2em]">
-                                {result === 'Healthy' ? "ACOUSTIC SIGNATURE OPTIMAL. NO ANOMALIES DETECTED IN SIGNAL." : "FREQUENCY VARIANCE DETECTED. IMMEDIATE FIELD AUDIT RECOMMENDED."}
-                            </p>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {result && !analyzing && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={cn(
+                                    glass.card, "p-8 flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden",
+                                    result === 'Healthy' ? "border-emerald-500/30 bg-emerald-500/5 shadow-emerald-500/10" : "border-red-500/30 bg-red-500/5 shadow-red-500/10"
+                                )}
+                            >
+                                <div className={cn("absolute inset-0 opacity-10 blur-3xl", result === 'Healthy' ? "bg-emerald-500" : "bg-red-500")} />
+                                <div className="relative z-10 flex items-center gap-5">
+                                    <div className={cn(
+                                        "w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-lg",
+                                        result === 'Healthy' ? "bg-emerald-500/20 text-emerald-500" : "bg-red-500/20 text-red-500"
+                                    )}>
+                                        {result === 'Healthy' ? <ShieldCheck className="w-8 h-8" /> : <AlertCircle className="w-8 h-8" />}
+                                    </div>
+                                    <h4 className={cn(glass.sectionTitle, "text-4xl normal-case tracking-tight", result === 'Healthy' ? "text-emerald-500" : "text-red-500")}>
+                                        {result}
+                                    </h4>
+                                </div>
+                                <p className={cn(glass.microLabel, "relative z-10 normal-case italic font-semibold text-muted-foreground/80 leading-relaxed border-t border-border/50 pt-6 mt-2")}>
+                                    {result === 'Healthy' ? "Acoustic signature optimal. No anomalies detected in signal." : "Frequency variance detected. Immediate field audit recommended."}
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* Waveform Visualization */}
-                <div className="lg:col-span-7 border-4 border-[#064e3b] bg-white p-10 flex flex-col shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                    <div className="flex items-center justify-between mb-10">
+                <div className={cn(glass.card, "p-0 overflow-hidden lg:col-span-7 flex flex-col group")}>
+                    <div className="flex items-center justify-between p-8 border-b border-border bg-white/30 dark:bg-black/20">
                         <div className="flex items-center gap-4">
-                            <Activity className="w-8 h-8 text-[#064e3b]" />
-                            <h3 className="text-4xl font-black uppercase tracking-tighter">Spectral Wave</h3>
+                            <Activity className="w-6 h-6 text-honey" />
+                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Spectral Wave</h3>
                         </div>
-                        <div className="px-4 py-2 bg-[#064e3b] text-white border-2 border-[#10b981] text-[10px] font-black uppercase tracking-[0.2em]">LIVE_FEED</div>
+                        <div className={cn(glass.badge, "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-emerald-500/10")}>LIVE_FEED</div>
                     </div>
 
-                    <div className="flex-1 flex items-center justify-center gap-2 h-80 px-10">
-                        {[...Array(40)].map((_, i) => (
-                            <div
-                                key={i}
-                                className={cn(
-                                    "w-3 border-2 border-[#064e3b] transition-none",
-                                    recording ? "bg-[#10b981]" : (analyzing ? "bg-[#facc15]" : "bg-neutral-100")
-                                )}
-                                style={{
-                                    height: `${Math.max(10, (recording || analyzing) ? Math.random() * 200 : 20 + Math.sin(i * 0.5) * 40)}px`
-                                }}
-                            />
-                        ))}
+                    <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-8 relative">
+                        {/* Background Grid */}
+                        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #888 1px, transparent 1px), linear-gradient(to bottom, #888 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+                        <div className="flex items-center justify-center gap-2 h-64 w-full max-w-2xl relative z-10">
+                            {[...Array(40)].map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    className={cn(
+                                        "w-3 rounded-t-full transition-colors duration-500 border-x border-t border-black/5 dark:border-white/5",
+                                        recording ? "bg-destructive/80" : (analyzing ? "bg-honey/80" : "bg-muted-foreground/20")
+                                    )}
+                                    animate={{
+                                        height: `${Math.max(10, (recording || analyzing) ? Math.random() * 200 : 20 + Math.sin(i * 0.5) * 40)}px`
+                                    }}
+                                    transition={{
+                                        type: "spring", stiffness: 300, damping: 20, mass: 0.5
+                                    }}
+                                />
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="mt-10 border-t-4 border-[#064e3b]/10 pt-8 grid grid-cols-2 gap-10">
-                        <div className="space-y-2">
-                            <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">Amplitude</p>
-                            <p className="text-4xl font-black text-[#064e3b] tracking-tighter">-14.2 DB</p>
+                    <div className="p-8 border-t border-border bg-muted/20 grid grid-cols-2 gap-8 divide-x divide-border">
+                        <div className="space-y-3">
+                            <p className={cn(glass.microLabel, "text-muted-foreground")}>Amplitude</p>
+                            <p className={cn(glass.sectionTitle, "text-4xl tabular-nums tracking-tight")}>-14.2 DB</p>
                         </div>
-                        <div className="space-y-2 text-right">
-                            <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">Confidence</p>
-                            <p className="text-4xl font-black text-[#10b981] tracking-tighter">94.8%</p>
+                        <div className="space-y-3 pl-8 text-right">
+                            <p className={cn(glass.microLabel, "text-muted-foreground")}>Confidence</p>
+                            <p className={cn(glass.sectionTitle, "text-4xl tabular-nums tracking-tight text-emerald-500")}>94.8%</p>
                         </div>
                     </div>
                 </div>

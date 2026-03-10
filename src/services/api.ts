@@ -121,7 +121,7 @@ export function getBaseUrl(endpoint: string): string {
         "/forms/",
         "/pollination/",
         "/stats/",
-        "/labels/",
+        "/labels", "/labels/", "labels",
         "/image/",
         "/acoustic/",
         "/iot/", "iot/",

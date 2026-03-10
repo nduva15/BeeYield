@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,10 +17,13 @@ import {
     ArrowUpRight,
     Zap,
     Scale,
-    Activity
+    Activity,
+    Info,
+    ArrowRight
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
 
 interface PalletData {
     id: string;
@@ -44,179 +47,251 @@ const ContractVerificationModule: React.FC = () => {
     const [search, setSearch] = React.useState('');
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header / Intro */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-10">
+        <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={cn(glass.page, "p-8 -m-8 space-y-12 pb-20 min-h-screen")}
+        >
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-10">
                 <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
-                        <FileCheck className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Contract Verification Engine</span>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                        <FileCheck className="w-4 h-4 mr-2" />
+                        Contract Verification Engine v3.1
                     </div>
-                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
-                        Grade <span className="text-[#10b981]">Certification</span>
+                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
+                        Grade <span className="text-honey">Certification</span>
                     </h1>
-                    <p className="text-[#064e3b]/40 font-black text-sm uppercase tracking-widest mt-2 px-1">
-                        Acoustic Brood Density + Morning Weight Matrix = Proven Pollination ROI
+                    <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
+                        Acoustic Brood Density · Morning Weight Matrix · Proven Pollination ROI
                     </p>
                 </div>
 
                 <div className="flex gap-4">
-                    <Button className="h-16 px-8 rounded-none border-4 border-[#064e3b] bg-[#facc15] text-[#064e3b] font-black uppercase tracking-widest text-xs shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none translate-y-[-2px] hover:translate-y-0 transition-all">
-                        <Printer className="w-4 h-4 mr-2" />
+                    <button className={cn(glass.btnPrimary, "h-14 px-10 font-bold shadow-lg shadow-honey/20")}>
+                        <Printer className="w-4 h-4 mr-3" />
                         Export Master Report
-                    </Button>
+                    </button>
                 </div>
             </div>
 
             {/* Matrix Definitions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="border-4 border-[#064e3b] p-8 bg-neutral-50/50">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Activity className="w-6 h-6 text-[#064e3b]" />
-                        <h3 className="text-xl font-black uppercase tracking-tighter">Acoustic Brood Index</h3>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className={cn(glass.card, "p-8 space-y-4 shadow-xl hover:shadow-2xl transition-all border-border/50")}
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                            <Activity className="w-6 h-6 text-honey" />
+                        </div>
+                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Acoustic Brood Index</h3>
                     </div>
-                    <p className="text-[10px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed text-foreground border-t border-border/50 pt-4">
                         Our system analyzes frequency response to determine frames of bees and brood presence. Grade A requires {'>'}85% density.
                     </p>
-                </div>
-                <div className="border-4 border-[#064e3b] p-8 bg-neutral-50/50">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Scale className="w-6 h-6 text-[#10b981]" />
-                        <h3 className="text-xl font-black uppercase tracking-tighter">Weight Threshold</h3>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className={cn(glass.card, "p-8 space-y-4 shadow-xl hover:shadow-2xl transition-all border-border/50")}
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                            <Scale className="w-6 h-6 text-emerald-500" />
+                        </div>
+                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Weight Threshold</h3>
                     </div>
-                    <p className="text-[10px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed text-foreground border-t border-border/50 pt-4">
                         Morning baseline mass validates cluster strength. Grade A requires {'>'}42kg per hive on the pallet gateway.
                     </p>
-                </div>
-                <div className="border-4 border-[#064e3b] p-8 bg-[#064e3b] text-white">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Award className="w-6 h-6 text-[#facc15]" />
-                        <h3 className="text-xl font-black uppercase tracking-tighter text-[#facc15]">Pricing Lift</h3>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className={cn(glass.card, "p-8 space-y-4 shadow-xl bg-honey/10 border-honey/20 relative overflow-hidden group")}
+                >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-honey/5 rounded-full blur-2xl pointer-events-none group-hover:bg-honey/10 transition-colors" />
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-honey shadow-sm">
+                            <Award className="w-6 h-6 text-honey" />
+                        </div>
+                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case text-honey")}>Pricing Lift</h3>
                     </div>
-                    <p className="text-[10px] font-bold text-white/60 leading-relaxed uppercase">
+                    <p className="text-sm italic font-bold opacity-80 leading-relaxed text-honey/80 border-t border-honey/20 pt-4 relative z-10">
                         Certified Grade A pallets justify a 25% premium on per-hive payments due to proven pollination capacity.
                     </p>
-                </div>
+                </motion.div>
             </div>
 
             {/* Search & Results Table */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                <CardHeader className="p-10 border-b-4 border-[#064e3b]/5 bg-neutral-50/30">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div>
-                            <CardTitle className="text-3xl font-black text-[#064e3b] uppercase tracking-tighter italic">Verified Asset Ledger</CardTitle>
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest px-1">Mathematically certified pollination infrastructure</p>
-                        </div>
-                        <div className="relative w-full md:w-96">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
-                            <Input
-                                placeholder="Filter by Pallet ID or Location..."
-                                className="h-12 pl-12 rounded-none border-4 border-[#064e3b] bg-white text-xs font-black uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5"
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                            />
-                        </div>
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className={cn(glass.card, "p-0 overflow-hidden shadow-2xl border-border/50 relative")}
+            >
+                <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+
+                <div className="p-10 border-b border-border bg-white/40 dark:bg-black/20 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 relative z-10">
+                    <div>
+                        <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Verified Asset Ledger</h3>
+                        <p className={cn(glass.microLabel, "opacity-60 font-bold mt-2")}>Mathematically certified pollination infrastructure</p>
                     </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b-4 border-[#064e3b]/5">
-                                    <th className="p-6 text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest">Asset Identifier</th>
-                                    <th className="p-6 text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest">Location</th>
-                                    <th className="p-6 text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest text-center">Acoustic Score</th>
-                                    <th className="p-6 text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest text-center">Mass (Avg)</th>
-                                    <th className="p-6 text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest text-center">Grade</th>
-                                    <th className="p-6 text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest text-right">Actions</th>
+                    <div className="relative w-full max-w-md">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-honey" />
+                        <Input
+                            placeholder="Filter by Pallet ID or Location..."
+                            className={cn(glass.input, "h-14 pl-12 shadow-sm font-semibold")}
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto relative z-10">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-border/50">
+                                <th className={cn(glass.microLabel, "p-8 opacity-40 font-black")}>Asset Identifier</th>
+                                <th className={cn(glass.microLabel, "p-8 opacity-40 font-black")}>Location</th>
+                                <th className={cn(glass.microLabel, "p-8 opacity-40 font-black text-center")}>Acoustic Score</th>
+                                <th className={cn(glass.microLabel, "p-8 opacity-40 font-black text-center")}>Mass (Avg)</th>
+                                <th className={cn(glass.microLabel, "p-8 opacity-40 font-black text-center")}>Grade</th>
+                                <th className={cn(glass.microLabel, "p-8 opacity-40 font-black text-right")}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/20">
+                            {pallets.filter(p => p.id.includes(search) || p.location.includes(search)).map((p, idx) => (
+                                <tr key={p.id} className="group hover:bg-white/40 dark:hover:bg-black/20 transition-all">
+                                    <td className="p-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-white dark:bg-black/40 border border-border flex items-center justify-center font-bold text-honey shadow-sm group-hover:scale-110 transition-transform">
+                                                #
+                                            </div>
+                                            <span className="text-base font-bold text-foreground opacity-80 group-hover:opacity-100 transition-opacity">{p.id}</span>
+                                        </div>
+                                    </td>
+                                    <td className="p-8">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-honey/40" />
+                                            <span className="text-sm font-semibold text-foreground/70 group-hover:text-foreground transition-colors">{p.location}</span>
+                                        </div>
+                                    </td>
+                                    <td className="p-8">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <span className="text-base font-bold text-foreground">{p.acousticDensity}%</span>
+                                            <div className="w-24 h-2 rounded-full bg-border/30 overflow-hidden shadow-inner">
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${p.acousticDensity}%` }}
+                                                    transition={{ duration: 1.5, delay: idx * 0.1 }}
+                                                    className="h-full bg-honey"
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-8 text-center text-base font-bold text-foreground tabular-nums">{p.morningWeight} kg</td>
+                                    <td className="p-8 text-center">
+                                        <div className={cn(
+                                            glass.badge,
+                                            "px-4 py-2 border-transparent font-bold",
+                                            p.grade === 'A' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                        )}>
+                                            {p.grade === 'A' ? <Award className="w-4 h-4 mr-2" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
+                                            Grade {p.grade}
+                                        </div>
+                                    </td>
+                                    <td className="p-8 text-right">
+                                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button className={cn(glass.btnSecondary, "h-12 w-12 p-0 flex items-center justify-center shadow-md")}><Share2 className="w-4 h-4" /></button>
+                                            <button className={cn(glass.btnPrimary, "h-12 px-6 font-bold shadow-md")}>Verify Audit</button>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y-2 divide-[#064e3b]/5">
-                                {pallets.filter(p => p.id.includes(search) || p.location.includes(search)).map((p) => (
-                                    <tr key={p.id} className="group hover:bg-[#10b981]/[0.02]">
-                                        <td className="p-6">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-none border-2 border-[#064e3b] bg-white flex items-center justify-center font-black text-[10px]">
-                                                    #
-                                                </div>
-                                                <span className="text-sm font-black text-[#064e3b]">{p.id}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-6 text-sm font-bold text-[#064e3b]/60 uppercase">{p.location}</td>
-                                        <td className="p-6 text-center">
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-sm font-black text-[#064e3b]">{p.acousticDensity}%</span>
-                                                <div className="w-16 h-1 mt-1 bg-neutral-100 border border-[#064e3b]/10">
-                                                    <div className="h-full bg-[#064e3b]" style={{ width: `${p.acousticDensity}%` }} />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="p-6 text-center text-sm font-black text-[#064e3b] tabular-nums">{p.morningWeight} kg</td>
-                                        <td className="p-6 text-center">
-                                            <div className={cn(
-                                                "inline-flex items-center gap-2 px-3 py-1 border-2 font-black text-[10px] uppercase",
-                                                p.grade === 'A' ? "border-[#10b981] bg-[#10b981]/10 text-[#064e3b]" : "border-[#facc15] bg-[#facc15]/10 text-[#064e3b]"
-                                            )}>
-                                                {p.grade === 'A' ? <Award className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                                                Grade {p.grade}
-                                            </div>
-                                        </td>
-                                        <td className="p-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" className="h-10 w-10 p-0 rounded-none border-2 border-transparent hover:border-[#064e3b] hover:bg-white transition-none">
-                                                    <Share2 className="w-4 h-4 text-[#064e3b]" />
-                                                </Button>
-                                                <Button className="h-10 px-4 rounded-none bg-[#064e3b] text-white font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-none">
-                                                    Verify
-                                                </Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </CardContent>
-            </Card>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </motion.div>
 
             {/* Certification Details */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-none border-4 border-[#10b981] bg-white shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
-                    <CardHeader className="p-8 pb-4">
-                        <div className="flex items-center gap-3">
-                            <ShieldCheck className="w-6 h-6 text-[#10b981]" />
-                            <CardTitle className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Cryptographic Evidence</CardTitle>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    <Card className={cn(glass.card, "p-10 space-y-6 shadow-xl border-emerald-500/20")}>
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-sm">
+                                <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                            </div>
+                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Cryptographic Evidence</h3>
                         </div>
-                    </CardHeader>
-                    <CardContent className="p-8 pt-2">
-                        <p className="text-[10px] font-bold text-[#064e3b]/60 uppercase leading-relaxed mb-6">
+                        <p className="text-sm italic font-medium opacity-80 leading-relaxed border-t border-border/50 pt-6">
                             Every Grade A certification is backed by a salt-hashed biometric signature of the acoustic response and load-cell matrix.
                         </p>
-                        <div className="p-4 bg-neutral-50 border-2 border-[#064e3b]/5 font-mono text-[9px] break-all text-[#064e3b]/40">
+                        <div className="p-5 bg-white/40 dark:bg-black/20 rounded-2xl border border-border/50 font-mono text-[10px] break-all opacity-60 shadow-inner">
                             0x7B2f9281A12C5D6E8...CERTIFIER_SIG_VERIFIED_BY_BEE_YIELD_CORE
                         </div>
-                        <div className="mt-6 flex items-center gap-4">
-                            <Badge className="rounded-none bg-[#10b981] text-white">F1 Score: 0.982</Badge>
-                            <Badge className="rounded-none bg-[#064e3b] text-white">Model: YOLOv11n-HHI</Badge>
+                        <div className="flex items-center gap-4 pt-2">
+                            <Badge className="rounded-xl bg-emerald-500 dark:bg-emerald-600 text-white border-transparent px-4 py-1 font-bold shadow-md">F1 Score: 0.982</Badge>
+                            <Badge className="rounded-xl bg-indigo-500 dark:bg-indigo-600 text-white border-transparent px-4 py-1 font-bold shadow-md">Model: YOLOv11n-HHI</Badge>
                         </div>
-                    </CardContent>
-                </Card>
+                    </Card>
+                </motion.div>
 
-                <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[8px_8px_0px_0px_rgba(250,204,21,1)]">
-                    <CardContent className="p-8 flex items-center gap-8 h-full">
-                        <div className="w-24 h-24 border-4 border-[#facc15] bg-white flex items-center justify-center p-4">
-                            <Award className="w-full h-full text-[#facc15]" />
+                <motion.div
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="h-full"
+                >
+                    <Card className={cn(glass.card, "p-0 h-full shadow-xl bg-honey/10 border-honey/20 relative overflow-hidden group")}>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-honey/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-honey/20 transition-colors" />
+                        <div className="p-10 flex items-center gap-10 h-full relative z-10">
+                            <div className="w-28 h-28 rounded-[2.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center p-6 border border-honey shadow-xl group-hover:scale-110 transition-transform duration-500">
+                                <Award className="w-full h-full text-honey" />
+                            </div>
+                            <div>
+                                <h3 className={cn(glass.sectionTitle, "text-3xl normal-case text-honey leading-tight")}>Pollination <br />ROI Lift</h3>
+                                <p className="text-sm font-bold opacity-80 leading-snug mt-4 italic max-w-sm">
+                                    Based on current market rates, Grade A certified pallets represent a $42.50 per-hive increase in seasonal contract value.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="text-3xl font-black text-[#facc15] uppercase tracking-tighter">Pollination ROI Lift</h3>
-                            <p className="text-sm font-bold text-white/60 uppercase leading-snug mt-2">
-                                Based on current market rates for almond pollination, Grade A certified pallets represent a $42.50 per-hive increase in seasonal contract value.
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+                    </Card>
+                </motion.div>
             </div>
-        </div>
+
+            {/* AI Summary Banner */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+            >
+                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-honey" />
+                </div>
+                <div className="relative z-10 text-center md:text-left">
+                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Verification Logic Summary</h5>
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
+                        Our recursive verification module synchronizes acoustic density and mass thresholding to certify pollination quality.
+                        Grade A certification mandates absolute biometric alignment, unlocking premium contract rates and ensuring verifiable
+                        biological performance for orchard stakeholders.
+                    </p>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 };
 

@@ -1,10 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { FileText, Download, Activity, DollarSign, BarChart, Loader2, Database, Terminal, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
 import BEEYIELD_LOGO from '@/assets/Logo.png';
+import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
+import { motion } from 'framer-motion';
 
 interface GeneratedReport {
     id: string;
@@ -78,7 +79,7 @@ const MetersReports: React.FC = () => {
             };
             setGeneratedReports(prev => [newReport, ...prev]);
             setLoading(null);
-            toast.success(`Export: ${reportName}`);
+            toast.success(`Export Generated: ${reportName}`);
         }, 1200);
     };
 
@@ -89,33 +90,35 @@ const MetersReports: React.FC = () => {
             const doc = new jsPDF();
             const data = reportData || generateReportData(reportName);
 
-            // Branding/Brutalist Style
-            doc.setFillColor(6, 78, 59); // \#064e3b
+            // Sleek Dark Theme Colors instead of brutalist Green
+            doc.setFillColor(9, 9, 11);
             doc.rect(0, 0, 210, 40, 'F');
 
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(24);
             doc.text("BEEYIELD PROFESSIONAL", 20, 25);
 
-            doc.setTextColor(250, 204, 21); // \#facc15
+            doc.setTextColor(245, 158, 11); // Amber
             doc.setFontSize(10);
             doc.text("OPERATIONAL ARCHIVE PROTOCOL v4.0", 20, 32);
 
             // Report Header
-            doc.setTextColor(6, 78, 59);
+            doc.setTextColor(9, 9, 11);
             doc.setFontSize(18);
             doc.text(data.title.toUpperCase(), 20, 60);
 
             doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
             doc.text(`EXTRACT_DATE: ${data.period}`, 20, 70);
             doc.text("SECURITY_LEVEL: LEVEL_4_ENCRYPTED", 20, 75);
 
             // Content Section
-            doc.setLineWidth(1);
-            doc.setDrawColor(6, 78, 59);
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(200, 200, 200);
             doc.line(20, 80, 190, 80);
 
             let y = 95;
+            doc.setTextColor(9, 9, 11);
 
             if (reportName === 'Usage Audit') {
                 doc.setFontSize(12);
@@ -158,13 +161,15 @@ const MetersReports: React.FC = () => {
                 });
                 y += 10;
                 doc.setFontSize(14);
+                doc.setTextColor(16, 185, 129); // Emerald
                 doc.text(`PROJECTED_CORE_MARGIN: ${data.margin}`, 20, y);
+                doc.setTextColor(9, 9, 11);
             }
 
             // Footer
             doc.setFontSize(8);
             doc.setTextColor(150, 150, 150);
-            doc.text("This document is a professional extract of the BeeYield neural network. All dates are in EAT (Nairobi).", 20, 280);
+            doc.text("This document is a professional extract of the BeeYield neural network.", 20, 280);
             doc.text("Verification hash: " + btoa(reportName + data.period).substring(0, 16), 20, 285);
 
             doc.save(`${reportName.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`);
@@ -178,79 +183,107 @@ const MetersReports: React.FC = () => {
     };
 
     return (
-        <div className="space-y-12 bg-white text-[#064e3b] p-8 min-h-screen antialiased">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-8 border-[#064e3b] pb-10">
-                <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
-                        <Database className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Operational Archive Hub</span>
-                    </div>
-                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Export <span className="text-[#10b981]">Desk</span></h1>
-                    <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
-                        Encapsulated registry download and audit station.
-                    </p>
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
+            <div className="space-y-4">
+                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <Database className="w-4 h-4 mr-2" />
+                    Operational Archive Hub
                 </div>
+                <h1 className={cn(glass.sectionTitle, 'text-6xl')}>Export <span className="text-honey">Desk</span></h1>
+                <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70 mt-2")}>
+                    Encapsulated registry download and audit station.
+                </p>
             </div>
 
             {/* Selector Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-4 border-[#064e3b]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                    { id: 'Usage Audit', icon: FileText, desc: 'Signal & usage metrics.' },
-                    { id: 'Fault Log', icon: BarChart, desc: 'Deviations and signals.' },
-                    { id: 'Cost Analysis', icon: DollarSign, desc: 'Operational margin.' }
+                    { id: 'Usage Audit', icon: FileText, desc: 'Signal & usage metrics.', color: 'text-blue-500' },
+                    { id: 'Fault Log', icon: BarChart, desc: 'Deviations and signals.', color: 'text-emerald-500' },
+                    { id: 'Cost Analysis', icon: DollarSign, desc: 'Operational margin.', color: 'text-amber-500' }
                 ].map((item, i) => (
-                    <div key={i} className="p-8 border-[#064e3b] border-b-4 md:border-b-0 md:border-r-4 last:border-r-0 hover:bg-[#facc15]/10 transition-all flex flex-col">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        key={i}
+                        className={cn(glass.card, "p-8 flex flex-col group hover:shadow-xl hover:border-border")}
+                    >
                         <div className="flex items-center gap-4 mb-6">
-                            <item.icon className="w-6 h-6 text-[#10b981]" />
-                            <h3 className="font-black text-xl uppercase tracking-tighter">{item.id}</h3>
+                            <div className="w-12 h-12 rounded-2xl bg-white/40 dark:bg-black/20 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                <item.icon className={cn("w-6 h-6", item.color)} />
+                            </div>
+                            <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>{item.id}</h3>
                         </div>
-                        <p className="text-[10px] font-black uppercase text-[#064e3b]/50 mb-10 flex-1">{item.desc}</p>
+                        <p className={cn(glass.microLabel, "normal-case opacity-60 mb-8 flex-1 italic")}>{item.desc}</p>
                         <button
                             onClick={() => handleGenerate(item.id)}
                             disabled={!!loading}
-                            className="h-14 border-2 border-[#064e3b] bg-[#10b981] text-white font-black uppercase text-xs tracking-widest hover:bg-black transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                            className={cn(glass.btnSecondary, "w-full justify-center group-hover:bg-foreground group-hover:text-background transition-all duration-300")}
                         >
-                            {loading === item.id ? 'Running...' : 'Export PDF'}
+                            {loading === item.id ? (
+                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Compiling PDF...</>
+                            ) : (
+                                "Export PDF Archive"
+                            )}
                         </button>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
 
             {/* History Registry */}
-            <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                    <ShieldCheck className="w-8 h-8 text-[#10b981]" />
-                    <h3 className="text-3xl font-black uppercase tracking-tighter text-[#064e3b]">Audit History <span className="text-[#10b981]">Registry</span></h3>
+            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
+                <div className="p-8 border-b border-border bg-white/40 dark:bg-black/20 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                        <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Audit History <span className="text-honey">Registry</span></h3>
                 </div>
-                <div className="border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                    <div className="bg-[#064e3b] text-white p-6 grid grid-cols-4 text-[10px] font-black uppercase tracking-[0.2em] border-b-4 border-[#10b981]">
-                        <span>REPORT_IDENTIFIER</span>
-                        <span>ARCHIVE_TIMESTAMP</span>
-                        <span>FORMAT_PROTOCOL</span>
-                        <span className="text-right">RETRIEVAL_ACTION</span>
-                    </div>
-                    <div className="divide-y-4 divide-neutral-50">
-                        {generatedReports.map((report) => (
-                            <div key={report.id} className="p-6 grid grid-cols-4 items-center hover:bg-[#facc15]/5 transition-none group">
-                                <span className="text-sm font-black uppercase text-[#064e3b] tracking-tighter">{report.name}</span>
-                                <span className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest">{report.date}</span>
-                                <div className="flex">
-                                    <span className="px-2 py-0.5 border-2 border-[#064e3b] text-[8px] font-black uppercase text-[#064e3b] bg-white group-hover:bg-[#064e3b] group-hover:text-white transition-none">{report.type}</span>
-                                </div>
-                                <div className="text-right">
-                                    <button
-                                        onClick={() => handleDownload(report.name, report.data)}
-                                        className="h-10 px-6 border-2 border-[#064e3b] bg-white text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
-                                    >
-                                        PULL ARCHIVE
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-border/50 bg-muted/20">
+                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60")}>Report Identifier</th>
+                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60")}>Archive Timestamp</th>
+                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60")}>Format Protocol</th>
+                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60 text-right")}>Retrieval Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/30">
+                            {generatedReports.map((report) => (
+                                <tr key={report.id} className="hover:bg-muted/10 transition-colors group">
+                                    <td className="p-6">
+                                        <span className={cn(glass.microLabel, "normal-case font-bold tracking-wider")}>{report.name}</span>
+                                    </td>
+                                    <td className="p-6">
+                                        <span className={cn(glass.microLabel, "opacity-60")}>{report.date}</span>
+                                    </td>
+                                    <td className="p-6">
+                                        <span className={cn(glass.badge, "bg-white/50 dark:bg-black/30 border-border group-hover:border-foreground/30")}>
+                                            {report.type}
+                                        </span>
+                                    </td>
+                                    <td className="p-6 text-right">
+                                        <button
+                                            onClick={() => handleDownload(report.name, report.data)}
+                                            disabled={downloading === report.name}
+                                            className={cn(glass.btnPrimary, "h-10 px-6 text-xs whitespace-nowrap inline-flex items-center gap-2")}
+                                        >
+                                            {downloading === report.name ? (
+                                                <><Loader2 className="w-3 h-3 animate-spin" /> Extracting...</>
+                                            ) : (
+                                                <><Download className="w-3 h-3" /> Pull Archive</>
+                                            )}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

@@ -37,6 +37,8 @@ import beeyieldService, { IoTDevice, SensorReading } from '@/services/beeyieldSe
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
+import { glass } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle } from 'react-leaflet';
 import L from 'leaflet';
@@ -271,38 +273,39 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     ];
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
-            {/* Professional Header - Tactical Registry style */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-8">
+        <div className={cn(glass.page, "p-8 -m-8 min-h-screen")}>
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
                 <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Pollination
-                        </h1>
-                        <div className="px-3 py-1 bg-[#facc15] border-2 border-[#064e3b] text-[10px] font-black uppercase">
-                            v2.4
-                        </div>
+                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20')}>
+                        <Target className="w-3.5 h-3.5" />
+                        <span className="uppercase tracking-[0.1em]">Precision Deployment</span>
                     </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] mt-4">
-                        Professional Farm Mapping
+                    <div className="flex items-center gap-4">
+                        <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
+                            Precision <span className="text-honey">Pollination</span>
+                        </h1>
+                    </div>
+                    <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
+                        Professional Farm Mapping & Execution
                     </p>
                 </div>
 
                 {!activeSubPageOverride && (
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className={cn(glass.filterBar, "p-1.5 bg-muted/40 shadow-inner overflow-hidden mb-2")}>
                         {subPageOptions.map(opt => (
                             <button
                                 key={opt.id}
                                 onClick={() => setActiveSubPage(opt.id as SubPage)}
                                 className={cn(
-                                    "flex items-center gap-3 px-6 py-3 border-4 font-black uppercase text-xs tracking-widest transition-none",
+                                    "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300",
                                     activeSubPage === opt.id
-                                        ? "bg-[#064e3b] text-white border-[#064e3b] shadow-[0px_4px_0px_0px_#10b981]"
-                                        : "bg-white text-[#064e3b] border-[#064e3b] hover:bg-[#facc15]/10"
+                                        ? "bg-white dark:bg-black text-foreground shadow-sm scale-100"
+                                        : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 scale-95 hover:scale-100"
                                 )}
                             >
                                 <opt.icon className="w-4 h-4" />
-                                {opt.label}
+                                <span className="hidden sm:inline">{opt.label}</span>
                             </button>
                         ))}
                     </div>
@@ -310,495 +313,585 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             </div>
 
             {/* Sub-Page Content Area */}
-            {activeSubPage === 'home' && (
-                <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        <div className="lg:col-span-2 border-4 border-[#064e3b] p-10 bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] flex flex-col justify-between">
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-3 h-3 bg-[#10b981] animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">System Status: Active</span>
-                                </div>
-                                <h2 className="text-7xl font-black text-[#064e3b] tracking-tighter uppercase leading-[0.8]">
-                                    Farm <br /> <span className="text-[#10b981]">Overview</span>
-                                </h2>
-                                <p className="max-w-md text-sm font-bold text-[#064e3b] leading-relaxed">
-                                    See your hives, flowering status, and farm data in one place. Monitor your fleet across the yard in real-time.
-                                </p>
-                            </div>
-                            <div className="pt-10 flex items-center gap-10 border-t-2 border-[#064e3b]/10">
-                                <div>
-                                    <p className="text-[10px] font-black text-[#064e3b]/30 uppercase mb-2">Active Sensors</p>
-                                    <p className="text-4xl font-black">{devices.length}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black text-[#064e3b]/30 uppercase mb-2">Active Hives</p>
-                                    <p className="text-4xl font-black text-[#10b981]">98%</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div className="border-4 border-[#064e3b] p-6 bg-[#facc15] shadow-[6px_6px_0px_0px_#064e3b]">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <Zap className="w-5 h-5 text-[#064e3b]" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">Flower Coverage</span>
-                                </div>
-                                <p className="text-5xl font-black text-[#064e3b]">72%</p>
-                                <p className="text-[10px] font-black uppercase text-[#064e3b]/60 mt-2">Variety: Nonpareil Almond</p>
-                            </div>
-                            <div className="border-4 border-[#064e3b] p-6 bg-white shadow-[6px_6px_0px_0px_#064e3b]">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <Activity className="w-5 h-5 text-[#10b981]" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">Activity Index</span>
-                                </div>
-                                <p className="text-5xl font-black text-[#10b981]">8.4</p>
-                                <p className="text-[10px] font-black uppercase text-[#064e3b]/60 mt-2">High Intensity Detected</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { id: 'bloom-tracking', label: 'Status', icon: Zap, desc: 'Field Analysis', color: 'hover:bg-[#10b981]/5', external: true },
-                            { id: 'grid', label: 'Map Grid', icon: Layers, desc: 'Sensor Map', color: 'hover:bg-[#facc15]/10', external: false },
-                            { id: 'calcs', label: 'Hive Calculator', icon: Calculator, desc: 'Bee Calculator', color: 'hover:bg-[#064e3b]/5', external: false },
-                            { id: 'map', label: 'Bee Flight Map', icon: Navigation, desc: 'Flight Paths', color: 'hover:bg-[#10b981]/5', external: false },
-                        ].map(module => (
-                            <button
-                                key={module.id}
-                                onClick={() => module.external ? onTabChange(module.id) : setActiveSubPage(module.id as SubPage)}
-                                className={cn(
-                                    "p-8 border-4 border-[#064e3b] bg-white text-left transition-none space-y-4 group shadow-[4px_4px_0px_0px_rgba(6,78,59,0.15)] hover:shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]",
-                                    module.color
-                                )}
-                            >
-                                <div className="w-12 h-12 border-2 border-[#064e3b] flex items-center justify-center group-hover:bg-[#064e3b] group-hover:text-white transition-none">
-                                    <module.icon className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-xl font-black uppercase tracking-tight">{module.label}</h4>
-                                    <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest">{module.desc}</p>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {activeSubPage === 'grid' && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="lg:col-span-4 space-y-6">
-                        <div className="flex items-center gap-4 mb-4">
-                            <Hexagon className="w-6 h-6 text-[#10b981]" />
-                            <h3 className="text-2xl font-black uppercase tracking-tight">Active Nodes</h3>
-                        </div>
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
-                            <input
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="INPUT ID..."
-                                className="w-full h-12 pl-12 pr-4 border-2 border-[#064e3b] bg-white font-black text-xs uppercase focus:bg-[#facc15]/5 outline-none"
-                            />
-                        </div>
-                        <div className="border-4 border-[#064e3b] divide-y-2 divide-[#064e3b]/10 bg-white overflow-y-auto max-h-[600px]">
-                            {filteredDevices.map(device => (
-                                <button
-                                    key={device.id}
-                                    onClick={() => setSelectedDeviceId(device.id)}
-                                    className={cn(
-                                        "w-full p-5 text-left transition-none flex items-center justify-between group",
-                                        selectedDeviceId === device.id ? "bg-[#10b981] text-white" : "hover:bg-[#facc15]/10"
-                                    )}
-                                >
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] font-black uppercase tracking-widest">{device.device_code}</p>
-                                        <p className={cn("text-[8px] font-bold uppercase", selectedDeviceId === device.id ? "text-white/60" : "text-[#064e3b]/40")}>
-                                            {device.location_name || 'N/A'}
-                                        </p>
+            <AnimatePresence mode="wait">
+                {activeSubPage === 'home' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-8"
+                    >
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className={cn(glass.card, "lg:col-span-2 p-10 flex flex-col justify-between shadow-2xl relative overflow-hidden")}>
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+                                <div className="space-y-6 relative z-10">
+                                    <div className="flex items-center gap-4 text-emerald-500">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                                        <span className={cn(glass.microLabel, "text-emerald-600 dark:text-emerald-400 font-bold")}>System Status: Active</span>
                                     </div>
-                                    <div className={cn(
-                                        "px-2 py-0.5 border text-[8px] font-black uppercase",
-                                        device.status === 'active' ? (selectedDeviceId === device.id ? "bg-white text-[#10b981] border-white" : "bg-[#10b981] text-white border-[#064e3b]") : "bg-red-500 text-white border-[#064e3b]"
-                                    )}>
-                                        {device.status}
+                                    <h2 className={cn(glass.sectionTitle, "text-5xl leading-[1.1]")}>
+                                        Farm <br /> <span className="text-emerald-500">Overview</span>
+                                    </h2>
+                                    <p className={cn(glass.microLabel, "normal-case text-muted-foreground opacity-90 max-w-lg leading-relaxed text-sm")}>
+                                        See your hives, flowering status, and farm data in one place. Monitor your fleet across the yard in real-time.
+                                    </p>
+                                </div>
+                                <div className="pt-8 mt-8 flex flex-wrap items-center gap-12 border-t border-border/50 relative z-10">
+                                    <div>
+                                        <p className={cn(glass.microLabel, "opacity-60 mb-2 font-bold")}>Active Sensors</p>
+                                        <p className={cn(glass.sectionTitle, "text-4xl tabular-nums")}>{devices.length}</p>
+                                    </div>
+                                    <div>
+                                        <p className={cn(glass.microLabel, "opacity-60 mb-2 font-bold")}>Active Hives</p>
+                                        <p className={cn(glass.sectionTitle, "text-4xl tabular-nums text-emerald-500")}>98%</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-8">
+                                <div className={cn(glass.card, "p-8 shadow-lg relative overflow-hidden bg-honey/10 border-honey/20")}>
+                                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-honey/10 to-transparent pointer-events-none" />
+                                    <div className="flex items-center gap-3 mb-6 relative z-10">
+                                        <Zap className="w-5 h-5 text-amber-500" />
+                                        <span className={cn(glass.microLabel, "text-amber-700 dark:text-amber-500 font-bold")}>Flower Coverage</span>
+                                    </div>
+                                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums mb-2 relative z-10")}>72%</p>
+                                    <p className={cn(glass.microLabel, "opacity-60 normal-case italic font-semibold relative z-10")}>Variety: Nonpareil Almond</p>
+                                </div>
+
+                                <div className={cn(glass.card, "p-8 shadow-lg relative overflow-hidden bg-emerald-500/5 border-emerald-500/20")}>
+                                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
+                                    <div className="flex items-center gap-3 mb-6 relative z-10">
+                                        <Activity className="w-5 h-5 text-emerald-500" />
+                                        <span className={cn(glass.microLabel, "text-emerald-700 dark:text-emerald-500 font-bold")}>Activity Index</span>
+                                    </div>
+                                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums mb-2 text-emerald-600 dark:text-emerald-400 relative z-10")}>8.4</p>
+                                    <p className={cn(glass.microLabel, "opacity-60 normal-case italic font-semibold relative z-10")}>High Intensity Detected</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {[
+                                { id: 'bloom-tracking', label: 'Status', icon: Zap, desc: 'Field Analysis', external: true },
+                                { id: 'grid', label: 'Map Grid', icon: Layers, desc: 'Sensor Map', external: false },
+                                { id: 'calcs', label: 'Calculators', icon: Calculator, desc: 'Bee Math', external: false },
+                                { id: 'map', label: 'Flight Map', icon: Navigation, desc: 'Flight Paths', external: false },
+                            ].map(module => (
+                                <button
+                                    key={module.id}
+                                    onClick={() => module.external ? onTabChange(module.id) : setActiveSubPage(module.id as SubPage)}
+                                    className={cn(glass.card, "p-8 text-left transition-all duration-300 space-y-4 group hover:shadow-xl hover:-translate-y-1 hover:border-honey/40")}
+                                >
+                                    <div className="w-12 h-12 rounded-[1.5rem] bg-muted/50 flex items-center justify-center border border-border group-hover:bg-honey group-hover:text-white transition-colors duration-300 shadow-sm">
+                                        <module.icon className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className={cn(glass.sectionTitle, "text-xl normal-case")}>{module.label}</h4>
+                                        <p className={cn(glass.microLabel, "opacity-60 normal-case italic mt-1")}>{module.desc}</p>
                                     </div>
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
+                )}
 
-                    <div className="lg:col-span-8 space-y-10">
-                        <div className="aspect-video border-4 border-[#064e3b] bg-white relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-[#facc15]/5 opacity-20" style={{ backgroundImage: 'radial-gradient(#064e3b 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-                            <div className="absolute inset-0 flex items-center justify-center grayscale opacity-40 contrast-125">
-                                <MapIcon className="w-1/2 h-1/2 text-[#064e3b]" />
+                {activeSubPage === 'grid' && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div className="lg:col-span-4 space-y-6">
+                            <div className="flex items-center gap-4 mb-4">
+                                <Hexagon className="w-6 h-6 text-emerald-500" />
+                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Active Nodes</h3>
                             </div>
+                            <div className="relative">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
+                                <input
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Search nodes..."
+                                    className={cn("w-full h-12 rounded-xl pl-12 pr-4 bg-white/40 dark:bg-black/20 border border-border focus:ring-2 focus:ring-honey/50 outline-none transition-all shadow-inner", glass.microLabel, "normal-case font-semibold")}
+                                />
+                            </div>
+                            <div className={cn(glass.card, "p-2 overflow-hidden h-[600px] flex flex-col")}>
+                                <div className="overflow-y-auto custom-scrollbar flex-1 -mx-2 px-2">
+                                    <div className="space-y-2 pb-2">
+                                        {filteredDevices.map(device => (
+                                            <button
+                                                key={device.id}
+                                                onClick={() => setSelectedDeviceId(device.id)}
+                                                className={cn(
+                                                    "w-full p-4 rounded-xl text-left transition-all duration-200 flex items-center justify-between group border",
+                                                    selectedDeviceId === device.id
+                                                        ? "bg-emerald-500/10 border-emerald-500/30 shadow-sm"
+                                                        : "bg-white/40 dark:bg-black/20 border-transparent hover:bg-muted/50 hover:border-border/50"
+                                                )}
+                                            >
+                                                <div className="space-y-1">
+                                                    <p className={cn(glass.microLabel, "font-bold", selectedDeviceId === device.id ? "text-emerald-700 dark:text-emerald-400" : "")}>
+                                                        {device.device_code}
+                                                    </p>
+                                                    <p className={cn(glass.microLabel, "normal-case text-[10px] opacity-60")}>
+                                                        {device.location_name || 'N/A'}
+                                                    </p>
+                                                </div>
+                                                <div className={cn(
+                                                    glass.badge, "px-3 py-1 font-bold border-transparent shadow-none",
+                                                    device.status === 'active'
+                                                        ? (selectedDeviceId === device.id ? "bg-emerald-500 text-white" : "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400")
+                                                        : "bg-red-500/20 text-red-700 dark:text-red-400"
+                                                )}>
+                                                    {device.status}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-8 flex flex-col gap-6">
+                            <div className={cn(glass.card, "p-0 aspect-video relative overflow-hidden flex-1 min-h-[400px]")}>
+                                <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                                    <MapIcon className="w-1/3 h-1/3" />
+                                </div>
+                                {selectedDevice && (
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                        <div className="relative">
+                                            <div className="absolute inset-0 w-24 h-24 border border-emerald-500 rounded-full animate-ping opacity-30" />
+                                            <div className="absolute inset-0 w-32 h-32 border border-emerald-500 rounded-full animate-ping opacity-10" style={{ animationDelay: '500ms' }} />
+
+                                            <div className="w-8 h-8 rounded-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)] border-4 border-white dark:border-black flex items-center justify-center relative z-10" />
+
+                                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 whitespace-nowrap z-20">
+                                                <div className={cn(glass.card, "py-2 px-4 shadow-xl border-emerald-500/30 flex items-center gap-2")}>
+                                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                    <p className={cn(glass.microLabel, "font-bold text-emerald-700 dark:text-emerald-400")}>{selectedDevice.device_code}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             {selectedDevice && (
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                    <div className="relative">
-                                        <div className="absolute inset-0 w-20 h-20 border-2 border-[#10b981] animate-ping opacity-20" />
-                                        <div className="w-6 h-6 bg-[#10b981] border-4 border-white shadow-[0_0_0_2px_#064e3b]" />
-                                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-white border-2 border-[#064e3b] p-3 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] whitespace-nowrap">
-                                            <p className="text-[10px] font-black uppercase">{selectedDevice.device_code}</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                    <div className={cn(glass.card, "p-6 flex flex-col items-start gap-4")}>
+                                        <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                                            <Thermometer className="w-5 h-5 text-emerald-500" />
+                                        </div>
+                                        <div>
+                                            <span className={cn(glass.microLabel, "opacity-70 normal-case mb-1 block")}>Temperature</span>
+                                            <h4 className={cn(glass.sectionTitle, "text-3xl tracking-tight")}>24.5<span className="text-xl text-muted-foreground ml-1">°C</span></h4>
+                                        </div>
+                                    </div>
+                                    <div className={cn(glass.card, "p-6 flex flex-col items-start gap-4")}>
+                                        <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                                            <Droplets className="w-5 h-5 text-emerald-500" />
+                                        </div>
+                                        <div>
+                                            <span className={cn(glass.microLabel, "opacity-70 normal-case mb-1 block")}>Humidity</span>
+                                            <h4 className={cn(glass.sectionTitle, "text-3xl tracking-tight")}>62<span className="text-xl text-muted-foreground ml-1">%</span></h4>
+                                        </div>
+                                    </div>
+                                    <div className={cn(glass.card, "p-6 flex flex-col items-start gap-4")}>
+                                        <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                                            <Signal className="w-5 h-5 text-amber-500" />
+                                        </div>
+                                        <div>
+                                            <span className={cn(glass.microLabel, "opacity-70 normal-case mb-1 block")}>Signal Strength</span>
+                                            <h4 className={cn(glass.sectionTitle, "text-3xl tracking-tight")}>98<span className="text-xl text-muted-foreground ml-1">%</span></h4>
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
+                    </motion.div>
+                )}
 
-                        {selectedDevice && (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="border-4 border-[#064e3b] p-6 bg-white space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <Thermometer className="w-5 h-5 text-[#10b981]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Temperature</span>
+                {activeSubPage === 'calcs' && (
+                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-1">
+                                <div className={cn(glass.card, "p-8 space-y-8 shadow-xl")}>
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <Calculator className="w-6 h-6 text-honey" />
+                                        <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Parameters</h3>
                                     </div>
-                                    <h4 className="text-4xl font-black leading-none">24.5<span className="text-xl">°C</span></h4>
-                                </div>
-                                <div className="border-4 border-[#064e3b] p-6 bg-white space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <Droplets className="w-5 h-5 text-[#10b981]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Humidity</span>
-                                    </div>
-                                    <h4 className="text-4xl font-black leading-none">62<span className="text-xl">%</span></h4>
-                                </div>
-                                <div className="border-4 border-[#064e3b] p-6 bg-white space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <Zap className="w-5 h-5 text-[#facc15] fill-current" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Signal</span>
-                                    </div>
-                                    <h4 className="text-4xl font-black leading-none">98<span className="text-xl">%</span></h4>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
 
-            {activeSubPage === 'calcs' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        <div className="lg:col-span-1 space-y-8">
-                            <div className="border-4 border-[#064e3b] p-8 bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                                <div className="flex items-center gap-4 mb-8">
-                                    <Calculator className="w-8 h-8 text-[#10b981]" />
-                                    <h3 className="text-2xl font-black uppercase tracking-tight text-[#064e3b]">Parameters</h3>
-                                </div>
-
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Total Area (Acres)</label>
-                                        <div className="flex items-center">
-                                            <button
-                                                onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: Math.max(1, prev.totalAcres - 5) }))}
-                                                className="w-12 h-12 border-4 border-[#064e3b] bg-white flex items-center justify-center hover:bg-[#facc15]/10"
-                                            >
-                                                <Minus className="w-4 h-4" />
-                                            </button>
-                                            <div className="flex-1 h-12 border-y-4 border-[#064e3b] flex items-center justify-center font-black text-xl">
-                                                {calcInputs.totalAcres}
+                                    <div className="space-y-8">
+                                        <div className="space-y-3">
+                                            <label className={cn(glass.microLabel, "font-bold opacity-80 block")}>Total Area (Acres)</label>
+                                            <div className="flex items-center bg-white/40 dark:bg-black/20 rounded-2xl border border-border p-1">
+                                                <button
+                                                    onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: Math.max(1, prev.totalAcres - 5) }))}
+                                                    className={cn(glass.btnSecondary, "w-12 h-12 rounded-xl p-0 shrink-0 border-transparent shadow-none hover:bg-muted/80")}
+                                                >
+                                                    <Minus className="w-4 h-4" />
+                                                </button>
+                                                <div className={cn(glass.sectionTitle, "flex-1 text-center text-3xl tabular-nums")}>
+                                                    {calcInputs.totalAcres}
+                                                </div>
+                                                <button
+                                                    onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: prev.totalAcres + 5 }))}
+                                                    className={cn(glass.btnSecondary, "w-12 h-12 rounded-xl p-0 shrink-0 border-transparent shadow-none hover:bg-muted/80")}
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </button>
                                             </div>
-                                            <button
-                                                onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: prev.totalAcres + 5 }))}
-                                                className="w-12 h-12 border-4 border-[#064e3b] bg-white flex items-center justify-center hover:bg-[#facc15]/10"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                            </button>
                                         </div>
-                                    </div>
 
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Bloom Intensity (0.1 - 1.0)</label>
-                                        <input
-                                            type="range"
-                                            min="0.1"
-                                            max="1.0"
-                                            step="0.1"
-                                            value={calcInputs.bloomIntensity}
-                                            onChange={(e) => setCalcInputs(prev => ({ ...prev, bloomIntensity: parseFloat(e.target.value) }))}
-                                            className="w-full accent-[#10b981]"
-                                        />
-                                        <div className="flex justify-between mt-2 font-black text-[10px] uppercase">
-                                            <span>Low</span>
-                                            <span className="text-[#10b981]">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
-                                            <span>Industrial</span>
+                                        <div className="space-y-3">
+                                            <label className={cn(glass.microLabel, "font-bold opacity-80 block")}>Bloom Intensity (0.1 - 1.0)</label>
+                                            <div className="relative pt-2 pb-6">
+                                                <input
+                                                    type="range"
+                                                    min="0.1"
+                                                    max="1.0"
+                                                    step="0.1"
+                                                    value={calcInputs.bloomIntensity}
+                                                    onChange={(e) => setCalcInputs(prev => ({ ...prev, bloomIntensity: parseFloat(e.target.value) }))}
+                                                    className="w-full appearance-none h-2 bg-muted rounded-full outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-lg cursor-pointer transition-all"
+                                                />
+                                                <div className="absolute bottom-0 inset-x-0 flex justify-between font-bold text-[10px] uppercase opacity-60">
+                                                    <span>Low</span>
+                                                    <span className="text-emerald-500 opacity-100">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
+                                                    <span>Peak</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Forage Competition</label>
-                                        <input
-                                            type="range"
-                                            min="0.1"
-                                            max="1.0"
-                                            step="0.1"
-                                            value={calcInputs.forageCondition}
-                                            onChange={(e) => setCalcInputs(prev => ({ ...prev, forageCondition: parseFloat(e.target.value) }))}
-                                            className="w-full accent-[#064e3b]"
-                                        />
-                                        <div className="flex justify-between mt-2 font-black text-[10px] uppercase">
-                                            <span>High Comp</span>
-                                            <span className="text-[#064e3b]">{Math.round(calcInputs.forageCondition * 100)}%</span>
-                                            <span>Clear Sky</span>
+                                        <div className="space-y-3">
+                                            <label className={cn(glass.microLabel, "font-bold opacity-80 block")}>Forage Competition</label>
+                                            <div className="relative pt-2 pb-6">
+                                                <input
+                                                    type="range"
+                                                    min="0.1"
+                                                    max="1.0"
+                                                    step="0.1"
+                                                    value={calcInputs.forageCondition}
+                                                    onChange={(e) => setCalcInputs(prev => ({ ...prev, forageCondition: parseFloat(e.target.value) }))}
+                                                    className="w-full appearance-none h-2 bg-muted rounded-full outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-honey [&::-webkit-slider-thumb]:shadow-lg cursor-pointer transition-all"
+                                                />
+                                                <div className="absolute bottom-0 inset-x-0 flex justify-between font-bold text-[10px] uppercase opacity-60">
+                                                    <span>High Comp</span>
+                                                    <span className="text-honey opacity-100">{Math.round(calcInputs.forageCondition * 100)}%</span>
+                                                    <span>Clear Sky</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="lg:col-span-2 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="border-4 border-[#064e3b] p-8 bg-white space-y-4">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Total Frames Deployed</p>
-                                    <h4 className="text-6xl font-black">{metrics.totalFrames}</h4>
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-neutral-100 border-2 border-black inline-flex">
-                                        <div className="w-2 h-2 bg-black" />
-                                        <span className="text-[8px] font-black uppercase">Standard Count</span>
+                            <div className="lg:col-span-2 flex flex-col gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className={cn(glass.card, "p-8 space-y-4 shadow-md bg-white/60 dark:bg-black/40")}>
+                                        <p className={cn(glass.microLabel, "opacity-70 font-bold")}>Total Frames Deployed</p>
+                                        <h4 className={cn(glass.sectionTitle, "text-5xl lg:text-6xl tabular-nums tracking-tight")}>{metrics.totalFrames}</h4>
+                                        <div className={cn(glass.badge, "border-transparent bg-muted/50 px-3 py-1")}>
+                                            <div className="w-2 h-2 rounded-full bg-foreground/30 mr-2" />
+                                            Standard Count
+                                        </div>
+                                    </div>
+                                    <div className={cn(glass.card, "p-8 space-y-4 shadow-lg border-honey/30 bg-honey/5 overflow-hidden relative")}>
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+                                        <p className={cn(glass.microLabel, "text-amber-700 dark:text-amber-500 font-bold relative z-10")}>Effective Frames <span className="opacity-60 font-semibold italic">(Bee Math™)</span></p>
+                                        <h4 className={cn(glass.sectionTitle, "text-5xl lg:text-6xl tabular-nums tracking-tight relative z-10")}>{metrics.effectiveFrames}</h4>
+                                        <div className={cn(glass.badge, "border-amber-500/30 bg-white/50 dark:bg-black/30 backdrop-blur-md px-3 py-1 relative z-10")}>
+                                            <Zap className="w-3.5 h-3.5 text-amber-500 mr-2 fill-amber-500/20" />
+                                            <span className="text-amber-700 dark:text-amber-400 font-bold">Adjusted Force</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="border-4 border-[#064e3b] p-8 bg-[#facc15] space-y-4 shadow-[8px_8px_0px_0px_#064e3b]">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">Effective Frames (Bee Math™)</p>
-                                    <h4 className="text-6xl font-black">{metrics.effectiveFrames}</h4>
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-white border-2 border-[#064e3b] inline-flex">
-                                        <Zap className="w-3 h-3 text-[#10b981] fill-current" />
-                                        <span className="text-[8px] font-black uppercase text-[#064e3b]">Adjusted Force</span>
+
+                                <div className={cn(glass.card, "p-8 grid grid-cols-1 sm:grid-cols-3 gap-8 shadow-xl")}>
+                                    <div className="space-y-2">
+                                        <p className={cn(glass.microLabel, "font-bold opacity-60")}>Frames Per Acre (FPA)</p>
+                                        <div className={cn(glass.sectionTitle, "text-4xl tabular-nums")}>{metrics.framesPerAcre}</div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className={cn(glass.microLabel, "font-bold text-emerald-500/80")}>Effective FPA</p>
+                                        <div className={cn(glass.sectionTitle, "text-4xl tabular-nums text-emerald-500")}>{metrics.effectiveFPA}</div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className={cn(glass.microLabel, "font-bold opacity-60")}>Efficacy Index</p>
+                                        <div className={cn(glass.sectionTitle, "text-4xl tabular-nums")}>{metrics.pollinationEfficacy}<span className="text-2xl text-muted-foreground ml-1">%</span></div>
                                     </div>
                                 </div>
+
                                 <button
                                     onClick={handleSaveDeployment}
                                     disabled={isSaving}
-                                    className="md:col-span-2 border-4 border-[#064e3b] p-6 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-[#10b981] transition-all disabled:opacity-50"
+                                    className={cn(glass.btnPrimary, "w-full h-16 text-sm uppercase tracking-widest mt-auto")}
                                 >
-                                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    Save Data
+                                    {isSaving ? <Loader2 className="w-5 h-5 animate-spin mr-3" /> : <Save className="w-5 h-5 mr-3" />}
+                                    Save Fleet Data
                                 </button>
                             </div>
-
-                            <div className="border-4 border-[#064e3b] p-10 bg-white grid grid-cols-1 md:grid-cols-3 gap-10">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest mb-4">Frames Per Acre (FPA)</p>
-                                    <div className="text-5xl font-black">{metrics.framesPerAcre}</div>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest mb-4 text-[#10b981]">Effective FPA</p>
-                                    <div className="text-5xl font-black text-[#10b981]">{metrics.effectiveFPA}</div>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest mb-4">Efficacy Index</p>
-                                    <div className="text-5xl font-black">{metrics.pollinationEfficacy}%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between border-b-4 border-black pb-4">
-                            <h3 className="text-3xl font-black uppercase tracking-tighter">Colony Inventory & Strength Logic</h3>
-                            <button
-                                onClick={() => setCalcInputs(prev => ({
-                                    ...prev,
-                                    hives: [...prev.hives, { frameCount: 8, isStrong: true, isLarge: false }]
-                                }))}
-                                className="px-6 py-2 border-4 border-black font-black uppercase text-xs hover:bg-black hover:text-white transition-none"
-                            >
-                                Add Unit
-                            </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {calcInputs.hives.map((hive, idx) => (
-                                <div key={idx} className="border-4 border-[#064e3b] p-6 bg-white space-y-4 relative group">
-                                    <button
-                                        onClick={() => setCalcInputs(prev => ({ ...prev, hives: prev.hives.filter((_, i) => i !== idx) }))}
-                                        className="absolute top-4 right-4 text-neutral-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-none"
-                                    >
-                                        <Minus className="w-4 h-4" />
-                                    </button>
-                                    <div className="text-[10px] font-black uppercase opacity-40">Unit #{idx + 1}</div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="font-black text-2xl">{hive.frameCount} FR</span>
-                                        <div className="flex gap-1">
-                                            {[...Array(hive.frameCount)].map((_, i) => (
-                                                <div key={i} className="w-1.5 h-4 bg-[#10b981]" />
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => {
-                                                const newHives = [...calcInputs.hives];
-                                                newHives[idx].isStrong = !newHives[idx].isStrong;
-                                                setCalcInputs(prev => ({ ...prev, hives: newHives }));
-                                            }}
-                                            className={cn("flex-1 py-1 border-2 text-[8px] font-black uppercase", hive.isStrong ? "bg-[#10b981] text-white border-[#10b981]" : "border-[#064e3b]")}
-                                        >
-                                            Strong
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                const newHives = [...calcInputs.hives];
-                                                newHives[idx].isLarge = !newHives[idx].isLarge;
-                                                setCalcInputs(prev => ({ ...prev, hives: newHives }));
-                                            }}
-                                            className={cn("flex-1 py-1 border-2 text-[8px] font-black uppercase", hive.isLarge ? "bg-[#064e3b] text-white border-[#064e3b]" : "border-[#064e3b]")}
-                                        >
-                                            Large
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )
-            }
-
-            {
-                activeSubPage === 'map' && (
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
-                        <div className="flex justify-between items-center bg-[#064e3b] p-4 text-white">
-                            <div>
-                                <h3 className="text-xl font-black uppercase">Spatial Optimizer</h3>
-                                <p className="text-xs text-[#10b981] font-bold">Algorithms driving maximum FPI.</p>
-                            </div>
-                            <div className="flex gap-4">
+                        <div className="space-y-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+                                <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Colony Inventory <span className="opacity-40 italic font-semibold text-2xl normal-case">&</span> Logic</h3>
                                 <button
-                                    onClick={handleOptimize}
-                                    disabled={isOptimizing}
-                                    className="px-6 py-2 bg-[#facc15] text-[#064e3b] font-black uppercase text-xs flex items-center gap-2 hover:bg-white transition-colors"
+                                    onClick={() => setCalcInputs(prev => ({
+                                        ...prev,
+                                        hives: [...prev.hives, { frameCount: 8, isStrong: true, isLarge: false }]
+                                    }))}
+                                    className={cn(glass.btnSecondary, "h-10 px-6 rounded-xl")}
                                 >
-                                    {isOptimizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                                    Calculate Optimized Placement
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Add Unit
                                 </button>
-                                {optimalPlacements.length > 0 && (
-                                    <button
-                                        onClick={handleCommitTasks}
-                                        disabled={isSaving}
-                                        className="px-6 py-2 bg-[#10b981] text-white font-black uppercase text-xs flex items-center gap-2 hover:bg-[#064e3b] transition-colors"
-                                    >
-                                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ClipboardList className="w-4 h-4" />}
-                                        Commit to Field Tasks
-                                    </button>
-                                )}
                             </div>
-                        </div>
-                        <div className="border-4 border-[#064e3b] bg-white h-[600px] relative overflow-hidden group">
-                            <MapContainer
-                                center={[-1.285, 36.825] as any}
-                                zoom={15}
-                                style={{ height: '100%', width: '100%' }}
-                                className="z-0"
-                            >
-                                <TileLayer
-                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                                    attribution='&copy; ESRI'
-                                />
 
-                                {/* Target Orchard */}
-                                <Polygon
-                                    positions={mockOrchardPolygon as any}
-                                    pathOptions={{ color: '#10b981', weight: 4, fillOpacity: 0.1 }}
-                                />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <AnimatePresence>
+                                    {calcInputs.hives.map((hive, idx) => (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            key={idx}
+                                            className={cn(glass.card, "p-6 space-y-5 relative group hover:border-border/80 transition-all")}
+                                        >
+                                            <button
+                                                onClick={() => setCalcInputs(prev => ({ ...prev, hives: prev.hives.filter((_, i) => i !== idx) }))}
+                                                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                            >
+                                                <Minus className="w-4 h-4" />
+                                            </button>
 
-                                {/* Optimized Placements */}
-                                {optimalPlacements.map((pos, idx) => (
-                                    <React.Fragment key={idx}>
-                                        <Marker position={[pos.lat, pos.lng] as any}>
-                                            <Popup>
-                                                <div className="text-center font-bold text-[#064e3b]">
-                                                    <p>Unit #{pos.metadata?.index || idx + 1}</p>
-                                                    <p className="text-xs text-[#10b981]">Score: {pos.score}</p>
+                                            <div className={cn(glass.microLabel, "normal-case italic font-semibold opacity-60")}>Unit #{idx + 1}</div>
+
+                                            <div className="flex items-center justify-between">
+                                                <span className={cn(glass.sectionTitle, "text-3xl")}>{hive.frameCount} <span className="text-sm text-muted-foreground ml-1">FR</span></span>
+                                                <div className="flex gap-1.5 opacity-80">
+                                                    {[...Array(hive.frameCount > 10 ? 10 : hive.frameCount)].map((_, i) => (
+                                                        <div key={i} className={cn("w-1.5 h-6 rounded-sm", hive.isStrong ? "bg-emerald-500" : "bg-honey")} />
+                                                    ))}
+                                                    {hive.frameCount > 10 && <div className="text-[10px] font-black self-end">+</div>}
                                                 </div>
-                                            </Popup>
-                                        </Marker>
-                                        <Circle
-                                            center={[pos.lat, pos.lng] as any}
-                                            radius={pos.coverage_radius_km * 1000} // km to meters
-                                            pathOptions={{ color: '#facc15', weight: 1, fillOpacity: 0.1, dashArray: '4' }}
+                                            </div>
+
+                                            <div className="flex gap-3 pt-2">
+                                                <button
+                                                    onClick={() => {
+                                                        const newHives = [...calcInputs.hives];
+                                                        newHives[idx].isStrong = !newHives[idx].isStrong;
+                                                        setCalcInputs(prev => ({ ...prev, hives: newHives }));
+                                                    }}
+                                                    className={cn(
+                                                        "flex-1 py-2 px-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
+                                                        hive.isStrong ? "bg-emerald-500 text-white border-emerald-500 shadow-sm" : "bg-white/40 dark:bg-black/20 text-muted-foreground border-border hover:bg-muted"
+                                                    )}
+                                                >
+                                                    Strong
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const newHives = [...calcInputs.hives];
+                                                        newHives[idx].isLarge = !newHives[idx].isLarge;
+                                                        setCalcInputs(prev => ({ ...prev, hives: newHives }));
+                                                    }}
+                                                    className={cn(
+                                                        "flex-1 py-2 px-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
+                                                        hive.isLarge ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white/40 dark:bg-black/20 text-muted-foreground border-border hover:bg-muted"
+                                                    )}
+                                                >
+                                                    Large
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {
+                    activeSubPage === 'map' && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+                            <div className={cn(glass.card, "p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 dark:bg-black/40 shadow-sm")}>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-honey/10 flex items-center justify-center border border-honey/20">
+                                        <MapIcon className="w-5 h-5 text-honey" />
+                                    </div>
+                                    <div>
+                                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case placeholder-transparent")}>Spatial Optimizer</h3>
+                                        <p className={cn(glass.microLabel, "text-emerald-600 dark:text-emerald-400 font-bold")}>Algorithms driving maximum FPI.</p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+                                    <button
+                                        onClick={handleOptimize}
+                                        disabled={isOptimizing}
+                                        className={cn(glass.btnSecondary, "flex-1 sm:flex-none border-honey/20 hover:border-honey hover:text-honey bg-white/50 dark:bg-black/20")}
+                                    >
+                                        {isOptimizing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+                                        Run Optimizer
+                                    </button>
+                                    {optimalPlacements.length > 0 && (
+                                        <button
+                                            onClick={handleCommitTasks}
+                                            disabled={isSaving}
+                                            className={cn(glass.btnPrimary, "flex-1 sm:flex-none bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600")}
+                                        >
+                                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardList className="w-4 h-4 mr-2" />}
+                                            Commit Tasks
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className={cn(glass.card, "p-2 h-[600px] overflow-hidden relative shadow-xl")}>
+                                <div className="absolute inset-2 rounded-3xl overflow-hidden z-0">
+                                    <MapContainer
+                                        center={[-1.285, 36.825] as any}
+                                        zoom={15}
+                                        style={{ height: '100%', width: '100%' }}
+                                        className="z-0 outline-none"
+                                        zoomControl={false}
+                                    >
+                                        <TileLayer
+                                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                                            attribution='&copy; ESRI'
                                         />
-                                    </React.Fragment>
-                                ))}
-                            </MapContainer>
-                        </div>
-                    </div>
-                )
-            }
 
-            {
-                activeSubPage === 'reports' && (
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="border-4 border-[#064e3b] bg-white overflow-hidden group">
-                                <div className="bg-[#10b981] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                    <h4 className="text-xl font-black text-white uppercase tracking-tight">Bloom Saturation Report</h4>
-                                    <Terminal className="w-5 h-5 text-white" />
-                                </div>
-                                <div className="p-10 space-y-8">
-                                    <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                        <span className="text-[10px] font-black uppercase text-neutral-400">Period Coverage</span>
-                                        <span className="font-black text-lg">MAR 14 - MAR 28</span>
-                                    </div>
-                                    <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                        <span className="text-[10px] font-black uppercase text-neutral-400">Peak Saturation</span>
-                                        <span className="font-black text-lg text-[#10b981]">92.4%</span>
-                                    </div>
-                                    <button
-                                        onClick={() => handleExport('Bloom')}
-                                        className="w-full py-4 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-black transition-none flex items-center justify-center gap-2"
-                                    >
-                                        <FileDown className="w-4 h-4" />
-                                        Export Geodata (.CSV)
-                                    </button>
+                                        {/* Target Orchard */}
+                                        <Polygon
+                                            positions={mockOrchardPolygon as any}
+                                            pathOptions={{ color: '#10b981', weight: 3, fillOpacity: 0.15, interactive: false }}
+                                        />
+
+                                        {/* Optimized Placements */}
+                                        {optimalPlacements.map((pos, idx) => (
+                                            <React.Fragment key={idx}>
+                                                <Marker position={[pos.lat, pos.lng] as any}>
+                                                    <Popup className="custom-popup">
+                                                        <div className="text-center p-1">
+                                                            <p className={cn(glass.sectionTitle, "text-lg normal-case mb-1")}>Unit #{pos.metadata?.index || idx + 1}</p>
+                                                            <div className="bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 inline-block">
+                                                                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Score: {pos.score}</p>
+                                                            </div>
+                                                        </div>
+                                                    </Popup>
+                                                </Marker>
+                                                <Circle
+                                                    center={[pos.lat, pos.lng] as any}
+                                                    radius={pos.coverage_radius_km * 1000} // km to meters
+                                                    pathOptions={{ color: '#f59e0b', weight: 1, fillOpacity: 0.08, dashArray: '4, 6' }}
+                                                />
+                                            </React.Fragment>
+                                        ))}
+                                    </MapContainer>
                                 </div>
                             </div>
+                        </motion.div>
+                    )
+                }
 
-                            <div className="border-4 border-[#064e3b] bg-white overflow-hidden group">
-                                <div className="bg-[#facc15] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                    <h4 className="text-xl font-black text-[#064e3b] uppercase tracking-tight">Hive Efficiency Audit</h4>
-                                    <Activity className="w-5 h-5 text-[#064e3b]" />
-                                </div>
-                                <div className="p-10 space-y-8">
-                                    <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                        <span className="text-[10px] font-black uppercase text-neutral-400">Audit Units</span>
-                                        <span className="font-black text-lg">45 Nodes</span>
-                                    </div>
-                                    <button
-                                        onClick={() => handleExport('Diagnostic')}
-                                        className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-white transition-none flex items-center justify-center gap-2"
-                                    >
-                                        <Activity className="w-4 h-4" />
-                                        Run Health Check
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="border-4 border-[#064e3b] p-8 bg-neutral-50 space-y-6">
-                            <h3 className="text-xl font-black uppercase tracking-widest border-b-2 border-black pb-4">Recent Audit Logs</h3>
-                            <div className="space-y-4 font-mono text-[10px] uppercase">
-                                {deployments.length === 0 ? (
-                                    <p className="text-neutral-400">No recent deployments logged.</p>
-                                ) : (
-                                    deployments.map((d, i) => (
-                                        <div key={i} className="flex gap-10">
-                                            <span className="text-[#10b981] font-black">{new Date(d.created_at).toLocaleString()}</span>
-                                            <span className="text-neutral-400">Deployment</span>
-                                            <span className="font-bold">{d.field_name} - {d.total_acres} Acres committed.</span>
+                {
+                    activeSubPage === 'reports' && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className={cn(glass.card, "p-0 overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300 border-emerald-500/20")}>
+                                    <div className="bg-emerald-500/10 p-6 border-b border-border flex justify-between items-center backdrop-blur-sm">
+                                        <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Bloom Saturation Report</h4>
+                                        <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                                            <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                                         </div>
-                                    ))
-                                )}
+                                    </div>
+                                    <div className="p-8 space-y-8 bg-white/20 dark:bg-black/10">
+                                        <div className="flex justify-between items-end border-b border-border pb-4">
+                                            <span className={cn(glass.microLabel, "font-bold opacity-60")}>Period Coverage</span>
+                                            <span className={cn(glass.sectionTitle, "text-xl normal-case")}>MAR 14 - MAR 28</span>
+                                        </div>
+                                        <div className="flex justify-between items-end border-b border-border pb-4">
+                                            <span className={cn(glass.microLabel, "font-bold opacity-60")}>Peak Saturation</span>
+                                            <span className={cn(glass.sectionTitle, "text-2xl tabular-nums tracking-tight text-emerald-500")}>92.4%</span>
+                                        </div>
+                                        <button
+                                            onClick={() => handleExport('Bloom')}
+                                            className={cn(glass.btnSecondary, "w-full border-transparent bg-white/50 dark:bg-black/20 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]")}
+                                        >
+                                            <FileDown className="w-4 h-4 mr-2" />
+                                            Export Geodata (.CSV)
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className={cn(glass.card, "p-0 overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300 border-honey/20")}>
+                                    <div className="bg-honey/10 p-6 border-b border-border flex justify-between items-center backdrop-blur-sm">
+                                        <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Hive Efficiency Audit</h4>
+                                        <div className="w-10 h-10 rounded-full bg-honey/20 flex items-center justify-center border border-honey/30">
+                                            <Activity className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                                        </div>
+                                    </div>
+                                    <div className="p-8 space-y-8 bg-white/20 dark:bg-black/10">
+                                        <div className="flex justify-between items-end border-b border-border pb-4">
+                                            <span className={cn(glass.microLabel, "font-bold opacity-60")}>Audit Units</span>
+                                            <span className={cn(glass.sectionTitle, "text-xl normal-case")}>45 Nodes</span>
+                                        </div>
+                                        <button
+                                            onClick={() => handleExport('Diagnostic')}
+                                            className={cn(glass.btnSecondary, "w-full border-transparent mt-[4.5rem] bg-white/50 dark:bg-black/20 hover:bg-honey hover:text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]")}
+                                        >
+                                            <Activity className="w-4 h-4 mr-2" />
+                                            Run Health Check
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div >
-                )
-            }
+
+                            <div className={cn(glass.card, "p-8 space-y-6 shadow-sm")}>
+                                <div className="flex items-center gap-4 border-b border-border pb-4">
+                                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Recent Audit Logs</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    {deployments.length === 0 ? (
+                                        <div className={glass.emptyState}>
+                                            <Clock className="w-8 h-8 text-muted-foreground/30 mb-4" />
+                                            <p className={glass.microLabel}>No recent deployments logged.</p>
+                                        </div>
+                                    ) : (
+                                        deployments.map((d, i) => (
+                                            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 p-4 rounded-xl bg-white/40 dark:bg-black/20 border border-border hover:bg-muted/50 transition-colors">
+                                                <span className={cn(glass.microLabel, "font-bold text-emerald-600 dark:text-emerald-400 shrink-0 w-32")}>
+                                                    {new Date(d.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                                <span className={cn(glass.badge, "border-transparent bg-muted/60 self-start sm:self-auto shrink-0")}>Deployment</span>
+                                                <span className="text-sm font-medium opacity-90 truncate">{d.field_name} - <span className="font-bold opacity-100">{d.total_acres} Acres</span> committed.</span>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div >
+                    )
+                }
+            </AnimatePresence>
 
             <style dangerouslySetInnerHTML={{
                 __html: `
-                @keyframes dash {
-                    to { stroke-dashoffset: -100; }
+                .leaflet-popup-content-wrapper {
+                    background: rgba(255, 255, 255, 0.9);
+                    backdrop-filter: blur(12px);
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    border-radius: 1rem;
+                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                }
+                .dark .leaflet-popup-content-wrapper {
+                    background: rgba(10, 10, 10, 0.9);
+                    border-color: rgba(255, 255, 255, 0.1);
+                }
+                .leaflet-popup-tip {
+                    background: rgba(255, 255, 255, 0.9);
+                }
+                .dark .leaflet-popup-tip {
+                    background: rgba(10, 10, 10, 0.9);
                 }
             `}} />
         </div >

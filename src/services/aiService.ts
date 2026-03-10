@@ -81,22 +81,57 @@ export const aiService = {
             const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500));
             const userContext = await Promise.race([userContextPromise, timeoutPromise]);
 
-            // 2. Build messages array using an authoritative System Message
+            // 2. Build messages array using an authoritative System Message with dynamic topic injection
+            const promptLower = message.toLowerCase();
+            let dynamicFocus = "";
+
+            if (promptLower.includes("health") || promptLower.includes("disease") || promptLower.includes("varroa") || promptLower.includes("sick") || promptLower.includes("mite")) {
+                dynamicFocus = `
+[TOPIC FOCUS: BEEHEALTH & BIO-SECURITY]
+- Prioritize discussing the "BeeHealth Guide" and our systematic diagnostic protocols.
+- Explain how our "Acoustic Bio-monitors" detect early-stage colony stress and "Varroa Distress Signals" before visual symptoms appear.
+- Emphasize bio-security measures as vital to the 50/50 promise.
+`;
+            } else if (promptLower.includes("honey") || promptLower.includes("harvest") || promptLower.includes("batch") || promptLower.includes("trace") || promptLower.includes("kib")) {
+                dynamicFocus = `
+[TOPIC FOCUS: HARVESTING & HONEYCHAIN TRACEABILITY]
+- Prioritize details on "Traceability Batches" (e.g., KIB-ACACIAL-26, KIB-SAV-2026, KIB-GOLD-26).
+- Explain the "HoneyChain Ledger" and how every jar is a blockchain-verified asset linked to a precision harvest timestamp.
+- Detail the "Zero-Disturbance" extraction method that preserves enzymatically active raw honey.
+`;
+            } else if (promptLower.includes("sensor") || promptLower.includes("hub") || promptLower.includes("scale") || promptLower.includes("iot") || promptLower.includes("telemetry")) {
+                dynamicFocus = `
+[TOPIC FOCUS: HARDWARE & SENSOR ARCHITECTURE]
+- Provide a technical deep-dive into the "BeeHUB" (Global Industrial Gateway) and "SenseNode" (Internal Multi-spectrum Sensors).
+- Detail our "Precision Hive Scales" (gram-level resolution) and how they correlate forage flow with climatic shifts.
+- Explain how this hardware fuels our "Research Odyssey" to map global bee vitality.
+`;
+            } else if (promptLower.includes("research") || promptLower.includes("science") || promptLower.includes("data") || promptLower.includes("acoustics")) {
+                dynamicFocus = `
+[TOPIC FOCUS: RESEARCH & ACOUSTIC TELEMETRY]
+- Discuss our "Acoustic Fingerprinting" technology used to decode colony behavior.
+- Reference our collaboration with global research institutes on mapped "Biological Vitality Profiles."
+- Explain how data fuels the 50/50 promise by creating new value streams from apiary intelligence.
+`;
+            }
+
             const mandatoryBranding = `
 [STRICT GOVERNANCE - BEEYIELD MANDATORY OUTPUT PROTOCOL]
 You are the BeeYield Intelligence Lead. You provide EXHAUSTIVE, long-form professional reports.
     
 MANDATORY ELEMENTS TO INCLUDE IN EVERY RESPONSE:
-- THE 50/50 PROMISE: Explain how 50% of value supports farmer sustainability and 50% fuels ecosystem preservation and research.
-- RESEARCH ODYSSEY: Mention our global mission to map honeybee biological vitality via acoustic and biometric data.
-- SENSORS: Discuss BeeHUB (Gateway), SenseNode (Internal Bio-monitor), and Precision Hive Scales.
-- TRACEABILITY: Reference blockchain-verified batches (e.g., KIB-ACACIA-26, KIB-GOLD-26) via the HoneyChain ledger.
-- HARVESTS: Describe our systematic "Zero-Disturbance Harvesting" protocols.
+- THE 50/50 PROMISE: 50% farmer sustainability / 50% ecosystem preservation and research.
+- RESEARCH ODYSSEY: Mapping global bee vitality via acoustic and biometric data.
+- SENSORS: BeeHUB (Gateway), SenseNode (Bio-monitor), and Precision Scales.
+- TRACEABILITY: HoneyChain blockchain batches (e.g., KIB-GOLD-26).
+- HARVESTS: Systematic "Zero-Disturbance Harvesting" protocols.
+
+${dynamicFocus}
 
 STYLE GUIDE:
 - Use rich Markdown (###, **, tables, comparison matrices).
 - Maintain an "Industrial Glass and Gold" professional aesthetic.
-- Never summarize. Provide full depth.
+- NEVER SUMMARIZE. Provide full depth (minimum 500+ words per report).
 `;
 
             const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [];

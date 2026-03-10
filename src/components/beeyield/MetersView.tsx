@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     Droplet, Flame, Zap, AlertTriangle, TrendingUp, Send,
-    Bot, ThermometerSun, Activity
+    Bot, ThermometerSun, Activity, Search,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -20,6 +20,7 @@ import MetersListOther from './MetersListOther';
 import ReportsExportsView from './ReportsExportsView';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { glass } from './GlassTheme';
 
 const usageTrendData = [
     { day: 'Day 1', value: 125 },
@@ -114,22 +115,22 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     if (loading && activeSubTab === 'meters-dashboard') {
         return (
             <div className="flex flex-col items-center justify-center min-h-[500px] space-y-6">
-                <div className="w-16 h-16 border-4 border-beeyield-forest border-t-transparent rounded-full animate-spin" />
-                <p className="text-gray-400 font-bold text-[11px] uppercase tracking-[0.2em] animate-pulse">Synchronizing Hubs...</p>
+                <div className="w-12 h-12 border-4 border-honey border-t-transparent rounded-full animate-spin" />
+                <p className={cn(glass.microLabel, "animate-pulse")}>Synchronizing Hubs...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 pb-12">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
             {/* Header */}
-            <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
-                    <Activity className="w-3.5 h-3.5 text-[#facc15]" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Operational Telemetry Hub</span>
+            <div className="space-y-4">
+                <div className={cn(glass.badge, "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold mb-4")}>
+                    <Activity className="w-4 h-4 mr-2" />
+                    Operational Telemetry Hub
                 </div>
-                <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Resource <span className="text-[#10b981]">Inventory</span></h1>
-                <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
+                <h1 className={cn(glass.sectionTitle, "text-6xl")}>Resource <span className="text-honey">Inventory</span></h1>
+                <p className={cn(glass.microLabel, "normal-case italic font-semibold text-lg opacity-70")}>
                     Critical payloads: Water, and Neural system energy health.
                 </p>
             </div>
@@ -140,223 +141,232 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     const { total, unit } = getUsageByMedium(medium);
                     const Icon = medium === 'Water' ? Droplet : medium === 'Heat' ? ThermometerSun : Zap;
                     const alertCount = meters.filter(m => m.meter_type === medium && m.has_alarm).length;
-                    const iconColors = {
-                        Water: 'text-[#10b981]',
-                        Heat: 'text-[#facc15]',
-                        Energy: 'text-white'
+
+                    const themeColors = {
+                        Water: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+                        Heat: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+                        Energy: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
                     };
 
                     return (
-                        <div key={medium}>
-                            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all overflow-hidden group">
-                                <CardContent className="p-6">
-                                    <div className="flex items-start justify-between mb-6">
-                                        <div className={cn('w-12 h-12 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] transition-all', iconColors[medium])}>
-                                            <Icon className="w-6 h-6" />
-                                        </div>
-                                        <div className={cn('px-2 py-0.5 border-2 text-[8px] font-black uppercase tracking-widest',
-                                            alertCount > 0 ? 'bg-red-500 text-white border-[#064e3b]' : 'bg-[#10b981] text-white border-[#064e3b]'
-                                        )}>
-                                            {alertCount > 0 ? 'ALERT' : 'NOMINAL'}
-                                        </div>
-                                    </div>
-                                    <h3 className="text-4xl font-black text-[#064e3b] tracking-tighter uppercase">
-                                        {total} <span className="text-sm font-black text-[#064e3b]/20">{unit}</span>
-                                    </h3>
-                                    <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mt-2">{medium} ACCUMULATION</p>
-                                </CardContent>
-                            </Card>
-                        </div>
+                        <motion.div
+                            key={medium}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.1 }}
+                            className={cn(glass.card, "p-6 hover:shadow-xl transition-all duration-300 border-border group")}
+                        >
+                            <div className="flex items-start justify-between mb-6">
+                                <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center border transition-all shadow-sm group-hover:scale-110 duration-300', themeColors[medium])}>
+                                    <Icon className="w-6 h-6" />
+                                </div>
+                                <div className={cn(
+                                    glass.badge, "text-[10px] font-bold px-3 py-1 shadow-none transition-colors",
+                                    alertCount > 0 ? 'bg-red-500 text-white border-transparent' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white'
+                                )}>
+                                    {alertCount > 0 ? 'ALERT' : 'NOMINAL'}
+                                </div>
+                            </div>
+                            <h3 className={cn(glass.sectionTitle, "text-4xl tabular-nums")}>
+                                {total} <span className="text-sm font-semibold opacity-50 ml-1">{unit}</span>
+                            </h3>
+                            <p className={cn(glass.microLabel, "italic normal-case opacity-60 mt-2 font-bold")}>{medium} Accumulation</p>
+                        </motion.div>
                     );
                 })}
 
-                {/* Alerts Card — Forest green dark */}
-                <div>
-                    <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[6px_6px_0px_0px_rgba(24acc15,1)] shadow-[#facc15] overflow-hidden relative">
-                        <CardContent className="p-6 relative z-10">
-                            <div className="flex items-start justify-between mb-6">
-                                <div className="w-12 h-12 rounded-none bg-white/5 border-2 border-white/20 flex items-center justify-center">
-                                    <AlertTriangle className="w-6 h-6 text-[#facc15]" />
-                                </div>
+                {/* Alerts Card */}
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className={cn(glass.card, "p-6 bg-red-500/5 border-red-500/20 relative overflow-hidden group hover:shadow-xl transition-all")}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                        <div>
+                            <div className="w-12 h-12 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center mb-6 shadow-sm">
+                                <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
                             </div>
-                            <h3 className="text-5xl font-black text-white tracking-tighter uppercase">{activeAlarmsCount}</h3>
-                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mt-2">Active Protocol Alerts</p>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onTabChange('meters-alarms')}
-                                className="mt-6 text-[#facc15] hover:bg-white/10 rounded-none h-10 px-4 border-2 border-[#facc15]/20 font-black uppercase text-[10px] tracking-widest transition-none"
-                            >
-                                INTERROGATE RECORDS →
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
+                            <h3 className={cn(glass.sectionTitle, "text-5xl tabular-nums text-red-600 dark:text-red-500")}>{activeAlarmsCount}</h3>
+                            <p className={cn(glass.microLabel, "normal-case italic opacity-70 font-bold mt-2")}>Active Protocol Alerts</p>
+                        </div>
+                        <button
+                            onClick={() => onTabChange('meters-alarms')}
+                            className={cn(glass.btnSecondary, "mt-6 text-red-600 dark:text-red-400 bg-white/50 dark:bg-black/20 border-red-500/30 hover:bg-red-500 hover:text-white hover:border-transparent group-hover:-translate-y-1")}
+                        >
+                            Interrogate Records →
+                        </button>
+                    </div>
+                </motion.div>
             </div>
 
             {/* Usage Trend Chart */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                <CardContent className="p-10">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
-                        <div>
-                            <h3 className="text-4xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Activity <span className="text-[#10b981]">Trend</span></h3>
-                            <p className="text-[#064e3b]/30 font-black text-[10px] mt-2 uppercase tracking-[0.2em]">Usage records from the last two weeks.</p>
-                        </div>
-                        <div className="flex bg-[#064e3b]/5 border-4 border-[#064e3b] p-1.5 gap-1.5">
-                            {(['Water', 'Heat', 'Energy'] as const).map(m => (
-                                <button
-                                    key={m}
-                                    className={cn('h-10 px-6 rounded-none text-[10px] font-black uppercase tracking-widest transition-none',
-                                        usageFilter === m
-                                            ? 'bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]'
-                                            : 'text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-white'
-                                    )}
-                                    onClick={() => setUsageFilter(m)}
-                                >{m}</button>
-                            ))}
-                        </div>
+            <div className={cn(glass.card, "p-8 space-y-8 shadow-xl")}>
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <h3 className={cn(glass.sectionTitle, "text-4xl normal-case")}>Activity <span className="text-honey">Trend</span></h3>
+                        <p className={cn(glass.microLabel, "normal-case italic mt-2 opacity-60")}>Usage records from the last two weeks.</p>
                     </div>
+                    <div className={cn(glass.filterBar, "bg-muted/40 p-1.5 shadow-inner")}>
+                        {(['Water', 'Heat', 'Energy'] as const).map(m => (
+                            <button
+                                key={m}
+                                className={cn(
+                                    "px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300",
+                                    usageFilter === m
+                                        ? "bg-white dark:bg-black text-foreground shadow-sm scale-100"
+                                        : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 scale-95 hover:scale-100"
+                                )}
+                                onClick={() => setUsageFilter(m)}
+                            >
+                                {m}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-                    <div className="h-[360px] w-full min-h-[360px]">
-                        <ResponsiveContainer width="99%" height="100%">
-                            <AreaChart data={usageTrendData}>
-                                <defs>
-                                    <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#1B4332" stopOpacity={0.12} />
-                                        <stop offset="95%" stopColor="#1B4332" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#F5F5F5" />
-                                <XAxis
-                                    dataKey="day"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 700 }}
-                                    dy={12}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 700 }}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '24px',
-                                        border: '1px solid #E0E0E0',
-                                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.08)',
-                                        padding: '16px 20px',
-                                        fontSize: '13px',
-                                        fontWeight: 700
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke="#064e3b"
-                                    fillOpacity={1}
-                                    fill="url(#colorUsage)"
-                                    strokeWidth={4}
-                                    dot={{ r: 6, strokeWidth: 3, fill: '#fff', stroke: '#064e3b' }}
-                                    activeDot={{ r: 8, fill: '#10b981' }}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </CardContent>
-            </Card>
+                <div className="h-[360px] w-full mt-4">
+                    <ResponsiveContainer width="99%" height="100%">
+                        <AreaChart data={usageTrendData}>
+                            <defs>
+                                <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="currentColor" strokeOpacity={0.1} />
+                            <XAxis
+                                dataKey="day"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: 'currentColor', fontSize: 12, fontFamily: 'serif', opacity: 0.6 }}
+                                dy={12}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: 'currentColor', fontSize: 12, fontFamily: 'sans-serif', fontWeight: 600, opacity: 0.6 }}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    borderRadius: '1rem',
+                                    border: '1px solid rgba(0,0,0,0.1)',
+                                    boxShadow: '0 20px 25px -5px rgba(0,0,0,0.08)',
+                                    padding: '16px 20px',
+                                    fontSize: '13px',
+                                    fontWeight: 700,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    backdropFilter: 'blur(12px)'
+                                }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#f59e0b"
+                                fill="url(#colorUsage)"
+                                strokeWidth={4}
+                                dot={{ r: 6, strokeWidth: 3, fill: '#fff', stroke: '#f59e0b' }}
+                                activeDot={{ r: 8, fill: '#f59e0b' }}
+                                animationDuration={1000}
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
 
             {/* Bottom: Smart Tips + Recent Events */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Smart Assistant */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                    <CardContent className="p-8">
-                        <div className="flex items-center gap-5 mb-8">
-                            <div className="w-14 h-14 bg-[#064e3b] border-2 border-[#10b981] rounded-none flex items-center justify-center">
-                                <Bot className="w-7 h-7 text-[#facc15]" />
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Neural Co-Pilot</h3>
-                                <p className="text-[9px] text-[#064e3b]/30 font-black uppercase tracking-[0.2em] mt-0.5">Autonomous Hive Assistant</p>
-                            </div>
+                <div className={cn(glass.card, "p-8 flex flex-col shadow-lg")}>
+                    <div className="flex items-center gap-5 mb-8">
+                        <div className="w-14 h-14 bg-honey/10 border border-honey/20 rounded-2xl flex items-center justify-center">
+                            <Bot className="w-6 h-6 text-amber-500" />
                         </div>
+                        <div>
+                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Neural Co-Pilot</h3>
+                            <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-60 mt-1")}>Autonomous Hive Assistant</p>
+                        </div>
+                    </div>
 
-                        <div className="bg-neutral-50/50 border-4 border-[#064e3b]/10 rounded-none p-6 mb-8 min-h-[100px]">
-                            {chatMessages.slice(-1).map((msg, idx) => (
-                                <p key={idx} className="text-sm font-medium text-beeyield-charcoal leading-relaxed">
-                                    {msg.content}
-                                </p>
-                            ))}
-                        </div>
+                    <div className="bg-white/40 dark:bg-black/20 border border-border rounded-2xl p-6 mb-8 min-h-[140px] flex-1 max-h-[250px] overflow-y-auto custom-scrollbar flex flex-col gap-4">
+                        {chatMessages.map((msg, idx) => (
+                            <div key={idx} className={cn("flex w-full", msg.role === 'user' ? "justify-end" : "justify-start")}>
+                                <div className={cn(
+                                    "px-4 py-3 rounded-2xl max-w-[85%] shadow-sm",
+                                    msg.role === 'user' ? "bg-honey text-white rounded-br-none" : "bg-white dark:bg-zinc-900 border border-border text-foreground rounded-bl-none"
+                                )}>
+                                    <p className="text-sm font-medium leading-relaxed">
+                                        {msg.content}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
-                        <div className="flex gap-4">
-                            <Input
-                                placeholder="Interrogate the Co-Pilot..."
-                                value={aiMessage}
-                                onChange={e => setAiMessage(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                                className="h-14 rounded-none border-4 border-[#064e3b] bg-white text-xs font-black uppercase px-6 focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
-                            />
-                            <Button
-                                onClick={handleSendMessage}
-                                className="h-14 w-14 rounded-none bg-[#064e3b] hover:bg-[#10b981] text-white border-2 border-[#064e3b] transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
-                            >
-                                <Send className="w-6 h-6" />
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                    <div className="flex gap-4 mt-auto relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground opacity-50" />
+                        <input
+                            placeholder="Interrogate the Co-Pilot..."
+                            value={aiMessage}
+                            onChange={e => setAiMessage(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                            className={cn(glass.input, "flex-1 rounded-2xl pl-12 h-14")}
+                        />
+                        <button
+                            onClick={handleSendMessage}
+                            className={cn(glass.btnPrimary, "w-14 h-14 rounded-2xl p-0 flex items-center justify-center border-transparent shadow-lg shadow-honey/20 shrink-0")}
+                        >
+                            <Send className="w-5 h-5 ml-1" />
+                        </button>
+                    </div>
+                </div>
 
                 {/* Recent Events */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
-                    <CardContent className="p-8">
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter leading-none">System <span className="text-[#10b981]">Events</span></h3>
-                                <p className="text-[9px] text-[#064e3b]/30 font-black uppercase tracking-[0.2em] mt-2">Live Telemetry Archive</p>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest hover:text-[#064e3b] hover:bg-[#facc15]/10 rounded-none h-10 px-4 transition-none"
-                                onClick={() => onTabChange('meters-alarms')}
-                            >
-                                FULL ARCHIVE →
-                            </Button>
+                <div className={cn(glass.card, "p-8 flex flex-col shadow-lg")}>
+                    <div className="flex items-start justify-between mb-8 border-b border-border pb-4">
+                        <div>
+                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case inline-flex items-center gap-2")}>System <span className="text-emerald-500">Events</span></h3>
+                            <p className={cn(glass.microLabel, "normal-case text-muted-foreground opacity-70 italic font-semibold mt-1")}>Live Telemetry Archive</p>
                         </div>
+                        <button
+                            className={cn(glass.btnSecondary, "text-xs px-4 h-9 bg-muted/40 border-transparent hover:bg-muted font-bold")}
+                            onClick={() => onTabChange('meters-alarms')}
+                        >
+                            Full Archive →
+                        </button>
+                    </div>
 
-                        <div className="space-y-4">
-                            {events.slice(0, 5).map((event) => (
-                                <div
+                    <div className="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-2">
+                        {events.length === 0 ? (
+                            <div className={glass.emptyState}>
+                                <Activity className="w-10 h-10 mb-4 text-muted-foreground/30" />
+                                <p className={glass.microLabel}>No events recorded.</p>
+                            </div>
+                        ) : (
+                            events.slice(0, 5).map((event) => (
+                                <motion.div
                                     key={event.id}
-                                    className="flex items-center justify-between p-5 rounded-none bg-neutral-50/30 border-2 border-transparent hover:border-[#064e3b]/10 transition-none group cursor-pointer"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="flex items-center justify-between p-4 rounded-xl bg-white/40 dark:bg-black/20 border border-border hover:bg-white/60 dark:hover:bg-black/40 hover:border-border/80 transition-all group cursor-pointer"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className={cn('w-3 h-3 rounded-none border-2',
+                                        <div className={cn('w-3 h-3 rounded-full shrink-0 shadow-sm border border-transparent',
                                             event.severity === 'CRITICAL' || event.severity === 'ALERT'
-                                                ? 'bg-red-500 border-[#064e3b] animate-pulse'
-                                                : 'bg-[#facc15] border-[#064e3b]'
+                                                ? 'bg-red-500 shadow-red-500/50 animate-pulse border-red-200'
+                                                : 'bg-emerald-500 shadow-emerald-500/50'
                                         )} />
                                         <div>
-                                            <span className="text-[11px] font-black text-[#064e3b] uppercase tracking-tighter block">{event.event_type}</span>
-                                            <p className="text-[9px] text-[#064e3b]/30 font-black mt-0.5 uppercase tracking-[0.1em]">{event.reason}</p>
+                                            <span className={cn(glass.microLabel, "font-bold tracking-wider opacity-90 group-hover:opacity-100 transition-opacity block", event.severity === 'CRITICAL' ? "text-red-600 dark:text-red-400" : "")}>{event.event_type}</span>
+                                            <p className="text-xs text-muted-foreground font-medium mt-1 truncate max-w-[200px] sm:max-w-[250px]">{event.reason}</p>
                                         </div>
                                     </div>
-                                    <span className="text-[9px] text-[#064e3b]/20 font-black uppercase tracking-[0.2em] group-hover:text-[#064e3b]/40 transition-none">
+                                    <span className={cn(glass.microLabel, "text-[10px] opacity-40 group-hover:opacity-70 transition-opacity font-bold shrink-0")}>
                                         {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
-                                </div>
-                            ))}
-                            {events.length === 0 && (
-                                <div className="py-12 text-center text-gray-400">
-                                    <Activity className="w-10 h-10 mx-auto mb-4 text-gray-200" />
-                                    <p className="text-sm font-bold">No events recorded</p>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                                </motion.div>
+                            ))
+                        )}
+                    </div>
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

@@ -6,6 +6,7 @@ import { Check, Zap, Shield, Crown, ArrowRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { glass } from './GlassTheme';
 
 interface Plan {
     id: string;
@@ -31,7 +32,7 @@ const plans: Plan[] = [
             'Community forum access',
             'Weather alerts'
         ],
-        color: 'border-[#064e3b] text-[#064e3b]',
+        color: 'border-muted-foreground/20 text-muted-foreground bg-muted/20',
         icon: Shield
     },
     {
@@ -47,7 +48,7 @@ const plans: Plan[] = [
             'Pollination contract management',
             'E-TIMS integration'
         ],
-        color: 'border-[#10b981] text-[#10b981] bg-[#10b981]/5',
+        color: 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/10',
         icon: Zap
     },
     {
@@ -63,7 +64,7 @@ const plans: Plan[] = [
             'Dedicated account manager',
             'White-label reporting'
         ],
-        color: 'border-[#facc15] text-[#064e3b] bg-[#facc15]/5',
+        color: 'border-honey/30 text-honey bg-honey/10 shadow-lg shadow-honey/10',
         icon: Crown
     }
 ];
@@ -102,55 +103,61 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                 const isCurrent = currentTier === plan.id;
 
                 return (
-                    <Card
+                    <div
                         key={plan.id}
                         className={cn(
-                            "rounded-none border-4 transition-all flex flex-col h-full",
+                            glass.card,
+                            "flex flex-col h-full rounded-[2.5rem] p-0 overflow-hidden backdrop-blur-md transition-all duration-500",
                             plan.color,
-                            isCurrent ? "shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] scale-[1.02]" : "shadow-none hover:shadow-[4px_4px_0px_0px_rgba(6,78,59,0.5)]"
+                            isCurrent ? "scale-[1.02] border-honey shadow-2xl shadow-honey/20 ring-1 ring-honey/50" : "hover:border-foreground/20 hover:shadow-xl"
                         )}
                     >
-                        <CardHeader className="p-8 border-b-4 border-current">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 border-2 border-current">
-                                    <Icon className="w-6 h-6" />
+                        <div className="p-8 border-b border-white/10 dark:border-black/10 bg-white/40 dark:bg-black/20">
+                            <div className="flex justify-between items-start mb-6">
+                                <div className={cn("p-4 rounded-2xl flex items-center justify-center border", plan.color)}>
+                                    <Icon className="w-8 h-8" />
                                 </div>
                                 {isCurrent && (
-                                    <Badge className="bg-[#064e3b] text-white rounded-none px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                                    <Badge className="bg-honey text-white rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-honey/20">
                                         Current Plan
                                     </Badge>
                                 )}
                             </div>
-                            <CardTitle className="text-2xl font-black uppercase tracking-tighter mb-2">{plan.name}</CardTitle>
-                            <p className="text-[10px] font-black uppercase opacity-60 leading-tight">{plan.description}</p>
-                        </CardHeader>
-                        <CardContent className="p-8 flex-1 flex flex-col">
+                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case mb-2 leading-none", plan.id === 'Free' ? 'text-foreground' : plan.color.split(' ')[1])}>{plan.name}</h3>
+                            <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-80 leading-relaxed")}>{plan.description}</p>
+                        </div>
+                        <div className="p-8 flex-1 flex flex-col bg-white/20 dark:bg-black/10">
                             <div className="mb-8">
-                                <span className="text-4xl font-black italic">{plan.price}</span>
-                                <span className="text-xs font-black uppercase opacity-40 ml-1">{plan.period}</span>
+                                <span className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none tracking-tight", plan.id === 'Free' ? 'text-foreground' : plan.color.split(' ')[1])}>{plan.price}</span>
+                                <span className={cn(glass.microLabel, "opacity-60 ml-2 normal-case font-semibold")}>{plan.period}</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1">
                                 {plan.features.map((feature, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <Check className="w-4 h-4 shrink-0 mt-0.5 text-[#10b981]" />
-                                        <span className="text-[10px] font-bold uppercase tracking-tight">{feature}</span>
+                                    <li key={i} className="flex items-start gap-4">
+                                        <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center mt-0.5 shrink-0">
+                                            <Check className="w-3 h-3 text-emerald-500" />
+                                        </div>
+                                        <span className={cn(glass.microLabel, "normal-case font-bold tracking-tight text-foreground/80")}>{feature}</span>
                                     </li>
                                 ))}
                             </ul>
-                            <Button
+                            <button
                                 disabled={isCurrent || (loading !== null)}
                                 onClick={() => handleUpgrade(plan.id)}
                                 className={cn(
-                                    "w-full h-14 rounded-none font-black uppercase tracking-[0.2em] text-xs transition-all",
+                                    glass.btnPrimary,
+                                    "w-full h-16 rounded-2xl",
                                     isCurrent
-                                        ? "bg-neutral-100 text-neutral-400 border-2 border-neutral-200"
-                                        : "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] hover:translate-y-1 hover:shadow-none"
+                                        ? "bg-muted text-muted-foreground border-border hover:bg-muted cursor-default shadow-none"
+                                        : "bg-foreground text-background border-foreground hover:bg-foreground/90 shadow-xl",
+                                    plan.id === 'Pro' && !isCurrent ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "",
+                                    plan.id === 'Enterprise' && !isCurrent ? "bg-honey text-white border-honey hover:bg-amber-600 shadow-honey/20" : ""
                                 )}
                             >
-                                {loading === plan.id ? <Loader2 className="w-4 h-4 animate-spin" /> : isCurrent ? 'Active' : 'Upgrade Plan'}
-                            </Button>
-                        </CardContent>
-                    </Card>
+                                {loading === plan.id ? <Loader2 className="w-5 h-5 animate-spin" /> : isCurrent ? 'Active Plan' : 'Select Plan'}
+                            </button>
+                        </div>
+                    </div>
                 );
             })}
         </div>
