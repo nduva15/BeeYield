@@ -63,13 +63,29 @@ export const labelService = {
     },
 
     saveLabel: async (design: LabelDesign): Promise<LabelDesign> => {
-        const response: any = await apiPost('/labels', design);
-        const data = response.data ? response.data : response;
-        return {
-            ...data.design_json,
-            id: data.id
-        };
+        try {
+            const response: any = await apiPost('/labels', design);
+            const data = response.data ? response.data : response;
+            
+            // If design_json exists, use it; otherwise treat the whole response as the design
+            if (data.design_json) {
+                return {
+                    ...data.design_json,
+                    id: data.id || design.id
+                };
+            }
+            
+            // Fallback: the response IS the design
+            return {
+                ...design,
+                id: data.id || design.id
+            };
+        } catch (error) {
+            console.error('[LabelService] Save failed:', error);
+            throw error;
+        }
     },
+
 
     deleteLabel: async (id: string): Promise<void> => {
         await apiDelete(`/labels/${id}`);

@@ -112,6 +112,7 @@ async def save_label_design(
     
     payload = {
         "user_id": user_id,
+        "name": design_data.get("name") or design_data.get("productName") or "Untitled Label",
         "design_json": design_data,
         "harvest_batch_id": design_data.get("batchNumber"),
         "include_qr": design_data.get("showQRCode", False)
@@ -121,19 +122,20 @@ async def save_label_design(
     if label_id and str(label_id).strip():
         payload["id"] = str(label_id).strip()
 
+    print(f"[LABELS] Saving label for user {user_id}, id={label_id}, name={payload['name']}")
+
     # Use db_upsert for both insert and update
     result = await db_upsert("saved_labels", payload, token=token)
     
     if not result.get("success"):
         error_detail = result.get("error", "Failed to save label design")
         print(f"[LABELS] Save failed: {error_detail}")
-        raise HTTPException(status_code=500, detail=error_detail)
+        raise HTTPException(status_code=500, detail=str(error_detail))
     
     data = result.get("data")
     if not data or not isinstance(data, list) or len(data) == 0:
-        # Fallback if Prefer: return=representation was ignored or failed but success was true
-        # We try to return what we have
-        return {"id": label_id, "design_json": design_data, "user_id": user_id}
+        # Fallback: return what we have so the frontend doesn't break
+        return {"id": label_id or str(datetime.datetime.now().timestamp()), "design_json": design_data, "user_id": user_id}
 
     return data[0]
 
