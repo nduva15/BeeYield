@@ -3,7 +3,7 @@ Supabase Database Connection for BeeYield
 ===========================================
 REWRITTEN: Now routes ALL database operations through the Rust + Go database gateway.
 - Rust service (port 9091): Handles core Supabase REST CRUD with connection pooling
-- Go gateway (port 9090):   Routes + handles ClickHouse analytics + JWT auth
+- Go gateway (port 9090):   Routes + handles JWT auth
 
 ALL configuration comes from environment variables. ZERO hardcoded data.
 """

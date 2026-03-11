@@ -19,16 +19,14 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
-    from app.db.clickhouse_db import track_traceability_scan
+    # Result will be fetched from traceability service
     
     result = await traceability_service.get_trace_journey(code, token=token)
     
     if result:
-        background_tasks.add_task(track_traceability_scan, code)
         return result
         
-    background_tasks.add_task(track_traceability_scan, code)
-    print(f"[ERROR] Code Not Found: {code}")
+
 
     raise HTTPException(status_code=404, detail=f"Traceability code '{code}' not found. Please verify the code on your jar.")
 

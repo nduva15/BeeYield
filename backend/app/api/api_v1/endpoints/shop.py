@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core import security
 from app.schemas import shop as schemas
 from app.services import payment, shop_service
-from app.db.clickhouse_db import track_order_event
+
 
 router = APIRouter()
 
@@ -68,10 +68,7 @@ async def initialize_checkout(
 
     order_id = order_result["order_id"]
     
-    try:
-        track_order_event(order_id, "created", float(order_in.total_kes))
-    except Exception:
-        pass
+
 
     return {
         **order_result,

@@ -34,18 +34,7 @@ const Header = () => {
     });
   };
 
-  const menuLinks = [
-    { to: "/global-hive-network", label: "Global Hive Network" },
-    { to: "/ourstory", label: "Our Story" },
-    { to: "/media", label: "Media" },
-    { to: "/blogs", label: "Blog" },
-    { to: "/contact", label: "Contact Us" },
-    { to: "/esg", label: "ESG" },
-    { to: "/commitment", label: "Commitment" },
-    { to: "/about", label: "About Us" },
-    { to: "/careers", label: "Careers" },
-    { to: "/team", label: "Team" },
-  ];
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-beeyield-gold/20 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm">
@@ -104,6 +93,35 @@ const Header = () => {
           >
             Beekeeping Network
           </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 text-beeyield-green/80 hover:text-beeyield-green">
+              Pages
+              <ChevronDown className="h-3.5 w-3.5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-56 p-2 bg-white dark:bg-neutral-800 border border-beeyield-gold/20 rounded-2xl shadow-2xl z-[100] grid grid-cols-1 gap-1">
+              {[
+                { label: 'About Us', to: '/about' },
+                { label: 'Bee Learn', to: '/learn' },
+                { label: 'Impact', to: '/impact' },
+                { label: 'ESG', to: '/esg' },
+                { label: 'Our Story', to: '/ourstory' },
+                { label: 'Commitment', to: '/commitment' },
+                { label: 'Global Network', to: '/global-hive-network' },
+                { label: 'Team', to: '/team' },
+                { label: 'Careers', to: '/careers' },
+                { label: 'Media', to: '/media' },
+                { label: 'Blogs', to: '/blogs' },
+                { label: 'Contact', to: '/contact' },
+              ].map((item) => (
+                <DropdownMenuItem key={item.to} asChild className="focus:bg-beeyield-gold/10 focus:text-beeyield-green rounded-xl">
+                  <Link to={item.to} className="w-full cursor-pointer px-4 py-2.5 text-sm font-bold text-beeyield-green/80 hover:text-beeyield-green transition-all">
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link
             to="/shop"
             onPrefetch={prefetchShop}
@@ -113,21 +131,7 @@ const Header = () => {
             Shop
           </Link>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 text-beeyield-green/80 hover:text-beeyield-green">
-              Pages
-              <ChevronDown className="h-3.5 w-3.5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-72 flex flex-col p-3 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100]">
-              {menuLinks.map((link) => (
-                <DropdownMenuItem key={link.to} asChild className="focus:bg-white/20 focus:text-white">
-                  <Link to={link.to} className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
-                    {link.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+
         </div>
 
         {/* Right side - Traceability Button & Menu (all devices) */}
@@ -252,6 +256,38 @@ const Header = () => {
               >
                 Shop
               </Link>
+
+              {/* Mobile Pages Sub-menu */}
+              <div className="flex flex-col">
+                <span className="text-sm sm:text-base font-bold text-beeyield-green px-3 py-2.5 sm:py-3 flex items-center gap-1">
+                  Pages
+                  <ChevronDown className="h-4 w-4" />
+                </span>
+                <div className="pl-4 grid grid-cols-2 gap-x-2 gap-y-1">
+                  {[
+                    { label: 'About', to: '/about' },
+                    { label: 'Learn', to: '/learn' },
+                    { label: 'Impact', to: '/impact' },
+                    { label: 'Commitment', to: '/commitment' },
+                    { label: 'Global Network', to: '/global-hive-network' },
+                    { label: 'ESG', to: '/esg' },
+                    { label: 'Story', to: '/ourstory' },
+                    { label: 'Team', to: '/team' },
+                    { label: 'Blogs', to: '/blogs' },
+                    { label: 'Contact', to: '/contact' },
+                  ].map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`text-xs font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive(item.to) ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
+                        }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Secondary Links Section */}
@@ -267,19 +303,7 @@ const Header = () => {
                 <Shield className="h-4 w-4" />
               </Link>
 
-              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black mt-2">More</span>
 
-              {menuLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive(link.to) ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
-                    }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
             </div>
           </div>
         </>

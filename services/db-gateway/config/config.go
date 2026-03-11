@@ -18,13 +18,7 @@ type Config struct {
 	RustDBHost string
 	RustDBPort int
 
-	// ClickHouse
-	ClickHouseHost     string
-	ClickHousePort     int
-	ClickHouseUser     string
-	ClickHousePassword string
-	ClickHouseDatabase string
-	ClickHouseSecure   bool
+
 
 	// Kaggle
 	KaggleUsername  string
@@ -48,12 +42,7 @@ func LoadFromEnv() *Config {
 		RustDBHost: getEnvDefault("RUST_DB_HOST", "127.0.0.1"),
 		RustDBPort: getEnvIntDefault("RUST_DB_PORT", 9091),
 
-		ClickHouseHost:     os.Getenv("CLICKHOUSE_HOST"),
-		ClickHousePort:     getEnvIntDefault("CLICKHOUSE_PORT", 8443),
-		ClickHouseUser:     getEnvDefault("CLICKHOUSE_USER", "default"),
-		ClickHousePassword: os.Getenv("CLICKHOUSE_PASSWORD"),
-		ClickHouseDatabase: getEnvDefault("CLICKHOUSE_DATABASE", "beeyield_analytics"),
-		ClickHouseSecure:   getEnvBoolDefault("CLICKHOUSE_SECURE", true),
+
 
 		KaggleUsername: os.Getenv("KAGGLE_USERNAME"),
 		KaggleAPIKey:   os.Getenv("KAGGLE_KEY"),
@@ -77,10 +66,7 @@ func (c *Config) GatewayAddr() string {
 	return fmt.Sprintf("%s:%d", c.ListenHost, c.ListenPort)
 }
 
-// ClickHouseConfigured returns true if ClickHouse host is set.
-func (c *Config) ClickHouseConfigured() bool {
-	return c.ClickHouseHost != ""
-}
+
 
 // JWTSecretKey returns the preferred JWT secret for verification.
 func (c *Config) JWTSecretKey() string {

@@ -14,7 +14,7 @@ import {
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
-    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck
+    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug
 } from 'lucide-react';
 import { Award } from 'lucide-react';
 import { toast } from 'sonner';
