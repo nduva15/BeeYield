@@ -65,6 +65,12 @@ export const glass = {
 
     /** Obsidian Section Title */
     sectionTitle: 'text-6xl font-black text-white tracking-tighter uppercase leading-none',
+
+    /** Ghost Shimmer Skeleton */
+    skeleton: 'bg-white/5 animate-pulse rounded-[3rem] overflow-hidden relative after:absolute after:inset-0 after:-translate-x-full after:animate-[shimmer_2s_infinite] after:bg-gradient-to-r after:from-transparent after:via-white/5 after:to-transparent',
+
+    /** Atmospheric Empty State */
+    emptyState: 'flex flex-col items-center justify-center p-20 text-center space-y-8 rounded-[5rem] border-2 border-dashed border-white/5 bg-white/[0.02]',
 } as const;
 
 
