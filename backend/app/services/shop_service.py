@@ -1,15 +1,25 @@
 from typing import List, Optional, Dict, Any
-from honey_rust import ShopEngine, MpesaEngine, InvoicingEngine, calc_yield as _rust_calc
 from app.core.config import settings
 import logging
 import json
 
 logger = logging.getLogger(__name__)
 
-# Initialize the Rust engines (Local PyO3 Bindings)
-engine = ShopEngine(500000)
-mpesa = MpesaEngine()
-invoicer = InvoicingEngine()
+# Defensive import: Rust engine is optional — backend works without it
+try:
+    from honey_rust import ShopEngine, MpesaEngine, InvoicingEngine, calc_yield as _rust_calc
+    engine = ShopEngine(500000)
+    mpesa = MpesaEngine()
+    invoicer = InvoicingEngine()
+    _RUST_SHOP_AVAILABLE = True
+    logger.info("Oxidized Shop Engine: Online")
+except ImportError:
+    _rust_calc = lambda items: 0
+    engine = None
+    mpesa = None
+    invoicer = None
+    _RUST_SHOP_AVAILABLE = False
+    logger.warning("Oxidized Shop Engine: OFFLINE — run 'maturin develop' inside backend/beeyield_core")
 
 async def create_order(order_in: Any, user_id: Optional[str] = None, token: Optional[str] = None) -> dict:
     """
@@ -63,7 +73,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             is_bypass = clean_phone.endswith(bypass_ph[-9:]) or (bypass_ph in str(order_in.dict()))
 
     # 3. Rust Engine Ledger Idempotency
-    if id_key:
+    if id_key and engine:
         payload = order_in.dict()
         payload["amount"] = str(order_in.total_kes)
         payload["currency"] = "KES"
@@ -169,23 +179,26 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         elif not phone.startswith("254"):
             phone = "254" + phone
         
-        try:
-            stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
-            payment_info = stk_res
-            
-            checkout_id = stk_res.get("CheckoutRequestID")
-            if checkout_id and id_key:
-                await db_update("billing_ledger", 
-                    {
-                        "checkout_request_id": checkout_id,
-                        "metadata": {"checkout_request_id": checkout_id, "order_id": order_id}
-                    }, 
-                    {"idempotency_key": id_key},
-                    token=settings.SUPABASE_SERVICE_ROLE_KEY
-                )
-        except Exception as e:
-            logger.warning(f"Oxidized M-Pesa Push error: {e}")
-            payment_info = {"success": False, "error": str(e)}
+        if not mpesa:
+            payment_info = {"success": False, "error": "M-Pesa engine not available (Rust core offline)"}
+        else:
+            try:
+                stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
+                payment_info = stk_res
+                
+                checkout_id = stk_res.get("CheckoutRequestID")
+                if checkout_id and id_key:
+                    await db_update("billing_ledger", 
+                        {
+                            "checkout_request_id": checkout_id,
+                            "metadata": {"checkout_request_id": checkout_id, "order_id": order_id}
+                        }, 
+                        {"idempotency_key": id_key},
+                        token=settings.SUPABASE_SERVICE_ROLE_KEY
+                    )
+            except Exception as e:
+                logger.warning(f"Oxidized M-Pesa Push error: {e}")
+                payment_info = {"success": False, "error": str(e)}
 
     elif order_in.payment_method == "card":
         from app.services import payment
@@ -248,7 +261,10 @@ async def generate_invoice_pdf(order_id: str, token: Optional[str] = None):
     return io.BytesIO(html.encode())
 
 async def generate_invoice(order_id: str, amount: float, items_html: str, trace_hash: str) -> str:
-    return invoicer.generate_invoice_html(order_id, amount, items_html, trace_hash)
+    if invoicer:
+        return invoicer.generate_invoice_html(order_id, amount, items_html, trace_hash)
+    # Fallback when Rust core is offline
+    return f"<html><body><h1>Invoice {order_id}</h1><p>Amount: KES {amount}</p>{items_html}</body></html>"
 
 async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
     """
@@ -257,6 +273,8 @@ async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
     """
     from app.db.supabase_db import db_update, db_select
     try:
+        if not mpesa:
+            return {"success": False, "error": "M-Pesa engine not available"}
         rust_data = mpesa.parse_callback_result(json.dumps(payload))
         res_code = rust_data.get("result_code")
         checkout_id = rust_data.get("checkout_request_id")
@@ -292,12 +310,19 @@ async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
         return {"success": False, "error": str(e)}
 
 async def update_status(order_id: str, current_status: str, next_status: str, token: Optional[str] = None) -> dict:
-    if not engine.validate_transition(current_status, next_status):
+    if engine and not engine.validate_transition(current_status, next_status):
         return {"success": False, "error": "Invalid state transition"}
+    if not _RUST_SHOP_AVAILABLE:
+        # Fallback: direct DB update without Rust validation
+        from app.db.supabase_db import db_update
+        return await db_update("orders", {"status": next_status}, {"id": order_id}, token=token)
     from honey_rust import rust_update_order_status
     return await rust_update_order_status(order_id, next_status, token=token)
 
-update_order_status = update_status
+async def update_order_status(order_id: str, current_status: str, next_status: str, token: Optional[str] = None) -> dict:
+    """Explicit wrapper for updating order status."""
+    return await update_status(order_id, current_status, next_status, token=token)
+
 
 async def calc_yield(items: List[Dict[str, Any]]) -> int:
     return _rust_calc(items)

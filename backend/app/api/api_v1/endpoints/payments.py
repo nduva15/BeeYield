@@ -11,7 +11,8 @@ import stripe
 import logging
 
 # Import shop service for order updates
-from app.services.shop_service import update_order_status
+from app.services.shop_service import set_order_paid
+
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -175,13 +176,9 @@ async def confirm_payment(
         intent = stripe.PaymentIntent.retrieve(request.payment_intent_id)
         
         if intent.status == "succeeded":
-            # Update order status in database
-            await update_order_status(
-                request.order_id, 
-                status="paid",
-                payment_status="completed",
-                token=token
-            )
+            # Update order status in database via the service layer
+            await set_order_paid(request.order_id, token=token)
+
             
             return {
                 "status": "success",
