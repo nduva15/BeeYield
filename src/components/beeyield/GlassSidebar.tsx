@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Hexagon, ChevronDown, LogOut, Settings, Sun, Moon, Binary, Shield, Command, Terminal, Activity, Layers, Network, ShieldCheck, Zap, Dna, Microspectrum, Fingerprint, Lock, Radio } from 'lucide-react';
+import { Hexagon, ChevronDown, LogOut, Settings, Sun, Moon, Binary, Shield, Command, Terminal, Activity, Layers, Network, ShieldCheck, Zap, Dna, Microscope, Fingerprint, Lock, Radio } from 'lucide-react';
 import { NavItem } from './DashboardSidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { beeyieldService, SensorAlert } from '@/services/beeyieldService';
@@ -166,7 +166,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                     return (
                                                         <div key={idx} className="space-y-4 pt-6 first:pt-0">
                                                             <div className="flex items-center gap-4 px-6 mb-2 opacity-20">
-                                                                <Microspectrum className="w-4 h-4 text-honey" />
+                                                                <Microscope className="w-4 h-4 text-honey" />
                                                                 <span className="text-[10px] font-black text-foreground uppercase tracking-[0.5em] italic">{sub.title}</span>
                                                             </div>
                                                             {sub.items.map((subItem: any) => (

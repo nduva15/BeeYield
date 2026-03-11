@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact,
     forms, shop, blog, careers, media,
-    services, jobs, analytics, notes, admin, iot,
+    services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth,
     requests, image_analysis, acoustic, routing, forage, intelligence
@@ -39,8 +39,7 @@ api_router.include_router(inspections.router, prefix="/inspections", tags=["Insp
 # Intelligence endpoint (PRD: Neural Hive)
 api_router.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
 
-# Analytics endpoint
-api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
+
 
 # IoT endpoint
 api_router.include_router(iot.router, prefix="/iot", tags=["IoT"])

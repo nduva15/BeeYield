@@ -15,9 +15,12 @@ import {
     Loader2,
     Repeat,
     PauseCircle,
-    StopCircle
+    StopCircle,
+    LayoutGrid,
+    CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
 import {
     format,
     addMonths,
@@ -235,659 +238,309 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
 
     if (isAddingTask) {
         return (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-24 relative min-h-[600px]">
-                {/* Header */}
-                <div className="flex items-center gap-4">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setIsAddingTask(false)}
-                        className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
-                    >
-                        <ArrowLeft className="w-6 h-6 text-slate-700 dark:text-slate-300" />
-                    </Button>
-                    <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">{t('add_task')}</h1>
-                </div>
-
-                <div className="bg-white dark:bg-[#09090b] p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 space-y-8 max-w-4xl">
-
-                    {/* Title */}
-                    <div className="space-y-2">
-                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('task_title_label')}<span className="text-red-500">*</span></label>
-                        <input
-                            id="task-title"
-                            name="title"
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder={t('task_title_placeholder')}
-                            className="w-full h-14 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans text-lg placeholder:text-slate-300"
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Task Type */}
-                        <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('task_type_label') || "Task Type"}<span className="text-red-500">*</span></label>
-                            <div className="flex flex-wrap gap-2">
-                                {['Inspection', 'Feeding', 'Treatment', 'Harvest', 'Other'].map((type) => (
-                                    <button
-                                        key={type}
-                                        type="button"
-                                        onClick={() => setTaskType(type as any)}
-                                        className={cn(
-                                            "flex-1 px-4 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all outline-none cursor-pointer border-2",
-                                            taskType === type
-                                                ? "bg-[#1B9157] text-white border-[#1B9157] shadow-lg shadow-[#1B9157]/40"
-                                                : "bg-slate-50 text-slate-400 border-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500"
-                                        )}
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Recurring Toggle */}
-                        <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('recurring_task_label') || "Recurring Task"}</label>
-                            <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 h-14 rounded-2xl px-6">
-                                <label htmlFor="task-recurring-checkbox" className="text-sm font-bold text-slate-600 dark:text-slate-300 flex-1">Repeat this task?</label>
-                                <input
-                                    id="task-recurring-checkbox"
-                                    name="is_recurring"
-                                    type="checkbox"
-                                    checked={isRecurring}
-                                    onChange={(e) => setIsRecurring(e.target.checked)}
-                                    className="w-5 h-5 accent-[#1B9157]"
-                                />
-                                {isRecurring && (
-                                    <div className="flex items-center gap-2 ml-4 border-l border-slate-200 dark:border-slate-700 pl-4">
-                                        <label htmlFor="task-recurrence-days" className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Every</label>
-                                        <input
-                                            id="task-recurrence-days"
-                                            name="recurrence_days"
-                                            type="number"
-                                            value={recurrenceDays}
-                                            onChange={(e) => setRecurrenceDays(e.target.value)}
-                                            className="w-12 bg-transparent border-none text-center font-black text-[#1B9157] focus:ring-0"
-                                        />
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Days</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Date */}
-                        <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('task_date')}<span className="text-red-500">*</span></label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <button
-                                        type="button"
-                                        className="w-full h-14 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans flex items-center justify-between group"
-                                    >
-                                        <span>{format(taskDate, "dd MMM yyyy")}</span>
-                                        <CalendarIcon className="w-5 h-5 text-[#1B9157] group-hover:text-[#1B9157]/80" />
-                                    </button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 rounded-3xl border-slate-100 shadow-2xl" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={taskDate}
-                                        onSelect={(date) => date && setTaskDate(date)}
-                                        initialFocus
-                                        className="rounded-3xl border-none"
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-
-                        {/* Time */}
-                        <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('task_time')}</label>
-                            <Popover onOpenChange={(open) => !open && setIsClockMinutes(false)}>
-                                <PopoverTrigger asChild>
-                                    <button
-                                        type="button"
-                                        className="w-full h-14 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans flex items-center justify-between group"
-                                    >
-                                        <span>{taskTime}</span>
-                                        <ClockIcon className="w-5 h-5 text-[#1B9157]" />
-                                    </button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[320px] p-0 rounded-[2.5rem] border-slate-100 shadow-2xl z-[100]" align="start">
-                                    <div className="p-8 space-y-6 flex flex-col items-center select-none">
-                                        <div className="flex items-center justify-between w-full border-b border-slate-50 pb-4">
-                                            <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                                                {isClockMinutes ? t('select_minutes') : t('select_hour')}
-                                            </h4>
-                                            <div className="flex gap-1 items-center">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsClockMinutes(false)}
-                                                    className={cn("text-xl font-black", !isClockMinutes ? "text-[#1B9157]" : "text-slate-300")}
-                                                >
-                                                    {taskTime.split(':')[0]}
-                                                </button>
-                                                <span className="text-xl font-black text-slate-300">:</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsClockMinutes(true)}
-                                                    className={cn("text-xl font-black", isClockMinutes ? "text-[#1B9157]" : "text-slate-300")}
-                                                >
-                                                    {taskTime.split(':')[1]}
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div className="relative w-48 h-48 bg-slate-50 rounded-full flex items-center justify-center shadow-inner">
-                                            <div className="w-2 h-2 rounded-full bg-[#1B9157] z-10" />
-                                            {isClockMinutes ? (
-                                                Array.from({ length: 12 }).map((_, i) => {
-                                                    const m = (i * 5).toString().padStart(2, '0');
-                                                    const angle = (i * 30) - 90;
-                                                    const x = 50 + 38 * Math.cos(angle * Math.PI / 180);
-                                                    const y = 50 + 38 * Math.sin(angle * Math.PI / 180);
-                                                    const isSelected = taskTime.split(':')[1] === m;
-                                                    return (
-                                                        <button
-                                                            key={`m-${m}`}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                const [h] = taskTime.split(':');
-                                                                setTaskTime(`${h}:${m}`);
-                                                            }}
-                                                            className={cn(
-                                                                "absolute w-8 h-8 rounded-full text-xs font-black transition-all flex items-center justify-center -translate-x-1/2 -translate-y-1/2",
-                                                                isSelected ? "bg-[#F4D03F] text-slate-900 shadow-lg" : "text-slate-400 hover:bg-white hover:text-[#F4D03F]"
-                                                            )}
-                                                            style={{ left: `${x}%`, top: `${y}%` }}
-                                                        >
-                                                            {m}
-                                                        </button>
-                                                    );
-                                                })
-                                            ) : (
-                                                Array.from({ length: 12 }).map((_, i) => {
-                                                    const h = (i === 0 ? 12 : i).toString().padStart(2, '0');
-                                                    const angle = (i * 30) - 90;
-                                                    const x = 50 + 38 * Math.cos(angle * Math.PI / 180);
-                                                    const y = 50 + 38 * Math.sin(angle * Math.PI / 180);
-                                                    const isSelected = taskTime.split(':')[0] === h;
-                                                    return (
-                                                        <button
-                                                            key={`h-${h}`}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                const [_, m] = taskTime.split(':');
-                                                                setTaskTime(`${h}:${m}`);
-                                                                setIsClockMinutes(true);
-                                                            }}
-                                                            className={cn(
-                                                                "absolute w-8 h-8 rounded-full text-sm font-black transition-all flex items-center justify-center -translate-x-1/2 -translate-y-1/2",
-                                                                isSelected ? "bg-[#F4D03F] text-slate-900 shadow-lg" : "text-slate-400 hover:bg-white hover:text-[#F4D03F]"
-                                                            )}
-                                                            style={{ left: `${x}%`, top: `${y}%` }}
-                                                        >
-                                                            {i === 0 ? 12 : i}
-                                                        </button>
-                                                    );
-                                                })
-                                            )}
-                                        </div>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-
-                        {/* Apiary */}
-                        <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('apiary_label')}</label>
-                            <div className="relative">
-                                <button
-                                    type="button"
-                                    onClick={() => { setIsApiaryOpen(!isApiaryOpen); setIsHiveOpen(false); }}
-                                    className="w-full h-14 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans flex items-center justify-between group"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <MapPin className="w-5 h-5 text-[#1B9157]" />
-                                        <span>{selectedApiary ? selectedApiary.name : t('none_label')}</span>
-                                    </div>
-                                    <ChevronDown className={cn("w-4 h-4 text-slate-300 transition-transform", isApiaryOpen && "rotate-180")} />
-                                </button>
-                                <AnimatePresence>
-                                    {isApiaryOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 max-h-[250px] overflow-y-auto"
-                                        >
-                                            <button
-                                                onClick={() => { setSelectedApiary(null); setIsApiaryOpen(false); }}
-                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/10 dark:hover:bg-[#F4D03F]/20 rounded-xl transition-colors text-slate-600 dark:text-slate-300 font-bold text-sm"
-                                            >
-                                                <span>{t('none_label')}</span>
-                                                {!selectedApiary && <Check className="w-4 h-4 ml-auto text-[#1B9157]" />}
-                                            </button>
-                                            {apiaries.map(apiary => (
-                                                <button
-                                                    key={apiary.id}
-                                                    onClick={() => { setSelectedApiary(apiary); setIsApiaryOpen(false); }}
-                                                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/10 dark:hover:bg-[#F4D03F]/20 rounded-xl transition-colors text-slate-600 dark:text-slate-300 font-bold text-sm"
-                                                >
-                                                    <span>{apiary.name}</span>
-                                                    {selectedApiary?.id === apiary.id && <Check className="w-4 h-4 ml-auto text-[#1B9157]" />}
-                                                </button>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-
-                        {/* Hive */}
-                        <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('hive_label')}</label>
-                            <div className="relative">
-                                <button
-                                    type="button"
-                                    onClick={() => { setIsHiveOpen(!isHiveOpen); setIsApiaryOpen(false); }}
-                                    className="w-full h-14 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans flex items-center justify-between group"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <Box className="w-5 h-5 text-[#1B9157]" />
-                                        <span>{selectedHive ? selectedHive.hive_code : t('none_label')}</span>
-                                    </div>
-                                    <ChevronDown className={cn("w-4 h-4 text-slate-300 transition-transform", isHiveOpen && "rotate-180")} />
-                                </button>
-                                <AnimatePresence>
-                                    {isHiveOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 max-h-[250px] overflow-y-auto"
-                                        >
-                                            <button
-                                                onClick={() => { setSelectedHive(null); setIsHiveOpen(false); }}
-                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/10 dark:hover:bg-[#F4D03F]/20 rounded-xl transition-colors text-slate-600 dark:text-slate-300 font-bold text-sm"
-                                            >
-                                                <span>{t('none_label')}</span>
-                                                {!selectedHive && <Check className="w-4 h-4 ml-auto text-[#1B9157]" />}
-                                            </button>
-                                            {hives
-                                                .filter(h => !selectedApiary || h.apiary_id === selectedApiary.id)
-                                                .map(hive => (
-                                                    <button
-                                                        key={hive.id}
-                                                        onClick={() => { setSelectedHive(hive); setIsHiveOpen(false); }}
-                                                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/10 dark:hover:bg-[#F4D03F]/20 rounded-xl transition-colors text-slate-600 dark:text-slate-300 font-bold text-sm"
-                                                    >
-                                                        <span>{hive.hive_code}</span>
-                                                        {selectedHive?.id === hive.id && <Check className="w-4 h-4 ml-auto text-[#1B9157]" />}
-                                                    </button>
-                                                ))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Priority */}
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('priority_label')}</label>
-                            <div className="flex gap-2">
-                                {['Low', 'Medium', 'High'].map((p) => (
-                                    <button
-                                        key={p}
-                                        type="button"
-                                        onClick={() => setPriority(p as any)}
-                                        className={cn(
-                                            "flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border-2 transition-all font-bold text-[10px] uppercase tracking-widest outline-none cursor-pointer",
-                                            priority === p
-                                                ? cn(
-                                                    p === 'Low' && "border-green-200 bg-green-50 text-[#1B9157]",
-                                                    p === 'Medium' && "border-[#F4D03F]/20 bg-[#F4D03F]/5 text-[#7a6820]",
-                                                    p === 'High' && "border-rose-200 bg-rose-50 text-rose-600"
-                                                )
-                                                : "border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500"
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "w-2 h-2 rounded-full",
-                                            p === 'Low' && "bg-[#1B9157]",
-                                            p === 'Medium' && "bg-[#F4D03F]",
-                                            p === 'High' && "bg-rose-500"
-                                        )} />
-                                        {p}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Category */}
-                        <div className="space-y-4">
-                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('category_label')}</label>
-                            <div className="flex flex-wrap gap-2">
-                                {['Inspection', 'Feeding', 'Harvest', 'General'].map((cat) => (
-                                    <button
-                                        key={cat}
-                                        type="button"
-                                        onClick={() => setCategory(cat)}
-                                        className={cn(
-                                            "px-4 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all outline-none cursor-pointer flex-1",
-                                            category === cat
-                                                ? "bg-[#1B9157] text-white shadow-lg shadow-[#1B9157]/40"
-                                                : "bg-slate-50 text-slate-400 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-500"
-                                        )}
-                                    >
-                                        {t(`category_${cat.toLowerCase()}`)}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    <div className="space-y-2">
-                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('description_label')}</label>
-                        <textarea
-                            id="task-description"
-                            name="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="w-full min-h-[120px] bg-slate-50 dark:bg-slate-900 border-none rounded-[2rem] p-6 font-medium text-slate-700 dark:text-slate-200 outline-none focus:ring-4 focus:ring-[#1B9157]/10 transition-all resize-none leading-relaxed font-sans placeholder:text-slate-300"
-                            placeholder="Add any additional details about this task..."
-                        />
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-4 pt-6">
-                        <Button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className="flex-1 h-14 rounded-xl bg-[#1B9157] hover:bg-[#167d4a] text-white font-bold text-lg shadow-lg shadow-green-500/10 dark:shadow-none disabled:opacity-70"
-                        >
-                            {isSaving ? <Loader2 className="animate-spin" /> : t('save_task')}
-                        </Button>
-                        <Button
-                            variant="outline"
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={glass.page}
+            >
+                <PageHeader
+                    icon={LayoutGrid}
+                    label="Operations Protocol"
+                    title={<>Schedule <span className="text-honey">Task</span></>}
+                    subtitle="Coordinate apiary logistics and maintenance schedules with precision-timed operational logs."
+                    actions={
+                        <button
                             onClick={() => setIsAddingTask(false)}
-                            className="px-8 h-14 rounded-xl border-2 border-[#1B9157]/20 font-bold text-[#1B9157] dark:text-[#F4D03F] hover:bg-[#1B9157]/5 dark:hover:bg-slate-800"
+                            className={glass.btnSecondary}
                         >
-                            {t('go_back')}
-                        </Button>
+                            <ChevronDown className="w-6 h-6 rotate-90" />
+                            Return
+                        </button>
+                    }
+                />
+
+                <div className="max-w-4xl mx-auto relative z-10">
+                    <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}>
+                        <div className="space-y-6">
+                            <label className={glass.microLabel}>{t('task_title_label')}</label>
+                            <input
+                                placeholder={t('task_title_placeholder')}
+                                className={glass.input}
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="space-y-6">
+                                <label className={glass.microLabel}>{t('task_date')}</label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <button className={cn(glass.btnSecondary, "w-full justify-between h-24 px-10 rounded-[2.5rem]")}>
+                                            <span className="font-black italic text-xl">{format(taskDate, "dd MMM yyyy")}</span>
+                                            <CalendarIcon className="w-8 h-8 text-honey" />
+                                        </button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className={glass.selectContent} align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={taskDate}
+                                            onSelect={(date) => date && setTaskDate(date)}
+                                            className="rounded-3xl border-none"
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <div className="space-y-6">
+                                <label className={glass.microLabel}>{t('priority_label')}</label>
+                                <select
+                                    className={glass.select}
+                                    value={priority}
+                                    onChange={(e) => setPriority(e.target.value as any)}
+                                >
+                                    <option value="Low">Low Priority</option>
+                                    <option value="Medium">Medium Priority</option>
+                                    <option value="High">High Priority</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <label className={glass.microLabel}>{t('description_label')}</label>
+                            <textarea
+                                placeholder="Operational details..."
+                                className={cn(glass.input, "min-h-[200px] p-10 py-12")}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-8 pt-4">
+                            <button
+                                onClick={handleSave}
+                                disabled={isSaving}
+                                className={cn(glass.btnPrimary, "flex-1")}
+                            >
+                                {isSaving ? <Loader2 className="w-10 h-10 animate-spin" /> : <CheckCircle2 className="w-10 h-10" />}
+                                Initiate Protocol
+                            </button>
+                            <button
+                                onClick={() => setIsAddingTask(false)}
+                                className={cn(glass.btnSecondary, "px-16")}
+                            >
+                                {t('go_back')}
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                {/* Backdrop for click-away */}
-                {(isApiaryOpen || isHiveOpen) && (
-                    <div
-                        className="fixed inset-0 z-40 bg-transparent"
-                        onClick={() => {
-                            setIsApiaryOpen(false);
-                            setIsHiveOpen(false);
-                        }}
-                    />
-                )}
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-20 relative">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-honey/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
 
-            <div className="flex justify-between items-end px-2">
-                <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">{t('tasks_title')}</h1>
-            </div>
+            {/* Header */}
+            <PageHeader
+                icon={CalendarIcon}
+                label="Operational Schedule"
+                title={<>Fleet <span className="text-honey">Logistics</span></>}
+                subtitle="Track and coordinate maintenance, inspections, and logistics across your entire apiary network."
+                actions={
+                    <div className="flex gap-8 relative z-10">
+                        <div className="flex bg-black/5 dark:bg-black/40 p-3 rounded-[2.5rem] border border-white/5 shadow-inner">
+                            <button
+                                onClick={() => setView('list')}
+                                className={cn(
+                                    "px-10 py-4 rounded-[2rem] font-black italic text-lg uppercase tracking-tight transition-all duration-500",
+                                    view === 'list' ? "bg-honey text-black shadow-4xl" : "text-foreground/40 hover:text-honey"
+                                )}
+                            >
+                                List
+                            </button>
+                            <button
+                                onClick={() => setView('month')}
+                                className={cn(
+                                    "px-10 py-4 rounded-[2rem] font-black italic text-lg uppercase tracking-tight transition-all duration-500",
+                                    view === 'month' ? "bg-honey text-black shadow-4xl" : "text-foreground/40 hover:text-honey"
+                                )}
+                            >
+                                Calendar
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => setIsAddingTask(true)}
+                            className={glass.btnPrimary}
+                        >
+                            <Plus className="w-10 h-10 group-hover:rotate-90 transition-transform duration-1000" />
+                            Schedule Task
+                        </button>
+                    </div>
+                }
+            />
 
-            <div className="relative">
-                <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-2xl overflow-hidden ring-1 ring-slate-100 dark:ring-gray-800">
-                    <CardContent className="p-0">
-                        {/* Calendar Header */}
-                        <div className="flex items-center justify-between p-6 bg-[#FEF9E7] dark:bg-[#1a1a1a]">
-                            <div className="flex gap-2">
-                                <Button
+            {/* Content Hub */}
+            <div className="relative z-10">
+                {view === 'month' ? (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={cn(glass.card, "p-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl min-h-[800px]")}
+                    >
+                        {/* Month Navigation */}
+                        <div className="flex items-center justify-between mb-12">
+                            <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">
+                                {format(currentDate, "MMMM")} <span className="text-honey">{format(currentDate, "yyyy")}</span>
+                            </h3>
+                            <div className="flex gap-4">
+                                <button
                                     onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-                                    size="icon"
-                                    className="w-10 h-10 rounded-lg bg-[#F4D03F] hover:bg-[#F4D03F] text-slate-800 border-none"
+                                    className={cn(glass.btnSecondary, "w-16 h-16 p-0 flex items-center justify-center")}
                                 >
-                                    <ChevronLeft className="w-5 h-5" />
-                                </Button>
-                                <Button
+                                    <ChevronLeft className="w-8 h-8" />
+                                </button>
+                                <button
                                     onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-                                    size="icon"
-                                    className="w-10 h-10 rounded-lg bg-[#F4D03F] hover:bg-[#F4D03F] text-slate-800 border-none"
+                                    className={cn(glass.btnSecondary, "w-16 h-16 p-0 flex items-center justify-center")}
                                 >
-                                    <ChevronRight className="w-5 h-5" />
-                                </Button>
-                            </div>
-
-                            <h2 className="text-3xl font-semibold text-slate-800 dark:text-white">
-                                {format(currentDate, "MMMM yyyy")}
-                            </h2>
-
-                            <div className="flex bg-[#F4D03F] dark:bg-[#1e1e1e] p-1 rounded-lg">
-                                <Button
-                                    onClick={() => setView('list')}
-                                    className={cn(
-                                        view === 'list' ? "bg-[#1B9157] text-white" : "bg-transparent text-slate-700 dark:text-slate-400"
-                                    )}
-                                >
-                                    {t('list_view')}
-                                </Button>
-                                <Button
-                                    onClick={() => setView('month')}
-                                    className={cn(
-                                        "px-6 h-9 rounded-md text-xs font-bold transition-all border-none",
-                                        view === 'month' ? "bg-[#1B9157] text-white" : "bg-transparent text-slate-700 dark:text-slate-400"
-                                    )}
-                                >
-                                    {t('month_view')}
-                                </Button>
+                                    <ChevronRight className="w-8 h-8" />
+                                </button>
                             </div>
                         </div>
 
-                        {/* Calendar Content */}
-                        <div className="bg-[#FEF9E7] dark:bg-[#0c0c0c] min-h-[400px]">
-                            {view === 'month' ? (
-                                <div className="grid grid-cols-7">
-                                    {/* Day Labels */}
-                                    {days.map((day) => (
-                                        <div key={day} className="h-10 flex items-center justify-center border-r border-b border-[#F4D03F]/20 dark:border-gray-800">
-                                            <span className="text-sm font-medium text-[#F4D03F]">
-                                                {day}
-                                            </span>
-                                        </div>
-                                    ))}
-
-                                    {/* Date Cells */}
-                                    {generateCalendarDays().map((day, i) => {
-                                        const isCurrentMonth = isSameMonth(day, currentDate);
-                                        const isTodayDate = isToday(day);
-
-                                        return (
-                                            <div
-                                                key={i}
-                                                className={cn(
-                                                    "min-h-[100px] p-2 text-right border-r border-b border-[#F4D03F]/20 dark:border-gray-800 relative group cursor-pointer hover:bg-white/50 transition-colors",
-                                                    !isCurrentMonth && "bg-slate-50/50 dark:bg-black/20"
-                                                )}
-                                            >
-                                                <span className={cn(
-                                                    "text-sm font-medium block",
-                                                    isCurrentMonth ? "text-[#1A1A1A] dark:text-white" : "text-gray-300 dark:text-gray-700",
-                                                    isTodayDate && "bg-[#F4D03F] text-[#1A1A1A] w-7 h-7 rounded-full flex items-center justify-center ml-auto"
-                                                )}>
-                                                    {getDate(day)}
-                                                </span>
-                                            </div>
-                                        );
-                                    })}
+                        <div className="grid grid-cols-7 gap-6">
+                            {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
+                                <div key={d} className="text-center py-6">
+                                    <span className="text-[12px] font-black text-foreground/20 italic tracking-[0.4em] uppercase">{d}</span>
                                 </div>
-                            ) : (
-                                <div className="p-6 space-y-4">
-                                    {eachDayOfInterval({
-                                        start: startOfMonth(currentDate),
-                                        end: endOfMonth(currentDate)
-                                    })
-                                        .filter(date => date.getDay() === 1) // Get all Mondays
-                                        .map((monday, i) => {
-                                            const sunday = endOfWeek(monday, { weekStartsOn: 1 });
-                                            return (
-                                                <div key={i} className="bg-white dark:bg-[#1a1a1a] p-4 rounded-xl border border-[#F4D03F]/10 dark:border-gray-800 shadow-sm">
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200">
-                                                            Week {format(monday, 'do')} - {format(sunday, 'do')}
-                                                        </h3>
-                                                        <span className="text-xs font-semibold text-[#1B9157] bg-[#1B9157]/10 px-3 py-1 rounded-full uppercase tracking-wider">
-                                                            {format(monday, 'MMM yyyy')}
+                            ))}
+                            {generateCalendarDays().map((date, i) => {
+                                const dateStr = format(date, 'yyyy-MM-dd');
+                                const isCurrentMonth = isSameMonth(date, currentDate);
+                                const isTodayDate = isToday(date);
+                                const dayTasks = tasks.filter(t => t.due_date?.startsWith(dateStr));
+
+                                return (
+                                    <div
+                                        key={i}
+                                        className={cn(
+                                            "min-h-[160px] rounded-[3rem] p-6 border transition-all duration-500 group/day relative",
+                                            isCurrentMonth ? "bg-white/40 dark:bg-black/40 border-white/5" : "opacity-10 pointer-events-none",
+                                            isTodayDate ? "ring-4 ring-honey/40 border-honey/40" : "hover:border-honey/20"
+                                        )}
+                                    >
+                                        <span className={cn(
+                                            "text-4xl font-black italic tracking-tighter tabular-nums",
+                                            isTodayDate ? "text-honey" : "text-foreground/20"
+                                        )}>
+                                            {format(date, 'd')}
+                                        </span>
+
+                                        <div className="mt-4 space-y-2">
+                                            {dayTasks.map(task => (
+                                                <div
+                                                    key={task.id}
+                                                    className={cn(
+                                                        "px-4 py-2 rounded-full border border-white/5 flex items-center gap-2 overflow-hidden",
+                                                        task.priority === 'High' ? "bg-red-500/10 text-red-500" :
+                                                            task.priority === 'Medium' ? "bg-honey/10 text-honey" : "bg-emerald-500/10 text-emerald-500"
+                                                    )}
+                                                >
+                                                    <div className={cn("w-2 h-2 rounded-full",
+                                                        task.priority === 'High' ? "bg-red-500" :
+                                                            task.priority === 'Medium' ? "bg-honey" : "bg-emerald-500"
+                                                    )} />
+                                                    <span className="text-[10px] font-black uppercase tracking-tight truncate italic">{task.title}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </motion.div>
+                ) : (
+                    <div className="space-y-16">
+                        {/* Task List Grid */}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+                            <AnimatePresence>
+                                {tasks.sort((a, b) => new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime()).map((task, i) => (
+                                    <motion.div
+                                        key={task.id}
+                                        initial={{ opacity: 0, x: -30 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.05, duration: 0.8 }}
+                                        className={cn(
+                                            glass.card,
+                                            "p-12 pl-20 relative group hover:border-honey/60 cursor-default",
+                                            task.is_completed && "opacity-60"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "absolute left-0 top-0 w-4 h-full transition-all duration-700",
+                                            task.is_completed ? "bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]" :
+                                                task.priority === 'High' ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]" :
+                                                    task.priority === 'Medium' ? "bg-honey shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-slate-400"
+                                        )} />
+
+                                        <div className="flex items-center justify-between mb-8">
+                                            <div className="flex items-center gap-6">
+                                                <button
+                                                    onClick={() => toggleTaskCompletion(task)}
+                                                    className={cn(
+                                                        "w-14 h-14 rounded-2xl border flex items-center justify-center transition-all duration-700",
+                                                        task.is_completed
+                                                            ? "bg-emerald-500 border-emerald-500 text-black shadow-4xl"
+                                                            : "bg-black/20 border-white/10 text-white/20 hover:border-honey hover:text-honey"
+                                                    )}
+                                                >
+                                                    <CheckCircle2 className="w-8 h-8" />
+                                                </button>
+                                                <div className="flex flex-col">
+                                                    <h3 className={cn(
+                                                        "text-4xl font-black italic tracking-tighter uppercase leading-none truncate max-w-[400px] transition-all",
+                                                        task.is_completed ? "text-foreground/30 line-through" : "text-foreground group-hover:text-honey"
+                                                    )}>
+                                                        {task.title}
+                                                    </h3>
+                                                    <div className="flex items-center gap-4 mt-2">
+                                                        <ClockIcon className="w-4 h-4 text-honey opacity-30" />
+                                                        <span className="text-[11px] font-black text-foreground/20 italic tracking-[0.2em] uppercase">
+                                                            DUE: {task.due_date ? format(new Date(task.due_date), "dd MMM yyyy").toUpperCase() : "Indefinite"}
                                                         </span>
                                                     </div>
-                                                    <div className="space-y-2">
-                                                        {tasks
-                                                            .filter(t => {
-                                                                if (!t.due_date) return false;
-                                                                const d = new Date(t.due_date);
-                                                                return d >= monday && d <= sunday;
-                                                            })
-                                                            .map(task => (
-                                                                <div key={task.id} className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg flex items-center justify-between group hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-                                                                    <div className="flex items-center gap-3 flex-1">
-                                                                        <button
-                                                                            onClick={() => toggleTaskCompletion(task)}
-                                                                            className={cn(
-                                                                                "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                                                                                task.is_completed
-                                                                                    ? "bg-[#1B9157] border-[#1B9157] text-white"
-                                                                                    : "border-slate-200 dark:border-slate-700 hover:border-[#1B9157]"
-                                                                            )}
-                                                                        >
-                                                                            {task.is_completed && <Check className="w-4 h-4" />}
-                                                                        </button>
-                                                                        <div className={cn(
-                                                                            "w-1 h-8 rounded-full",
-                                                                            task.priority === 'High' ? "bg-red-500" : task.priority === 'Medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
-                                                                        )} />
-                                                                        <div className="flex-1 min-w-0">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <h4 className={cn(
-                                                                                    "font-bold text-slate-700 dark:text-slate-200 text-sm truncate",
-                                                                                    task.is_completed && "line-through opacity-50"
-                                                                                )}>{task.title}</h4>
-                                                                                {task.is_recurring && (
-                                                                                    <div className="flex items-center gap-1">
-                                                                                        <Repeat className={cn(
-                                                                                            "w-3 h-3",
-                                                                                            task.recurrence_status === 'active' ? "text-[#1B9157]" :
-                                                                                                task.recurrence_status === 'paused' ? "text-amber-500" : "text-slate-400"
-                                                                                        )} />
-                                                                                        {task.recurrence_status !== 'active' && (
-                                                                                            <span className="text-[8px] font-black uppercase tracking-tighter text-slate-400">
-                                                                                                {task.recurrence_status}
-                                                                                            </span>
-                                                                                        )}
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                                                                                {task.type} • {format(new Date(task.due_date!), 'h:mm a')}
-                                                                                {task.is_recurring && ` • Every ${task.recurrence_days} days`}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="flex items-center gap-2">
-                                                                        {task.hive && (
-                                                                            <span className="hidden sm:inline-block text-[10px] font-mono bg-white dark:bg-black px-2 py-1 rounded border border-slate-100 dark:border-gray-800 text-slate-500">
-                                                                                {task.hive.hive_code}
-                                                                            </span>
-                                                                        )}
-
-                                                                        {task.is_recurring && (
-                                                                            <Popover>
-                                                                                <PopoverTrigger asChild>
-                                                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                                                                        <MoreVertical className="w-4 h-4 text-slate-400" />
-                                                                                    </Button>
-                                                                                </PopoverTrigger>
-                                                                                <PopoverContent className="w-48 p-2 rounded-2xl" align="end">
-                                                                                    <div className="space-y-1">
-                                                                                        {task.recurrence_status === 'paused' ? (
-                                                                                            <button
-                                                                                                onClick={() => updateRecurrenceStatus(task, 'active')}
-                                                                                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-xs font-bold text-[#1B9157]"
-                                                                                            >
-                                                                                                <Play className="w-4 h-4" /> Resume Series
-                                                                                            </button>
-                                                                                        ) : (
-                                                                                            <button
-                                                                                                onClick={() => updateRecurrenceStatus(task, 'paused')}
-                                                                                                disabled={task.recurrence_status === 'stopped'}
-                                                                                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-xs font-bold text-amber-500 disabled:opacity-50"
-                                                                                            >
-                                                                                                <Pause className="w-4 h-4" /> Pause Series
-                                                                                            </button>
-                                                                                        )}
-                                                                                        <button
-                                                                                            onClick={() => updateRecurrenceStatus(task, 'stopped')}
-                                                                                            disabled={task.recurrence_status === 'stopped'}
-                                                                                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-xs font-bold text-red-500 disabled:opacity-50"
-                                                                                        >
-                                                                                            <StopIcon className="w-4 h-4" /> Stop Series
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </PopoverContent>
-                                                                            </Popover>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            ))
-                                                        }
-                                                        {tasks.filter(t => t.due_date && new Date(t.due_date) >= monday && new Date(t.due_date) <= sunday).length === 0 && (
-                                                            <div className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg text-center">
-                                                                <span className="text-slate-400 text-sm font-medium">{t('no_tasks_week')}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
                                                 </div>
-                                            );
-                                        })}
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                                            </div>
 
-                {/* Floating Action Button */}
-                {/* Floating Action Button */}
-                <motion.div
-                    className="fixed top-1/2 right-8 z-50"
-                    initial={{ y: "-50%" }}
-                    animate={{ y: ["-50%", "-60%", "-50%"] }} // Gentle bobbing effect
-                    transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                >
-                    <Button
-                        onClick={() => setIsAddingTask(true)}
-                        size="icon"
-                        className="w-16 h-16 rounded-full bg-[#F4D03F] hover:bg-[#F4D03F] transition-colors text-slate-800 border-none shadow-xl flex items-center justify-center"
-                    >
-                        <Plus className="w-8 h-8" />
-                    </Button>
-                </motion.div>
+                                            <div className="flex flex-col items-end gap-3">
+                                                <div className={cn(
+                                                    "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] skew-x-[-15deg] shadow-4xl border",
+                                                    task.priority === 'High' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                                        task.priority === 'Medium' ? "bg-honey/10 text-honey border-honey/20" : "bg-black/10 text-foreground/20 border-white/5"
+                                                )}>
+                                                    <span className="skew-x-[15deg] block">{task.priority?.toUpperCase()} PRIORITY</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-black/5 dark:bg-black/30 rounded-[3rem] p-8 border border-white/5 shadow-inner group-hover:border-honey/20 transition-all duration-1000">
+                                            <p className="text-xl font-black text-foreground/30 italic leading-relaxed line-clamp-2 uppercase tracking-tight">
+                                                {task.description || "No operational notes provided for this mission protocol."}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                )}
             </div>
-        </div>
+        </motion.div>
     );
 };
 

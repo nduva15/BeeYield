@@ -56,13 +56,7 @@ class Settings(BaseSettings):
     POSTGRES_URL: Optional[str] = Field(default=None)
 
 
-    # ============ CLICKHOUSE (Analytics) ============
-    CLICKHOUSE_HOST: str = Field(default="")
-    CLICKHOUSE_USER: str = "default"
-    CLICKHOUSE_PASSWORD: str = ""
-    CLICKHOUSE_DATABASE: str = "beeyield_analytics"
-    CLICKHOUSE_PORT: int = 8443
-    CLICKHOUSE_SECURE: bool = True
+
 
     # ============ AUTHENTICATION ============
     SECRET_KEY: str = "beeyield-super-secret-key-change-in-production"

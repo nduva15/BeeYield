@@ -28,7 +28,6 @@ import {
     Waves,
     Calendar,
     ArrowRight,
-    Microspectrum,
     ShieldCheck,
     Dna,
     Network,

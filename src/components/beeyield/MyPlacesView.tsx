@@ -87,7 +87,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
         if (!status) return 'bg-foreground/10';
         const s = status.toLowerCase();
         if (s.includes('healthy') || s.includes('active') || s.includes('ok')) return 'bg-emerald-500';
-        if (s.includes('weak') || s.includes('warning') || s.includes('maintenance')) return 'bg-amber-500';
+        if (s.includes('weak') || s.includes('warning') || s.includes('maintenance')) return 'bg-[#FBBE24]';
         if (s.includes('critical') || s.includes('abandoned') || s.includes('emergency')) return 'bg-red-500';
         return 'bg-foreground/20';
     };
@@ -110,158 +110,159 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
             animate={{ opacity: 1 }}
             className={glass.page}
         >
-            {/* Header */}
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-12 border-b border-white/5 pb-16 relative">
-                <div className="flex flex-col md:flex-row items-start md:items-center gap-12 relative z-10">
-                    <button
-                        onClick={() => setViewingApiary(null)}
-                        className={cn(glass.btnSecondary, "h-22 w-22 p-0 rounded-[3rem] flex items-center justify-center")}
-                    >
-                        <ChevronLeft className="w-12 h-12" />
-                    </button>
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-6">
-                            <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
-                                <div className="flex items-center gap-4 skew-x-[12deg]">
-                                    <MapPin className="w-5 h-5" />
-                                    <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">{apiary.location_name || 'Location'}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 bg-emerald-500/10 px-6 py-2.5 rounded-full border border-emerald-500/20 shadow-3xl">
-                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[12px] font-black text-emerald-500 uppercase tracking-widest italic">Active</span>
-                            </div>
-                        </div>
-                        <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                            {apiary.name}
-                        </h1>
-                    </div>
-                </div>
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-honey/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
 
-                <div className="flex bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-4 rounded-[3.5rem] border border-white/5 gap-4 shadow-4xl relative overflow-hidden group">
-                    <button
-                        onClick={() => setActiveView('dashboard')}
-                        className={cn('h-18 px-14 rounded-[2.5rem] text-[15px] font-black uppercase tracking-[0.3em] italic transition-all duration-700 relative z-10 flex items-center gap-4',
-                            activeView === 'dashboard' ? 'bg-white dark:bg-black text-honey shadow-4xl' : 'text-muted-foreground/30 hover:text-honey hover:bg-honey/5'
-                        )}
-                    >
-                        <Target className="w-5 h-5" />
-                        Map View
-                    </button>
-                    <button
-                        onClick={() => setActiveView('details')}
-                        className={cn('h-18 px-14 rounded-[2.5rem] text-[15px] font-black uppercase tracking-[0.3em] italic transition-all duration-700 relative z-10 flex items-center gap-4',
-                            activeView === 'details' ? 'bg-white dark:bg-black text-honey shadow-4xl' : 'text-muted-foreground/30 hover:text-honey hover:bg-honey/5'
-                        )}
-                    >
-                        <Activity className="w-5 h-5" />
-                        Stats
-                    </button>
-                </div>
-            </div>
+            {/* Header */}
+            <PageHeader
+                icon={MapPin}
+                label={apiary.location_name || 'Location'}
+                title={<>{apiary.name.split(' ')[0]} <span className="text-honey">{apiary.name.split(' ').slice(1).join(' ') || 'Site'}</span></>}
+                subtitle="Detailed operational view for this location. Monitor telemetry and manage colony assets."
+                actions={
+                    <div className="flex items-center gap-8 relative z-10">
+                        <button
+                            onClick={() => setViewingApiary(null)}
+                            className={cn(glass.btnSecondary, "h-24 w-24 p-0 rounded-[3rem] flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-700")}
+                        >
+                            <ChevronLeft className="w-12 h-12" />
+                        </button>
+
+                        <div className="flex bg-white/40 dark:bg-black/60 p-3 rounded-[3.5rem] border border-white/5 gap-3 shadow-4xl relative overflow-hidden group">
+                            <button
+                                onClick={() => setActiveView('dashboard')}
+                                className={cn('h-18 px-14 rounded-[2.5rem] text-[15px] font-black uppercase tracking-[0.3em] italic transition-all duration-700 relative z-10 flex items-center gap-6',
+                                    activeView === 'dashboard' ? 'bg-white dark:bg-black text-honey shadow-4xl' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
+                                )}
+                            >
+                                <Target className="w-6 h-6" />
+                                Interactive Map
+                            </button>
+                            <button
+                                onClick={() => setActiveView('details')}
+                                className={cn('h-18 px-14 rounded-[2.5rem] text-[15px] font-black uppercase tracking-[0.3em] italic transition-all duration-700 relative z-10 flex items-center gap-6',
+                                    activeView === 'details' ? 'bg-white dark:bg-black text-honey shadow-4xl' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
+                                )}
+                            >
+                                <Activity className="w-6 h-6" />
+                                Statistics
+                            </button>
+                        </div>
+                    </div>
+                }
+            />
 
             {activeView === 'dashboard' ? (
                 <div className="relative z-10 animate-in fade-in slide-in-from-bottom-12 duration-1000">
                     <OrchardDashboardView apiary={apiary} onTabChange={onTabChange} />
                 </div>
             ) : (
-                <div className="space-y-16 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+                <div className="space-y-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 relative z-10">
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
                         <GlassStatCard label="Total Hives" value={stats.total} icon={Hexagon} index={0} />
                         <GlassStatCard label="Healthy" value={stats.healthy} icon={ShieldCheck} index={1} color="text-emerald-500" />
-                        <GlassStatCard label="Alerts" value={stats.warnings} icon={Activity} index={2} color="text-amber-500" />
-                        <GlassStatCard label="Critical" value={stats.critical} icon={Wind} index={3} color="text-destructive" />
+                        <GlassStatCard label="Alerts" value={stats.warnings} icon={Activity} index={2} color="text-[#FBBE24]" />
+                        <GlassStatCard label="Critical" value={stats.critical} icon={Wind} index={3} color="text-red-500" />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className={cn(glass.card, "p-12 text-center bg-honey text-black border-none shadow-4xl rounded-[3.5rem] flex flex-col items-center justify-center")}
+                            transition={{ delay: 0.4, duration: 1 }}
+                            className={cn(glass.statCard, "p-12 text-center bg-honey text-black border-none shadow-4xl rounded-[3.5rem] flex flex-col items-center justify-center group/acres")}
                         >
-                            <Sprout className="w-14 h-14 mb-8 text-black/20" />
-                            <p className={cn(glass.microLabel, "text-black/40 mb-3 font-black tracking-[0.4em] italic uppercase")}>Size</p>
-                            <p className="text-6xl font-black italic tracking-tighter text-black leading-none">{apiary.size_acres || 0} <span className="text-2xl opacity-40">AC</span></p>
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover/acres:opacity-100 transition-opacity duration-1000" />
+                            <Sprout className="w-16 h-16 mb-8 text-black/20 group-hover/acres:scale-110 group-hover/acres:rotate-12 transition-all duration-1000" />
+                            <p className={cn(glass.microLabel, "text-black/40 mb-3 font-black tracking-[0.4em] italic uppercase")}>Total Area</p>
+                            <p className="text-7xl font-black italic tracking-tighter text-black leading-none">{apiary.size_acres || 0} <span className="text-3xl opacity-40">AC</span></p>
                         </motion.div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                        {/* Left Panel */}
+                        {/* Left Panel - Grid View */}
                         <div className="lg:col-span-4 space-y-12">
                             <motion.div
-                                initial={{ opacity: 0, x: -30 }}
+                                initial={{ opacity: 0, x: -50 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn(glass.card, "p-0 overflow-hidden shadow-4xl min-h-[750px] bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem] flex flex-col")}
+                                transition={{ duration: 1 }}
+                                className={cn(glass.section, "min-h-[750px] flex flex-col")}
                             >
-                                <div className="p-12 border-b border-white/5 flex items-center justify-between bg-white/40 dark:bg-black/40 backdrop-blur-3xl">
-                                    <div className="space-y-2">
-                                        <h3 className={cn(glass.microLabel, "font-black italic opacity-60 uppercase")}>Colony Status</h3>
-                                        <p className="text-[12px] font-black text-honey/40 uppercase italic">Hive View</p>
+                                <div className={cn(glass.sectionHeader, "flex items-center justify-between")}>
+                                    <div className="space-y-3">
+                                        <h3 className="text-5xl font-black italic text-foreground tracking-tighter uppercase leading-none italic">Asset <span className="text-honey">Grid</span></h3>
+                                        <p className={cn(glass.microLabel, "opacity-30")}>Live Status Matrix</p>
                                     </div>
                                     <div className="flex bg-black/5 dark:bg-white/5 p-3 rounded-[2.5rem] gap-3 shadow-inner border border-white/5">
                                         <button
-                                            className={cn("h-14 w-14 rounded-[1.5rem] transition-all duration-700 flex items-center justify-center", viewMode === 'grid' ? "bg-white dark:bg-black shadow-4xl text-honey" : "text-muted-foreground/10 hover:text-muted-foreground/30")}
+                                            className={cn("h-16 w-16 rounded-[1.8rem] transition-all duration-700 flex items-center justify-center", viewMode === 'grid' ? "bg-white dark:bg-black shadow-4xl text-honey" : "text-foreground/10 hover:text-foreground/30")}
                                             onClick={() => setViewMode('grid')}
                                         >
-                                            <LayoutGrid className="w-6 h-6" />
+                                            <LayoutGrid className="w-7 h-7" />
                                         </button>
                                         <button
-                                            className={cn("h-14 w-14 rounded-[1.5rem] transition-all duration-700 flex items-center justify-center", viewMode === 'list' ? "bg-white dark:bg-black shadow-4xl text-honey" : "text-muted-foreground/10 hover:text-muted-foreground/30")}
+                                            className={cn("h-16 w-16 rounded-[1.8rem] transition-all duration-700 flex items-center justify-center", viewMode === 'list' ? "bg-white dark:bg-black shadow-4xl text-honey" : "text-foreground/10 hover:text-foreground/30")}
                                             onClick={() => setViewMode('list')}
                                         >
-                                            <ListIcon className="w-6 h-6" />
+                                            <ListIcon className="w-7 h-7" />
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="p-14 flex-1 overflow-y-auto thin-scrollbar">
+                                <div className="p-16 flex-1 overflow-y-auto custom-scrollbar-modern">
                                     {viewMode === 'grid' ? (
-                                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-8">
-                                            {hives.map(hive => (
+                                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-10">
+                                            {hives.map((hive, i) => (
                                                 <motion.div
                                                     key={hive.id}
-                                                    whileHover={{ scale: 1.3, zIndex: 10, rotate: 10 }}
+                                                    initial={{ opacity: 0, scale: 0 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    transition={{ delay: i * 0.02, duration: 0.5 }}
+                                                    whileHover={{ scale: 1.4, zIndex: 50, rotate: 10, shadow: '0 20px 40px rgba(0,0,0,0.4)' }}
                                                     className={cn(
-                                                        "aspect-square rounded-[1.5rem] flex items-center justify-center text-[15px] font-black text-white cursor-pointer shadow-3xl relative overflow-hidden border-2 border-white/20",
+                                                        "aspect-square rounded-[1.8rem] flex items-center justify-center text-[16px] font-black text-white cursor-pointer shadow-4xl relative overflow-hidden border-2 border-white/20",
                                                         getStatusColor(hive.status)
                                                     )}
                                                     onClick={() => handleEditHive(hive)}
                                                 >
-                                                    <span className="relative z-10 italic">{hive.hive_code.split('-').pop() || hive.hive_code.slice(-2)}</span>
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    <span className="relative z-10 italic drop-shadow-md">{hive.hive_code.split('-').pop() || hive.hive_code.slice(-2)}</span>
                                                 </motion.div>
                                             ))}
                                             {hives.length === 0 && (
                                                 <div className="col-span-full h-96 flex flex-col items-center justify-center text-center opacity-20">
-                                                    <Box className="w-24 h-24 mb-6" />
-                                                    <p className="font-black tracking-[0.4em] uppercase italic">No Hives Found</p>
+                                                    <Box className="w-24 h-24 mb-6 animate-pulse" />
+                                                    <p className="font-black tracking-[0.4em] uppercase italic text-xl">System Empty</p>
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
                                         <div className="space-y-8">
-                                            {hives.slice(0, 50).map(hive => (
+                                            {hives.slice(0, 50).map((hive, i) => (
                                                 <motion.div
                                                     key={hive.id}
-                                                    whileHover={{ x: 15, scale: 1.05 }}
-                                                    className="flex items-center justify-between p-10 rounded-[3rem] bg-white/40 dark:bg-black/40 border border-white/5 hover:border-honey/40 hover:bg-honey/10 transition-all cursor-pointer group shadow-2xl"
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: i * 0.05, duration: 0.8 }}
+                                                    whileHover={{ x: 20, scale: 1.02 }}
+                                                    className="flex items-center justify-between p-12 rounded-[3.5rem] bg-white/40 dark:bg-black/40 border border-white/5 hover:border-honey/60 hover:bg-honey/15 transition-all cursor-pointer group shadow-4xl"
                                                     onClick={() => handleEditHive(hive)}
                                                 >
-                                                    <div className="flex items-center gap-8">
-                                                        <div className={cn("w-4 h-4 rounded-full border-2 border-white/20", getStatusColor(hive.status))} />
+                                                    <div className="flex items-center gap-10">
+                                                        <div className={cn("w-5 h-5 rounded-full border-2 border-white/20 shadow-4xl animate-pulse", getStatusColor(hive.status))} />
                                                         <div className="flex flex-col gap-1">
-                                                            <span className="text-2xl font-black italic text-foreground tracking-tighter uppercase group-hover:text-honey">#{hive.hive_code}</span>
-                                                            <span className="text-[12px] font-black text-muted-foreground/30 uppercase italic">Hive ID</span>
+                                                            <span className="text-3xl font-black italic text-foreground tracking-tighter uppercase group-hover:text-honey transition-colors">#{hive.hive_code}</span>
+                                                            <span className="text-[10px] font-black text-foreground/20 uppercase italic tracking-widest">Biometric Unit</span>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-8">
+                                                    <div className="flex items-center gap-10">
                                                         <div className="flex flex-col items-end gap-1">
-                                                            <span className="text-[12px] font-black text-orange-500/40 uppercase italic">Temperature</span>
-                                                            <div className="flex items-center gap-3">
-                                                                <Thermometer className="w-5 h-5 text-orange-500 opacity-40 group-hover:opacity-100" />
-                                                                <span className="text-2xl font-black tabular-nums text-foreground/70 italic group-hover:text-foreground">
+                                                            <div className="flex items-center gap-4">
+                                                                <Thermometer className="w-6 h-6 text-red-500 opacity-40 group-hover:opacity-100 transition-all group-hover:scale-125" />
+                                                                <span className="text-3xl font-black tabular-nums text-foreground/70 italic group-hover:text-foreground">
                                                                     {((hive as any).latest_temp)?.toFixed(1) || '--'}°C
                                                                 </span>
                                                             </div>
+                                                            <span className="text-[10px] font-black text-red-500/30 uppercase italic tracking-widest">Internal Temp</span>
                                                         </div>
-                                                        <ChevronRight className="w-8 h-8 text-honey opacity-0 group-hover:opacity-100 translate-x-4 transition-all" />
+                                                        <ChevronRight className="w-10 h-10 text-honey opacity-0 group-hover:opacity-100 translate-x-10 group-hover:translate-x-0 transition-all duration-700" />
                                                     </div>
                                                 </motion.div>
                                             ))}
@@ -271,39 +272,40 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             </motion.div>
                         </div>
 
-                        {/* Right Panel */}
+                        {/* Right Panel - List View */}
                         <div className="lg:col-span-8 space-y-12">
                             <motion.div
-                                initial={{ opacity: 0, x: 30 }}
+                                initial={{ opacity: 0, x: 50 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn(glass.card, "p-0 overflow-hidden shadow-4xl min-h-[750px] bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem] flex flex-col")}
+                                transition={{ duration: 1 }}
+                                className={cn(glass.section, "min-h-[750px] flex flex-col")}
                             >
-                                <div className="p-14 border-b border-white/5 flex flex-col md:flex-row items-center justify-between bg-white/40 dark:bg-black/40 backdrop-blur-3xl gap-10 relative z-10">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-12 h-12 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20">
-                                                <Database className="w-6 h-6 text-honey" />
-                                            </div>
-                                            <h3 className="text-5xl font-black italic text-foreground tracking-tighter uppercase">Hives</h3>
+                                <div className={cn(glass.sectionHeader, "flex flex-col md:flex-row items-center justify-between gap-12")}>
+                                    <div className="flex items-center gap-12">
+                                        <div className="w-20 h-20 rounded-[2.5rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl group-hover:rotate-12 transition-transform">
+                                            <Database className="w-10 h-10 text-honey" />
                                         </div>
-                                        <p className={cn(glass.microLabel, "opacity-40 italic font-black uppercase tracking-[0.4em]")}>Asset Registry</p>
+                                        <div className="space-y-3">
+                                            <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none italic">Asset <span className="text-honey">Registry</span></h3>
+                                            <p className={cn(glass.microLabel, "opacity-30 font-black uppercase tracking-[0.4em]")}>Centralized Intelligence</p>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={handleOpenAddHive}
                                         className={cn(glass.btnPrimary, "h-24 bg-honey text-black shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl uppercase flex items-center justify-center gap-10 group/btn pl-24")}
                                     >
-                                        <Plus className="w-10 h-10 group-hover/btn:rotate-90 transition-transform" />
-                                        Add New Hive
+                                        <Plus className="w-10 h-10 group-hover/btn:rotate-90 transition-transform duration-1000" />
+                                        Execute New Unit
                                     </button>
                                 </div>
 
-                                <div className="p-14 relative z-10">
+                                <div className="p-16 flex-1 overflow-visible relative z-10">
                                     {hivesLoading ? (
-                                        <div className="space-y-10">
-                                            {[1, 2, 3, 4, 5].map(i => <div key={i} className={cn(glass.skeleton, "h-28 rounded-[3.5rem]")} />)}
+                                        <div className="space-y-12">
+                                            {[1, 2, 3, 4, 5].map(i => <div key={i} className={cn(glass.skeleton, "h-32 rounded-[4rem] text-transparent")} />)}
                                         </div>
                                     ) : (
-                                        <div className="thin-scrollbar py-6">
+                                        <div className="py-6 h-full">
                                             <HivesTable
                                                 data={hives || []}
                                                 onRowClick={handleEditHive}

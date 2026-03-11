@@ -19,7 +19,7 @@ import { useNotes, useCreateNote, useUpdateNote, useDeleteNote } from '@/hooks/u
 import { useHives, useApiaries } from '@/hooks/useHives';
 import { debounce } from 'lodash';
 import { Note } from '@/services/beeyieldService';
-import { Badge } from '@/components/ui/badge';
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
 
 interface MyNotesViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -156,52 +156,57 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
     if (isAddingNote || isEditingNote) {
         return (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-24 relative">
-                <div className="flex items-center justify-between px-2">
-                    <div className="flex flex-col gap-1">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={glass.page}
+            >
+                <PageHeader
+                    icon={StickyNote}
+                    label="Observation Log"
+                    title={<>{isEditingNote ? "Edit" : "New"} <span className="text-honey">Observation</span></>}
+                    subtitle="Record detailed findings from your apiary visits. Capturing data ensures long-term colony health and high productivity."
+                    actions={
                         <button
-                            type="button"
                             onClick={() => { setIsAddingNote(false); setIsEditingNote(null); }}
-                            className="text-sm font-bold text-slate-400 hover:text-[#1B9157] transition-colors flex items-center gap-1 mb-2 uppercase tracking-widest outline-none border-none bg-transparent cursor-pointer"
+                            className={glass.btnSecondary}
                         >
-                            <ChevronDown className="w-4 h-4 rotate-90" /> {t('back_to_notes')}
+                            <ChevronDown className="w-6 h-6 rotate-90" />
+                            Return
                         </button>
-                        <h1 className="text-[2.5rem] font-black text-[#1B9157] leading-tight tracking-tight">
-                            {isEditingNote ? "EDIT OBSERVATION" : t('add_note')}
-                        </h1>
-                    </div>
-                </div>
+                    }
+                />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
                     {/* Main Form Area */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white dark:bg-[#111111] p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 space-y-8">
+                    <div className="lg:col-span-8 space-y-12">
+                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}>
                             {/* Title Field */}
-                            <div className="space-y-2">
-                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Title / Summary</label>
+                            <div className="space-y-6">
+                                <label className={glass.microLabel}>Title / Summary</label>
                                 <input
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full h-14 bg-slate-50 dark:bg-white/5 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all"
+                                    className={cn(glass.input, "w-full min-h-24 px-10")}
                                     placeholder="e.g. Varroa check in main apiary"
                                 />
                             </div>
 
                             {/* Date and Time Row */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('note_date')}</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <div className="space-y-6">
+                                    <label className={glass.microLabel}>{t('note_date')}</label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <button
                                                 type="button"
-                                                className="w-full h-14 bg-slate-50 dark:bg-white/5 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans flex items-center justify-between"
+                                                className={cn(glass.btnSecondary, "w-full justify-between h-24 px-10 rounded-[2.5rem]")}
                                             >
-                                                <span>{format(noteDate, "dd/MM/yyyy")}</span>
-                                                <CalendarIcon className="w-5 h-5 text-[#1B9157]" />
+                                                <span className="font-black italic text-xl">{format(noteDate, "dd/MM/yyyy")}</span>
+                                                <CalendarIcon className="w-8 h-8 text-honey" />
                                             </button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 rounded-3xl border-slate-100 shadow-2xl" align="start">
+                                        <PopoverContent className={glass.selectContent} align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={noteDate}
@@ -212,84 +217,84 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="note-time-input" className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('note_time')}</label>
+                                <div className="space-y-6">
+                                    <label htmlFor="note-time-input" className={glass.microLabel}>{t('note_time')}</label>
                                     <input
                                         id="note-time-input"
                                         type="time"
                                         value={noteTime}
                                         onChange={(e) => setNoteTime(e.target.value)}
-                                        className="w-full h-14 bg-slate-50 dark:bg-white/5 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all"
+                                        className={cn(glass.input, "w-full")}
                                     />
                                 </div>
                             </div>
 
                             {/* Description */}
-                            <div className="space-y-2">
-                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Detailed Body / Observations</label>
+                            <div className="space-y-6">
+                                <label className={glass.microLabel}>Detailed Body / Observations</label>
                                 <textarea
                                     value={description}
                                     onChange={handleDescriptionChange}
-                                    className="w-full min-h-[250px] bg-slate-50 dark:bg-white/5 border-none rounded-[2rem] p-8 font-medium text-slate-700 dark:text-white outline-none focus:ring-4 focus:ring-[#1B9157]/10 transition-all resize-none leading-relaxed font-sans"
+                                    className={cn(glass.input, "w-full min-h-[400px] p-10 py-12 leading-relaxed resize-none lowercase placeholder:normal-case")}
                                     placeholder="Describe your findings in detail..."
                                 />
                                 {updateNoteMutation.isPending && (
-                                    <div className="flex items-center gap-2 text-[10px] font-black text-[#1B9157] uppercase tracking-widest animate-pulse">
-                                        <Loader2 className="w-3 h-3 animate-spin" /> Auto-syncing...
+                                    <div className="flex items-center gap-4 text-[11px] font-black text-honey uppercase tracking-[0.3em] animate-pulse">
+                                        <Loader2 className="w-5 h-5 animate-spin" /> Auto-syncing...
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-4 pt-4">
-                            <Button
+                        <div className="flex items-center gap-8 pt-4">
+                            <button
                                 type="button"
                                 disabled={isSaving}
                                 onClick={handleSaveNote}
-                                className="flex-1 h-16 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-green-500/10"
+                                className={cn(glass.btnPrimary, "flex-1")}
                             >
-                                {isSaving ? <Loader2 className="animate-spin" /> : (isEditingNote ? "Sync Changes" : t('save_note'))}
-                            </Button>
-                            <Button
+                                {isSaving ? <Loader2 className="w-10 h-10 animate-spin" /> : (isEditingNote ? <Check className="w-10 h-10" /> : <Plus className="w-10 h-10" />)}
+                                {isEditingNote ? "Sync Changes" : t('save_note')}
+                            </button>
+                            <button
                                 type="button"
-                                variant="outline"
                                 onClick={() => { setIsAddingNote(false); setIsEditingNote(null); }}
-                                className="px-10 h-16 rounded-2xl border-2 border-[#1B9157]/20 font-black text-[#1B9157] hover:bg-[#1B9157]/5 uppercase tracking-widest text-xs"
+                                className={cn(glass.btnSecondary, "px-16")}
                             >
                                 {t('back_button')}
-                            </Button>
+                            </button>
                         </div>
                     </div>
 
                     {/* Meta Sidebar */}
-                    <div className="space-y-6">
-                        <div className="bg-white dark:bg-[#111111] p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 space-y-8">
+                    <div className="lg:col-span-4 space-y-12">
+                        <div className={cn(glass.card, "p-12 space-y-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}>
                             {/* Priority Selection */}
-                            <div className="space-y-4">
-                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('priority_label')}</label>
-                                <div className="grid grid-cols-1 gap-3">
+                            <div className="space-y-8">
+                                <label className={glass.microLabel}>{t('priority_label')}</label>
+                                <div className="grid grid-cols-1 gap-6">
                                     {['low', 'medium', 'high'].map((p) => (
                                         <button
                                             key={p}
                                             type="button"
                                             onClick={() => setPriority(p as any)}
                                             className={cn(
-                                                "flex items-center gap-3 px-5 py-3 rounded-xl border-2 transition-all font-black text-[10px] uppercase tracking-widest outline-none cursor-pointer flex-1",
+                                                "flex items-center gap-6 h-20 px-10 rounded-[2.5rem] border border-white/5 transition-all font-black text-lg uppercase tracking-widest italic outline-none cursor-pointer",
                                                 priority === p
                                                     ? cn(
-                                                        p === 'low' && "border-green-200 bg-green-50 text-[#1B9157]",
-                                                        p === 'medium' && "border-[#F4D03F]/20 bg-[#F4D03F]/5 text-[#7a6820]",
-                                                        p === 'high' && "border-rose-200 bg-rose-50 text-rose-600"
+                                                        p === 'low' && "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+                                                        p === 'medium' && "bg-honey/10 text-honey border-honey/20",
+                                                        p === 'high' && "bg-red-500/10 text-red-500 border-red-500/20"
                                                     )
-                                                    : "border-slate-50 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 hover:border-slate-200"
+                                                    : "bg-black/5 dark:bg-black/40 text-foreground/30 hover:text-honey hover:border-honey/40"
                                             )}
                                         >
                                             <div className={cn(
-                                                "w-2 h-2 rounded-full",
-                                                p === 'low' && "bg-[#1B9157]",
-                                                p === 'medium' && "bg-[#F4D03F]",
-                                                p === 'high' && "bg-rose-500"
+                                                "w-4 h-4 rounded-full shadow-4xl animate-pulse",
+                                                p === 'low' && "bg-emerald-500",
+                                                p === 'medium' && "bg-honey",
+                                                p === 'high' && "bg-red-500"
                                             )} />
                                             {p}
                                         </button>
@@ -298,19 +303,19 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             </div>
 
                             {/* Category Selection */}
-                            <div className="space-y-4">
-                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('category_label')}</label>
-                                <div className="flex flex-wrap gap-2">
+                            <div className="space-y-8">
+                                <label className={glass.microLabel}>{t('category_label')}</label>
+                                <div className="flex flex-wrap gap-4">
                                     {['General', 'Health', 'Queen Seen', 'Harvest', 'Varroa'].map((cat) => (
                                         <button
                                             key={cat}
                                             type="button"
                                             onClick={() => setCategory(cat)}
                                             className={cn(
-                                                "px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all outline-none cursor-pointer",
+                                                "px-8 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all outline-none cursor-pointer italic border border-white/5 shadow-4xl",
                                                 category === cat
-                                                    ? "bg-[#1B9157] text-white shadow-lg shadow-[#1B9157]/40"
-                                                    : "bg-slate-100 dark:bg-white/5 text-slate-500 hover:bg-slate-200 dark:hover:bg-white/10"
+                                                    ? "bg-honey text-black border-honey"
+                                                    : "bg-black/5 dark:bg-black/40 text-foreground/40 hover:text-honey hover:border-honey/40"
                                             )}
                                         >
                                             {cat}
@@ -320,238 +325,181 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             </div>
 
                             {/* Entity Link */}
-                            <div className="space-y-4">
-                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Link to Hive / Apiary</label>
-                                <select
-                                    aria-label="Select Apiary"
-                                    value={selectedPlaceId || ""}
-                                    onChange={(e) => setSelectedPlaceId(e.target.value || null)}
-                                    className="w-full h-12 bg-slate-50 dark:bg-white/5 border-none rounded-xl px-4 font-bold text-xs outline-none"
-                                >
-                                    <option value="">Select Apiary</option>
-                                    {apiaries.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                                </select>
-                                <select
-                                    aria-label="Select Hive"
-                                    value={selectedHiveId || ""}
-                                    onChange={(e) => setSelectedHiveId(e.target.value || null)}
-                                    className="w-full h-12 bg-slate-50 dark:bg-white/5 border-none rounded-xl px-4 font-bold text-xs outline-none"
-                                >
-                                    <option value="">Select Hive</option>
-                                    {hives.filter(h => !selectedPlaceId || h.apiary_id === selectedPlaceId).map(h => (
-                                        <option key={h.id} value={h.id}>{h.hive_code}</option>
-                                    ))}
-                                </select>
+                            <div className="space-y-8">
+                                <label className={glass.microLabel}>Link to Entity</label>
+                                <div className="space-y-6">
+                                    <select
+                                        aria-label="Select Apiary"
+                                        value={selectedPlaceId || ""}
+                                        onChange={(e) => setSelectedPlaceId(e.target.value || null)}
+                                        className={cn(glass.select, "w-full h-20 text-lg rounded-[2.5rem]")}
+                                    >
+                                        <option value="">Select Apiary</option>
+                                        {apiaries.map(a => <option key={a.id} value={a.id}>{a.name.toUpperCase()}</option>)}
+                                    </select>
+                                    <select
+                                        aria-label="Select Hive"
+                                        value={selectedHiveId || ""}
+                                        onChange={(e) => setSelectedHiveId(e.target.value || null)}
+                                        className={cn(glass.select, "w-full h-20 text-lg rounded-[2.5rem]")}
+                                    >
+                                        <option value="">Select Hive</option>
+                                        {hives.filter(h => !selectedPlaceId || h.apiary_id === selectedPlaceId).map(h => (
+                                            <option key={h.id} value={h.id}>{h.hive_code.toUpperCase()}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 pb-24 relative min-h-[600px]">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-honey/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
+
             {/* Title Section */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-3 h-12 bg-[#1B9157] rounded-full" />
-                    <div>
-                        <h1 className="text-[3rem] font-black text-[#1B9157] dark:text-white tracking-tighter uppercase leading-none">MY NOTES</h1>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">{filteredNotes.length} Observations Indexed</p>
-                    </div>
-                </div>
-                {loadingNotes && <Loader2 className="w-6 h-6 border-t-transparent animate-spin text-[#1B9157]" />}
-            </div>
+            <PageHeader
+                icon={StickyNote}
+                label="Observation Repository"
+                title={<>Apiary <span className="text-honey">Notes</span></>}
+                subtitle="Archive biometric observations, environmental data, and colony health logs in a high-fidelity glass framework."
+                actions={
+                    <button
+                        onClick={() => setIsAddingNote(true)}
+                        className={glass.btnPrimary}
+                    >
+                        <Plus className="w-10 h-10 group-hover:rotate-90 transition-transform duration-1000" />
+                        Capture Note
+                    </button>
+                }
+            />
 
             {/* Filter Hub */}
-            <div className="flex flex-wrap gap-4">
-                <div className="relative min-w-[220px]">
-                    <button
-                        type="button"
-                        onClick={() => { setIsPlacesOpen(!isPlacesOpen); setIsHivesOpen(false); }}
-                        className={cn(
-                            "flex items-center gap-4 px-8 py-5 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-3xl shadow-sm hover:border-[#F4D03F]/40 transition-all w-full",
-                            isPlacesOpen && "ring-2 ring-[#1B9157]/20 border-[#1B9157]/40"
-                        )}
-                    >
-                        <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", selectedPlaceId ? "bg-[#1B9157] text-white" : "bg-slate-50 dark:bg-white/5 text-slate-400")}>
-                            <MapPin className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col items-start">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest underline decoration-[#F4D03F] decoration-2 underline-offset-4">MY PLACES</span>
-                            <span className="text-[14px] font-black text-slate-700 dark:text-slate-200 uppercase truncate">
-                                {selectedPlace ? selectedPlace.name : "All Places"}
-                            </span>
-                        </div>
-                        <ChevronDown className={cn("w-4 h-4 ml-auto text-slate-300 transition-transform", isPlacesOpen && "rotate-180")} />
-                    </button>
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={glass.filterBar}
+            >
+                <div className="flex flex-col md:flex-row gap-12 items-center">
+                    <div className="relative flex-1 group/sel">
+                        <MapPin className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/sel:opacity-100 transition-opacity" />
+                        <select
+                            value={selectedPlaceId || ""}
+                            onChange={(e) => setSelectedPlaceId(e.target.value || null)}
+                            className={cn(glass.select, "w-full pl-24")}
+                        >
+                            <option value="">All Locations</option>
+                            {apiaries.map(a => <option key={a.id} value={a.id}>{a.name.toUpperCase()}</option>)}
+                        </select>
+                    </div>
 
-                    <AnimatePresence>
-                        {isPlacesOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 6 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 6 }}
-                                transition={spring.snappy}
-                                className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
-                            >
-                                <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                    {apiaries.map((place) => (
-                                        <button
-                                            key={place.id}
-                                            onClick={() => { setSelectedPlaceId(place.id); setIsPlacesOpen(false); }}
-                                            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-[#1B9157]/5 rounded-2xl transition-colors font-black text-[11px] uppercase tracking-widest text-slate-600 dark:text-slate-300"
-                                        >
-                                            <MapPin className="w-4 h-4" /> {place.name}
-                                        </button>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    <div className="relative flex-1 group/sel">
+                        <Box className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/sel:opacity-100 transition-opacity" />
+                        <select
+                            value={selectedHiveId || ""}
+                            onChange={(e) => setSelectedHiveId(e.target.value || null)}
+                            className={cn(glass.select, "w-full pl-24")}
+                        >
+                            <option value="">All Hives</option>
+                            {hives.filter(h => !selectedPlaceId || h.apiary_id === selectedPlaceId).map(h => (
+                                <option key={h.id} value={h.id}>{h.hive_code.toUpperCase()}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-6 px-10 py-4 bg-black/5 dark:bg-white/5 rounded-full border border-white/5 shadow-4xl skew-x-[-15deg]">
+                        <span className="text-[12px] font-black uppercase tracking-[0.4em] skew-x-[15deg] italic text-foreground/40">
+                            {filteredNotes.length} Observations
+                        </span>
+                    </div>
                 </div>
-
-                <div className="relative min-w-[200px]">
-                    <button
-                        type="button"
-                        onClick={() => { setIsHivesOpen(!isHivesOpen); setIsPlacesOpen(false); }}
-                        className={cn(
-                            "flex items-center gap-4 px-8 py-5 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-3xl shadow-sm hover:border-[#F4D03F]/40 transition-all w-full",
-                            isHivesOpen && "ring-2 ring-[#1B9157]/20 border-[#1B9157]/40"
-                        )}
-                    >
-                        <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", selectedHiveId ? "bg-[#F4D03F] text-black" : "bg-slate-50 dark:bg-white/5 text-slate-400")}>
-                            <Box className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col items-start">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">HIVE</span>
-                            <span className="text-[14px] font-black text-slate-700 dark:text-slate-200 uppercase truncate">
-                                {selectedHive ? selectedHive.hive_code : "All Hives"}
-                            </span>
-                        </div>
-                        <ChevronDown className={cn("w-4 h-4 ml-auto text-slate-300 transition-transform", isHivesOpen && "rotate-180")} />
-                    </button>
-
-                    <AnimatePresence>
-                        {isHivesOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 6 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 6 }}
-                                transition={spring.snappy}
-                                className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
-                            >
-                                <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                    {hives
-                                        .filter(h => !selectedPlaceId || h.apiary_id === selectedPlaceId)
-                                        .slice(0, 184) // Limit to 184 if needed, though data should already be correct
-                                        .map((hive) => (
-                                            <button
-                                                key={hive.id}
-                                                onClick={() => { setSelectedHiveId(hive.id); setIsHivesOpen(false); }}
-                                                className="w-full flex items-center gap-3 px-5 py-4 hover:bg-[#F4D03F]/10 rounded-2xl transition-colors font-black text-[11px] uppercase tracking-widest text-slate-600 dark:text-slate-300"
-                                            >
-                                                <Box className="w-4 h-4" /> {hive.hive_code}
-                                            </button>
-                                        ))}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
+            </motion.div>
 
             {/* Notes Grid */}
-            <div className="mt-12">
+            <div className="relative z-10">
                 {filteredNotes.length === 0 ? (
-                    <div className="bg-slate-50 dark:bg-white/[0.02] border-2 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem] py-32 flex flex-col items-center justify-center text-center">
-                        <div className="w-24 h-24 bg-white dark:bg-white/5 rounded-[2rem] shadow-sm flex items-center justify-center mb-8">
-                            <StickyNote className="w-10 h-10 text-slate-200" />
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={glass.emptyState}>
+                        <div className="w-56 h-56 rounded-[4rem] bg-honey/5 border border-honey/20 flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 shadow-4xl">
+                            <StickyNote className="w-28 h-28 text-honey opacity-20" />
                         </div>
-                        <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-2">No Notes Found</h3>
-                        <p className="text-slate-400 font-bold text-sm max-w-xs uppercase tracking-widest">No observations recorded for this selection.</p>
-                    </div>
+                        <div className="space-y-6">
+                            <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none opacity-40">Zero Observations</h3>
+                            <p className={cn(glass.microLabel, "max-w-xl mx-auto")}>No logs found for this selection. Initiate a new record to begin tracking.</p>
+                        </div>
+                        <button onClick={() => setIsAddingNote(true)} className={cn(glass.btnPrimary, "mt-16")}>
+                            <Plus className="w-10 h-10 mr-6" /> Record First Note
+                        </button>
+                    </motion.div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredNotes.map((note) => (
-                            <motion.div
-                                key={note.id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.96 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={spring.gentle}
-                                className="group"
-                            >
-                                <div className="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative overflow-hidden">
-                                    <div className={cn("absolute top-0 right-0 w-3 h-full",
-                                        note.priority === 'high' ? "bg-rose-500" :
-                                            note.priority === 'medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-14">
+                        <AnimatePresence>
+                            {filteredNotes.map((note, i) => (
+                                <motion.div
+                                    key={note.id}
+                                    initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                                    transition={{ delay: i * 0.05, duration: 0.8 }}
+                                    className={cn(glass.card, "p-12 hover:border-honey/60 group cursor-default")}
+                                >
+                                    <div className={cn("absolute top-0 right-0 w-3 h-full group-hover:w-4 transition-all duration-700",
+                                        note.priority === 'high' ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]" :
+                                            note.priority === 'medium' ? "bg-honey shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                                     )} />
 
-                                    <div className="flex items-center justify-between mb-6">
-                                        <Badge className="bg-slate-50 dark:bg-white/5 text-[8px] font-black uppercase tracking-widest py-1 px-3 border-none text-slate-400">
-                                            {note.category || "General"}
-                                        </Badge>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-slate-50 dark:bg-white/5" onClick={() => setIsEditingNote(note)}>
-                                                <Edit className="w-3.5 h-3.5" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-rose-50 dark:bg-rose-900/20 text-rose-600" onClick={() => handleDeleteNote(note.id)}>
-                                                <Trash2 className="w-3.5 h-3.5" />
-                                            </Button>
+                                    <div className="flex items-center justify-between mb-10">
+                                        <div className={cn(glass.badge, "bg-black/5 dark:bg-white/5 text-foreground/40 border-white/5")}>
+                                            <span className="skew-x-[15deg] block">{note.category?.toUpperCase() || "GENERAL"}</span>
+                                        </div>
+                                        <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-4 group-hover:translate-x-0">
+                                            <button onClick={() => setIsEditingNote(note)} className="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center hover:bg-honey/20 hover:text-honey transition-all">
+                                                <Edit className="w-7 h-7" />
+                                            </button>
+                                            <button onClick={() => handleDeleteNote(note.id)} className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/10 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">
+                                                <Trash2 className="w-7 h-7" />
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase mb-4 line-clamp-2 leading-tight">
+                                    <h4 className="text-4xl font-black italic text-foreground tracking-tighter uppercase mb-6 line-clamp-2 leading-none group-hover:text-honey transition-colors duration-700">
                                         {note.title || "Observation Log"}
                                     </h4>
 
-                                    <p className="text-slate-500 dark:text-slate-400 font-bold text-sm leading-relaxed line-clamp-4 flex-1">
-                                        {note.content}
-                                    </p>
+                                    <div className="bg-black/5 dark:bg-black/30 rounded-[2.5rem] p-8 border border-white/5 shadow-inner mb-8 group-hover:border-honey/20 transition-all duration-1000">
+                                        <p className="text-xl font-black text-foreground/40 italic leading-relaxed line-clamp-4 lowercase first-letter:uppercase">
+                                            {note.content}
+                                        </p>
+                                    </div>
 
-                                    <div className="mt-8 pt-6 border-t border-slate-50 dark:border-white/5 flex flex-wrap gap-4">
-                                        <div className="flex items-center gap-2">
-                                            <CalendarIcon className="w-3.5 h-3.5 text-[#1B9157]" />
-                                            <span className="text-[10px] font-black text-slate-400 uppercase">{format(new Date(note.note_date || note.created_at!), "dd MMM yyyy")}</span>
+                                    <div className="pt-8 border-t border-white/5 flex flex-wrap gap-8">
+                                        <div className="flex items-center gap-4">
+                                            <CalendarIcon className="w-6 h-6 text-honey opacity-30" />
+                                            <span className="text-[12px] font-black text-foreground/20 italic uppercase tracking-[0.2em]">{format(new Date(note.note_date || note.created_at!), "dd MMM yyyy").toUpperCase()}</span>
                                         </div>
                                         {note.hive_id && (
-                                            <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-full">
-                                                <Box className="w-3 h-3 text-[#F4D03F]" />
-                                                <span className="text-[9px] font-black uppercase text-slate-600 dark:text-slate-300 tracking-widest">
-                                                    {hives.find(h => h.id === note.hive_id)?.hive_code || "Unit"}
+                                            <div className="flex items-center gap-4 px-6 py-2 bg-honey/5 border border-honey/10 rounded-full skew-x-[-15deg]">
+                                                <Box className="w-5 h-5 text-honey skew-x-[15deg]" />
+                                                <span className="text-[10px] font-black uppercase text-honey tracking-[0.3em] skew-x-[15deg] italic">
+                                                    HIVE: {hives.find(h => h.id === note.hive_id)?.hive_code.toUpperCase() || "UNIT"}
                                                 </span>
                                             </div>
                                         )}
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </div>
                 )}
             </div>
-
-            {/* Floating Action Button */}
-            <motion.div
-                className="fixed bottom-12 right-12 z-50"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-                <Button
-                    type="button"
-                    onClick={() => setIsAddingNote(true)}
-                    className="w-20 h-20 rounded-[2.5rem] bg-[#1B9157] hover:bg-[#167d4a] text-white shadow-[0_20px_50px_rgba(27,145,87,0.3)] flex items-center justify-center p-0 border-4 border-white dark:border-[#141414] transition-all hover:scale-110 active:scale-95"
-                >
-                    <Plus className="w-10 h-10 stroke-[3]" />
-                </Button>
-            </motion.div>
-
-            {/* Backdrop for click-away */}
-            {(isPlacesOpen || isHivesOpen) && (
-                <div className="fixed inset-0 z-40 bg-transparent" onClick={() => { setIsPlacesOpen(false); setIsHivesOpen(false); }} />
-            )}
-        </div>
+        </motion.div>
     );
 };
 

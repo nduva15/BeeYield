@@ -36,14 +36,6 @@ func main() {
 	mux.HandleFunc("POST /ai/tokenize", gw.ProxyAITokenize)
 
 
-
-	// ===== ClickHouse Analytics =====
-	mux.HandleFunc("POST /ch/track/page-view", gw.TrackPageView)
-	mux.HandleFunc("POST /ch/track/traceability-scan", gw.TrackTraceabilityScan)
-	mux.HandleFunc("POST /ch/track/order-event", gw.TrackOrderEvent)
-	mux.HandleFunc("GET /ch/analytics/summary", gw.GetAnalyticsSummary)
-	mux.HandleFunc("POST /ch/init-tables", gw.InitClickHouseTables)
-
 	// ===== Kaggle Remote Inference =====
 	mux.HandleFunc("POST /inference/kaggle/trigger", gw.TriggerKaggleInference)
 	mux.HandleFunc("GET /inference/kaggle/status/", gw.GetKaggleInferenceStatus)
@@ -60,11 +52,7 @@ func main() {
 	addr := cfg.GatewayAddr()
 	log.Printf("🚀 BeeYield DB Gateway starting on %s", addr)
 	log.Printf("   Rust DB Service: %s", cfg.RustDBURL())
-	if cfg.ClickHouseConfigured() {
-		log.Printf("   ClickHouse: %s:%d", cfg.ClickHouseHost, cfg.ClickHousePort)
-	} else {
-		log.Println("   ClickHouse: not configured")
-	}
+
 
 	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatalf("Server failed: %v", err)

@@ -8,6 +8,12 @@ import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";
 import { aiService, type ChatMessage as AIChatMessage } from "@/services/aiService";
+import { AboutBeeYieldAI } from "./AboutBeeYieldAI";
+import { BeeSpeciesGallery } from "./BeeSpeciesGallery";
+import { AnimatePresence, motion } from "framer-motion";
+import { Info, ExternalLink, Bug } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface AIAssistantViewProps {
     onTabChange: (tab: string, message?: string) => void;
@@ -58,6 +64,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     const [conversationId, setConversationId] = useState<string | null>(null);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [historyOpen, setHistoryOpen] = useState(false);
+    const [aboutOpen, setAboutOpen] = useState(false);
+    const [galleryOpen, setGalleryOpen] = useState(false);
 
     // Media state
     const [attachedImage, setAttachedImage] = useState<File | null>(null);
@@ -307,11 +315,29 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         <span className="text-xs font-black uppercase tracking-widest">History</span>
                     </button>
 
+                    <button
+                        onClick={() => setGalleryOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-border hover:border-honey/50 transition-all text-muted-foreground hover:text-foreground bg-muted/30"
+                        title="Species Identification Gallery"
+                    >
+                        <Bug className="w-5 h-5" />
+                        <span className="text-xs font-black uppercase tracking-widest">Species ID</span>
+                    </button>
+
                     <div className="h-8 w-px bg-border mx-2" />
 
                     <img src={Logo} alt="Beeyield" className="h-10 w-auto" />
                     <div className="hidden sm:block">
-                        <div className="font-serif text-2xl font-black text-honey leading-none">BeeYield AI</div>
+                        <div className="flex items-center gap-2">
+                            <div className="font-serif text-2xl font-black text-honey leading-none">BeeYield AI</div>
+                            <button
+                                onClick={() => setAboutOpen(true)}
+                                className="w-5 h-5 rounded-full bg-honey/10 flex items-center justify-center hover:bg-honey/20 transition-all group"
+                                title="About BeeYield AI"
+                            >
+                                <Info className="w-3 h-3 text-honey group-hover:scale-110" />
+                            </button>
+                        </div>
                         <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Global Intelligence Framework</div>
                     </div>
                 </div>
@@ -338,22 +364,39 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                     <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in zoom-in-95 duration-700 max-w-4xl mx-auto w-full pb-20">
                         <div className="relative mb-8">
                             <div className="absolute inset-0 bg-honey/20 blur-3xl rounded-full scale-150 animate-pulse" />
-                            <img src={Logo} alt="Beeyield" className="h-24 w-auto relative z-10 opacity-100" />
+                        <img src={Logo} alt="Beeyield" className="h-24 w-auto relative z-10 opacity-100" />
                         </div>
-
-                        <h1 className="font-serif text-6xl font-black text-honey mb-4 tracking-tight">Welcome to BeeYield AI</h1>
-                        <p className="text-muted-foreground max-w-2xl mb-12 text-sm font-medium leading-relaxed uppercase tracking-wide opacity-70">
-                            The world&apos;s most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
+                        <h1 className="font-serif text-6xl font-black text-honey mb-4 tracking-tight italic uppercase">BeeYield AI</h1>
+                        <p className="text-muted-foreground max-w-2xl mb-12 text-sm font-black leading-relaxed uppercase tracking-[0.2em] opacity-50 flex items-center justify-center gap-4">
+                            <span className="w-10 h-px bg-honey/20" />
+                            750,000+ Research Datasets Integrated
+                            <span className="w-10 h-px bg-honey/20" />
                         </p>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-12">
+                            <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
+                                <span className="text-2xl font-black text-honey mb-1">20,000+</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Bee Species</span>
+                            </div>
+                            <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
+                                <span className="text-2xl font-black text-honey mb-1">300+</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Honey Varieties</span>
+                            </div>
+                            <div className="hidden lg:flex bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
+                                <span className="text-2xl font-black text-honey mb-1">50+</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Protocols</span>
+                            </div>
+                        </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                             {SUGGESTIONS.map((s) => (
                                 <button
                                     key={s}
                                     onClick={() => send(s)}
-                                    className="text-left px-6 py-5 rounded-[2rem] text-sm border border-border bg-white hover:border-honey/50 hover:bg-honey/5 hover:shadow-honey transition-all text-muted-foreground hover:text-foreground leading-relaxed font-semibold shadow-sm"
+                                    className="text-left px-6 py-5 rounded-[2rem] text-sm border border-border bg-white hover:border-honey/50 hover:bg-honey/5 hover:shadow-honey transition-all text-muted-foreground hover:text-foreground leading-relaxed font-semibold shadow-sm group flex items-center justify-between"
                                 >
                                     {s}
+                                    <Send className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-honey" />
                                 </button>
                             ))}
                         </div>
@@ -385,9 +428,15 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 )}
                                 <div className={`px-8 py-6 text-[15px] leading-relaxed whitespace-pre-wrap shadow-sm ${msg.role === "user"
                                         ? "bg-honey text-white rounded-[2rem] rounded-tr-lg font-bold"
-                                        : "bg-white text-foreground border border-border rounded-[2.5rem] rounded-tl-lg font-medium"
+                                        : "bg-white text-foreground border border-border rounded-[2.5rem] rounded-tl-lg font-medium prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-headings:font-black prose-headings:tracking-tight prose-headings:uppercase prose-headings:flex prose-headings:items-center prose-headings:gap-2 prose-a:text-honey max-w-none"
                                     }`}>
-                                    {msg.content}
+                                    {msg.role === "user" ? (
+                                        msg.content
+                                    ) : (
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {msg.content}
+                                        </ReactMarkdown>
+                                    )}
                                 </div>
                             </div>
                             {msg.role === "user" && (
@@ -519,6 +568,43 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
             <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageSelect} />
             <input ref={audioInputRef} type="file" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/m4a,audio/*" className="hidden" onChange={handleAudioSelect} />
+
+            <AnimatePresence>
+                {aboutOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setAboutOpen(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                        />
+                        <AboutBeeYieldAI onClose={() => setAboutOpen(false)} />
+                    </div>
+                )}
+                {galleryOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-12">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setGalleryOpen(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                        />
+                        <div className="relative w-full h-full bg-background rounded-[3rem] overflow-hidden shadow-3xl border border-border z-10">
+                            <button 
+                                onClick={() => setGalleryOpen(false)}
+                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-muted/50 hover:bg-honey transition-all flex items-center justify-center text-foreground hover:text-black z-[110]"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                            <div className="w-full h-full overflow-y-auto">
+                                <BeeSpeciesGallery />
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             <style>{`
         .custom-scroll::-webkit-scrollbar {

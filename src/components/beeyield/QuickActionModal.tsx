@@ -14,6 +14,7 @@ import { Plus, MapPin, Wind, Sun, Info, Database, Calendar, Hexagon, Layers, Shi
 import { beeyieldService, Apiary } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
 import { glass } from './GlassTheme';
 
