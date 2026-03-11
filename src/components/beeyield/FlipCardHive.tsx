@@ -20,118 +20,102 @@ interface FlipCardHiveProps {
 }
 
 const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMarkInspection }) => {
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'ok': return 'bg-emerald-500';
-            case 'warning': return 'bg-amber-500';
-            case 'critical': return 'bg-red-500';
-            default: return 'bg-honey';
-        }
+    const [isFlipped, setIsFlipped] = React.useState(false);
+
+    const statusConfig = {
+        ok: { label: 'NOMINAL', color: 'text-white', dot: 'bg-white' },
+        warning: { label: 'ALERT', color: 'text-[#FF6B00]', dot: 'bg-[#FF6B00]' },
+        critical: { label: 'CRITICAL', color: 'text-[#FF6B00]', dot: 'bg-[#FF6B00] shadow-[0_0_10px_#FF6B00]' },
     };
 
-    const statusLabel = hive.status === 'ok' ? 'Healthy' : hive.status === 'warning' ? 'Check Unit' : 'Needs Help';
+    const cfg = statusConfig[hive.status] || statusConfig.ok;
 
     return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ y: -15, scale: 1.02 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div 
+            className="group perspective-1000 h-[380px] w-full cursor-pointer"
+            onClick={() => setIsFlipped(!isFlipped)}
         >
-            <Card className="h-full border border-white/5 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem] shadow-[0_80px_150px_-30px_rgba(0,0,0,0.4)] overflow-hidden group hover:border-honey/60 transition-all duration-1000 flex flex-col relative">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-honey/5 rounded-full blur-[80px] -mr-32 -mt-32 group-hover:bg-honey/15 transition-all duration-2000" />
+            <motion.div
+                className="relative w-full h-full transition-all duration-700 preserve-3d"
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            >
+                {/* ── Front Face ── */}
+                <div className="absolute inset-0 backface-hidden flex flex-col bg-[#0A0A0A] border border-white/20 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                    <div className="p-8 border-b border-white/5 bg-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className={cn("w-2 h-2 rounded-full animate-pulse", cfg.dot)} />
+                            <span className={cn("text-[9px] font-black uppercase tracking-widest", cfg.color)}>{cfg.label}</span>
+                        </div>
+                        <Hexagon className="w-5 h-5 text-white/10" />
+                    </div>
+                    
+                    <div className="flex-1 p-10 flex flex-col justify-center gap-4">
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">Unit Registry</p>
+                        <h3 className="text-6xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-[#FF6B00] transition-colors">
+                            {hive.name}
+                        </h3>
+                    </div>
 
-                <div className={cn("px-10 py-5 text-[12px] font-black uppercase tracking-[0.5em] italic text-center border-b border-white/5 relative z-10",
-                    hive.status === 'ok' ? 'text-emerald-500 bg-emerald-500/10' :
-                        hive.status === 'warning' ? 'text-amber-500 bg-amber-500/10' :
-                            'text-red-500 bg-red-500/10'
-                )}>
-                    Status: {statusLabel}
+                    <div className="p-8 bg-white/5 border-t border-white/5 flex items-center justify-between">
+                        <div className="space-y-1">
+                            <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">Weight Protocol</p>
+                            <p className="text-3xl font-mono font-black text-white tabular-nums">{hive.weight} KG</p>
+                        </div>
+                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#FF6B00]/10 group-hover:border-[#FF6B00]/30 transition-all">
+                            <ArrowRight className="w-6 h-6 text-[#FF6B00]" />
+                        </div>
+                    </div>
                 </div>
 
-                <CardContent className="flex-1 flex flex-col p-12 gap-12 relative z-10">
-                    <div className="flex items-start justify-between">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-4">
-                                <Binary className="w-6 h-6 text-honey/20" />
-                                <span className="text-[10px] font-black text-honey/20 uppercase tracking-[0.6em] italic leading-none">Hive Registry</span>
-                            </div>
-                            <h3 className="text-6xl font-black text-foreground tracking-tighter uppercase leading-[0.8] italic group-hover:text-honey transition-colors duration-1000">
-                                {hive.name}
-                            </h3>
-                        </div>
-                        <div className="w-18 h-18 rounded-[1.8rem] bg-black/5 dark:bg-white/5 flex items-center justify-center text-honey group-hover:scale-125 group-hover:rotate-[360deg] transition-all duration-[1.5s] border border-white/5 shadow-4xl backdrop-blur-3xl">
-                            <Hexagon className="w-10 h-10" />
-                        </div>
+                {/* ── Back Face ── */}
+                <div 
+                    className="absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-[#000000] border border-[#FF6B00]/40 rounded-[2.5rem] overflow-hidden shadow-[0_0_40px_rgba(255,107,0,0.1)]"
+                >
+                    <div className="p-8 border-b border-[#FF6B00]/20 bg-[#FF6B00]/5 flex items-center justify-between">
+                        <h4 className="text-[10px] font-black text-[#FF6B00] uppercase tracking-widest">Biometric Telemetry</h4>
+                        <Activity className="w-4 h-4 text-[#FF6B00]" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-8">
-                        <div className="p-10 rounded-[2.5rem] bg-black/5 dark:bg-white/5 border border-white/5 transition-all duration-1000 group-hover:bg-honey/10 group-hover:border-honey/40 shadow-inner overflow-hidden relative">
-                            <div className="absolute inset-0 bg-honey/[0.02] animate-shimmer" />
-                            <div className="flex items-center gap-4 mb-4 text-foreground/20 group-hover:text-honey/60 transition-colors relative z-10">
-                                <Zap className="w-5 h-5" />
-                                <span className="text-[11px] font-black uppercase tracking-widest italic leading-none">Weight</span>
+                    <div className="flex-1 p-8 grid grid-cols-2 gap-4">
+                        {[
+                            { label: 'TEMP', value: `${hive.temp}°C`, icon: Thermometer },
+                            { label: 'HUMIDITY', value: `${hive.humidity}%`, icon: Droplet },
+                            { label: 'HEALTH', value: 'NOMINAL', icon: ShieldCheck },
+                            { label: 'SIGNAL', value: '-84dBm', icon: Binary },
+                        ].map((s, i) => (
+                            <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                <s.icon className="w-4 h-4 text-white/20 mb-3" />
+                                <p className="text-xl font-mono font-black text-white tabular-nums leading-none mb-1">{s.value}</p>
+                                <p className="text-[7px] font-black text-white/40 uppercase tracking-widest">{s.label}</p>
                             </div>
-                            <div className="flex items-end gap-3 relative z-10">
-                                <span className="text-5xl font-black text-foreground italic tracking-tighter tabular-nums">{hive.weight}</span>
-                                <span className="text-sm font-black text-foreground/20 uppercase tracking-widest italic mb-3">KG</span>
-                            </div>
-                        </div>
-                        <div className="p-10 rounded-[2.5rem] bg-black/5 dark:bg-white/5 border border-white/5 transition-all duration-1000 group-hover:bg-emerald-500/10 group-hover:border-emerald-500/40 shadow-inner overflow-hidden relative">
-                            <div className="absolute inset-0 bg-emerald-500/[0.02] animate-shimmer" />
-                            <div className="flex items-center gap-4 mb-4 text-foreground/20 group-hover:text-emerald-500/60 transition-colors relative z-10">
-                                <Activity className="w-5 h-5" />
-                                <span className="text-[11px] font-black uppercase tracking-widest italic leading-none">Humidity</span>
-                            </div>
-                            <div className="flex items-end gap-3 relative z-10">
-                                <span className="text-5xl font-black text-foreground italic tracking-tighter tabular-nums">{hive.humidity}</span>
-                                <span className="text-sm font-black text-foreground/20 uppercase tracking-widest italic mb-3">%</span>
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
-                    <div className="mt-auto space-y-6">
-                        <div className="flex gap-6">
-                            <Button
-                                variant="ghost"
-                                className="flex-1 h-20 rounded-[2rem] bg-black/5 dark:bg-white/5 text-foreground/40 hover:text-honey hover:bg-honey/10 transition-all duration-1000 font-black text-[12px] uppercase tracking-[0.4em] italic border border-white/5 shadow-4xl"
-                                onClick={onViewHistory}
-                            >
-                                <BarChart2 className="w-6 h-6 mr-4" /> Stats
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                className="flex-1 h-20 rounded-[2rem] bg-black/5 dark:bg-white/5 text-foreground/40 hover:text-honey hover:bg-honey/10 transition-all duration-1000 font-black text-[12px] uppercase tracking-[0.4em] italic border border-white/5 shadow-4xl"
-                                onClick={onMarkInspection}
-                            >
-                                <Settings className="w-6 h-6 mr-4" /> Schedule
-                            </Button>
-                        </div>
-                        <button
-                            className="w-full h-24 rounded-[2.5rem] bg-black text-white font-black text-[14px] uppercase tracking-[0.5em] italic shadow-[0_45px_100px_-20px_rgba(0,0,0,0.6)] transition-all duration-1000 group/btn flex items-center justify-center gap-6 relative overflow-hidden"
-                            onClick={onViewHistory}
+                    <div className="p-6 flex gap-3">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onViewHistory(); }}
+                            className="flex-1 h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest transition-all border border-white/10"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-[1500ms]" />
-                            <span className="relative z-10">View Details</span>
-                            <ArrowRight className="w-7 h-7 text-honey group-hover/btn:translate-x-5 transition-transform duration-1000 relative z-10" />
+                            History
+                        </button>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onMarkInspection(); }}
+                            className="flex-1 h-12 rounded-xl bg-[#FF6B00] hover:bg-[#FF6B00]/80 text-[#000000] font-black text-[9px] uppercase tracking-widest transition-all shadow-lg"
+                        >
+                            Task
                         </button>
                     </div>
-                </CardContent>
-
-                {/* Status Pulsar */}
-                <div className="absolute bottom-10 right-10 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-1500">
-                    <div className="relative">
-                        <div className={cn("absolute inset-0 blur-2xl opacity-60 animate-pulse", getStatusColor(hive.status))} />
-                        <div className={cn("w-3 h-3 rounded-full relative z-10 shadow-4xl border border-white/20", getStatusColor(hive.status))} />
-                    </div>
                 </div>
+            </motion.div>
 
-                <style>{`
-                    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-                    .animate-shimmer { animation: shimmer 4s infinite linear; }
-                `}</style>
-            </Card>
-        </motion.div>
+            <style>{`
+                .perspective-1000 { perspective: 1000px; }
+                .preserve-3d { transform-style: preserve-3d; }
+                .backface-hidden { backface-visibility: hidden; }
+                .rotate-y-180 { transform: rotateY(180deg); }
+            `}</style>
+        </div>
     );
 };
 

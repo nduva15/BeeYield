@@ -79,37 +79,23 @@ const FleetSecurity: React.FC = () => {
             <AnimatePresence>
                 {globalAlert && (
                     <motion.div
-                        initial={{ height: 0, opacity: 0, y: -40, scale: 0.95 }}
-                        animate={{ height: 'auto', opacity: 1, y: 0, scale: 1 }}
-                        exit={{ height: 0, opacity: 0, y: -40, scale: 0.95 }}
-                        className="relative z-50 mb-16"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        className="bg-[#FF6B00] text-black px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_0_50px_rgba(255,107,0,0.3)] relative z-50 mb-10 overflow-hidden"
                     >
-                        <div className="bg-destructive/90 dark:bg-red-600/90 backdrop-blur-3xl p-16 rounded-[4rem] border-4 border-white/20 shadow-[0_60px_100px_rgba(239,68,68,0.5)] flex flex-col lg:flex-row items-center justify-between text-white gap-12 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-white/10 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-40 animate-pulse" />
-                            <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent pointer-events-none" />
-
-                            <div className="flex items-center gap-12 relative z-10">
-                                <div className="p-8 bg-white/20 rounded-[3rem] backdrop-blur-3xl shadow-4xl animate-pulse border-2 border-white/20">
-                                    <AlertTriangle className="w-16 h-16 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-6 mb-4">
-                                        <div className="w-4 h-4 rounded-full bg-white animate-ping" />
-                                        <h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">Security <span className="text-white/60">Alert</span></h2>
-                                    </div>
-                                    <p className="text-2xl font-black italic opacity-90 uppercase tracking-widest leading-tight max-w-2xl pl-4 border-l-8 border-white/20">
-                                        Someone moved Pallet {pallets[1].id} without permission. Please check your hives immediately.
-                                    </p>
-                                </div>
+                        <div className="absolute inset-0 bg-black/5 animate-pulse pointer-events-none" />
+                        <div className="flex items-center gap-8 relative z-10">
+                            <AlertTriangle className="w-12 h-12 animate-pulse" />
+                            <div className="space-y-1">
+                                <h2 className="text-3xl font-black uppercase tracking-tighter">Critical_Pulse_Detected</h2>
+                                <p className="text-sm font-mono font-black uppercase tracking-[0.2em] opacity-80">Pallet_{pallets[1].id}_Movement // Sector_G4 // Alert_Auth_Required</p>
                             </div>
-                            <div className="flex gap-6 relative z-10">
-                                <button
-                                    onClick={() => setGlobalAlert(false)}
-                                    className="h-24 px-16 bg-white text-red-600 font-black italic uppercase text-3xl rounded-full shadow-4xl hover:scale-105 active:scale-95 transition-all"
-                                >
-                                    Dismiss
-                                </button>
-                            </div>
+                        </div>
+                        <div className="flex items-center gap-6 relative z-10">
+                            <button className="px-10 py-4 bg-black text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Suppress_Alarm</button>
+                            <button onClick={() => setGlobalAlert(false)} className="w-16 h-16 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black/10 transition-all">
+                                <X className="w-6 h-6" />
+                            </button>
                         </div>
                     </motion.div>
                 )}
@@ -117,19 +103,17 @@ const FleetSecurity: React.FC = () => {
 
             {/* Header Section */}
             <PageHeader
-                icon={Shield}
-                label="Theft Protection"
-                title={<>Hive <span className="text-honey">Security</span></>}
-                subtitle="Protect your hives from theft and see exactly where they are located."
+                icon={ShieldCheck}
+                label="Fleet Security Ops"
+                title={<>Fleet <span className="text-[#FF6B00]">Security</span></>}
+                subtitle="High-fidelity telemetry of pallet movement, geo-fencing, and nodal integrity."
                 actions={
-                    <div className="flex gap-8">
-                        <button className={cn(glass.btnSecondary, "h-20 px-12 font-black italic uppercase text-lg rounded-full border-white/10 hover:bg-white/5")}>
-                            Map Settings
-                        </button>
-                        <button className={cn(glass.btnPrimary, "h-20 px-16 font-black italic uppercase text-2xl shadow-4xl shadow-honey/20 rounded-full flex items-center gap-6")}>
-                            <Lock className="w-8 h-8" />
-                            Secure All
-                        </button>
+                    <div className="flex gap-6">
+                        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-6 py-2">
+                            <Lock className="w-5 h-5 text-white/40" />
+                            <span className="text-[10px] font-mono font-black text-[#FF6B00] uppercase tracking-widest">ENCRYPTED_UPLINK</span>
+                        </div>
+                        <button className="h-14 px-8 bg-[#FF6B00] text-black font-black uppercase tracking-widest text-xs rounded-xl shadow-3xl hover:brightness-125 transition-all">LOCK_ALL_PALLETS</button>
                     </div>
                 }
             />
@@ -139,101 +123,54 @@ const FleetSecurity: React.FC = () => {
 
                 {/* Asset Registry */}
                 <div className="lg:col-span-8 space-y-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-4xl relative border-white/5 bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem]")}
-                    >
-                        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-honey/[0.05] rounded-full blur-[150px] pointer-events-none" />
-
-                        <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/20 backdrop-blur-3xl flex flex-col sm:flex-row items-center justify-between gap-12 relative z-10">
-                            <div className="space-y-4">
-                                <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Hive <span className="text-honey">Map</span></h2>
-                                <p className="text-xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-white/5">Check where your hives are located.</p>
-                            </div>
-                            <div className="flex items-center gap-6 bg-emerald-500/10 border-2 border-emerald-500/20 rounded-[2.5rem] px-10 py-4 shadow-4xl backdrop-blur-3xl">
-                                <div className="relative">
-                                    <div className="absolute inset-0 bg-emerald-500 blur-md opacity-60 animate-pulse" />
-                                    <div className="w-4 h-4 rounded-full bg-emerald-500 relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
+                        <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden relative group">
+                            <div className="p-10 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                                <div className="flex items-center gap-6">
+                                    <MapPin className="w-8 h-8 text-[#FF6B00]" />
+                                    <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Asset_Vector_Map</h3>
                                 </div>
-                                <span className="text-xl font-black italic uppercase text-emerald-500 tracking-widest">Secure Connection</span>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-3 px-4 py-1 bg-white/5 rounded-lg border border-white/10">
+                                        <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+                                        <span className="text-[9px] font-mono font-black text-white/40 uppercase tracking-widest">GEO_SYNCED</span>
+                                    </div>
+                                    <RefreshCw className="w-5 h-5 text-white/10 hover:text-[#FF6B00] cursor-pointer transition-colors" />
+                                </div>
+                            </div>
+                            
+                            <div className="aspect-video relative overflow-hidden bg-black">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,107,0,0.03),transparent)] pointer-events-none" />
+                                {/* Simple Grid Overlay */}
+                                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+                                
+                                {pallets.map((p, i) => (
+                                    <motion.div
+                                        key={p.id}
+                                        className="absolute cursor-pointer group/node"
+                                        style={{ left: `${20 + i * 25}%`, top: `${30 + i * 15}%` }}
+                                        whileHover={{ scale: 1.2 }}
+                                    >
+                                        <div className={cn(
+                                            "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500",
+                                            p.status === 'critical' ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)]" : "bg-white shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+                                        )}>
+                                            <div className={cn(
+                                                "w-2 h-2 rounded-full",
+                                                p.status === 'critical' ? "bg-white animate-ping" : "bg-black opacity-40"
+                                            )} />
+                                        </div>
+                                        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-lg opacity-0 group-hover/node:opacity-100 transition-opacity whitespace-nowrap">
+                                            {p.id}__{p.location.toUpperCase().replace(' ', '_')}
+                                        </div>
+                                    </motion.div>
+                                ))}
+                                
+                                <div className="absolute bottom-6 right-6 flex flex-col gap-4">
+                                    <button className="h-10 w-10 bg-white/10 border border-white/10 rounded-lg flex items-center justify-center text-white hover:bg-[#FF6B00] hover:text-black transition-all">+</button>
+                                    <button className="h-10 w-10 bg-white/10 border border-white/10 rounded-lg flex items-center justify-center text-white hover:bg-[#FF6B00] hover:text-black transition-all">-</button>
+                                </div>
                             </div>
                         </div>
-
-                        <div className="overflow-x-auto relative z-10 pb-12">
-                            <table className="w-full text-left border-separate border-spacing-0">
-                                <thead>
-                                    <tr className="bg-white/40 dark:bg-black/40">
-                                        <th className="px-12 py-10 text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Pallet</th>
-                                        <th className="px-12 py-10 text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Location</th>
-                                        <th className="px-12 py-10 text-center text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Hives</th>
-                                        <th className="px-12 py-10 text-center text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Movement</th>
-                                        <th className="px-16 py-10 text-right text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y border-t-8 border-black/10">
-                                    {pallets.map((p, i) => (
-                                        <motion.tr
-                                            key={p.id}
-                                            initial={{ opacity: 0, x: -30 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.1, duration: 0.8 }}
-                                            className={cn(
-                                                "group transition-all duration-700",
-                                                p.status === 'critical' ? "bg-red-500/10" : (p.status === 'warning' ? "bg-honey/10" : "hover:bg-white/5")
-                                            )}
-                                        >
-                                            <td className="py-12 px-12">
-                                                <div className="flex items-center gap-8">
-                                                    <div className="w-20 h-20 rounded-[2rem] bg-honey/10 flex items-center justify-center border-2 border-honey/20 shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
-                                                        <Box className="w-10 h-10 text-honey" />
-                                                    </div>
-                                                    <span className="text-4xl font-black italic uppercase tracking-tighter tabular-nums">{p.id}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-12 px-12">
-                                                <div className="flex items-center gap-4">
-                                                    <MapPin className="w-6 h-6 text-honey" />
-                                                    <span className="text-2xl font-black italic uppercase tracking-tighter opacity-60">{p.location}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-12 px-12 text-center">
-                                                <div className="inline-block bg-honey/10 text-honey border-2 border-honey/20 px-8 py-3 rounded-full text-xl font-black italic uppercase shadow-4xl">
-                                                    {p.hives} Hives
-                                                </div>
-                                            </td>
-                                            <td className="py-12 px-12 text-center">
-                                                <div className="flex flex-col items-center gap-4">
-                                                    <div className="flex items-center gap-4 bg-black/20 px-6 py-3 rounded-3xl border border-white/5 shadow-inner">
-                                                        <Activity className={cn("w-6 h-6 transition-all duration-700", p.vibration > 0.1 ? "text-red-500 animate-pulse scale-125" : "text-emerald-500")} />
-                                                        <span className="font-mono text-xl font-black opacity-60 tabular-nums lowercase">{p.vibration.toFixed(2)}v</span>
-                                                    </div>
-                                                    <div className="w-32 h-2 bg-white/5 rounded-full overflow-hidden shadow-inner p-[2px]">
-                                                        <motion.div
-                                                            className={cn("h-full rounded-full", p.vibration > 0.1 ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" : "bg-emerald-500")}
-                                                            animate={{ width: `${Math.min(p.vibration * 100 * 2, 100)}%` }}
-                                                            transition={{ type: 'spring', stiffness: 50 }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-12 px-16 text-right">
-                                                <div className={cn(
-                                                    "inline-flex items-center gap-6 px-10 py-4 rounded-full border-4 shadow-4xl backdrop-blur-3xl transition-all duration-500 hover:scale-105",
-                                                    p.status === 'secured' ? 'bg-emerald-500 text-black border-emerald-400' :
-                                                        p.status === 'warning' ? 'bg-honey text-black border-honey shadow-[0_0_20px_rgba(251,191,36,0.3)]' :
-                                                            'bg-red-500 text-white border-red-400 animate-pulse'
-                                                )}>
-                                                    <div className={cn("w-4 h-4 rounded-full", p.status === 'secured' ? 'bg-black opacity-40' : p.status === 'warning' ? 'bg-black opacity-40' : 'bg-white')} />
-                                                    <span className="text-xl font-black italic uppercase tracking-widest">{p.status === 'secured' ? 'Safe' : p.status.toUpperCase()}</span>
-                                                </div>
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </motion.div>
                 </div>
 
                 {/* Control Panel */}
@@ -241,106 +178,42 @@ const FleetSecurity: React.FC = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[5rem] border-white/5 relative overflow-hidden flex flex-col gap-16")}
+                        className="bg-white/5 border border-white/10 rounded-3xl p-10 flex flex-col gap-10 sticky top-32"
                     >
-                        <div className="absolute bottom-0 right-0 w-80 h-80 bg-honey/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mb-40" />
+                        <div className="flex items-center gap-6 border-l-4 border-[#FF6B00] pl-6">
+                            <Activity className="w-8 h-8 text-[#FF6B00]" />
+                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Unit_Matrix</h3>
+                        </div>
 
-                        {/* Alert Settings */}
-                        <section className="space-y-12 relative z-10">
-                            <div className="flex items-center gap-8 border-honey border-l-8 pl-8">
-                                <Radio className="w-10 h-10 text-honey" />
-                                <h3 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Alert <span className="text-honey">Settings</span></h3>
-                            </div>
-
-                            <div className="space-y-8">
-                                {[
-                                    { label: 'Text Messages', status: true, icon: Smartphone },
-                                    { label: 'Phone Alerts', status: true, icon: Bell },
-                                    { label: 'Alarm Sound', status: false, icon: Volume2 }
-                                ].map((cfg, i) => (
-                                    <div key={i} className="flex items-center justify-between p-10 bg-black/10 dark:bg-black/40 rounded-[3rem] border border-white/5 group/cfg hover:border-honey/40 hover:bg-honey/5 transition-all duration-700 shadow-4xl overflow-hidden relative">
-                                        <div className="flex items-center gap-8 relative z-10">
-                                            <div className="w-20 h-20 rounded-[2.5rem] bg-honey/10 flex items-center justify-center border-2 border-honey/20 shadow-4xl group-hover/cfg:scale-110 group-hover/cfg:rotate-6 transition-all">
-                                                <cfg.icon className="w-10 h-10 text-honey" />
-                                            </div>
-                                            <span className="text-2xl font-black italic uppercase tracking-widest opacity-60">{cfg.label}</span>
-                                        </div>
-                                        <div
-                                            className={cn(
-                                                "w-24 h-12 rounded-full border-4 border-white/10 shadow-inner p-1.5 cursor-pointer transition-all duration-700 relative z-10",
-                                                cfg.status ? "bg-honey shadow-[0_0_30px_rgba(251,191,36,0.4)]" : "bg-black/20"
-                                            )}
-                                        >
-                                            <motion.div
-                                                className={cn(
-                                                    "w-7 h-7 rounded-full shadow-4xl transition-all duration-700 flex items-center justify-center",
-                                                    cfg.status ? "bg-white ml-auto" : "bg-white/10"
-                                                )}
-                                                layout
-                                            >
-                                                {cfg.status && <div className="w-2 h-2 bg-honey rounded-full" />}
-                                            </motion.div>
+                        <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4 thin-scrollbar">
+                            {pallets.map((p, i) => (
+                                <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-center justify-between hover:border-[#FF6B00]/40 transition-all group">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-[13px] font-mono font-black text-white group-hover:text-[#FF6B00] transition-colors tracking-widest uppercase">{p.id}</span>
+                                        <span className="text-[9px] font-mono font-black text-white/20 uppercase tracking-[0.2em]">{p.vibration.toFixed(2)}v_CORE_ECHO</span>
+                                    </div>
+                                    <div className="text-right flex flex-col items-end gap-1">
+                                        <span className={cn(
+                                            "text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg",
+                                            p.status === 'critical' ? "bg-[#FF6B00]/10 text-[#FF6B00]" : "bg-white/10 text-white"
+                                        )}>
+                                            {p.status.toUpperCase()}
+                                        </span>
+                                        <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden mt-1 text-[2px]">
+                                            <div
+                                                className={cn("h-full", p.status === 'critical' ? "bg-[#FF6B00]" : "bg-white")}
+                                                style={{ width: `${Math.min(p.vibration * 200, 100)}%` }}
+                                            />
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </section>
-
-                        <div className="h-1 bg-white/5 mx-[-64px]" />
-
-                        {/* Actions */}
-                        <section className="space-y-12 relative z-10">
-                            <div className="flex items-center gap-8 border-red-500 border-l-8 pl-8">
-                                <Hammer className="w-10 h-10 text-red-500" />
-                                <h3 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Quick <span className="text-red-500">Actions</span></h3>
-                            </div>
-                            <div className="grid grid-cols-1 gap-8">
-                                <button className="w-full h-28 rounded-[3rem] bg-red-600 text-white flex items-center justify-between px-12 group/btn font-black italic text-2xl uppercase tracking-tighter shadow-4xl hover:scale-105 active:scale-95 transition-all">
-                                    <div className="flex items-center gap-8">
-                                        <Volume2 className="w-10 h-10 group-hover/btn:scale-125 transition-transform" />
-                                        <span>Sound Alarm</span>
-                                    </div>
-                                    <ArrowRight className="w-10 h-10 opacity-40 group-hover/btn:translate-x-4 transition-transform" />
-                                </button>
-                                <button className="w-full h-28 rounded-[3rem] bg-honey text-black flex items-center justify-between px-12 group/btn font-black italic text-2xl uppercase tracking-tighter shadow-4xl hover:scale-105 active:scale-95 transition-all">
-                                    <div className="flex items-center gap-8">
-                                        <Lock className="w-10 h-10 group-hover/btn:scale-125 transition-transform" />
-                                        <span>Lock Pallets</span>
-                                    </div>
-                                    <ArrowRight className="w-10 h-10 opacity-40 group-hover/btn:translate-x-4 transition-transform" />
-                                </button>
-                            </div>
-                        </section>
-
-                        {/* Auto-Security Info */}
-                        <motion.div
-                            whileHover={{ y: -10, scale: 1.02 }}
-                            className="p-16 bg-[#0D0D0D] rounded-[4rem] border-4 border-honey/20 shadow-[0_50px_100px_rgba(0,0,0,0.8)] relative overflow-hidden group/info"
-                        >
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32 group-hover/info:bg-honey/20 transition-all duration-1000" />
-
-                            <div className="flex items-center justify-between mb-10 relative z-10">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-4 h-4 bg-red-500 animate-pulse rounded-full shadow-[0_0_15px_rgba(239,68,68,0.8)]" />
-                                    <p className="text-[14px] font-black italic uppercase tracking-[0.4em] text-red-500">Auto-Security</p>
                                 </div>
-                                <Info className="w-8 h-8 text-honey/40" />
-                            </div>
+                            ))}
+                        </div>
 
-                            <p className="text-2xl font-black italic text-white/50 leading-tight uppercase tracking-widest pl-6 border-l-8 border-honey relative z-10">
-                                If a pallet moves more than <span className="text-honey">2 meters</span> without you knowing, the <span className="text-white">alarm will sound</span> to protect your hives.
-                            </p>
-
-                            <div className="flex items-center justify-between pt-10 relative z-10">
-                                <div className="flex gap-4">
-                                    {[1, 2, 3, 4, 5, 6].map(i => (
-                                        <div key={i} className="w-2 h-10 bg-honey/10 rounded-full group-hover/info:bg-honey/40 transition-all duration-500" />
-                                    ))}
-                                </div>
-                                <ShieldCheck className="w-12 h-12 text-honey/20 group-hover/info:scale-125 transition-all duration-700" />
-                            </div>
-                        </motion.div>
+                        <div className="pt-6 border-t border-white/10 space-y-6">
+                            <button className="w-full h-16 bg-white text-black font-black uppercase tracking-widest text-xs rounded-xl hover:bg-[#FF6B00] transition-all">MANUAL_OVERRIDE</button>
+                            <button className="w-full h-16 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs rounded-xl hover:border-[#FF6B00]/40 transition-all">SYSTEM_DIAGNOSTIC</button>
+                        </div>
                     </motion.div>
                 </div>
             </div>
@@ -348,7 +221,7 @@ const FleetSecurity: React.FC = () => {
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.2); border-radius: 20px; }
             `}</style>
         </motion.div>
     );

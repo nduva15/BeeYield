@@ -218,35 +218,35 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             <PageHeader
                 icon={Hexagon}
                 label="Hive Management"
-                title={<>Hive <span className="text-honey">Inventory</span></>}
+                title={<>Hive <span className="text-[#FF6B00]">Inventory</span></>}
                 subtitle="Track your hives, monitor equipment health, and manage colony weight data in real-time."
                 actions={
                     <div className="flex items-center gap-6">
                         <button
                             onClick={handleExportExcel}
                             disabled={isExporting}
-                            className={cn(glass.btnSecondary, "h-20 w-20 p-0 rounded-[2.5rem] bg-white dark:bg-black/60 shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
+                            className={cn(glass.btnSecondary, "px-8")}
                             title="Export to Excel"
                         >
-                            {isExporting ? <RefreshCw className="w-10 h-10 animate-spin" /> : <Download className="w-10 h-10" />}
+                            {isExporting ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
                         </button>
                         <button
                             onClick={handleOpenAddHive}
-                            className={cn(glass.btnPrimary, "h-24 bg-[#FBBE24] text-black shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl transition-all uppercase flex items-center justify-center gap-8 group/btn pl-24")}
+                            className={glass.btnPrimary}
                         >
-                            <Plus className="w-10 h-10 group-hover/btn:rotate-90 transition-transform duration-1000" />
-                            Add New Hive
+                            <Plus className="w-6 h-6" />
+                            Initialize Hive
                         </button>
                     </div>
                 }
             />
 
             {/* ── Quick Stats ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <GlassStatCard label="Total Hives" value={stats.total} icon={Box} index={0} />
-                <GlassStatCard label="Online" value={stats.active} icon={ShieldCheck} index={1} color="text-emerald-500" />
-                <GlassStatCard label="Alerts" value={stats.critical} icon={HeartPulse} index={2} color="text-destructive" />
-                <GlassStatCard label="Average Weight" value={`${stats.avgWeight}kg`} icon={Zap} index={3} color="text-honey" />
+                <GlassStatCard label="Online Status" value={stats.active} icon={ShieldCheck} index={1} color="text-white" />
+                <GlassStatCard label="Critical Alerts" value={stats.critical} icon={HeartPulse} index={2} color="text-[#FF6B00]" />
+                <GlassStatCard label="Mean Weight" value={`${stats.avgWeight}kg`} icon={Zap} index={3} color="text-[#FF6B00]" />
             </div>
 
             {/* ── Filter Bar ── */}
@@ -255,47 +255,47 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 animate={{ opacity: 1, y: 0 }}
                 className={glass.filterBar}
             >
-                <div className="relative z-10 flex flex-col xl:flex-row gap-12 justify-between items-center">
-                    <div className="flex bg-black/5 dark:bg-white/5 p-4 rounded-[3.5rem] gap-4 border border-white/10 shadow-inner w-full xl:w-auto">
+                <div className="relative z-10 flex flex-col xl:flex-row gap-8 justify-between items-center">
+                    <div className="flex bg-white/5 p-2 rounded-2xl gap-2 border border-white/10 w-full xl:w-auto">
                         <button
                             onClick={() => setViewMode('hives')}
-                            className={cn('flex-1 xl:flex-initial h-20 px-16 rounded-[2.8rem] text-lg font-black uppercase tracking-widest italic transition-all duration-700 flex items-center gap-6 justify-center',
-                                viewMode === 'hives' ? 'bg-white dark:bg-black/80 text-honey shadow-4xl border border-honey/20' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
+                            className={cn('flex-1 xl:flex-initial h-14 px-10 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-4 justify-center',
+                                viewMode === 'hives' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-[#FF6B00] hover:bg-[#FF6B00]/10'
                             )}
                         >
-                            <Layers className="w-7 h-7" /> Hive List
+                            <Layers className="w-5 h-5" /> Hives
                         </button>
                         <button
                             onClick={() => setViewMode('devices')}
-                            className={cn('flex-1 xl:flex-initial h-20 px-16 rounded-[2.8rem] text-lg font-black uppercase tracking-widest italic transition-all duration-700 flex items-center gap-6 justify-center',
-                                viewMode === 'devices' ? 'bg-white dark:bg-black/80 text-honey shadow-4xl border border-honey/20' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
+                            className={cn('flex-1 xl:flex-initial h-14 px-10 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-4 justify-center',
+                                viewMode === 'devices' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-[#FF6B00] hover:bg-[#FF6B00]/10'
                             )}
                         >
-                            <Cpu className="w-7 h-7" /> Equipment
+                            <Cpu className="w-5 h-5" /> Hardware
                         </button>
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-8 w-full xl:flex-1 xl:justify-end">
+                    <div className="flex flex-col md:flex-row gap-6 w-full xl:flex-1 xl:justify-end">
                         <div className="relative flex-1 max-w-xl group/search">
-                            <Search className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/search:opacity-100 transition-opacity duration-700" />
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#FF6B00] opacity-40 group-focus-within/search:opacity-100 transition-opacity" />
                             <Input
-                                placeholder="Search hives..."
+                                placeholder="Filter units..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className={cn(glass.input, 'h-24 pl-24 px-12 rounded-[3.5rem] italic font-black text-2xl bg-black/5 dark:bg-black/30 border-none shadow-inner normal-case placeholder:opacity-5')}
+                                className={cn(glass.input, 'h-14 pl-14 px-8 rounded-xl font-bold text-lg bg-white/5 border-white/10 shadow-inner')}
                             />
                         </div>
-                        <div className="w-full md:w-[350px]">
+                        <div className="w-full md:w-[280px]">
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                <SelectTrigger className={cn(glass.select, 'h-24 px-10 rounded-[3.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner')}>
-                                    <div className="flex items-center gap-6">
-                                        <MapPin className="w-8 h-8 text-honey opacity-30" />
-                                        <SelectValue placeholder="All Locations" />
+                                <SelectTrigger className={cn(glass.select, 'h-14 px-6 rounded-xl font-bold bg-white/5 border-white/10')}>
+                                    <div className="flex items-center gap-4">
+                                        <MapPin className="w-5 h-5 text-[#FF6B00] opacity-30" />
+                                        <SelectValue placeholder="Sectors" />
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent className={glass.selectContent}>
-                                    <SelectItem value="all" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">All Locations</SelectItem>
-                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">{a.name.toUpperCase()}</SelectItem>)}
+                                    <SelectItem value="all" className="font-bold uppercase text-[12px] tracking-widest">Global</SelectItem>
+                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-bold uppercase text-[12px] tracking-widest">{a.name.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -347,27 +347,26 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         </div>
                     )
                 ) : (
-                    /* ── Equipment Table ── */
-                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={glass.table}>
-                        <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-3xl flex items-center justify-between">
+                                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.table, "bg-[#0A0A0A] border-white/20")}>
+                        <div className="p-12 border-b border-white/10 bg-white/5 backdrop-blur-3xl flex items-center justify-between">
                             <div className="flex items-center gap-8">
-                                <div className="w-18 h-18 rounded-[1.5rem] bg-honey/20 flex items-center justify-center border border-honey/40 shadow-4xl">
-                                    <Cpu className="w-10 h-10 text-honey" />
+                                <div className="w-14 h-14 rounded-2xl bg-[#FF6B00]/10 flex items-center justify-center border border-[#FF6B00]/20">
+                                    <Cpu className="w-8 h-8 text-[#FF6B00]" />
                                 </div>
-                                <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">Equipment <span className="text-honey">Fleet</span></h3>
+                                <h3 className="text-4xl font-black text-white tracking-tighter uppercase">Equipment <span className="text-[#FF6B00]">Fleet</span></h3>
                             </div>
-                            <p className={glass.microLabel}>Monitor your hardware health and batteries</p>
+                            <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Hardware Telemetry Monitoring</p>
                         </div>
 
                         <div className="overflow-x-auto thin-scrollbar">
                             <table className="w-full text-left border-separate border-spacing-0">
                                 <thead>
                                     <tr>
-                                        <th className={glass.tableHead}>Device Code</th>
-                                        <th className={glass.tableHead}>Assigned Hive</th>
-                                        <th className={glass.tableHead}>Status</th>
-                                        <th className={glass.tableHead}>Battery</th>
-                                        <th className={cn(glass.tableHead, "text-right")}>Last Seen</th>
+                                        <th className={glass.tableHead}>ID CODE</th>
+                                        <th className={glass.tableHead}>DEPLOYMENT</th>
+                                        <th className={glass.tableHead}>STATUS</th>
+                                        <th className={glass.tableHead}>BATTERY</th>
+                                        <th className={cn(glass.tableHead, "text-right")}>LAST TEL</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -376,56 +375,53 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                         return (
                                             <motion.tr
                                                 key={device.id}
-                                                initial={{ opacity: 0, x: -30 }}
+                                                initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: i * 0.05, duration: 0.8 }}
+                                                transition={{ delay: i * 0.05 }}
                                                 className={glass.tableRow}
                                             >
-                                                <td className="px-16 py-14">
-                                                    <div className="flex items-center gap-10">
-                                                        <div className="w-20 h-20 rounded-[2.5rem] bg-black/5 dark:bg-white/5 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-125 group-hover:rotate-12 transition-all">
-                                                            <Hash className="w-10 h-10 text-honey opacity-40 group-hover:opacity-100" />
+                                                <td className="px-12 py-8">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+                                                            <Hash className="w-6 h-6 text-[#FF6B00] opacity-40" />
                                                         </div>
-                                                        <span className="text-3xl font-black italic text-foreground tracking-tighter group-hover:text-honey transition-colors">{device.device_code}</span>
+                                                        <span className="text-xl font-black text-white tracking-tighter uppercase">{device.device_code}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-12 py-14">
+                                                <td className="px-8 py-8">
                                                     {linkedHive ? (
-                                                        <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 px-12 py-4 shadow-3xl skew-x-[-15deg] max-w-fit')}>
-                                                            <div className="flex items-center gap-6 skew-x-[15deg]">
-                                                                <ShieldCheck className="w-6 h-6" />
-                                                                <span className="font-black italic uppercase text-lg">Hive: {linkedHive.hive_code}</span>
-                                                            </div>
+                                                        <div className="bg-white/5 text-white border border-white/10 px-6 py-2 rounded-lg max-w-fit flex items-center gap-4">
+                                                            <ShieldCheck className="w-4 h-4 text-[#FF6B00]" />
+                                                            <span className="font-bold uppercase text-[11px] tracking-widest">HIVE: {linkedHive.hive_code}</span>
                                                         </div>
                                                     ) : (
-                                                        <span className="italic font-black text-xl opacity-20 uppercase tracking-widest">Unassigned</span>
+                                                        <span className="font-bold text-sm text-white/10 uppercase tracking-widest">Dormant</span>
                                                     )}
                                                 </td>
-                                                <td className="px-12 py-14">
-                                                    <div className="flex items-center gap-8">
-                                                        <div className={cn("w-5 h-5 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.8)] animate-pulse", device.status === 'active' ? 'bg-emerald-500' : 'bg-red-500')} />
-                                                        <span className={cn("text-2xl font-black uppercase italic", device.status === 'active' ? "text-emerald-500" : "text-foreground/30")}>
-                                                            {device.status === 'active' ? 'Online' : 'Offline'}
+                                                <td className="px-8 py-8">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className={cn("w-3 h-3 rounded-full", device.status === 'active' ? 'bg-[#FF6B00] shadow-[0_0_10px_rgba(255,107,0,0.4)]' : 'bg-white/10')} />
+                                                        <span className={cn("text-lg font-black uppercase", device.status === 'active' ? "text-white" : "text-white/20")}>
+                                                            {device.status === 'active' ? 'SYNCING' : 'OFFLINE'}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-12 py-14">
-                                                    <div className="flex items-center gap-10">
-                                                        <div className="flex flex-col items-end gap-3 min-w-[160px]">
-                                                            <span className="text-4xl font-black italic text-foreground tracking-tighter tabular-nums">{device.battery_level}%</span>
-                                                            <div className="w-full h-3 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[1.5px] border border-white/5">
+                                                <td className="px-8 py-8">
+                                                    <div className="flex items-center gap-8">
+                                                        <div className="flex flex-col items-end gap-2 min-w-[120px]">
+                                                            <span className="text-2xl font-mono font-black text-white tracking-tighter tabular-nums">{device.battery_level}%</span>
+                                                            <div className="w-full h-2 bg-white/5 rounded-none overflow-hidden relative border border-white/10">
                                                                 <motion.div
                                                                     initial={{ width: 0 }}
                                                                     animate={{ width: `${device.battery_level}%` }}
-                                                                    className={cn("h-full rounded-full animate-shimmer", device.battery_level > 60 ? "bg-emerald-500" : device.battery_level > 20 ? "bg-honey" : "bg-red-500")}
+                                                                    className={cn("h-full", device.battery_level > 60 ? "bg-white" : device.battery_level > 20 ? "bg-[#FF6B00]" : "bg-[#FF6B00]/40")}
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <Battery className={cn("w-12 h-12", device.battery_level < 20 ? "text-red-500 animate-pulse" : "text-honey opacity-20")} />
                                                     </div>
                                                 </td>
-                                                <td className="px-16 py-14 text-right">
-                                                    <span className="text-2xl font-black italic text-foreground tracking-tighter uppercase">{new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).toUpperCase()}</span>
+                                                <td className="px-12 py-8 text-right">
+                                                    <span className="text-lg font-mono font-black text-white/40 tracking-tighter uppercase">{new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
                                                 </td>
                                             </motion.tr>
                                         );
@@ -549,8 +545,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 .animate-shimmer { animation: shimmer 3s infinite linear; }
                 .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
-                .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.2); }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.1); border-radius: 20px; }
+                .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 0, 0.2); }
             `}</style>
         </motion.div>
     );

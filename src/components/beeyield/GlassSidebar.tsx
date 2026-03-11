@@ -45,7 +45,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     return (
         <div
             className={cn(
-                "fixed left-0 top-0 bottom-0 w-[340px] bg-white/60 dark:bg-[#080808]/90 backdrop-blur-3xl border-r border-white/5 z-50 hidden md:flex flex-col antialiased shadow-[0_80px_150px_rgba(0,0,0,0.4)] transition-all duration-1000",
+                "fixed left-0 top-0 bottom-0 w-[340px] bg-[#0A0A0A] border-r border-white/10 z-50 hidden md:flex flex-col antialiased shadow-[0_0_100px_rgba(0,0,0,1)] transition-all",
                 className
             )}
         >
@@ -59,14 +59,14 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                     className="h-32 flex items-center px-10 border-b border-white/5 relative z-10 w-full text-left group"
                 >
                     <div className="flex items-center gap-8">
-                        <div className="w-18 h-18 flex items-center justify-center flex-shrink-0 bg-honey/15 rounded-[1.8rem] group-hover:rotate-[720deg] transition-all duration-[2000ms] border-2 border-honey/40 shadow-[0_20px_40px_rgba(251,191,36,0.3)] p-3 backdrop-blur-2xl">
-                            <img src={Logo} alt="BeeYield" className="w-full h-full object-contain filter group-hover:brightness-150 group-hover:drop-shadow-[0_0_15px_rgba(251,191,36,1)] transition-all" />
+                        <div className="w-18 h-18 flex items-center justify-center flex-shrink-0 bg-[#FF6B00]/5 rounded-2xl group-hover:rotate-[360deg] transition-all duration-[1.5s] border border-[#FF6B00]/20 p-3 backdrop-blur-2xl">
+                            <img src={Logo} alt="BeeYield" className="w-full h-full object-contain filter group-hover:brightness-150 transition-all opacity-80 group-hover:opacity-100" />
                         </div>
                         <div className="flex flex-col space-y-2">
-                            <span className="text-3xl font-black text-foreground tracking-tighter italic uppercase leading-none italic group-hover:text-honey transition-colors duration-1000">BeeYield <span className="text-honey">Hub</span></span>
+                            <span className="text-3xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-[#FF6B00] transition-colors">BeeYield <span className="text-[#FF6B00]">Ops</span></span>
                             <div className="flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 rounded-full bg-honey animate-pulse" />
-                                <span className="text-[10px] font-black text-honey/40 uppercase tracking-[0.6em] italic leading-none">Kernel_v5.2.0_STABLE</span>
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#FF6B00] animate-pulse" />
+                                <span className="text-[9px] font-mono font-black text-[#FF6B00]/40 uppercase tracking-[0.4em] leading-none">v5.2.0_STABLE</span>
                             </div>
                         </div>
                     </div>
@@ -74,18 +74,17 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             </div>
 
             {/* ── Operational Node Pulsar ── */}
-            <div className="h-16 flex items-center justify-between px-10 bg-black/10 dark:bg-white/[0.02] border-b border-white/5 relative overflow-hidden">
-                <div className="absolute inset-0 bg-honey/[0.02] animate-shimmer" />
+            <div className="h-16 flex items-center justify-between px-10 bg-white/[0.02] border-b border-white/5 relative overflow-hidden">
                 <div className="flex items-center gap-4 relative z-10">
-                    <Terminal className="w-4 h-4 text-foreground/20 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase text-foreground/20 tracking-[0.5em] italic">Federated_Nodes</span>
+                    <Terminal className="w-4 h-4 text-white/20" />
+                    <span className="text-[9px] font-black uppercase text-white/20 tracking-[0.5em]">Uplink_Node</span>
                 </div>
-                <div className="flex items-center gap-4 bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20 shadow-4xl relative z-10 skew-x-[-15deg]">
-                    <div className="relative flex h-2.5 w-2.5 skew-x-[15deg]">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                <div className="flex items-center gap-4 bg-white/5 px-4 py-1.5 rounded-lg border border-white/10 relative z-10">
+                    <div className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-40"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                     </div>
-                    <span className="text-[10px] font-black tracking-[0.3em] text-emerald-500 italic skew-x-[15deg]">ACTIVE_LINK</span>
+                    <span className="text-[9px] font-black tracking-[0.2em] text-white/60">NOMINAL</span>
                 </div>
             </div>
 
@@ -107,24 +106,24 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                 <button
                                     onClick={() => isFolder ? toggleFolder(item.id) : onTabChange(item.id)}
                                     className={cn(
-                                        "w-full flex items-center justify-between h-18 px-6 transition-all duration-1000 rounded-[2.2rem] group relative border border-transparent overflow-hidden",
+                                        "w-full flex items-center justify-between h-16 px-6 transition-all rounded-xl group relative border border-transparent overflow-hidden",
                                         isActive
-                                            ? "bg-white dark:bg-white/10 text-foreground shadow-[0_45px_100px_-20px_rgba(0,0,0,0.3)] border-white/10"
-                                            : "text-foreground/30 hover:text-foreground hover:bg-honey/15 dark:hover:bg-white/5"
+                                            ? "bg-white/10 text-white border-white/20 shadow-2xl"
+                                            : "text-white/30 hover:text-white hover:bg-white/5"
                                     )}
                                 >
                                     <div className="flex items-center gap-6 relative z-10">
                                         <div className={cn(
-                                            "w-12 h-12 rounded-[1.2rem] flex items-center justify-center transition-all duration-1000 shadow-4xl border border-transparent",
+                                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all border border-transparent",
                                             isActive
-                                                ? "bg-honey text-black shadow-[0_15px_30px_rgba(251,191,36,0.5)] border-honey/40 rotate-12 scale-110"
-                                                : "bg-black/5 dark:bg-white/5 group-hover:text-honey group-hover:border-honey/40 group-hover:scale-110"
+                                                ? "bg-[#FF6B00] text-[#000000] shadow-[0_0_20px_rgba(255,107,0,0.4)]"
+                                                : "bg-white/5 group-hover:text-[#FF6B00] group-hover:border-[#FF6B00]/30"
                                         )}>
-                                            <item.icon className={cn("w-6 h-6", isActive ? "text-black" : "opacity-30 group-hover:opacity-100 group-hover:scale-110 transition-transform")} />
+                                            <item.icon className={cn("w-5 h-5", isActive ? "text-[#000000]" : "opacity-30 group-hover:opacity-100")} />
                                         </div>
                                         <span className={cn(
-                                            "text-[15px] font-black uppercase tracking-widest italic transition-all duration-1000",
-                                            isActive ? "text-foreground group-hover:text-honey" : "text-foreground/30 group-hover:text-foreground"
+                                            "text-[13px] font-black uppercase tracking-widest transition-all",
+                                            isActive ? "text-white" : "text-white/20 group-hover:text-white"
                                         )}>
                                             {item.label}
                                         </span>
@@ -132,20 +131,14 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
 
                                     {isFolder && (
                                         <ChevronDown className={cn(
-                                            "w-5 h-5 transition-all duration-1000 relative z-10",
-                                            isActive ? "text-honey" : "text-foreground/10 group-hover:text-honey/40",
+                                            "w-4 h-4 transition-all",
+                                            isActive ? "text-[#FF6B00]" : "text-white/10 group-hover:text-[#FF6B00]/40",
                                             isExpanded ? "rotate-180" : ""
                                         )} />
                                     )}
 
                                     {isActive && (
-                                        <motion.div
-                                            layoutId="sidebar-active-pill"
-                                            className="absolute inset-0 bg-honey/[0.08] dark:bg-honey/[0.12] rounded-[2.2rem] border border-honey/20 pointer-events-none"
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.8 }}
-                                        >
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-honey/10 to-transparent animate-shimmer" />
-                                        </motion.div>
+                                        <div className="absolute inset-0 bg-[#FF6B00]/[0.05] pointer-events-none" />
                                     )}
                                 </button>
 
@@ -153,13 +146,11 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                 <AnimatePresence mode="popLayout">
                                     {isFolder && isExpanded && (
                                         <motion.div
-                                            initial={{ opacity: 0, height: 0, x: -20 }}
-                                            animate={{ opacity: 1, height: 'auto', x: 0 }}
-                                            exit={{ opacity: 0, height: 0, x: -20 }}
-                                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                                            className="mt-4 ml-12 pl-8 border-l-2 border-honey/20 space-y-2 py-6 overflow-hidden relative"
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="mt-2 ml-4 pl-6 border-l border-white/10 space-y-1 py-4 overflow-hidden"
                                         >
-                                            <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-gradient-to-b from-honey via-honey/20 to-transparent opacity-40" />
 
                                             {item.submenuItems?.map((sub: any, idx: number) => {
                                                 if ('title' in sub) {
@@ -176,15 +167,15 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                                     className={cn(
                                                                         "w-full text-left h-14 px-8 text-[12px] font-black uppercase tracking-widest italic rounded-2xl transition-all duration-700 flex items-center justify-between group/sub",
                                                                         activeTab === subItem.id
-                                                                            ? "text-honey bg-honey/15 border border-honey/30 shadow-4xl"
-                                                                            : "text-foreground/20 hover:text-foreground hover:bg-white/40 dark:hover:bg-white/5"
+                                                                            ? "text-[#FF6B00] bg-[#FF6B00]/10 border border-[#FF6B00]/20 shadow-lg"
+                                                                             : "text-white/20 hover:text-white hover:bg-white/5"
                                                                     )}
                                                                 >
                                                                     <div className="flex items-center gap-6">
-                                                                        <div className={cn("w-2 h-2 rounded-full transition-all duration-1000", activeTab === subItem.id ? "bg-honey scale-150 shadow-[0_0_15px_rgba(251,191,36,1)]" : "bg-foreground/10 group-hover/sub:bg-honey/60")} />
+                                                                        <div className={cn("w-1.5 h-1.5 rounded-full transition-all", activeTab === subItem.id ? "bg-[#FF6B00] shadow-[0_0_10px_#FF6B00]" : "bg-white/10 group-hover/sub:bg-[#FF6B00]/60")} />
                                                                         {subItem.label.toUpperCase()}
                                                                     </div>
-                                                                    {activeTab === subItem.id && <Radio className="w-4 h-4 text-honey animate-pulse" />}
+                                                                    {activeTab === subItem.id && <Radio className="w-3 h-3 text-[#FF6B00] animate-pulse" />}
                                                                 </button>
                                                             ))}
                                                         </div>
@@ -197,15 +188,15 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                         className={cn(
                                                             "w-full text-left h-14 px-8 text-[12px] font-black uppercase tracking-widest italic rounded-2xl transition-all duration-700 flex items-center justify-between group/sub",
                                                             activeTab === sub.id
-                                                                ? "text-honey bg-honey/15 border border-honey/30 shadow-4xl"
-                                                                : "text-foreground/20 hover:text-foreground hover:bg-white/40 dark:hover:bg-white/5"
+                                                                ? "text-[#FF6B00] bg-[#FF6B00]/10 border border-[#FF6B00]/20 shadow-lg"
+                                                                 : "text-white/20 hover:text-white hover:bg-white/5"
                                                         )}
                                                     >
-                                                        <div className="flex items-center gap-6">
-                                                            <div className={cn("w-2 h-2 rounded-full transition-all duration-1000", activeTab === sub.id ? "bg-honey scale-150 shadow-[0_0_15px_rgba(251,191,36,1)]" : "bg-foreground/10 group-hover/sub:bg-honey/60")} />
-                                                            {sub.label.toUpperCase()}
-                                                        </div>
-                                                        {activeTab === sub.id && <Radio className="w-4 h-4 text-honey animate-pulse" />}
+                                                         <div className="flex items-center gap-6">
+                                                             <div className={cn("w-1.5 h-1.5 rounded-full transition-all", activeTab === sub.id ? "bg-[#FF6B00] shadow-[0_0_10px_#FF6B00]" : "bg-white/10 group-hover/sub:bg-[#FF6B00]/60")} />
+                                                             {sub.label.toUpperCase()}
+                                                         </div>
+                                                         {activeTab === sub.id && <Radio className="w-3 h-3 text-[#FF6B00] animate-pulse" />}
                                                     </button>
                                                 );
                                             })}
@@ -226,16 +217,16 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 >
                     <div className="absolute inset-0 bg-honey/[0.02] animate-shimmer" />
                     <div className="flex items-center gap-6 relative z-10">
-                        <div className="w-10 h-10 rounded-xl bg-honey/15 flex items-center justify-center border border-honey/30 shadow-4xl group-hover/theme:rotate-[360deg] transition-all duration-1000">
-                            {isDark ? <Moon className="w-5 h-5 text-honey" /> : <Sun className="w-5 h-5 text-honey" />}
+                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover/theme:border-[#FF6B00]/40 transition-all">
+                            {isDark ? <Moon className="w-4 h-4 text-white" /> : <Sun className="w-4 h-4 text-white" />}
                         </div>
-                        <span className="text-[12px] font-black uppercase tracking-[0.4em] italic group-hover/theme:text-honey transition-colors">
-                            Neural_Link
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] group-hover/theme:text-[#FF6B00] transition-colors">
+                            Dark_Link
                         </span>
                     </div>
                     <div className={cn(
-                        "w-12 h-7 rounded-full p-1.5 transition-all duration-1000 shadow-inner relative z-10",
-                        isDark ? "bg-honey shadow-[0_0_20px_rgba(251,191,36,0.3)]" : "bg-black/20"
+                        "w-12 h-6 rounded-full p-1 transition-all shadow-inner relative z-10",
+                        isDark ? "bg-[#FF6B00]" : "bg-white/10"
                     )}>
                         <motion.div
                             layout
@@ -249,31 +240,30 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                     <button
                         onClick={() => onTabChange('settings')}
-                        className="h-18 flex items-center justify-center gap-5 bg-white/40 dark:bg-black/60 text-foreground/20 hover:text-foreground hover:bg-honey/15 rounded-[1.8rem] transition-all duration-1000 border border-white/5 hover:border-honey/60 group shadow-inner"
+                        className="h-16 flex items-center justify-center gap-4 bg-white/5 text-white/20 hover:text-white hover:bg-[#FF6B00]/10 rounded-xl transition-all border border-white/5 hover:border-[#FF6B00]/40 group"
                     >
-                        <Settings className="w-6 h-6 group-hover:rotate-[360deg] transition-all duration-[2000ms] group-hover:text-honey" />
-                        <span className="text-[11px] font-black uppercase tracking-[0.3em] italic">CONFIG</span>
+                        <Settings className="w-5 h-5 group-hover:rotate-180 transition-all group-hover:text-[#FF6B00]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">CONFIG</span>
                     </button>
                     <button
                         onClick={onLogout}
-                        className="h-18 flex items-center justify-center gap-5 bg-white/40 dark:bg-black/60 text-foreground/20 hover:text-red-500 hover:bg-red-500/10 rounded-[1.8rem] transition-all duration-1000 border border-white/5 hover:border-red-500/40 group shadow-inner"
+                        className="h-16 flex items-center justify-center gap-4 bg-white/5 text-white/20 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all border border-white/5 hover:border-red-500/40 group"
                     >
-                        <LogOut className="w-6 h-6 group-hover:-translate-x-3 transition-all duration-700" />
-                        <span className="text-[11px] font-black uppercase tracking-[0.3em] italic">TERMINATE</span>
+                        <LogOut className="w-5 h-5 group-hover:-translate-x-2 transition-all" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">EXIT_OS</span>
                     </button>
                 </div>
 
-                <div className="pt-10 flex flex-col items-center gap-6 opacity-15 hover:opacity-100 transition-all duration-1000 group/footer cursor-default">
+                <div className="pt-8 flex flex-col items-center gap-4 opacity-20 hover:opacity-100 transition-all cursor-default">
                     <div className="flex items-center gap-6 w-full">
-                        <Lock className="w-4 h-4 text-honey group-hover/footer:rotate-12 transition-transform" />
-                        <div className="flex-1 h-px bg-foreground/40 group-hover/footer:bg-honey transition-colors" />
-                        <Fingerprint className="w-5 h-5 text-honey group-hover/footer:scale-125 transition-transform" />
-                        <div className="flex-1 h-px bg-foreground/40 group-hover/footer:bg-honey transition-colors" />
-                        <ShieldCheck className="w-4 h-4 text-honey group-hover/footer:-rotate-12 transition-transform" />
+                        <Lock className="w-3 h-3 text-[#FF6B00]" />
+                        <div className="flex-1 h-px bg-white/10" />
+                        <Fingerprint className="w-4 h-4 text-[#FF6B00]" />
+                        <div className="flex-1 h-px bg-white/10" />
+                        <ShieldCheck className="w-3 h-3 text-[#FF6B00]" />
                     </div>
-                    <div className="space-y-1 text-center">
-                        <span className="text-[10px] font-black text-foreground uppercase tracking-[0.5em] italic block group-hover/footer:text-honey transition-colors">© MMXXVI BEEYIELD_AI_SYSTEMS</span>
-                        <span className="text-[8px] font-bold text-foreground/40 uppercase tracking-[1em] block">SECURE_LEDGER_ACTIVE</span>
+                    <div className="space-y-1 text-center font-mono">
+                        <span className="text-[9px] font-black text-white uppercase tracking-[0.3em] block">© MMXXVI BEEYIELD_OS</span>
                     </div>
                 </div>
             </div>
@@ -283,8 +273,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 .animate-shimmer { animation: shimmer 5s infinite linear; }
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.05); border-radius: 20px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.2); }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.1); border-radius: 20px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 0, 0.4); }
             `}</style>
         </div>
     );
