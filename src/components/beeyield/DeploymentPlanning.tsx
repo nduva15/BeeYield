@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, ShieldAlert, Hexagon, Trash2, RotateCcw, Crosshair, ClipboardList, Save, Share2, Info, ArrowRight, Zap, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DeploymentPlanningProps {
@@ -17,7 +17,7 @@ interface Pallet {
 }
 
 const GRID_W = 800;
-const GRID_H = 500;
+const GRID_H = 400;
 
 const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) => {
     const [pallets, setPallets] = React.useState<Pallet[]>([]);
@@ -34,14 +34,13 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
         const x = Math.round(e.clientX - rect.left);
         const y = Math.round(e.clientY - rect.top);
 
-        // Limit placement within SVG bounds visually
         if (x < 0 || x > GRID_W || y < 0 || y > GRID_H) return;
 
         setPallets(prev => [...prev, {
             id: `PAL-${Date.now()}`,
             x, y,
             hives: 4,
-            coverageRadius: 80
+            coverageRadius: 60
         }]);
     };
 
@@ -66,64 +65,55 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={cn(glass.page, "p-8 -m-8 space-y-12 pb-20 min-h-screen")}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "max-w-7xl mx-auto space-y-6 pb-24")}
         >
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
-                <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
-                        <Crosshair className="w-4 h-4 mr-2" />
-                        Geospatial Deployment Planner v4.1
+            <PageHeader
+                icon={Crosshair}
+                label="Geospatial Node"
+                title={<>Field <span className="text-[#F4D03F]">Planner</span></>}
+                subtitle="Interactive geospatial deployment protocols for precision apiary logistics."
+                actions={
+                    <div className="flex items-center gap-3">
+                        <div className="flex flex-col items-end px-4 py-1.5 bg-[#1B9157]/5 border border-[#1B9157]/10 rounded-xl">
+                            <span className="text-[7px] font-black uppercase text-[#1B9157] opacity-60 italic leading-none">Expected Coverage</span>
+                            <span className="text-[13px] font-black text-[#1B9157] italic mt-1">{avgCoverage}%</span>
+                        </div>
+                        <div className="flex flex-col items-end px-4 py-1.5 bg-[#F4D03F]/5 border border-[#F4D03F]/10 rounded-xl">
+                            <span className="text-[7px] font-black uppercase text-[#F4D03F] opacity-60 italic leading-none">Active Units</span>
+                            <span className="text-[13px] font-black text-[#F4D03F] italic mt-1">{totalHives}</span>
+                        </div>
                     </div>
-                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Field <span className="text-honey">Planner</span>
-                    </h1>
-                    <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
-                        Interactive Simulation · Coverage Optimization · Logistical Tracking
-                    </p>
-                </div>
+                }
+            />
 
-                <div className="flex gap-4">
-                    <div className={cn(glass.card, "px-8 py-3 bg-white/40 flex flex-col items-center justify-center border-border/50 shadow-sm")}>
-                        <span className={cn(glass.microLabel, "opacity-40 italic font-bold mb-1")}>EXPECTED_COVERAGE</span>
-                        <span className={cn(glass.sectionTitle, "text-2xl text-honey italic")}>{avgCoverage}%</span>
-                    </div>
-                    <div className={cn(glass.card, "px-8 py-3 bg-white/40 flex flex-col items-center justify-center border-border/50 shadow-sm")}>
-                        <span className={cn(glass.microLabel, "opacity-40 italic font-bold mb-1")}>ACTIVE_HIVES</span>
-                        <span className={cn(glass.sectionTitle, "text-2xl")}>{totalHives}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Simulation Area */}
-                <div className="lg:col-span-8 flex flex-col gap-8">
+                <div className="lg:col-span-8 space-y-6">
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "flex flex-col sm:flex-row items-center justify-between p-6 bg-white/40 border-border shadow-md gap-6")}
+                        className={cn(glass.section, "flex items-center justify-between p-4 bg-white/40")}
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20">
-                                <Info className="w-5 h-5 text-honey" />
+                            <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                <Info className="w-4 h-4 text-[#F4D03F]" />
                             </div>
-                            <span className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70 leading-tight")}>
-                                Click on the grid to place hive trays. <br className="hidden sm:block" /> Drag existing trays to optimize spatial coverage.
-                            </span>
+                            <p className="text-[10px] font-black uppercase italic opacity-40 leading-tight">
+                                Click grid to initialize units. <br /> Drag units to optimize geospatial flow.
+                            </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
                             <button
                                 onClick={() => setPallets([])}
-                                className={cn(glass.btnSecondary, "w-12 h-12 p-0 flex items-center justify-center group")}
-                                title="Reset Grid"
+                                className={cn(glass.btnSecondary, "w-10 h-10 p-0 flex items-center justify-center")}
                             >
-                                <RotateCcw className="w-5 h-5 group-hover:rotate-[-45deg] transition-transform" />
+                                <RotateCcw className="w-4 h-4" />
                             </button>
-                            <button className={cn(glass.btnPrimary, "h-12 px-8 font-bold shadow-lg shadow-honey/20")}>
-                                <Save className="w-4 h-4 mr-2" />
-                                Save Field Plan
+                            <button className={cn(glass.btnPrimary, "h-10 px-6 italic")}>
+                                <Save className="w-3.5 h-3.5 mr-2" />
+                                Commit Map
                             </button>
                         </div>
                     </motion.div>
@@ -131,10 +121,9 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.99 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.1 }}
-                        className={cn(glass.card, "p-0 h-[550px] relative overflow-hidden shadow-2xl border-honey/10 group")}
+                        className={cn(glass.section, "p-0 h-[480px] relative overflow-hidden bg-[#1A1A1A]/5")}
                     >
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20 group-hover:bg-honey/10 transition-colors" />
+                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
                         <svg
                             ref={svgRef}
@@ -143,12 +132,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
                             className="w-full h-full cursor-crosshair select-none relative z-10"
-                            style={{
-                                backgroundImage: `radial-gradient(hsl(var(--honey) / 0.15) 1.5px, transparent 1.5px)`,
-                                backgroundSize: '40px 40px'
-                            }}
                         >
-                            {/* Coverage Shadows */}
                             <AnimatePresence>
                                 {pallets.map(p => (
                                     <motion.circle
@@ -157,14 +141,16 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                         animate={{ r: p.coverageRadius, opacity: 1 }}
                                         exit={{ scale: 0, opacity: 0 }}
                                         cx={p.x} cy={p.y}
-                                        fill="hsl(var(--honey) / 0.08)"
+                                        fill="#F4D03F"
+                                        fillOpacity={0.08}
+                                        stroke="#F4D03F"
+                                        strokeOpacity={0.1}
+                                        strokeWidth={1}
                                         className="pointer-events-none"
-                                        style={{ stroke: 'hsl(var(--honey) / 0.1)', strokeWidth: 1 }}
                                     />
                                 ))}
                             </AnimatePresence>
 
-                            {/* Pallets */}
                             {pallets.map(p => (
                                 <g
                                     key={p.id}
@@ -175,22 +161,20 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                     <motion.path
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
-                                        d="M 0 -20 L 17 -10 L 17 10 L 0 20 L -17 10 L -17 -10 Z"
-                                        fill={draggingPallet === p.id ? "hsl(var(--honey))" : "white"}
-                                        stroke="hsl(var(--honey))"
-                                        strokeWidth={draggingPallet === p.id ? 4 : 2}
-                                        className="transition-all duration-300 drop-shadow-lg"
+                                        d="M 0 -15 L 13 -7.5 L 13 7.5 L 0 15 L -13 7.5 L -13 -7.5 Z"
+                                        fill={draggingPallet === p.id ? "#F4D03F" : "white"}
+                                        stroke="#F4D03F"
+                                        strokeWidth={draggingPallet === p.id ? 3 : 1.5}
+                                        className="transition-all duration-200 shadow-xl"
                                     />
                                     <text
                                         textAnchor="middle"
                                         dominantBaseline="central"
-                                        fontSize="10"
+                                        fontSize="9"
                                         fontWeight="900"
-                                        fill={draggingPallet === p.id ? "white" : "hsl(var(--honey))"}
-                                        className="pointer-events-none"
+                                        fill={draggingPallet === p.id ? "white" : "#F4D03F"}
+                                        className="pointer-events-none italic"
                                     >4</text>
-
-                                    {/* Hover delete button hint could go here with a small x icon */}
                                 </g>
                             ))}
                         </svg>
@@ -198,80 +182,67 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 </div>
 
                 {/* Operations & Logs */}
-                <div className="lg:col-span-4 space-y-10">
-                    {/* Management by Exception - Alert View */}
+                <div className="lg:col-span-4 space-y-6">
                     <motion.div
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className={cn(glass.card, "p-8 space-y-8 bg-destructive/5 border-destructive/20 shadow-xl relative overflow-hidden group")}
+                        className={cn(glass.card, "p-5 bg-red-500/5 border-red-500/10 border-l-4 border-l-red-500 shadow-sm")}
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-destructive/10 rounded-full blur-2xl pointer-events-none group-hover:bg-destructive/15 transition-colors" />
-                        <div className="flex items-center gap-4 relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-destructive shadow-sm">
-                                <ShieldAlert className="w-6 h-6 text-destructive" />
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-9 h-9 rounded-xl bg-white/80 flex items-center justify-center border border-red-100 text-red-500">
+                                <ShieldAlert className="w-5 h-5" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, "text-xl normal-case italic text-destructive")}>Security Alerts</h3>
+                            <h3 className="text-[12px] font-black uppercase italic tracking-tight text-red-600">Incident Registry</h3>
                         </div>
-                        <div className="space-y-4 relative z-10">
+                        <div className="space-y-3">
                             {[
-                                { title: 'Hive Tipped Over: Area 4', desc: 'Acoustic spike detected. Probable external disturbance.' },
-                                { title: 'Hive Moved: WAT-012', desc: 'GPS offset detected beyond threshold. High theft risk.' }
+                                { title: 'Tilt Detected: Sector A4', desc: 'Acoustic spike at node 04. Ground verification required.' },
+                                { title: 'GPS Drift: Unit WAT-12', desc: 'Perimeter breach detected. Theft protocol initialized.' }
                             ].map((alert, i) => (
-                                <div key={i} className="flex items-start gap-4 p-5 bg-white/40 rounded-2xl border border-destructive/20 group/alert hover:bg-destructive/10 transition-colors shadow-sm">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-destructive mt-1.5 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                                <div key={i} className="flex gap-3 p-3 bg-white/40 rounded-xl border border-red-500/5 group">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1 shrink-0 animate-pulse" />
                                     <div>
-                                        <p className={cn(glass.microLabel, "text-sm font-bold text-destructive leading-none")}>{alert.title}</p>
-                                        <p className={cn(glass.microLabel, "opacity-60 italic mt-2 normal-case leading-snug")}>{alert.desc}</p>
+                                        <p className="text-[10px] font-black text-red-600 uppercase italic leading-none">{alert.title}</p>
+                                        <p className="text-[9px] font-medium opacity-60 uppercase italic mt-1 leading-tight">{alert.desc}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </motion.div>
 
-                    {/* Field Logs */}
                     <motion.div
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className={cn(glass.card, "p-8 space-y-8 shadow-xl border-border/50 relative overflow-hidden")}
+                        className={cn(glass.section, "p-5 bg-white/40")}
                     >
-                        <div className="absolute bottom-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-
-                        <div className="flex items-center gap-4 border-b border-border/20 pb-6 relative z-10">
-                            <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center border border-emerald-500/30 shadow-sm">
-                                <ClipboardList className="w-5 h-5 text-emerald-500" />
+                        <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4 mb-4">
+                            <div className="w-9 h-9 rounded-xl bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10">
+                                <ClipboardList className="w-4 h-4 text-[#1B9157]" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, "text-xl normal-case italic")}>Field Activity Logs</h3>
+                            <h3 className="text-[11px] font-black uppercase italic tracking-widest text-[#1A1A1A]">Operational Logs</h3>
                         </div>
 
-                        <div className="space-y-6 max-h-[320px] overflow-y-auto pr-4 custom-scrollbar relative z-10">
+                        <div className="space-y-4 max-h-[220px] overflow-y-auto custom-scrollbar">
                             {logs.map((log, idx) => (
-                                <motion.div
-                                    key={log.id}
-                                    initial={{ opacity: 0, y: 5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 + (idx * 0.1) }}
-                                    className="group hover:bg-white/40:bg-gray-100 rounded-xl p-3 -m-3 transition-colors"
-                                >
-                                    <div className="flex justify-between items-start mb-2">
+                                <div key={log.id} className="group">
+                                    <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center gap-2">
-                                            <div className={cn("w-1.5 h-1.5 rounded-full", log.type === 'syrup' ? 'bg-honey' : 'bg-indigo-500')} />
-                                            <span className={cn(glass.microLabel, "text-xs font-bold font-sans opacity-70 group-hover:opacity-100 transition-opacity uppercase tracking-widest")}>
-                                                {log.type === 'syrup' ? '⚡ Feeding' : '🛡 Mite Check'}
+                                            <div className={cn("w-1 h-1 rounded-full", log.type === 'syrup' ? 'bg-[#F4D03F]' : 'bg-blue-500')} />
+                                            <span className="text-[9px] font-black uppercase italic text-gray-400 group-hover:text-gray-600">
+                                                {log.type === 'syrup' ? 'System_Feeding' : 'Registry_Audit'}
                                             </span>
                                         </div>
-                                        <span className={cn(glass.microLabel, "opacity-30 tabular-nums font-bold")}>{log.time}</span>
+                                        <span className="text-[8px] font-black opacity-20 italic">{log.time}</span>
                                     </div>
-                                    <p className="text-sm italic font-medium opacity-80 leading-relaxed text-foreground/80 group-hover:text-foreground group-hover:opacity-100 transition-all">
+                                    <p className="text-[10px] font-medium opacity-70 uppercase italic leading-tight pl-3">
                                         {log.desc}
                                     </p>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
 
-                        <button className={cn(glass.btnSecondary, "w-full h-14 justify-center border-dashed font-bold mt-2 hover:bg-honey/5 hover:border-honey/40 transition-colors uppercase tracking-[0.2em] relative z-10")}>
-                            + Add Entry
+                        <button className={cn(glass.btnSecondary, "w-full h-10 mt-6 border-dashed text-[9px] italic")}>
+                            + Append Entry
                         </button>
                     </motion.div>
                 </div>
@@ -281,21 +252,26 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-6 bg-[#F4D03F]/5 border-[#F4D03F]/10 flex items-center gap-6 relative overflow-hidden group")}
             >
-                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-8 h-8 text-honey" />
+                <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#F4D03F]/10 blur-3xl rounded-full" />
+                <div className="w-12 h-12 rounded-xl bg-white/80 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm">
+                    <Info className="w-6 h-6 text-[#F4D03F]" />
                 </div>
-                <div className="relative z-10 text-center md:text-left">
-                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Planner Optimization Insight</h5>
-                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
-                        Your current field plan covers approximately 82% of the targeted orchard geometry. Drag the trays in Section A-4 further north-east to close the pollination gap.
-                        Security alerts in Area 4 require urgent ground-truth verification due to recursive acoustic tipping signals.
+                <div className="flex-1 space-y-1 relative z-10">
+                    <h5 className="text-[13px] font-black uppercase italic tracking-tight text-[#1A1A1A]">Intelligence <span className="text-[#F4D03F]">Sync</span></h5>
+                    <p className="text-[10px] font-medium opacity-60 leading-relaxed uppercase italic tracking-tight border-l-2 border-[#F4D03F] pl-4">
+                        Current field plan coverage at <span className="text-black font-black">82%</span>. Shift Section A-4 trajectories North-East to close gap.
+                        Security flags in Sector 4 require urgent ground verification.
                     </p>
                 </div>
             </motion.div>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.2); border-radius: 10px; }
+            `}</style>
         </motion.div>
     );
 };

@@ -74,9 +74,9 @@ const UserDebugPanel: React.FC = () => {
     return (
         <div className="space-y-4 pb-12">
             <Card className="rounded-[1.5rem] border border-slate-100 shadow-sm overflow-hidden">
-                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                <CardHeader className="bg-[#F9F7F2] border-b border-slate-100">
                     <CardTitle className="flex items-center gap-2 text-sm font-bold text-slate-800 uppercase tracking-wider">
-                        <User className="h-4 w-4 text-amber-500" />
+                        <User className="h-4 w-4 text-[#F4D03F]" />
                         Current User Session
                     </CardTitle>
                 </CardHeader>
@@ -85,13 +85,13 @@ const UserDebugPanel: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">User ID:</span>
                             <div className="flex items-center gap-2">
-                                <code className="text-[10px] bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg font-mono text-slate-600">
+                                <code className="text-[10px] bg-[#F9F7F2] border border-slate-100 px-3 py-1 rounded-lg font-mono text-slate-600">
                                     {user.id}
                                 </code>
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-8 w-8 p-0 rounded-lg hover:bg-slate-50"
+                                    className="h-8 w-8 p-0 rounded-lg hover:bg-[#F9F7F2]"
                                     onClick={() => copyToClipboard(user.id, 'User ID')}
                                 >
                                     <Copy className="h-3 w-3 text-slate-400" />
@@ -102,14 +102,14 @@ const UserDebugPanel: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Email:</span>
                             <div className="flex items-center gap-2">
-                                <code className="text-[10px] bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg font-mono text-slate-600">
+                                <code className="text-[10px] bg-[#F9F7F2] border border-slate-100 px-3 py-1 rounded-lg font-mono text-slate-600">
                                     {user.email || 'Not set'}
                                 </code>
                                 {user.email && (
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="h-8 w-8 p-0 rounded-lg hover:bg-slate-50"
+                                        className="h-8 w-8 p-0 rounded-lg hover:bg-[#F9F7F2]"
                                         onClick={() => copyToClipboard(user.email!, 'Email')}
                                     >
                                         <Copy className="h-3 w-3 text-slate-400" />
@@ -133,9 +133,9 @@ const UserDebugPanel: React.FC = () => {
             </Card>
 
             <Card className="rounded-[1.5rem] border border-slate-100 shadow-sm overflow-hidden">
-                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                <CardHeader className="bg-[#F9F7F2] border-b border-slate-100">
                     <CardTitle className="flex items-center gap-2 text-sm font-bold text-slate-800 uppercase tracking-wider">
-                        <Database className="h-4 w-4 text-green-600" />
+                        <Database className="h-4 w-4 text-[#1B9157]" />
                         Account Data
                     </CardTitle>
                 </CardHeader>
@@ -144,16 +144,16 @@ const UserDebugPanel: React.FC = () => {
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center py-4">Loading Data...</p>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                            <div className="flex items-center justify-between p-4 bg-[#F9F7F2] border border-slate-100 rounded-xl">
                                 <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Apiaries Found:</span>
-                                <Badge className="bg-amber-100 text-amber-700 border-none font-bold">
+                                <Badge className="bg-amber-100 text-[#F4D03F] border-none font-bold">
                                     {apiaries.length}
                                 </Badge>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                            <div className="flex items-center justify-between p-4 bg-[#F9F7F2] border border-slate-100 rounded-xl">
                                 <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Hive Units:</span>
-                                <Badge className="bg-green-100 text-green-700 border-none font-bold">
+                                <Badge className="bg-green-100 text-[#1B9157] border-none font-bold">
                                     {hives.length}
                                 </Badge>
                             </div>
@@ -163,7 +163,7 @@ const UserDebugPanel: React.FC = () => {
                                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4">Linked Apiaries:</h4>
                                     <div className="grid gap-2">
                                         {apiaries.map((apiary) => (
-                                            <div key={apiary.id} className="text-sm font-bold text-slate-700 flex items-center justify-between p-3 bg-white border border-slate-50 rounded-lg">
+                                            <div key={apiary.id} className="text-sm font-bold text-slate-700 flex items-center justify-between p-3 bg-[#FFF9F0] border border-slate-50 rounded-lg">
                                                 <span>{apiary.name}</span>
                                                 <span className="text-[10px] text-slate-400 uppercase">{apiary.hive_count || 0} Hives</span>
                                             </div>
@@ -175,7 +175,7 @@ const UserDebugPanel: React.FC = () => {
                             {apiaries.length === 0 && (
                                 <div className="mt-4 p-5 bg-amber-50 border border-amber-100 rounded-2xl">
                                     <p className="text-sm text-slate-800 font-bold mb-3 flex items-center gap-2">
-                                        <AlertTriangle className="h-4 w-4 text-amber-500" />
+                                        <AlertTriangle className="h-4 w-4 text-[#F4D03F]" />
                                         No Data Linked
                                     </p>
                                     <p className="text-xs text-slate-500 font-medium leading-relaxed mb-6">
@@ -218,7 +218,7 @@ const UserDebugPanel: React.FC = () => {
                                                 setLoading(false);
                                             }
                                         }}
-                                        className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 uppercase tracking-wider text-[10px]"
+                                        className="w-full bg-[#F4D03F] hover:bg-amber-600 text-[#1A1A1A] font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 uppercase tracking-wider text-[10px]"
                                     >
                                         Claim Kibwezi Main Apiary
                                     </Button>

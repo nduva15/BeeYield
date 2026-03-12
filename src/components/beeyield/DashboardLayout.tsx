@@ -29,7 +29,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
 
     return (
-        <div className="flex h-screen w-full bg-gray-50 overflow-hidden font-sans text-gray-900 selection:bg-honey selection:text-black">
+        <div className="flex h-screen w-full bg-[#F9F7F2] overflow-hidden font-sans text-[#1A1A1A] selection:bg-[#F4D03F]/30 selection:text-[#1A1A1A]">
             {/* Sidebar */}
             <GlassSidebar
                 activeTab={activeTab}

@@ -56,29 +56,29 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-8 pb-4">
                 <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-honey/10 text-honey rounded-full text-[10px] font-black uppercase tracking-widest border border-honey/20 backdrop-blur-sm">
+                    <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-[#F4D03F]/10 text-[#F4D03F] rounded-full text-[10px] font-black uppercase tracking-widest border border-[#F4D03F]/20 backdrop-blur-sm">
                         <Database className="w-3.5 h-3.5" />
                         AI-Enhanced Telemetry
                     </div>
-                    <h1 className="text-6xl font-serif font-black text-honey tracking-tight leading-none">Telemetry <span className="text-foreground">Analytics</span></h1>
+                    <h1 className="text-6xl font-serif font-black text-[#F4D03F] tracking-tight leading-none">Telemetry <span className="text-foreground">Analytics</span></h1>
                     <p className="text-sm font-medium text-muted-foreground max-w-lg leading-relaxed uppercase tracking-wider opacity-70">
                         Historical and real-time sensor analytics powered by BeeYield&apos;s Global Intelligence Framework.
                     </p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-white/50 backdrop-blur-md border border-border text-muted-foreground hover:text-honey font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-honey/50 transition-all">
+                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-[#F9F7F2]0 backdrop-blur-md border border-border text-muted-foreground hover:text-[#F4D03F] font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-[#F4D03F]/50 transition-all">
                         <FileText className="w-4 h-4 mr-2" /> Export Audit
                     </Button>
-                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-white/50 backdrop-blur-md border border-border text-muted-foreground hover:text-honey font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-honey/50 transition-all">
+                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-[#F9F7F2]0 backdrop-blur-md border border-border text-muted-foreground hover:text-[#F4D03F] font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-[#F4D03F]/50 transition-all">
                         <Download className="w-4 h-4 mr-2" /> Dataset
                     </Button>
                     <Select value={timeRange} onValueChange={setTimeRange}>
-                        <SelectTrigger className="w-[200px] h-14 rounded-2xl border-border bg-white/50 backdrop-blur-md font-black text-[10px] uppercase tracking-widest shadow-sm focus:ring-honey/20">
-                            <Calendar className="w-4 h-4 mr-2 text-honey" />
+                        <SelectTrigger className="w-[200px] h-14 rounded-2xl border-border bg-[#F9F7F2]0 backdrop-blur-md font-black text-[10px] uppercase tracking-widest shadow-sm focus:ring-[#F4D03F]/20">
+                            <Calendar className="w-4 h-4 mr-2 text-[#F4D03F]" />
                             <SelectValue placeholder="Time Range" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-border shadow-2xl p-0 backdrop-blur-xl bg-white/90">
+                        <SelectContent className="rounded-2xl border-border shadow-2xl p-0 backdrop-blur-xl bg-[#FFF9F0]/90">
                             <SelectItem value="24h" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 24h</SelectItem>
                             <SelectItem value="7d" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 7d</SelectItem>
                             <SelectItem value="30d" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 30d</SelectItem>
@@ -90,10 +90,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'Thermal Internal', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-honey', bg: 'bg-honey/10' },
-                    { label: 'Ambient Saturation', value: `${latest.hum}%`, icon: Droplets, color: 'text-honey', bg: 'bg-honey/10' },
-                    { label: 'Colony Biomass', value: `${latest.weight}kg`, icon: Weight, color: 'text-honey', bg: 'bg-honey/10' },
-                    { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-honey', bg: 'bg-honey/10' },
+                    { label: 'Thermal Internal', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
+                    { label: 'Ambient Saturation', value: `${latest.hum}%`, icon: Droplets, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
+                    { label: 'Colony Biomass', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
+                    { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
                 ].map((stat, i) => (
                     <motion.div
                         key={stat.label}
@@ -101,7 +101,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                     >
-                        <Card className="rounded-[2.5rem] border border-border bg-white/80 backdrop-blur-md shadow-xl shadow-black/5 hover:border-honey/30 transition-all group overflow-hidden">
+                        <Card className="rounded-[2.5rem] border border-border bg-[#FFF9F0]/80 backdrop-blur-md shadow-xl shadow-black/5 hover:border-[#F4D03F]/30 transition-all group overflow-hidden">
                             <CardContent className="p-8">
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", stat.bg)}>
@@ -117,17 +117,17 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </div>
 
             {/* Main Chart Area */}
-            <Card className="rounded-[3rem] border border-slate-200/60 bg-white shadow-2xl shadow-black/5 overflow-hidden">
+            <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 overflow-hidden">
                 <CardContent className="p-10">
                     <div className="flex justify-between items-center mb-12">
                         <div className="space-y-1">
-                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Thermal Stability Registry</h3>
+                            <h3 className="text-2xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Thermal Stability Registry</h3>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Internal environmental control audit</p>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 border border-amber-100">
-                                <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Internal Node 01</span>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#F4D03F] animate-pulse" />
+                                <span className="text-[10px] font-black text-[#F4D03F] uppercase tracking-widest">Internal Node 01</span>
                             </div>
                         </div>
                     </div>
@@ -174,10 +174,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-[3rem] border border-slate-200/60 bg-white shadow-2xl shadow-black/5 p-10">
+                <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 p-10">
                     <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Mass Variation (kg)</h3>
-                        <Badge className="bg-emerald-50 text-emerald-700 border-none font-black text-[10px] uppercase tracking-widest">Active Scale</Badge>
+                        <h3 className="text-xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Mass Variation (kg)</h3>
+                        <Badge className="bg-emerald-50 text-[#1B9157] border-none font-black text-[10px] uppercase tracking-widest">Active Scale</Badge>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -192,10 +192,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     </div>
                 </Card>
 
-                <Card className="rounded-[3rem] border border-slate-200/60 bg-white shadow-2xl shadow-black/5 p-10">
+                <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 p-10">
                     <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Saturation Profile (%)</h3>
-                        <Badge className="bg-amber-50 text-amber-700 border-none font-black text-[10px] uppercase tracking-widest">Balanced</Badge>
+                        <h3 className="text-xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Saturation Profile (%)</h3>
+                        <Badge className="bg-amber-50 text-[#F4D03F] border-none font-black text-[10px] uppercase tracking-widest">Balanced</Badge>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">

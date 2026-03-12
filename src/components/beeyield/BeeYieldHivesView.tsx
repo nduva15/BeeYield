@@ -218,7 +218,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             <PageHeader
                 icon={Hexagon}
                 label="Hive Management"
-                title={<>Hive <span className="text-[#FF6B00]">Inventory</span></>}
+                title={<>Hive <span className="text-[#F4D03F]">Inventory</span></>}
                 subtitle="Track your hives, monitor equipment health, and manage colony weight data in real-time."
                 actions={
                     <div className="flex items-center gap-6">
@@ -242,11 +242,11 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             />
 
             {/* ── Quick Stats ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <GlassStatCard label="Total Hives" value={stats.total} icon={Box} index={0} />
-                <GlassStatCard label="Online Status" value={stats.active} icon={ShieldCheck} index={1} color="text-gray-900" />
-                <GlassStatCard label="Critical Alerts" value={stats.critical} icon={HeartPulse} index={2} color="text-[#FF6B00]" />
-                <GlassStatCard label="Mean Weight" value={`${stats.avgWeight}kg`} icon={Zap} index={3} color="text-[#FF6B00]" />
+                <GlassStatCard label="Online Status" value={stats.active} icon={ShieldCheck} index={1} color="text-[#1A1A1A]" />
+                <GlassStatCard label="Critical Alerts" value={stats.critical} icon={HeartPulse} index={2} color="text-[#F4D03F]" />
+                <GlassStatCard label="Mean Weight" value={`${stats.avgWeight}kg`} icon={Zap} index={3} color="text-[#F4D03F]" />
             </div>
 
             {/* ── Filter Bar ── */}
@@ -255,47 +255,47 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 animate={{ opacity: 1, y: 0 }}
                 className={glass.filterBar}
             >
-                <div className="relative z-10 flex flex-col xl:flex-row gap-8 justify-between items-center">
-                    <div className="flex bg-white/5 p-2 rounded-2xl gap-2 border border-gray-200 w-full xl:w-auto">
+                <div className="relative z-10 flex flex-col xl:flex-row gap-4 justify-between items-center">
+                    <div className="flex bg-[#F9F7F2] p-1 rounded-lg gap-1 border border-[#F4D03F]/20 w-full xl:w-auto">
                         <button
                             onClick={() => setViewMode('hives')}
-                            className={cn('flex-1 xl:flex-initial h-14 px-10 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-4 justify-center',
-                                viewMode === 'hives' ? 'bg-white text-black shadow-lg' : 'text-gray-600 hover:text-[#FF6B00] hover:bg-[#FF6B00]/10'
+                            className={cn('flex-1 xl:flex-initial h-9 px-5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 justify-center',
+                                viewMode === 'hives' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F] hover:bg-[#F4D03F]/10'
                             )}
                         >
-                            <Layers className="w-5 h-5" /> Hives
+                            <Layers className="w-3.5 h-3.5" /> Hives
                         </button>
                         <button
                             onClick={() => setViewMode('devices')}
-                            className={cn('flex-1 xl:flex-initial h-14 px-10 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-4 justify-center',
-                                viewMode === 'devices' ? 'bg-white text-black shadow-lg' : 'text-gray-600 hover:text-[#FF6B00] hover:bg-[#FF6B00]/10'
+                            className={cn('flex-1 xl:flex-initial h-9 px-5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 justify-center',
+                                viewMode === 'devices' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F] hover:bg-[#F4D03F]/10'
                             )}
                         >
-                            <Cpu className="w-5 h-5" /> Hardware
+                            <Cpu className="w-3.5 h-3.5" /> Hardware
                         </button>
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-6 w-full xl:flex-1 xl:justify-end">
+                    <div className="flex flex-col md:flex-row gap-3 w-full xl:flex-1 xl:justify-end">
                         <div className="relative flex-1 max-w-xl group/search">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#FF6B00] opacity-40 group-focus-within/search:opacity-100 transition-opacity" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                             <Input
                                 placeholder="Filter units..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className={cn(glass.input, 'h-14 pl-14 px-8 rounded-xl font-bold text-lg bg-white/5 border-gray-200 shadow-inner')}
+                                className="h-9 pl-10 bg-[#F9F7F2] border-[#F4D03F]/10 rounded-lg text-[10px] font-bold uppercase tracking-widest"
                             />
                         </div>
-                        <div className="w-full md:w-[280px]">
+                        <div className="w-full md:w-48">
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                <SelectTrigger className={cn(glass.select, 'h-14 px-6 rounded-xl font-bold bg-white/5 border-gray-200')}>
-                                    <div className="flex items-center gap-4">
-                                        <MapPin className="w-5 h-5 text-[#FF6B00] opacity-30" />
-                                        <SelectValue placeholder="Sectors" />
+                                <SelectTrigger className="h-9 px-4 rounded-lg bg-[#F9F7F2] border-[#F4D03F]/10 text-[10px] font-bold uppercase tracking-widest">
+                                    <div className="flex items-center gap-2">
+                                        <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                        <SelectValue placeholder="All" />
                                     </div>
                                 </SelectTrigger>
-                                <SelectContent className={glass.selectContent}>
-                                    <SelectItem value="all" className="font-bold uppercase text-[12px] tracking-widest">Global</SelectItem>
-                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-bold uppercase text-[12px] tracking-widest">{a.name.toUpperCase()}</SelectItem>)}
+                                <SelectContent className="bg-white border-[#F4D03F]/10">
+                                    <SelectItem value="all" className="font-bold uppercase text-[9px] tracking-widest">All</SelectItem>
+                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-bold uppercase text-[9px] tracking-widest">{a.name.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -307,26 +307,24 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             <div className="relative z-10">
                 {viewMode === 'hives' ? (
                     isLoading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                <div key={i} className={cn(glass.skeleton, 'aspect-[3/4] rounded-[4rem] animate-pulse')} />
+                                <div key={i} className={cn(glass.skeleton, 'aspect-[3/4] rounded-2xl animate-pulse')} />
                             ))}
                         </div>
                     ) : filteredHives.length === 0 ? (
-                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={glass.emptyState}>
-                            <div className="w-56 h-56 rounded-[4rem] bg-honey/5 border border-honey/20 flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 shadow-4xl">
-                                <Hexagon className="w-28 h-28 text-honey opacity-20" />
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-20">
+                            <div className="w-20 h-20 rounded-2xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6">
+                                <Hexagon className="w-10 h-10 text-[#F4D03F] opacity-20" />
                             </div>
-                            <div className="space-y-6">
-                                <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none opacity-40">No Hives Found</h3>
-                                <p className={cn(glass.microLabel, "max-w-xl mx-auto")}>Add your first hive to start monitoring your colonies.</p>
-                            </div>
-                            <button onClick={handleOpenAddHive} className={cn(glass.btnPrimary, "h-24 bg-honey text-black mt-16 px-20 rounded-[3.5rem]")}>
-                                <Plus className="w-10 h-10 mr-6" /> Add Hive
+                            <h3 className="text-2xl font-bold text-foreground/40 tracking-tight">No Hives Found</h3>
+                            <p className="text-sm text-gray-400 font-medium mt-2 max-w-md text-center">Add your first hive to start monitoring your colonies.</p>
+                            <button onClick={handleOpenAddHive} className={cn(glass.btnPrimary, "mt-6")}>
+                                <Plus className="w-4 h-4" /> Add Hive
                             </button>
                         </motion.div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             <AnimatePresence>
                                 {filteredHives.map((hive, i) => (
                                     <FlipCardHive
@@ -347,13 +345,13 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         </div>
                     )
                 ) : (
-                                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.table, "bg-gray-50 border-gray-300")}>
-                        <div className="p-12 border-b border-gray-200 bg-white/5 backdrop-blur-3xl flex items-center justify-between">
+                                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.table, "bg-[#F9F7F2] border-[#F4D03F]/40")}>
+                        <div className="p-12 border-b border-[#F4D03F]/20 bg-[#F9F7F2] backdrop-blur-3xl flex items-center justify-between">
                             <div className="flex items-center gap-8">
-                                <div className="w-14 h-14 rounded-2xl bg-[#FF6B00]/10 flex items-center justify-center border border-[#FF6B00]/20">
-                                    <Cpu className="w-8 h-8 text-[#FF6B00]" />
+                                <div className="w-14 h-14 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                    <Cpu className="w-8 h-8 text-[#F4D03F]" />
                                 </div>
-                                <h3 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">Equipment <span className="text-[#FF6B00]">Fleet</span></h3>
+                                <h3 className="text-4xl font-black text-[#1A1A1A] tracking-tighter uppercase">Equipment <span className="text-[#F4D03F]">Fleet</span></h3>
                             </div>
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hardware Telemetry Monitoring</p>
                         </div>
@@ -369,7 +367,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                         <th className={cn(glass.tableHead, "text-right")}>LAST TEL</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-gray-100">
                                     {devices.map((device, i) => {
                                         const linkedHive = hives.find(h => h.id === device.hive_id || h.hive_code === device.device_code);
                                         return (
@@ -382,26 +380,26 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                             >
                                                 <td className="px-12 py-8">
                                                     <div className="flex items-center gap-6">
-                                                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
-                                                            <Hash className="w-6 h-6 text-[#FF6B00] opacity-40" />
+                                                        <div className="w-12 h-12 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center">
+                                                            <Hash className="w-6 h-6 text-[#F4D03F] opacity-40" />
                                                         </div>
-                                                        <span className="text-xl font-black text-gray-900 tracking-tighter uppercase">{device.device_code}</span>
+                                                        <span className="text-xl font-black text-[#1A1A1A] tracking-tighter uppercase">{device.device_code}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-8">
                                                     {linkedHive ? (
-                                                        <div className="bg-white/5 text-gray-900 border border-gray-200 px-6 py-2 rounded-lg max-w-fit flex items-center gap-4">
-                                                            <ShieldCheck className="w-4 h-4 text-[#FF6B00]" />
+                                                        <div className="bg-[#F9F7F2] text-[#1A1A1A] border border-[#F4D03F]/20 px-6 py-2 rounded-lg max-w-fit flex items-center gap-4">
+                                                            <ShieldCheck className="w-4 h-4 text-[#F4D03F]" />
                                                             <span className="font-bold uppercase text-[11px] tracking-widest">HIVE: {linkedHive.hive_code}</span>
                                                         </div>
                                                     ) : (
-                                                        <span className="font-bold text-sm text-white/10 uppercase tracking-widest">Dormant</span>
+                                                        <span className="font-bold text-sm text-gray-400 uppercase tracking-widest">Dormant</span>
                                                     )}
                                                 </td>
                                                 <td className="px-8 py-8">
                                                     <div className="flex items-center gap-6">
-                                                        <div className={cn("w-3 h-3 rounded-full", device.status === 'active' ? 'bg-[#FF6B00] shadow-[0_0_10px_rgba(255,107,0,0.4)]' : 'bg-white/10')} />
-                                                        <span className={cn("text-lg font-black uppercase", device.status === 'active' ? "text-gray-900" : "text-gray-400")}>
+                                                        <div className={cn("w-3 h-3 rounded-full", device.status === 'active' ? 'bg-[#F4D03F] shadow-[0_0_10px_rgba(255,107,0,0.4)]' : 'bg-[#F4D03F]/10')} />
+                                                        <span className={cn("text-lg font-black uppercase", device.status === 'active' ? "text-[#1A1A1A]" : "text-gray-400")}>
                                                             {device.status === 'active' ? 'SYNCING' : 'OFFLINE'}
                                                         </span>
                                                     </div>
@@ -409,12 +407,12 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                                 <td className="px-8 py-8">
                                                     <div className="flex items-center gap-8">
                                                         <div className="flex flex-col items-end gap-2 min-w-[120px]">
-                                                            <span className="text-2xl font-mono font-black text-gray-900 tracking-tighter tabular-nums">{device.battery_level}%</span>
-                                                            <div className="w-full h-2 bg-white/5 rounded-none overflow-hidden relative border border-gray-200">
+                                                            <span className="text-2xl font-mono font-black text-[#1A1A1A] tracking-tighter tabular-nums">{device.battery_level}%</span>
+                                                            <div className="w-full h-2 bg-[#F9F7F2] rounded-none overflow-hidden relative border border-[#F4D03F]/20">
                                                                 <motion.div
                                                                     initial={{ width: 0 }}
                                                                     animate={{ width: `${device.battery_level}%` }}
-                                                                    className={cn("h-full", device.battery_level > 60 ? "bg-white" : device.battery_level > 20 ? "bg-[#FF6B00]" : "bg-[#FF6B00]/40")}
+                                                                    className={cn("h-full", device.battery_level > 60 ? "bg-[#FFF9F0]" : device.battery_level > 20 ? "bg-[#F4D03F]" : "bg-[#F4D03F]/40")}
                                                                 />
                                                             </div>
                                                         </div>
@@ -446,52 +444,36 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 {isRequestingInspection && (
                     <div className={glass.modalOverlay} onClick={() => setIsRequestingInspection(false)}>
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 100 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className={glass.modalCard}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className={glass.modalHeader}>
+                            <div className="p-6 border-b border-[#F4D03F]/10">
                                 <div className="flex justify-between items-start">
-                                    <div className="space-y-6">
-                                        <div className="inline-flex items-center gap-6 px-8 py-3 bg-honey/10 rounded-full border border-honey/30 shadow-4xl skew-x-[-15deg]">
-                                            <Calendar className="w-6 h-6 text-honey skew-x-[15deg]" />
-                                            <span className="text-[12px] font-black uppercase tracking-[0.5em] skew-x-[15deg] italic">Task Management</span>
-                                        </div>
-                                        <h2 className="text-6xl font-black text-foreground tracking-tighter uppercase italic leading-none">Schedule <span className="text-honey">Inspection</span></h2>
-                                        <p className="text-xl font-black text-foreground/30 uppercase italic border-l-4 border-honey/20 pl-10">Set a reminder to check on this colony soon.</p>
+                                    <div className="space-y-1">
+                                        <h2 className="text-xl font-bold text-foreground tracking-tight">Schedule <span className="text-[#F4D03F]">Inspection</span></h2>
+                                        <p className="text-xs text-gray-400 font-medium">Set a reminder to check on this colony.</p>
                                     </div>
-                                    <button onClick={() => setIsRequestingInspection(false)} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-gray-200 flex items-center justify-center hover:bg-red-500/20 transition-all duration-700">
-                                        <X className="w-10 h-10" />
+                                    <button onClick={() => setIsRequestingInspection(false)} className="w-9 h-9 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all">
+                                        <X className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
-                            <div className="p-20 space-y-16">
-                                <div className="space-y-8">
+                            <div className="p-6 space-y-4">
+                                <div className="space-y-2">
                                     <Label className={glass.microLabel}>Inspection Title</Label>
-                                    <Input
-                                        value={inspectionTaskForm.title}
-                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })}
-                                        className={glass.input}
-                                        placeholder="Routine Health Check"
-                                    />
+                                    <Input value={inspectionTaskForm.title} onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })} className={glass.input} placeholder="Routine Health Check" />
                                 </div>
-                                <div className="space-y-8">
+                                <div className="space-y-2">
                                     <Label className={glass.microLabel}>Due Date</Label>
-                                    <Input
-                                        type="date"
-                                        value={inspectionTaskForm.due_date}
-                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })}
-                                        className={glass.input}
-                                    />
+                                    <Input type="date" value={inspectionTaskForm.due_date} onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })} className={glass.input} />
                                 </div>
-                                <div className="pt-12 flex gap-12">
-                                    <button className={glass.btnSecondary} onClick={() => setIsRequestingInspection(false)}>
-                                        Cancel
-                                    </button>
+                                <div className="pt-4 flex gap-3">
+                                    <button className={glass.btnSecondary} onClick={() => setIsRequestingInspection(false)}>Cancel</button>
                                     <button onClick={submitInspectionRequest} disabled={isSavingTask} className={cn(glass.btnPrimary, "flex-1")}>
-                                        {isSavingTask ? <RefreshCw className="w-12 h-12 animate-spin" /> : <ShieldCheck className="w-12 h-12" />}
+                                        {isSavingTask ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                         Save Inspection
                                     </button>
                                 </div>
@@ -506,32 +488,32 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 {isNotesModalOpen && activeHive && (
                     <div className={glass.modalOverlay} onClick={() => setIsNotesModalOpen(false)}>
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 100 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className={glass.modalCard}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className={glass.modalHeader}>
+                            <div className="p-6 border-b border-[#F4D03F]/10">
                                 <div className="flex justify-between items-start">
-                                    <div className="space-y-6">
-                                        <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-none">Hive <span className="text-honey">Notes</span></h2>
-                                        <p className="text-2xl font-black text-foreground/30 uppercase italic border-l-4 border-honey/20 pl-10">Archive observations for hive #{activeHive.hive_code}.</p>
+                                    <div className="space-y-1">
+                                        <h2 className="text-xl font-bold text-foreground tracking-tight">Hive <span className="text-[#F4D03F]">Notes</span></h2>
+                                        <p className="text-xs text-gray-400 font-medium">Archive observations for hive #{activeHive.hive_code}.</p>
                                     </div>
-                                    <button onClick={() => setIsNotesModalOpen(false)} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-gray-200 flex items-center justify-center hover:bg-red-500/20 transition-all duration-700">
-                                        <X className="w-10 h-10" />
+                                    <button onClick={() => setIsNotesModalOpen(false)} className="w-9 h-9 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all">
+                                        <X className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
-                            <div className="p-20 space-y-16">
+                            <div className="p-6 space-y-4">
                                 <Textarea
                                     value={hiveNotes}
                                     onChange={(e) => setHiveNotes(e.target.value)}
-                                    className="min-h-[400px] p-16 rounded-[4rem] font-black italic text-4xl leading-relaxed bg-gray-50 border-gray-200 shadow-inner resize-none focus:ring-honey/20"
+                                    className="min-h-[200px] p-4 rounded-xl text-sm bg-[#F9F7F2] border-[#F4D03F]/10 resize-none focus:ring-[#F4D03F]/20"
                                     placeholder="Write your observations here..."
                                 />
-                                <button onClick={handleSaveNotes} disabled={isSavingNotes} className={cn(glass.btnPrimary, "w-full h-28 text-3xl")}>
-                                    {isSavingNotes ? <RefreshCw className="w-16 h-16 animate-spin" /> : <ShieldCheck className="w-16 h-16" />}
+                                <button onClick={handleSaveNotes} disabled={isSavingNotes} className={cn(glass.btnPrimary, "w-full")}>
+                                    {isSavingNotes ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                     Save Notes
                                 </button>
                             </div>
@@ -545,8 +527,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 .animate-shimmer { animation: shimmer 3s infinite linear; }
                 .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.1); border-radius: 20px; }
-                .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 0, 0.2); }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.1); border-radius: 20px; }
+                .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(244, 208, 63, 0.2); }
             `}</style>
         </motion.div>
     );

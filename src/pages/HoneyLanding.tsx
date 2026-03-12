@@ -58,7 +58,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-white">
+    <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-[#FFF9F0]">
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-beeyield-green/[0.02] -skew-x-12 translate-x-32 pointer-events-none" />
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-beeyield-gold/5 rounded-full blur-3xl pointer-events-none animate-pulse" />
@@ -86,7 +86,7 @@ const HeroSection = () => {
             <div className="flex flex-wrap gap-4 mb-12">
               <Button
                 size="lg"
-                className="bg-neutral-900 hover:bg-beeyield-green text-gray-900 font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs"
+                className="bg-neutral-900 hover:bg-beeyield-green text-[#1A1A1A] font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs"
                 onClick={() => navigate("/shop")}
               >
                 Shop Collection
@@ -141,10 +141,10 @@ const HeroSection = () => {
               <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-white/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white/50 flex flex-col items-center gap-2"
+                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-[#FFF9F0]/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-[#F4D03F]/100 flex flex-col items-center gap-2"
               >
                 <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
-                  <ShieldCheck className="w-6 h-6 text-gray-900" />
+                  <ShieldCheck className="w-6 h-6 text-[#1A1A1A]" />
                 </div>
                 <div className="text-center">
                   <span className="block text-sm font-black text-neutral-900">Verified</span>
@@ -169,7 +169,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
   const featuredProducts = (products.length > 0 ? products : initialHoneyProducts).slice(0, 4);
 
   return (
-    <section className="py-20 lg:py-32 bg-white overflow-hidden">
+    <section className="py-20 lg:py-32 bg-[#FFF9F0] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-xl">
@@ -203,14 +203,14 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
               className="group"
             >
               <Card
-                className="bg-white border-none rounded-[2rem] overflow-hidden shadow-soft group-hover:shadow-2xl transition-all duration-500 h-full flex flex-col relative"
+                className="bg-[#FFF9F0] border-none rounded-[2rem] overflow-hidden shadow-soft group-hover:shadow-2xl transition-all duration-500 h-full flex flex-col relative"
               >
                 {/* Product Image Area */}
                 <div className="relative h-64 bg-gradient-to-br from-neutral-50 to-neutral-100/50 p-6 flex items-center justify-center overflow-hidden group-hover:bg-amber-50/30 transition-colors">
                   {/* Floating Tags */}
                   {product.badge && (
                     <div className="absolute top-4 left-4 z-10">
-                      <Badge className="bg-beeyield-gold text-gray-900 font-black uppercase text-[9px] tracking-widest px-3 py-1 shadow-md border-none">
+                      <Badge className="bg-beeyield-gold text-[#1A1A1A] font-black uppercase text-[9px] tracking-widest px-3 py-1 shadow-md border-none">
                         {product.badge}
                       </Badge>
                     </div>
@@ -242,14 +242,14 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
                     }}
                     className={`absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md transition-all z-10 ${isInWishlist(product.id)
                       ? "bg-red-50 text-red-500 shadow-sm"
-                      : "bg-white/60 text-neutral-400 hover:bg-white hover:text-red-500 hover:shadow-md translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0"
+                      : "bg-[#FFF9F0]/60 text-neutral-400 hover:bg-[#FFF9F0] hover:text-red-500 hover:shadow-md translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0"
                       }`}
                   >
                     <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
                   </button>
                 </div>
 
-                <CardContent className="p-6 flex flex-col flex-grow bg-white relative z-20">
+                <CardContent className="p-6 flex flex-col flex-grow bg-[#FFF9F0] relative z-20">
                   <div className="mb-3">
                     <div className="text-[10px] font-black uppercase tracking-widest text-beeyield-gold mb-1">Single Origin</div>
                     <h3 className="font-bold text-lg text-beeyield-green group-hover:text-beeyield-green-dark transition-colors line-clamp-1">{product.name}</h3>
@@ -265,7 +265,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
 
                     <Button
                       size="sm"
-                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-gray-900 font-black uppercase tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
+                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-[#1A1A1A] font-black uppercase tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
                       onClick={() => handleAddToCart(product)}
                     >
                       Add
@@ -339,7 +339,7 @@ const TestimonialSection = () => {
         </motion.div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="relative bg-white rounded-[3rem] p-8 md:p-16 shadow-xl border border-white/50 backdrop-blur-sm">
+          <div className="relative bg-[#FFF9F0] rounded-[3rem] p-8 md:p-16 shadow-xl border border-[#F4D03F]/100 backdrop-blur-sm">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
@@ -360,7 +360,7 @@ const TestimonialSection = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-beeyield-green/80 via-beeyield-green/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
                     {/* Badge on Image */}
-                    <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                    <div className="absolute bottom-6 left-6 bg-[#FFF9F0]/90 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
                       <ShieldCheck className="w-4 h-4 text-beeyield-green" />
                       <span className="text-xs font-black text-beeyield-green uppercase tracking-wider">Verified Purchase</span>
                     </div>
@@ -426,7 +426,7 @@ const AboutSection = () => {
           >
             <div className="relative group">
               {/* Main Lifestyle Image */}
-              <div className="w-64 h-80 md:w-80 md:h-[450px] rounded-[3.5rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] transform -rotate-3 group-hover:rotate-0 transition-transform duration-700 bg-white">
+              <div className="w-64 h-80 md:w-80 md:h-[450px] rounded-[3.5rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] transform -rotate-3 group-hover:rotate-0 transition-transform duration-700 bg-[#FFF9F0]">
                 <img src="/images/products/beeyield_honey_1kg.png" alt="BeeYield Journey" className="w-full h-full object-cover p-8" />
               </div>
 
@@ -445,7 +445,7 @@ const AboutSection = () => {
               <motion.div
                 animate={{ rotate: [-12, -8, -12] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-8 -left-8 bg-beeyield-green text-gray-900 p-6 rounded-[2rem] shadow-2xl font-black text-sm uppercase tracking-widest leading-none text-center"
+                className="absolute -top-8 -left-8 bg-beeyield-green text-[#1A1A1A] p-6 rounded-[2rem] shadow-2xl font-black text-sm uppercase tracking-widest leading-none text-center"
               >
                 50 / 50<br />
                 <span className="text-[10px] opacity-70">Promise</span>
@@ -512,7 +512,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-[#FFF9F0]">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
@@ -523,7 +523,7 @@ const FeaturesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="bg-neutral-50 rounded-[2.5rem] p-10 text-left hover:bg-white hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
+              className="bg-neutral-50 rounded-[2.5rem] p-10 text-left hover:bg-[#FFF9F0] hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
             >
               <div className={`w-16 h-16 mb-8 ${feature.color} rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
                 <feature.icon className="h-8 w-8" />
@@ -568,7 +568,7 @@ const FlashSaleSection = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-[#FFF9F0]">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
@@ -586,7 +586,7 @@ const FlashSaleSection = () => {
               <Badge className="bg-beeyield-gold text-neutral-900 border-none mb-8 px-6 py-2 font-black uppercase tracking-widest text-[10px] shadow-glow">
                 Limited Time Offer
               </Badge>
-              <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-8 leading-[0.9] tracking-tighter uppercase">
+              <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] mb-8 leading-[0.9] tracking-tighter uppercase">
                 Claim Your <span className="text-beeyield-gold">20% Welcome</span> Discount
               </h2>
               <p className="text-neutral-400 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
@@ -595,7 +595,7 @@ const FlashSaleSection = () => {
 
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-gray-900 font-black rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
+                className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-[#1A1A1A] font-black rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
                 onClick={() => navigate("/shop")}
               >
                 Claim Discount Now
@@ -610,9 +610,9 @@ const FlashSaleSection = () => {
                 { label: "Seconds", value: timeLeft.seconds }
               ].map((time, i) => (
                 <div key={i} className="flex flex-col items-center group">
-                  <div className="bg-white/5 backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-gray-200 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
+                  <div className="bg-[#F9F7F2] backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-[#F4D03F]/20 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
                     <div className="absolute inset-0 bg-beeyield-gold/0 group-hover:bg-beeyield-gold/5 transition-colors duration-500" />
-                    <span className="text-4xl sm:text-5xl font-black text-gray-900 tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
+                    <span className="text-4xl sm:text-5xl font-black text-[#1A1A1A] tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
                   </div>
                   <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest group-hover:text-beeyield-gold transition-colors">{time.label}</span>
                 </div>
@@ -671,7 +671,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-[#FFF9F0]">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <Badge className="bg-neutral-100 text-neutral-600 border-none mb-6 px-4 py-1.5 font-black uppercase tracking-widest text-[10px] mx-auto block w-fit">
@@ -686,7 +686,7 @@ const FAQSection = () => {
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="bg-neutral-50 rounded-2xl px-6 border border-transparent hover:border-beeyield-gold/30 hover:bg-white hover:shadow-lg transition-all duration-300"
+                className="bg-neutral-50 rounded-2xl px-6 border border-transparent hover:border-beeyield-gold/30 hover:bg-[#FFF9F0] hover:shadow-lg transition-all duration-300"
               >
                 <AccordionTrigger className="text-left font-bold text-neutral-900 hover:no-underline py-5 text-base hover:text-beeyield-green transition-colors">
                   {faq.question}
@@ -742,33 +742,33 @@ const NewsletterSection = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <div className="bg-white/10 backdrop-blur-2xl rounded-[3rem] p-8 md:p-20 border border-gray-300 text-center relative overflow-hidden shadow-2xl">
+          <div className="bg-[#F4D03F]/10 backdrop-blur-2xl rounded-[3rem] p-8 md:p-20 border border-[#F4D03F]/40 text-center relative overflow-hidden shadow-2xl">
             <div className="absolute -top-32 -right-32 w-80 h-80 bg-beeyield-gold/20 rounded-full blur-3xl mix-blend-overlay" />
 
             <div className="relative z-10">
-              <div className="w-20 h-20 mx-auto mb-8 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner border border-gray-300">
-                <Mail className="w-8 h-8 text-gray-900" />
+              <div className="w-20 h-20 mx-auto mb-8 bg-gray-200 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner border border-[#F4D03F]/40">
+                <Mail className="w-8 h-8 text-[#1A1A1A]" />
               </div>
 
-              <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 uppercase tracking-tighter">
+              <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] mb-6 uppercase tracking-tighter">
                 Keep in <span className="text-beeyield-gold">Touch</span>
               </h2>
               <p className="text-beeyield-green-100/80 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium">
                 Subscribe for exclusive drops, blockchain reports, and the future of verifiable beekeeping.
               </p>
 
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-white/5 p-2 rounded-3xl border border-gray-200">
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-[#F9F7F2] p-2 rounded-3xl border border-[#F4D03F]/20">
                 <Input
                   type="email"
                   placeholder="Enter your email address..."
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 rounded-2xl bg-transparent border-none text-gray-900 placeholder:text-gray-600 text-base px-6 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all font-medium"
+                  className="h-14 rounded-2xl bg-transparent border-none text-[#1A1A1A] placeholder:text-gray-600 text-base px-6 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all font-medium"
                   required
                 />
                 <Button
                   type="submit"
-                  className="h-14 bg-beeyield-gold hover:bg-white text-beeyield-green font-black rounded-2xl px-10 text-xs uppercase tracking-widest shadow-lg transition-all hover:scale-105"
+                  className="h-14 bg-beeyield-gold hover:bg-[#FFF9F0] text-beeyield-green font-black rounded-2xl px-10 text-xs uppercase tracking-widest shadow-lg transition-all hover:scale-105"
                   disabled={status === "loading"}
                 >
                   {status === "loading" ? "Joining..." : "Join"}
@@ -823,7 +823,7 @@ const AllProductsSection = ({
             return (
               <Card
                 key={product.id}
-                className="group bg-white border border-neutral-100 rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
+                className="group bg-[#FFF9F0] border border-neutral-100 rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
               >
                 <div className="relative aspect-square overflow-hidden bg-neutral-50 p-6 flex items-center justify-center group-hover:bg-amber-50/30 transition-colors">
                   <BrandedProductImage
@@ -833,7 +833,7 @@ const AllProductsSection = ({
                     className="w-full h-full object-contain drop-shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ease-out"
                   />
                   {product.badge && (
-                    <Badge className="absolute top-4 left-4 bg-beeyield-gold text-gray-900 font-black uppercase text-[9px] tracking-widest px-3 py-1 rounded-full shadow-lg border-none">
+                    <Badge className="absolute top-4 left-4 bg-beeyield-gold text-[#1A1A1A] font-black uppercase text-[9px] tracking-widest px-3 py-1 rounded-full shadow-lg border-none">
                       {product.badge}
                     </Badge>
                   )}
@@ -873,7 +873,7 @@ const AllProductsSection = ({
 
                     <Button
                       size="sm"
-                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-gray-900 rounded-xl h-11 text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg shadow-neutral-900/10"
+                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-[#1A1A1A] rounded-xl h-11 text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg shadow-neutral-900/10"
                       onClick={() => handleAddToCart(product)}
                     >
                       <ShoppingCart className="h-3.5 w-3.5 mr-2" />
@@ -910,14 +910,14 @@ const AllProductsSection = ({
 // Mission Statement Section - Tesla-style Premium Narrative
 const MissionStatementSection = () => {
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section className="py-24 bg-[#FFF9F0] relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-gray-900 text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-[#1A1A1A] text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
           >
             <Sparkles className="w-3.5 h-3.5 text-beeyield-gold" />
             The Mission
@@ -1035,7 +1035,7 @@ const HoneyLanding = () => {
   const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FFF9F0]">
       <SEO
         title="Premium Traceable Honey from Kibwezi"
         description="Shop 100% raw, traceable honey from Kibwezi. Powered by HoneyChainâ„¢ technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
@@ -1066,21 +1066,21 @@ const HoneyLanding = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:divide-x md:divide-neutral-200/50">
             <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
+              <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <ShieldCheck className="h-6 w-6 text-beeyield-green" />
               </div>
               <span className="font-black uppercase tracking-widest text-xs text-neutral-900">100% Lab Tested</span>
               <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Verified for purity and absence of antibiotics</span>
             </div>
             <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
+              <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <Zap className="h-6 w-6 text-beeyield-gold" />
               </div>
               <span className="font-black uppercase tracking-widest text-xs text-neutral-900">Direct from Hive</span>
               <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Bottled at source to preserve active enzymes</span>
             </div>
             <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
+              <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <Leaf className="h-6 w-6 text-beeyield-green" />
               </div>
               <span className="font-black uppercase tracking-widest text-xs text-neutral-900">Sustainable Harvest</span>

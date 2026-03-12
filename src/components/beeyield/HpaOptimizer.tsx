@@ -1,26 +1,19 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import {
     Calculator,
-    Map as MapIcon,
-    Target,
     Zap,
     ArrowRight,
     Info,
     AlertCircle,
     BarChart3,
     Layers,
-    Navigation2,
     TreePine,
     Maximize2,
-    Compass
+    Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
-import { motion, AnimatePresence } from 'framer-motion';
+import { glass, PageHeader } from './GlassTheme';
+import { motion } from 'framer-motion';
 
 const HpaOptimizer: React.FC = () => {
     const [acreage, setAcreage] = React.useState(40);
@@ -41,80 +34,61 @@ const HpaOptimizer: React.FC = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={cn(glass.card, "p-0 overflow-hidden bg-white/80 backdrop-blur-3xl rounded-[6rem] border-white/5 relative shadow-4xl")}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
         >
-            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-honey/[0.05] to-transparent pointer-events-none" />
-
-            <div className="p-16 border-b border-white/5 bg-white/40 relative z-10">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-                    <div className="space-y-6">
-                        <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
-                            <div className="flex items-center gap-4 skew-x-[12deg]">
-                                <Calculator className="w-5 h-5" />
-                                <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Precision Planning</span>
-                            </div>
-                        </div>
-                        <h1 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                            Placement <span className="text-honey">Planner</span>
-                        </h1>
-                        <p className="text-[14px] font-black text-foreground/40 uppercase tracking-[0.4em] ml-2 italic">Calculate the perfect number of hives for your farm.</p>
+            <PageHeader
+                icon={Calculator}
+                label="Site Setup Node"
+                title={<>Placement <span className="text-[#F4D03F]">Planner</span></>}
+                subtitle="Calculate precision hive placement density for apiary operations."
+                actions={
+                    <div className="flex items-center gap-2 bg-[#F9F7F2] px-3 py-1.5 rounded-lg border border-[#F4D03F]/10">
+                        <Activity className="w-3.5 h-3.5 text-[#1B9157]" />
+                        <span className="text-[10px] font-bold text-gray-500">Efficiency Gain: <span className="text-[#1B9157]">+12.4%</span></span>
                     </div>
+                }
+            />
 
-                    <div className="text-right flex flex-col items-end gap-2">
-                        <span className="text-[12px] font-black uppercase text-honey tracking-widest italic opacity-40">Efficiency Gain</span>
-                        <div className="flex items-end gap-3">
-                            <span className="text-7xl font-black text-emerald-500 tracking-tighter italic leading-none">+12.4%</span>
-                            <div className="w-4 h-16 bg-emerald-500/20 rounded-full relative overflow-hidden mb-1 shadow-4xl">
-                                <motion.div
-                                    initial={{ height: 0 }}
-                                    animate={{ height: '70%' }}
-                                    transition={{ duration: 2, ease: "easeOut" }}
-                                    className="absolute bottom-0 w-full bg-emerald-500"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col xl:flex-row relative z-10">
+            <div className={cn(glass.card, "flex flex-col xl:flex-row overflow-hidden p-0")}>
                 {/* Inputs & Parameters */}
-                <div className="w-full xl:w-[450px] p-16 space-y-16 bg-gray-50 backdrop-blur-3xl border-r border-white/5 shrink-0">
-                    <section className="space-y-10">
-                        <div className="flex items-center gap-6 border-honey border-l-8 pl-8">
-                            <Layers className="w-8 h-8 text-honey" />
-                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Site Details</h3>
+                <div className="w-full xl:w-[320px] p-6 space-y-8 bg-[#F9F7F2] border-r border-[#F4D03F]/10 shrink-0">
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                <Layers className="w-4 h-4 text-[#F4D03F]" />
+                            </div>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Site Parameters</h3>
                         </div>
 
-                        <div className="space-y-10">
-                            <div className="space-y-4">
-                                <label className="text-[12px] font-black uppercase tracking-[0.3em] text-foreground/40 italic ml-2">Orchard Acreage</label>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className={glass.microLabel}>Orchard Acreage</label>
                                 <div className="relative group">
                                     <input
                                         type="number"
                                         value={acreage}
                                         onChange={(e) => setAcreage(Number(e.target.value))}
-                                        className={cn(glass.input, "h-20 px-10 text-3xl font-black italic border-gray-200 group-hover:border-honey/40 transition-colors")}
+                                        className={cn(glass.input, "pr-12 text-sm text-[#1B9157] font-bold")}
                                     />
-                                    <span className="absolute right-10 top-1/2 -translate-y-1/2 font-black italic text-honey opacity-40 text-xl uppercase tracking-widest">Acres</span>
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs">Acres</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <label className="text-[12px] font-black uppercase tracking-[0.3em] text-foreground/40 italic ml-2">Tree Density</label>
-                                <div className="flex bg-gray-100 p-2 rounded-[2.5rem] border border-white/5 gap-2 shadow-4xl">
+                            <div className="space-y-2">
+                                <label className={glass.microLabel}>Tree Density</label>
+                                <div className="flex bg-white p-1 rounded-xl border border-gray-200 gap-1">
                                     {['low', 'medium', 'high'].map((d) => (
                                         <button
                                             key={d}
                                             onClick={() => setTreeDensity(d)}
                                             className={cn(
-                                                "flex-1 h-14 rounded-full text-[12px] font-black uppercase italic tracking-widest transition-all duration-700 relative overflow-hidden group/btn",
-                                                treeDensity === d ? "bg-honey text-black shadow-4xl scale-110" : "text-muted-foreground/30 hover:text-honey hover:bg-honey/5"
+                                                "flex-1 h-8 rounded-lg text-xs font-bold capitalize transition-all",
+                                                treeDensity === d ? "bg-[#F9F7F2] text-[#1A1A1A] border border-[#F4D03F]/20 shadow-sm" : "text-gray-500 hover:text-gray-700"
                                             )}
                                         >
-                                            <span className="relative z-10">{d}</span>
+                                            {d}
                                         </button>
                                     ))}
                                 </div>
@@ -122,25 +96,24 @@ const HpaOptimizer: React.FC = () => {
                         </div>
                     </section>
 
-                    <section className="space-y-10">
-                        <div className="flex items-center gap-6 border-blue-400 border-l-8 pl-8">
-                            <TreePine className="w-8 h-8 text-blue-400" />
-                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Select Crop</h3>
+                    <section className="space-y-4 pt-4 border-t border-gray-200">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#1B9157]/20 shadow-sm">
+                                <TreePine className="w-4 h-4 text-[#1B9157]" />
+                            </div>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Crop Profile</h3>
                         </div>
-                        <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-1 gap-2">
                             {['Almond', 'Cherry', 'Apple', 'Blueberry'].map((c) => (
                                 <button
                                     key={c}
                                     onClick={() => setVariety(c.toLowerCase())}
                                     className={cn(
-                                        "h-18 rounded-3xl border-2 text-left px-10 text-[14px] font-black uppercase italic tracking-[0.2em] transition-all relative overflow-hidden group/crop",
-                                        variety === c.toLowerCase() ? "bg-blue-400 border-blue-400 text-black shadow-4xl scale-[1.02]" : "border-gray-200 text-foreground/40 hover:border-blue-400 hover:text-blue-400 hover:bg-blue-400/5"
+                                        "h-10 rounded-xl border text-left px-4 text-xs font-bold transition-all",
+                                        variety === c.toLowerCase() ? "bg-white border-[#F4D03F]/30 text-[#1A1A1A] shadow-sm" : "border-transparent text-gray-500 hover:border-gray-200 hover:bg-white"
                                     )}
                                 >
-                                    <span className="relative z-10">{c}</span>
-                                    {variety === c.toLowerCase() && (
-                                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full -mr-12 -mt-12 blur-2xl" />
-                                    )}
+                                    {c}
                                 </button>
                             ))}
                         </div>
@@ -148,121 +121,98 @@ const HpaOptimizer: React.FC = () => {
                 </div>
 
                 {/* Main Visualizer */}
-                <div className="flex-1 p-16 lg:p-24 space-y-16 bg-white/5 min-h-[800px] relative overflow-hidden">
-                    <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-honey/5 rounded-full blur-[150px] pointer-events-none" />
-
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 relative z-10">
-                        <div className="space-y-4">
-                            <h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">Suggestions</h2>
-                            <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-white/5">Optimized for full crop coverage.</p>
+                <div className="flex-1 p-6 space-y-6 relative bg-white">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="space-y-0.5">
+                            <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">Placement Suggestions</h2>
+                            <p className="text-[10px] font-medium text-gray-500">Full crop coverage dynamics</p>
                         </div>
-                        <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-12 py-5 rounded-[3rem] shadow-4xl')}>
-                            <span className="text-4xl font-black italic uppercase tracking-tighter">{suggestedHPA.toFixed(1)} <span className="text-xl opacity-40">HPA</span></span>
+                        <div className="bg-[#F9F7F2] border border-[#F4D03F]/20 px-4 py-2 rounded-xl flex items-center gap-3">
+                            <Zap className="w-4 h-4 text-[#F4D03F]" />
+                            <span className="text-xl font-bold tracking-tight text-[#1A1A1A]">{suggestedHPA.toFixed(1)} <span className="text-xs text-gray-500 font-medium">HPA</span></span>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
-                        {/* Coverage Analysis Map */}
-                        <div className={cn(glass.card, "aspect-square relative overflow-hidden group rounded-[5rem] border-gray-200 shadow-4xl")}>
-                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=1000&auto=format&fit=crop')] bg-cover opacity-10 grayscale scale-110 group-hover:scale-125 transition-transform duration-10000" />
-                            <div className="absolute inset-0 p-12 flex flex-col justify-between z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                        {/* Coverage Preview */}
+                        <div className={cn(glass.card, "aspect-video md:aspect-[4/3] relative overflow-hidden bg-gray-50 p-0 border-gray-200")}>
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02),transparent)]" />
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                            
+                            <div className="absolute inset-0 p-4 flex flex-col justify-between">
                                 <div className="flex justify-between items-start">
-                                    <div className={cn(glass.badge, 'bg-white/80 backdrop-blur-md border-gray-200 px-6 py-2 rounded-full')}>
-                                        <span className="text-[10px] font-black uppercase italic tracking-[0.4em]">Coverage Analysis</span>
+                                    <div className="bg-white/90 backdrop-blur-md border border-gray-200 px-3 py-1.5 rounded-lg shadow-sm">
+                                        <span className="text-[10px] font-bold text-gray-600">Coverage Scan</span>
                                     </div>
                                     <motion.div
-                                        animate={{ scale: [1, 1.2, 1] }}
+                                        animate={{ scale: [1, 1.05, 1] }}
                                         transition={{ duration: 2, repeat: Infinity }}
-                                        className="bg-red-500 text-gray-900 p-4 rounded-3xl border-4 border-black shadow-4xl"
+                                        className="bg-red-50 text-red-500 p-2 rounded-lg border border-red-100"
                                     >
-                                        <AlertCircle className="w-8 h-8" />
+                                        <AlertCircle className="w-4 h-4" />
                                     </motion.div>
                                 </div>
 
-                                {/* Simulated Heatmap Blobs */}
-                                <div className="relative flex-1">
-                                    <div className="absolute top-1/4 left-1/3 w-48 h-48 bg-red-500/20 blur-[60px] rounded-full animate-pulse" />
-                                    <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-red-500/10 blur-[80px] rounded-full animate-pulse [animation-delay:1s]" />
-
-                                    {/* Crosshair */}
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:rotate-180 transition-transform duration-1000">
-                                        <Compass className="w-16 h-16 text-honey/40" />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="p-6 rounded-3xl bg-white/80 backdrop-blur-xl border border-gray-200 shadow-4xl flex items-center gap-6">
-                                        <div className="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]" />
-                                        <p className="text-[14px] font-black text-gray-900 uppercase italic tracking-widest leading-tight">
-                                            Low activity found in North-West sector.
-                                        </p>
-                                    </div>
+                                <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-red-500" />
+                                    <p className="text-xs font-bold text-[#1A1A1A]">Sector B12 Deficit detected</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Summary Details */}
-                        <div className="space-y-12">
-                            <div className={cn(glass.card, "p-12 bg-honey text-black shadow-4xl rounded-[5rem] group relative overflow-hidden transition-all hover:scale-[1.02]")}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50" />
+                        <div className="space-y-4">
+                            <div className={cn(glass.card, "bg-[#F9F7F2] border-[#F4D03F]/20")}>
                                 <div className="relative z-10">
-                                    <p className="text-[14px] font-black uppercase tracking-[0.4em] opacity-40 italic mb-4">Total Hives Needed</p>
-                                    <div className="flex items-end gap-6 mb-8">
-                                        <p className="text-9xl font-black tracking-tighter italic leading-none">{totalHives}</p>
-                                        <div className="flex flex-col gap-2">
-                                            <span className="text-xl font-black italic uppercase opacity-40">Hives</span>
-                                            <div className="w-24 h-2 bg-gray-100 rounded-full" />
-                                        </div>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Total Hives Required</p>
+                                    <div className="flex items-end gap-2 mb-2">
+                                        <p className="text-4xl font-bold tracking-tight text-[#1A1A1A] leading-none">{totalHives}</p>
+                                        <p className="text-[10px] font-bold text-gray-500 mb-1">UNITS</p>
                                     </div>
-                                    <p className="text-xl font-black italic uppercase leading-relaxed max-w-sm pl-4 border-l-8 border-black/20">
-                                        We recommend placing <span className="text-gray-900">12 hives per pallet</span> to cover your {acreage} acres perfectly.
+                                    <p className="text-[11px] font-medium text-gray-500 leading-relaxed pl-3 border-l-2 border-[#F4D03F]/30">
+                                        Suggested: <span className="font-bold text-[#1A1A1A]">12 per pallet</span> configuration.
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-8 p-10 rounded-[3.5rem] bg-white/40 border border-gray-200 shadow-4xl group/stat hover:bg-honey/5 transition-all">
-                                    <div className="w-20 h-20 bg-honey/10 rounded-[2.5rem] border border-honey/20 flex items-center justify-center shrink-0 group-hover/stat:scale-110 group-hover/stat:rotate-6 transition-all shadow-4xl">
-                                        <Maximize2 className="w-10 h-10 text-honey" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h4 className="text-[12px] font-black uppercase tracking-[0.4em] text-foreground/40 italic">Coverage Radius</h4>
-                                        <p className="text-3xl font-black italic uppercase tracking-tighter text-foreground">500 - 800 Meters</p>
-                                    </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="p-4 rounded-xl bg-white border border-gray-200 text-center shadow-sm">
+                                    <Maximize2 className="w-4 h-4 mx-auto mb-2 text-gray-400" />
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Radius</p>
+                                    <p className="text-xs font-bold text-[#1A1A1A]">500-800m</p>
                                 </div>
-                                <div className="flex items-center gap-8 p-10 rounded-[3.5rem] bg-white/40 border border-gray-200 shadow-4xl group/stat hover:bg-emerald-500/5 transition-all">
-                                    <div className="w-20 h-20 bg-emerald-500/10 rounded-[2.5rem] border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover/stat:scale-110 group-hover/stat:-rotate-6 transition-all shadow-4xl">
-                                        <BarChart3 className="w-10 h-10 text-emerald-500" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h4 className="text-[12px] font-black uppercase tracking-[0.4em] text-foreground/40 italic">Efficiency Score</h4>
-                                        <p className="text-3xl font-black italic uppercase tracking-tighter text-emerald-500">0.84 (High)</p>
-                                    </div>
+                                <div className="p-4 rounded-xl bg-white border border-gray-200 text-center shadow-sm">
+                                    <BarChart3 className="w-4 h-4 mx-auto mb-2 text-[#1B9157]/60" />
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Efficiency</p>
+                                    <p className="text-xs font-bold text-[#1B9157]">0.84 High</p>
                                 </div>
                             </div>
 
-                            <button className="w-full h-28 bg-black text-honey rounded-[4.5rem] font-black italic text-3xl uppercase shadow-4xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-10 group/plan relative overflow-hidden">
-                                <div className="absolute inset-0 bg-honey/0 group-hover/plan:bg-honey/10 transition-all" />
-                                <span className="relative z-10">Generate Plan</span>
-                                <ArrowRight className="w-10 h-10 group-hover/plan:translate-x-6 transition-transform relative z-10" />
+                            <button className={cn(glass.btnPrimary, "w-full h-11 flex items-center justify-center gap-2 group/btn")}>
+                                <span className="text-xs font-bold">Commit Planning Matrix</span>
+                                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                             </button>
                         </div>
                     </div>
 
-                    <div className="p-16 rounded-[5rem] bg-white/40 border border-gray-200 backdrop-blur-3xl flex items-center gap-12 shadow-4xl relative z-10 hover:border-honey/20 transition-all group/info">
-                        <div className="w-24 h-24 rounded-[3rem] bg-honey text-black flex items-center justify-center shrink-0 group-hover/info:scale-110 transition-transform shadow-4xl">
-                            <Info className="w-12 h-12" />
+                    <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center shrink-0 shadow-sm">
+                            <Info className="w-4 h-4 text-gray-500" />
                         </div>
-                        <div className="space-y-4">
-                            <h4 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Smart Planning</h4>
-                            <p className="text-2xl font-black italic text-foreground opacity-60 leading-relaxed max-w-5xl pl-4 border-l-8 border-honey">
-                                Our tool ensures every tree in your orchard is covered without wasting hives. We calculate movement patterns
-                                to make sure the foraging zone of each hive drop fits together like a perfect puzzle, maximizing your harvest efficiency.
+                        <div className="space-y-0.5">
+                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Industrial Mapping</h4>
+                            <p className="text-[11px] font-medium text-gray-500 leading-relaxed">
+                                Coverage optimized for industrial apiary flow. Movement patterns validated for maximal foraging efficiency.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
+            <style>{`
+                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 20px; }
+            `}</style>
         </motion.div>
     );
 };

@@ -47,15 +47,15 @@ const PollinationSolutions = () => {
 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Queen health status</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Colony strength grading</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Environmental stress alerts</span>
                   </div>
                 </div>
@@ -90,15 +90,15 @@ const PollinationSolutions = () => {
 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Real-time pollination maps</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Foraging efficiency tracking</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Weather impact analysis</span>
                   </div>
                 </div>
@@ -123,7 +123,7 @@ const PollinationSolutions = () => {
               <div className="absolute top-0 left-0 w-full h-2 bg-green-600"></div>
               <div className="p-8 md:p-12 flex flex-col h-full bg-card relative z-10">
                 <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="h-8 w-8 text-green-700" />
+                  <Shield className="h-8 w-8 text-[#1B9157]" />
                 </div>
 
                 <h2 className="text-3xl font-bold mb-4 text-foreground">Diseases</h2>
@@ -133,20 +133,20 @@ const PollinationSolutions = () => {
 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Early disease detection</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Colony health grading</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#1B9157] flex-shrink-0" />
                     <span className="font-medium text-foreground">Reduced chemical use</span>
                   </div>
                 </div>
 
-                <Button size="lg" variant="outline" className="w-full gap-2 border-green-500/20 text-green-700 hover:bg-green-600 hover:text-gray-900" asChild>
+                <Button size="lg" variant="outline" className="w-full gap-2 border-[#1B9157]/ text-[#1B9157] hover:bg-green-600 hover:text-[#1A1A1A]" asChild>
                   <Link to="/diseases">Explore Disease Technology <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
@@ -238,7 +238,7 @@ const PollinationSolutions = () => {
             </div>
             <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Sprout className="h-6 w-6 text-green-600" />
+                <Sprout className="h-6 w-6 text-[#1B9157]" />
               </div>
               <h3 className="text-xl font-bold mb-3 text-foreground">Optimize</h3>
               <p className="text-muted-foreground">Make data-driven decisions to boost crop yield and bee welfare.</p>

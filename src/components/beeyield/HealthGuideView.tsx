@@ -144,13 +144,13 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
     const [activeTab, setActiveTab] = React.useState<'diseases' | 'species'>('diseases');
 
     return (
-        <div className="flex flex-col min-h-screen bg-white text-[#064e3b] overflow-y-auto">
+        <div className="flex flex-col min-h-screen bg-[#FFF9F0] text-[#064e3b] overflow-y-auto">
             {/* Top Command Bar */}
             <div className="border-b-4 border-[#064e3b] p-10 flex flex-col xl:flex-row gap-8 items-start xl:items-center justify-between shrink-0 bg-[#facc15]/5">
                 <div className="space-y-2">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
                         <Microscope className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Health & Biology DB</span>
+                        <span className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Health & Biology DB</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
                         Health <span className="text-[#10b981]">Guide</span>
@@ -161,7 +161,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                     <div className="flex flex-col gap-2 w-full md:w-80 relative z-50">
                         <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/60">Pathology DB (200+ Entries)</span>
                         <Select onValueChange={(val) => { setActiveTab('diseases'); setSelectedItem(diseaseData.find(d => d.id === val)); }}>
-                            <SelectTrigger className="w-full h-14 border-4 border-[#064e3b] bg-white rounded-none font-black text-xs uppercase text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                            <SelectTrigger className="w-full h-14 border-4 border-[#064e3b] bg-[#FFF9F0] rounded-none font-black text-xs uppercase text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
                                 <SelectValue placeholder="Select Disease..." />
                             </SelectTrigger>
                             <SelectContent className="border-4 border-[#064e3b] rounded-none shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
@@ -175,7 +175,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                     <div className="flex flex-col gap-2 w-full md:w-80 relative z-40">
                         <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/60">Species DB (Global Register)</span>
                         <Select onValueChange={(val) => { setActiveTab('species'); setSelectedItem(speciesData.find(s => s.id === val)); }}>
-                            <SelectTrigger className="w-full h-14 border-4 border-[#064e3b] bg-white rounded-none font-black text-xs uppercase text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                            <SelectTrigger className="w-full h-14 border-4 border-[#064e3b] bg-[#FFF9F0] rounded-none font-black text-xs uppercase text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
                                 <SelectValue placeholder="Select Bee Type..." />
                             </SelectTrigger>
                             <SelectContent className="border-4 border-[#064e3b] rounded-none shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
@@ -188,7 +188,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                 </div>
             </div>
 
-            <div className="flex-1 flex justify-center p-10 bg-white">
+            <div className="flex-1 flex justify-center p-10 bg-[#FFF9F0]">
                 <div className="w-full max-w-5xl">
                     {selectedItem ? (
                         <div className="space-y-16 animate-in fade-in duration-500 pb-20">
@@ -210,7 +210,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     </div>
                                     <Button
                                         onClick={() => onTabChange?.('assistant', `Tell me more about ${selectedItem.name} from the Health Guide.`)}
-                                        className="h-14 px-8 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-gray-900 transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest shrink-0"
+                                        className="h-14 px-8 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-[#1A1A1A] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest shrink-0"
                                     >
                                         <Bot className="w-5 h-5 mr-3" />
                                         Ask BeeYield
@@ -227,7 +227,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                                 <AlertCircle className="w-6 h-6 text-[#064e3b]" />
                                                 <h3 className="text-3xl font-black uppercase tracking-tighter">Causes & Effects</h3>
                                             </div>
-                                            <div className="p-8 border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] space-y-6">
+                                            <div className="p-8 border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] space-y-6">
                                                 <div>
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-[#10b981]">Primary Cause</span>
                                                     <p className="text-sm font-bold mt-2">{selectedItem.causes}</p>
@@ -262,7 +262,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                                 <ShieldCheck className="w-6 h-6 text-[#10b981]" />
                                                 <h3 className="text-3xl font-black uppercase tracking-tighter">Treatment & Management</h3>
                                             </div>
-                                            <div className="p-8 border-4 border-[#064e3b] bg-[#064e3b] text-gray-900 shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
+                                            <div className="p-8 border-4 border-[#064e3b] bg-[#064e3b] text-[#1A1A1A] shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
                                                 <p className="text-sm font-black uppercase tracking-loose leading-relaxed">{selectedItem.treatment}</p>
                                             </div>
                                         </section>
@@ -287,7 +287,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         </div>
                                         <ul className="space-y-4">
                                             {selectedItem.traits.map((trait: string, i: number) => (
-                                                <li key={i} className="flex gap-4 items-center p-6 border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
+                                                <li key={i} className="flex gap-4 items-center p-6 border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
                                                     <div className="w-4 h-4 bg-[#facc15]" />
                                                     <span className="text-sm font-black uppercase tracking-widest">{trait}</span>
                                                 </li>
@@ -299,7 +299,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                             <Globe className="w-6 h-6 text-[#10b981]" />
                                             <h3 className="text-3xl font-black uppercase tracking-tighter">Locations & Habitats</h3>
                                         </div>
-                                        <div className="p-10 border-4 border-[#064e3b] bg-[#064e3b] text-gray-900 shadow-[10px_10px_0px_0px_rgba(16,185,129,1)]">
+                                        <div className="p-10 border-4 border-[#064e3b] bg-[#064e3b] text-[#1A1A1A] shadow-[10px_10px_0px_0px_rgba(16,185,129,1)]">
                                             <span className="block text-[10px] text-[#facc15] font-black uppercase tracking-widest mb-4">Natural / Adapted Domain</span>
                                             <p className="text-2xl font-black uppercase tracking-tighter">{selectedItem.suitability}</p>
                                         </div>

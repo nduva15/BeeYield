@@ -129,8 +129,8 @@ const Impact = () => {
   };
 
   const stats = [
-    { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-[#F4D03F]", bg: "bg-amber-50" },
+    { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-[#1B9157]", bg: "bg-emerald-50" },
     { label: "Integrity Score", value: "99.9%", icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Carbon Offset", value: "2.1t", icon: Sprout, color: "text-lime-600", bg: "bg-lime-50" },
   ];
@@ -149,7 +149,7 @@ const Impact = () => {
               <Globe className="w-3 h-3 mr-2" />
               Global Impact Registry
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-[0.95]">
+            <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
               Ecological <span className="text-beeyield-green">Impact.</span> <br />
               <span className="text-beeyield-gold italic">Quantified.</span>
             </h1>
@@ -161,7 +161,7 @@ const Impact = () => {
               <button
                 onClick={handleDownloadImpactReport}
                 disabled={downloading}
-                className="group relative inline-flex items-center gap-3 bg-slate-900 text-gray-900 px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
+                className="group relative inline-flex items-center gap-3 bg-[#FFF9F0] text-[#1A1A1A] px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
                 {downloading ? (
@@ -203,12 +203,12 @@ const Impact = () => {
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="border-none shadow-soft rounded-[2.5rem] bg-white overflow-hidden group hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
+                <Card className="border-none shadow-soft rounded-[2.5rem] bg-[#FFF9F0] overflow-hidden group hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
                   <CardContent className="p-8">
                     <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
                       <stat.icon className="h-7 w-7" />
                     </div>
-                    <h3 className="text-4xl font-black text-slate-900 mb-2 tracking-tighter">{stat.value}</h3>
+                    <h3 className="text-4xl font-black text-[#1A1A1A] mb-2 tracking-tighter">{stat.value}</h3>
                     <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
                   </CardContent>
                 </Card>
@@ -219,7 +219,7 @@ const Impact = () => {
       </section>
 
       {/* Narrative Sections */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#FFF9F0]">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -230,7 +230,7 @@ const Impact = () => {
               <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group">
                 <img src={impactImage} alt="BeYield Sustainable Beekeeping" className="w-full aspect-[4/5] object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
-                <div className="absolute bottom-10 left-10 text-gray-900">
+                <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
                   <p className="text-sm font-black uppercase tracking-[0.3em] mb-2">Location: Kibwezi, Kenya</p>
                   <h4 className="text-2xl font-bold">Resilient Landscapes</h4>
                 </div>
@@ -244,24 +244,24 @@ const Impact = () => {
               className="space-y-10"
             >
               <div>
-                <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tighter">Radical Ecological <br />Transparency.</h2>
+                <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] mb-6 tracking-tighter">Radical Ecological <br />Transparency.</h2>
                 <p className="text-lg text-slate-600 leading-relaxed font-medium">
                   We don't just harvest honey; we steward a biome. Our precision pollination model ensures that for every acre of apiary, local biodiversity thrives. We track native flora restoration down to the coordinate.
                 </p>
               </div>
 
               <div className="space-y-8">
-                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-emerald-100/50">
+                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-[#1B9157]/">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-black text-emerald-800 text-sm uppercase tracking-widest">Habitat Fidelity</span>
-                    <span className="font-black text-emerald-700">95%</span>
+                    <span className="font-black text-[#1B9157] text-sm uppercase tracking-widest">Habitat Fidelity</span>
+                    <span className="font-black text-[#1B9157]">95%</span>
                   </div>
                   <Progress value={95} className="h-3 bg-emerald-100" />
                 </div>
 
                 <div className="p-6 rounded-[2.5rem] bg-beeyield-gold/5 border border-beeyield-gold/10">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-black text-amber-800 text-sm uppercase tracking-widest">Chemical-Free Index</span>
+                    <span className="font-black text-[#F4D03F] text-sm uppercase tracking-widest">Chemical-Free Index</span>
                     <span className="font-black text-beeyield-gold">100%</span>
                   </div>
                   <Progress value={100} className="h-3 bg-amber-100" />
@@ -277,11 +277,11 @@ const Impact = () => {
               </div>
 
               <div className="flex items-center gap-6 pt-6">
-                <div className="h-14 w-14 rounded-2xl bg-slate-900 flex items-center justify-center text-gray-900 shadow-xl">
+                <div className="h-14 w-14 rounded-2xl bg-[#FFF9F0] flex items-center justify-center text-[#1A1A1A] shadow-xl">
                   <Zap className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-slate-900 uppercase">Live Pulse Integration</p>
+                  <p className="text-sm font-black text-[#1A1A1A] uppercase">Live Pulse Integration</p>
                   <p className="text-xs text-slate-400 font-medium">Data synced with Kibwezi Sensor Network</p>
                 </div>
               </div>
@@ -291,7 +291,7 @@ const Impact = () => {
       </section>
 
       {/* 2030 Roadmap */}
-      <section className="py-24 bg-slate-900 text-gray-900 overflow-hidden relative">
+      <section className="py-24 bg-[#FFF9F0] text-[#1A1A1A] overflow-hidden relative">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">The 2030 <br />Biosphere Roadmap.</h2>
@@ -312,11 +312,11 @@ const Impact = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-[2.5rem] bg-white/5 border border-gray-200 backdrop-blur-md"
+                className="p-8 rounded-[2.5rem] bg-[#F9F7F2] border border-[#F4D03F]/20 backdrop-blur-md"
               >
                 <item.icon className="h-8 w-8 text-beeyield-gold mb-6" />
                 <h4 className="text-xl font-bold mb-4">{item.title}</h4>
-                <p className="text-sm text-white/60 leading-relaxed font-medium">{item.desc}</p>
+                <p className="text-sm text-gray-700 leading-relaxed font-medium">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -327,21 +327,21 @@ const Impact = () => {
       </section>
 
       {/* Impact CTA */}
-      <section className="py-24 bg-white border-b border-slate-100">
+      <section className="py-24 bg-[#FFF9F0] border-b border-slate-100">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-2xl mx-auto">
             <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8">
               <Heart className="w-10 h-10 text-beeyield-green" />
             </div>
-            <h3 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">Invest in Planetary Health.</h3>
+            <h3 className="text-3xl md:text-4xl font-black text-[#1A1A1A] mb-6">Invest in Planetary Health.</h3>
             <p className="text-slate-500 mb-10 text-lg">
               Whether you're a consumer, partner, or researcher, you're part of this ecosystem. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="px-8 py-4 bg-slate-900 text-gray-900 rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
+              <Link to="/contact" className="px-8 py-4 bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
                 Contact the Hive <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/global-hive-network" className="px-8 py-4 bg-white text-slate-900 border-2 border-slate-100 rounded-2xl font-black hover:bg-slate-50 transition-all">
+              <Link to="/global-hive-network" className="px-8 py-4 bg-[#FFF9F0] text-[#1A1A1A] border-2 border-slate-100 rounded-2xl font-black hover:bg-[#F9F7F2] transition-all">
                 Join our Global Hive Network
               </Link>
             </div>

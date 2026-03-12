@@ -18,7 +18,7 @@ const consumptionData = [
 const summaryItems = [
     { label: 'Water', value: '320 m3', icon: Droplets, color: 'text-blue-500' },
     { label: 'Heat', value: '210 GJ', icon: Thermometer, color: 'text-orange-500' },
-    { label: 'Energy', value: '410 kWh', icon: Zap, color: 'text-emerald-500' },
+    { label: 'Energy', value: '410 kWh', icon: Zap, color: 'text-[#1B9157]' },
 ];
 
 const ConsumptionView: React.FC = () => {
@@ -31,12 +31,12 @@ const ConsumptionView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
                         <Activity className="w-4 h-4 mr-2" />
                         Usage Volumetric Engine v4.2
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Consumption <span className="text-honey">Density</span>
+                        Consumption <span className="text-[#F4D03F]">Density</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
                         Resource Utilization · Volumetric Analysis · Live Signal Processing
@@ -52,7 +52,7 @@ const ConsumptionView: React.FC = () => {
                 className={cn(glass.card, "p-8 shadow-xl")}
             >
                 <div className="flex items-center gap-3 mb-8">
-                    <Settings2 className="w-5 h-5 text-honey" />
+                    <Settings2 className="w-5 h-5 text-[#F4D03F]" />
                     <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Aggregate Parameters</h3>
                 </div>
 
@@ -101,7 +101,7 @@ const ConsumptionView: React.FC = () => {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-honey")}>Archival Export</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Archival Export</label>
                         <div className="flex gap-2">
                             <button className={cn(glass.btnSecondary, "flex-1 h-12 justify-center text-[10px] font-bold")}>
                                 <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -123,19 +123,19 @@ const ConsumptionView: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative min-h-[550px]")}
             >
-                <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-white/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-gray-400 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
-                            <Search className="w-6 h-6 text-honey" />
+                        <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm">
+                            <Search className="w-6 h-6 text-[#F4D03F]" />
                         </div>
                         <div>
-                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Volumetric <span className="text-honey">Density</span></h3>
+                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Volumetric <span className="text-[#F4D03F]">Density</span></h3>
                             <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Live usage signal array benchmarking</p>
                         </div>
                     </div>
-                    <div className={cn(glass.badge, "bg-honey text-white border-transparent px-4 py-2 shadow-lg animate-pulse")}>
+                    <div className={cn(glass.badge, "bg-[#F4D03F] text-white border-transparent px-4 py-2 shadow-lg animate-pulse")}>
                         LIVE_SIGNAL_ARRAY
                     </div>
                 </div>
@@ -194,10 +194,10 @@ const ConsumptionView: React.FC = () => {
                 className="space-y-6"
             >
                 <div className="flex items-center gap-4 px-2">
-                    <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-sm">
-                        <Activity className="w-5 h-5 text-honey" />
+                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                        <Activity className="w-5 h-5 text-[#F4D03F]" />
                     </div>
-                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Recursive Summary <span className="text-honey">Log</span></h3>
+                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Recursive Summary <span className="text-[#F4D03F]">Log</span></h3>
                 </div>
 
                 <div className={cn(glass.card, "p-4 space-y-4 shadow-xl divide-y divide-border/30 overflow-hidden")}>
@@ -207,10 +207,10 @@ const ConsumptionView: React.FC = () => {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 + (idx * 0.1) }}
-                            className="p-6 pt-8 flex items-center justify-between hover:bg-white/40:bg-gray-100 rounded-2xl transition-all group first:pt-6"
+                            className="p-6 pt-8 flex items-center justify-between hover:bg-gray-400:bg-[#F4D03F]/10 rounded-2xl transition-all group first:pt-6"
                         >
                             <div className="flex items-center gap-4">
-                                <div className={cn("w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
+                                <div className={cn("w-14 h-14 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
                                     <item.icon className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -218,7 +218,7 @@ const ConsumptionView: React.FC = () => {
                                     <p className={cn(glass.microLabel, "opacity-40 font-bold")}>LAST_MONTH_BIN</p>
                                 </div>
                             </div>
-                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-white text-honey border-honey/30 shadow-lg group-hover:scale-105 transition-transform")}>
+                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-[#FFF9F0] text-[#F4D03F] border-[#F4D03F]/30 shadow-lg group-hover:scale-105 transition-transform")}>
                                 {item.value}
                             </div>
                         </motion.div>
@@ -231,11 +231,11 @@ const ConsumptionView: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
-                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-8 h-8 text-honey" />
+                <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
                     <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Volumetric Diagnostic Summary</h5>

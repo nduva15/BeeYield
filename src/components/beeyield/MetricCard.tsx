@@ -20,13 +20,13 @@ const MetricCard: React.FC<MetricCardProps> = ({
     className
 }) => {
     return (
-        <div className={cn("bg-white border-2 border-black rounded-none p-6 relative overflow-hidden group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-none", className)}>
+        <div className={cn("bg-[#FFF9F0] border-2 border-black rounded-none p-6 relative overflow-hidden group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-none", className)}>
             <div className="flex justify-between items-start mb-6">
-                <div className="p-3 bg-black text-gray-900 rounded-none">
+                <div className="p-3 bg-[#FFF9F0] text-[#1A1A1A] rounded-none">
                     <Icon className="w-6 h-6" />
                 </div>
                 {trend && (
-                    <div className="flex items-center gap-1 text-gray-900 bg-[#FF4F00] px-2 py-1 border-2 border-black font-black text-[10px] uppercase">
+                    <div className="flex items-center gap-1 text-[#1A1A1A] bg-[#FF4F00] px-2 py-1 border-2 border-black font-black text-[10px] uppercase">
                         <TrendingUp className="w-3 h-3" />
                         {trend}
                     </div>
@@ -34,7 +34,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
             </div>
 
             <div className="space-y-2">
-                <h3 className="text-4xl font-black text-black tracking-tighter uppercase leading-none">{value}</h3>
+                <h3 className="text-4xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">{value}</h3>
                 <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest">
                     {description}
                 </p>

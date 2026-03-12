@@ -15,103 +15,95 @@ import {
     Share2,
     Info,
     ArrowRight,
-    Zap
+    Zap,
+    Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
 
 const ComplianceReport: React.FC = () => {
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={cn(glass.page, "p-8 -m-8 space-y-12 pb-20 min-h-screen max-w-[1400px] mx-auto")}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "space-y-8 pb-32")}
         >
             {/* Report Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-border/50 pb-10">
-                <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
-                        <ShieldCheck className="w-4 h-4 mr-2" />
-                        Certified Pollination Document v2.4
+            <PageHeader
+                icon={FileText}
+                label="Certified Pollination Document v2.4"
+                title={<>Compliance <span className="text-[#F4D03F]">Report</span></>}
+                subtitle="Season: Spring 2026 // REF: BY-CERT-00824"
+                actions={
+                    <div className="flex gap-4">
+                        <button className={cn(glass.btnSecondary, "h-12 px-6 font-black uppercase text-xs rounded-xl shadow-sm")}>
+                            <Printer className="w-4 h-4 mr-2" />
+                            Print
+                        </button>
+                        <button className={cn(glass.btnPrimary, "h-12 px-8 font-black uppercase text-xs shadow-sm rounded-xl")}>
+                            <Download className="w-4 h-4 mr-2" />
+                            PDF
+                        </button>
                     </div>
-                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Compliance <span className="text-honey">Report</span>
-                    </h1>
-                    <div className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-[0.15em] opacity-60 italic">
-                        <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Season: Spring 2026</span>
-                        <span className="flex items-center gap-2"><FileText className="w-4 h-4" /> REF: BY-CERT-00824</span>
-                    </div>
-                </div>
+                }
+            />
 
-                <div className="flex gap-4">
-                    <button className={cn(glass.btnSecondary, "h-14 px-8 font-bold")}>
-                        <Printer className="w-4 h-4 mr-3" />
-                        Print Archive
-                    </button>
-                    <button className={cn(glass.btnPrimary, "h-14 px-10 font-bold shadow-lg shadow-honey/20")}>
-                        <Download className="w-4 h-4 mr-3" />
-                        Download PDF
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* Main Certificate Section */}
-                <div className="lg:col-span-8 space-y-12">
+                <div className="lg:col-span-8 space-y-8">
                     <motion.section
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-12 relative overflow-hidden shadow-2xl border-honey/20")}
+                        className={cn(glass.card, "p-8 relative overflow-hidden shadow-sm border-[#F4D03F]/20 rounded-3xl")}
                     >
                         {/* Decorative Background Stamp */}
-                        <Award className="absolute -top-10 -right-10 w-96 h-96 text-honey/[0.03] rotate-12 pointer-events-none" />
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-honey/5 rounded-full blur-[80px] pointer-events-none" />
+                        <Award className="absolute -top-10 -right-10 w-96 h-96 text-[#F4D03F]/[0.03] rotate-12 pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-[80px] pointer-events-none" />
 
-                        <div className="space-y-10 relative z-10">
+                        <div className="space-y-8 relative z-10">
                             <div className="flex justify-between items-start">
-                                <div className="space-y-2">
-                                    <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Verified Strength Audit</h3>
-                                    <p className={cn(glass.microLabel, "opacity-60 italic font-semibold")}>Frames of Bees (FOB) Certification</p>
+                                <div className="space-y-1">
+                                    <h3 className="text-2xl font-black uppercase tracking-tight">Verified Strength Audit</h3>
+                                    <p className="text-[10px] font-black uppercase opacity-40">Frames of Bees (FOB) Certification</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className={cn(glass.sectionTitle, "text-6xl text-honey")}>8.4</p>
-                                    <p className={cn(glass.microLabel, "font-bold text-emerald-500 mt-1")}>AVG. FOB SCORE</p>
+                                    <p className="text-5xl font-black text-[#F4D03F] tracking-tight tabular-nums leading-none">8.4</p>
+                                    <p className="text-[10px] font-black text-emerald-600 mt-1 uppercase">AVG. FOB SCORE</p>
                                 </div>
                             </div>
 
                             <Separator className="bg-border/50 h-[1px]" />
 
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="space-y-2 text-center p-8 bg-white/40 rounded-2xl border border-dashed border-border shadow-sm">
-                                    <p className={cn(glass.sectionTitle, "text-4xl")}>1,284</p>
-                                    <p className={cn(glass.microLabel, "opacity-60")}>Certified Hives</p>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-1 text-center p-6 bg-black/5 rounded-2xl border border-dashed border-border">
+                                    <p className="text-3xl font-black tabular-nums">1,284</p>
+                                    <p className="text-[10px] font-bold uppercase opacity-40">Certified Hives</p>
                                 </div>
-                                <div className="space-y-2 text-center p-8 bg-white/40 rounded-2xl border border-dashed border-border shadow-sm">
-                                    <p className={cn(glass.sectionTitle, "text-4xl")}>98.2%</p>
-                                    <p className={cn(glass.microLabel, "opacity-60")}>Contract Adherence</p>
+                                <div className="space-y-1 text-center p-6 bg-black/5 rounded-2xl border border-dashed border-border">
+                                    <p className="text-3xl font-black tabular-nums">98.2%</p>
+                                    <p className="text-[10px] font-bold uppercase opacity-40">Contract Match</p>
                                 </div>
                             </div>
 
-                            <div className={cn(glass.card, "p-8 bg-honey/10 border-honey/20 shadow-xl relative overflow-hidden group")}>
-                                <div className="absolute inset-0 bg-honey/5 group-hover:bg-honey/10 transition-colors animate-pulse" />
+                            <div className={cn(glass.card, "p-6 bg-[#F4D03F]/10 border-[#F4D03F]/20 shadow-sm relative overflow-hidden group")}>
+                                <div className="absolute inset-0 bg-[#F4D03F]/5 group-hover:bg-[#F4D03F]/10 transition-colors" />
                                 <div className="flex items-center gap-4 mb-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-honey shadow-sm">
-                                        <Stamp className="w-6 h-6 text-honey" />
+                                    <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center border border-[#F4D03F] shadow-sm">
+                                        <Stamp className="w-5 h-5 text-[#F4D03F]" />
                                     </div>
-                                    <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Pollination Quality Guarantee</h4>
+                                    <h4 className="text-xl font-black uppercase tracking-tight">Quality Guarantee</h4>
                                 </div>
-                                <p className="text-sm font-medium opacity-80 leading-relaxed mb-6 italic relative z-10">
-                                    Based on acoustic biometric analysis and digital audit protocols, BeeYield certifies that the apiary strength meets or exceeds the minimum sustainable foraging threshold for this orchard block.
+                                <p className="text-[10px] font-bold opacity-80 leading-relaxed mb-6 uppercase tracking-tight relative z-10">
+                                    acoustic biometric analysis confirms that the apiary strength meets or exceeds the minimum sustainable foraging threshold for this orchard block.
                                 </p>
-                                <div className="flex items-center justify-between border-t border-honey/20 pt-6 relative z-10">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                        <span className={cn(glass.microLabel, "font-bold text-emerald-600")}>AUTHENTICATED_SECURE</span>
+                                <div className="flex items-center justify-between border-t border-[#F4D03F]/20 pt-4 relative z-10">
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                        <span className="text-[8px] font-black text-emerald-600 uppercase">AUTHENTICATED</span>
                                     </div>
                                     <div className="text-right">
-                                        <p className={cn(glass.microLabel, "opacity-40 italic font-bold")}>DIGITAL_SIGNATURE</p>
-                                        <p className="font-mono text-[10px] opacity-60">b57492...e91a02</p>
+                                        <p className="font-mono text-[8px] opacity-40">SEC_ID: b57492...e91a02</p>
                                     </div>
                                 </div>
                             </div>
@@ -122,30 +114,30 @@ const ComplianceReport: React.FC = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="space-y-6"
+                        className="space-y-4"
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-sm">
-                                <Leaf className="w-6 h-6 text-emerald-500" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-sm">
+                                <Leaf className="w-5 h-5 text-emerald-600" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Sustainability <span className="text-honey">Score</span></h3>
+                            <h3 className="text-xl font-black uppercase tracking-tight">Sustainability <span className="text-[#F4D03F]">Metrics</span></h3>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className={cn(glass.card, "p-8 space-y-4 shadow-xl border-emerald-500/10")}>
-                                <p className={cn(glass.microLabel, "opacity-60 font-bold")}>Biodiversity Impact</p>
-                                <p className={cn(glass.sectionTitle, "text-5xl text-emerald-600")}>A+</p>
-                                <p className="text-sm italic font-medium opacity-80 leading-relaxed border-t border-border/50 pt-4">
-                                    No pesticide risk identified during foraging windows. High flowering diversity.
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className={cn(glass.card, "p-6 space-y-2 shadow-sm bg-white/50 border-emerald-500/10 rounded-2xl")}>
+                                <p className="text-[10px] font-black uppercase opacity-40">Biodiversity</p>
+                                <p className="text-4xl font-black text-emerald-600">A+</p>
+                                <p className="text-xs font-bold opacity-60 leading-relaxed uppercase tracking-tight pt-2 border-t border-black/5">
+                                    Zero pesticide risk detected.
                                 </p>
                             </div>
-                            <div className={cn(glass.card, "p-8 space-y-4 shadow-xl border-emerald-500/10")}>
-                                <p className={cn(glass.microLabel, "opacity-60 font-bold")}>Colony Welfare</p>
-                                <div className="flex items-baseline gap-2">
-                                    <p className={cn(glass.sectionTitle, "text-5xl text-emerald-600")}>92</p>
-                                    <p className={cn(glass.microLabel, "font-bold opacity-40")}>/100</p>
+                            <div className={cn(glass.card, "p-6 space-y-2 shadow-sm bg-white/50 border-emerald-500/10 rounded-2xl")}>
+                                <p className="text-[10px] font-black uppercase opacity-40">Welfare Index</p>
+                                <div className="flex items-baseline gap-1">
+                                    <p className="text-4xl font-black text-emerald-600">92</p>
+                                    <p className="text-[10px] font-black opacity-20">/100</p>
                                 </div>
-                                <p className="text-sm italic font-medium opacity-80 leading-relaxed border-t border-border/50 pt-4">
-                                    Net weight gain detected. Optimal forage availability throughout bloom.
+                                <p className="text-xs font-bold opacity-60 leading-relaxed uppercase tracking-tight pt-2 border-t border-black/5">
+                                    Positive weight gain trajectory.
                                 </p>
                             </div>
                         </div>
@@ -153,36 +145,35 @@ const ComplianceReport: React.FC = () => {
                 </div>
 
                 {/* Sidebar Info */}
-                <div className="lg:col-span-4 space-y-10">
+                <div className="lg:col-span-4 space-y-6">
                     <motion.div
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
-                        className={cn(glass.card, "p-10 space-y-8 shadow-xl bg-gradient-to-br from-indigo-500/5 to-transparent border-indigo-500/10")}
+                        className={cn(glass.card, "p-8 space-y-6 shadow-sm bg-white/50 backdrop-blur-xl border-border/50 rounded-3xl")}
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
-                                <Info className="w-6 h-6 text-indigo-500" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center border border-border shadow-sm">
+                                <Info className="w-5 h-5 text-indigo-500" />
                             </div>
-                            <h4 className={cn(glass.sectionTitle, "text-xl normal-case")}>About Report</h4>
+                            <h4 className="text-lg font-black uppercase tracking-tight">Standardization</h4>
                         </div>
-                        <p className="text-sm italic font-medium opacity-80 leading-relaxed text-foreground">
-                            This report is a standardized document generated by BeeYield for global crop insurance and GAP certification.
-                            It serves as a verifiable record of hive activity and orchard health synergy.
+                        <p className="text-[10px] font-bold opacity-60 leading-relaxed uppercase tracking-tight text-foreground">
+                            Standardized document generated for global crop insurance and GAP certification. Verifiable record of orchard synergy.
                         </p>
                         <Separator className="bg-border/50 h-[1px]" />
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {[
-                                { label: 'Methodology Data', icon: Zap },
-                                { label: 'Sensor Calibration logs', icon: Activity },
-                                { label: 'Pesticide Data Feed', icon: Leaf }
+                                { label: 'Methodology', icon: Zap },
+                                { label: 'Sensor logs', icon: Activity },
+                                { label: 'Pesticide Feed', icon: Leaf }
                             ].map(item => (
-                                <div key={item.label} className="flex items-center justify-between group cursor-pointer p-2 -m-2 rounded-xl hover:bg-white/40:bg-gray-100 transition-all">
-                                    <div className="flex items-center gap-3">
-                                        <item.icon className="w-4 h-4 text-indigo-500/50 group-hover:text-indigo-500 transition-colors" />
-                                        <span className={cn(glass.microLabel, "font-bold opacity-70 group-hover:opacity-100 group-hover:text-honey transition-all")}>{item.label}</span>
+                                <div key={item.label} className="flex items-center justify-between group cursor-pointer">
+                                    <div className="flex items-center gap-2">
+                                        <item.icon className="w-3.5 h-3.5 text-indigo-500/50" />
+                                        <span className="text-[8px] font-black uppercase opacity-60 group-hover:opacity-100 group-hover:text-[#F4D03F] transition-all">{item.label}</span>
                                     </div>
-                                    <ArrowRight className="w-4 h-4 text-border group-hover:text-honey group-hover:translate-x-1 transition-all" />
+                                    <ArrowRight className="w-3 h-3 text-border group-hover:text-[#F4D03F] transition-all" />
                                 </div>
                             ))}
                         </div>
@@ -192,20 +183,19 @@ const ComplianceReport: React.FC = () => {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 }}
-                        className={cn(glass.card, "p-10 space-y-8 text-center shadow-xl relative overflow-hidden group")}
+                        className={cn(glass.card, "p-8 space-y-6 text-center shadow-sm relative overflow-hidden group rounded-3xl")}
                     >
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-honey via-honey/50 to-honey animate-pulse" />
-                        <div className="w-20 h-20 rounded-[2rem] bg-honey/10 flex items-center justify-center mx-auto border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500">
-                            <Share2 className="w-10 h-10 text-honey" />
+                        <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto border border-[#F4D03F]/20 shadow-sm group-hover:scale-105 transition-transform">
+                            <Share2 className="w-8 h-8 text-[#F4D03F]" />
                         </div>
-                        <div className="space-y-2">
-                            <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>External Verification</h4>
-                            <p className={cn(glass.microLabel, "italic opacity-60 leading-relaxed max-w-[240px] mx-auto")}>
-                                Securely share this document with orchard owners or insurance underwriters.
+                        <div className="space-y-1">
+                            <h4 className="text-xl font-black uppercase tracking-tight">Verification</h4>
+                            <p className="text-[10px] font-bold uppercase opacity-40 leading-relaxed max-w-[200px] mx-auto">
+                                Securely share with underwriters or crop owners.
                             </p>
                         </div>
-                        <button className={cn(glass.btnSecondary, "w-full h-14 justify-center font-bold shadow-md hover:shadow-honey/20")}>
-                            Generate Secure Link
+                        <button className={cn(glass.btnSecondary, "w-full h-12 justify-center font-black uppercase text-xs rounded-xl shadow-sm")}>
+                            Generate Link
                         </button>
                     </motion.div>
                 </div>

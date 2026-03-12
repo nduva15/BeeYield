@@ -48,7 +48,7 @@ const plans: Plan[] = [
             'Pollination contract management',
             'E-TIMS integration'
         ],
-        color: 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/10',
+        color: 'border-[#1B9157]/ text-[#1B9157] bg-[#1B9157]/ shadow-lg shadow-emerald-500/10',
         icon: Zap
     },
     {
@@ -64,7 +64,7 @@ const plans: Plan[] = [
             'Dedicated account manager',
             'White-label reporting'
         ],
-        color: 'border-honey/30 text-honey bg-honey/10 shadow-lg shadow-honey/10',
+        color: 'border-[#F4D03F]/30 text-[#F4D03F] bg-[#F4D03F]/10 shadow-lg shadow-honey/10',
         icon: Crown
     }
 ];
@@ -109,16 +109,16 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             glass.card,
                             "flex flex-col h-full rounded-[2.5rem] p-0 overflow-hidden backdrop-blur-md transition-all duration-500",
                             plan.color,
-                            isCurrent ? "scale-[1.02] border-honey shadow-2xl shadow-honey/20 ring-1 ring-honey/50" : "hover:border-foreground/20 hover:shadow-xl"
+                            isCurrent ? "scale-[1.02] border-[#F4D03F] shadow-2xl shadow-honey/20 ring-1 ring-[#F4D03F]/50" : "hover:border-foreground/20 hover:shadow-xl"
                         )}
                     >
-                        <div className="p-8 border-b border-gray-200 bg-white/40">
+                        <div className="p-8 border-b border-[#F4D03F]/20 bg-gray-400">
                             <div className="flex justify-between items-start mb-6">
                                 <div className={cn("p-4 rounded-2xl flex items-center justify-center border", plan.color)}>
                                     <Icon className="w-8 h-8" />
                                 </div>
                                 {isCurrent && (
-                                    <Badge className="bg-honey text-white rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-honey/20">
+                                    <Badge className="bg-[#F4D03F] text-white rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-honey/20">
                                         Current Plan
                                     </Badge>
                                 )}
@@ -126,7 +126,7 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             <h3 className={cn(glass.sectionTitle, "text-3xl normal-case mb-2 leading-none", plan.id === 'Free' ? 'text-foreground' : plan.color.split(' ')[1])}>{plan.name}</h3>
                             <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-80 leading-relaxed")}>{plan.description}</p>
                         </div>
-                        <div className="p-8 flex-1 flex flex-col bg-white/20">
+                        <div className="p-8 flex-1 flex flex-col bg-gray-200">
                             <div className="mb-8">
                                 <span className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none tracking-tight", plan.id === 'Free' ? 'text-foreground' : plan.color.split(' ')[1])}>{plan.price}</span>
                                 <span className={cn(glass.microLabel, "opacity-60 ml-2 normal-case font-semibold")}>{plan.period}</span>
@@ -134,8 +134,8 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             <ul className="space-y-4 mb-10 flex-1">
                                 {plan.features.map((feature, i) => (
                                     <li key={i} className="flex items-start gap-4">
-                                        <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center mt-0.5 shrink-0">
-                                            <Check className="w-3 h-3 text-emerald-500" />
+                                        <div className="w-5 h-5 rounded-full bg-[#1B9157]/ flex items-center justify-center mt-0.5 shrink-0">
+                                            <Check className="w-3 h-3 text-[#1B9157]" />
                                         </div>
                                         <span className={cn(glass.microLabel, "normal-case font-bold tracking-tight text-foreground/80")}>{feature}</span>
                                     </li>
@@ -150,8 +150,8 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                                     isCurrent
                                         ? "bg-muted text-muted-foreground border-border hover:bg-muted cursor-default shadow-none"
                                         : "bg-foreground text-background border-foreground hover:bg-foreground/90 shadow-xl",
-                                    plan.id === 'Pro' && !isCurrent ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "",
-                                    plan.id === 'Enterprise' && !isCurrent ? "bg-honey text-white border-honey hover:bg-amber-600 shadow-honey/20" : ""
+                                    plan.id === 'Pro' && !isCurrent ? "bg-[#1B9157] text-white border-emerald-500 hover:bg-[#145A32] shadow-emerald-500/20" : "",
+                                    plan.id === 'Enterprise' && !isCurrent ? "bg-[#F4D03F] text-white border-[#F4D03F] hover:bg-amber-600 shadow-honey/20" : ""
                                 )}
                             >
                                 {loading === plan.id ? <Loader2 className="w-5 h-5 animate-spin" /> : isCurrent ? 'Active Plan' : 'Select Plan'}

@@ -1,28 +1,21 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { 
+    Shield, 
+    Lock, 
+    Database, 
+    ArrowLeft 
+} from 'lucide-react';
+
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+
 import CebaLoginForm from '@/components/auth/ceba/CebaLoginForm';
 import CebaRegisterForm from '@/components/auth/ceba/CebaRegisterForm';
 import CebaForgotPasswordForm from '@/components/auth/ceba/CebaForgotPasswordForm';
-import {
-    Shield,
-    Lock,
-    LogIn,
-    Loader2,
-    UserPlus,
-    Terminal,
-    Database,
-    Server,
-    Cpu,
-    Zap,
-    Globe,
-    Activity,
-    Maximize2
-} from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { SUPER_ADMIN_EMAIL } from '@/config/constants';
-import { motion } from 'framer-motion';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -48,180 +41,130 @@ const AdminAuth = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-beeyield-cream">
-                <div className="relative">
-                    <div className="w-16 h-16 border-4 border-beeyield-gold/20 border-t-beeyield-green rounded-full animate-spin" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <Zap className="h-6 w-6 text-beeyield-gold animate-pulse" />
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                        <div className="w-12 h-12 rounded-full border-4 border-honey/10 border-t-honey animate-spin" />
                     </div>
+                    <span className="text-honey font-bold text-sm tracking-widest uppercase">Authorizing...</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-beeyield-cream text-beeyield-green selection:bg-beeyield-gold/40 flex items-center justify-center p-4 overflow-hidden relative font-sans">
-            {/* Geometric Circuit Background - Updated for Light Theme */}
-            <div className="absolute inset-0 z-0 opacity-5">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-beeyield-gold to-transparent animate-scan" style={{ animationDuration: '3s' }} />
-                <div className="absolute inset-0 bg-[radial-gradient(#1B9157_1px,transparent_1px)] bg-[size:20px_20px]" />
-                <svg className="absolute inset-0 w-full h-full">
-                    <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
-                        <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(27,145,87,0.1)" strokeWidth="0.5" />
-                    </pattern>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
-                </svg>
-            </div>
+        <div className="min-h-screen bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden">
+            {/* Ambient Background */}
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-honey/5 rounded-full blur-[120px] -mr-96 -mt-96 opacity-60" />
+            <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-beeyield-green/5 rounded-full blur-[120px] -ml-96 -mb-96 opacity-60" />
 
-            <div className="container max-w-xl mx-auto relative z-10 space-y-12">
-                {/* Enterprise Header */}
-                <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="space-y-6 text-center"
-                >
-                    <div className="relative inline-block">
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            className="w-24 h-24 rounded-3xl bg-white flex items-center justify-center border-2 border-beeyield-gold/20 shadow-glow group transition-all"
-                        >
-                            <Shield className="h-12 w-12 text-beeyield-green group-hover:scale-110 transition-transform" />
-                            <div className="absolute -top-2 -right-2 bg-beeyield-gold text-beeyield-black text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase tracking-widest">Secure</div>
-                        </motion.div>
-                        {/* Decorative corners */}
-                        <div className="absolute -top-4 -left-4 w-4 h-4 border-t-2 border-l-2 border-beeyield-green/30" />
-                        <div className="absolute -bottom-4 -right-4 w-4 h-4 border-b-2 border-r-2 border-beeyield-green/30" />
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-center gap-3">
-                            <div className="h-px w-8 bg-beeyield-gold/50" />
-                            <span className="text-[10px] font-black text-beeyield-gold tracking-[0.5em] uppercase">CEBA Entry</span>
-                            <div className="h-px w-8 bg-beeyield-gold/50" />
+            <div className="container mx-auto px-6 min-h-screen flex flex-col relative z-10">
+                <header className="py-10 flex items-center justify-between">
+                    <Link to="/" className="flex items-center gap-4 group">
+                        <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-gray-100 group-hover:border-honey/30 group-hover:shadow-honey/10 transition-all duration-500">
+                            <Shield className="h-6 w-6 text-honey" />
                         </div>
-                        <h1 className="text-5xl font-black text-beeyield-green tracking-tightest">Secure <span className="text-beeyield-gold italic font-normal">Terminal</span></h1>
-                        <p className="text-sm font-medium text-beeyield-green/40 max-w-xs mx-auto">Authorized access only for CEBA administrators.</p>
-                    </div>
-                </motion.div>
-
-                {/* Industrial Auth Card - Updated Styles */}
-                <motion.div
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    <Card className="bg-white border-2 border-beeyield-gold/10 shadow-premium rounded-none relative overflow-hidden group">
-                        {/* Corner Detail */}
-                        <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden pointer-events-none">
-                            <div className="absolute top-[-20px] right-[-20px] w-10 h-10 bg-beeyield-gold/20 rotate-45 border border-beeyield-gold/40" />
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black tracking-tight text-gray-900 leading-none">
+                                Bee<span className="text-honey">Yield</span>
+                            </span>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">Admin Central</span>
                         </div>
+                    </Link>
 
-                        <CardContent className="pt-10 pb-12 px-10">
-                            {/* Auth Mode Interface */}
-                            <div className="mb-10 flex items-center justify-between border-b border-beeyield-green/10 pb-6">
-                                <div className="space-y-1">
-                                    <h2 className="text-xs font-black text-beeyield-green uppercase tracking-widest">
-                                        {authMode === 'login' ? 'Login' : 'Sign Up'}
-                                    </h2>
-                                    <p className="text-[9px] text-beeyield-green/50 font-bold uppercase tracking-widest flex items-center gap-2">
-                                        <Activity className="h-2 w-2 text-beeyield-gold animate-pulse" />
-                                        {authMode === 'login' ? 'Enter Details' : 'Create Account'}
-                                    </p>
-                                </div>
-                                <div className="flex gap-2 p-1 bg-beeyield-cream border border-beeyield-green/10">
-                                    <button
-                                        onClick={() => setAuthMode('login')}
-                                        className={`px-4 py-2 text-[9px] font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-beeyield-green text-gray-900 shadow-sm' : 'text-beeyield-green/60 hover:text-beeyield-green'}`}
-                                    >
-                                        Log In
-                                    </button>
-                                    <button
-                                        onClick={() => setAuthMode('register')}
-                                        className={`px-4 py-2 text-[9px] font-black uppercase tracking-tighter transition-all ${authMode === 'register' ? 'bg-beeyield-gold text-beeyield-black shadow-sm' : 'text-beeyield-green/60 hover:text-beeyield-green'}`}
-                                    >
-                                        Sign Up
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Forms */}
-                            {authMode === 'login' && (
-                                <div className="animate-fade-in-up">
-                                    <CebaLoginForm
-                                        onSuccess={() => navigate(redirectPath)}
-                                        onSwitchToRegister={() => setAuthMode('register')}
-                                        onForgotPassword={() => setAuthMode('forgot-password')}
-                                    />
-                                </div>
-                            )}
-
-                            {authMode === 'register' && (
-                                <div className="animate-fade-in-up">
-                                    <CebaRegisterForm
-                                        onSuccess={() => {
-                                            toast.success("Admin Node Requested.");
-                                            setAuthMode('login');
-                                        }}
-                                        onSwitchToLogin={() => setAuthMode('login')}
-                                    />
-                                </div>
-                            )}
-
-                            {authMode === 'forgot-password' && (
-                                <div className="animate-fade-in-up">
-                                    <CebaForgotPasswordForm
-                                        onBackToLogin={() => setAuthMode('login')}
-                                    />
-                                </div>
-                            )}
-                        </CardContent>
-
-                        {/* Industrial Status Bar */}
-                        <div className="px-10 py-3 bg-beeyield-green/5 border-t border-beeyield-green/10 flex items-center justify-between">
-                            <div className="flex gap-6">
-                                <div className="flex items-center gap-2 text-[8px] font-black text-beeyield-green/60 uppercase tracking-widest">
-                                    <Server className="h-3 w-3" /> SERVER
-                                </div>
-                                <div className="flex items-center gap-2 text-[8px] font-black text-beeyield-green/60 uppercase tracking-widest">
-                                    <Globe className="h-3 w-3" /> NETWORK
-                                </div>
-                            </div>
-                            <div className="text-[8px] font-black text-beeyield-gold uppercase tracking-widest animate-pulse">
-                                System Online
-                            </div>
-                        </div>
-                    </Card>
-                </motion.div>
-
-                {/* System Navigation */}
-                <div className="flex flex-col items-center gap-6 pt-4">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="group flex items-center gap-4 text-beeyield-green/40 hover:text-beeyield-green transition-all text-[10px] font-black uppercase tracking-[0.4em]"
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2.5 text-sm font-bold text-gray-400 hover:text-gray-900 transition-all group"
                     >
-                        <div className="h-px w-6 bg-beeyield-green/20 group-hover:bg-beeyield-green transition-all" />
-                        Exit
-                        <div className="h-px w-6 bg-beeyield-green/20 group-hover:bg-beeyield-green transition-all" />
-                    </button>
+                        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                        <span>Return Home</span>
+                    </Link>
+                </header>
 
-                    <div className="flex gap-12 text-[9px] font-bold text-beeyield-green/60 uppercase tracking-widest">
-                        <div className="flex items-center gap-2 hover:text-beeyield-green cursor-help transition-colors">
-                            <Cpu className="h-3 w-3" /> Encrypted
+                <main className="flex-1 flex flex-col items-center justify-center py-16">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="max-w-md w-full"
+                    >
+                        <div className="text-center mb-12 space-y-4">
+                            <h2 className="text-4xl font-black tracking-tight text-gray-900 leading-tight">
+                                {authMode === 'login' ? 'System Access' : authMode === 'register' ? 'Join Management' : 'Restoration'}
+                            </h2>
+                            <p className="text-gray-500 font-medium text-lg max-w-[80%] mx-auto leading-relaxed">
+                                {authMode === 'login' 
+                                    ? 'Enter your credentials to access the administrative dashboard.' 
+                                    : authMode === 'register' 
+                                    ? 'Apply for an administrative role within our system.' 
+                                    : 'Please provide your email to recover your access.'}
+                            </p>
                         </div>
-                        <div className="flex items-center gap-2 hover:text-beeyield-green cursor-help transition-colors">
-                            <Maximize2 className="h-3 w-3" /> Full Access
+
+                        <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] bg-white/80 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden">
+                            <CardContent className="p-10">
+                                <div className="space-y-8">
+                                    {authMode === 'login' && (
+                                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                                            <CebaLoginForm
+                                                onSuccess={() => navigate(redirectPath)}
+                                                onSwitchToRegister={() => setAuthMode('register')}
+                                                onForgotPassword={() => setAuthMode('forgot-password')}
+                                            />
+                                        </motion.div>
+                                    )}
+
+                                    {authMode === 'register' && (
+                                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                                            <CebaRegisterForm
+                                                onSuccess={() => {
+                                                    toast.success("Request received", { description: "We will review your application soon." });
+                                                    setAuthMode('login');
+                                                }}
+                                                onSwitchToLogin={() => setAuthMode('login')}
+                                            />
+                                        </motion.div>
+                                    )}
+
+                                    {authMode === 'forgot-password' && (
+                                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                                            <CebaForgotPasswordForm
+                                                onBackToLogin={() => setAuthMode('login')}
+                                            />
+                                        </motion.div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="mt-12 text-center space-y-8">
+                            <div className="flex items-center justify-center gap-10 opacity-20 grayscale hover:grayscale-0 transition-all duration-700">
+                                <Shield className="h-6 w-6" />
+                                <Lock className="h-6 w-6" />
+                                <Database className="h-6 w-6" />
+                            </div>
+                            
+                            <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl">
+                                <div className="w-2 h-2 rounded-full bg-beeyield-green animate-pulse" />
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
+                                    Encrypted Admin Gateway
+                                </span>
+                            </div>
                         </div>
+                    </motion.div>
+                </main>
+
+                <footer className="py-12 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        <p>© 2026 BeeYield. All rights reserved.</p>
+                        <p className="opacity-60">Controlled Environment Access</p>
                     </div>
-                </div>
-            </div>
-
-            {/* HUD Elements - Updated colors */}
-            <div className="fixed bottom-10 left-10 hidden xl:block pointer-events-none">
-                <div className="space-y-2 text-[8px] text-beeyield-green/40 font-bold uppercase tracking-widest border-l border-beeyield-green/20 pl-4">
-                    <p>Status: Checking...</p>
-                    <p>IP Local: 127.0.0.1</p>
-                    <p>Protocol: Secure</p>
-                </div>
+                    <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
+                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Infrastructure</a>
+                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Privacy</a>
+                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Assistance</a>
+                    </div>
+                </footer>
             </div>
         </div>
     );

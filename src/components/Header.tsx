@@ -143,6 +143,62 @@ const Header = () => {
             </Link>
           </Button>
 
+          {/* Desktop Pages Dropdown */}
+          <div className="hidden lg:block relative z-[200]">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 text-beeyield-green outline-none">
+                <Menu className="h-6 w-6" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 flex flex-col p-4 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100] gap-1 max-h-[85vh] overflow-y-auto">
+                <div className="px-4 py-1.5 mb-1">
+                  <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Main Navigation</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { label: 'Professional Pollination', to: '/crops-we-pollinate' },
+                    { label: 'In Land Pollination', to: '/in-land-pollination' },
+                    { label: 'In Hive Pollination', to: '/precision-pollination' },
+                    { label: 'Diseases', to: '/diseases' },
+                    { label: 'Beekeeping Network', to: '/pollination-solutions' },
+                    { label: 'Shop', to: '/shop' },
+                  ].map((item) => (
+                    <DropdownMenuItem key={item.to} asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
+                      <Link to={item.to} className="w-full cursor-pointer px-3 py-2.5 text-[13px] font-bold text-white hover:text-white transition-all">
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+
+                <div className="px-4 py-1.5 mt-3 mb-1 border-t border-white/10 pt-4">
+                  <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Company</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { label: 'About Us', to: '/about' },
+                    { label: 'Bee Learn', to: '/learn' },
+                    { label: 'Blogs', to: '/blogs' },
+                    { label: 'Careers', to: '/careers' },
+                    { label: 'Commitment', to: '/commitment' },
+                    { label: 'Contact', to: '/contact' },
+                    { label: 'ESG', to: '/esg' },
+                    { label: 'Global Network', to: '/global-hive-network' },
+                    { label: 'Impact', to: '/impact' },
+                    { label: 'Media', to: '/media' },
+                    { label: 'Our Story', to: '/ourstory' },
+                    { label: 'Team', to: '/team' },
+                  ].map((item) => (
+                    <DropdownMenuItem key={item.to} asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
+                      <Link to={item.to} className="w-full cursor-pointer px-3 py-2 text-[12px] font-bold text-white/80 hover:text-white transition-all">
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"

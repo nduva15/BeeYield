@@ -309,7 +309,7 @@ const ContentEditor = () => {
                     {post.status !== 'published' && (
                         <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-gray-900 font-bold"
+                            className="bg-green-600 hover:bg-green-700 text-[#1A1A1A] font-bold"
                             onClick={handlePublish}
                             disabled={publishing}
                         >
@@ -370,7 +370,7 @@ const ContentEditor = () => {
                 </div>
 
                 {/* Center: Writing Area */}
-                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full bg-white shadow-sm border-x">
+                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full bg-[#FFF9F0] shadow-sm border-x">
                     {activeChapter ? (
                         <>
                             <div className="p-6 border-b pb-4">
@@ -466,15 +466,15 @@ const ContentEditor = () => {
 
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-xs">
-                                    {analysis.seo.score >= 80 ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-amber-500" />}
+                                    {analysis.seo.score >= 80 ? <CheckCircle2 className="w-3 h-3 text-[#1B9157]" /> : <AlertCircle className="w-3 h-3 text-[#F4D03F]" />}
                                     <span>SEO (Google): {analysis.seo.score}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
-                                    {analysis.aeo.score >= 80 ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-amber-500" />}
+                                    {analysis.aeo.score >= 80 ? <CheckCircle2 className="w-3 h-3 text-[#1B9157]" /> : <AlertCircle className="w-3 h-3 text-[#F4D03F]" />}
                                     <span>AEO (Voice): {analysis.aeo.score}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
-                                    {analysis.geo.score >= 80 ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-amber-500" />}
+                                    {analysis.geo.score >= 80 ? <CheckCircle2 className="w-3 h-3 text-[#1B9157]" /> : <AlertCircle className="w-3 h-3 text-[#F4D03F]" />}
                                     <span>GEO (Insight): {analysis.geo.score}</span>
                                 </div>
                             </div>

@@ -144,7 +144,7 @@ const ESG = () => {
     {
       title: "Ecological Intelligence",
       icon: Cpu,
-      color: "from-emerald-950 to-emerald-900 border-emerald-500/20",
+      color: "from-emerald-950 to-emerald-900 border-[#1B9157]/",
       initiatives: [
         "Advanced acoustic analysis for early disease detection",
         "Real-time hive condition snapshots (Temp, Humidity, Mass)",
@@ -209,7 +209,7 @@ const ESG = () => {
               <Globe className="w-3 h-3 mr-2" />
               ESG Governance Node
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-[0.95]">
+            <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
               Governance <br /><span className="text-beeyield-gold">by Integrity.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
@@ -217,11 +217,11 @@ const ESG = () => {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-slate-900 text-gray-900 rounded-2xl h-16 px-10 font-black shadow-2xl hover:bg-slate-800" onClick={handleDownloadReport} disabled={downloading}>
+              <Button size="lg" className="bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl h-16 px-10 font-black shadow-2xl hover:bg-slate-800" onClick={handleDownloadReport} disabled={downloading}>
                 {downloading ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Download className="w-5 h-5 mr-3" />}
                 {downloading ? "Authenticating..." : "Download 2026 ESG Registry"}
               </Button>
-              <Button size="lg" variant="outline" asChild className="rounded-2xl h-16 px-10 border-2 font-black border-slate-100 hover:bg-slate-50">
+              <Button size="lg" variant="outline" asChild className="rounded-2xl h-16 px-10 border-2 font-black border-slate-100 hover:bg-[#F9F7F2]">
                 <Link to="/commitment">Vision & Purpose</Link>
               </Button>
             </div>
@@ -233,7 +233,7 @@ const ESG = () => {
       </section>
 
       {/* Impact Metrics */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#FFF9F0]">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {impactStats.map((stat, index) => (
@@ -244,10 +244,10 @@ const ESG = () => {
                 transition={{ delay: index * 0.05 }}
                 className="text-center p-6 rounded-[2rem] bg-[#fdfbf6] border border-slate-50 shadow-soft group hover:-translate-y-1 transition-all"
               >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-white flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-[#FFF9F0] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                   <stat.icon className="w-6 h-6 text-beeyield-green" />
                 </div>
-                <div className="text-2xl font-black text-slate-900 mb-1 tracking-tighter">{stat.value}</div>
+                <div className="text-2xl font-black text-[#1A1A1A] mb-1 tracking-tighter">{stat.value}</div>
                 <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{stat.label}</div>
               </motion.div>
             ))}
@@ -270,24 +270,24 @@ const ESG = () => {
                   <Card className={`overflow-hidden border-2 h-full rounded-[2.5rem] bg-gradient-to-br ${pillar.color} shadow-2xl`}>
                     <CardContent className="p-10 flex flex-col h-full">
                       <div className="flex items-center gap-4 mb-8">
-                        <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center border border-gray-300">
-                          <pillar.icon className="w-8 h-8 text-gray-900 shadow-lg" />
+                        <div className="w-16 h-16 rounded-[1.5rem] bg-[#F4D03F]/10 backdrop-blur-md flex items-center justify-center border border-[#F4D03F]/40">
+                          <pillar.icon className="w-8 h-8 text-[#1A1A1A] shadow-lg" />
                         </div>
-                        <h3 className="text-2xl font-black text-gray-900 tracking-tight">{pillar.title}</h3>
+                        <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tight">{pillar.title}</h3>
                       </div>
 
                       <div className="space-y-4 mb-10 flex-1">
                         {pillar.initiatives.map((initiative, i) => (
                           <div key={i} className="flex items-start gap-4">
                             <div className="mt-1.5 h-1 w-1 rounded-full bg-beeyield-gold shadow-[0_0_8px_rgba(217,119,6,0.8)] flex-shrink-0" />
-                            <span className="text-sm text-gray-800 font-medium leading-relaxed">{initiative}</span>
+                            <span className="text-sm text-[#1A1A1A] font-medium leading-relaxed">{initiative}</span>
                           </div>
                         ))}
                       </div>
 
-                      <div className="pt-8 border-t border-gray-200">
+                      <div className="pt-8 border-t border-[#F4D03F]/20">
                         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-beeyield-gold mb-2 italic">Quantified Impact</p>
-                        <p className="text-lg font-bold text-gray-900 leading-tight">
+                        <p className="text-lg font-bold text-[#1A1A1A] leading-tight">
                           {pillar.impact}
                         </p>
                       </div>
@@ -301,7 +301,7 @@ const ESG = () => {
       </section>
 
       {/* Food Security / Hunger Focus */}
-      <section className="py-24 bg-slate-900 text-gray-900 relative overflow-hidden">
+      <section className="py-24 bg-[#FFF9F0] text-[#1A1A1A] relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
@@ -327,7 +327,7 @@ const ESG = () => {
 
             <div className="relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-[3rem] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity" />
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-gray-200">
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-[#F4D03F]/20">
                 <img src="/pollination-farmers.png" alt="Participatory Ag" className="w-full aspect-square object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
                 <div className="absolute bottom-10 left-10 right-10">
@@ -344,21 +344,21 @@ const ESG = () => {
       </section>
 
       {/* Partner/Trust Footprint */}
-      <section className="py-24 bg-white border-b border-slate-100">
+      <section className="py-24 bg-[#FFF9F0] border-b border-slate-100">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-2xl mx-auto space-y-10">
-            <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto shadow-inner">
-              <ShieldCheck className="w-12 h-12 text-slate-900" />
+            <div className="w-24 h-24 bg-[#F9F7F2] rounded-[2rem] flex items-center justify-center mx-auto shadow-inner">
+              <ShieldCheck className="w-12 h-12 text-[#1A1A1A]" />
             </div>
-            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter">Verified by Design.</h3>
+            <h3 className="text-3xl md:text-5xl font-black text-[#1A1A1A] tracking-tighter">Verified by Design.</h3>
             <p className="text-slate-500 text-lg font-medium">
               Every jar tracked. Every hive monitored. Every community empowered. Join the Tesla of Apiculture in our mission for radical transparency.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <Link to="/contact" className="px-10 py-5 bg-slate-900 text-gray-900 rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all">
+              <Link to="/contact" className="px-10 py-5 bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all">
                 Partner Engagement
               </Link>
-              <Link to="/media" className="px-10 py-5 bg-white text-slate-900 border-2 border-slate-100 rounded-2xl font-black hover:bg-slate-50 transition-all">
+              <Link to="/media" className="px-10 py-5 bg-[#FFF9F0] text-[#1A1A1A] border-2 border-slate-100 rounded-2xl font-black hover:bg-[#F9F7F2] transition-all">
                 Impact Media Room
               </Link>
             </div>

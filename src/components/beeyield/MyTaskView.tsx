@@ -246,7 +246,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                 <PageHeader
                     icon={LayoutGrid}
                     label="Operations Protocol"
-                    title={<>Schedule <span className="text-honey">Task</span></>}
+                    title={<>Schedule <span className="text-[#F4D03F]">Task</span></>}
                     subtitle="Coordinate apiary logistics and maintenance schedules with precision-timed operational logs."
                     actions={
                         <button
@@ -260,7 +260,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                 />
 
                 <div className="max-w-4xl mx-auto relative z-10">
-                    <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 backdrop-blur-3xl")}>
+                    <div className={cn(glass.card, "p-16 space-y-12 bg-[#FFF9F0]/60 backdrop-blur-3xl")}>
                         <div className="space-y-6">
                             <label className={glass.microLabel}>{t('task_title_label')}</label>
                             <input
@@ -278,7 +278,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                     <PopoverTrigger asChild>
                                         <button className={cn(glass.btnSecondary, "w-full justify-between h-24 px-10 rounded-[2.5rem]")}>
                                             <span className="font-black italic text-xl">{format(taskDate, "dd MMM yyyy")}</span>
-                                            <CalendarIcon className="w-8 h-8 text-honey" />
+                                            <CalendarIcon className="w-8 h-8 text-[#F4D03F]" />
                                         </button>
                                     </PopoverTrigger>
                                     <PopoverContent className={glass.selectContent} align="start">
@@ -343,22 +343,22 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
             animate={{ opacity: 1 }}
             className={glass.page}
         >
-            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-honey/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F]/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
 
             {/* Header */}
             <PageHeader
                 icon={CalendarIcon}
                 label="Operational Schedule"
-                title={<>Fleet <span className="text-honey">Logistics</span></>}
+                title={<>Fleet <span className="text-[#F4D03F]">Logistics</span></>}
                 subtitle="Track and coordinate maintenance, inspections, and logistics across your entire apiary network."
                 actions={
                     <div className="flex gap-8 relative z-10">
-                        <div className="flex bg-gray-50 p-3 rounded-[2.5rem] border border-white/5 shadow-inner">
+                        <div className="flex bg-[#F9F7F2] p-3 rounded-[2.5rem] border border-[#F4D03F]/10 shadow-inner">
                             <button
                                 onClick={() => setView('list')}
                                 className={cn(
                                     "px-10 py-4 rounded-[2rem] font-black italic text-lg uppercase tracking-tight transition-all duration-500",
-                                    view === 'list' ? "bg-honey text-black shadow-4xl" : "text-foreground/40 hover:text-honey"
+                                    view === 'list' ? "bg-[#F4D03F] text-[#1A1A1A] shadow-4xl" : "text-foreground/40 hover:text-[#F4D03F]"
                                 )}
                             >
                                 List
@@ -367,7 +367,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                 onClick={() => setView('month')}
                                 className={cn(
                                     "px-10 py-4 rounded-[2rem] font-black italic text-lg uppercase tracking-tight transition-all duration-500",
-                                    view === 'month' ? "bg-honey text-black shadow-4xl" : "text-foreground/40 hover:text-honey"
+                                    view === 'month' ? "bg-[#F4D03F] text-[#1A1A1A] shadow-4xl" : "text-foreground/40 hover:text-[#F4D03F]"
                                 )}
                             >
                                 Calendar
@@ -390,12 +390,12 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "p-12 bg-white/60 backdrop-blur-3xl min-h-[800px]")}
+                        className={cn(glass.card, "p-12 bg-[#FFF9F0]/60 backdrop-blur-3xl min-h-[800px]")}
                     >
                         {/* Month Navigation */}
                         <div className="flex items-center justify-between mb-12">
                             <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">
-                                {format(currentDate, "MMMM")} <span className="text-honey">{format(currentDate, "yyyy")}</span>
+                                {format(currentDate, "MMMM")} <span className="text-[#F4D03F]">{format(currentDate, "yyyy")}</span>
                             </h3>
                             <div className="flex gap-4">
                                 <button
@@ -430,13 +430,13 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                         key={i}
                                         className={cn(
                                             "min-h-[160px] rounded-[3rem] p-6 border transition-all duration-500 group/day relative",
-                                            isCurrentMonth ? "bg-white/40 border-white/5" : "opacity-10 pointer-events-none",
-                                            isTodayDate ? "ring-4 ring-honey/40 border-honey/40" : "hover:border-honey/20"
+                                            isCurrentMonth ? "bg-gray-400 border-[#F4D03F]/10" : "opacity-10 pointer-events-none",
+                                            isTodayDate ? "ring-4 ring-[#F4D03F]/40 border-[#F4D03F]/40" : "hover:border-[#F4D03F]/20"
                                         )}
                                     >
                                         <span className={cn(
                                             "text-4xl font-black italic tracking-tighter tabular-nums",
-                                            isTodayDate ? "text-honey" : "text-foreground/20"
+                                            isTodayDate ? "text-[#F4D03F]" : "text-foreground/20"
                                         )}>
                                             {format(date, 'd')}
                                         </span>
@@ -446,14 +446,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                 <div
                                                     key={task.id}
                                                     className={cn(
-                                                        "px-4 py-2 rounded-full border border-white/5 flex items-center gap-2 overflow-hidden",
+                                                        "px-4 py-2 rounded-full border border-[#F4D03F]/10 flex items-center gap-2 overflow-hidden",
                                                         task.priority === 'High' ? "bg-red-500/10 text-red-500" :
-                                                            task.priority === 'Medium' ? "bg-honey/10 text-honey" : "bg-emerald-500/10 text-emerald-500"
+                                                            task.priority === 'Medium' ? "bg-[#F4D03F]/10 text-[#F4D03F]" : "bg-[#1B9157]/ text-[#1B9157]"
                                                     )}
                                                 >
                                                     <div className={cn("w-2 h-2 rounded-full",
                                                         task.priority === 'High' ? "bg-red-500" :
-                                                            task.priority === 'Medium' ? "bg-honey" : "bg-emerald-500"
+                                                            task.priority === 'Medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
                                                     )} />
                                                     <span className="text-[10px] font-black uppercase tracking-tight truncate italic">{task.title}</span>
                                                 </div>
@@ -477,15 +477,15 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                         transition={{ delay: i * 0.05, duration: 0.8 }}
                                         className={cn(
                                             glass.card,
-                                            "p-12 pl-20 relative group hover:border-honey/60 cursor-default",
+                                            "p-12 pl-20 relative group hover:border-[#F4D03F]/60 cursor-default",
                                             task.is_completed && "opacity-60"
                                         )}
                                     >
                                         <div className={cn(
                                             "absolute left-0 top-0 w-4 h-full transition-all duration-700",
-                                            task.is_completed ? "bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]" :
+                                            task.is_completed ? "bg-[#1B9157] shadow-[0_0_20px_rgba(16,185,129,0.4)]" :
                                                 task.priority === 'High' ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]" :
-                                                    task.priority === 'Medium' ? "bg-honey shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-slate-400"
+                                                    task.priority === 'Medium' ? "bg-[#F4D03F] shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-slate-400"
                                         )} />
 
                                         <div className="flex items-center justify-between mb-8">
@@ -495,8 +495,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                     className={cn(
                                                         "w-14 h-14 rounded-2xl border flex items-center justify-center transition-all duration-700",
                                                         task.is_completed
-                                                            ? "bg-emerald-500 border-emerald-500 text-black shadow-4xl"
-                                                            : "bg-gray-100 border-gray-200 text-gray-400 hover:border-honey hover:text-honey"
+                                                            ? "bg-[#1B9157] border-emerald-500 text-[#1A1A1A] shadow-4xl"
+                                                            : "bg-[#F4D03F]/10 border-[#F4D03F]/20 text-gray-400 hover:border-[#F4D03F] hover:text-[#F4D03F]"
                                                     )}
                                                 >
                                                     <CheckCircle2 className="w-8 h-8" />
@@ -504,12 +504,12 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                 <div className="flex flex-col">
                                                     <h3 className={cn(
                                                         "text-4xl font-black italic tracking-tighter uppercase leading-none truncate max-w-[400px] transition-all",
-                                                        task.is_completed ? "text-foreground/30 line-through" : "text-foreground group-hover:text-honey"
+                                                        task.is_completed ? "text-foreground/30 line-through" : "text-foreground group-hover:text-[#F4D03F]"
                                                     )}>
                                                         {task.title}
                                                     </h3>
                                                     <div className="flex items-center gap-4 mt-2">
-                                                        <ClockIcon className="w-4 h-4 text-honey opacity-30" />
+                                                        <ClockIcon className="w-4 h-4 text-[#F4D03F] opacity-30" />
                                                         <span className="text-[11px] font-black text-foreground/20 italic tracking-[0.2em] uppercase">
                                                             DUE: {task.due_date ? format(new Date(task.due_date), "dd MMM yyyy").toUpperCase() : "Indefinite"}
                                                         </span>
@@ -521,14 +521,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                 <div className={cn(
                                                     "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] skew-x-[-15deg] shadow-4xl border",
                                                     task.priority === 'High' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                                        task.priority === 'Medium' ? "bg-honey/10 text-honey border-honey/20" : "bg-gray-50 text-foreground/20 border-white/5"
+                                                        task.priority === 'Medium' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : "bg-[#F9F7F2] text-foreground/20 border-[#F4D03F]/10"
                                                 )}>
                                                     <span className="skew-x-[15deg] block">{task.priority?.toUpperCase()} PRIORITY</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="bg-gray-50 rounded-[3rem] p-8 border border-white/5 shadow-inner group-hover:border-honey/20 transition-all duration-1000">
+                                        <div className="bg-[#F9F7F2] rounded-[3rem] p-8 border border-[#F4D03F]/10 shadow-inner group-hover:border-[#F4D03F]/20 transition-all duration-1000">
                                             <p className="text-xl font-black text-foreground/30 italic leading-relaxed line-clamp-2 uppercase tracking-tight">
                                                 {task.description || "No operational notes provided for this mission protocol."}
                                             </p>

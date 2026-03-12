@@ -905,7 +905,7 @@ const AdminDashboard: React.FC = () => {
             case 'pending': return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-200"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
             case 'processing': return <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200"><RefreshCw className="w-3 h-3 mr-1" /> Processing</Badge>;
             case 'shipped': return <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-200"><Package className="w-3 h-3 mr-1" /> Shipped</Badge>;
-            case 'completed': return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-200"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</Badge>;
+            case 'completed': return <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-green-200"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</Badge>;
             case 'cancelled': return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-200"><XCircle className="w-3 h-3 mr-1" /> Cancelled</Badge>;
             default: return <Badge variant="outline">{status}</Badge>;
         }
@@ -1047,11 +1047,11 @@ const AdminDashboard: React.FC = () => {
                                 />
 
                                 <div className="flex gap-3">
-                                    <div className="flex-1 bg-white border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
+                                    <div className="flex-1 bg-[#FFF9F0] border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
                                         <p className="text-[9px] font-black text-beeyield-green/20 uppercase tracking-widest">GROSS YIELD</p>
                                         <p className="text-md font-black text-beeyield-green mt-1">KES 72K <span className="text-beeyield-green text-[10px] ml-1">↑4%</span></p>
                                     </div>
-                                    <div className="flex-1 bg-white border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
+                                    <div className="flex-1 bg-[#FFF9F0] border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
                                         <p className="text-[9px] font-black text-beeyield-green/20 uppercase tracking-widest">PROFIT CORE</p>
                                         <p className="text-md font-black text-beeyield-green mt-1">KES 54K <span className="text-beeyield-green text-[10px] ml-1">↑6%</span></p>
                                     </div>
@@ -1066,7 +1066,7 @@ const AdminDashboard: React.FC = () => {
                             <Col span={4} className="space-y-6">
                                 <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Network Traffic</h3>
 
-                                <Card className="bg-white border-beeyield-green/5 rounded-[32px] p-8 shadow-2xl shadow-beeyield-green/[0.02] border-none">
+                                <Card className="bg-[#FFF9F0] border-beeyield-green/5 rounded-[32px] p-8 shadow-2xl shadow-beeyield-green/[0.02] border-none">
                                     <div className="flex items-center justify-between mb-6">
                                         <div>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30">Live Nodes</p>
@@ -1101,18 +1101,18 @@ const AdminDashboard: React.FC = () => {
                                         <p className="text-xs font-medium text-muted-foreground">System Health</p>
                                         <div className="flex justify-between text-xs">
                                             <span className="text-muted-foreground">Apiaries Connected</span>
-                                            <span className="font-medium text-green-500">{dashboardStats.totalApiaries}</span>
+                                            <span className="font-medium text-[#1B9157]">{dashboardStats.totalApiaries}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
                                             <span className="text-muted-foreground">Active Hives</span>
-                                            <span className="font-medium text-amber-500">{dashboardStats.totalHives}</span>
+                                            <span className="font-medium text-[#F4D03F]">{dashboardStats.totalHives}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
                                             <span className="text-muted-foreground">Batches Indexed</span>
                                             <span className="font-medium text-blue-500">{dashboardStats.totalHoneyKg} kg</span>
                                         </div>
                                     </div>
-                                    <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-2">
+                                    <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto mt-2">
                                         Real-Time Report →
                                     </Button>
                                 </Card>
@@ -1127,7 +1127,7 @@ const AdminDashboard: React.FC = () => {
 
                                 <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                     <div className="flex gap-2 mb-4">
-                                        <Button size="sm" className="rounded-full bg-amber-500 text-gray-900 text-xs px-4 h-7">Active</Button>
+                                        <Button size="sm" className="rounded-full bg-[#F4D03F] text-[#1A1A1A] text-xs px-4 h-7">Active</Button>
                                         <Button size="sm" variant="outline" className="rounded-full text-xs px-4 h-7">Inactive</Button>
                                     </div>
 
@@ -1156,7 +1156,7 @@ const AdminDashboard: React.FC = () => {
                                     <div className="space-y-2">
                                         <div className="flex items-center justify-between text-xs">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                                                <div className="w-2 h-2 rounded-full bg-[#F4D03F]"></div>
                                                 <span className="text-muted-foreground">Verified Farmers</span>
                                             </div>
                                             <span className="font-medium">{dashboardStats.totalFarmers}</span>
@@ -1182,7 +1182,7 @@ const AdminDashboard: React.FC = () => {
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-bold">Official Store</h3>
                                             <div className="flex gap-2">
-                                                <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2 bg-white">
+                                                <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2 bg-[#FFF9F0]">
                                                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Filter by city
                                                 </Button>
                                             </div>
@@ -1191,20 +1191,20 @@ const AdminDashboard: React.FC = () => {
                                     </div>
 
                                     {/* Interactive Map Styles */}
-                                    <div className="flex-1 relative bg-slate-100 min-h-[350px]">
+                                    <div className="flex-1 relative bg-[#F4D03F]/10 min-h-[350px]">
                                         {/* Map Controls */}
-                                        <div className="absolute top-4 left-4 z-10 flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-gray-50 border-r border-gray-200">Map</button>
-                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-gray-50 text-muted-foreground">Satellite</button>
+                                        <div className="absolute top-4 left-4 z-10 flex bg-[#FFF9F0] rounded-lg shadow-sm border border-[#F4D03F]/20 overflow-hidden">
+                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-[#F9F7F2] border-r border-[#F4D03F]/20">Map</button>
+                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-[#F9F7F2] text-muted-foreground">Satellite</button>
                                         </div>
 
-                                        <div className="absolute top-4 right-4 z-10 bg-white rounded-lg p-1.5 shadow-sm border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                        <div className="absolute top-4 right-4 z-10 bg-[#FFF9F0] rounded-lg p-1.5 shadow-sm border border-[#F4D03F]/20 hover:bg-[#F9F7F2] cursor-pointer">
                                             <Maximize2 className="w-4 h-4 text-gray-500" />
                                         </div>
 
-                                        <div className="absolute bottom-8 left-4 z-10 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                            <button aria-label="Zoom in" className="p-1.5 hover:bg-gray-50 border-b border-gray-200"><Plus className="w-4 h-4 text-gray-600" /></button>
-                                            <button aria-label="Zoom out" className="p-1.5 hover:bg-gray-50"><Minus className="w-4 h-4 text-gray-600" /></button>
+                                        <div className="absolute bottom-8 left-4 z-10 flex flex-col bg-[#FFF9F0] rounded-lg shadow-sm border border-[#F4D03F]/20 overflow-hidden">
+                                            <button aria-label="Zoom in" className="p-1.5 hover:bg-[#F9F7F2] border-b border-[#F4D03F]/20"><Plus className="w-4 h-4 text-gray-600" /></button>
+                                            <button aria-label="Zoom out" className="p-1.5 hover:bg-[#F9F7F2]"><Minus className="w-4 h-4 text-gray-600" /></button>
                                         </div>
 
                                         {/* Map Background Pattern */}
@@ -1227,13 +1227,13 @@ const AdminDashboard: React.FC = () => {
                                                         transform: 'translate(-50%, -50%)'
                                                     }}
                                                 >
-                                                    <div className="w-6 h-6 bg-amber-500/20 rounded-full flex items-center justify-center animate-pulse absolute"></div>
+                                                    <div className="w-6 h-6 bg-[#F4D03F]/ rounded-full flex items-center justify-center animate-pulse absolute"></div>
                                                     <div className="relative w-6 h-6">
-                                                        <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-gray-900 font-bold text-[10px]">
+                                                        <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-[#1A1A1A] font-bold text-[10px]">
                                                             {idx + 1}
                                                         </div>
                                                     </div>
-                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white px-2 py-0.5 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-[#FFF9F0] px-2 py-0.5 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
                                                         {apiary.name}
                                                     </div>
                                                 </div>
@@ -1264,7 +1264,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    <Button variant="secondary" className="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium h-9 rounded-xl">
+                                    <Button variant="secondary" className="w-full mt-4 bg-[#F4D03F]/10 hover:bg-gray-200 text-gray-600 text-xs font-medium h-9 rounded-xl">
                                         View More
                                     </Button>
                                 </Card>
@@ -1275,26 +1275,26 @@ const AdminDashboard: React.FC = () => {
                         <Grid cols={2} gap="lg">
                             {/* Activity Overview Summary */}
                             <Col span={1}>
-                                <Card className="bg-amber-600 rounded-2xl p-6 text-gray-900 relative overflow-hidden flex flex-col justify-center h-48">
+                                <Card className="bg-amber-600 rounded-2xl p-6 text-[#1A1A1A] relative overflow-hidden flex flex-col justify-center h-48">
                                     <div className="relative z-10 max-w-xs">
                                         <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
-                                        <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
-                                        <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-white text-amber-600 hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
+                                        <p className="text-[#F4D03F] text-xs mb-4">Monitor and support our master beekeepers.</p>
+                                        <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-[#FFF9F0] text-[#F4D03F] hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
                                             Manage Farmers
                                         </Button>
                                     </div>
                                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                        <Users className="w-24 h-24 text-amber-400/30" />
+                                        <Users className="w-24 h-24 text-[#F4D03F]/30" />
                                     </div>
                                 </Card>
                             </Col>
                             <Col span={1}>
 
-                                <Card className="bg-indigo-600 rounded-2xl p-6 text-gray-900 relative overflow-hidden flex flex-col justify-center h-48">
+                                <Card className="bg-indigo-600 rounded-2xl p-6 text-[#1A1A1A] relative overflow-hidden flex flex-col justify-center h-48">
                                     <div className="relative z-10 max-w-xs">
                                         <h3 className="text-lg font-bold mb-1 leading-tight">Log</h3>
                                         <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
-                                        <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
+                                        <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-[#FFF9F0] text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
                                             View Ledger
                                         </Button>
                                     </div>
@@ -1333,12 +1333,12 @@ const AdminDashboard: React.FC = () => {
                                     {products.length > 0 ? products.slice(0, 5).map((product, i) => (
                                         <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-border/50">
                                             <TableCell className="py-3">
-                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-border">
+                                                <div className="w-10 h-10 rounded-lg bg-[#F4D03F]/10 overflow-hidden border border-border">
                                                     {product.images?.[0] ? (
                                                         <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center bg-amber-50">
-                                                            <Package className="w-5 h-5 text-amber-500" />
+                                                            <Package className="w-5 h-5 text-[#F4D03F]" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -1352,7 +1352,7 @@ const AdminDashboard: React.FC = () => {
                                                 <span className={cn(
                                                     "px-2 py-0.5 rounded text-[10px] font-bold border flex items-center w-fit gap-1",
                                                     (product.variants?.[0]?.stock_quantity || 0) > 10
-                                                        ? "text-green-600 border-green-200 bg-green-50"
+                                                        ? "text-[#1B9157] border-green-200 bg-green-50"
                                                         : "text-red-500 border-red-200 bg-red-50"
                                                 )}>
                                                     {(product.variants?.[0]?.stock_quantity || 0) > 10 ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
@@ -1361,7 +1361,7 @@ const AdminDashboard: React.FC = () => {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-3">
-                                                    <button className="text-gray-400 hover:text-amber-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
+                                                    <button className="text-gray-400 hover:text-[#F4D03F] flex items-center gap-1 text-[11px] font-medium transition-colors">
                                                         <Edit className="w-3.5 h-3.5" /> Edit
                                                     </button>
                                                     <button className="text-gray-400 hover:text-red-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
@@ -1384,7 +1384,7 @@ const AdminDashboard: React.FC = () => {
                             <div className="p-4 border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&lt;</Button>
-                                    <Button size="sm" className="w-8 h-8 rounded-lg bg-amber-500 text-gray-900">1</Button>
+                                    <Button size="sm" className="w-8 h-8 rounded-lg bg-[#F4D03F] text-[#1A1A1A]">1</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">2</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">3</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&gt;</Button>
@@ -1418,7 +1418,7 @@ const AdminDashboard: React.FC = () => {
                                     This dashboard gives you a complete overview of your beekeeping network metrics.
                                     Monitor honey production, track farmer performance, and manage your product inventory all in one place.
                                 </p>
-                                <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-2">
+                                <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto mt-2">
                                     View Notes →
                                 </Button>
                             </div>
@@ -1451,8 +1451,8 @@ const AdminDashboard: React.FC = () => {
                                                 className={cn(
                                                     "py-1.5 rounded-lg",
                                                     !isCurrentMonth && "text-muted-foreground/30",
-                                                    isToday && "bg-amber-500 text-gray-900 font-bold",
-                                                    hasEvent && !isToday && "bg-amber-100 text-amber-700 font-medium"
+                                                    isToday && "bg-[#F4D03F] text-[#1A1A1A] font-bold",
+                                                    hasEvent && !isToday && "bg-amber-100 text-[#F4D03F] font-medium"
                                                 )}
                                             >
                                                 {isCurrentMonth ? day : day <= 0 ? 30 + day : day - 30}
@@ -1472,13 +1472,13 @@ const AdminDashboard: React.FC = () => {
                             <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold">Recent Activities</h3>
-                                    <Button variant="link" className="text-amber-600 text-xs p-0 h-auto">Show More</Button>
+                                    <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto">Show More</Button>
                                 </div>
 
                                 <div className="space-y-4">
                                     {orders.slice(0, 4).map((order, i) => (
                                         <div key={order.id || i} className="flex items-start gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-gray-900 text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-[#F4D03F] flex items-center justify-center text-[#1A1A1A] text-xs font-bold">
                                                 O
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -1490,7 +1490,7 @@ const AdminDashboard: React.FC = () => {
                                     ))}
                                     {batches.slice(0, 2).map((batch, i) => (
                                         <div key={batch.id || i} className="flex items-start gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-gray-900 text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-[#1A1A1A] text-xs font-bold">
                                                 B
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -1513,7 +1513,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="space-y-4">
                                     {orders.slice(0, 4).map((order, i) => (
                                         <div key={order.id || i} className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-gray-900 text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-[#1A1A1A] text-xs font-bold">
                                                 {order.shipping_address?.first_name?.charAt(0) || 'U'}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -1526,7 +1526,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                             <span className={cn(
                                                 "text-xs font-bold",
-                                                order.status === 'completed' ? "text-green-600" : "text-amber-600"
+                                                order.status === 'completed' ? "text-[#1B9157]" : "text-[#F4D03F]"
                                             )}>
                                                 +KES {order.total_amount?.toLocaleString() || '0'}
                                             </span>
@@ -1537,7 +1537,7 @@ const AdminDashboard: React.FC = () => {
                                     )}
                                 </div>
 
-                                <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-4">
+                                <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto mt-4">
                                     View More →
                                 </Button>
                             </Card></Col>
@@ -1834,7 +1834,7 @@ const AdminDashboard: React.FC = () => {
                                         <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                        <Badge className="bg-[#1B9157]/ text-[#1B9157] border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                             {stockMovements.length} RECORDS
                                         </Badge>
                                         <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black uppercase tracking-widest text-[10px]">
@@ -1863,7 +1863,7 @@ const AdminDashboard: React.FC = () => {
                                                     <TableRow key={mov.id} className="hover:bg-muted/20 transition-colors border-border/10">
                                                         <TableCell className="px-6 font-semibold">{mov.products?.name || 'Unknown Product'}</TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge variant="outline" className={mov.type === 'addition' ? 'bg-green-500/10 text-green-600 border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
+                                                            <Badge variant="outline" className={mov.type === 'addition' ? 'bg-[#1B9157]/ text-[#1B9157] border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
                                                                 {mov.type === 'addition' ? <TrendingUp className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
                                                                 {mov.type}
                                                             </Badge>
@@ -1956,7 +1956,7 @@ const AdminDashboard: React.FC = () => {
                                     <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-[10px] py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
+                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-[10px] py-5 bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none px-6 shadow-glow transition-all active:scale-95">
                                         <Plus className="mr-2 h-4 w-4" /> Mint Block
                                     </Button>
                                 </div>
@@ -2056,7 +2056,7 @@ const AdminDashboard: React.FC = () => {
                                                                     <Button
                                                                         size="icon"
                                                                         variant="outline"
-                                                                        className="rounded-xl w-8 h-8 border-border/50 text-amber-600 hover:bg-amber-600/10"
+                                                                        className="rounded-xl w-8 h-8 border-border/50 text-[#F4D03F] hover:bg-[#F4D03F]/"
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             window.open(`/trace?code=${batch.batch_code}`, '_blank');
@@ -2087,7 +2087,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="grid gap-6 py-4">
                                     {/* Basic Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-gray-200 pb-2">Batch Details</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Batch Details</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Honey Variety</Label>
@@ -2152,7 +2152,7 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Source Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-gray-200 pb-2">Source Origin</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Source Origin</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
@@ -2262,7 +2262,7 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Quality Metrics */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-gray-200 pb-2">Quality Assurance</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Quality Assurance</h4>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>
@@ -2311,7 +2311,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Save</Button>
+                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none shadow-glow">Save</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -2321,7 +2321,7 @@ const AdminDashboard: React.FC = () => {
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black flex items-center gap-2">
-                                        <Shield className="w-6 h-6 text-green-500" />
+                                        <Shield className="w-6 h-6 text-[#1B9157]" />
                                         Batch Verification
                                     </DialogTitle>
                                     <DialogDescription className="font-mono text-xs">
@@ -2337,7 +2337,7 @@ const AdminDashboard: React.FC = () => {
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Batch Code</p>
                                                 <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
                                             </div>
-                                            <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
+                                            <Badge className="bg-[#1B9157]/ text-[#1B9157] px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
                                                 VERIFIED HISTORY
                                             </Badge>
                                         </div>
@@ -2469,7 +2469,7 @@ const AdminDashboard: React.FC = () => {
                                                     <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
                                                         <TableCell className="px-6">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-xl bg-honey/20 flex items-center justify-center font-black text-honey">
+                                                                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/20 flex items-center justify-center font-black text-[#F4D03F]">
                                                                     {farmer.name?.[0]?.toUpperCase() || 'F'}
                                                                 </div>
                                                                 <div className="flex flex-col">
@@ -2492,7 +2492,7 @@ const AdminDashboard: React.FC = () => {
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge className={farmer.certification_status === 'CERTIFIED' ? 'bg-green-500/10 text-green-600 border-none' : 'bg-amber-500/10 text-amber-600 border-none'}>
+                                                            <Badge className={farmer.certification_status === 'CERTIFIED' ? 'bg-[#1B9157]/ text-[#1B9157] border-none' : 'bg-[#F4D03F]/ text-[#F4D03F] border-none'}>
                                                                 {farmer.certification_status || 'PENDING'}
                                                             </Badge>
                                                         </TableCell>
@@ -2684,7 +2684,7 @@ const AdminDashboard: React.FC = () => {
                                                             {hives.filter(h => h.apiary_id === apiary.id).length}
                                                         </TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-muted text-muted-foreground"}>
+                                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-[#1B9157]/ text-[#1B9157] border-green-200" : "bg-muted text-muted-foreground"}>
                                                                 {apiary.status?.toUpperCase()}
                                                             </Badge>
                                                         </TableCell>
@@ -2837,7 +2837,7 @@ const AdminDashboard: React.FC = () => {
                                                         <TableCell className="px-6">{hive.type}</TableCell>
                                                         <TableCell className="px-6 text-sm text-muted-foreground">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
+                                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-[#1B9157]/ text-[#1B9157] border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
                                                                 {hive.status?.toUpperCase()}
                                                             </Badge>
                                                         </TableCell>
@@ -2979,7 +2979,7 @@ const AdminDashboard: React.FC = () => {
                                                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
                                                         {userObj.email?.[0].toUpperCase()}
                                                         {userObj.role === 'super_admin' && (
-                                                            <div className="absolute -top-1 -right-1 bg-yellow-400 text-black rounded-xl p-0.5 shadow-lg border-2 border-background">
+                                                            <div className="absolute -top-1 -right-1 bg-yellow-400 text-[#1A1A1A] rounded-xl p-0.5 shadow-lg border-2 border-background">
                                                                 <Crown className="w-3 h-3" />
                                                             </div>
                                                         )}
@@ -3260,7 +3260,7 @@ const AdminDashboard: React.FC = () => {
                                         <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
                                         <CardDescription>Messages received through the contact form.</CardDescription>
                                     </div>
-                                    <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                    <Badge className="bg-[#F4D03F]/ text-[#F4D03F] border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                         {contacts.length} MESSAGES
                                     </Badge>
                                 </div>

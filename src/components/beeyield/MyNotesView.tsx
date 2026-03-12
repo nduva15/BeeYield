@@ -164,7 +164,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                 <PageHeader
                     icon={StickyNote}
                     label="Observation Log"
-                    title={<>{isEditingNote ? "Edit" : "New"} <span className="text-honey">Observation</span></>}
+                    title={<>{isEditingNote ? "Edit" : "New"} <span className="text-[#F4D03F]">Observation</span></>}
                     subtitle="Record detailed findings from your apiary visits. Capturing data ensures long-term colony health and high productivity."
                     actions={
                         <button
@@ -180,7 +180,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
                     {/* Main Form Area */}
                     <div className="lg:col-span-8 space-y-12">
-                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 backdrop-blur-3xl")}>
+                        <div className={cn(glass.card, "p-16 space-y-12 bg-[#FFF9F0]/60 backdrop-blur-3xl")}>
                             {/* Title Field */}
                             <div className="space-y-6">
                                 <label className={glass.microLabel}>Title / Summary</label>
@@ -203,7 +203,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                                 className={cn(glass.btnSecondary, "w-full justify-between h-24 px-10 rounded-[2.5rem]")}
                                             >
                                                 <span className="font-black italic text-xl">{format(noteDate, "dd/MM/yyyy")}</span>
-                                                <CalendarIcon className="w-8 h-8 text-honey" />
+                                                <CalendarIcon className="w-8 h-8 text-[#F4D03F]" />
                                             </button>
                                         </PopoverTrigger>
                                         <PopoverContent className={glass.selectContent} align="start">
@@ -239,7 +239,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     placeholder="Describe your findings in detail..."
                                 />
                                 {updateNoteMutation.isPending && (
-                                    <div className="flex items-center gap-4 text-[11px] font-black text-honey uppercase tracking-[0.3em] animate-pulse">
+                                    <div className="flex items-center gap-4 text-[11px] font-black text-[#F4D03F] uppercase tracking-[0.3em] animate-pulse">
                                         <Loader2 className="w-5 h-5 animate-spin" /> Auto-syncing...
                                     </div>
                                 )}
@@ -269,7 +269,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
                     {/* Meta Sidebar */}
                     <div className="lg:col-span-4 space-y-12">
-                        <div className={cn(glass.card, "p-12 space-y-12 bg-white/60 backdrop-blur-3xl")}>
+                        <div className={cn(glass.card, "p-12 space-y-12 bg-[#FFF9F0]/60 backdrop-blur-3xl")}>
                             {/* Priority Selection */}
                             <div className="space-y-8">
                                 <label className={glass.microLabel}>{t('priority_label')}</label>
@@ -280,20 +280,20 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             type="button"
                                             onClick={() => setPriority(p as any)}
                                             className={cn(
-                                                "flex items-center gap-6 h-20 px-10 rounded-[2.5rem] border border-white/5 transition-all font-black text-lg uppercase tracking-widest italic outline-none cursor-pointer",
+                                                "flex items-center gap-6 h-20 px-10 rounded-[2.5rem] border border-[#F4D03F]/10 transition-all font-black text-lg uppercase tracking-widest italic outline-none cursor-pointer",
                                                 priority === p
                                                     ? cn(
-                                                        p === 'low' && "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-                                                        p === 'medium' && "bg-honey/10 text-honey border-honey/20",
+                                                        p === 'low' && "bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/",
+                                                        p === 'medium' && "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20",
                                                         p === 'high' && "bg-red-500/10 text-red-500 border-red-500/20"
                                                     )
-                                                    : "bg-gray-50 text-foreground/30 hover:text-honey hover:border-honey/40"
+                                                    : "bg-[#F9F7F2] text-foreground/30 hover:text-[#F4D03F] hover:border-[#F4D03F]/40"
                                             )}
                                         >
                                             <div className={cn(
                                                 "w-4 h-4 rounded-full shadow-4xl animate-pulse",
-                                                p === 'low' && "bg-emerald-500",
-                                                p === 'medium' && "bg-honey",
+                                                p === 'low' && "bg-[#1B9157]",
+                                                p === 'medium' && "bg-[#F4D03F]",
                                                 p === 'high' && "bg-red-500"
                                             )} />
                                             {p}
@@ -312,10 +312,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             type="button"
                                             onClick={() => setCategory(cat)}
                                             className={cn(
-                                                "px-8 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all outline-none cursor-pointer italic border border-white/5 shadow-4xl",
+                                                "px-8 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all outline-none cursor-pointer italic border border-[#F4D03F]/10 shadow-4xl",
                                                 category === cat
-                                                    ? "bg-honey text-black border-honey"
-                                                    : "bg-gray-50 text-foreground/40 hover:text-honey hover:border-honey/40"
+                                                    ? "bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F]"
+                                                    : "bg-[#F9F7F2] text-foreground/40 hover:text-[#F4D03F] hover:border-[#F4D03F]/40"
                                             )}
                                         >
                                             {cat}
@@ -363,13 +363,13 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             animate={{ opacity: 1 }}
             className={glass.page}
         >
-            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-honey/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F]/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
 
             {/* Title Section */}
             <PageHeader
                 icon={StickyNote}
                 label="Observation Repository"
-                title={<>Apiary <span className="text-honey">Notes</span></>}
+                title={<>Apiary <span className="text-[#F4D03F]">Notes</span></>}
                 subtitle="Archive biometric observations, environmental data, and colony health logs in a high-fidelity glass framework."
                 actions={
                     <button
@@ -390,7 +390,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             >
                 <div className="flex flex-col md:flex-row gap-12 items-center">
                     <div className="relative flex-1 group/sel">
-                        <MapPin className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/sel:opacity-100 transition-opacity" />
+                        <MapPin className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-[#F4D03F] opacity-20 group-focus-within/sel:opacity-100 transition-opacity" />
                         <select
                             value={selectedPlaceId || ""}
                             onChange={(e) => setSelectedPlaceId(e.target.value || null)}
@@ -402,7 +402,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                     </div>
 
                     <div className="relative flex-1 group/sel">
-                        <Box className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/sel:opacity-100 transition-opacity" />
+                        <Box className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-[#F4D03F] opacity-20 group-focus-within/sel:opacity-100 transition-opacity" />
                         <select
                             value={selectedHiveId || ""}
                             onChange={(e) => setSelectedHiveId(e.target.value || null)}
@@ -415,7 +415,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                         </select>
                     </div>
 
-                    <div className="flex items-center gap-6 px-10 py-4 bg-gray-50 rounded-full border border-white/5 shadow-4xl skew-x-[-15deg]">
+                    <div className="flex items-center gap-6 px-10 py-4 bg-[#F9F7F2] rounded-full border border-[#F4D03F]/10 shadow-4xl skew-x-[-15deg]">
                         <span className="text-[12px] font-black uppercase tracking-[0.4em] skew-x-[15deg] italic text-foreground/40">
                             {filteredNotes.length} Observations
                         </span>
@@ -427,8 +427,8 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             <div className="relative z-10">
                 {filteredNotes.length === 0 ? (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={glass.emptyState}>
-                        <div className="w-56 h-56 rounded-[4rem] bg-honey/5 border border-honey/20 flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 shadow-4xl">
-                            <StickyNote className="w-28 h-28 text-honey opacity-20" />
+                        <div className="w-56 h-56 rounded-[4rem] bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 shadow-4xl">
+                            <StickyNote className="w-28 h-28 text-[#F4D03F] opacity-20" />
                         </div>
                         <div className="space-y-6">
                             <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none opacity-40">Zero Observations</h3>
@@ -448,19 +448,19 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.9, y: 30 }}
                                     transition={{ delay: i * 0.05, duration: 0.8 }}
-                                    className={cn(glass.card, "p-12 hover:border-honey/60 group cursor-default")}
+                                    className={cn(glass.card, "p-12 hover:border-[#F4D03F]/60 group cursor-default")}
                                 >
                                     <div className={cn("absolute top-0 right-0 w-3 h-full group-hover:w-4 transition-all duration-700",
                                         note.priority === 'high' ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]" :
-                                            note.priority === 'medium' ? "bg-honey shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                                            note.priority === 'medium' ? "bg-[#F4D03F] shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-[#1B9157] shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                                     )} />
 
                                     <div className="flex items-center justify-between mb-10">
-                                        <div className={cn(glass.badge, "bg-gray-50 text-foreground/40 border-white/5")}>
+                                        <div className={cn(glass.badge, "bg-[#F9F7F2] text-foreground/40 border-[#F4D03F]/10")}>
                                             <span className="skew-x-[15deg] block">{note.category?.toUpperCase() || "GENERAL"}</span>
                                         </div>
                                         <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-4 group-hover:translate-x-0">
-                                            <button onClick={() => setIsEditingNote(note)} className="w-14 h-14 rounded-2xl bg-white/10 border border-gray-200 flex items-center justify-center hover:bg-honey/20 hover:text-honey transition-all">
+                                            <button onClick={() => setIsEditingNote(note)} className="w-14 h-14 rounded-2xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center hover:bg-[#F4D03F]/20 hover:text-[#F4D03F] transition-all">
                                                 <Edit className="w-7 h-7" />
                                             </button>
                                             <button onClick={() => handleDeleteNote(note.id)} className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/10 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">
@@ -469,25 +469,25 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                         </div>
                                     </div>
 
-                                    <h4 className="text-4xl font-black italic text-foreground tracking-tighter uppercase mb-6 line-clamp-2 leading-none group-hover:text-honey transition-colors duration-700">
+                                    <h4 className="text-4xl font-black italic text-foreground tracking-tighter uppercase mb-6 line-clamp-2 leading-none group-hover:text-[#F4D03F] transition-colors duration-700">
                                         {note.title || "Observation Log"}
                                     </h4>
 
-                                    <div className="bg-gray-50 rounded-[2.5rem] p-8 border border-white/5 shadow-inner mb-8 group-hover:border-honey/20 transition-all duration-1000">
+                                    <div className="bg-[#F9F7F2] rounded-[2.5rem] p-8 border border-[#F4D03F]/10 shadow-inner mb-8 group-hover:border-[#F4D03F]/20 transition-all duration-1000">
                                         <p className="text-xl font-black text-foreground/40 italic leading-relaxed line-clamp-4 lowercase first-letter:uppercase">
                                             {note.content}
                                         </p>
                                     </div>
 
-                                    <div className="pt-8 border-t border-white/5 flex flex-wrap gap-8">
+                                    <div className="pt-8 border-t border-[#F4D03F]/10 flex flex-wrap gap-8">
                                         <div className="flex items-center gap-4">
-                                            <CalendarIcon className="w-6 h-6 text-honey opacity-30" />
+                                            <CalendarIcon className="w-6 h-6 text-[#F4D03F] opacity-30" />
                                             <span className="text-[12px] font-black text-foreground/20 italic uppercase tracking-[0.2em]">{format(new Date(note.note_date || note.created_at!), "dd MMM yyyy").toUpperCase()}</span>
                                         </div>
                                         {note.hive_id && (
-                                            <div className="flex items-center gap-4 px-6 py-2 bg-honey/5 border border-honey/10 rounded-full skew-x-[-15deg]">
-                                                <Box className="w-5 h-5 text-honey skew-x-[15deg]" />
-                                                <span className="text-[10px] font-black uppercase text-honey tracking-[0.3em] skew-x-[15deg] italic">
+                                            <div className="flex items-center gap-4 px-6 py-2 bg-[#F4D03F]/5 border border-[#F4D03F]/10 rounded-full skew-x-[-15deg]">
+                                                <Box className="w-5 h-5 text-[#F4D03F] skew-x-[15deg]" />
+                                                <span className="text-[10px] font-black uppercase text-[#F4D03F] tracking-[0.3em] skew-x-[15deg] italic">
                                                     HIVE: {hives.find(h => h.id === note.hive_id)?.hive_code.toUpperCase() || "UNIT"}
                                                 </span>
                                             </div>

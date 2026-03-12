@@ -1,6 +1,8 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, Shield, Crosshair, Hexagon, AlertCircle, Plus, Info, Zap, Trash2, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass, PageHeader } from './GlassTheme';
 
 interface HiveLogisticsSecurityProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -40,43 +42,38 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
     };
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "space-y-8 pb-32")}
+        >
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_#facc15]">
-                            <Shield className="w-6 h-6 text-[#facc15]" />
-                        </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Hive <span className="text-[#10b981]">Tracking</span>
-                        </h1>
-                    </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Bee Map · Virtual Fence · Live Log
-                    </p>
-                </div>
-
-                <div className="flex gap-4">
+            <PageHeader
+                icon={Shield}
+                label="BEE MAP · VIRTUAL FENCE · LIVE LOG"
+                title={<>Hive <span className="text-[#F4D03F]">Tracking</span></>}
+                subtitle="Live geofenced hive placements and security monitoring."
+                actions={
                     <button
                         onClick={() => setAddingHive(true)}
                         className={cn(
-                            "flex items-center gap-3 px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
-                            addingHive ? "bg-[#facc15] text-[#064e3b] border-[#064e3b] animate-pulse" : "bg-[#064e3b] text-gray-900 border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
+                            glass.btnPrimary,
+                            "h-12 px-6 font-black uppercase text-xs rounded-xl shadow-sm flex items-center gap-3 transition-all",
+                            addingHive ? "animate-pulse ring-2 ring-yellow-500" : ""
                         )}
                     >
-                        <Plus className="w-5 h-5" />
-                        {addingHive ? 'Click Map to Place Hives' : 'Track New Hives'}
+                        <Plus className="w-4 h-4" />
+                        {addingHive ? 'Click Map' : 'Track New Hives'}
                     </button>
-                </div>
-            </div>
+                }
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* 3D Map Interface */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
-                    <div className="border-8 border-[#064e3b] bg-[#f0f2f0] h-[600px] relative overflow-hidden shadow-[15px_15px_0px_0px_rgba(6,78,59,1)]">
+                    <div className={cn(glass.card, "bg-white/50 h-[500px] relative overflow-hidden rounded-3xl shadow-sm border-[#F4D03F]/10")}>
                         {/* Satellite-style underlying grid effect */}
-                        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#064e3b 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#064e3b 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
                         <svg
                             ref={svgRef}
@@ -88,52 +85,52 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                                 <circle
                                     key={`fence-${p.id}`}
                                     cx={p.x} cy={p.y} r="60"
-                                    fill="rgba(16,185,129,0.05)"
-                                    stroke="rgba(16,185,129,0.2)"
-                                    strokeWidth="2"
-                                    strokeDasharray="5 5"
+                                    fill="rgba(16,185,129,0.03)"
+                                    stroke="rgba(16,185,129,0.15)"
+                                    strokeWidth="1"
+                                    strokeDasharray="4 4"
                                 />
                             ))}
 
                             {/* Isometric Pallet Icons */}
                             {pallets.map(p => (
                                 <g key={p.id} transform={`translate(${p.x},${p.y})`} className="cursor-pointer group">
-                                    <ellipse cx="0" cy="12" rx="14" ry="6" fill="rgba(0,0,0,0.1)" />
+                                    <ellipse cx="0" cy="8" rx="10" ry="4" fill="rgba(0,0,0,0.05)" />
                                     <path
-                                        d="M -12,-8 L 0,-14 L 12,-8 L 12,4 L 0,10 L -12,4 Z"
+                                        d="M -10,-6 L 0,-11 L 10,-6 L 10,3 L 0,8 L -10,3 Z"
                                         fill="#064e3b"
                                         stroke="white"
-                                        strokeWidth="2"
+                                        strokeWidth="1.5"
                                     />
                                     <text
-                                        y="-2"
+                                        y="-1"
                                         textAnchor="middle"
-                                        fontSize="8"
+                                        fontSize="6"
                                         fontWeight="900"
                                         fill="white"
                                     >{p.hives}</text>
 
                                     {p.isSecure && (
-                                        <circle cx="12" cy="-12" r="4" fill="#10b981" className="animate-pulse" />
+                                        <circle cx="8" cy="-8" r="3" fill="#10b981" className="animate-pulse" />
                                     )}
                                 </g>
                             ))}
                         </svg>
 
-                        <div className="absolute bottom-6 left-6 p-4 bg-white/90 backdrop-blur-sm border-4 border-[#064e3b] shadow-xl">
-                            <h4 className="text-[10px] font-black uppercase text-[#064e3b] mb-2 tracking-widest border-b-2 border-[#064e3b]/10 pb-2">Hive Stats</h4>
-                            <div className="flex gap-10">
-                                <div>
-                                    <p className="text-[8px] font-black uppercase text-[#064e3b]/40">Active Spots</p>
-                                    <p className="text-xl font-black text-[#064e3b]">{pallets.length}</p>
+                        <div className="absolute bottom-6 left-6 p-4 bg-white/80 backdrop-blur-sm border border-[#F4D03F]/20 rounded-2xl shadow-sm">
+                            <h4 className="text-[10px] font-black uppercase text-[#064e3b] mb-3 tracking-widest border-b border-[#064e3b]/10 pb-2">Hive Stats</h4>
+                            <div className="flex gap-8">
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black uppercase opacity-40">Active</p>
+                                    <p className="text-lg font-black">{pallets.length}</p>
                                 </div>
-                                <div>
-                                    <p className="text-[8px] font-black uppercase text-[#064e3b]/40">Coverage</p>
-                                    <p className="text-xl font-black text-[#10b981]">84%</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black uppercase opacity-40">Coverage</p>
+                                    <p className="text-lg font-black text-[#10b981]">84%</p>
                                 </div>
-                                <div>
-                                    <p className="text-[8px] font-black uppercase text-[#064e3b]/40">Status</p>
-                                    <p className="text-xl font-black text-[#064e3b]">Normal</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black uppercase opacity-40">Status</p>
+                                    <p className="text-lg font-black">Normal</p>
                                 </div>
                             </div>
                         </div>
@@ -142,60 +139,60 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
 
                 {/* Security Audit & Exceptions Sidebar */}
                 <div className="lg:col-span-4 space-y-8">
-                    <div className="border-4 border-[#064e3b] p-8 bg-white shadow-[10px_10px_0px_0px_#064e3b]">
-                        <div className="flex items-center gap-3 mb-8 border-b-2 border-[#064e3b]/10 pb-4">
+                    <div className={cn(glass.card, "p-8 space-y-6 shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 relative overflow-hidden group")}>
+                        <div className="flex items-center justify-between mb-8 border-b-2 border-[#10b981]/10 pb-4">
+                            <h3 className="text-xl font-black uppercase tracking-tight leading-none">Live <span className="text-[#10b981]">History</span></h3>
                             <ShieldAlert className="w-5 h-5 text-[#10b981]" />
-                            <h3 className="text-xl font-black uppercase text-[#064e3b] tracking-tight">Live History</h3>
                         </div>
-                        <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+                        <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                             {[
                                 { status: 'OK', msg: 'Hives placed correctly on map.', time: '14:22' },
                                 { status: 'OK', msg: 'All sensors are working normally.', time: '14:15' },
                                 { status: 'WAIT', msg: 'Signal check in North area.', time: '13:58' },
                                 { status: 'OK', msg: 'GPS tracking updated.', time: '12:40' },
                             ].map((log, i) => (
-                                <div key={i} className="flex gap-4 items-start border-b border-[#064e3b]/5 pb-4 last:border-0">
+                                <div key={i} className="flex gap-4 items-start border-b border-black/5 pb-4 last:border-0">
                                     <span className={cn(
-                                        "text-[8px] font-black px-1.5 py-0.5 border leading-none",
-                                        log.status === 'OK' ? "bg-[#10b981] text-gray-900 border-[#10b981]" : "bg-[#facc15] text-[#064e3b] border-[#facc15]"
+                                        "text-[8px] font-black px-2 py-0.5 rounded-full",
+                                        log.status === 'OK' ? "bg-[#10b981] text-white" : "bg-[#F4D03F] text-white"
                                     )}>{log.status}</span>
-                                    <div>
-                                        <p className="text-[9px] font-bold text-[#064e3b]/70 uppercase">{log.msg}</p>
-                                        <p className="text-[8px] font-black text-[#064e3b]/30 uppercase mt-1">{log.time} </p>
+                                    <div className="space-y-0.5">
+                                        <p className="text-[10px] font-bold opacity-60 uppercase">{log.msg}</p>
+                                        <p className="text-[8px] font-black opacity-30 uppercase">{log.time} </p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="bg-[#064e3b] border-4 border-[#064e3b] p-8 text-gray-900 shadow-[10px_10px_0px_0px_#10b981]">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Crosshair className="w-6 h-6 text-[#facc15]" />
-                            <h3 className="text-xl font-black uppercase tracking-tight">Status Summary</h3>
+                    <div className={cn(glass.card, "p-8 shadow-sm bg-[#064e3b] text-white rounded-3xl group transition-all relative overflow-hidden")}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="flex items-center gap-4 mb-4 relative z-10">
+                            <Crosshair className="w-6 h-6 text-[#F4D03F]" />
+                            <h3 className="text-xl font-black uppercase tracking-tight leading-none">Status Summary</h3>
                         </div>
-                        <p className="text-[10px] font-bold text-white/60 leading-relaxed uppercase mb-6">
-                            Adding hives will set up an **Automatic Alarm**. Any unexpected movement will send an alert to your phone.
+                        <p className="text-[10px] font-bold opacity-70 leading-relaxed uppercase tracking-tight relative z-10 pl-4 border-l-4 border-[#F4D03F]/40">
+                            Adding hives will set up an **Automatic Alarm**. Any unexpected movement will send an alert.
                         </p>
-                        <div className="flex items-center gap-3 text-[#10b981]">
-                            <Info className="w-4 h-4" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">Queen Protected</span>
-                        </div>
                     </div>
 
-                    <div className="border-4 border-red-500 p-8 bg-red-50">
-                        <h4 className="text-red-600 font-black text-xs uppercase tracking-widest mb-4">Health Alerts</h4>
-                        <div className="p-4 bg-white border-2 border-red-500 flex items-center gap-4">
-                            <AlertCircle className="w-8 h-8 text-red-600" />
-                            <div>
-                                <p className="text-[10px] font-black text-red-600 uppercase">Movement Detected</p>
-                                <p className="text-[8px] font-bold text-red-500/60 uppercase">High winds or movement detected near your hives.</p>
+                    <div className={cn(glass.card, "p-8 space-y-4 border-red-500/20 bg-red-50/50 rounded-3xl shadow-sm")}>
+                        <h4 className="text-red-500 font-black text-xs uppercase tracking-widest mb-2">Health Alerts</h4>
+                        <div className="flex items-center gap-4 bg-white/50 p-4 rounded-2xl border border-red-500/10">
+                            <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20 shrink-0">
+                                <AlertCircle className="w-5 h-5 text-red-500" />
+                            </div>
+                            <div className="space-y-0.5">
+                                <p className="text-[10px] font-black text-red-500 uppercase">Movement Detected</p>
+                                <p className="text-[8px] font-bold opacity-60 uppercase">High winds or movement near hives.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
 export default HiveLogisticsSecurity;
+

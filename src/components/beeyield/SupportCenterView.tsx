@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -22,8 +21,10 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ServiceForm } from './ServiceForm';
-import { Loader2, Paperclip, Send, Printer, Headphones, Mail, Phone, MapPin, Search } from 'lucide-react';
+import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activity, ChevronRight, MessageSquare, ShieldCheck, Clock } from 'lucide-react';
 import { beeyieldService, SupportRequest } from '@/services/beeyieldService';
+import { motion } from 'framer-motion';
+import { glass, PageHeader } from './GlassTheme';
 
 interface SupportCenterViewProps {
     onTabChange: (tab: string) => void;
@@ -38,7 +39,6 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
     const [loading, setLoading] = React.useState(true);
     const [supportRequests, setSupportRequests] = React.useState<SupportRequest[]>([]);
 
-    // Form State
     const [formData, setFormData] = React.useState({
         category: 'General',
         subject: '',
@@ -48,9 +48,14 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
     const loadRequests = async () => {
         setLoading(true);
-        const data = await beeyieldService.getRequests();
-        setSupportRequests(data);
-        setLoading(false);
+        try {
+            const data = await beeyieldService.getRequests();
+            setSupportRequests(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     React.useEffect(() => {
@@ -59,7 +64,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
     const stats = {
         total: supportRequests.length,
-        lastRequest: supportRequests.length > 0 ? new Date(supportRequests[0].created_at).toLocaleDateString() : 'None yet',
+        lastRequest: supportRequests.length > 0 ? new Date(supportRequests[0].created_at).toLocaleDateString() : 'None',
         pending: supportRequests.filter(r => r.status === 'new').length,
         active: supportRequests.filter(r => r.status === 'in_progress').length,
         completed: supportRequests.filter(r => r.status === 'resolved').length,
@@ -67,7 +72,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
     const filteredRequests = supportRequests.filter(request => {
         const matchesTab = activeTab === 'all' || request.status === activeTab;
-        const matchesFilter = request.subject.toLowerCase().includes(filterText.toLowerCase());
+        const matchesFilter = request.subject?.toLowerCase().includes(filterText.toLowerCase());
         return matchesTab && matchesFilter;
     });
 
@@ -82,9 +87,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!formData.subject || !formData.description) {
-            toast.error("Please fill in all required fields.");
+            toast.error("Required fields missing.");
             return;
         }
 
@@ -100,206 +104,120 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
             setSupportRequests(prev => [data, ...prev]);
             setIsDialogOpen(false);
             setFormData({ category: 'General', subject: '', description: '', priority: 'medium' });
+            toast.success("Ticket Dispatched");
         }
         setIsSubmitting(false);
     };
 
-    const handlePrint = () => {
-        window.print();
-    };
-
     return (
-        <>
-            <div className="hidden print:block fixed inset-0 z-[9999] bg-white">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20 max-w-7xl mx-auto")}
+        >
+            <PageHeader
+                icon={Headphones}
+                label="Mission Control & Telemetry Support v2.0"
+                title={<>Nexus <span className="text-[#F4D03F]">Concierge</span></>}
+                subtitle="High-priority support for your apiary industrial control systems."
+                actions={
+                    <Button
+                        onClick={() => setIsDialogOpen(true)}
+                        className="h-10 bg-[#1B9157] text-white hover:bg-[#1B9157]/90 rounded-xl px-6 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#1B9157]/20"
+                    >
+                        New Ticket <ChevronRight className="w-4 h-4" />
+                    </Button>
+                }
+            />
+
+            {/* Print Layout */}
+            <div className="hidden print:block">
                 <ServiceForm />
             </div>
 
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20 print:hidden">
-                {/* Header Section */}
-                <div>
-                    <h1 className="text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">Support Centre</h1>
-                    <p className="text-sm font-medium text-slate-400">How can we help you today?</p>
-                </div>
-
+            <div className="print:hidden space-y-6">
                 {/* KPI Section */}
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                     {[
-                        { label: 'TOTAL REQUESTS', value: stats.total, color: 'text-blue-600', bg: 'bg-blue-500' },
-                        { label: 'LAST REQUEST', value: stats.lastRequest, color: 'text-slate-800', bg: 'bg-sky-400' },
-                        { label: 'PENDING', value: stats.pending, color: 'text-amber-600', bg: 'bg-amber-400' },
-                        { label: 'IN PROGRESS', value: stats.active, color: 'text-green-600', bg: 'bg-green-500' },
-                        { label: 'RESOLVED', value: stats.completed, color: 'text-slate-400', bg: 'bg-slate-300' },
+                        { label: 'Total Flux', value: stats.total, color: 'text-[#1A1A1A]', bg: 'bg-[#F4D03F]' },
+                        { label: 'Pending Node', value: stats.pending, color: 'text-amber-600', bg: 'bg-amber-400' },
+                        { label: 'Active Link', value: stats.active, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]' },
+                        { label: 'Archive', value: stats.completed, color: 'text-[#1A1A1A]/40', bg: 'bg-[#1A1A1A]/10' },
+                        { label: 'Last Comms', value: stats.lastRequest, color: 'text-[#1A1A1A]', bg: 'bg-blue-400' },
                     ].map((stat, i) => (
-                        <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden h-32 flex flex-col justify-between group hover:border-amber-200 transition-all">
-                            <div className={cn("absolute top-0 left-0 w-full h-[3px]", stat.bg)} />
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                            <span className={cn("text-3xl font-black tracking-tighter", stat.color)}>{stat.value}</span>
+                        <div key={i} className={cn(glass.card, "p-4 space-y-2 border-[#1A1A1A]/5 bg-[#FFF9F0]/80 rounded-2xl relative overflow-hidden group")}>
+                            <div className={cn("absolute top-0 left-0 w-full h-[2px] opacity-10", stat.bg)} />
+                            <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">{stat.label}</p>
+                            <p className={cn("text-2xl font-black tracking-tighter truncate", stat.color)}>{stat.value}</p>
                         </div>
                     ))}
                 </div>
 
-                {/* Contact & Support Actions */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-100 p-12 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/[0.03] rounded-full -mr-32 -mt-32 blur-3xl transition-transform group-hover:scale-110" />
-
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
-                        <div className="lg:col-span-8 space-y-10">
+                {/* Contact Hero */}
+                <div className={cn(glass.card, "p-8 lg:p-12 bg-[#FFF9F0]/80 rounded-[2.5rem] relative overflow-hidden group border-[#F4D03F]/10")}>
+                    <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F4D03F]/10 transition-all duration-1000" />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10">
+                        <div className="space-y-8">
                             <div>
-                                <h2 className="text-2xl font-black text-slate-800 mb-4">Contact Support Centre</h2>
-                                <p className="text-slate-500 font-medium max-w-xl leading-relaxed">
-                                    Our technical team is available 24/7 to assist with your BeeHUB devices, harvest software, or farm data questions.
+                                <h2 className="text-3xl font-black text-[#1A1A1A] mb-4 tracking-tighter italic uppercase leading-none">Contact <span className="text-[#F4D03F]">Concierge</span></h2>
+                                <p className="text-[#1A1A1A]/50 font-medium max-w-xl leading-relaxed italic text-sm">
+                                    Our industrial telemetry experts are available 24/7 to assist with BeeHUB synchronization, kernel updates, or sensor calibration.
                                 </p>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                                        <Mail className="w-3.5 h-3.5" /> Email
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {[
+                                    { icon: Mail, label: 'Kernel Mail', value: 'support@beeyield.com' },
+                                    { icon: Phone, label: 'Direct Pulse', value: '+254 700 000 000' },
+                                    { icon: MapPin, label: 'Sector Hub', value: 'Kibwezi, Kenya' }
+                                ].map((item, idx) => (
+                                    <div key={idx} className="space-y-1">
+                                        <div className="flex items-center gap-2 text-[8px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">
+                                            <item.icon className="w-3 h-3 text-[#F4D03F]" /> {item.label}
+                                        </div>
+                                        <p className="text-[#1A1A1A] font-black italic text-xs truncate">{item.value}</p>
                                     </div>
-                                    <p className="text-slate-800 font-bold">support@beeyield.com</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                                        <Phone className="w-3.5 h-3.5" /> WhatsApp
-                                    </div>
-                                    <p className="text-slate-800 font-bold">+254 700 000 000</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                                        <MapPin className="w-3.5 h-3.5" /> Office
-                                    </div>
-                                    <p className="text-slate-800 font-bold">Kibwezi, Kenya</p>
-                                </div>
+                                ))}
                             </div>
 
-                            <div className="pt-6 border-t border-slate-50">
-                                <p className="text-green-600 text-sm font-bold flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
-                                    Expected response time: Under 2 hours.
-                                </p>
+                            <div className="flex items-center gap-3 py-3 px-5 bg-[#1B9157]/5 border border-[#1B9157]/10 rounded-xl w-fit">
+                                <span className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
+                                <p className="text-[#1B9157] text-[10px] font-black uppercase tracking-widest italic">Response_SLA: &lt; 2 Hours</p>
                             </div>
                         </div>
 
-                        <div className="lg:col-span-4 flex flex-col gap-4 justify-center">
+                        <div className="flex flex-col gap-3 justify-center">
                             <Button
                                 variant="outline"
-                                className="h-14 rounded-2xl border-2 border-slate-100 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all"
+                                className="h-12 rounded-xl border-[#1A1A1A]/10 bg-white/50 font-black uppercase tracking-widest text-[9px] italic hover:bg-[#F4D03F]/10 transition-all"
                                 onClick={() => toast.info("Manuals loading...")}
                             >
-                                Technical Manuals
+                                <Activity className="w-4 h-4 mr-2" /> Technical Protocols
                             </Button>
                             <Button
-                                onClick={handlePrint}
-                                className="h-14 rounded-2xl bg-[#F4D03F] hover:bg-[#ebc735] text-slate-800 font-black uppercase tracking-widest text-[11px] gap-3 shadow-xl shadow-amber-500/10"
+                                onClick={() => window.print()}
+                                className="h-12 rounded-xl bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-black uppercase tracking-widest text-[9px] italic gap-3 shadow-lg shadow-[#F4D03F]/10"
                             >
-                                <Printer className="w-5 h-5" /> Print Service Form
+                                <Printer className="w-4 h-4" /> Export Service Form
                             </Button>
-
-                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <Button className="h-14 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-gray-900 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-500/10 hover:scale-[1.02] transition-all">
-                                        Open Ticket Online
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[700px] p-0 rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#FAF9F6]">
-                                    <div className="p-12 relative">
-                                        <div className="mb-10">
-                                            <h2 className="text-3xl font-black text-slate-800 mb-2 tracking-tighter">New Support Ticket</h2>
-                                            <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Secure help request</p>
-                                        </div>
-
-                                        <form onSubmit={handleSubmit} className="space-y-8">
-                                            <div className="grid grid-cols-2 gap-8">
-                                                <div className="space-y-3">
-                                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
-                                                    <Select name="category" value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
-                                                        <SelectTrigger id="support-category" className="h-16 rounded-2xl border-2 border-slate-200 bg-white px-6 font-bold text-slate-700">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
-                                                            <SelectItem value="Hardware" className="p-4 font-bold text-slate-700">Hardware Support</SelectItem>
-                                                            <SelectItem value="Software" className="p-4 font-bold text-slate-700">Software Request</SelectItem>
-                                                            <SelectItem value="Traceability" className="p-4 font-bold text-slate-700">Product History</SelectItem>
-                                                            <SelectItem value="General" className="p-4 font-bold text-slate-700">General</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="space-y-3">
-                                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Priority</Label>
-                                                    <Select name="priority" value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
-                                                        <SelectTrigger id="support-priority" className="h-16 rounded-2xl border-2 border-slate-200 bg-white px-6 font-bold text-slate-700">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
-                                                            <SelectItem value="low" className="p-4 font-bold text-slate-700">Low</SelectItem>
-                                                            <SelectItem value="medium" className="p-4 font-bold text-slate-700">Medium</SelectItem>
-                                                            <SelectItem value="high" className="p-4 font-bold text-slate-700">High / Critical</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</Label>
-                                                <Input
-                                                    id="support-subject"
-                                                    name="subject"
-                                                    value={formData.subject}
-                                                    onChange={handleInputChange}
-                                                    placeholder="Briefly describe the issue..."
-                                                    className="h-16 rounded-2xl border-2 border-slate-200 bg-white px-6 font-bold text-slate-800 focus-visible:border-amber-400 transition-colors"
-                                                />
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description</Label>
-                                                <Textarea
-                                                    id="support-description"
-                                                    name="description"
-                                                    value={formData.description}
-                                                    onChange={handleInputChange}
-                                                    placeholder="Detailed explanation..."
-                                                    className="min-h-[160px] rounded-2xl border-2 border-slate-200 bg-white p-6 font-medium text-slate-800 resize-none focus-visible:border-amber-400 transition-colors"
-                                                />
-                                            </div>
-
-                                            <div className="flex items-center justify-between pt-6">
-                                                <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Encrypted Session</p>
-                                                <div className="flex gap-4">
-                                                    <Button variant="ghost" type="button" onClick={() => setIsDialogOpen(false)} className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-slate-600">
-                                                        Cancel
-                                                    </Button>
-                                                    <Button
-                                                        type="submit"
-                                                        disabled={isSubmitting}
-                                                        className="h-14 px-8 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-gray-900 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-500/10"
-                                                    >
-                                                        {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Submit Ticket"}
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
                         </div>
                     </div>
                 </div>
 
-                {/* Table Section */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                {/* Tickets Ledger */}
+                <div className="space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#F4D03F]/10 w-fit">
                             {['all', 'new', 'in_progress', 'resolved'].map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab as any)}
                                     className={cn(
-                                        "px-6 h-11 rounded-full text-[11px] font-black uppercase tracking-widest transition-all",
+                                        "px-4 h-8 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all italic",
                                         activeTab === tab
-                                            ? "bg-slate-900 text-gray-900 shadow-xl shadow-slate-900/10"
-                                            : "hover:bg-slate-100 text-slate-400"
+                                            ? "bg-white text-[#1A1A1A] shadow-sm"
+                                            : "text-[#1A1A1A]/30 hover:text-[#1A1A1A]/60"
                                     )}
                                 >
                                     {tab.replace('_', ' ')}
@@ -307,84 +225,173 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                             ))}
                         </div>
 
-                        <div className="relative group min-w-[300px]">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-amber-500 transition-all" />
+                        <div className="relative group w-full md:w-80">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1A1A1A]/20 group-focus-within:text-[#F4D03F] transition-all" />
                             <input
-                                id="ticket-search"
-                                name="ticket-search"
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)}
-                                placeholder="Search tickets..."
-                                className="w-full h-11 bg-white border border-slate-100 rounded-full pl-11 pr-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500/30 transition-all"
+                                placeholder="Search archives..."
+                                className="w-full h-10 bg-[#FFF9F0]/80 border border-[#F4D03F]/10 rounded-xl pl-10 pr-4 text-[11px] font-black italic text-[#1A1A1A] outline-none focus:ring-1 focus:ring-[#F4D03F]/30 transition-all"
                             />
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden min-h-[400px]">
+                    <div className={cn(glass.card, "p-0 overflow-hidden bg-[#FFF9F0]/80 rounded-3xl min-h-[400px]")}>
                         {loading ? (
                             <div className="flex items-center justify-center h-[400px]">
-                                <Loader2 className="w-8 h-8 animate-spin text-slate-200" />
+                                <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]/20" />
                             </div>
                         ) : filteredRequests.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-[400px] text-center p-8">
-                                <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6">
-                                    <Send className="w-8 h-8 text-slate-200" />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-800 mb-2">No tickets found</h3>
-                                <p className="text-sm font-medium text-slate-400 max-w-xs leading-relaxed">
-                                    {filterText ? "Try searching for something else." : "You're all set! No active support tickets."}
-                                </p>
+                            <div className="flex flex-col items-center justify-center h-[400px] text-center p-8 opacity-40 italic">
+                                <Send className="w-12 h-12 mb-4 opacity-20" />
+                                <h3 className="text-sm font-black uppercase tracking-widest mb-1">Null_Records_Found</h3>
+                                <p className="text-[10px] font-medium uppercase tracking-widest opacity-60">Ledger is optimized & synchronized.</p>
                             </div>
                         ) : (
-                            <table className="w-full">
-                                <thead className="bg-slate-50/50 border-b border-slate-50">
-                                    <tr>
-                                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subject</th>
-                                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Priority</th>
-                                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
-                                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Created</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    {filteredRequests.map((request) => (
-                                        <tr key={request.id} className="hover:bg-slate-50/50:bg-white/[0.01] transition-colors cursor-pointer group">
-                                            <td className="px-10 py-6">
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-black text-slate-800 group-hover:text-[#1B9157] transition-colors">{request.subject}</span>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{request.category}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-10 py-6">
-                                                <span className={cn(
-                                                    "px-3 py-1 text-[9px] font-black uppercase tracking-wider rounded-lg",
-                                                    request.priority === 'high' ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"
-                                                )}>
-                                                    {request.priority || 'medium'}
-                                                </span>
-                                            </td>
-                                            <td className="px-10 py-6">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={cn(
-                                                        "w-1.5 h-1.5 rounded-full",
-                                                        request.status === 'new' ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]" :
-                                                            request.status === 'in_progress' ? "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" :
-                                                                "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"
-                                                    )} />
-                                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{request.status.replace('_', ' ')}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-10 py-6 text-[11px] font-bold text-slate-400 tabular-nums">
-                                                {new Date(request.created_at).toLocaleDateString()}
-                                            </td>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="bg-[#1A1A1A]/5">
+                                        <tr>
+                                            <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Sequence_Subject</th>
+                                            <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Priority_Hash</th>
+                                            <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Kernel_Status</th>
+                                            <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Timestamp</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#F4D03F]/5">
+                                        {filteredRequests.map((request) => (
+                                            <tr key={request.id} className="hover:bg-[#F4D03F]/[0.02] transition-colors cursor-pointer group">
+                                                <td className="px-8 py-5">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-black text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors italic uppercase leading-none">{request.subject}</span>
+                                                        <span className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic mt-1.5">{request.category}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-5">
+                                                    <span className={cn(
+                                                        "px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full italic",
+                                                        request.priority === 'high' ? "bg-red-500/10 text-red-600" : "bg-blue-500/10 text-blue-600"
+                                                    )}>
+                                                        {request.priority || 'medium'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-5">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={cn(
+                                                            "w-1.5 h-1.5 rounded-full",
+                                                            request.status === 'new' ? "bg-amber-400" :
+                                                                request.status === 'in_progress' ? "bg-blue-500" :
+                                                                    "bg-[#1B9157]"
+                                                        )} />
+                                                        <span className="text-[10px] font-black text-[#1A1A1A]/60 uppercase tracking-widest italic">{request.status.replace('_', ' ')}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-5 text-[10px] font-black text-[#1A1A1A]/30 tabular-nums italic">
+                                                    {new Date(request.created_at).toLocaleDateString()}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </div>
+
+                {/* Dialog Implementation */}
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogContent className="sm:max-w-[700px] p-0 rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#FFF9F0]">
+                        <div className="p-10 lg:p-14 relative overflow-hidden">
+                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl" />
+                            
+                            <div className="mb-10 flex items-center gap-5">
+                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border-2 border-[#F4D03F]/10 shadow-sm">
+                                    <MessageSquare className="w-6 h-6 text-[#F4D03F]" />
+                                </div>
+                                <div>
+                                    <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter italic uppercase leading-none">New <span className="text-[#F4D03F]">Protocol</span> Ticket</h2>
+                                    <p className="text-[10px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic mt-1">Encrypted Support Session v4.1</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic ml-4">Dispatch Category</Label>
+                                        <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
+                                            <SelectTrigger className="h-14 rounded-2xl border border-[#F4D03F]/10 bg-white/50 px-6 font-black italic text-[#1A1A1A] text-sm">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-[#F4D03F]/10 shadow-3xl bg-white">
+                                                <SelectItem value="Hardware" className="p-4 font-black italic uppercase text-xs">Hardware Calibration</SelectItem>
+                                                <SelectItem value="Software" className="p-4 font-black italic uppercase text-xs">Kernel / App Issue</SelectItem>
+                                                <SelectItem value="Traceability" className="p-4 font-black italic uppercase text-xs">Ledger / API Query</SelectItem>
+                                                <SelectItem value="General" className="p-4 font-black italic uppercase text-xs">General Logistics</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <Label className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic ml-4">Response Priority</Label>
+                                        <Select value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
+                                            <SelectTrigger className="h-14 rounded-2xl border border-[#F4D03F]/10 bg-white/50 px-6 font-black italic text-[#1A1A1A] text-sm">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-[#F4D03F]/10 shadow-3xl bg-white">
+                                                <SelectItem value="low" className="p-4 font-black italic uppercase text-xs">Low Flux</SelectItem>
+                                                <SelectItem value="medium" className="p-4 font-black italic uppercase text-xs">Standard Nominal</SelectItem>
+                                                <SelectItem value="high" className="p-4 font-black italic uppercase text-xs text-red-600">High / Critical Alert</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Label className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic ml-4">Mission Subject</Label>
+                                    <Input
+                                        name="subject"
+                                        value={formData.subject}
+                                        onChange={handleInputChange}
+                                        placeholder="Identify the anomaly..."
+                                        className="h-14 rounded-2xl border border-[#F4D03F]/10 bg-white/50 px-6 font-black italic text-[#1A1A1A] placeholder:text-[#1A1A1A]/20"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Label className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic ml-4">Telemetry Details</Label>
+                                    <Textarea
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleInputChange}
+                                        placeholder="Full context for technical dispatch..."
+                                        className="min-h-[160px] rounded-2xl border border-[#F4D03F]/10 bg-white/50 p-6 font-medium text-[#1A1A1A] placeholder:text-[#1A1A1A]/20 resize-none italic"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-[#F4D03F]/10">
+                                    <div className="flex items-center gap-3 opacity-30">
+                                        <ShieldCheck className="w-5 h-5" />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] italic">Encrypted_Payload: OK</p>
+                                    </div>
+                                    <div className="flex gap-4 w-full md:w-auto">
+                                        <Button variant="ghost" type="button" onClick={() => setIsDialogOpen(false)} className="h-14 flex-1 md:px-8 rounded-2xl font-black uppercase tracking-widest text-[9px] text-[#1A1A1A]/40 hover:text-[#1A1A1A] italic">
+                                            Abort
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="h-14 flex-1 md:px-12 rounded-2xl bg-[#1B9157] hover:bg-[#1B9157]/90 text-white font-black uppercase tracking-widest text-[10px] italic shadow-xl shadow-green-500/10"
+                                        >
+                                            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Dispatch Ticket"}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
-        </>
+        </motion.div>
     );
 };
 

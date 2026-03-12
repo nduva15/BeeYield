@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, CheckCircle, LogIn } from 'lucide-react';
 
 interface ShopForgotPasswordFormProps {
     onBackToLogin: () => void;
@@ -25,10 +25,10 @@ const ShopForgotPasswordForm: React.FC<ShopForgotPasswordFormProps> = ({
         const { error } = await resetPassword(email, 'shop');
 
         if (error) {
-            toast.error('Recovery Failed', { description: error.message });
+            toast.error('Error', { description: error.message });
         } else {
             setEmailSent(true);
-            toast.success('Check your email! 🍯');
+            toast.success('Reset email sent');
         }
         setLoading(false);
     };
@@ -36,21 +36,21 @@ const ShopForgotPasswordForm: React.FC<ShopForgotPasswordFormProps> = ({
     if (emailSent) {
         return (
             <div className="space-y-6 text-center">
-                <div className="w-20 h-20 rounded-[2rem] bg-beeyield-gold/10 flex items-center justify-center mx-auto border border-beeyield-gold/20">
-                    <CheckCircle className="h-10 w-10 text-beeyield-gold" />
+                <div className="w-16 h-16 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="h-10 w-10 text-beeyield-green" />
                 </div>
                 <div className="space-y-2">
-                    <h3 className="text-xl font-black text-beeyield-green uppercase tracking-tighter">Check Your Hive</h3>
-                    <p className="text-sm text-beeyield-green/60 font-medium leading-relaxed">
-                        We've sent a recovery link to <span className="font-bold text-beeyield-green">{email}</span>. Click it to reset your access.
+                    <h3 className="text-xl font-bold text-gray-900">Check your email</h3>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                        We've sent a password reset link to <span className="text-beeyield-green font-bold">{email}</span>.
                     </p>
                 </div>
                 <Button
                     variant="outline"
-                    className="w-full h-12 border-beeyield-green/10 text-beeyield-green font-bold"
+                    className="w-full h-12 bg-gray-50 border-gray-200 text-gray-600 hover:text-gray-900 font-bold rounded-xl transition-all"
                     onClick={onBackToLogin}
                 >
-                    Back to Sign In
+                    Return to login
                 </Button>
             </div>
         );
@@ -59,26 +59,26 @@ const ShopForgotPasswordForm: React.FC<ShopForgotPasswordFormProps> = ({
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center space-y-2">
-                <div className="w-16 h-16 rounded-[1.5rem] bg-beeyield-gold/10 flex items-center justify-center mx-auto border border-beeyield-gold/20">
-                    <Mail className="h-8 w-8 text-beeyield-gold" />
+                <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
+                    <Mail className="h-6 w-6 text-honey" />
                 </div>
-                <h3 className="text-xl font-black text-beeyield-green uppercase tracking-tighter">Account Recovery</h3>
-                <p className="text-xs font-medium text-beeyield-green/60 uppercase tracking-widest">
-                    Enter your email to receive a secure link
+                <h3 className="text-lg font-bold text-gray-900">Reset your password</h3>
+                <p className="text-sm text-gray-500 font-medium">
+                    Enter your email to receive a password reset link
                 </p>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="shop-reset-email" className="text-beeyield-green font-bold text-[10px] uppercase tracking-widest">Email Address</Label>
+                <Label htmlFor="shop-reset-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
                 <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/30" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="shop-reset-email"
                         type="email"
-                        placeholder="honey_lover@gmail.com"
+                        placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-12 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl"
+                        className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                         required
                         autoFocus
                     />
@@ -87,19 +87,19 @@ const ShopForgotPasswordForm: React.FC<ShopForgotPasswordFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-white font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                 disabled={loading}
             >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send Recovery Link'}
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+                Send Reset Link
             </Button>
 
             <button
                 type="button"
                 onClick={onBackToLogin}
-                className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
+                className="w-full text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors py-2 flex items-center justify-center gap-2"
             >
-                <ArrowLeft className="h-3 w-3" />
-                Return to Login
+                <ArrowLeft className="h-4 w-4" /> Back to login
             </button>
         </form>
     );

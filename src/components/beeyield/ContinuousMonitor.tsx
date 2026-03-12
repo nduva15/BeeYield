@@ -30,8 +30,8 @@ const initialEvents: HiveEvent[] = [
 ];
 
 const levelConfig: Record<EventLevel, { color: string; bg: string; icon: React.ElementType; dot: string; glow: string }> = {
-    ok: { color: 'text-emerald-500', bg: 'bg-emerald-500/5', icon: CheckCircle2, dot: 'bg-emerald-500', glow: 'shadow-emerald-500/20' },
-    warn: { color: 'text-amber-500', bg: 'bg-amber-500/5', icon: AlertTriangle, dot: 'bg-amber-500', glow: 'shadow-amber-500/20' },
+    ok: { color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/', icon: CheckCircle2, dot: 'bg-[#1B9157]', glow: 'shadow-emerald-500/20' },
+    warn: { color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/', icon: AlertTriangle, dot: 'bg-[#F4D03F]', glow: 'shadow-amber-500/20' },
     critical: { color: 'text-red-500', bg: 'bg-red-500/5', icon: ShieldAlert, dot: 'bg-red-500 animate-pulse', glow: 'shadow-red-500/40' },
 };
 
@@ -82,12 +82,12 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
                         <Wifi className="w-4 h-4 mr-2" />
                         Live Synchronous Monitoring v5.0
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Continuous <span className="text-honey">Monitor</span>
+                        Continuous <span className="text-[#F4D03F]">Monitor</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
                         24/7 Hive Heartbeat Stream · Acoustic Analysis · Thermal Vitals
@@ -101,7 +101,7 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                 initial={{ opacity: 0, x: 10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -10 }}
-                                className={cn(glass.badge, "bg-red-500 text-gray-900 border-transparent px-4 py-2 shadow-lg shadow-red-500/20 animate-pulse")}
+                                className={cn(glass.badge, "bg-red-500 text-[#1A1A1A] border-transparent px-4 py-2 shadow-lg shadow-red-500/20 animate-pulse")}
                             >
                                 <ShieldAlert className="w-4 h-4 mr-2" /> {criticalCount} Critical
                             </motion.div>
@@ -111,16 +111,16 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                 initial={{ opacity: 0, x: 10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -10 }}
-                                className={cn(glass.badge, "bg-amber-500 text-gray-900 border-transparent px-4 py-2 shadow-lg shadow-amber-500/20")}
+                                className={cn(glass.badge, "bg-[#F4D03F] text-[#1A1A1A] border-transparent px-4 py-2 shadow-lg shadow-amber-500/20")}
                             >
                                 <AlertTriangle className="w-4 h-4 mr-2" /> {warnCount} Warnings
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <div className={cn(glass.badge, "bg-white/40 border-honey/30 px-6 py-2 shadow-inner group")}>
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                        <Clock className="w-4 h-4 text-honey mr-2 group-hover:rotate-12 transition-transform" />
-                        <span className="text-honey font-bold text-sm tracking-widest tabular-nums">
+                    <div className={cn(glass.badge, "bg-gray-400 border-[#F4D03F]/30 px-6 py-2 shadow-inner group")}>
+                        <div className="w-2 h-2 rounded-full bg-[#1B9157] mr-3 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                        <Clock className="w-4 h-4 text-[#F4D03F] mr-2 group-hover:rotate-12 transition-transform" />
+                        <span className="text-[#F4D03F] font-bold text-sm tracking-widest tabular-nums">
                             {liveTime.toLocaleTimeString()}
                         </span>
                     </div>
@@ -130,7 +130,7 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
             {/* Heartbeat Grid */}
             <div className="space-y-6">
                 <div className="flex items-center gap-3 px-2">
-                    <Activity className="w-5 h-5 text-honey" />
+                    <Activity className="w-5 h-5 text-[#F4D03F]" />
                     <h3 className={cn(glass.microLabel, "font-bold opacity-60 uppercase tracking-[0.3em]")}>Fleet Heartbeat</h3>
                 </div>
 
@@ -146,11 +146,11 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                 transition={{ delay: nodeIdx * 0.05 }}
                                 className={cn(
                                     glass.card,
-                                    "p-8 space-y-6 shadow-xl hover:shadow-2xl transition-all border-honey/10 relative overflow-hidden group",
+                                    "p-8 space-y-6 shadow-xl hover:shadow-2xl transition-all border-[#F4D03F]/10 relative overflow-hidden group",
                                     node.status === 'critical' ? 'border-red-500/30' : node.status === 'warn' ? 'border-amber-500/30' : ''
                                 )}
                             >
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-honey/5 rounded-full blur-xl pointer-events-none group-hover:bg-honey/10 transition-colors" />
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-[#F4D03F]/5 rounded-full blur-xl pointer-events-none group-hover:bg-[#F4D03F]/10 transition-colors" />
 
                                 <div className="flex items-center justify-between relative z-10">
                                     <div className="flex items-center gap-4">
@@ -175,8 +175,8 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                                             className={cn(
                                                 "flex-1 rounded-full opacity-30 group-hover:opacity-60 transition-opacity",
-                                                node.status === 'ok' ? 'bg-emerald-500' :
-                                                    node.status === 'warn' ? 'bg-amber-500' : 'bg-red-500'
+                                                node.status === 'ok' ? 'bg-[#1B9157]' :
+                                                    node.status === 'warn' ? 'bg-[#F4D03F]' : 'bg-red-500'
                                             )}
                                         />
                                     ))}
@@ -191,21 +191,21 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border/50 pb-6 gap-4 px-2">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-sm">
-                            <Zap className="w-6 h-6 text-honey" />
+                        <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                            <Zap className="w-6 h-6 text-[#F4D03F]" />
                         </div>
                         <div>
-                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Activity <span className="text-honey">Ledger</span></h3>
+                            <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Activity <span className="text-[#F4D03F]">Ledger</span></h3>
                             <p className={cn(glass.microLabel, "normal-case italic opacity-60 mt-1")}>Recursive real-time event indexing</p>
                         </div>
                     </div>
-                    <div className={cn(glass.badge, "bg-white/40 border-border px-4 py-2 shadow-sm font-bold")}>
+                    <div className={cn(glass.badge, "bg-gray-400 border-border px-4 py-2 shadow-sm font-bold")}>
                         {events.length} EVENTS_BUFFERED
                     </div>
                 </div>
 
                 <div className={cn(glass.card, "p-0 shadow-2xl overflow-hidden border-border/50 relative")}>
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
                     <div className="max-h-[550px] overflow-y-auto divide-y divide-border/20 custom-scrollbar relative z-10">
                         <AnimatePresence initial={false}>
@@ -219,10 +219,10 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                         animate={{ opacity: 1, x: 0, height: 'auto' }}
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.3 }}
-                                        className={cn("flex items-start gap-6 px-10 py-6 hover:bg-white/40:bg-gray-100 transition-all group overflow-hidden")}
+                                        className={cn("flex items-start gap-6 px-10 py-6 hover:bg-gray-400:bg-[#F4D03F]/10 transition-all group overflow-hidden")}
                                     >
                                         <div className={cn("w-1.5 h-12 rounded-full shrink-0 group-hover:scale-y-110 transition-transform", cfg.dot, "shadow-sm")} />
-                                        <div className={cn("w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm group-hover:border-honey transition-colors")}>
+                                        <div className={cn("w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm group-hover:border-[#F4D03F] transition-colors")}>
                                             <Icon className={cn("w-6 h-6", cfg.color)} />
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -252,11 +252,11 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-gradient-to-br from-honey/10 to-transparent border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-gradient-to-br from-honey/10 to-transparent border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
-                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/15 rounded-full blur-[80px] pointer-events-none group-hover:bg-honey/25 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-8 h-8 text-honey" />
+                <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/15 rounded-full blur-[80px] pointer-events-none group-hover:bg-[#F4D03F]/25 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
                     <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Continuous Monitoring Insight</h5>

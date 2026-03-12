@@ -27,9 +27,9 @@ const PrecisionPollination = () => {
   ];
 
   return (
-    <div className="pt-24 min-h-screen bg-white">
+    <div className="pt-24 min-h-screen bg-[#FFF9F0]">
       {/* Dynamic Nav Bar / Sticky Sub-header */}
-      <div className="sticky top-20 z-50 bg-white/80 backdrop-blur-md border-b-4 border-[#064e3b] py-4">
+      <div className="sticky top-20 z-50 bg-[#FFF9F0]/80 backdrop-blur-md border-b-4 border-[#064e3b] py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#facc15] border-2 border-[#064e3b] flex items-center justify-center">
@@ -40,12 +40,12 @@ const PrecisionPollination = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-gray-900 border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
+              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-[#1A1A1A] border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
                 Professional Suite
                 <ChevronDown className="w-3 h-3" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 bg-white border-4 border-[#064e3b] rounded-none shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+            <DropdownMenuContent className="w-72 p-2 bg-[#FFF9F0] border-4 border-[#064e3b] rounded-none shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
               {professionalTools.map((tool) => (
                 <DropdownMenuItem key={tool.path} asChild>
                   <Link to={tool.path} className="flex items-start gap-4 p-4 hover:bg-[#facc15]/10 cursor-pointer group outline-none">
@@ -90,7 +90,7 @@ const PrecisionPollination = () => {
                 <div className="absolute -bottom-4 -right-4 bg-background rounded-xl shadow-lg p-4 border border-border">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-foreground">Live Monitoring Active</p>
-                    <div className="flex items-center gap-1 text-xs text-green-600">
+                    <div className="flex items-center gap-1 text-xs text-[#1B9157]">
                       <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                       System Online
                     </div>

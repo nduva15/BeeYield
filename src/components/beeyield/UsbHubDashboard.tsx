@@ -156,18 +156,18 @@ export function UsbHubDashboard() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-10 shadow-2xl relative overflow-hidden group border-honey/10")}
+                className={cn(glass.card, "p-10 shadow-2xl relative overflow-hidden group border-[#F4D03F]/10")}
             >
                 <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-honey/[0.03] to-transparent pointer-events-none" />
-                <div className="absolute top-0 right-0 w-64 h-64 bg-honey/5 rounded-full blur-[80px] pointer-events-none -mr-32 -mt-32" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-[80px] pointer-events-none -mr-32 -mt-32" />
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
                     <div className="flex items-center gap-8">
-                        <div className="w-24 h-24 bg-white/40 rounded-[2rem] flex items-center justify-center p-5 border border-honey/20 shadow-xl group-hover:scale-105 transition-transform duration-700">
+                        <div className="w-24 h-24 bg-gray-400 rounded-[2rem] flex items-center justify-center p-5 border border-[#F4D03F]/20 shadow-xl group-hover:scale-105 transition-transform duration-700">
                             <img src={logoAsset} alt="BeeYield" className="w-full h-full object-contain" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Architecture <span className="text-honey">Manager</span></h2>
+                            <h2 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Architecture <span className="text-[#F4D03F]">Manager</span></h2>
                             <p className={cn(glass.microLabel, "opacity-40 font-bold uppercase tracking-[0.2em]")}>HARDWARE_VERSION_ALPHA_COMM_PORT</p>
                         </div>
                     </div>
@@ -175,13 +175,13 @@ export function UsbHubDashboard() {
                     <div className="flex flex-col items-end gap-3">
                         <div className={cn(
                             "flex items-center gap-4 px-6 py-3 rounded-full border backdrop-blur-md shadow-xl transition-all duration-500",
-                            connectionStatus === 'connected' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/10 border-gray-300 opacity-40'
+                            connectionStatus === 'connected' ? 'bg-[#1B9157]/ border-[#1B9157]/' : 'bg-[#F4D03F]/10 border-[#F4D03F]/40 opacity-40'
                         )}>
                             <div className={cn(
                                 "w-2.5 h-2.5 rounded-full transition-all duration-500",
-                                connectionStatus === 'connected' ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-foreground/20'
+                                connectionStatus === 'connected' ? 'bg-[#1B9157] shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-foreground/20'
                             )} />
-                            <span className={cn(glass.microLabel, connectionStatus === 'connected' ? 'text-emerald-500' : 'text-foreground/40', "font-black italic tracking-widest")}>
+                            <span className={cn(glass.microLabel, connectionStatus === 'connected' ? 'text-[#1B9157]' : 'text-foreground/40', "font-black italic tracking-widest")}>
                                 {connectionStatus === 'connected' ? 'HANDSHAKE_ESTABLISHED' : 'LINK_OFFLINE'}
                             </span>
                         </div>
@@ -197,17 +197,17 @@ export function UsbHubDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className={cn(glass.card, "p-12 shadow-2xl border-honey/5 relative overflow-hidden")}
+                className={cn(glass.card, "p-12 shadow-2xl border-[#F4D03F]/5 relative overflow-hidden")}
             >
-                <div className="absolute top-0 left-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -ml-48 -mt-48" />
+                <div className="absolute top-0 left-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -ml-48 -mt-48" />
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-12 relative z-10 pb-8 border-b border-border/50">
                     <div className="space-y-3">
-                        <div className={cn(glass.badge, "bg-honey/10 text-honey border-honey/20")}>
+                        <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20")}>
                             <Activity className="w-3.5 h-3.5 mr-2" />
                             DATA_EGRSS_STREAM
                         </div>
-                        <h2 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Live <span className="text-honey">Architecture Terminal</span></h2>
+                        <h2 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Live <span className="text-[#F4D03F]">Architecture Terminal</span></h2>
                         <p className={cn(glass.microLabel, "opacity-40 italic mt-2")}>RAW_SERIAL_INPUT_COLONY_TELEMETRY</p>
                     </div>
 
@@ -220,16 +220,16 @@ export function UsbHubDashboard() {
                     </button>
                 </div>
 
-                <div className="bg-white/95 rounded-[2.5rem] p-10 space-y-6 shadow-2xl border border-honey/10 relative overflow-hidden group">
+                <div className="bg-[#FFF9F0]/95 rounded-[2.5rem] p-10 space-y-6 shadow-2xl border border-[#F4D03F]/10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-honey/30 to-transparent" />
 
-                    <div className="flex items-center justify-between px-4 pb-4 border-b border-white/5">
+                    <div className="flex items-center justify-between px-4 pb-4 border-b border-[#F4D03F]/10">
                         <div className="flex items-center gap-4">
-                            <Cpu className="w-4 h-4 text-honey animate-pulse" />
-                            <span className={cn(glass.microLabel, "text-honey/60 font-black tracking-[0.3em] font-mono")}>KERNEL_LOG_BUFFER</span>
+                            <Cpu className="w-4 h-4 text-[#F4D03F] animate-pulse" />
+                            <span className={cn(glass.microLabel, "text-[#F4D03F]/60 font-black tracking-[0.3em] font-mono")}>KERNEL_LOG_BUFFER</span>
                         </div>
                         {logs.length > 0 && (
-                            <button onClick={() => setLogs([])} className={cn(glass.microLabel, "text-honey/30 hover:text-honey transition-colors font-black tracking-widest text-[9px]")}>
+                            <button onClick={() => setLogs([])} className={cn(glass.microLabel, "text-[#F4D03F]/30 hover:text-[#F4D03F] transition-colors font-black tracking-widest text-[9px]")}>
                                 [ CLEAR_BUFFER ]
                             </button>
                         )}
@@ -238,21 +238,21 @@ export function UsbHubDashboard() {
                     <div className="min-h-[300px] font-mono text-[11px] relative overflow-hidden">
                         {logs.length === 0 ? (
                             <div className="text-gray-400 flex flex-col items-center justify-center h-full gap-4 pt-12">
-                                <div className="w-1.5 h-6 bg-honey/40 rounded-full animate-pulse shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
+                                <div className="w-1.5 h-6 bg-[#F4D03F]/40 rounded-full animate-pulse shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
                                 <span className="uppercase tracking-[0.4em] font-black italic">Awaiting serial handshake...</span>
                             </div>
                         ) : (
-                            <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar-terminal text-honey/80 p-4 bg-honey/[0.01] rounded-2xl border border-white/5">
+                            <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar-terminal text-[#F4D03F]/80 p-4 bg-[#F4D03F]/[0.01] rounded-2xl border border-[#F4D03F]/10">
                                 {logs.map((log, i) => (
-                                    <div key={i} className="flex gap-6 border-b border-white/5 pb-3 transition-colors hover:bg-white/[0.02]">
-                                        <span className="text-honey/20 font-black text-[9px] w-10 shrink-0 tabular-nums">[{String(i + 1).padStart(3, '0')}]</span>
-                                        <span className="font-bold tracking-tight leading-relaxed selection:bg-honey/30 selection:text-white uppercase text-[10px]">{log}</span>
+                                    <div key={i} className="flex gap-6 border-b border-[#F4D03F]/10 pb-3 transition-colors hover:bg-[#F9F7F2]">
+                                        <span className="text-[#F4D03F]/20 font-black text-[9px] w-10 shrink-0 tabular-nums">[{String(i + 1).padStart(3, '0')}]</span>
+                                        <span className="font-bold tracking-tight leading-relaxed selection:bg-[#F4D03F]/30 selection:text-white uppercase text-[10px]">{log}</span>
                                     </div>
                                 ))}
                                 <div ref={logsEndRef} />
                             </div>
                         )}
-                        <button className="absolute bottom-4 right-4 text-white/10 hover:text-honey/60 transition-all p-3 rounded-xl bg-white/5">
+                        <button className="absolute bottom-4 right-4 text-gray-400 hover:text-[#F4D03F]/60 transition-all p-3 rounded-xl bg-[#F9F7F2]">
                             <Maximize2 className="w-4 h-4" />
                         </button>
                     </div>
@@ -268,25 +268,25 @@ export function UsbHubDashboard() {
                     transition={{ delay: 0.2 }}
                     className="lg:col-span-8 space-y-10"
                 >
-                    <div className={cn(glass.card, "p-12 shadow-2xl relative overflow-hidden group border-honey/5 h-full flex flex-col")}>
-                        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
+                    <div className={cn(glass.card, "p-12 shadow-2xl relative overflow-hidden group border-[#F4D03F]/5 h-full flex flex-col")}>
+                        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#1B9157]/ rounded-full blur-[80px] pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
 
                         <div className="mb-12 border-b border-border/50 pb-8 relative z-10 flex items-center justify-between">
                             <div>
-                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Flash <span className="text-honey">Architecture</span></h3>
+                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Flash <span className="text-[#F4D03F]">Architecture</span></h3>
                                 <p className={cn(glass.microLabel, "opacity-40 italic mt-1")}>SECURE_FIRMWARE_OVERWRITE_EXECUTABLE</p>
                             </div>
-                            <FileCode className="w-10 h-10 text-honey/20" />
+                            <FileCode className="w-10 h-10 text-[#F4D03F]/20" />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 flex-1 relative z-10">
                             <div className="md:col-span-2 space-y-6">
                                 <p className={cn(glass.microLabel, "opacity-40 tracking-widest text-[9px]")}>BINARY_TARGET_ASSET</p>
-                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-honey/10 rounded-[2.5rem] p-10 bg-white/40 hover:bg-honey/[0.03] hover:border-honey/40 transition-all cursor-pointer group shadow-inner">
-                                    <div className="w-16 h-16 bg-white/80 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform mb-6 border border-honey/20">
-                                        <SettingsIcon className={cn("w-8 h-8 text-honey", firmwareFile ? "animate-spin[slow]" : "")} />
+                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-[#F4D03F]/10 rounded-[2.5rem] p-10 bg-gray-400 hover:bg-[#F4D03F]/[0.03] hover:border-[#F4D03F]/40 transition-all cursor-pointer group shadow-inner">
+                                    <div className="w-16 h-16 bg-[#FFF9F0]/80 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform mb-6 border border-[#F4D03F]/20">
+                                        <SettingsIcon className={cn("w-8 h-8 text-[#F4D03F]", firmwareFile ? "animate-spin[slow]" : "")} />
                                     </div>
-                                    <p className={cn(glass.microLabel, "text-center font-black tracking-widest text-honey leading-tight px-4")}>
+                                    <p className={cn(glass.microLabel, "text-center font-black tracking-widest text-[#F4D03F] leading-tight px-4")}>
                                         {firmwareFile ? firmwareFile.name.toUpperCase() : 'IDENTIFY_BINARY_RESOURCE'}
                                     </p>
                                     <Input id="firmware-input-dash" type="file" className="hidden" onChange={(e) => setFirmwareFile(e.target.files?.[0] || null)} />
@@ -294,7 +294,7 @@ export function UsbHubDashboard() {
 
                                 <button
                                     onClick={handleFlash}
-                                    className={cn(glass.btnPrimary, "w-full h-18 text-base shadow-2xl shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-500")}
+                                    className={cn(glass.btnPrimary, "w-full h-18 text-base shadow-2xl shadow-emerald-500/20 bg-[#145A32] hover:bg-[#1B9157]")}
                                     disabled={isFlashing}
                                 >
                                     {isFlashing ? (
@@ -314,10 +314,10 @@ export function UsbHubDashboard() {
                                     <Textarea
                                         value={manifestJson}
                                         onChange={(e) => setManifestJson(e.target.value)}
-                                        className={cn(glass.input, "w-full h-full min-h-[220px] p-8 font-mono text-[10px] leading-relaxed resize-none bg-gray-50 border-honey/10 shadow-inner focus:border-honey/40 transition-all font-bold")}
+                                        className={cn(glass.input, "w-full h-full min-h-[220px] p-8 font-mono text-[10px] leading-relaxed resize-none bg-[#F9F7F2] border-[#F4D03F]/10 shadow-inner focus:border-[#F4D03F]/40 transition-all font-bold")}
                                         spellCheck={false}
                                     />
-                                    <div className="absolute right-6 top-6 bottom-6 w-0.5 bg-honey/20 rounded-full group-hover:bg-honey/40 transition-colors" />
+                                    <div className="absolute right-6 top-6 bottom-6 w-0.5 bg-[#F4D03F]/20 rounded-full group-hover:bg-[#F4D03F]/40 transition-colors" />
                                 </div>
                             </div>
                         </div>
@@ -334,12 +334,12 @@ export function UsbHubDashboard() {
                                     >
                                         <div className="flex justify-between items-end">
                                             <div>
-                                                <p className={cn(glass.microLabel, "text-honey font-black animate-pulse tracking-widest uppercase")}>Transmitting_Egress_Blocks...</p>
+                                                <p className={cn(glass.microLabel, "text-[#F4D03F] font-black animate-pulse tracking-widest uppercase")}>Transmitting_Egress_Blocks...</p>
                                                 <p className="text-[10px] font-bold opacity-30 italic mt-1 uppercase">Block Offset 0x{(1000 + syncProgress * 10).toString(16).toUpperCase()}</p>
                                             </div>
-                                            <span className={cn(glass.sectionTitle, "text-4xl text-honey")}>{syncProgress}%</span>
+                                            <span className={cn(glass.sectionTitle, "text-4xl text-[#F4D03F]")}>{syncProgress}%</span>
                                         </div>
-                                        <div className="h-4 w-full bg-white/20 rounded-full overflow-hidden p-1 border border-gray-200 shadow-inner">
+                                        <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden p-1 border border-[#F4D03F]/20 shadow-inner">
                                             <motion.div
                                                 className="h-full bg-gradient-amber rounded-full shadow-lg shadow-honey/20"
                                                 initial={{ width: 0 }}
@@ -352,13 +352,13 @@ export function UsbHubDashboard() {
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="flex items-center gap-6 p-6 bg-honey/5 rounded-3xl border border-honey/10"
+                                        className="flex items-center gap-6 p-6 bg-[#F4D03F]/5 rounded-3xl border border-[#F4D03F]/10"
                                     >
-                                        <div className="w-12 h-12 rounded-[1.2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-xl">
-                                            <ShieldCheck className="w-6 h-6 text-honey" />
+                                        <div className="w-12 h-12 rounded-[1.2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-xl">
+                                            <ShieldCheck className="w-6 h-6 text-[#F4D03F]" />
                                         </div>
                                         <div>
-                                            <span className={cn(glass.microLabel, "text-honey font-black tracking-widest animate-none text-[10px]")}>SYSTEM_STANDBY_MODE</span>
+                                            <span className={cn(glass.microLabel, "text-[#F4D03F] font-black tracking-widest animate-none text-[10px]")}>SYSTEM_STANDBY_MODE</span>
                                             <p className={cn(glass.microLabel, "text-[9px] opacity-30 mt-1 italic")}>VERIFY_ALL_ASSETS_BEFORE_OVERWRITE</p>
                                         </div>
                                     </motion.div>
@@ -391,8 +391,8 @@ export function UsbHubDashboard() {
                                 { t: "PERSISTENT_PHYSICAL_LINK", d: "Do not sever industrial USB bridge during flash sequence." }
                             ].map((item, i) => (
                                 <li key={i} className="flex gap-6 items-start group/li">
-                                    <div className="w-10 h-10 bg-white/40 border border-destructive/20 group-hover/li:bg-destructive group-hover/li:border-destructive transition-all duration-500 rounded-2xl shrink-0 flex items-center justify-center shadow-xl">
-                                        <span className="text-xs font-black text-destructive group-hover/li:text-gray-900 tabular-nums">{i + 1}</span>
+                                    <div className="w-10 h-10 bg-gray-400 border border-destructive/20 group-hover/li:bg-destructive group-hover/li:border-destructive transition-all duration-500 rounded-2xl shrink-0 flex items-center justify-center shadow-xl">
+                                        <span className="text-xs font-black text-destructive group-hover/li:text-[#1A1A1A] tabular-nums">{i + 1}</span>
                                     </div>
                                     <div className="space-y-1">
                                         <p className={cn(glass.microLabel, "text-xs font-black text-foreground group-hover/li:text-destructive transition-colors tracking-tight")}>{item.t}</p>
@@ -403,12 +403,12 @@ export function UsbHubDashboard() {
                         </ul>
 
                         <div className="mt-20 pt-10 border-t border-destructive/20 relative z-10">
-                            <div className="p-6 bg-emerald-500/10 rounded-[1.5rem] border border-emerald-500/20 shadow-xl flex items-center gap-5">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 animate-pulse">
-                                    <Wifi className="w-5 h-5 text-emerald-500" />
+                            <div className="p-6 bg-[#1B9157]/ rounded-[1.5rem] border border-[#1B9157]/ shadow-xl flex items-center gap-5">
+                                <div className="w-10 h-10 rounded-xl bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ animate-pulse">
+                                    <Wifi className="w-5 h-5 text-[#1B9157]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <span className={cn(glass.microLabel, "text-emerald-500 font-black tracking-[0.2em] text-[9px]")}>CLOUD_SYNC_ACTIVE</span>
+                                    <span className={cn(glass.microLabel, "text-[#1B9157] font-black tracking-[0.2em] text-[9px]")}>CLOUD_SYNC_ACTIVE</span>
                                     <p className={cn(glass.microLabel, "text-[8px] opacity-40 font-bold uppercase")}>MONITORING_RECURSIVE_INGEST</p>
                                 </div>
                             </div>

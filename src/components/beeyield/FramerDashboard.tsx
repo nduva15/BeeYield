@@ -52,8 +52,8 @@ interface AnimatedStatCardProps {
 
 const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({ title, value, trend, icon: Icon, color }) => {
     const colors = {
-        amber: "text-amber-500 bg-amber-500/10 border-amber-500/20",
-        emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+        amber: "text-[#F4D03F] bg-[#F4D03F]/ border-amber-500/20",
+        emerald: "text-[#1B9157] bg-[#1B9157]/ border-[#1B9157]/",
         blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
         red: "text-red-500 bg-red-500/10 border-red-500/20",
     };
@@ -70,12 +70,12 @@ const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({ title, value, trend
                 </div>
                 <motion.span
                     whileHover={{ scale: 1.1 }}
-                    className="flex items-center text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full"
+                    className="flex items-center text-xs font-medium text-[#1B9157] bg-[#1B9157]/ px-2 py-1 rounded-full"
                 >
                     {trend} <ArrowUpRight size={12} className="ml-1" />
                 </motion.span>
             </div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-1">{value}</h3>
+            <h3 className="text-3xl font-bold text-[#1A1A1A] mb-1">{value}</h3>
             <p className="text-sm text-gray-600 font-medium">{title}</p>
 
             {/* Hover glow effect */}
@@ -100,7 +100,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ text, time, alert }) => {
         <motion.li
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-start gap-3 text-sm py-2 px-3 rounded-lg hover:bg-gray-50:bg-gray-800/50 transition-colors"
+            className="flex items-start gap-3 text-sm py-2 px-3 rounded-lg hover:bg-[#F9F7F2]:bg-gray-800/50 transition-colors"
         >
             <div className={cn(
                 "mt-1.5 w-2 h-2 rounded-full",
@@ -134,16 +134,16 @@ const FramerDashboard: React.FC<FramerDashboardProps> = ({ onTabChange }) => {
                 className="flex justify-between items-center"
             >
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
+                    <h2 className="text-3xl font-bold text-[#1A1A1A]">Dashboard</h2>
                     <p className="text-gray-600 mt-1">
-                        Welcome back. Operations are <span className="text-emerald-500 font-semibold">94% nominal</span>.
+                        Welcome back. Operations are <span className="text-[#1B9157] font-semibold">94% nominal</span>.
                     </p>
                 </div>
 
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="btn-interactive bg-[hsl(var(--honey-gold))] hover:bg-[hsl(var(--pollen-yellow))] text-black px-6 py-3 rounded-xl font-semibold shadow-lg shadow-amber-500/20 transition-all"
+                    className="btn-interactive bg-[hsl(var(--honey-gold))] hover:bg-[hsl(var(--pollen-yellow))] text-[#1A1A1A] px-6 py-3 rounded-xl font-semibold shadow-lg shadow-amber-500/20 transition-all"
                 >
                     + Log Harvest
                 </motion.button>
@@ -197,11 +197,11 @@ const FramerDashboard: React.FC<FramerDashboardProps> = ({ onTabChange }) => {
                 >
                     <div className="flex items-center gap-2 mb-4">
                         <TrendingUp className="text-[hsl(var(--honey-gold))]" size={20} />
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-[#1A1A1A]">
                             Yield Trends (2026)
                         </h3>
                     </div>
-                    <div className="h-64 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+                    <div className="h-64 flex items-center justify-center text-gray-400 border-2 border-dashed border-[#F4D03F]/20 rounded-xl">
                         [Chart Component Here]
                     </div>
                 </motion.div>
@@ -215,7 +215,7 @@ const FramerDashboard: React.FC<FramerDashboardProps> = ({ onTabChange }) => {
                 >
                     <div className="flex items-center gap-2 mb-4">
                         <Activity className="text-[hsl(var(--honey-gold))]" size={20} />
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-[#1A1A1A]">
                             Live Activity
                         </h3>
                     </div>

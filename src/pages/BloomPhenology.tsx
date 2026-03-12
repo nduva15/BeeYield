@@ -1,7 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 import {
     Flower2,
     Calendar,
@@ -23,7 +21,8 @@ import {
     ResponsiveContainer,
     ReferenceLine
 } from 'recharts';
-import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
 
 const bloomData = [
     { stage: 'BBCH 51', intensity: 10, date: 'Mar 1' },
@@ -35,123 +34,125 @@ const bloomData = [
 ];
 
 const BloomPhenology: React.FC = () => {
-    const [selectedOrchard, setSelectedOrchard] = React.useState('North Block Alpha');
-
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "space-y-8 pb-32")}
+        >
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-10">
-                <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
-                        <Flower2 className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Floral Phenology Engine</span>
-                    </div>
-                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
-                        Bloom <span className="text-[#10b981]">Synchronization</span>
-                    </h1>
-                    <p className="text-[#064e3b]/40 font-black text-sm uppercase tracking-widest mt-2 px-1">
-                        BBCH Growth Stages · Pollination Window Tracking · Forage Opportunity Math
-                    </p>
-                </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" className="h-16 px-8 rounded-none border-4 border-[#064e3b] font-black uppercase tracking-widest text-xs">
-                        <History className="w-4 h-4 mr-2" />
+            <PageHeader
+                icon={Flower2}
+                label="Floral Phenology Engine"
+                title={<>Bloom <span className="text-[#F4D03F]">Synchronization</span></>}
+                subtitle="BBCH Growth Stages · Pollination Window Tracking · Forage Opportunity Math"
+                actions={
+                    <button className={cn(glass.btnSecondary, "h-10 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all")}>
+                        <History className="w-3.5 h-3.5 mr-2" />
                         Historic Index
-                    </Button>
-                </div>
-            </div>
+                    </button>
+                }
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* stage selection */}
-                <Card className="lg:col-span-1 rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                    <CardHeader className="p-8 border-b-4 border-[#064e3b]/5">
-                        <CardTitle className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Current Growth Stage</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8 space-y-8">
-                        <div className="text-center py-10 border-4 border-[#064e3b]/5 bg-neutral-50/50">
-                            <span className="text-7xl font-black text-[#064e3b] italic">65</span>
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/40 mt-2 tracking-widest">BBCH Scale: Full Bloom</p>
-                        </div>
+                <div className={cn(glass.card, "lg:col-span-1 p-8 space-y-8 shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
+                    <div className="flex items-center justify-between border-b border-[#F4D03F]/20 pb-4">
+                        <h3 className="text-xl font-black uppercase tracking-tight leading-none">Growth <span className="text-[#F4D03F]">Stage</span></h3>
+                        <Sprout className="w-5 h-5 text-[#F4D03F]" />
+                    </div>
 
-                        <div className="space-y-4">
-                            <label className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block">Stage Progression Slider</label>
-                            <div className="h-3 w-full bg-neutral-100 border-2 border-[#064e3b] relative">
-                                <div className="absolute top-0 left-0 bottom-0 bg-[#10b981] w-[65%]" />
-                                <div className="absolute top-[-4px] left-[65%] w-5 h-5 bg-[#facc15] border-2 border-[#064e3b] translate-x-[-10px]" />
-                            </div>
-                            <div className="flex justify-between text-[8px] font-black uppercase text-[#064e3b]/60">
-                                <span>Bud (50)</span>
-                                <span>Peak (65)</span>
-                                <span>Fall (69)</span>
-                            </div>
-                        </div>
+                    <div className="text-center py-6 border-2 border-[#F4D03F]/10 bg-[#F4D03F]/5 rounded-2xl">
+                        <span className="text-4xl font-black text-[#064e3b] italic">65</span>
+                        <p className="text-[9px] font-black uppercase text-[#064e3b]/40 mt-1 tracking-widest">BBCH: Full Bloom</p>
+                    </div>
 
-                        <div className="p-6 bg-[#064e3b] text-gray-900">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Sprout className="w-4 h-4 text-[#10b981]" />
-                                <span className="text-[10px] font-black uppercase">Optimization Notice</span>
-                            </div>
-                            <p className="text-[9px] font-bold leading-relaxed uppercase">
-                                Current stage indicates peak nectar secretion. Deploy Grade A pallets immediately to maximize pollination ROI.
-                            </p>
+                    <div className="space-y-4">
+                        <label className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block">Stage Progression Slider</label>
+                        <div className="h-2 w-full bg-muted rounded-full relative overflow-hidden">
+                            <div className="absolute top-0 left-0 bottom-0 bg-[#1B9157] w-[65%]" />
                         </div>
-                    </CardContent>
-                </Card>
+                        <div className="flex justify-between text-[8px] font-black uppercase text-[#064e3b]/60">
+                            <span>Bud (50)</span>
+                            <span className="text-[#F4D03F]">Peak (65)</span>
+                            <span>Fall (69)</span>
+                        </div>
+                    </div>
+
+                    <div className={cn(glass.card, "p-6 bg-[#064e3b] text-white rounded-2xl relative overflow-hidden group")}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="flex items-center gap-2 mb-2 relative z-10">
+                            <Flower2 className="w-4 h-4 text-[#F4D03F]" />
+                            <span className="text-[10px] font-black uppercase tracking-tight">Optimization Notice</span>
+                        </div>
+                        <p className="text-[9px] font-bold leading-relaxed uppercase opacity-80 relative z-10 pl-3 border-l-2 border-[#F4D03F]/40">
+                            Current stage indicates peak nectar secretion. Deploy Grade A pallets immediately.
+                        </p>
+                    </div>
+                </div>
 
                 {/* Intensity Chart */}
-                <Card className="lg:col-span-2 rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(16,185,129,1)]">
-                    <CardHeader className="p-8 border-b-4 border-[#064e3b]/5 flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Bloom Intensity Curve</CardTitle>
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/30">Real-time flowering density over time</p>
+                <div className={cn(glass.card, "lg:col-span-2 p-0 flex flex-col overflow-hidden shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
+                    <div className="flex flex-col md:flex-row items-center justify-between p-8 border-b border-[#F4D03F]/10 bg-white/30">
+                        <div className="space-y-1">
+                            <h3 className="text-2xl font-black uppercase tracking-tight leading-none">Intensity <span className="text-[#F4D03F]">Curve</span></h3>
+                            <p className="text-[10px] font-black opacity-40 uppercase tracking-widest pl-2 border-l-4 border-[#F4D03F]/20">Real-time flowering density over time</p>
                         </div>
-                        <Badge className="bg-[#facc15] text-[#064e3b] rounded-none px-4 py-1 text-[10px] font-black">PEAK WINDOW: 4 DAYS REMAINING</Badge>
-                    </CardHeader>
-                    <CardContent className="p-8 h-[400px]">
-                        <ResponsiveContainer width="100%" height="100%" debounce={50}>
-                            <AreaChart data={bloomData}>
+                        <div className={cn(glass.badge, "bg-[#F4D03F] text-white px-4 py-2 rounded-xl text-[10px] font-black shadow-sm")}>
+                            PEAK WINDOW: 4 DAYS REMAINING
+                        </div>
+                    </div>
+
+                    <div className="h-[400px] w-full p-8 relative flex-1">
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={bloomData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="bloomGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#1B9157" stopOpacity={0.4} />
+                                        <stop offset="95%" stopColor="#1B9157" stopOpacity={0.05} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.05} />
                                 <XAxis
                                     dataKey="date"
-                                    className="text-[10px] font-black uppercase"
                                     axisLine={false}
                                     tickLine={false}
+                                    tick={{ fill: 'currentColor', opacity: 0.3, fontWeight: 'black', fontSize: 10 }}
+                                    dy={10}
                                 />
-                                <YAxis
-                                    hide
-                                    domain={[0, 100]}
-                                />
+                                <YAxis hide domain={[0, 110]} />
                                 <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '0px',
-                                        border: '4px solid #064e3b',
+                                    contentStyle={{ 
+                                        backgroundColor: 'rgba(0, 0, 0, 0.9)', 
+                                        backdropFilter: 'blur(12px)', 
+                                        border: 'none', 
+                                        borderRadius: '1rem', 
+                                        color: '#fff', 
+                                        padding: '1rem',
                                         fontSize: '10px',
-                                        fontWeight: '900',
+                                        fontWeight: 'black',
                                         textTransform: 'uppercase'
                                     }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="intensity"
-                                    stroke="#064e3b"
+                                    stroke="#1B9157"
                                     strokeWidth={4}
-                                    fillOpacity={1}
                                     fill="url(#bloomGradient)"
+                                    animationDuration={2000}
                                 />
-                                <ReferenceLine x="Mar 15" stroke="#facc15" strokeWidth={4} strokeDasharray="8 8" label={{ position: 'top', value: 'CURRENT', fill: '#064e3b', fontSize: 10, fontWeight: 900 }} />
+                                <ReferenceLine x="Mar 15" stroke="#F4D03F" strokeWidth={3} strokeDasharray="6 6" label={{ position: 'top', value: 'CURRENT', fill: '#064e3b', fontSize: 8, fontWeight: 900 }} />
                             </AreaChart>
                         </ResponsiveContainer>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
 export default BloomPhenology;
+

@@ -34,12 +34,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     const handleAtomicSave = (section: string) => {
         setLoading(prev => ({ ...prev, [section]: true }));
-        // Simulate API call to beeyield_profiles
         setTimeout(() => {
             setLoading(prev => ({ ...prev, [section]: false }));
             toast.success(`${section} Registry Synchronized`, {
                 description: "Settings committed to BeeYield Global Registry",
-                icon: <Check className="w-5 h-5 text-emerald-500" />
+                icon: <Check className="w-4 h-4 text-[#1B9157]" />
             });
         }, 1200);
     };
@@ -50,23 +49,23 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "max-w-7xl mx-auto space-y-16 pb-40")}
+            className={cn(glass.page, "max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6")}
         >
             <PageHeader
                 icon={Settings}
-                label="Identity & Kernel Configuration_v4.4"
-                title={<>System <span className="text-honey">Control</span></>}
+                label="Identity & Kernel Configuration v4.4"
+                title={<>System <span className="text-[#F4D03F]">Control</span></>}
                 subtitle="Manage your industrial identity patterns, module access permissions, and global notification routing protocols."
                 actions={
-                    <div className="flex items-center gap-6 bg-white/40 backdrop-blur-3xl border border-white/5 px-8 py-3 font-black text-[11px] uppercase tracking-[0.3em] rounded-2xl shadow-2xl skew-x-[-12deg]">
-                        <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />
-                        <span className="skew-x-[12deg]">Kernel_Sync: <span className="text-emerald-500">OPTIMIZED</span></span>
+                    <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-4 py-1.5 rounded-lg shadow-sm">
+                        <Activity className="w-3.5 h-3.5 text-[#1B9157] animate-pulse" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Kernel_Sync: <span className="text-[#1B9157]">OPTIMIZED</span></span>
                     </div>
                 }
             />
 
-            <Tabs defaultValue="identity" className="w-full space-y-12">
-                <TabsList className="bg-white/40 p-2 h-22 w-full grid grid-cols-2 md:grid-cols-4 rounded-[40px] border border-gray-200 backdrop-blur-3xl shadow-3xl">
+            <Tabs defaultValue="identity" className="w-full space-y-6">
+                <TabsList className="bg-gray-50/80 p-1 h-10 w-full grid grid-cols-4 rounded-lg border border-gray-100 backdrop-blur-xl">
                     {[
                         { value: 'identity', label: 'Identity', icon: User },
                         { value: 'modules', label: 'Modules', icon: Layers },
@@ -76,139 +75,131 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <TabsTrigger
                             key={tab.value}
                             value={tab.value}
-                            className="h-full rounded-[30px] font-black uppercase text-[12px] tracking-[0.2em] italic text-muted-foreground/60 data-[state=active]:bg-white=active]:bg-white/10 data-[state=active]:text-foreground data-[state=active]:shadow-2xl transition-all duration-700 flex items-center justify-center gap-4"
+                            className="h-full rounded-md font-bold uppercase text-[10px] tracking-wider text-gray-500 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 transition-all flex items-center justify-center gap-1.5"
                         >
-                            <tab.icon className="w-5 h-5" /> {tab.label}
+                            <tab.icon className="w-3.5 h-3.5" /> {tab.label}
                         </TabsTrigger>
                     ))}
                 </TabsList>
 
-                {/* --- TAB: IDENTITY & LOCALIZATION --- */}
-                <TabsContent value="identity" className="animate-in fade-in slide-in-from-bottom-5 duration-1000">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                        <div className="lg:col-span-4 space-y-12">
+                <TabsContent value="identity" className="space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        {/* Profile Summary */}
+                        <div className="lg:col-span-4 space-y-4">
                             <motion.div
-                                initial={{ opacity: 0, x: -30 }}
+                                initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn(glass.card, "text-center flex flex-col items-center justify-center py-20 px-12 bg-white/60 relative overflow-hidden")}
+                                className={cn(glass.card, "text-center flex flex-col items-center justify-center py-8 px-6 bg-white relative overflow-hidden")}
                             >
-                                <div className="absolute -top-10 -left-10 opacity-5 pointer-events-none">
-                                    <Fingerprint className="w-40 h-40" />
+                                <div className="absolute -top-6 -left-6 opacity-[0.03] pointer-events-none">
+                                    <Fingerprint className="w-32 h-32" />
                                 </div>
-                                <div className="w-44 h-44 rounded-full border-8 border-white/40 bg-gradient-amber p-1 flex items-center justify-center relative shadow-[0_45px_100px_-20px_rgba(251,191,36,0.5)] group">
-                                    <div className="w-full h-full rounded-full bg-gray-100 backdrop-blur-xl flex items-center justify-center border-4 border-gray-200 relative overflow-hidden">
-                                        <User className="w-20 h-20 text-gray-900 group-hover:scale-110 transition-transform duration-1000" />
-                                        <div className="absolute inset-0 bg-honey/20 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                                <div className="w-24 h-24 rounded-full border-4 border-gray-50 bg-[#F4D03F]/10 p-1 flex items-center justify-center relative shadow-sm group">
+                                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center border border-gray-200 overflow-hidden">
+                                        <User className="w-8 h-8 text-[#1A1A1A] group-hover:scale-110 transition-transform" />
                                     </div>
-                                    <div className="absolute bottom-2 right-2 bg-emerald-500 text-white p-3 rounded-full border-4 border-white shadow-2xl shadow-emerald-500/50 transform group-hover:rotate-[360deg] transition-transform duration-1000">
-                                        <ShieldCheck className="w-6 h-6" />
+                                    <div className="absolute bottom-0 right-0 bg-[#1B9157] text-white p-1 rounded-full border-2 border-white shadow-sm">
+                                        <ShieldCheck className="w-3.5 h-3.5" />
                                     </div>
                                 </div>
-                                <div className="mt-14 space-y-4">
-                                    <h3 className={cn(glass.sectionTitle, 'text-4xl normal-case italic')}>Autonomous <span className="text-honey">Identity</span></h3>
-                                    <p className={cn(glass.microLabel, 'opacity-40 leading-relaxed italic uppercase tracking-[0.2em] font-black text-[10px]')}>
-                                        System Hash_v4 Verified
-                                    </p>
+                                <div className="mt-6 space-y-1">
+                                    <h3 className="text-xl font-bold tracking-tight text-[#1A1A1A] leading-none">Autonomous <span className="text-[#F4D03F]">Identity</span></h3>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">System Hash v4 Verified</p>
                                 </div>
-                                <button className={cn(glass.btnSecondary, 'mt-12 w-full h-18 rounded-3xl font-black italic shadow-xl')}>Update Biometrics</button>
+                                <button className={cn(glass.btnPrimary, "mt-6 w-full h-9 font-bold text-xs uppercase shadow-sm")}>
+                                    Update Biometrics
+                                </button>
                             </motion.div>
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className={cn(glass.card, "p-12 space-y-8 bg-white/40 border-white/5")}
-                            >
+                            <div className={cn(glass.card, "p-5 bg-white")}>
                                 <div className="flex items-center justify-between">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-4">
-                                            <Palette className="w-6 h-6 text-honey" />
-                                            <h4 className="text-xl font-black italic tracking-tight">Chromatic Interface</h4>
+                                    <div className="space-y-0.5">
+                                        <div className="flex items-center gap-2">
+                                            <Palette className="w-4 h-4 text-[#F4D03F]" />
+                                            <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Interface Skin</h4>
                                         </div>
-                                        <p className={cn(glass.microLabel, 'opacity-40 uppercase font-black text-[9px] italic')}>Switch visual kernel mode</p>
+                                        <p className="text-[10px] font-medium text-gray-500">Toggle visual kernel state</p>
                                     </div>
                                     <Switch
                                         checked={theme === 'dark'}
                                         onCheckedChange={(c) => setTheme(c ? 'dark' : 'light')}
-                                        className="data-[state=checked]:bg-honey h-10 w-18 scale-150"
+                                        className="scale-90 data-[state=checked]:bg-[#1B9157]"
                                     />
                                 </div>
-                            </motion.div>
+                            </div>
 
                             <button
                                 onClick={() => signOut()}
-                                className={cn(glass.btnSecondary, "w-full h-20 rounded-[2.5rem] bg-red-500/5 border-red-500/20 text-red-500 font-black italic text-xl gap-6 group hover:bg-red-500 hover:text-gray-900 transition-all duration-700")}
+                                className={cn(glass.btnSecondary, "w-full h-10 border-red-100 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 font-bold text-xs uppercase flex items-center justify-center gap-2 group transition-all")}
                             >
-                                <LogOut className="w-8 h-8 group-hover:-translate-x-2 transition-transform duration-700" />
+                                <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
                                 Terminate Session
                             </button>
                         </div>
 
+                        {/* Audit Form */}
                         <div className="lg:col-span-8">
                             <motion.div
-                                initial={{ opacity: 0, x: 30 }}
+                                initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn(glass.card, "p-0 overflow-hidden shadow-3xl bg-white/60 backdrop-blur-3xl")}
+                                className={cn(glass.card, "p-0 overflow-hidden bg-white")}
                             >
-                                <div className={cn(glass.sectionHeader, 'p-14 border-b border-gray-200 bg-white/40 flex items-center justify-between')}>
-                                    <div className="flex items-center gap-8">
-                                        <div className="w-16 h-16 rounded-[1.5rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-inner">
-                                            <Globe className="w-9 h-9 text-honey" />
+                                <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between flex-wrap gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                                            <Globe className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
-                                        <div className="space-y-1">
-                                            <h2 className={cn(glass.sectionTitle, 'text-4xl normal-case italic')}>Profile <span className="text-honey">Audit</span></h2>
-                                            <p className={cn(glass.microLabel, 'opacity-40 italic tracking-widest text-[9px] uppercase')}>Global Registry Metadata Protocol_v4</p>
+                                        <div className="space-y-0.5">
+                                            <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none">Profile <span className="text-[#F4D03F]">Audit</span></h2>
+                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Global Registry Metadata Protocol</p>
                                         </div>
                                     </div>
-                                    <Badge className={cn(glass.badge, 'bg-emerald-500/5 text-emerald-500 border-emerald-500/20 px-6 py-3 rounded-full italic font-black shadow-2xl')}>ARCHIVED_PROTOCOL_1</Badge>
+                                    <Badge className="bg-gray-100 text-gray-600 border-none rounded-md font-bold text-[9px] uppercase tracking-wider px-2 py-0.5">ARCHIVED_v5</Badge>
                                 </div>
 
-                                <div className="p-16 space-y-16">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                        <div className="space-y-6 group">
-                                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-honey/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Full Designation</Label>
+                                <div className="p-6 space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-1.5 group">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Full Designation</Label>
                                             <div className="relative">
-                                                <User className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-honey/40 transition-colors group-focus-within:text-honey" />
-                                                <Input className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2rem] italic font-black text-xl bg-gray-50 border-none shadow-inner")} placeholder="Timothy Nduva" />
+                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input className="h-10 pl-10 bg-gray-50 border-gray-200 rounded-lg text-sm font-medium focus:bg-white transition-colors" placeholder="e.g. Timothy Nduva" />
                                             </div>
                                         </div>
-                                        <div className="space-y-6 group">
-                                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-muted-foreground/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Verified Comms</Label>
+                                        <div className="space-y-1.5 group">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Verified Comms</Label>
                                             <div className="relative">
-                                                <Input className={cn(glass.input, "h-20 pl-10 px-10 rounded-[2rem] italic font-black text-xl bg-gray-50 border-none shadow-inner opacity-50 cursor-not-allowed")} defaultValue={user?.email || ""} disabled />
-                                                <Lock className="absolute right-8 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground/30" />
+                                                <Input className="h-10 pl-4 pr-10 bg-gray-100 border-transparent rounded-lg text-sm font-medium text-gray-500 cursor-not-allowed" defaultValue={user?.email || ""} disabled />
+                                                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                             </div>
                                         </div>
-                                        <div className="space-y-6 group">
-                                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Nexus Link (+254)</Label>
+                                        <div className="space-y-1.5 group">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Nexus Link (+254)</Label>
                                             <div className="relative">
-                                                <Smartphone className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-blue-400/40 transition-colors group-focus-within:text-blue-400" />
-                                                <Input className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2rem] italic font-black text-xl bg-gray-50 border-none shadow-inner")} placeholder="+254 7XX XXX XXX" />
+                                                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input className="h-10 pl-10 bg-gray-50 border-gray-200 rounded-lg text-sm font-medium focus:bg-white transition-colors" placeholder="+254 7XX XXX XXX" />
                                             </div>
                                         </div>
-                                        <div className="space-y-6 group">
-                                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-orange-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Physical Sector</Label>
+                                        <div className="space-y-1.5 group">
+                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Physical Sector</Label>
                                             <div className="relative">
-                                                <MapPin className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-orange-400/40 transition-colors group-focus-within:text-orange-400" />
-                                                <Input className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2rem] italic font-black text-xl bg-gray-50 border-none shadow-inner")} placeholder="Kibwezi, Kenya" />
+                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input className="h-10 pl-10 bg-gray-50 border-gray-200 rounded-lg text-sm font-medium focus:bg-white transition-colors" placeholder="Kibwezi, Kenya" />
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="p-14 border-t border-gray-200 bg-white/40 flex justify-between items-center -mx-16 -mb-16 mt-12 rounded-b-[3rem]">
-                                        <div className="flex items-center gap-8 opacity-20 px-10">
-                                            <Activity className="w-10 h-10" />
-                                            <p className="text-[11px] font-black uppercase tracking-[0.4em] max-w-sm italic leading-relaxed">SYSTEM_STATUS: SECURE · GLOBAL_HASH: OK</p>
+                                    <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center sm:items-start md:items-center gap-4">
+                                        <div className="flex items-center gap-2 text-gray-400">
+                                            <Activity className="w-4 h-4" />
+                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">SYSTEM_HASH: OK</p>
                                         </div>
                                         <button
                                             onClick={() => handleAtomicSave("Profile")}
                                             disabled={loading["Profile"]}
-                                            className={cn(glass.btnPrimary, "h-22 px-24 font-black text-2xl italic shadow-[0_45px_100px_-20px_rgba(251,191,36,0.5)] rounded-[2.5rem] flex items-center gap-6 group/commit pl-20")}
+                                            className={cn(glass.btnPrimary, "w-full sm:w-auto h-10 px-8 font-bold text-xs uppercase flex items-center justify-center gap-2", loading["Profile"] && "opacity-70 cursor-not-allowed")}
                                         >
-                                            {loading["Profile"] ? (
-                                                <Activity className="w-10 h-10 animate-spin" />
-                                            ) : (
-                                                <ShieldCheck className="w-10 h-10 group-hover/commit:scale-125 transition-transform duration-1000 text-black" />
-                                            )}
+                                            {loading["Profile"] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                             Commit Identity
                                         </button>
                                     </div>
@@ -218,80 +209,68 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     </div>
                 </TabsContent>
 
-                {/* --- TAB: MODULE SWITCHING --- */}
-                <TabsContent value="modules" className="animate-in fade-in slide-in-from-bottom-5 duration-1000">
+                <TabsContent value="modules" className="space-y-6">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-3xl bg-white/60 backdrop-blur-3xl")}
+                        className={cn(glass.card, "p-0 overflow-hidden bg-white")}
                     >
-                        <div className={cn(glass.sectionHeader, 'p-14 border-b border-gray-200 bg-white/40 flex flex-col md:flex-row md:items-center justify-between gap-12')}>
-                            <div className="flex items-center gap-10">
-                                <div className="w-20 h-20 rounded-[2.5rem] bg-honey/10 flex items-center justify-center border-2 border-honey/20 shadow-2xl skew-y-3">
-                                    <Layers className="w-10 h-10 text-honey" />
+                        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                                    <Layers className="w-6 h-6 text-[#F4D03F]" />
                                 </div>
-                                <div>
-                                    <h3 className={cn(glass.sectionTitle, 'text-5xl italic normal-case')}>Module <span className="text-honey">Topography</span></h3>
-                                    <p className={cn(glass.microLabel, 'mt-2 opacity-40 leading-relaxed max-w-xl italic uppercase font-black text-[10px] tracking-[0.2em]')}>
-                                        Custom hardware & software routing protocols for your BeeYield cockpit.
-                                    </p>
+                                <div className="space-y-0.5">
+                                    <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight leading-none">Module <span className="text-[#F4D03F]">Topography</span></h3>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Custom hardware & software routing protocols</p>
                                 </div>
                             </div>
-                            <div className="flex gap-8">
-                                <button onClick={() => resetWorkspace(true)} className={cn(glass.btnSecondary, 'h-18 px-10 rounded-3xl font-black italic uppercase text-xs tracking-widest group hover:bg-emerald-500 hover:text-white transition-all duration-700')}>
+                            <div className="flex gap-2">
+                                <button onClick={() => resetWorkspace(true)} className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-[10px] uppercase")}>
                                     Full Integration
                                 </button>
-                                <button onClick={() => resetWorkspace(false)} className={cn(glass.btnSecondary, 'h-18 px-10 rounded-3xl font-black italic uppercase text-xs tracking-widest group hover:bg-red-500 hover:text-gray-900 transition-all duration-700')}>
-                                    Purge Workspace
+                                <button onClick={() => resetWorkspace(false)} className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-[10px] uppercase border-red-100 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600")}>
+                                    Purge Matrix
                                 </button>
                             </div>
                         </div>
 
-                        <div className="p-16">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {[
-                                    { id: 'beehives', label: 'Commercial Apiaries', desc: 'Main telemetry flow for hive health, production inventory, and node linkage.', icon: Hexagon, priority: true, color: 'honey' },
-                                    { id: 'agro', label: 'Meteo & Bloom', desc: 'Satellite weather analytics, flora tracking, and precision bloom forecasting.', icon: Globe, priority: true, color: 'emerald-500' },
-                                    { id: 'trackers', label: 'Auxiliary Hardware', icon: Cpu, desc: 'Real-time vehicle tracking, solar node vitals, and drone telemetry.', color: 'blue-500' },
-                                    { id: 'patients', label: 'Biometric Lab', icon: Activity, desc: 'Advanced veterinary mode for microscopic analysis and disease mitigation.', color: 'red-500' },
+                                    { id: 'beehives', label: 'Commercial Apiaries', desc: 'Main telemetry flow for hive health.', icon: Hexagon, color: 'text-[#F4D03F]' },
+                                    { id: 'agro', label: 'Meteo & Bloom', desc: 'Satellite weather analytics.', icon: Globe, color: 'text-[#1B9157]' },
+                                    { id: 'trackers', label: 'Auxiliary Hardware', desc: 'Solar node vitals & telemetry.', icon: Cpu, color: 'text-blue-500' },
+                                    { id: 'patients', label: 'Biometric Lab', desc: 'Advanced veterinary disease analysis.', icon: Activity, color: 'text-red-500' }
                                 ].map((mod, idx) => (
                                     <motion.div
                                         key={mod.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: idx * 0.1 }}
-                                        className="p-12 rounded-[3.5rem] border border-white/5 bg-white/20 flex items-start justify-between group hover:border-honey/60 hover:bg-honey/[0.03] transition-all duration-1000 backdrop-blur-3xl shadow-xl relative overflow-hidden"
+                                        initial={{ opacity: 0, scale: 0.98 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 flex items-start justify-between group hover:bg-white hover:border-[#F4D03F]/30 hover:shadow-sm transition-all"
                                     >
-                                        <div className="absolute -bottom-10 -right-10 opacity-5 pointer-events-none group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
-                                            <mod.icon className="w-40 h-40" />
-                                        </div>
-                                        <div className="flex gap-10 relative z-10">
-                                            <div className={cn("w-18 h-18 rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all duration-1000 transform group-hover:rotate-6", `bg-${mod.id === 'beehives' ? 'honey' : mod.color}/10 border-${mod.id === 'beehives' ? 'honey' : mod.color}/20 text-${mod.id === 'beehives' ? 'honey' : mod.color}`)}>
-                                                <mod.icon className="w-9 h-9" />
+                                        <div className="flex gap-4">
+                                            <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 bg-white shadow-sm transition-transform group-hover:scale-105", mod.color)}>
+                                                <mod.icon className="w-5 h-5" />
                                             </div>
-                                            <div className="space-y-4">
-                                                <div className="flex items-center gap-6">
-                                                    <h4 className="text-2xl font-black italic tracking-tight group-hover:text-foreground transition-colors">{mod.label}</h4>
-                                                    {mod.priority && (
-                                                        <Badge className="bg-honey/10 text-honey border border-honey/20 px-4 py-1 rounded-full font-black text-[9px] uppercase tracking-widest animate-pulse italic">CORE</Badge>
-                                                    )}
-                                                </div>
-                                                <p className={cn(glass.microLabel, 'opacity-40 leading-relaxed pt-1 normal-case italic font-medium text-lg max-w-sm')}>{mod.desc}</p>
+                                            <div className="space-y-0.5">
+                                                <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">{mod.label}</h4>
+                                                <p className="text-[11px] font-medium text-gray-500 max-w-[200px] leading-relaxed">{mod.desc}</p>
                                             </div>
                                         </div>
                                         <Switch
                                             checked={!!(moduleFlags as any)[mod.id]}
                                             onCheckedChange={(val) => updateModuleFlags({ [mod.id]: val })}
-                                            className="data-[state=checked]:bg-honey h-8 w-14 mt-4 scale-125"
+                                            className="scale-90 data-[state=checked]:bg-[#1B9157]"
                                         />
                                     </motion.div>
                                 ))}
                             </div>
 
-                            <div className="mt-20 flex justify-end">
+                            <div className="mt-6 flex justify-end">
                                 <button
                                     onClick={() => handleAtomicSave("Module Flags")}
-                                    className={cn(glass.btnPrimary, "h-22 px-24 font-black text-2xl italic shadow-[0_45px_100px_-20px_rgba(251,191,36,0.5)] rounded-[2.5rem] flex items-center gap-6")}
+                                    className={cn(glass.btnPrimary, "h-10 px-6 font-bold text-xs uppercase shadow-sm")}
                                 >
                                     Commit Feature Map
                                 </button>
@@ -300,137 +279,115 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     </motion.div>
                 </TabsContent>
 
-                {/* --- TAB: SMART NOTIFICATIONS --- */}
-                <TabsContent value="alerts" className="animate-in fade-in slide-in-from-bottom-5 duration-1000">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-0 overflow-hidden shadow-3xl bg-white/60 backdrop-blur-3xl")}
-                        >
-                            <div className={cn(glass.sectionHeader, 'p-12 border-b border-gray-200 bg-white/40')}>
-                                <div className="flex items-center gap-8">
-                                    <div className="w-16 h-16 rounded-[1.5rem] bg-honey/10 flex items-center justify-center border border-honey/20">
-                                        <Bell className="w-8 h-8 text-honey" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h3 className={cn(glass.sectionTitle, 'text-3xl normal-case italic')}>Internal <span className="text-honey">Telemetry</span></h3>
-                                        <p className={cn(glass.microLabel, 'opacity-40 italic tracking-[0.2em] uppercase font-black text-[9px]')}>System-level anomaly detection</p>
-                                    </div>
+                <TabsContent value="alerts" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Internal Telemetry */}
+                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white")}>
+                            <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                                    <Bell className="w-5 h-5 text-[#F4D03F]" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <h4 className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none">Internal <span className="text-[#F4D03F]">Telemetry</span></h4>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Anomalies & Guidance</p>
                                 </div>
                             </div>
-                            <div className="p-12 space-y-10">
+                            <div className="p-5 space-y-3">
                                 {[
-                                    { id: 'aiAnomalies', title: 'Neural Data Drift', desc: 'Predictive analytics for sensor spikes and telemetry anomalies.', icon: ShieldCheck, color: 'emerald-500' },
-                                    { id: 'swarmRisk', title: 'Swarm Frequency', desc: 'Acoustic pattern matching for imminent hive swarming detection.', icon: Activity, color: 'honey' },
-                                    { id: 'onboardingHints', title: 'Contextual AI Hints', desc: 'Real-time operative guidance based on current workflow state.', icon: Globe, color: 'blue-500' },
+                                    { id: 'aiAnomalies', title: 'Neural Data Drift', desc: 'Predictive sensor spikes.', color: 'emerald-500' },
+                                    { id: 'swarmRisk', title: 'Swarm Frequency', desc: 'Acoustic pattern matching.', color: 'amber-500' },
+                                    { id: 'onboardingHints', title: 'Contextual AI Hints', desc: 'Real-time guidance pulses.', color: 'blue-500' },
                                 ].map((alert) => (
-                                    <div key={alert.id} className="flex items-center justify-between py-10 px-8 border border-white/5 rounded-[2.5rem] bg-gray-50 group hover:bg-white/5 transition-colors duration-700">
-                                        <div className="flex items-center gap-8">
-                                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl", `bg-${alert.color}/10 border border-${alert.color}/20 text-${alert.color}`)}>
-                                                <alert.icon className="w-7 h-7" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <h4 className="text-xl font-black italic tracking-tight">{alert.title}</h4>
-                                                <p className={cn(glass.microLabel, 'opacity-40 italic font-medium normal-case text-[15px]')}>{alert.desc}</p>
-                                            </div>
+                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 bg-gray-50/50 hover:bg-white transition-colors group">
+                                        <div className="space-y-0.5">
+                                            <h5 className="text-sm font-bold text-[#1A1A1A]">{alert.title}</h5>
+                                            <p className="text-[10px] font-medium text-gray-500">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
                                             onCheckedChange={(val) => updateAlerts({ [alert.id]: val })}
-                                            className="data-[state=checked]:bg-honey h-8 w-14 scale-110"
+                                            className="scale-90 data-[state=checked]:bg-[#1B9157]"
                                         />
                                     </div>
                                 ))}
                             </div>
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                            initial={{ opacity: 0, x: 30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-0 overflow-hidden shadow-3xl bg-white/60 backdrop-blur-3xl")}
-                        >
-                            <div className={cn(glass.sectionHeader, 'p-12 border-b border-gray-200 bg-white/40')}>
-                                <div className="flex items-center gap-8">
-                                    <div className="w-16 h-16 rounded-[1.5rem] bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                                        <Smartphone className="w-8 h-8 text-blue-500" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h3 className={cn(glass.sectionTitle, 'text-3xl normal-case italic')}>External <span className="text-blue-500">Routing</span></h3>
-                                        <p className={cn(glass.microLabel, 'opacity-40 italic tracking-[0.2em] uppercase font-black text-[9px]')}>Direct device push protocols</p>
-                                    </div>
+                        {/* External Routing */}
+                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white")}>
+                            <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                                    <Smartphone className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <h4 className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none">External <span className="text-blue-500">Routing</span></h4>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Direct push protocols</p>
                                 </div>
                             </div>
-                            <div className="p-12 space-y-10">
+                            <div className="p-5 space-y-3">
                                 {[
-                                    { id: 'malfunction', title: 'Hardware Panic', desc: 'Critical alerts for node sensor failure or data loss.', icon: Zap, color: 'red-500' },
-                                    { id: 'lowBattery', title: 'BeeHUB Energy Hub', desc: 'Priority notifications when solar nodes drop below 15% threshold.', icon: Cpu, color: 'blue-500' },
-                                    { id: 'marketing', title: 'Boutique Intelligence', desc: 'Market analysis for honey retail pricing and boutique updates.', icon: ShoppingBag, color: 'honey' }, // Note: ShoppingBag is not imported here, use something else or add
+                                    { id: 'malfunction', title: 'Hardware Panic', desc: 'Critical sensor failure alerts.', color: 'red-500' },
+                                    { id: 'lowBattery', title: 'Energy Hub Vitals', desc: 'Low power threshold pulses.', color: 'blue-500' },
+                                    { id: 'marketing', title: 'Boutique Intelligence', desc: 'Retail pricing updates.', color: 'amber-500' },
                                 ].map((alert) => (
-                                    <div key={alert.id} className="flex items-center justify-between py-10 px-8 border border-white/5 rounded-[2.5rem] bg-gray-50 group hover:bg-white/5 transition-colors duration-700">
-                                        <div className="flex items-center gap-8">
-                                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl", `bg-${alert.color}/10 border border-${alert.color}/20 text-${alert.color}`)}>
-                                                <alert.icon className="w-7 h-7" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <h4 className="text-xl font-black italic tracking-tight">{alert.title}</h4>
-                                                <p className={cn(glass.microLabel, 'opacity-40 italic font-medium normal-case text-[15px]')}>{alert.desc}</p>
-                                            </div>
+                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 bg-gray-50/50 hover:bg-white transition-colors group">
+                                        <div className="space-y-0.5">
+                                            <h5 className="text-sm font-bold text-[#1A1A1A]">{alert.title}</h5>
+                                            <p className="text-[10px] font-medium text-gray-500">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
                                             onCheckedChange={(val) => updateAlerts({ [alert.id]: val })}
-                                            className="data-[state=checked]:bg-honey h-8 w-14 scale-110"
+                                            className="scale-90 data-[state=checked]:bg-blue-500"
                                         />
                                     </div>
                                 ))}
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
-                    <div className="mt-16 flex justify-center">
+                    <div className="flex justify-center pt-2">
                         <button
                             onClick={() => handleAtomicSave("Notification Routes")}
-                            className={cn(glass.btnPrimary, "h-22 px-32 font-black text-2xl italic shadow-[0_45px_100px_-20px_rgba(251,191,36,0.5)] rounded-[2.5rem] flex items-center gap-6 shadow-honey/30")}
+                            className={cn(glass.btnPrimary, "h-10 px-8 font-bold text-xs uppercase shadow-sm")}
                         >
                             Commit Alert Topology
                         </button>
                     </div>
                 </TabsContent>
 
-                {/* --- TAB: SECURITY PATH --- */}
-                <TabsContent value="security" className="animate-in fade-in slide-in-from-bottom-5 duration-1000">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <TabsContent value="security" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={cn(glass.card, "p-12 bg-white/60 overflow-hidden relative group")}
+                            whileHover={{ scale: 1.01 }}
+                            className={cn(glass.card, "p-8 bg-white relative overflow-hidden group")}
                         >
-                            <div className="absolute top-0 right-0 w-60 h-60 bg-honey/5 blur-[80px] group-hover:bg-honey/10 transition-colors duration-1000" />
-                            <div className="mb-12 w-24 h-24 rounded-[2rem] bg-honey/10 flex items-center justify-center border-2 border-honey/20 shadow-3xl transform group-hover:rotate-12 transition-transform duration-1000">
-                                <Key className="w-12 h-12 text-honey" />
+                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 blur-3xl rounded-full" />
+                            <div className="w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 mb-6 shadow-sm group-hover:bg-white transition-colors">
+                                <Key className="w-6 h-6 text-[#F4D03F]" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, 'text-5xl italic normal-case mb-8')}>Vault <span className="text-honey">Integrity</span></h3>
-                            <p className={cn(glass.microLabel, 'opacity-40 leading-relaxed mb-12 normal-case italic font-medium text-lg border-l-2 border-honey/20 pl-8 max-w-xl')}>
-                                Traceability Level 4 enabled for this identity. Kernel sessions are secured via cryptographic node relay. Generate ephemeral access pulses for third-party analysis.
+                            <h3 className="text-2xl font-bold tracking-tight text-[#1A1A1A] leading-none mb-3">Vault <span className="text-[#F4D03F]">Integrity</span></h3>
+                            <p className="text-[11px] font-medium text-gray-500 leading-relaxed mb-8 max-w-sm border-l-2 border-[#F4D03F]/40 pl-4">
+                                Traceability Level 4 enabled. Kernel sessions are secured via cryptographic node relay. Generate ephemeral access pulses for third-party analysis.
                             </p>
-                            <button className={cn(glass.btnSecondary, 'w-full h-20 rounded-[2.5rem] font-black italic text-xl shadow-2xl transition-all duration-700 hover:bg-honey/10 hover:border-honey/40')}>Initialize Access Pulse</button>
+                            <button className={cn(glass.btnSecondary, "w-full h-10 font-bold text-xs uppercase")}>
+                                Initialize Access Pulse
+                            </button>
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={cn(glass.card, "p-12 bg-red-500/5 border-red-500/20 overflow-hidden relative group")}
+                            whileHover={{ scale: 1.01 }}
+                            className={cn(glass.card, "p-8 bg-white border-red-100 relative overflow-hidden group")}
                         >
-                            <div className="absolute top-0 right-0 w-60 h-60 bg-red-500/5 blur-[80px]" />
-                            <div className="mb-12 w-24 h-24 rounded-[2rem] bg-red-500/10 flex items-center justify-center border-2 border-red-500/20 shadow-3xl transform group-hover:-rotate-12 transition-transform duration-1000">
-                                <Trash2 className="w-12 h-12 text-red-500" />
+                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-red-500/5 blur-3xl rounded-full" />
+                            <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 mb-6 shadow-sm group-hover:bg-white transition-colors">
+                                <Trash2 className="w-6 h-6 text-red-500" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, 'text-5xl italic normal-case text-red-500 mb-8')}>Identity <span className="text-foreground">Termination</span></h3>
-                            <p className={cn(glass.microLabel, 'text-red-500/40 leading-relaxed mb-12 normal-case italic font-medium text-lg border-l-2 border-red-500/20 pl-8 max-w-xl')}>
-                                CRITICAL: This protocol will irreversibly destroy your industrial hash identity, historical apiary metadata, and all node linkage records.
+                            <h3 className="text-2xl font-bold tracking-tight text-red-600 leading-none mb-3">Identity <span className="text-[#1A1A1A]">Termination</span></h3>
+                            <p className="text-[11px] font-medium text-red-600/80 leading-relaxed mb-8 max-w-sm border-l-2 border-red-500/40 pl-4">
+                                CRITICAL: Irreversibly destroy industrial hash identity, historical apiary metadata, and all node linkage records.
                             </p>
-                            <button className="h-20 w-full rounded-[2.5rem] bg-red-500/10 text-red-500 font-black italic text-xl tracking-widest hover:bg-red-500 hover:text-gray-900 transition-all duration-700 border border-red-500/20 shadow-2xl flex items-center justify-center gap-6 group/purge">
-                                <Shield className="w-8 h-8 group-hover/purge:animate-bounce" />
+                            <button className={cn("w-full h-10 bg-red-600 text-white hover:bg-red-700 rounded-lg font-bold text-xs uppercase flex items-center justify-center gap-2 transition-all shadow-sm")}>
+                                <Shield className="w-3.5 h-3.5" />
                                 Initiate Absolute Purge
                             </button>
                         </motion.div>

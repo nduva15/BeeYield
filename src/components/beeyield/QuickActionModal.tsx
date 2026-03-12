@@ -100,13 +100,13 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl p-0 overflow-hidden outline-none">
+            <DialogContent className="max-w-lg bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-2xl shadow-2xl p-0 overflow-hidden outline-none">
                 {/* Header */}
-                <div className="bg-gradient-to-br from-[#FF6B00]/5 to-transparent px-6 py-5 border-b border-gray-200">
+                <div className="bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-6 py-5 border-b border-[#F4D03F]/20">
                     <DialogHeader>
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#FF6B00]/10 rounded-lg border border-[#FF6B00]/20 w-fit mb-2">
-                            <Plus className="w-3.5 h-3.5 text-[#FF6B00]" />
-                            <span className="text-[11px] font-semibold text-[#FF6B00]">New Record</span>
+                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#F4D03F]/10 rounded-lg border border-[#F4D03F]/20 w-fit mb-2">
+                            <Plus className="w-3.5 h-3.5 text-[#F4D03F]" />
+                            <span className="text-[11px] font-semibold text-[#F4D03F]">New Record</span>
                         </div>
                         <DialogTitle className="text-xl font-bold text-foreground">
                             Add New Asset
@@ -121,10 +121,10 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                 <div className="px-6 py-5">
                     <Tabs defaultValue="apiary" onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 h-10 rounded-lg mb-6">
-                            <TabsTrigger value="apiary" className="rounded-md text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm h-8">
+                            <TabsTrigger value="apiary" className="rounded-md text-sm font-medium data-[state=active]:bg-[#FFF9F0] dark:data-[state=active]:bg-[#F4D03F]/10 data-[state=active]:shadow-sm h-8">
                                 Apiary
                             </TabsTrigger>
-                            <TabsTrigger value="hive" className="rounded-md text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm h-8">
+                            <TabsTrigger value="hive" className="rounded-md text-sm font-medium data-[state=active]:bg-[#FFF9F0] dark:data-[state=active]:bg-[#F4D03F]/10 data-[state=active]:shadow-sm h-8">
                                 Hive
                             </TabsTrigger>
                         </TabsList>
@@ -244,7 +244,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <div className="space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50">
                                     <div className="flex justify-between items-center">
                                         <Label className="text-sm font-medium">Colony Strength</Label>
-                                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">
+                                        <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ text-xs">
                                             {Math.round(hiveData.strength * 20)}%
                                         </Badge>
                                     </div>

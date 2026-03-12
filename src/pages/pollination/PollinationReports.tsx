@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 const PollinationReports: React.FC = () => {
     return (
-        <div className="min-h-screen bg-white text-[#064e3b] font-sans antialiased p-8 md:p-12">
+        <div className="min-h-screen bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12">
             <div className="max-w-7xl mx-auto space-y-12">
                 {/* Back Link */}
                 <Link to="/precision-pollination" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#10b981] hover:text-[#064e3b] transition-colors">
@@ -30,10 +30,10 @@ const PollinationReports: React.FC = () => {
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         {/* Bloom Report Card */}
-                        <div className="border-4 border-[#064e3b] bg-white overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                        <div className="border-4 border-[#064e3b] bg-[#FFF9F0] overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                             <div className="bg-[#10b981] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                <h4 className="text-xl font-black text-gray-900 uppercase tracking-tight">Bloom Saturation Report</h4>
-                                <Terminal className="w-5 h-5 text-gray-900" />
+                                <h4 className="text-xl font-black text-[#1A1A1A] uppercase tracking-tight">Bloom Saturation Report</h4>
+                                <Terminal className="w-5 h-5 text-[#1A1A1A]" />
                             </div>
                             <div className="p-10 space-y-8">
                                 <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
@@ -48,14 +48,14 @@ const PollinationReports: React.FC = () => {
                                     <span className="text-[10px] font-black uppercase text-neutral-400">Foraging Overlap</span>
                                     <span className="font-black text-lg">88.1%</span>
                                 </div>
-                                <button className="w-full py-4 bg-[#064e3b] text-gray-900 font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-black transition-none">
+                                <button className="w-full py-4 bg-[#064e3b] text-[#1A1A1A] font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-[#1A1A1A] transition-none">
                                     Export Geodata (.CSV)
                                 </button>
                             </div>
                         </div>
 
                         {/* Hive Performance Card */}
-                        <div className="border-4 border-[#064e3b] bg-white overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                        <div className="border-4 border-[#064e3b] bg-[#FFF9F0] overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                             <div className="bg-[#facc15] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
                                 <h4 className="text-xl font-black text-[#064e3b] uppercase tracking-tight">Hive Efficiency Audit</h4>
                                 <Activity className="w-5 h-5 text-[#064e3b]" />
@@ -73,7 +73,7 @@ const PollinationReports: React.FC = () => {
                                     <span className="text-[10px] font-black uppercase text-neutral-400">Avg Colony Health</span>
                                     <span className="font-black text-lg text-[#10b981]">OPTIMAL</span>
                                 </div>
-                                <button className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-gray-900 transition-none">
+                                <button className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none">
                                     Run Deep Diagnostic
                                 </button>
                             </div>
