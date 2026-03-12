@@ -106,7 +106,7 @@ const ShopAuth: React.FC = () => {
                                     <div className="flex flex-col items-center relative z-10">
                                         <div
                                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${step.active
-                                                ? 'bg-gradient-to-br from-beeyield-gold to-beeyield-orange text-white shadow-glow scale-110'
+                                                ? 'bg-gradient-to-br from-beeyield-gold to-beeyield-orange text-gray-900 shadow-glow scale-110'
                                                 : 'bg-beeyield-cream text-beeyield-green/40 border border-beeyield-gold/20'
                                                 }`}
                                         >
@@ -200,7 +200,7 @@ const ShopAuth: React.FC = () => {
                                     <div className="flex gap-1 p-1 bg-white rounded-xl border border-beeyield-gold/20 shadow-sm">
                                         <button
                                             onClick={() => setAuthMode('login')}
-                                            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-beeyield-green text-white shadow-md' : 'text-beeyield-green/40 hover:bg-beeyield-cream'}`}
+                                            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-beeyield-green text-gray-900 shadow-md' : 'text-beeyield-green/40 hover:bg-beeyield-cream'}`}
                                         >
                                             Log In
                                         </button>

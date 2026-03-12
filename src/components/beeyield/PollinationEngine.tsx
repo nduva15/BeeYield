@@ -172,7 +172,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                             <select
                                 value={selectedCrop}
                                 onChange={(e) => setSelectedCrop(e.target.value)}
-                                className="h-24 px-12 pr-20 appearance-none bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl border-4 border-white/5 text-3xl font-black italic uppercase tracking-tighter outline-none focus:border-honey/50 transition-all cursor-pointer"
+                                className="h-24 px-12 pr-20 appearance-none bg-white/80 backdrop-blur-3xl border-4 border-white/5 text-3xl font-black italic uppercase tracking-tighter outline-none focus:border-honey/50 transition-all cursor-pointer"
                             >
                                 {crops.map(c => (
                                     <option key={c.id} value={c.crop_name}>{c.crop_name}</option>
@@ -203,7 +203,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                 <motion.div
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className={cn(glass.card, "p-16 space-y-12 shadow-4xl relative overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] border-white/5 group hover:border-honey/20 transition-all")}
+                    className={cn(glass.card, "p-16 space-y-12 shadow-4xl relative overflow-hidden bg-white/80 backdrop-blur-3xl rounded-[6rem] border-white/5 group hover:border-honey/20 transition-all")}
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none group-hover:bg-emerald-500/10 transition-all duration-1000" />
 
@@ -222,7 +222,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                                 type="range" min="0.5" max="4" step="0.1"
                                 value={schemeA.hivesPerAcre}
                                 onChange={(e) => setSchemeA({ ...schemeA, hivesPerAcre: parseFloat(e.target.value) })}
-                                className="w-full h-4 bg-black/10 dark:bg-white/10 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-4xl"
+                                className="w-full h-4 bg-gray-50 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-4xl"
                             />
                         </div>
 
@@ -235,17 +235,17 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                                 type="range" min="4" max="14" step="1"
                                 value={schemeA.framesPerHive}
                                 onChange={(e) => setSchemeA({ ...schemeA, framesPerHive: parseInt(e.target.value) })}
-                                className="w-full h-4 bg-black/10 dark:bg-white/10 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-4xl"
+                                className="w-full h-4 bg-gray-50 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-4xl"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-12 pt-12 relative z-10">
                         <CircularGauge value={calcResultA?.coverage_health_pct || statsA.setProbability} max={100} label="Flower Score" />
-                        <div className="rounded-[4rem] bg-black/5 dark:bg-white/5 p-10 flex flex-col justify-center items-center text-center border-4 border-white/5 shadow-4xl">
+                        <div className="rounded-[4rem] bg-gray-50 p-10 flex flex-col justify-center items-center text-center border-4 border-white/5 shadow-4xl">
                             <p className="text-[14px] font-black italic uppercase tracking-[0.3em] opacity-40 mb-3">Cost per Acre</p>
                             <p className="text-6xl font-black italic tracking-tighter tabular-nums leading-none">${statsA.cost.toFixed(0)}</p>
-                            <div className="mt-8 h-3 bg-black/10 dark:bg-white/10 w-full rounded-full overflow-hidden p-[2px]">
+                            <div className="mt-8 h-3 bg-gray-50 w-full rounded-full overflow-hidden p-[2px]">
                                 <motion.div
                                     animate={{ width: `${calcResultA?.coverage_health_pct || Math.min(100, statsA.fpa * 100)}%` }}
                                     className="h-full bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)]"
@@ -260,7 +260,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 }}
-                    className={cn(glass.card, "p-16 space-y-12 shadow-4xl relative overflow-hidden bg-honey/10 dark:bg-[#0D0D0D]/90 backdrop-blur-3xl rounded-[6rem] border-honey/20 group hover:border-honey transition-all")}
+                    className={cn(glass.card, "p-16 space-y-12 shadow-4xl relative overflow-hidden bg-honey/10 backdrop-blur-3xl rounded-[6rem] border-honey/20 group hover:border-honey transition-all")}
                 >
                     <div className="absolute top-0 right-0 w-80 h-80 bg-honey/10 rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none group-hover:bg-honey/15 transition-all duration-1000" />
 
@@ -279,7 +279,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                                 type="range" min="0.5" max="4" step="0.1"
                                 value={schemeB.hivesPerAcre}
                                 onChange={(e) => setSchemeB({ ...schemeB, hivesPerAcre: parseFloat(e.target.value) })}
-                                className="w-full h-4 bg-black/10 dark:bg-white/10 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-honey [&::-webkit-slider-thumb]:shadow-4xl"
+                                className="w-full h-4 bg-gray-50 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-honey [&::-webkit-slider-thumb]:shadow-4xl"
                             />
                         </div>
 
@@ -292,17 +292,17 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                                 type="range" min="4" max="14" step="1"
                                 value={schemeB.framesPerHive}
                                 onChange={(e) => setSchemeB({ ...schemeB, framesPerHive: parseInt(e.target.value) })}
-                                className="w-full h-4 bg-black/10 dark:bg-white/10 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-honey [&::-webkit-slider-thumb]:shadow-4xl"
+                                className="w-full h-4 bg-gray-50 rounded-full outline-none appearance-none cursor-pointer p-1 shadow-inner [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-honey [&::-webkit-slider-thumb]:shadow-4xl"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-12 pt-12 relative z-10">
                         <CircularGauge isPremium value={calcResultB?.coverage_health_pct || statsB.setProbability} max={100} label="Flower Score" />
-                        <div className="rounded-[4rem] bg-black/5 dark:bg-white/5 p-10 flex flex-col justify-center items-center text-center border-4 border-white/5 shadow-4xl transition-all group-hover:bg-honey/5">
+                        <div className="rounded-[4rem] bg-gray-50 p-10 flex flex-col justify-center items-center text-center border-4 border-white/5 shadow-4xl transition-all group-hover:bg-honey/5">
                             <p className="text-[14px] font-black italic uppercase tracking-[0.3em] opacity-40 mb-3">Cost per Acre</p>
                             <p className="text-6xl font-black italic tracking-tighter tabular-nums leading-none">${statsB.cost.toFixed(0)}</p>
-                            <div className="mt-8 h-3 bg-black/10 dark:bg-white/10 w-full rounded-full overflow-hidden p-[2px]">
+                            <div className="mt-8 h-3 bg-gray-50 w-full rounded-full overflow-hidden p-[2px]">
                                 <motion.div
                                     animate={{ width: `${calcResultB?.coverage_health_pct || Math.min(100, statsB.fpa * 100)}%` }}
                                     className="h-full bg-honey rounded-full shadow-[0_0_15px_rgba(251,191,36,0.8)]"
@@ -318,7 +318,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className={cn(glass.card, "p-16 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[5.5rem] border-8 relative group", aIsBetter ? "border-emerald-500/20" : "border-honey/20")}
+                className={cn(glass.card, "p-16 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[5.5rem] border-8 relative group", aIsBetter ? "border-emerald-500/20" : "border-honey/20")}
             >
                 <div className="absolute right-0 top-0 w-96 h-96 bg-honey/5 rounded-full blur-[120px] pointer-events-none group-hover:bg-honey/10 transition-all duration-1000" />
                 <div className="flex flex-col md:flex-row gap-16 items-center">
@@ -336,7 +336,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                         </p>
                     </div>
 
-                    <div className="border-l-4 border-black/5 dark:border-white/5 pl-12 hidden md:block shrink-0 text-right">
+                    <div className="border-l-4 border-black/5 pl-12 hidden md:block shrink-0 text-right">
                         <p className="text-[14px] font-black italic uppercase tracking-[0.4em] opacity-40 mb-4">Cost Difference</p>
                         <p className="text-7xl font-black italic uppercase tracking-tighter tabular-nums leading-none">${Math.abs(statsA.cost - statsB.cost).toFixed(0)}</p>
                         <p className="text-[12px] font-black italic uppercase opacity-20 mt-2">per acre</p>
@@ -349,7 +349,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                 disabled={isSaving}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={cn(glass.btnPrimary, "w-full h-32 text-3xl font-black italic uppercase tracking-[0.4em] rounded-[4rem] shadow-4xl relative overflow-hidden group border-white/10 flex items-center justify-center gap-10")}
+                className={cn(glass.btnPrimary, "w-full h-32 text-3xl font-black italic uppercase tracking-[0.4em] rounded-[4rem] shadow-4xl relative overflow-hidden group border-gray-200 flex items-center justify-center gap-10")}
             >
                 <div className="absolute inset-x-0 inset-y-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:animate-shimmer" />
                 {isSaving ? <Loader2 className="w-12 h-12 animate-spin" /> : <Save className="w-12 h-12" />}

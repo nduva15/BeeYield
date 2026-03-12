@@ -91,7 +91,7 @@ const BeeFlightHoursForecast: React.FC = () => {
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-16 lg:p-24 bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5 shadow-4xl")}
+                className={cn(glass.card, "p-16 lg:p-24 bg-white/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5 shadow-4xl")}
             >
                 <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-honey/[0.05] to-transparent pointer-events-none" />
                 <div className="absolute -bottom-60 -left-60 w-[500px] h-[500px] bg-honey/5 rounded-full blur-[120px] pointer-events-none" />
@@ -102,7 +102,7 @@ const BeeFlightHoursForecast: React.FC = () => {
                         <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest leading-tight max-w-2xl pl-2 border-l-8 border-white/5">Estimated flight hours for each day based on weather conditions.</p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-8 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-6 rounded-[3.5rem] border border-white/10 shadow-4xl">
+                    <div className="flex flex-wrap items-center gap-8 bg-white/40 backdrop-blur-3xl p-6 rounded-[3.5rem] border border-gray-200 shadow-4xl">
                         {[
                             { label: 'High Activity', color: 'bg-honey shadow-[0_0_20px_rgba(251,191,36,0.5)]' },
                             { label: 'Moderate', color: 'bg-honey/50' },
@@ -185,7 +185,7 @@ const BeeFlightHoursForecast: React.FC = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className={cn(glass.card, "p-16 lg:p-24 bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5 shadow-4xl")}
+                className={cn(glass.card, "p-16 lg:p-24 bg-white/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5 shadow-4xl")}
             >
                 <div className="absolute right-0 top-0 w-[600px] h-[600px] bg-honey/5 rounded-full blur-[150px] pointer-events-none group-hover:bg-honey/10 transition-all duration-1000" />
 
@@ -204,7 +204,7 @@ const BeeFlightHoursForecast: React.FC = () => {
                             Bright sunny days with high UV are the best for foraging, and our system highlights these peak windows so you know when to expect the most activity.
                         </p>
                     </div>
-                    <button className={cn(glass.btnSecondary, "relative h-24 px-16 group/btn bg-white dark:bg-black overflow-hidden rounded-[3.5rem] border-white/10 shadow-4xl")}>
+                    <button className={cn(glass.btnSecondary, "relative h-24 px-16 group/btn bg-white overflow-hidden rounded-[3.5rem] border-gray-200 shadow-4xl")}>
                         <div className="absolute inset-0 bg-honey/0 group-hover/btn:bg-honey/10 transition-all" />
                         <div className="relative flex items-center gap-8">
                             <span className="text-2xl font-black italic uppercase">Learn More</span>

@@ -923,11 +923,11 @@ const Media = () => {
                                 {story.acres} Acres Pollinated
                               </Badge>
                             </div>
-                            <div className="absolute bottom-8 left-8 text-white z-10">
+                            <div className="absolute bottom-8 left-8 text-gray-900 z-10">
                               <p className="font-bold text-2xl mb-2">
                                 {story.farmer}
                               </p>
-                              <p className="text-white/90 text-sm flex items-center font-medium bg-white/10 backdrop-blur-sm w-fit px-3 py-1 rounded-full">
+                              <p className="text-gray-900 text-sm flex items-center font-medium bg-white/10 backdrop-blur-sm w-fit px-3 py-1 rounded-full">
                                 <MapPin className="w-4 h-4 mr-1.5" />
                                 {story.location}
                               </p>

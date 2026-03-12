@@ -47,7 +47,7 @@ const ToggleSwitch = ({ checked, onCheckedChange, label }: { checked: boolean, o
             <div
                 className={cn(
                     "relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honey/50",
-                    checked ? "bg-honey/80 shadow-lg shadow-honey/20" : "bg-white/10 dark:bg-black/20"
+                    checked ? "bg-honey/80 shadow-lg shadow-honey/20" : "bg-white/10"
                 )}
                 onClick={() => onCheckedChange(!checked)}
             >
@@ -66,7 +66,7 @@ const MeasurementIntervalSelector = () => {
     const options = [15, 30, 60, 120, 180, 360, 720];
     const [selected, setSelected] = React.useState(60);
     return (
-        <div className="flex bg-white/20 dark:bg-black/20 backdrop-blur-md border border-border/50 rounded-[1.8rem] overflow-hidden w-full p-2 gap-2 shadow-inner">
+        <div className="flex bg-white/20 backdrop-blur-md border border-border/50 rounded-[1.8rem] overflow-hidden w-full p-2 gap-2 shadow-inner">
             {options.map((opt) => (
                 <button
                     key={opt}
@@ -74,7 +74,7 @@ const MeasurementIntervalSelector = () => {
                     className={cn(
                         "flex-1 py-4 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest",
                         selected === opt
-                            ? "bg-white dark:bg-white/10 text-honey shadow-xl scale-[1.05] z-10 border border-honey/20"
+                            ? "bg-white text-honey shadow-xl scale-[1.05] z-10 border border-honey/20"
                             : "text-foreground/40 hover:text-foreground/60"
                     )}
                 >
@@ -102,11 +102,11 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-honey/10 bg-white/95 dark:bg-[#0D0D0D]/95 backdrop-blur-2xl")}
+                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-honey/10 bg-white/95 backdrop-blur-2xl")}
                 >
                     <div className="absolute top-0 right-0 w-80 h-80 bg-honey/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
 
-                    <div className="bg-white/40 dark:bg-white/[0.05] px-12 py-12 border-b border-border/50 relative z-10">
+                    <div className="bg-white/40 px-12 py-12 border-b border-border/50 relative z-10">
                         <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 mb-6')}>
                             <Settings className="w-3.5 h-3.5 mr-2" />
                             Bridge Configuration v5.1
@@ -180,11 +180,11 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-destructive/10 bg-white/95 dark:bg-[#0D0D0D]/95 backdrop-blur-2xl")}
+                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-destructive/10 bg-white/95 backdrop-blur-2xl")}
                 >
                     <div className="absolute top-0 right-0 w-80 h-80 bg-destructive/5 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
 
-                    <div className="bg-white/40 dark:bg-white/[0.05] px-12 py-12 border-b border-border/50 relative z-10">
+                    <div className="bg-white/40 px-12 py-12 border-b border-border/50 relative z-10">
                         <div className={cn(glass.badge, 'bg-destructive/10 text-destructive border-destructive/20 mb-6')}>
                             <Bell className="w-3.5 h-3.5 mr-2" />
                             Biosphere Alert Matrix v2.0
@@ -211,7 +211,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                                 <Input
                                     type="email"
                                     placeholder="ENDPOINT_TARGET@BEEYIELD.AI"
-                                    className={cn(glass.input, "h-16 font-black tracking-widest bg-black/5")}
+                                    className={cn(glass.input, "h-16 font-black tracking-widest bg-gray-50")}
                                 />
                                 <button className={cn(glass.btnSecondary, "h-16 px-10 font-black tracking-widest border-border/50")}>VERIFY</button>
                             </div>
@@ -372,7 +372,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                     <div className="space-y-6">
                         <Label className={cn(glass.microLabel, "ml-4 opacity-40 font-black tracking-[0.2em]")}>INDUSTRIAL_SECTOR_IDENTIFIER</Label>
                         <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-honey/10 hover:border-honey/30 transition-all rounded-[2rem] bg-white/40 dark:bg-black/20")}>
+                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-honey/10 hover:border-honey/30 transition-all rounded-[2rem] bg-white/40")}>
                                 <div className="flex items-center gap-6">
                                     <div className="w-12 h-12 rounded-[1.2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-lg shadow-honey/5">
                                         <Grid3X3 className="w-6 h-6 text-honey" />
@@ -394,7 +394,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                     <div className="space-y-6">
                         <Label className={cn(glass.microLabel, "ml-4 opacity-40 font-black tracking-[0.2em]")}>NODE_NEURAL_ASSET_ID</Label>
                         <Select value={selectedHive} onValueChange={setSelectedHive}>
-                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-emerald-500/10 hover:border-emerald-500/30 transition-all rounded-[2rem] bg-white/40 dark:bg-black/20")}>
+                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-emerald-500/10 hover:border-emerald-500/30 transition-all rounded-[2rem] bg-white/40")}>
                                 <div className="flex items-center gap-6">
                                     <div className="w-12 h-12 rounded-[1.2rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
                                         <Box className="w-6 h-6 text-emerald-500" />
@@ -450,7 +450,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         animate={{ opacity: 1 }}
                         className={cn(glass.card, "p-24 text-center flex flex-col items-center justify-center space-y-10 bg-honey/[0.02] border-honey/10 border-dashed rounded-[4rem]")}
                     >
-                        <div className="w-28 h-28 rounded-[2.5rem] bg-white/40 dark:bg-white/5 flex items-center justify-center border border-honey/20 shadow-2xl shadow-honey/5 opacity-40 group hover:scale-110 transition-transform duration-700">
+                        <div className="w-28 h-28 rounded-[2.5rem] bg-white/40 flex items-center justify-center border border-honey/20 shadow-2xl shadow-honey/5 opacity-40 group hover:scale-110 transition-transform duration-700">
                             <SearchCode className="w-14 h-14 text-honey" />
                         </div>
                         <div className="space-y-4">
@@ -624,7 +624,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                         animate={{ opacity: 1, scale: 1 }}
                         className={cn(glass.card, "p-32 text-center flex flex-col items-center justify-center space-y-12 bg-honey/[0.02] border-honey/10 border-dashed rounded-[4rem]")}
                     >
-                        <div className="w-32 h-32 rounded-[3.5rem] bg-white/40 dark:bg-white/5 flex items-center justify-center border border-honey/20 shadow-2xl shadow-honey/5 opacity-20 group hover:scale-110 transition-transform duration-700">
+                        <div className="w-32 h-32 rounded-[3.5rem] bg-white/40 flex items-center justify-center border border-honey/20 shadow-2xl shadow-honey/5 opacity-20 group hover:scale-110 transition-transform duration-700">
                             <BluetoothIcon className="w-16 h-16 text-honey" />
                         </div>
                         <div className="space-y-6">

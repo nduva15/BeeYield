@@ -39,7 +39,7 @@ const FlightMapping: React.FC = () => {
                         <div className="absolute inset-0 p-10 grid grid-cols-12 grid-rows-8 gap-4">
                             {[...Array(96)].map((_, i) => (
                                 <div key={i} className="border border-[#064e3b]/10 hover:bg-[#facc15]/20 flex items-center justify-center transition-none cursor-crosshair group/tile relative">
-                                    <div className="text-[6px] font-black text-white/40 absolute top-1 left-1 opacity-0 group-hover/tile:opacity-100">{i}</div>
+                                    <div className="text-[6px] font-black text-gray-600 absolute top-1 left-1 opacity-0 group-hover/tile:opacity-100">{i}</div>
                                 </div>
                             ))}
                         </div>

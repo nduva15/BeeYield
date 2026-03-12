@@ -131,7 +131,7 @@ const AdminAuth = () => {
                                 <div className="flex gap-2 p-1 bg-beeyield-cream border border-beeyield-green/10">
                                     <button
                                         onClick={() => setAuthMode('login')}
-                                        className={`px-4 py-2 text-[9px] font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-beeyield-green text-white shadow-sm' : 'text-beeyield-green/60 hover:text-beeyield-green'}`}
+                                        className={`px-4 py-2 text-[9px] font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-beeyield-green text-gray-900 shadow-sm' : 'text-beeyield-green/60 hover:text-beeyield-green'}`}
                                     >
                                         Log In
                                     </button>

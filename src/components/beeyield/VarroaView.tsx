@@ -83,7 +83,7 @@ const VarroaView: React.FC = () => {
                     <p className="text-slate-500 mt-1 text-sm font-medium">Scientific analysis for varroa mite detection.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button className="bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold">
+                    <Button className="bg-green-600 hover:bg-green-700 text-gray-900 rounded-xl font-bold">
                         <Microscope className="w-4 h-4 mr-2" />
                         Run Diagnosis
                     </Button>
@@ -100,7 +100,7 @@ const VarroaView: React.FC = () => {
                         <h3 className="font-bold text-red-900 uppercase text-[10px] tracking-wider mb-1">High Infestation Alert</h3>
                         <p className="text-sm text-red-700 font-medium font-bold">Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.</p>
                     </div>
-                    <Button className="bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold">
+                    <Button className="bg-red-500 hover:bg-red-600 text-gray-900 rounded-xl font-bold">
                         Treatment Guide
                     </Button>
                 </div>

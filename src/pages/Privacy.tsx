@@ -5,7 +5,7 @@ const Privacy = () => {
     return (
         <Container className="py-20">
             <Section>
-                <div className="max-w-4xl mx-auto prose dark:prose-invert">
+                <div className="max-w-4xl mx-auto prose">
                     <h1>Privacy Policy</h1>
                     <p>Last updated: {new Date().toLocaleDateString()}</p>
 

@@ -73,7 +73,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <Crosshair className="w-4 h-4 mr-2" />
                         Geospatial Deployment Planner v4.1
                     </div>
@@ -86,11 +86,11 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 </div>
 
                 <div className="flex gap-4">
-                    <div className={cn(glass.card, "px-8 py-3 bg-white/40 dark:bg-black/20 flex flex-col items-center justify-center border-border/50 shadow-sm")}>
+                    <div className={cn(glass.card, "px-8 py-3 bg-white/40 flex flex-col items-center justify-center border-border/50 shadow-sm")}>
                         <span className={cn(glass.microLabel, "opacity-40 italic font-bold mb-1")}>EXPECTED_COVERAGE</span>
                         <span className={cn(glass.sectionTitle, "text-2xl text-honey italic")}>{avgCoverage}%</span>
                     </div>
-                    <div className={cn(glass.card, "px-8 py-3 bg-white/40 dark:bg-black/20 flex flex-col items-center justify-center border-border/50 shadow-sm")}>
+                    <div className={cn(glass.card, "px-8 py-3 bg-white/40 flex flex-col items-center justify-center border-border/50 shadow-sm")}>
                         <span className={cn(glass.microLabel, "opacity-40 italic font-bold mb-1")}>ACTIVE_HIVES</span>
                         <span className={cn(glass.sectionTitle, "text-2xl")}>{totalHives}</span>
                     </div>
@@ -103,7 +103,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "flex flex-col sm:flex-row items-center justify-between p-6 bg-white/40 dark:bg-black/20 border-border shadow-md gap-6")}
+                        className={cn(glass.card, "flex flex-col sm:flex-row items-center justify-between p-6 bg-white/40 border-border shadow-md gap-6")}
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20">
@@ -179,7 +179,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                         fill={draggingPallet === p.id ? "hsl(var(--honey))" : "white"}
                                         stroke="hsl(var(--honey))"
                                         strokeWidth={draggingPallet === p.id ? 4 : 2}
-                                        className="transition-all duration-300 dark:fill-black/80 drop-shadow-lg"
+                                        className="transition-all duration-300 drop-shadow-lg"
                                     />
                                     <text
                                         textAnchor="middle"
@@ -187,7 +187,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                         fontSize="10"
                                         fontWeight="900"
                                         fill={draggingPallet === p.id ? "white" : "hsl(var(--honey))"}
-                                        className="pointer-events-none dark:fill-white"
+                                        className="pointer-events-none"
                                     >4</text>
 
                                     {/* Hover delete button hint could go here with a small x icon */}
@@ -208,7 +208,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-destructive/10 rounded-full blur-2xl pointer-events-none group-hover:bg-destructive/15 transition-colors" />
                         <div className="flex items-center gap-4 relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-destructive shadow-sm">
+                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-destructive shadow-sm">
                                 <ShieldAlert className="w-6 h-6 text-destructive" />
                             </div>
                             <h3 className={cn(glass.sectionTitle, "text-xl normal-case italic text-destructive")}>Security Alerts</h3>
@@ -218,7 +218,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                 { title: 'Hive Tipped Over: Area 4', desc: 'Acoustic spike detected. Probable external disturbance.' },
                                 { title: 'Hive Moved: WAT-012', desc: 'GPS offset detected beyond threshold. High theft risk.' }
                             ].map((alert, i) => (
-                                <div key={i} className="flex items-start gap-4 p-5 bg-white/40 dark:bg-black/20 rounded-2xl border border-destructive/20 group/alert hover:bg-destructive/10 transition-colors shadow-sm">
+                                <div key={i} className="flex items-start gap-4 p-5 bg-white/40 rounded-2xl border border-destructive/20 group/alert hover:bg-destructive/10 transition-colors shadow-sm">
                                     <div className="w-2.5 h-2.5 rounded-full bg-destructive mt-1.5 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
                                     <div>
                                         <p className={cn(glass.microLabel, "text-sm font-bold text-destructive leading-none")}>{alert.title}</p>
@@ -239,7 +239,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                         <div className="absolute bottom-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
 
                         <div className="flex items-center gap-4 border-b border-border/20 pb-6 relative z-10">
-                            <div className="w-10 h-10 rounded-xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-emerald-500/30 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center border border-emerald-500/30 shadow-sm">
                                 <ClipboardList className="w-5 h-5 text-emerald-500" />
                             </div>
                             <h3 className={cn(glass.sectionTitle, "text-xl normal-case italic")}>Field Activity Logs</h3>
@@ -252,7 +252,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                     initial={{ opacity: 0, y: 5 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 + (idx * 0.1) }}
-                                    className="group hover:bg-white/40 dark:hover:bg-black/20 rounded-xl p-3 -m-3 transition-colors"
+                                    className="group hover:bg-white/40:bg-gray-100 rounded-xl p-3 -m-3 transition-colors"
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

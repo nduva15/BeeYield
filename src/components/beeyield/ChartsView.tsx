@@ -48,7 +48,7 @@ const ChartsView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <BarChart3 className="w-4 h-4 mr-2" />
                         Telemetry Diagnostics v3.0
                     </div>
@@ -140,12 +140,12 @@ const ChartsView: React.FC = () => {
             >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-white/40 dark:bg-black/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-white/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div>
                         <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage Trend <span className="text-honey">Analysis</span></h3>
                         <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Telemetry patterns with recursive anomaly detection</p>
                     </div>
-                    <div className="flex items-center gap-6 bg-white/60 dark:bg-black/40 p-2 px-4 rounded-2xl border border-border shadow-sm">
+                    <div className="flex items-center gap-6 bg-white/60 p-2 px-4 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full bg-honey" />
                             <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Baseline_Sig</span>
@@ -238,11 +238,11 @@ const ChartsView: React.FC = () => {
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Recursive Usage Spike</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>KIB_MAIN_C · T+03:00</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-destructive text-white border-transparent px-4 py-1 animate-pulse shadow-md relative z-10")}>
+                            <div className={cn(glass.badge, "bg-destructive text-gray-900 border-transparent px-4 py-1 animate-pulse shadow-md relative z-10")}>
                                 <Zap className="w-3 h-3 mr-1" /> HIGH_SEV
                             </div>
                         </div>
-                        <div className="p-6 rounded-2xl bg-white/40 dark:bg-black/20 border border-border flex items-center justify-between group hover:border-honey transition-colors cursor-pointer shadow-sm">
+                        <div className="p-6 rounded-2xl bg-white/40 border border-border flex items-center justify-between group hover:border-honey transition-colors cursor-pointer shadow-sm">
                             <div className="space-y-1">
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Signal Drop Isolation</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>KIB_MAIN_B · T+12:00</p>
@@ -279,12 +279,12 @@ const ChartsView: React.FC = () => {
                                 <span className="font-bold">+18%_GAIN</span>
                             </div>
                         </div>
-                        <div className="p-6 rounded-2xl bg-white/40 dark:bg-black/20 border border-border flex items-center justify-between group hover:border-destructive transition-colors cursor-pointer shadow-sm">
+                        <div className="p-6 rounded-2xl bg-white/40 border border-border flex items-center justify-between group hover:border-destructive transition-colors cursor-pointer shadow-sm">
                             <div className="space-y-1">
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Load Compression Baseline</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>Minimum signal overhead window</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-destructive text-white border-transparent px-4 py-2 shadow-lg flex items-center gap-2")}>
+                            <div className={cn(glass.badge, "bg-destructive text-gray-900 border-transparent px-4 py-2 shadow-lg flex items-center gap-2")}>
                                 <TrendingDown className="w-4 h-4" />
                                 <span className="font-bold">-9%_LOSS</span>
                             </div>
@@ -301,7 +301,7 @@ const ChartsView: React.FC = () => {
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

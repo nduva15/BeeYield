@@ -175,7 +175,7 @@ const PollinationCalcs: React.FC = () => {
                                 ...prev,
                                 hives: [...prev.hives, { frameCount: 8, isStrong: true, isLarge: false }]
                             }))}
-                            className="px-6 py-2 border-4 border-black font-black uppercase text-xs hover:bg-black hover:text-white transition-none"
+                            className="px-6 py-2 border-4 border-black font-black uppercase text-xs hover:bg-black hover:text-gray-900 transition-none"
                         >
                             Add Unit
                         </button>
@@ -206,7 +206,7 @@ const PollinationCalcs: React.FC = () => {
                                             newHives[idx].isStrong = !newHives[idx].isStrong;
                                             setCalcInputs(prev => ({ ...prev, hives: newHives }));
                                         }}
-                                        className={cn("flex-1 py-1 border-2 text-[8px] font-black uppercase", hive.isStrong ? "bg-[#10b981] text-white border-[#10b981]" : "border-[#064e3b]")}
+                                        className={cn("flex-1 py-1 border-2 text-[8px] font-black uppercase", hive.isStrong ? "bg-[#10b981] text-gray-900 border-[#10b981]" : "border-[#064e3b]")}
                                     >
                                         Strong
                                     </button>
@@ -216,7 +216,7 @@ const PollinationCalcs: React.FC = () => {
                                             newHives[idx].isLarge = !newHives[idx].isLarge;
                                             setCalcInputs(prev => ({ ...prev, hives: newHives }));
                                         }}
-                                        className={cn("flex-1 py-1 border-2 text-[8px] font-black uppercase", hive.isLarge ? "bg-[#064e3b] text-white border-[#064e3b]" : "border-[#064e3b]")}
+                                        className={cn("flex-1 py-1 border-2 text-[8px] font-black uppercase", hive.isLarge ? "bg-[#064e3b] text-gray-900 border-[#064e3b]" : "border-[#064e3b]")}
                                     >
                                         Large
                                     </button>

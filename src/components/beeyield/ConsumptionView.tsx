@@ -31,7 +31,7 @@ const ConsumptionView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <Activity className="w-4 h-4 mr-2" />
                         Usage Volumetric Engine v4.2
                     </div>
@@ -125,9 +125,9 @@ const ConsumptionView: React.FC = () => {
             >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-white/40 dark:bg-black/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-white/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
                             <Search className="w-6 h-6 text-honey" />
                         </div>
                         <div>
@@ -207,10 +207,10 @@ const ConsumptionView: React.FC = () => {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 + (idx * 0.1) }}
-                            className="p-6 pt-8 flex items-center justify-between hover:bg-white/40 dark:hover:bg-black/20 rounded-2xl transition-all group first:pt-6"
+                            className="p-6 pt-8 flex items-center justify-between hover:bg-white/40:bg-gray-100 rounded-2xl transition-all group first:pt-6"
                         >
                             <div className="flex items-center gap-4">
-                                <div className={cn("w-14 h-14 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
+                                <div className={cn("w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
                                     <item.icon className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -218,7 +218,7 @@ const ConsumptionView: React.FC = () => {
                                     <p className={cn(glass.microLabel, "opacity-40 font-bold")}>LAST_MONTH_BIN</p>
                                 </div>
                             </div>
-                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-white dark:bg-black text-honey border-honey/30 shadow-lg group-hover:scale-105 transition-transform")}>
+                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-white text-honey border-honey/30 shadow-lg group-hover:scale-105 transition-transform")}>
                                 {item.value}
                             </div>
                         </motion.div>
@@ -234,7 +234,7 @@ const ConsumptionView: React.FC = () => {
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

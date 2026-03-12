@@ -122,7 +122,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                             value={formData.hive_code}
                             onChange={(e) => handleChange("hive_code", e.target.value)}
                             placeholder="e.g. ALPHA-001"
-                            className="h-14 rounded-2xl border-slate-100 dark:border-white/5 text-base bg-slate-50/50 dark:bg-white/[0.02] font-bold"
+                            className="h-14 rounded-2xl border-slate-100 text-base bg-slate-50/50 font-bold"
                         />
                     </div>
                 )}

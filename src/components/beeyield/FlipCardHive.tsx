@@ -23,7 +23,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
     const [isFlipped, setIsFlipped] = React.useState(false);
 
     const statusConfig = {
-        ok: { label: 'NOMINAL', color: 'text-white', dot: 'bg-white' },
+        ok: { label: 'NOMINAL', color: 'text-gray-900', dot: 'bg-white' },
         warning: { label: 'ALERT', color: 'text-[#FF6B00]', dot: 'bg-[#FF6B00]' },
         critical: { label: 'CRITICAL', color: 'text-[#FF6B00]', dot: 'bg-[#FF6B00] shadow-[0_0_10px_#FF6B00]' },
     };
@@ -41,7 +41,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
                 {/* ── Front Face ── */}
-                <div className="absolute inset-0 backface-hidden flex flex-col bg-[#0A0A0A] border border-white/20 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                <div className="absolute inset-0 backface-hidden flex flex-col bg-gray-50 border border-gray-300 rounded-[2.5rem] overflow-hidden shadow-2xl">
                     <div className="p-8 border-b border-white/5 bg-white/5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className={cn("w-2 h-2 rounded-full animate-pulse", cfg.dot)} />
@@ -51,18 +51,18 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     </div>
                     
                     <div className="flex-1 p-10 flex flex-col justify-center gap-4">
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">Unit Registry</p>
-                        <h3 className="text-6xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-[#FF6B00] transition-colors">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">Unit Registry</p>
+                        <h3 className="text-6xl font-black text-gray-900 tracking-tighter uppercase leading-none group-hover:text-[#FF6B00] transition-colors">
                             {hive.name}
                         </h3>
                     </div>
 
                     <div className="p-8 bg-white/5 border-t border-white/5 flex items-center justify-between">
                         <div className="space-y-1">
-                            <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">Weight Protocol</p>
-                            <p className="text-3xl font-mono font-black text-white tabular-nums">{hive.weight} KG</p>
+                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Weight Protocol</p>
+                            <p className="text-3xl font-mono font-black text-gray-900 tabular-nums">{hive.weight} KG</p>
                         </div>
-                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#FF6B00]/10 group-hover:border-[#FF6B00]/30 transition-all">
+                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-gray-200 flex items-center justify-center group-hover:bg-[#FF6B00]/10 group-hover:border-[#FF6B00]/30 transition-all">
                             <ArrowRight className="w-6 h-6 text-[#FF6B00]" />
                         </div>
                     </div>
@@ -85,9 +85,9 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                             { label: 'SIGNAL', value: '-84dBm', icon: Binary },
                         ].map((s, i) => (
                             <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/5">
-                                <s.icon className="w-4 h-4 text-white/20 mb-3" />
-                                <p className="text-xl font-mono font-black text-white tabular-nums leading-none mb-1">{s.value}</p>
-                                <p className="text-[7px] font-black text-white/40 uppercase tracking-widest">{s.label}</p>
+                                <s.icon className="w-4 h-4 text-gray-400 mb-3" />
+                                <p className="text-xl font-mono font-black text-gray-900 tabular-nums leading-none mb-1">{s.value}</p>
+                                <p className="text-[7px] font-black text-gray-600 uppercase tracking-widest">{s.label}</p>
                             </div>
                         ))}
                     </div>
@@ -95,7 +95,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     <div className="p-6 flex gap-3">
                         <button 
                             onClick={(e) => { e.stopPropagation(); onViewHistory(); }}
-                            className="flex-1 h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white font-black text-[9px] uppercase tracking-widest transition-all border border-white/10"
+                            className="flex-1 h-12 rounded-xl bg-white/5 hover:bg-white/10 text-gray-900 font-black text-[9px] uppercase tracking-widest transition-all border border-gray-200"
                         >
                             History
                         </button>

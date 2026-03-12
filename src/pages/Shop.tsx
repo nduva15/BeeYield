@@ -963,7 +963,7 @@ const Shop = () => {
               <Badge className="bg-amber-500 text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
                 BeeYield HoneyChain™
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-[0.9] tracking-tighter uppercase">
+              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-8 leading-[0.9] tracking-tighter uppercase">
                 Trust in Every <span className="text-amber-500">Blockchain</span> Sealed Jar
               </h2>
               <p className="text-neutral-400 text-lg mb-10 leading-relaxed font-medium">
@@ -977,7 +977,7 @@ const Shop = () => {
                   "Direct Impact Tracking",
                   "Zero-Trust Verification"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-white font-bold text-sm">
+                  <li key={i} className="flex items-center gap-3 text-gray-900 font-bold text-sm">
                     <div className="h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
                       <ShieldCheck className="h-3 w-3 text-green-500" />
                     </div>
@@ -988,7 +988,7 @@ const Shop = () => {
 
               <Button
                 variant="outline"
-                className="h-14 border-2 border-white/20 text-white hover:bg-white hover:text-neutral-900 font-black rounded-2xl px-10 uppercase tracking-widest text-xs transition-all"
+                className="h-14 border-2 border-gray-300 text-gray-900 hover:bg-white hover:text-neutral-900 font-black rounded-2xl px-10 uppercase tracking-widest text-xs transition-all"
                 asChild
               >
                 <Link to="/traceability">Explore HoneyChain™</Link>
@@ -1002,7 +1002,7 @@ const Shop = () => {
                 className="relative"
               >
                 <div className="absolute inset-0 bg-amber-500/20 blur-[100px] rounded-full" />
-                <div className="w-64 h-64 border-2 border-white/10 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/5">
+                <div className="w-64 h-64 border-2 border-gray-200 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/5">
                   <Cpu className="w-24 h-24 text-amber-500/40" />
                 </div>
               </motion.div>
@@ -1028,7 +1028,7 @@ const Shop = () => {
             { label: "Traceability Core", icon: ShieldCheck }
           ].map((partner, i) => (
             <div key={i} className="flex items-center gap-4 group cursor-pointer">
-              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-white transition-all">
+              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-gray-900 transition-all">
                 <partner.icon className="h-6 w-6" />
               </div>
               <span className="font-black text-xs uppercase tracking-[0.2em] text-neutral-400 group-hover:text-neutral-900 transition-colors">

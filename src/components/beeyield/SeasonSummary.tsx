@@ -36,7 +36,7 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; subla
             <div className="relative">
                 <svg width="120" height="120" viewBox="0 0 120 120" className="drop-shadow-sm">
                     {/* Background track */}
-                    <circle cx="60" cy="60" r={R} fill="none" className="stroke-muted/50 dark:stroke-muted" strokeWidth="12" />
+                    <circle cx="60" cy="60" r={R} fill="none" className="stroke-muted/50" strokeWidth="12" />
                     {/* Progress arc */}
                     <circle
                         cx="60" cy="60" r={R}
@@ -182,14 +182,14 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/50 bg-white/30 dark:bg-black/10">
+                            <tbody className="divide-y divide-border/50 bg-white/30">
                                 {blockResults.map(b => {
                                     const strengthPct = Math.round((b.delivered / b.contracted) * 100);
                                     const timingDelta = Math.abs(b.peakFlightDay - b.peakBloomDay);
                                     const isGood = strengthPct >= 85 && timingDelta <= 1 && b.coverageVariance <= 15;
                                     const isWarn = !isGood && strengthPct >= 60;
                                     return (
-                                        <tr key={b.block} className="hover:bg-white/50 dark:hover:bg-white/5 transition-colors group">
+                                        <tr key={b.block} className="hover:bg-white/50:bg-white/5 transition-colors group">
                                             <td className="px-8 py-5">
                                                 <span className={cn(glass.sectionTitle, "text-lg normal-case")}>{b.block}</span>
                                             </td>

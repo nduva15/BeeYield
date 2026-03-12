@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2, Download, ShieldCheck, Zap, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,7 +86,7 @@ const ESG = () => {
         ];
 
         stats.forEach(stat => {
-          doc.text(`â€¢ ${stat}`, 20, yPos + 5);
+          doc.text(`• ${stat}`, 20, yPos + 5);
           yPos += 8;
         });
         yPos += 15;
@@ -217,7 +217,7 @@ const ESG = () => {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-slate-900 text-white rounded-2xl h-16 px-10 font-black shadow-2xl hover:bg-slate-800" onClick={handleDownloadReport} disabled={downloading}>
+              <Button size="lg" className="bg-slate-900 text-gray-900 rounded-2xl h-16 px-10 font-black shadow-2xl hover:bg-slate-800" onClick={handleDownloadReport} disabled={downloading}>
                 {downloading ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Download className="w-5 h-5 mr-3" />}
                 {downloading ? "Authenticating..." : "Download 2026 ESG Registry"}
               </Button>
@@ -270,24 +270,24 @@ const ESG = () => {
                   <Card className={`overflow-hidden border-2 h-full rounded-[2.5rem] bg-gradient-to-br ${pillar.color} shadow-2xl`}>
                     <CardContent className="p-10 flex flex-col h-full">
                       <div className="flex items-center gap-4 mb-8">
-                        <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                          <pillar.icon className="w-8 h-8 text-white shadow-lg" />
+                        <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center border border-gray-300">
+                          <pillar.icon className="w-8 h-8 text-gray-900 shadow-lg" />
                         </div>
-                        <h3 className="text-2xl font-black text-white tracking-tight">{pillar.title}</h3>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight">{pillar.title}</h3>
                       </div>
 
                       <div className="space-y-4 mb-10 flex-1">
                         {pillar.initiatives.map((initiative, i) => (
                           <div key={i} className="flex items-start gap-4">
                             <div className="mt-1.5 h-1 w-1 rounded-full bg-beeyield-gold shadow-[0_0_8px_rgba(217,119,6,0.8)] flex-shrink-0" />
-                            <span className="text-sm text-white/80 font-medium leading-relaxed">{initiative}</span>
+                            <span className="text-sm text-gray-800 font-medium leading-relaxed">{initiative}</span>
                           </div>
                         ))}
                       </div>
 
-                      <div className="pt-8 border-t border-white/10">
+                      <div className="pt-8 border-t border-gray-200">
                         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-beeyield-gold mb-2 italic">Quantified Impact</p>
-                        <p className="text-lg font-bold text-white leading-tight">
+                        <p className="text-lg font-bold text-gray-900 leading-tight">
                           {pillar.impact}
                         </p>
                       </div>
@@ -301,7 +301,7 @@ const ESG = () => {
       </section>
 
       {/* Food Security / Hunger Focus */}
-      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+      <section className="py-24 bg-slate-900 text-gray-900 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
@@ -310,7 +310,7 @@ const ESG = () => {
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Data-Driven <br />Food Security.</h2>
               <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 max-w-xl">
-                In semi-arid Makueni, pollination isn't just a serviceâ€”it's survival. By deploying 184 sensor-optimized hives, we've increased regional food resilience by providing stable, high-performance pollination for mango and avocado smallholders.
+                In semi-arid Makueni, pollination isn't just a service—it's survival. By deploying 184 sensor-optimized hives, we've increased regional food resilience by providing stable, high-performance pollination for mango and avocado smallholders.
               </p>
 
               <div className="grid grid-cols-2 gap-10">
@@ -327,13 +327,13 @@ const ESG = () => {
 
             <div className="relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-[3rem] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity" />
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-white/10">
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-gray-200">
                 <img src="/pollination-farmers.png" alt="Participatory Ag" className="w-full aspect-square object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
                 <div className="absolute bottom-10 left-10 right-10">
                   <Quote className="w-10 h-10 text-beeyield-gold mb-4 opacity-50" />
                   <p className="text-xl font-medium italic text-slate-100 mb-4">
-                    "Through precision pollination, we're not just harvesting honeyâ€”we're creating local abundance."
+                    "Through precision pollination, we're not just harvesting honey—we're creating local abundance."
                   </p>
                   <p className="text-sm font-black uppercase tracking-widest text-beeyield-gold">Timothy Nduva, CEO</p>
                 </div>
@@ -355,7 +355,7 @@ const ESG = () => {
               Every jar tracked. Every hive monitored. Every community empowered. Join the Tesla of Apiculture in our mission for radical transparency.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <Link to="/contact" className="px-10 py-5 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all">
+              <Link to="/contact" className="px-10 py-5 bg-slate-900 text-gray-900 rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all">
                 Partner Engagement
               </Link>
               <Link to="/media" className="px-10 py-5 bg-white text-slate-900 border-2 border-slate-100 rounded-2xl font-black hover:bg-slate-50 transition-all">

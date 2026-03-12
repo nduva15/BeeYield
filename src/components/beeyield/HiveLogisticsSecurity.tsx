@@ -62,7 +62,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                         onClick={() => setAddingHive(true)}
                         className={cn(
                             "flex items-center gap-3 px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
-                            addingHive ? "bg-[#facc15] text-[#064e3b] border-[#064e3b] animate-pulse" : "bg-[#064e3b] text-white border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
+                            addingHive ? "bg-[#facc15] text-[#064e3b] border-[#064e3b] animate-pulse" : "bg-[#064e3b] text-gray-900 border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
                         )}
                     >
                         <Plus className="w-5 h-5" />
@@ -157,7 +157,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                                 <div key={i} className="flex gap-4 items-start border-b border-[#064e3b]/5 pb-4 last:border-0">
                                     <span className={cn(
                                         "text-[8px] font-black px-1.5 py-0.5 border leading-none",
-                                        log.status === 'OK' ? "bg-[#10b981] text-white border-[#10b981]" : "bg-[#facc15] text-[#064e3b] border-[#facc15]"
+                                        log.status === 'OK' ? "bg-[#10b981] text-gray-900 border-[#10b981]" : "bg-[#facc15] text-[#064e3b] border-[#facc15]"
                                     )}>{log.status}</span>
                                     <div>
                                         <p className="text-[9px] font-bold text-[#064e3b]/70 uppercase">{log.msg}</p>
@@ -168,7 +168,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                         </div>
                     </div>
 
-                    <div className="bg-[#064e3b] border-4 border-[#064e3b] p-8 text-white shadow-[10px_10px_0px_0px_#10b981]">
+                    <div className="bg-[#064e3b] border-4 border-[#064e3b] p-8 text-gray-900 shadow-[10px_10px_0px_0px_#10b981]">
                         <div className="flex items-center gap-3 mb-6">
                             <Crosshair className="w-6 h-6 text-[#facc15]" />
                             <h3 className="text-xl font-black uppercase tracking-tight">Status Summary</h3>

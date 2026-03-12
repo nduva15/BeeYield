@@ -257,7 +257,7 @@ const BeeLearn = () => {
     <main className="min-h-screen bg-white">
       {/* GUIDE MODAL */}
       {isGuideModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 backdrop-blur-sm p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
             <button onClick={() => setIsGuideModalOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600">
               <span className="text-2xl">&times;</span>
@@ -283,7 +283,7 @@ const BeeLearn = () => {
                   onChange={e => setGuideEmail(e.target.value)}
                 />
               </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl">
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-green-700 hover:bg-green-800 text-gray-900 font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="animate-spin" /> : "Send Me The Guide"}
               </Button>
             </form>
@@ -293,7 +293,7 @@ const BeeLearn = () => {
 
       {/* QUOTE MODAL */}
       {isQuoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 backdrop-blur-sm p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
             <button onClick={() => setIsQuoteModalOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600">
               <span className="text-2xl">&times;</span>
@@ -322,7 +322,7 @@ const BeeLearn = () => {
                 <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Training Needs</label>
                 <textarea id="quote-message" name="training-needs" required rows={3} className="w-full p-3 rounded-lg border border-neutral-200" placeholder="Number of attendees, preferred dates, etc." value={quoteForm.message} onChange={e => setQuoteForm({ ...quoteForm, message: e.target.value })}></textarea>
               </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl">
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Request"}
               </Button>
             </form>
@@ -419,7 +419,7 @@ const BeeLearn = () => {
                   {/* Video Overlay UI */}
                   <div className="absolute inset-0 flex flex-col justify-between p-4">
                     <div>
-                      <Badge className="bg-amber-600 text-white font-bold text-[10px]">
+                      <Badge className="bg-amber-600 text-gray-900 font-bold text-[10px]">
                         LESSON 3
                       </Badge>
                     </div>
@@ -428,16 +428,16 @@ const BeeLearn = () => {
                       {/* Play button */}
                       <div className="flex justify-center">
                         <div className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/30 transition-all">
-                          <PlayCircle className="h-10 w-10 text-white fill-white/20" />
+                          <PlayCircle className="h-10 w-10 text-gray-900 fill-white/20" />
                         </div>
                       </div>
 
                       {/* Video info */}
-                      <div className="bg-black/40 backdrop-blur-md rounded-2xl p-4 space-y-2">
-                        <p className="text-white font-bold text-sm">Module 3: Queen Rearing</p>
-                        <div className="flex items-center justify-between text-white/80 text-xs">
+                      <div className="bg-gray-100 backdrop-blur-md rounded-2xl p-4 space-y-2">
+                        <p className="text-gray-900 font-bold text-sm">Module 3: Queen Rearing</p>
+                        <div className="flex items-center justify-between text-gray-800 text-xs">
                           <span>14:20 / 45:00</span>
-                          <Button size="sm" variant="ghost" className="h-7 text-xs text-white hover:text-amber-300">
+                          <Button size="sm" variant="ghost" className="h-7 text-xs text-gray-900 hover:text-amber-300">
                             <Download className="h-3 w-3 mr-1" />
                             Resources
                           </Button>
@@ -489,7 +489,7 @@ const BeeLearn = () => {
 
               {/* Floating Product Card - Right Bottom */}
               <div className="absolute right-0 bottom-8 lg:-right-8 lg:bottom-16 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[220px] animate-in slide-in-from-right duration-700 delay-450">
-                <Badge className="mb-2 bg-amber-600 text-white text-[10px]">Best Seller</Badge>
+                <Badge className="mb-2 bg-amber-600 text-gray-900 text-[10px]">Best Seller</Badge>
                 <p className="font-bold text-neutral-900 text-sm mb-1">Commercial Apiary Management</p>
                 <p className="text-xs text-neutral-500 mb-2">Video Course + PDF Bundle</p>
                 <p className="text-xl font-black text-amber-600">KES 14,900</p>
@@ -560,7 +560,7 @@ const BeeLearn = () => {
               </div>
 
               {/* Experience Badge */}
-              <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 bg-green-700 text-white rounded-2xl p-4 lg:p-6 shadow-xl">
+              <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 bg-green-700 text-gray-900 rounded-2xl p-4 lg:p-6 shadow-xl">
                 <p className="text-4xl lg:text-5xl font-black">254+</p>
                 <p className="text-sm font-medium opacity-90">Years Combined Experience</p>
               </div>
@@ -641,7 +641,7 @@ const BeeLearn = () => {
       </section>
 
       {/* Educational Workshops Section */}
-      <section className="py-20 lg:py-28 bg-[#0A2612] text-white">
+      <section className="py-20 lg:py-28 bg-[#0A2612] text-gray-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4 border-green-500 text-green-400 font-semibold">
@@ -663,7 +663,7 @@ const BeeLearn = () => {
                   <div className={`h-14 w-14 rounded-2xl ${workshop.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <workshop.icon className="h-7 w-7" />
                   </div>
-                  <h3 className="text-white font-bold text-xl mb-2">{workshop.title}</h3>
+                  <h3 className="text-gray-900 font-bold text-xl mb-2">{workshop.title}</h3>
                   <p className="text-neutral-400 text-sm leading-relaxed">{workshop.description}</p>
                 </CardContent>
               </Card>
@@ -671,7 +671,7 @@ const BeeLearn = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl" onClick={() => setIsQuoteModalOpen(true)}>
+            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-gray-900 font-bold rounded-xl" onClick={() => setIsQuoteModalOpen(true)}>
               Request a Quote for Your Company
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
@@ -729,8 +729,8 @@ const BeeLearn = () => {
                       }}
                       aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       className={`absolute top-4 right-4 p-2.5 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 ${isInWishlist(product.id)
-                        ? "bg-amber-500 text-white"
-                        : "bg-white/80 hover:bg-amber-500 hover:text-white text-neutral-400 group-hover:opacity-100 opacity-0"
+                        ? "bg-amber-500 text-gray-900"
+                        : "bg-white/80 hover:bg-amber-500 hover:text-gray-900 text-neutral-400 group-hover:opacity-100 opacity-0"
                         }`}
                     >
                       <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
@@ -762,7 +762,7 @@ const BeeLearn = () => {
                       <Button
                         size="sm"
                         onClick={() => handleAddToCart(product)}
-                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-white shadow-lg shadow-neutral-900/10 transition-all duration-300"
+                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-gray-900 shadow-lg shadow-neutral-900/10 transition-all duration-300"
                       >
                         <ShoppingCart className="h-4 w-4" />
                       </Button>
@@ -809,10 +809,10 @@ const BeeLearn = () => {
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-green-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
             <div className="relative z-10">
-              <Badge className="mb-6 bg-green-700 text-white font-bold">
+              <Badge className="mb-6 bg-green-700 text-gray-900 font-bold">
                 Join Our Community
               </Badge>
-              <h2 className="text-3xl lg:text-5xl font-black text-white mb-6">
+              <h2 className="text-3xl lg:text-5xl font-black text-gray-900 mb-6">
                 Trusted Source for{" "}
                 <span className="text-green-400">Premium Learning</span>
               </h2>
@@ -824,7 +824,7 @@ const BeeLearn = () => {
                   type="email"
                   required
                   placeholder="Enter your email"
-                  className="flex-1 h-14 px-6 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="flex-1 h-14 px-6 rounded-xl bg-white/10 border border-gray-300 text-gray-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   value={newsletterEmail}
                   onChange={e => setNewsletterEmail(e.target.value)}
                 />

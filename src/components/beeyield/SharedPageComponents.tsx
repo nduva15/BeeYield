@@ -32,11 +32,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     const getBadgeColor = (variant?: string) => {
         switch (variant) {
             case 'success':
-                return 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20';
+                return 'bg-green-500/10 text-green-600 border-green-500/20';
             case 'warning':
-                return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+                return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
             case 'error':
-                return 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20';
+                return 'bg-red-500/10 text-red-600 border-red-500/20';
             default:
                 return 'bg-primary/10 text-primary border-primary/20';
         }
@@ -64,7 +64,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                         )}
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+                                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
                                     {title}
                                 </h1>
                                 {badge && (
@@ -74,7 +74,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                                 )}
                             </div>
                             {subtitle && (
-                                <p className="text-gray-600 dark:text-gray-400 mt-1 font-medium">
+                                <p className="text-gray-600 mt-1 font-medium">
                                     {subtitle}
                                 </p>
                             )}
@@ -122,11 +122,11 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
     const getColorClasses = () => {
         const colors = {
             primary: 'bg-primary/5 hover:bg-primary/10 border-primary/20 text-primary',
-            green: 'bg-green-500/5 hover:bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400',
-            blue: 'bg-blue-500/5 hover:bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400',
-            amber: 'bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400',
-            purple: 'bg-purple-500/5 hover:bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-400',
-            red: 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
+            green: 'bg-green-500/5 hover:bg-green-500/10 border-green-500/20 text-green-600',
+            blue: 'bg-blue-500/5 hover:bg-blue-500/10 border-blue-500/20 text-blue-600',
+            amber: 'bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/20 text-amber-600',
+            purple: 'bg-purple-500/5 hover:bg-purple-500/10 border-purple-500/20 text-purple-600',
+            red: 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20 text-red-600'
         };
         return colors[color];
     };
@@ -142,7 +142,7 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
         >
             <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Icon className="w-6 h-6" />
                     </div>
                     {badge && (
@@ -151,11 +151,11 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
                         </Badge>
                     )}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">
                     {title}
                 </h3>
                 {description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600">
                         {description}
                     </p>
                 )}
@@ -196,20 +196,20 @@ export const StatCard: React.FC<StatCardProps> = ({
     };
 
     const getTrendColor = () => {
-        if (trend === 'up') return 'text-green-600 dark:text-green-400';
-        if (trend === 'down') return 'text-red-600 dark:text-red-400';
-        return 'text-gray-600 dark:text-gray-400';
+        if (trend === 'up') return 'text-green-600';
+        if (trend === 'down') return 'text-red-600';
+        return 'text-gray-600';
     };
 
     return (
         <Card className={cn("border-l-4 p-6", getColorClasses())}>
             <div className="flex items-start justify-between">
                 <div className="flex-1">
-                    <p className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">
                         {label}
                     </p>
                     <div className="flex items-baseline gap-2">
-                        <p className="text-3xl font-black text-gray-900 dark:text-white">
+                        <p className="text-3xl font-black text-gray-900">
                             {value}
                         </p>
                         {change !== undefined && (
@@ -219,14 +219,14 @@ export const StatCard: React.FC<StatCardProps> = ({
                         )}
                     </div>
                     {subtitle && (
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 mt-1">
                             {subtitle}
                         </p>
                     )}
                 </div>
                 {Icon && (
-                    <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-900 flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-gray-600" />
                     </div>
                 )}
             </div>
@@ -244,11 +244,11 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, a
     return (
         <div className="flex items-start justify-between">
             <div className="space-y-1">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-xl font-bold text-gray-900">
                     {title}
                 </h2>
                 {subtitle && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600">
                         {subtitle}
                     </p>
                 )}
@@ -271,13 +271,13 @@ interface EmptyStateProps {
 export const EmptyState: React.FC<EmptyStateProps> = ({ icon: Icon, title, description, action }) => {
     return (
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
                 <Icon className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {title}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-6">
+            <p className="text-gray-600 max-w-sm mb-6">
                 {description}
             </p>
             {action && (

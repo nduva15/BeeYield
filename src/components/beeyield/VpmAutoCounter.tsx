@@ -66,7 +66,7 @@ const VpmAutoCounter: React.FC = () => {
                 <div className="flex gap-4">
                     <button
                         onClick={() => setIsActive(!isActive)}
-                        className="w-16 h-16 rounded-2xl bg-white/60 dark:bg-black/40 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-honey/40 transition-all shadow-lg active:scale-95"
+                        className="w-16 h-16 rounded-2xl bg-white/60 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-honey/40 transition-all shadow-lg active:scale-95"
                     >
                         {isActive ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                     </button>
@@ -78,14 +78,14 @@ const VpmAutoCounter: React.FC = () => {
 
             <div className={cn(glass.card, "flex flex-col lg:flex-row overflow-hidden p-0")}>
                 {/* Camera Feed Context */}
-                <div className="flex-1 p-10 bg-black/[0.02] dark:bg-white/[0.02] min-h-[500px] relative overflow-hidden group">
+                <div className="flex-1 p-10 bg-gray-50 min-h-[500px] relative overflow-hidden group">
                     {/* UI Overlays */}
                     <div className="absolute inset-0 pointer-events-none rounded-[2rem] border-4 border-transparent group-hover:border-honey/20 transition-all duration-500 z-10 m-4" />
 
                     {/* Feed Info */}
                     <div className="absolute top-10 left-10 z-30 flex flex-col gap-3">
                         <Badge className={cn(glass.badge, "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20")}>LIVE_FEED</Badge>
-                        <Badge className={cn(glass.badge, "bg-white/60 dark:bg-black/40 text-foreground border-border backdrop-blur-md")}>FPS: 30.2</Badge>
+                        <Badge className={cn(glass.badge, "bg-white/60 text-foreground border-border backdrop-blur-md")}>FPS: 30.2</Badge>
                     </div>
 
                     <div className="absolute bottom-10 left-10 z-30">
@@ -108,7 +108,7 @@ const VpmAutoCounter: React.FC = () => {
                                     )}
                                 >
                                     <div className={cn(
-                                        "absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[8px] font-black uppercase text-white shadow-sm whitespace-nowrap",
+                                        "absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[8px] font-black uppercase text-gray-900 shadow-sm whitespace-nowrap",
                                         d.hasPollen ? "bg-emerald-500" : "bg-honey"
                                     )}>
                                         {d.hasPollen ? "POLLEN" : "BEE"}
@@ -123,7 +123,7 @@ const VpmAutoCounter: React.FC = () => {
                     </div>
 
                     {/* Center Crosshair */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none mix-blend-difference dark:mix-blend-screen">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none mix-blend-difference">
                         <div className="w-32 h-[1px] bg-foreground/50" />
                         <div className="h-32 w-[1px] bg-foreground/50 absolute" />
                         <div className="absolute w-4 h-4 rounded-full border border-foreground/50" />
@@ -139,13 +139,13 @@ const VpmAutoCounter: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className={cn(glass.card, "p-6 text-center bg-white/40 dark:bg-white/5 border-border hover:shadow-none hover:border-honey/20 transition-all")}>
+                            <div className={cn(glass.card, "p-6 text-center bg-white/40 border-border hover:shadow-none hover:border-honey/20 transition-all")}>
                                 <p className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none mb-2")}>{vpm.toFixed(1)}</p>
                                 <p className={cn(glass.microLabel, "text-muted-foreground opacity-70")}>Visits / Min</p>
                             </div>
-                            <div className={cn(glass.card, "p-6 text-center border-none bg-gradient-to-br from-honey to-amber-600 text-white shadow-xl shadow-honey/20")}>
-                                <p className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none mb-2 text-white")}>{pcr.toFixed(0)}%</p>
-                                <p className={cn(glass.microLabel, "text-white/80")}>PCR INDEX</p>
+                            <div className={cn(glass.card, "p-6 text-center border-none bg-gradient-to-br from-honey to-amber-600 text-gray-900 shadow-xl shadow-honey/20")}>
+                                <p className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none mb-2 text-gray-900")}>{pcr.toFixed(0)}%</p>
+                                <p className={cn(glass.microLabel, "text-gray-800")}>PCR INDEX</p>
                             </div>
                         </div>
                     </section>
@@ -195,7 +195,7 @@ const VpmAutoCounter: React.FC = () => {
                             <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-1" />
                             <div>
                                 <h5 className={cn(glass.microLabel, "text-red-500 mb-2")}>Efficiency Alert</h5>
-                                <p className={cn(glass.microLabel, "text-red-600/90 dark:text-red-400 normal-case italic font-bold leading-relaxed")}>
+                                <p className={cn(glass.microLabel, "text-red-600/90 normal-case italic font-bold leading-relaxed")}>
                                     Pollination Deficit detected. Actual VPM matches target, but PCR is critical. Validate surrounding forage competition.
                                 </p>
                             </div>

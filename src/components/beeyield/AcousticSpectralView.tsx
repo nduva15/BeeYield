@@ -29,7 +29,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <Volume2 className="w-4 h-4 mr-2" />
                         Acoustic Neural Interface
                     </div>
@@ -42,7 +42,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                 </div>
 
                 <div className={cn(glass.card, "p-1 overflow-hidden inline-flex bg-background/50 border-emerald-500/20 shadow-emerald-500/10 shadow-lg")}>
-                    <div className="px-6 py-2 bg-white/40 dark:bg-black/20 flex items-center gap-3 backdrop-blur-md rounded-[1.8rem]">
+                    <div className="px-6 py-2 bg-white/40 flex items-center gap-3 backdrop-blur-md rounded-[1.8rem]">
                         <Waves className="w-5 h-5 text-emerald-500 animate-pulse" />
                         <span className={cn(glass.microLabel, "font-bold text-foreground")}>Status: Listening</span>
                         <div className="w-px h-6 bg-border mx-2" />
@@ -62,12 +62,12 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                     className={cn(glass.card, "lg:col-span-2 p-0 shadow-2xl flex flex-col justify-between overflow-hidden relative")}
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none w-full h-full" />
-                    <div className="p-8 pb-4 flex items-center justify-between border-b border-border bg-white/40 dark:bg-black/20 relative z-10">
+                    <div className="p-8 pb-4 flex items-center justify-between border-b border-border bg-white/40 relative z-10">
                         <div>
                             <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Sound <span className="text-honey">Waves</span></h3>
                             <p className={cn(glass.microLabel, "normal-case italic opacity-60 mt-1")}>Live frequency display from the hive.</p>
                         </div>
-                        <div className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 animate-pulse")}>
+                        <div className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 animate-pulse")}>
                             Live Feed
                         </div>
                     </div>
@@ -82,7 +82,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-8 p-8 border-t border-border bg-white/20 dark:bg-black/10 relative z-10">
+                    <div className="grid grid-cols-3 gap-8 p-8 border-t border-border bg-white/20 relative z-10">
                         <div className="space-y-1">
                             <p className={cn(glass.microLabel, "opacity-60")}>Low Sound</p>
                             <p className={cn(glass.sectionTitle, "text-2xl normal-case")}>Stable</p>
@@ -118,7 +118,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                                 <p className={cn(glass.microLabel, "opacity-60 mb-2")}>Colony Mood</p>
                                 <p className={cn(glass.sectionTitle, "text-4xl text-emerald-500 tracking-tight")}>CALM</p>
                             </div>
-                            <div className="h-3 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden shadow-inner">
+                            <div className="h-3 bg-gray-50 rounded-full overflow-hidden shadow-inner">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: "88%" }}
@@ -159,7 +159,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                             </div>
                             <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
                                 <Zap className="w-5 h-5 text-emerald-500 shrink-0" />
-                                <span className={cn(glass.microLabel, "normal-case font-bold text-emerald-600 dark:text-emerald-400 mt-0.5")}>Good Sound Detected</span>
+                                <span className={cn(glass.microLabel, "normal-case font-bold text-emerald-600 mt-0.5")}>Good Sound Detected</span>
                             </div>
                         </div>
                     </motion.div>
@@ -174,7 +174,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-3xl bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-300 relative z-10">
+                <div className="w-16 h-16 rounded-3xl bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-300 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10">

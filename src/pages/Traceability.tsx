@@ -205,7 +205,7 @@ const Traceability = () => {
       <div className="py-24 -mt-16 relative z-20">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="mx-auto max-w-5xl">
-            <Card className="border-none shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md dark:bg-slate-950/95 rounded-[2.5rem]">
+            <Card className="border-none shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md rounded-[2.5rem]">
               <CardContent className="p-0">
                 {showScanner ? (
                   <div className="p-10">
@@ -222,7 +222,7 @@ const Traceability = () => {
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-2">
-                    <div className="p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
+                    <div className="p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100">
                       <h2 className="mb-4 text-3xl font-black tracking-tight">Find Your Honey</h2>
                       <p className="mb-8 text-muted-foreground">
                         Enter the unique batch code found on the bottom or side of your honey jar.
@@ -244,13 +244,13 @@ const Traceability = () => {
                         <Button
                           type="submit"
                           disabled={loading || !qrCode.trim()}
-                          className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-white text-lg font-black rounded-2xl shadow-xl hover:shadow-amber-500/20 transition-all"
+                          className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-gray-900 text-lg font-black rounded-2xl shadow-xl hover:shadow-amber-500/20 transition-all"
                         >
                           {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Search"}
                         </Button>
                       </form>
 
-                      <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
+                      <div className="mt-8 pt-8 border-t border-slate-100">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try these example codes</p>
                         <div className="flex flex-wrap gap-2">
                           {["KIB-ACACIAL-26", "KIB-SAV-2026", "KIB-GOLD-2026"].map(code => (
@@ -275,17 +275,17 @@ const Traceability = () => {
                       </div>
                     </div>
 
-                    <div className="p-10 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 flex flex-col items-center justify-center text-center">
-                      <div className="mb-6 w-20 h-20 bg-amber-100 dark:bg-amber-900/30 rounded-3xl flex items-center justify-center animate-bounce">
-                        <QrCode className="h-10 w-10 text-amber-600 dark:text-amber-400" />
+                    <div className="p-10 bg-gradient-to-br from-slate-50 to-white flex flex-col items-center justify-center text-center">
+                      <div className="mb-6 w-20 h-20 bg-amber-100 rounded-3xl flex items-center justify-center animate-bounce">
+                        <QrCode className="h-10 w-10 text-amber-600" />
                       </div>
-                      <h3 className="text-2xl font-black tracking-tight mb-4 text-slate-900 dark:text-white">Quick Scan</h3>
+                      <h3 className="text-2xl font-black tracking-tight mb-4 text-slate-900">Quick Scan</h3>
                       <p className="text-muted-foreground mb-8 text-sm">
                         Use your smartphone camera to instantly verify your honey's authenticity and see its full origin story.
                       </p>
                       <Button
                         variant="outline"
-                        className="w-full h-16 border-2 border-amber-500/20 hover:border-amber-500 text-amber-700 dark:text-amber-400 font-black rounded-2xl transition-all"
+                        className="w-full h-16 border-2 border-amber-500/20 hover:border-amber-500 text-amber-700 font-black rounded-2xl transition-all"
                         onClick={() => setShowScanner(true)}
                       >
                         <Zap className="mr-2 h-5 w-5 fill-amber-500" />
@@ -318,7 +318,7 @@ const Traceability = () => {
                       <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-[120px] animate-pulse"></div>
 
                       {/* High-Tech Scanner Visual */}
-                      <div className="relative h-56 w-56 mx-auto bg-neutral-900 rounded-[3rem] shadow-2xl flex items-center justify-center border border-white/10 overflow-hidden group">
+                      <div className="relative h-56 w-56 mx-auto bg-neutral-900 rounded-[3rem] shadow-2xl flex items-center justify-center border border-gray-200 overflow-hidden group">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#15803d_0%,transparent_70%)] opacity-20"></div>
 
                         {/* Scanning Line */}
@@ -357,7 +357,7 @@ const Traceability = () => {
                     </div>
 
                     <div className="space-y-4">
-                      <h3 className="text-3xl font-black tracking-tight text-white uppercase italic">Checking Records</h3>
+                      <h3 className="text-3xl font-black tracking-tight text-gray-900 uppercase italic">Checking Records</h3>
                       <p className="text-neutral-500 font-black uppercase tracking-[0.3em] text-[10px]">
                         Accessing <span className="text-amber-500">Secure Database</span> Module
                       </p>
@@ -369,13 +369,13 @@ const Traceability = () => {
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-left">
+                        <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-gray-200 text-left">
                           <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Source Node</p>
-                          <p className="text-xs font-mono font-bold text-white">GENESIS_0x71A</p>
+                          <p className="text-xs font-mono font-bold text-gray-900">GENESIS_0x71A</p>
                         </div>
-                        <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-left">
+                        <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-gray-200 text-left">
                           <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Batch Key</p>
-                          <p className="text-xs font-mono font-bold text-white">{qrCode || "PENDING"}</p>
+                          <p className="text-xs font-mono font-bold text-gray-900">{qrCode || "PENDING"}</p>
                         </div>
                       </div>
 
@@ -442,7 +442,7 @@ const Traceability = () => {
                   </div>
 
                   {/* Mission Story Section */}
-                  <div className="bg-slate-50 dark:bg-slate-900 rounded-[2.5rem] p-8 md:p-10 mb-12">
+                  <div className="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 mb-12">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="h-12 w-12 rounded-2xl bg-orange-100 flex items-center justify-center">
                         <Leaf className="h-6 w-6 text-orange-600" />
@@ -621,7 +621,7 @@ const Traceability = () => {
                               </Badge>
                             </div>
 
-                            <div className="bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-white rounded-[2rem] p-6 overflow-hidden relative border border-emerald-500/20 shadow-2xl">
+                            <div className="bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-gray-900 rounded-[2rem] p-6 overflow-hidden relative border border-emerald-500/20 shadow-2xl">
                               {/* Background Pattern */}
                               <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
                                 <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -634,15 +634,15 @@ const Traceability = () => {
 
                               <div className="relative z-10">
                                 {/* Header: Hive ID & Queen Status */}
-                                <div className="flex justify-between items-start mb-6 pb-6 border-b border-white/10">
+                                <div className="flex justify-between items-start mb-6 pb-6 border-b border-gray-200">
                                   <div className="flex items-center gap-4">
                                     <div className="relative">
                                       {/* Aura effect for the node icon */}
                                       <div className="absolute -inset-2 bg-amber-500/20 rounded-full blur-lg animate-pulse" />
-                                      <div className="h-14 w-14 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 flex items-center justify-center relative z-10 shadow-lg group-hover:bg-white/20 transition-all duration-500">
+                                      <div className="h-14 w-14 bg-white/10 backdrop-blur-md rounded-2xl border border-gray-300 flex items-center justify-center relative z-10 shadow-lg group-hover:bg-white/20 transition-all duration-500">
                                         <div className="text-center">
                                           <Cpu className="h-5 w-5 text-amber-300 mb-0.5 mx-auto" />
-                                          <p className="text-[10px] font-black text-white leading-none">{traceData.hive.hive_code}</p>
+                                          <p className="text-[10px] font-black text-gray-900 leading-none">{traceData.hive.hive_code}</p>
                                         </div>
                                       </div>
                                     </div>
@@ -662,7 +662,7 @@ const Traceability = () => {
                                             <span className="text-[9px] font-black uppercase tracking-widest text-red-300">Colony Alert</span>
                                           </div>
                                         ) : (
-                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 border border-white/10 rounded-full">
+                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 border border-gray-200 rounded-full">
                                             <span className="text-[10px] leading-none text-slate-400 italic">?</span>
                                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 italic">State Unknown</span>
                                           </div>
@@ -672,8 +672,8 @@ const Traceability = () => {
                                   </div>
                                   <div className="text-right glass-panel p-2 rounded-xl bg-emerald-950/30 border border-emerald-500/20">
                                     <p className="text-[8px] font-black text-emerald-300 uppercase mb-0.5 tracking-widest">GPS Location</p>
-                                    <p className="text-[10px] font-mono font-bold text-white mb-0.5">{traceData.sensor_snapshot?.latitude || "-1.2870"}</p>
-                                    <p className="text-[10px] font-mono font-bold text-white">{traceData.sensor_snapshot?.longitude || "36.8252"}</p>
+                                    <p className="text-[10px] font-mono font-bold text-gray-900 mb-0.5">{traceData.sensor_snapshot?.latitude || "-1.2870"}</p>
+                                    <p className="text-[10px] font-mono font-bold text-gray-900">{traceData.sensor_snapshot?.longitude || "36.8252"}</p>
                                   </div>
                                 </div>
 
@@ -757,10 +757,10 @@ const Traceability = () => {
                                       <div className="absolute top-[25%] left-[35%] h-1.5 w-1.5 bg-amber-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
                                       <div className="absolute top-[65%] left-[75%] h-1.5 w-1.5 bg-amber-400 rounded-full animate-pulse delay-700 shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
                                       {/* Apiary Center */}
-                                      <div className="relative z-10 p-2.5 bg-emerald-600 rounded-xl shadow-2xl border border-white/20">
-                                        <MapPin className="h-4 w-4 text-white" />
+                                      <div className="relative z-10 p-2.5 bg-emerald-600 rounded-xl shadow-2xl border border-gray-300">
+                                        <MapPin className="h-4 w-4 text-gray-900" />
                                       </div>
-                                      <div className="absolute bottom-3 left-3 text-[9px] font-black text-emerald-100 uppercase bg-emerald-900/80 px-2 py-1 rounded-lg backdrop-blur-md border border-white/10">
+                                      <div className="absolute bottom-3 left-3 text-[9px] font-black text-emerald-100 uppercase bg-emerald-900/80 px-2 py-1 rounded-lg backdrop-blur-md border border-gray-200">
                                         {traceData?.apiary?.environment_type || "Savanna Wooded"}
                                       </div>
                                     </div>
@@ -778,7 +778,7 @@ const Traceability = () => {
                                               <ShieldCheck className="h-4 w-4 text-green-400" />
                                             </div>
                                             <div>
-                                              <p className="text-[10px] font-bold text-white leading-tight">Batch Fingerprint</p>
+                                              <p className="text-[10px] font-bold text-gray-900 leading-tight">Batch Fingerprint</p>
                                               <p className="text-[9px] font-medium text-emerald-300/80">Authorized by BeeYield</p>
                                             </div>
                                           </div>
@@ -789,7 +789,7 @@ const Traceability = () => {
                                             <p className="text-[9px] font-black text-emerald-400 uppercase mb-1 tracking-tighter">Verified By</p>
                                             <div className="flex items-center gap-2">
                                               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                                              <p className="text-xl font-black text-white">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
+                                              <p className="text-xl font-black text-gray-900">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
                                             </div>
                                           </div>
                                           <div className="text-right">
@@ -811,10 +811,10 @@ const Traceability = () => {
                                 </div>
 
                                 {/* Footer Stats */}
-                                <div className="flex items-center gap-6 pt-5 border-t border-white/10">
+                                <div className="flex items-center gap-6 pt-5 border-t border-gray-200">
                                   <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                                     <span className="text-[9px] font-black text-emerald-400 uppercase tracking-tighter">Hive Quality:</span>
-                                    <span className="text-xs font-black text-white">{traceData.sensor_snapshot?.fob || "7"}/10</span>
+                                    <span className="text-xs font-black text-gray-900">{traceData.sensor_snapshot?.fob || "7"}/10</span>
                                   </div>
                                   <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                                     <span className="text-[9px] font-black text-emerald-400 uppercase tracking-tighter">Tracking:</span>
@@ -832,7 +832,7 @@ const Traceability = () => {
                     </Card>
 
                     {/* Master Beekeeper Card */}
-                    <Card className="border-none shadow-xl rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-white p-8 relative overflow-hidden h-full">
+                    <Card className="border-none shadow-xl rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-gray-900 p-8 relative overflow-hidden h-full">
                       <h3 className="text-xs font-black uppercase tracking-widest opacity-60 mb-8 text-emerald-200">Your Beekeeper</h3>
 
                       <div className="flex gap-6 items-start relative z-10 mb-8">
@@ -842,7 +842,7 @@ const Traceability = () => {
                           <div className="flex items-center gap-8">
                             <div className="relative group">
                               <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400 to-green-500 rounded-[1.8rem] blur-lg opacity-40 group-hover:opacity-60 transition-opacity animate-pulse"></div>
-                              <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-white/20 shadow-2xl relative z-10" />
+                              <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-gray-300 shadow-2xl relative z-10" />
                             </div>
                             <div className="relative flex flex-col items-center gap-2 group">
                               <img src={LOGO} alt="BeeYield" className="h-20 w-20 md:h-24 md:w-24 object-contain transition-transform group-hover:scale-110 duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
@@ -856,7 +856,7 @@ const Traceability = () => {
                       {/* Info */}
                       <div className="space-y-3">
                         <div className="text-2xl font-black tracking-tighter">{traceData?.farmer?.name || "Timothy Nduva"}</div>
-                        <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-none font-bold text-[10px] px-2 py-0.5 inline-flex items-center gap-1">
+                        <Badge className="bg-amber-500 hover:bg-amber-600 text-gray-900 border-none font-bold text-[10px] px-2 py-0.5 inline-flex items-center gap-1">
                           <Award className="h-3 w-3" /> Head Beekeeper
                         </Badge>
                         <div className="space-y-1 pt-1">
@@ -878,7 +878,7 @@ const Traceability = () => {
                             <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center">
                               <Scale className="h-4 w-4 text-green-400" />
                             </div>
-                            <p className="font-bold text-lg text-white">50% Harvest Promise</p>
+                            <p className="font-bold text-lg text-gray-900">50% Harvest Promise</p>
                           </div>
                           <p className="text-xs text-emerald-200 leading-relaxed">We strictly ensure half of every harvest remains in the hive to nourish the colony through dry seasons.</p>
                         </div>
@@ -906,7 +906,7 @@ const Traceability = () => {
 
                     <div className="space-y-12 relative px-4 sm:px-12">
                       {/* The Golden Thread - High Fidelity Animated Line */}
-                      <div className="absolute left-[4rem] sm:left-[6rem] top-4 bottom-4 w-1 bg-neutral-100 dark:bg-white/5 overflow-hidden rounded-full">
+                      <div className="absolute left-[4rem] sm:left-[6rem] top-4 bottom-4 w-1 bg-neutral-100 overflow-hidden rounded-full">
                         <motion.div
                           className="absolute inset-0 bg-gradient-to-b from-transparent via-beeyield-gold to-transparent opacity-80"
                           animate={{
@@ -927,7 +927,7 @@ const Traceability = () => {
                           <div className="relative z-10 shrink-0">
                             <motion.div
                               whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
-                              className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white dark:bg-slate-900 border-4 border-beeyield-gold flex items-center justify-center text-beeyield-gold shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
+                              className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white border-4 border-beeyield-gold flex items-center justify-center text-beeyield-gold shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
                             >
                               <Home className="h-8 w-8 sm:h-10 sm:w-10" />
                             </motion.div>
@@ -935,16 +935,16 @@ const Traceability = () => {
                               Origin
                             </div>
                           </div>
-                          <div className="flex-1 pb-12 border-b border-slate-50 dark:border-white/5">
+                          <div className="flex-1 pb-12 border-b border-slate-50">
                             <div className="flex flex-wrap items-center gap-3 mb-4">
-                              <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Hive #{traceData.hive.hive_code}</h4>
-                              <Badge className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 border-none font-black text-[10px] px-3 py-1">SOURCE NODE</Badge>
+                              <h4 className="font-black text-2xl sm:text-3xl text-slate-900 tracking-tighter">Hive #{traceData.hive.hive_code}</h4>
+                              <Badge className="bg-amber-100 text-amber-800 border-none font-black text-[10px] px-3 py-1">SOURCE NODE</Badge>
                             </div>
-                            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
-                              Deep within the <span className="text-slate-900 dark:text-white font-black italic">{traceData.apiary?.name}</span>, a resilient colony of <span className="text-beeyield-gold font-bold">{traceData.hive.bee_type}</span> began their harvest.
+                            <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
+                              Deep within the <span className="text-slate-900 font-black italic">{traceData.apiary?.name}</span>, a resilient colony of <span className="text-beeyield-gold font-bold">{traceData.hive.bee_type}</span> began their harvest.
                             </p>
                             <div className="flex items-center gap-4">
-                              <div className="bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 border border-slate-200 dark:border-white/10">
+                              <div className="bg-slate-100 text-slate-500 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 border border-slate-200">
                                 <Globe className="h-3.5 w-3.5" /> {traceData.apiary?.location_name}
                               </div>
                             </div>
@@ -957,7 +957,7 @@ const Traceability = () => {
                         <div className="relative z-10 shrink-0">
                           <motion.div
                             whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
-                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white dark:bg-slate-900 border-4 border-beeyield-green flex items-center justify-center text-beeyield-green shadow-glow-green group-hover:scale-110 transition-transform duration-500"
+                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white border-4 border-beeyield-green flex items-center justify-center text-beeyield-green shadow-glow-green group-hover:scale-110 transition-transform duration-500"
                           >
                             <Leaf className="h-8 w-8 sm:h-10 sm:w-10" />
                           </motion.div>
@@ -965,12 +965,12 @@ const Traceability = () => {
                             Flora
                           </div>
                         </div>
-                        <div className="flex-1 pb-12 border-b border-slate-50 dark:border-white/5">
+                        <div className="flex-1 pb-12 border-b border-slate-50">
                           <div className="flex flex-wrap items-center gap-3 mb-4">
-                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Botanical Record</h4>
-                            <Badge className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 border-none font-black text-[10px] px-3 py-1">BIO-VERIFIED</Badge>
+                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 tracking-tighter">Botanical Record</h4>
+                            <Badge className="bg-green-100 text-green-800 border-none font-black text-[10px] px-3 py-1">BIO-VERIFIED</Badge>
                           </div>
-                          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
                             Nectar sourced from <span className="text-beeyield-green font-black">{traceData?.apiary?.flora_types?.join(' & ') || 'Mixed Wildflowers'}</span> during peak blooming cycles.
                           </p>
                           <p className="text-sm text-slate-400 font-medium italic">Verified by ecosystem acoustic patterns and environmental sensor snapshots.</p>
@@ -982,7 +982,7 @@ const Traceability = () => {
                         <div className="relative z-10 shrink-0">
                           <motion.div
                             whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
-                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white dark:bg-slate-900 border-4 border-amber-600 flex items-center justify-center text-amber-600 shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
+                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white border-4 border-amber-600 flex items-center justify-center text-amber-600 shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
                           >
                             <Scale className="h-8 w-8 sm:h-10 sm:w-10" />
                           </motion.div>
@@ -990,15 +990,15 @@ const Traceability = () => {
                             Ethics
                           </div>
                         </div>
-                        <div className="flex-1 pb-12 border-b border-slate-50 dark:border-white/5">
+                        <div className="flex-1 pb-12 border-b border-slate-50">
                           <div className="flex flex-wrap items-center gap-3 mb-4">
-                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Harvest Protocol</h4>
-                            <Badge className="bg-beeyield-gold text-white border-none font-black text-[10px] px-3 py-1 shadow-lg">50/50 PROMISE</Badge>
+                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 tracking-tighter">Harvest Protocol</h4>
+                            <Badge className="bg-beeyield-gold text-gray-900 border-none font-black text-[10px] px-3 py-1 shadow-lg">50/50 PROMISE</Badge>
                           </div>
-                          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
-                            Precision harvest of <span className="text-slate-900 dark:text-white font-black">{traceData?.impact_stats?.total_honey_kg || "60"}kg</span>. Exactly half remains for colony vitality.
+                          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
+                            Precision harvest of <span className="text-slate-900 font-black">{traceData?.impact_stats?.total_honey_kg || "60"}kg</span>. Exactly half remains for colony vitality.
                           </p>
-                          <div className="inline-flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-beeyield-gold/30 shadow-glow-amber-small">
+                          <div className="inline-flex items-center gap-2 p-3 bg-white rounded-2xl border border-beeyield-gold/30 shadow-glow-amber-small">
                             <div className="relative">
                               <ShieldCheck className="h-4 w-4 text-beeyield-gold" />
                               <motion.div
@@ -1027,10 +1027,10 @@ const Traceability = () => {
                         </div>
                         <div className="flex-1 last:pb-0">
                           <div className="flex flex-wrap items-center gap-3 mb-4">
-                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Final Custody</h4>
-                            <Badge className="bg-slate-900 text-white border-none font-black text-[10px] px-3 py-1">END NODE</Badge>
+                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 tracking-tighter">Final Custody</h4>
+                            <Badge className="bg-slate-900 text-gray-900 border-none font-black text-[10px] px-3 py-1">END NODE</Badge>
                           </div>
-                          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
                             Hand-bottled and assigned to batch <span className="text-beeyield-gold font-black underline underline-offset-4 decoration-2">{traceData?.batch_code}</span>. Destination: Excellence.
                           </p>
                           <motion.div
@@ -1055,7 +1055,7 @@ const Traceability = () => {
                         className="w-full sm:flex-1"
                       >
                         {({ loading }) => (
-                          <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black h-14 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                          <Button className="w-full bg-amber-600 hover:bg-amber-700 text-gray-900 font-black h-14 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
                             {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <FileDown className="h-5 w-5" />}
                             Download Certificate
                           </Button>

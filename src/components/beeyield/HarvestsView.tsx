@@ -133,7 +133,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                     <div className="flex items-center gap-14 relative z-10">
                         <button
                             onClick={() => setIsAddingHarvest(false)}
-                            className={cn(glass.btnSecondary, "h-24 w-24 p-0 rounded-[2.5rem] bg-white dark:bg-black/60 shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
+                            className={cn(glass.btnSecondary, "h-24 w-24 p-0 rounded-[2.5rem] bg-white shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
                         >
                             <ChevronLeft className="w-12 h-12" />
                         </button>
@@ -154,7 +154,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                         <div className={cn(glass.card, 'bg-emerald-500/[0.03] border-emerald-500/30 p-16 rounded-[4rem] shadow-4xl relative overflow-hidden group')}>
                             <div className="relative z-10 space-y-10">
                                 <div className="w-20 h-20 rounded-[2.5rem] bg-emerald-500 flex items-center justify-center shadow-4xl">
-                                    <FlaskConical className="w-10 h-10 text-white" />
+                                    <FlaskConical className="w-10 h-10 text-gray-900" />
                                 </div>
                                 <div className="space-y-6">
                                     <h3 className="text-4xl font-black italic text-foreground tracking-tighter uppercase leading-none">Important <span className="text-emerald-500">Note</span></h3>
@@ -165,17 +165,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                             </div>
                         </div>
 
-                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem] shadow-4xl border-white/5")}>
+                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/40 backdrop-blur-3xl rounded-[4rem] shadow-4xl border-white/5")}>
                             <div className="space-y-4">
                                 <p className={cn(glass.microLabel, "opacity-20 italic font-black uppercase tracking-[0.4em]")}>Current Batch</p>
                                 <h4 className="text-4xl font-black italic text-foreground tracking-tighter uppercase leading-none italic">Harvest <span className="text-honey">Details</span></h4>
                             </div>
                             <div className="grid grid-cols-1 gap-8 pt-4">
-                                <div className="flex items-center justify-between p-10 rounded-[2.5rem] bg-black/5 dark:bg-black/40 border border-white/5 shadow-inner">
+                                <div className="flex items-center justify-between p-10 rounded-[2.5rem] bg-gray-50 border border-white/5 shadow-inner">
                                     <span className={cn(glass.microLabel, "opacity-20 font-black italic uppercase tracking-[0.3em]")}>BATCH CODE</span>
                                     <span className="text-2xl font-black italic text-honey tabular-nums tracking-tighter uppercase">BATCH_{new Date().getTime().toString().slice(-6)}</span>
                                 </div>
-                                <div className="flex items-center justify-between p-10 rounded-[2.5rem] bg-black/5 dark:bg-black/40 border border-white/5 shadow-inner">
+                                <div className="flex items-center justify-between p-10 rounded-[2.5rem] bg-gray-50 border border-white/5 shadow-inner">
                                     <span className={cn(glass.microLabel, "opacity-20 font-black italic uppercase tracking-[0.3em]")}>SYNC STATUS</span>
                                     <div className="flex items-center gap-4">
                                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -191,9 +191,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-0 overflow-hidden bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[5rem] relative")}
+                            className={cn(glass.card, "p-0 overflow-hidden bg-white/60 backdrop-blur-3xl rounded-[5rem] relative")}
                         >
-                            <div className="p-16 border-b border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl relative z-10">
+                            <div className="p-16 border-b border-gray-200 bg-white/40 backdrop-blur-3xl relative z-10">
                                 <div className="flex items-center gap-10">
                                     <div className="w-18 h-18 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-3xl">
                                         <Layers className="w-10 h-10 text-honey" />
@@ -299,7 +299,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     </div>
                                 </div>
 
-                                <div className="p-16 mt-20 border-t border-white/10 bg-white/40 dark:bg-black/60 backdrop-blur-3xl flex flex-col sm:flex-row justify-between items-center -m-20 rounded-b-[5rem]">
+                                <div className="p-16 mt-20 border-t border-gray-200 bg-white/40 backdrop-blur-3xl flex flex-col sm:flex-row justify-between items-center -m-20 rounded-b-[5rem]">
                                     <div className="flex items-center gap-10 opacity-10 px-10 mb-10 sm:mb-0">
                                         <Lock className="w-10 h-10" />
                                         <p className="text-[14px] font-black uppercase tracking-[0.5em] italic">Data protected and synced.</p>
@@ -350,7 +350,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                     <div className="flex items-center gap-8">
                         <button
                             onClick={() => window.location.reload()}
-                            className={cn(glass.btnSecondary, "h-20 w-20 p-0 rounded-2xl bg-white/5 border-white/10 flex items-center justify-center hover:text-[#FF6B00] transition-all")}
+                            className={cn(glass.btnSecondary, "h-20 w-20 p-0 rounded-2xl bg-white/5 border-gray-200 flex items-center justify-center hover:text-[#FF6B00] transition-all")}
                         >
                             <RefreshCw className="w-8 h-8" />
                         </button>
@@ -369,13 +369,13 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
                     { label: 'GROSS VOLUME', value: `${stats.totalHoney}KG`, icon: Zap, color: 'text-[#FF6B00]' },
-                    { label: 'TOTAL CYCLES', value: stats.totalHarvests, icon: RefreshCw, color: 'text-white' },
-                    { label: 'MONTHLY DELTA', value: stats.thisMonth, icon: Calendar, color: 'text-white' },
-                    { label: 'YIELD / CYCLE', value: `${stats.avgPerHarvest}KG`, icon: Activity, color: 'text-white' }
+                    { label: 'TOTAL CYCLES', value: stats.totalHarvests, icon: RefreshCw, color: 'text-gray-900' },
+                    { label: 'MONTHLY DELTA', value: stats.thisMonth, icon: Calendar, color: 'text-gray-900' },
+                    { label: 'YIELD / CYCLE', value: `${stats.avgPerHarvest}KG`, icon: Activity, color: 'text-gray-900' }
                 ].map((s, i) => (
-                    <div key={i} className="bg-white/5 border border-white/10 p-10 rounded-3xl flex flex-col gap-6 relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all">
+                    <div key={i} className="bg-white/5 border border-gray-200 p-10 rounded-3xl flex flex-col gap-6 relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all">
                         <div className="flex items-center justify-between relative z-10">
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 group-hover:text-white/40 transition-colors">{s.label}</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 group-hover:text-gray-600 transition-colors">{s.label}</span>
                             <s.icon className={cn("w-6 h-6", s.color)} />
                         </div>
                         <span className={cn("text-6xl font-black tracking-tighter tabular-nums relative z-10", s.color)}>{s.value}</span>
@@ -388,36 +388,36 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col xl:flex-row items-center justify-between gap-8 relative overflow-hidden"
+                className="bg-white/5 border border-gray-200 rounded-3xl p-6 flex flex-col xl:flex-row items-center justify-between gap-8 relative overflow-hidden"
             >
                 <div className="flex-1 w-full relative group/search">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-8 h-8 text-white/20 group-focus-within/search:text-[#FF6B00] transition-all" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-8 h-8 text-gray-400 group-focus-within/search:text-[#FF6B00] transition-all" />
                     <Input
                         placeholder="Neural Batch Query..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-16 pl-20 bg-transparent border-none text-xl font-mono text-white placeholder:text-white/10 focus-visible:ring-0 uppercase tracking-widest"
+                        className="h-16 pl-20 bg-transparent border-none text-xl font-mono text-gray-900 placeholder:text-white/10 focus-visible:ring-0 uppercase tracking-widest"
                     />
                 </div>
                 <div className="flex items-center gap-6 w-full xl:w-auto">
                     <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger className="h-16 w-full xl:w-64 bg-white/5 border-white/10 rounded-xl text-white font-mono uppercase tracking-widest px-8">
+                        <SelectTrigger className="h-16 w-full xl:w-64 bg-white/5 border-gray-200 rounded-xl text-gray-900 font-mono uppercase tracking-widest px-8">
                             <div className="flex items-center gap-4">
-                                <Calendar className="w-5 h-5 text-white/20" />
+                                <Calendar className="w-5 h-5 text-gray-400" />
                                 <SelectValue placeholder="Year" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0A0A0A] border-white/10">
-                            <SelectItem value="all" className="uppercase font-mono text-white/60 focus:text-white">All_Years</SelectItem>
+                        <SelectContent className="bg-gray-50 border-gray-200">
+                            <SelectItem value="all" className="uppercase font-mono text-white/60 focus:text-gray-900">All_Years</SelectItem>
                             {Array.from({ length: 9 }, (_, i) => {
                                 const year = (new Date().getFullYear() - i).toString();
                                 return (
-                                    <SelectItem key={year} value={year} className="uppercase font-mono text-white/60 focus:text-white">CY_{year}</SelectItem>
+                                    <SelectItem key={year} value={year} className="uppercase font-mono text-white/60 focus:text-gray-900">CY_{year}</SelectItem>
                                 );
                             })}
                         </SelectContent>
                     </Select>
-                    <button className="h-16 px-10 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white hover:border-[#FF6B00]/40 transition-all flex items-center gap-4 group">
+                    <button className="h-16 px-10 bg-white/5 border border-gray-200 rounded-xl text-gray-600 hover:text-gray-900 hover:border-[#FF6B00]/40 transition-all flex items-center gap-4 group">
                         <Download className="w-6 h-6" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">EXPORT_DB</span>
                     </button>
@@ -426,17 +426,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
             {/* Main Registry Table */}
             <div className="mt-8 relative z-10">
-                <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+                <div className="bg-white/5 border border-gray-200 rounded-3xl overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-white/10 bg-white/[0.02]">
-                                    <th className="px-10 py-8 text-[10px] font-black text-white/20 uppercase tracking-[0.4em] font-mono">Batch_ID</th>
-                                    <th className="px-10 py-8 text-[10px] font-black text-white/20 uppercase tracking-[0.4em] font-mono">Timestamp</th>
-                                    <th className="px-10 py-8 text-[10px] font-black text-white/20 uppercase tracking-[0.4em] font-mono">Source_Vector</th>
-                                    <th className="px-10 py-8 text-center text-[10px] font-black text-white/20 uppercase tracking-[0.4em] font-mono">Volume_Net</th>
-                                    <th className="px-10 py-8 text-center text-[10px] font-black text-white/20 uppercase tracking-[0.4em] font-mono">Grade_Idx</th>
-                                    <th className="px-10 py-8 text-right text-[10px] font-black text-white/20 uppercase tracking-[0.4em] font-mono">Status</th>
+                                <tr className="border-b border-gray-200 bg-white/[0.02]">
+                                    <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] font-mono">Batch_ID</th>
+                                    <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] font-mono">Timestamp</th>
+                                    <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] font-mono">Source_Vector</th>
+                                    <th className="px-10 py-8 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] font-mono">Volume_Net</th>
+                                    <th className="px-10 py-8 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] font-mono">Grade_Idx</th>
+                                    <th className="px-10 py-8 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] font-mono">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -445,7 +445,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <td colSpan={6} className="p-20 text-center">
                                             <div className="flex flex-col items-center gap-6 animate-pulse">
                                                 <RefreshCw className="w-12 h-12 text-[#FF6B00] animate-spin" />
-                                                <span className="text-xl font-mono text-white/20 uppercase tracking-widest">Hydrating_Records...</span>
+                                                <span className="text-xl font-mono text-gray-400 uppercase tracking-widest">Hydrating_Records...</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -473,16 +473,16 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 </span>
                                             </td>
                                             <td className="px-10 py-10">
-                                                <span className="text-lg font-mono font-black text-white/40 group-hover:text-white/60 transition-colors uppercase whitespace-nowrap">
+                                                <span className="text-lg font-mono font-black text-gray-600 group-hover:text-white/60 transition-colors uppercase whitespace-nowrap">
                                                     {format(new Date(h.harvest_date), 'yyyy.MM.dd')}
                                                 </span>
                                             </td>
                                             <td className="px-10 py-10">
                                                 <div className="flex flex-col">
-                                                    <span className="text-xl font-black text-white/80 group-hover:text-white transition-colors uppercase truncate max-w-[200px]">
+                                                    <span className="text-xl font-black text-gray-800 group-hover:text-gray-900 transition-colors uppercase truncate max-w-[200px]">
                                                         {h.apiary?.name || 'FIELD_OPS'}
                                                     </span>
-                                                    <span className="text-[10px] font-mono font-black text-white/20 uppercase tracking-widest">
+                                                    <span className="text-[10px] font-mono font-black text-gray-400 uppercase tracking-widest">
                                                         NODE_{h.hive?.hive_code || 'NULL'}
                                                     </span>
                                                 </div>
@@ -490,11 +490,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             <td className="px-10 py-10 text-center">
                                                 <span className="text-4xl font-black text-[#FF6B00] tracking-tighter tabular-nums">
                                                     {h.quantity_kg.toFixed(2)}
-                                                    <span className="text-sm ml-2 text-white/20">KG</span>
+                                                    <span className="text-sm ml-2 text-gray-400">KG</span>
                                                 </span>
                                             </td>
                                             <td className="px-10 py-10 text-center">
-                                                <div className="inline-flex items-center gap-4 px-6 py-2 bg-white/5 border border-white/10 rounded-lg">
+                                                <div className="inline-flex items-center gap-4 px-6 py-2 bg-white/5 border border-gray-200 rounded-lg">
                                                     <div className="w-2 h-2 rounded-full bg-white opacity-40" />
                                                     <span className="text-[12px] font-mono font-black text-white/60 uppercase">
                                                         GRADE_{h.color_grade?.split(' ')[0].toUpperCase() || 'A'}
@@ -502,8 +502,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 </div>
                                             </td>
                                             <td className="px-10 py-10 text-right">
-                                                <div className="inline-flex items-center gap-4 px-6 py-2 bg-white/10 text-white border border-white/20 rounded-lg font-mono text-[10px] font-black uppercase tracking-widest">
-                                                    <ShieldCheck className="w-4 h-4 text-white/40" />
+                                                <div className="inline-flex items-center gap-4 px-6 py-2 bg-white/10 text-gray-900 border border-gray-300 rounded-lg font-mono text-[10px] font-black uppercase tracking-widest">
+                                                    <ShieldCheck className="w-4 h-4 text-gray-600" />
                                                     EXTRACTED
                                                 </div>
                                             </td>

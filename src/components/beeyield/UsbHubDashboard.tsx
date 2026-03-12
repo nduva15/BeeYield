@@ -163,7 +163,7 @@ export function UsbHubDashboard() {
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
                     <div className="flex items-center gap-8">
-                        <div className="w-24 h-24 bg-white/40 dark:bg-black/20 rounded-[2rem] flex items-center justify-center p-5 border border-honey/20 shadow-xl group-hover:scale-105 transition-transform duration-700">
+                        <div className="w-24 h-24 bg-white/40 rounded-[2rem] flex items-center justify-center p-5 border border-honey/20 shadow-xl group-hover:scale-105 transition-transform duration-700">
                             <img src={logoAsset} alt="BeeYield" className="w-full h-full object-contain" />
                         </div>
                         <div className="space-y-2">
@@ -175,7 +175,7 @@ export function UsbHubDashboard() {
                     <div className="flex flex-col items-end gap-3">
                         <div className={cn(
                             "flex items-center gap-4 px-6 py-3 rounded-full border backdrop-blur-md shadow-xl transition-all duration-500",
-                            connectionStatus === 'connected' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/10 border-white/20 opacity-40'
+                            connectionStatus === 'connected' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/10 border-gray-300 opacity-40'
                         )}>
                             <div className={cn(
                                 "w-2.5 h-2.5 rounded-full transition-all duration-500",
@@ -220,7 +220,7 @@ export function UsbHubDashboard() {
                     </button>
                 </div>
 
-                <div className="bg-black/95 rounded-[2.5rem] p-10 space-y-6 shadow-2xl border border-honey/10 relative overflow-hidden group">
+                <div className="bg-white/95 rounded-[2.5rem] p-10 space-y-6 shadow-2xl border border-honey/10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-honey/30 to-transparent" />
 
                     <div className="flex items-center justify-between px-4 pb-4 border-b border-white/5">
@@ -237,7 +237,7 @@ export function UsbHubDashboard() {
 
                     <div className="min-h-[300px] font-mono text-[11px] relative overflow-hidden">
                         {logs.length === 0 ? (
-                            <div className="text-white/20 flex flex-col items-center justify-center h-full gap-4 pt-12">
+                            <div className="text-gray-400 flex flex-col items-center justify-center h-full gap-4 pt-12">
                                 <div className="w-1.5 h-6 bg-honey/40 rounded-full animate-pulse shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
                                 <span className="uppercase tracking-[0.4em] font-black italic">Awaiting serial handshake...</span>
                             </div>
@@ -282,8 +282,8 @@ export function UsbHubDashboard() {
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 flex-1 relative z-10">
                             <div className="md:col-span-2 space-y-6">
                                 <p className={cn(glass.microLabel, "opacity-40 tracking-widest text-[9px]")}>BINARY_TARGET_ASSET</p>
-                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-honey/10 rounded-[2.5rem] p-10 bg-white/40 dark:bg-black/20 hover:bg-honey/[0.03] hover:border-honey/40 transition-all cursor-pointer group shadow-inner">
-                                    <div className="w-16 h-16 bg-white/80 dark:bg-black/40 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform mb-6 border border-honey/20">
+                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-honey/10 rounded-[2.5rem] p-10 bg-white/40 hover:bg-honey/[0.03] hover:border-honey/40 transition-all cursor-pointer group shadow-inner">
+                                    <div className="w-16 h-16 bg-white/80 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform mb-6 border border-honey/20">
                                         <SettingsIcon className={cn("w-8 h-8 text-honey", firmwareFile ? "animate-spin[slow]" : "")} />
                                     </div>
                                     <p className={cn(glass.microLabel, "text-center font-black tracking-widest text-honey leading-tight px-4")}>
@@ -314,7 +314,7 @@ export function UsbHubDashboard() {
                                     <Textarea
                                         value={manifestJson}
                                         onChange={(e) => setManifestJson(e.target.value)}
-                                        className={cn(glass.input, "w-full h-full min-h-[220px] p-8 font-mono text-[10px] leading-relaxed resize-none bg-black/5 dark:bg-black/40 border-honey/10 shadow-inner focus:border-honey/40 transition-all font-bold")}
+                                        className={cn(glass.input, "w-full h-full min-h-[220px] p-8 font-mono text-[10px] leading-relaxed resize-none bg-gray-50 border-honey/10 shadow-inner focus:border-honey/40 transition-all font-bold")}
                                         spellCheck={false}
                                     />
                                     <div className="absolute right-6 top-6 bottom-6 w-0.5 bg-honey/20 rounded-full group-hover:bg-honey/40 transition-colors" />
@@ -339,7 +339,7 @@ export function UsbHubDashboard() {
                                             </div>
                                             <span className={cn(glass.sectionTitle, "text-4xl text-honey")}>{syncProgress}%</span>
                                         </div>
-                                        <div className="h-4 w-full bg-white/20 dark:bg-black/40 rounded-full overflow-hidden p-1 border border-white/10 shadow-inner">
+                                        <div className="h-4 w-full bg-white/20 rounded-full overflow-hidden p-1 border border-gray-200 shadow-inner">
                                             <motion.div
                                                 className="h-full bg-gradient-amber rounded-full shadow-lg shadow-honey/20"
                                                 initial={{ width: 0 }}
@@ -391,8 +391,8 @@ export function UsbHubDashboard() {
                                 { t: "PERSISTENT_PHYSICAL_LINK", d: "Do not sever industrial USB bridge during flash sequence." }
                             ].map((item, i) => (
                                 <li key={i} className="flex gap-6 items-start group/li">
-                                    <div className="w-10 h-10 bg-white/40 dark:bg-white/5 border border-destructive/20 group-hover/li:bg-destructive group-hover/li:border-destructive transition-all duration-500 rounded-2xl shrink-0 flex items-center justify-center shadow-xl">
-                                        <span className="text-xs font-black text-destructive group-hover/li:text-white tabular-nums">{i + 1}</span>
+                                    <div className="w-10 h-10 bg-white/40 border border-destructive/20 group-hover/li:bg-destructive group-hover/li:border-destructive transition-all duration-500 rounded-2xl shrink-0 flex items-center justify-center shadow-xl">
+                                        <span className="text-xs font-black text-destructive group-hover/li:text-gray-900 tabular-nums">{i + 1}</span>
                                     </div>
                                     <div className="space-y-1">
                                         <p className={cn(glass.microLabel, "text-xs font-black text-foreground group-hover/li:text-destructive transition-colors tracking-tight")}>{item.t}</p>

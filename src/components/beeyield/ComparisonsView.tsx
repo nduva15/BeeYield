@@ -73,7 +73,7 @@ const ComparisonsView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <ArrowLeftRight className="w-4 h-4 mr-2" />
                         Recursive Diagnostic Engine v3.0
                     </div>
@@ -187,10 +187,10 @@ const ComparisonsView: React.FC = () => {
             >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-white/40 dark:bg-black/20 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-white/40 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
                     <div className="space-y-1">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
                                 <TrendingUp className="w-6 h-6 text-honey" />
                             </div>
                             <h2 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Aggregated <span className="text-honey">Benchmarks</span></h2>
@@ -199,7 +199,7 @@ const ComparisonsView: React.FC = () => {
                     </div>
 
                     {/* Comparison Pills */}
-                    <div className="flex bg-white/40 dark:bg-black/20 p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
+                    <div className="flex bg-white/40 p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
                         {(['apt12', 'apt24', 'main'] as const).map((tab) => (
                             <button
                                 key={tab}
@@ -207,8 +207,8 @@ const ComparisonsView: React.FC = () => {
                                 className={cn(
                                     "px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
                                     selectedComparisonTab === tab
-                                        ? "bg-white dark:bg-black text-honey shadow-sm ring-1 ring-border"
-                                        : "text-foreground/40 hover:text-foreground hover:bg-white/40 dark:hover:bg-black/20"
+                                        ? "bg-white text-honey shadow-sm ring-1 ring-border"
+                                        : "text-foreground/40 hover:text-foreground hover:bg-white/40:bg-gray-100"
                                 )}
                             >
                                 {tab === 'apt12' ? 'APT_NODE_01' : tab === 'apt24' ? 'APT_NODE_02' : 'MAIN_REGISTRY'}
@@ -236,7 +236,7 @@ const ComparisonsView: React.FC = () => {
                         </AnimatePresence>
 
                         {comparisonData.length === 0 && !isLoading ? (
-                            <div className="h-full w-full flex flex-col items-center justify-center bg-white/20 dark:bg-black/10 rounded-3xl border border-dashed border-border text-foreground/40">
+                            <div className="h-full w-full flex flex-col items-center justify-center bg-white/20 rounded-3xl border border-dashed border-border text-foreground/40">
                                 <ArrowLeftRight className="w-16 h-16 mb-6 opacity-20" />
                                 <p className={cn(glass.microLabel, "normal-case text-lg font-semibold")}>No comparison data available for this selection.</p>
                             </div>
@@ -312,7 +312,7 @@ const ComparisonsView: React.FC = () => {
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

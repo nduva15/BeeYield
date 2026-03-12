@@ -248,7 +248,7 @@ const FlightMapView: React.FC = () => {
                     <Button
                         onClick={handlePlanRoute}
                         disabled={planningRoute}
-                        className="bg-[#1B9157] hover:bg-[#157a48] text-white rounded-xl font-black h-12 px-6 shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95"
+                        className="bg-[#1B9157] hover:bg-[#157a48] text-gray-900 rounded-xl font-black h-12 px-6 shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95"
                     >
                         {planningRoute ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Route className="w-4 h-4 mr-2" />}
                         PLAN OPTIMAL ROUTE
@@ -261,7 +261,7 @@ const FlightMapView: React.FC = () => {
                 <div className="lg:col-span-4 space-y-6">
                     {/* Live Weather Metrics */}
                     <Card className="rounded-[2.5rem] border-none bg-white shadow-xl overflow-hidden">
-                        <div className="bg-[#0F172A] p-6 text-white">
+                        <div className="bg-[#0F172A] p-6 text-gray-900">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 mb-4">Bee-Specific Meteo</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
@@ -536,7 +536,7 @@ const FlightMapView: React.FC = () => {
                         {/* Route Legend */}
                         {route.length > 0 && (
                             <div className="absolute bottom-8 left-8 z-[1000] animate-in slide-in-from-left-4">
-                                <Card className="rounded-3xl border-none shadow-2xl p-6 bg-[#0F172A] text-white">
+                                <Card className="rounded-3xl border-none shadow-2xl p-6 bg-[#0F172A] text-gray-900">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Route className="w-5 h-5 text-blue-400" />
                                         <span className="text-sm font-black uppercase tracking-widest">Active Route Protocol</span>
@@ -544,7 +544,7 @@ const FlightMapView: React.FC = () => {
                                     <div className="space-y-3">
                                         {route.slice(0, 3).map((stop, i) => (
                                             <div key={i} className="flex items-center gap-3">
-                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-black text-white">
+                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-black text-gray-900">
                                                     {i + 1}
                                                 </div>
                                                 <span className="text-[10px] font-bold uppercase opacity-80">{stop.name}</span>

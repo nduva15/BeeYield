@@ -180,7 +180,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 <div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
                         <Activity className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Operational Registry</span>
+                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Operational Registry</span>
                     </div>
                     <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Sensor <span className="text-[#10b981]">Registry</span> <span className="text-[#064e3b]/20">·</span> {title}</h1>
                 </div>
@@ -195,7 +195,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         </div>
                         <Button
                             onClick={() => setIsAddingMeter(true)}
-                            className="rounded-none px-8 bg-[#064e3b] text-white hover:bg-[#10b981] border-2 border-[#064e3b] font-black uppercase text-xs h-12 transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                            className="rounded-none px-8 bg-[#064e3b] text-gray-900 hover:bg-[#10b981] border-2 border-[#064e3b] font-black uppercase text-xs h-12 transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                         >
                             ENROLL DEVICE
                         </Button>
@@ -210,7 +210,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                             <Input placeholder="SERIAL IDENTIFIER" className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none" />
                             <Select><SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase focus:ring-0 transition-none"><SelectValue placeholder="APIARY" /></SelectTrigger></Select>
                             <Input placeholder="HIVE / STATION" className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none" />
-                            <Button className="h-12 rounded-none font-black uppercase text-xs bg-[#064e3b] hover:bg-[#10b981] text-white border-2 border-[#064e3b] transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">COMMIT ENROLLMENT</Button>
+                            <Button className="h-12 rounded-none font-black uppercase text-xs bg-[#064e3b] hover:bg-[#10b981] text-gray-900 border-2 border-[#064e3b] transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">COMMIT ENROLLMENT</Button>
                         </div>
                     </div>
                 )}
@@ -235,7 +235,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                 <h4 className="text-lg font-black text-[#064e3b] uppercase tracking-tighter truncate">{b.name}</h4>
                                 <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.1em] mt-1 line-clamp-1">{b.address}</p>
                                 <div className="mt-6 flex items-center justify-between">
-                                    <div className="bg-[#064e3b] text-white px-2 py-0.5 border-2 border-[#10b981] text-[8px] font-black uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(16,185,129,1)]">
+                                    <div className="bg-[#064e3b] text-gray-900 px-2 py-0.5 border-2 border-[#10b981] text-[8px] font-black uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(16,185,129,1)]">
                                         {meters.filter(m => m.building_id === b.id).length} DEVICES
                                     </div>
                                     <div className="w-8 h-8 rounded-none bg-neutral-50 flex items-center justify-center border-2 border-[#064e3b]/10">
@@ -317,7 +317,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                     <tr key={meter.id} className="group hover:bg-[#facc15]/5 transition-none">
                                         <td className="py-6 px-8">
                                             <div className="flex items-center gap-4">
-                                                <div className={cn("w-10 h-10 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] text-white")}>
+                                                <div className={cn("w-10 h-10 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] text-gray-900")}>
                                                     {meterType === 'Water' && <Droplet className="w-5 h-5" />}
                                                     {meterType === 'Heat' && <Flame className="w-5 h-5" />}
                                                     {meterType === 'Energy' && <Zap className="w-5 h-5" />}
@@ -340,8 +340,8 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                         <td className="py-6 px-8">
                                             <Badge className={cn(
                                                 "rounded-none border-2 text-[8px] font-black px-3 py-1 uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(6,78,59,1)]",
-                                                meter.status === 'OK' ? "bg-[#10b981] text-white border-[#064e3b]" :
-                                                    meter.status === 'WARNING' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-red-500 text-white border-[#064e3b]"
+                                                meter.status === 'OK' ? "bg-[#10b981] text-gray-900 border-[#064e3b]" :
+                                                    meter.status === 'WARNING' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-red-500 text-gray-900 border-[#064e3b]"
                                             )}>
                                                 {meter.status === 'OK' ? 'NOMINAL' : meter.status}
                                             </Badge>
@@ -349,7 +349,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                         <td className="py-6 px-8">
                                             <div className="flex gap-2">
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border-2 border-[#064e3b]/10 bg-white text-[#064e3b] hover:bg-[#facc15]/10 transition-none"><Info className="w-4 h-4" /></Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border-2 border-[#064e3b]/10 bg-white text-[#064e3b] hover:bg-[#10b981] hover:text-white transition-none" onClick={() => generatePDF()}><Download className="w-4 h-4" /></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border-2 border-[#064e3b]/10 bg-white text-[#064e3b] hover:bg-[#10b981] hover:text-gray-900 transition-none" onClick={() => generatePDF()}><Download className="w-4 h-4" /></Button>
                                             </div>
                                         </td>
                                     </tr>
@@ -368,13 +368,13 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         <p className="text-xl font-black text-[#064e3b] uppercase tracking-tighter mt-1">Archive System Records</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
-                        <Button variant="outline" size="sm" onClick={() => handleExport('CSV')} className="h-12 px-6 rounded-none border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest text-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none gap-3">
+                        <Button variant="outline" size="sm" onClick={() => handleExport('CSV')} className="h-12 px-6 rounded-none border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest text-[#064e3b] hover:bg-[#064e3b] hover:text-gray-900 transition-none gap-3">
                             <FileText className="w-4 h-4" /> CSV BATCH
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleExport('XLS')} className="h-12 px-6 rounded-none border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest text-[#064e3b] hover:bg-[#10b981] hover:text-white transition-none gap-3">
+                        <Button variant="outline" size="sm" onClick={() => handleExport('XLS')} className="h-12 px-6 rounded-none border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest text-[#064e3b] hover:bg-[#10b981] hover:text-gray-900 transition-none gap-3">
                             <FileSpreadsheet className="w-4 h-4" /> EXCEL MATRIX
                         </Button>
-                        <Button size="sm" onClick={() => handleExport('PDF')} className="h-12 px-8 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest transition-none gap-3 shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                        <Button size="sm" onClick={() => handleExport('PDF')} className="h-12 px-8 rounded-none bg-[#064e3b] text-gray-900 hover:bg-[#10b981] border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest transition-none gap-3 shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
                             {downloading === 'PDF' ? <Loader2 className="w-4 h-4 animate-spin text-[#facc15]" /> : <Download className="w-5 h-5 text-[#facc15]" />}
                             PDF OPERATIONAL REPORT
                         </Button>

@@ -145,7 +145,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             {/* Page Header */}
             <div className="flex items-center gap-4 border-b-4 border-black pb-6">
                 <div className="w-12 h-12 bg-black flex items-center justify-center border-2 border-black">
-                    <Camera className="w-6 h-6 text-white" />
+                    <Camera className="w-6 h-6 text-gray-900" />
                 </div>
                 <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
                     Analysis
@@ -160,7 +160,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-10">
                 <div className="flex items-center gap-3 mb-8 border-b-2 border-black pb-4">
                     <div className="w-8 h-8 bg-black flex items-center justify-center border-2 border-black">
-                        <Info className="w-4 h-4 text-white" />
+                        <Info className="w-4 h-4 text-gray-900" />
                     </div>
                     <h2 className="text-2xl font-black text-black uppercase tracking-tight">Instructions</h2>
                 </div>
@@ -218,11 +218,11 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="min-h-[300px] flex items-center justify-center bg-neutral-100 border-2 border-black">
                                 <img src={previewUrl} alt="Analyzed" className="w-full h-full object-contain max-h-[500px]" />
                                 {isAnalyzing && (
-                                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center z-10">
+                                    <div className="absolute inset-0 bg-gray-500 flex flex-col items-center justify-center z-10">
                                         {realtimeCount > 0 ? (
                                             <>
                                                 <div className="text-8xl font-black text-[#FF4F00] drop-shadow-lg">{realtimeCount}</div>
-                                                <div className="text-white font-black uppercase tracking-widest text-[10px] mt-2 bg-black px-4 py-2 border-2 border-white">Detected</div>
+                                                <div className="text-gray-900 font-black uppercase tracking-widest text-[10px] mt-2 bg-black px-4 py-2 border-2 border-white">Detected</div>
                                             </>
                                         ) : (
                                             <div className="w-16 h-16 border-4 border-t-[#FF4F00] border-white rounded-none animate-spin" />
@@ -242,7 +242,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-3 pb-4 border-b-2 border-black">
-                                        <div className="w-8 h-8 bg-black flex items-center justify-center"><Search className="w-4 h-4 text-white" /></div>
+                                        <div className="w-8 h-8 bg-black flex items-center justify-center"><Search className="w-4 h-4 text-gray-900" /></div>
                                         <h3 className="text-3xl font-black text-black uppercase tracking-tighter">Results</h3>
                                     </div>
                                     <div className="flex items-center justify-between gap-6">
@@ -261,7 +261,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         {isAnalyzing ? (
                             <div className="border-4 border-black bg-white p-12 h-full flex flex-col justify-center items-center text-center space-y-10 min-h-[400px] shadow-[8px_8px_0px_0px_rgba(255,79,0,1)]">
                                 <div className="w-20 h-20 bg-black flex items-center justify-center border-4 border-black shadow-[6px_6px_0px_0px_rgba(255,79,0,1)]">
-                                    <Bot className="w-10 h-10 text-white" />
+                                    <Bot className="w-10 h-10 text-gray-900" />
                                 </div>
                                 <div className="space-y-4">
                                     <h3 className="text-4xl font-black text-black uppercase tracking-tighter leading-tight">Processing...</h3>
@@ -282,7 +282,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                         Could not identify hive structures or bees. Please try a clearer photo.
                                     </p>
                                 </div>
-                                <button onClick={clearImage} className="h-14 px-10 border-4 border-black bg-black text-white font-black uppercase tracking-widest text-[10px] hover:bg-[#FF4F00] transition-none">
+                                <button onClick={clearImage} className="h-14 px-10 border-4 border-black bg-black text-gray-900 font-black uppercase tracking-widest text-[10px] hover:bg-[#FF4F00] transition-none">
                                     Try Again
                                 </button>
                             </div>
@@ -292,7 +292,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <h3 className="text-2xl font-black uppercase tracking-tight">Detection</h3>
                                     <div className="flex items-center gap-4">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Total Count</span>
-                                        <div className="w-10 h-10 bg-black text-white flex items-center justify-center border-2 border-black font-black">
+                                        <div className="w-10 h-10 bg-black text-gray-900 flex items-center justify-center border-2 border-black font-black">
                                             {results.beesCounted}
                                         </div>
                                     </div>
@@ -333,7 +333,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <div className="border-4 border-black overflow-hidden">
                                         <table className="w-full text-[10px] font-bold border-collapse">
                                             <thead>
-                                                <tr className="bg-black border-b-4 border-black text-white uppercase tracking-widest text-[9px]">
+                                                <tr className="bg-black border-b-4 border-black text-gray-900 uppercase tracking-widest text-[9px]">
                                                     <th className="px-3 py-3 text-left font-black">#</th>
                                                     <th className="px-3 py-3 text-left font-black">Conf.</th>
                                                     <th className="px-3 py-3 text-left font-black">Health</th>
@@ -358,10 +358,10 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="space-y-10">
                                 <div className="border-4 border-black border-dashed bg-white p-12 h-auto flex flex-col justify-center items-center text-center space-y-10 min-h-[300px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                                     <div className="w-16 h-16 bg-black flex items-center justify-center border-4 border-black shadow-[6px_6px_0px_0px_rgba(255,79,0,1)]">
-                                        <Activity className="w-8 h-8 text-white" />
+                                        <Activity className="w-8 h-8 text-gray-900" />
                                     </div>
                                     <h3 className="text-3xl font-black uppercase tracking-tighter">Ready</h3>
-                                    <button onClick={() => handleStartAnalysis()} className="w-full h-20 border-4 border-black bg-black text-white font-black text-xl uppercase tracking-widest hover:bg-[#FF4F00] transition-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                                    <button onClick={() => handleStartAnalysis()} className="w-full h-20 border-4 border-black bg-black text-gray-900 font-black text-xl uppercase tracking-widest hover:bg-[#FF4F00] transition-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
                                         Identify Specimen
                                     </button>
                                 </div>

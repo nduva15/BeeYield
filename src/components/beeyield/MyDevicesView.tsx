@@ -120,10 +120,10 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative")}
+                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 backdrop-blur-3xl rounded-[6rem] relative")}
             >
                 {/* Search and Filters */}
-                <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/20 backdrop-blur-3xl flex flex-col xl:flex-row gap-16 items-center relative z-10">
+                <div className="p-16 border-b border-white/5 bg-white/40 backdrop-blur-3xl flex flex-col xl:flex-row gap-16 items-center relative z-10">
                     <div className="flex-1 w-full relative">
                         <Label className={cn(glass.microLabel, 'ml-8 opacity-40 uppercase italic mb-4 block')}>Search Devices</Label>
                         <div className="relative">
@@ -159,7 +159,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <div className="overflow-x-auto thin-scrollbar relative z-10">
                     <table className="w-full text-left border-separate border-spacing-0">
                         <thead>
-                            <tr className="bg-white/40 dark:bg-black/40">
+                            <tr className="bg-white/40">
                                 <th className={cn(glass.microLabel, "px-14 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Status</th>
                                 <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Device</th>
                                 <th className={cn(glass.microLabel, "px-10 py-12 opacity-40 border-b border-white/5 uppercase italic")}>Location</th>
@@ -195,13 +195,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                         >
                                             <td className="px-14 py-14">
                                                 <div className="flex items-center gap-6">
-                                                    <div className={cn("w-4 h-4 rounded-full border-2 border-white/20 shadow-4xl", device.status === 'active' ? 'bg-emerald-500' : 'bg-red-500')} />
+                                                    <div className={cn("w-4 h-4 rounded-full border-2 border-gray-300 shadow-4xl", device.status === 'active' ? 'bg-emerald-500' : 'bg-red-500')} />
                                                     <span className={cn(glass.microLabel, "font-black italic text-[14px]", device.status === 'active' ? 'text-emerald-500' : 'text-red-500')}>{device.status === 'active' ? 'Online' : 'Offline'}</span>
                                                 </div>
                                             </td>
                                             <td className="px-10 py-14">
                                                 <div className="flex items-center gap-10">
-                                                    <div className="w-20 h-20 rounded-[2rem] bg-white/40 dark:bg-black/60 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:text-honey transition-all">
+                                                    <div className="w-20 h-20 rounded-[2rem] bg-white/40 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:text-honey transition-all">
                                                         <Cpu className="w-10 h-10" />
                                                     </div>
                                                     <div className="flex flex-col gap-1">
@@ -228,7 +228,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                 <div className="flex items-center gap-8">
                                                     <div className="flex flex-col items-end gap-3 min-w-[120px]">
                                                         <span className="text-2xl font-black italic tabular-nums text-foreground/70">{device.battery_level}%</span>
-                                                        <div className="w-full h-2.5 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[1px] border border-white/5">
+                                                        <div className="w-full h-2.5 bg-gray-50 rounded-full overflow-hidden shadow-inner p-[1px] border border-white/5">
                                                             <div className={cn("h-full rounded-full", device.battery_level > 60 ? "bg-emerald-500" : device.battery_level > 20 ? "bg-honey" : "bg-red-500 animate-pulse")} style={{ width: `${device.battery_level}%` }} />
                                                         </div>
                                                     </div>
@@ -260,7 +260,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 </div>
 
                 {/* Footer */}
-                <div className="p-14 border-t border-white/5 bg-white/40 dark:bg-black/30 backdrop-blur-3xl flex flex-col md:flex-row justify-between items-center gap-12 relative z-10">
+                <div className="p-14 border-t border-white/5 bg-white/40 backdrop-blur-3xl flex flex-col md:flex-row justify-between items-center gap-12 relative z-10">
                     <div className="flex items-center gap-10">
                         <Database className="w-10 h-10 text-honey opacity-40" />
                         <div className="flex flex-col">

@@ -310,7 +310,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                         <h3 className="text-5xl font-black italic tracking-tighter uppercase leading-none mb-4">{stat.value}</h3>
                         {stat.sub && <p className="text-[12px] font-black opacity-20 uppercase tracking-widest leading-none">{stat.sub}</p>}
                         {stat.progress !== undefined && (
-                            <div className="mt-8 w-full h-3 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner p-[2px]">
+                            <div className="mt-8 w-full h-3 bg-gray-50 rounded-full overflow-hidden border border-white/5 shadow-inner p-[2px]">
                                 <motion.div
                                     className={cn("h-full rounded-full shadow-2xl relative", stat.progress < 20 ? 'bg-red-500' : 'bg-honey')}
                                     initial={{ width: 0 }}
@@ -340,7 +340,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5")}
+                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5")}
                     >
                         <div className="absolute top-0 right-0 p-16 relative z-20">
                             <div className="flex items-center gap-6 bg-emerald-500/10 border-2 border-emerald-500/30 rounded-full px-8 py-3 backdrop-blur-3xl shadow-4xl">
@@ -379,7 +379,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                             <span className="text-2xl font-black italic opacity-30 uppercase">{gauge.unit}</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4 bg-black/10 dark:bg-white/5 px-8 py-3 rounded-full border border-white/10 shadow-4xl group-hover/gauge:border-honey/40 transition-all">
+                                    <div className="flex items-center gap-4 bg-gray-50 px-8 py-3 rounded-full border border-gray-200 shadow-4xl group-hover/gauge:border-honey/40 transition-all">
                                         <gauge.icon className={cn("w-6 h-6", gauge.color)} />
                                         <span className="text-[14px] font-black italic uppercase tracking-widest opacity-60">{gauge.label}</span>
                                     </div>
@@ -392,7 +392,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5")}
+                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-white/5")}
                     >
                         <div className="absolute bottom-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none group-hover:bg-emerald-500/10 transition-all" />
 
@@ -417,7 +417,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                         </div>
 
                         <div className="space-y-12 relative z-10">
-                            <div className="bg-black/5 dark:bg-white/5 rounded-[4rem] p-16 flex flex-col md:flex-row items-center justify-between border border-white/5 shadow-4xl gap-16">
+                            <div className="bg-gray-50 rounded-[4rem] p-16 flex flex-col md:flex-row items-center justify-between border border-white/5 shadow-4xl gap-16">
                                 <div className="flex gap-10 items-center">
                                     <div className="w-20 h-20 bg-honey/10 rounded-[2.5rem] flex items-center justify-center border-2 border-honey/40 shadow-inner">
                                         <ShieldCheck className="w-10 h-10 text-honey" />
@@ -451,7 +451,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                             </div>
                                             <span className="text-5xl font-black italic tabular-nums tracking-tighter">{syncProgress}%</span>
                                         </div>
-                                        <div className="h-6 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner p-1.5">
+                                        <div className="h-6 bg-gray-50 rounded-full overflow-hidden border border-white/5 shadow-inner p-1.5">
                                             <motion.div
                                                 className="h-full bg-honey rounded-full shadow-4xl relative"
                                                 initial={{ width: 0 }}
@@ -478,16 +478,16 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                     >
                         <div className="absolute top-0 right-0 w-80 h-80 bg-honey/10 rounded-full blur-[150px] pointer-events-none group-hover/console:bg-honey/20 transition-all" />
 
-                        <div className="flex items-center justify-between mb-12 relative z-10 border-b border-white/10 pb-10">
+                        <div className="flex items-center justify-between mb-12 relative z-10 border-b border-gray-200 pb-10">
                             <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center border border-white/10 shadow-inner">
+                                <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center border border-gray-200 shadow-inner">
                                     <Terminal className="w-8 h-8 text-honey" />
                                 </div>
                                 <span className="text-2xl font-black italic text-honey uppercase tracking-[0.3em]">System Log</span>
                             </div>
                             <button
                                 onClick={() => setLogs([])}
-                                className="text-white/20 hover:text-honey transition-all uppercase text-[12px] font-black tracking-widest px-8 py-3 rounded-full border border-white/10 hover:border-honey/40 hover:bg-honey/5"
+                                className="text-gray-400 hover:text-honey transition-all uppercase text-[12px] font-black tracking-widest px-8 py-3 rounded-full border border-gray-200 hover:border-honey/40 hover:bg-honey/5"
                             >
                                 CLEAR
                             </button>
@@ -511,14 +511,14 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                             )}
                         </div>
 
-                        <div className="mt-12 pt-10 border-t border-white/10 relative z-10">
-                            <div className="bg-white/5 rounded-[3rem] p-10 flex gap-8 border border-white/10 shadow-4xl group/bridge hover:border-honey/40 transition-all">
-                                <div className="w-20 h-20 rounded-[2.5rem] bg-white/5 flex items-center justify-center border-2 border-white/10 group-hover/bridge:border-honey/40 group-hover/bridge:rotate-6 transition-all shadow-4xl">
+                        <div className="mt-12 pt-10 border-t border-gray-200 relative z-10">
+                            <div className="bg-white/5 rounded-[3rem] p-10 flex gap-8 border border-gray-200 shadow-4xl group/bridge hover:border-honey/40 transition-all">
+                                <div className="w-20 h-20 rounded-[2.5rem] bg-white/5 flex items-center justify-center border-2 border-gray-200 group-hover/bridge:border-honey/40 group-hover/bridge:rotate-6 transition-all shadow-4xl">
                                     <ShieldCheck className="w-10 h-10 text-honey" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[12px] font-black italic uppercase tracking-[0.4em] text-white/40">Secure Connection</p>
-                                    <p className="text-xl text-white/80 font-black italic uppercase tracking-tighter">Bluetooth 4.2 · Encrypted</p>
+                                    <p className="text-[12px] font-black italic uppercase tracking-[0.4em] text-gray-600">Secure Connection</p>
+                                    <p className="text-xl text-gray-800 font-black italic uppercase tracking-tighter">Bluetooth 4.2 · Encrypted</p>
                                 </div>
                             </div>
                         </div>
@@ -532,11 +532,11 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] relative bg-white/95 dark:bg-[#0D0D0D]/95 backdrop-blur-3xl rounded-[6rem] border-white/10")}
+                        className={cn(glass.card, "p-0 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] relative bg-white/95 backdrop-blur-3xl rounded-[6rem] border-gray-200")}
                     >
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-honey/10 rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40" />
 
-                        <div className="bg-white/40 dark:bg-black/40 px-16 py-16 border-b border-white/5 relative z-10">
+                        <div className="bg-white/40 px-16 py-16 border-b border-white/5 relative z-10">
                             <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg] mb-8')}>
                                 <div className="flex items-center gap-4 skew-x-[12deg]">
                                     <Cpu className="w-5 h-5" />
@@ -564,9 +564,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     <SelectTrigger className={cn(glass.input, "h-20 px-10 shadow-4xl text-2xl font-black italic")}>
                                         <SelectValue placeholder="Choose a hive..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-black/90 backdrop-blur-3xl border-white/10 rounded-[3rem] p-6">
+                                    <SelectContent className="bg-white/90 backdrop-blur-3xl border-gray-200 rounded-[3rem] p-6">
                                         {hives.map(hive => (
-                                            <SelectItem key={hive.id} value={hive.id} className="p-6 font-black italic text-2xl uppercase tracking-tighter text-white hover:bg-honey hover:text-black transition-colors rounded-3xl">
+                                            <SelectItem key={hive.id} value={hive.id} className="p-6 font-black italic text-2xl uppercase tracking-tighter text-gray-900 hover:bg-honey hover:text-black transition-colors rounded-3xl">
                                                 {hive.hive_code}
                                             </SelectItem>
                                         ))}

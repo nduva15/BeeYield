@@ -229,11 +229,11 @@ const Receipt = () => {
                         </div>
 
                         {/* Traceability Seal */}
-                        <div className="mt-16 bg-[#1e293b] rounded-[2rem] p-8 text-white relative overflow-hidden group">
+                        <div className="mt-16 bg-[#1e293b] rounded-[2rem] p-8 text-gray-900 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
 
                             <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-                                <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20">
+                                <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-gray-300">
                                     <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
                                         {/* Mock QR */}
                                         <div className="grid grid-cols-2 gap-1 p-2">

@@ -61,7 +61,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
 
                 <button
                     onClick={handleDownloadCert}
-                    className="flex items-center gap-4 px-8 py-4 bg-[#064e3b] border-4 border-[#064e3b] text-white font-black text-xs uppercase tracking-widest shadow-[8px_8px_0px_0px_#10b981] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                    className="flex items-center gap-4 px-8 py-4 bg-[#064e3b] border-4 border-[#064e3b] text-gray-900 font-black text-xs uppercase tracking-widest shadow-[8px_8px_0px_0px_#10b981] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
                 >
                     {generatingCert ? (
                         <Activity className="w-5 h-5 animate-spin" />
@@ -115,7 +115,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                             <p className="text-[10px] font-bold text-red-600/70 uppercase leading-relaxed max-w-md">
                                 {alert.detail}
                             </p>
-                            <button className="mt-6 px-6 py-3 bg-red-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-none">
+                            <button className="mt-6 px-6 py-3 bg-red-600 text-gray-900 font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-none">
                                 Issue Exception Order: {alert.action}
                             </button>
                         </div>

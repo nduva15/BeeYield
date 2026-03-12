@@ -374,15 +374,15 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         </p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-12">
-                            <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
+                            <div className="bg-white/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
                                 <span className="text-2xl font-black text-honey mb-1">20,000+</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Bee Species</span>
                             </div>
-                            <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
+                            <div className="bg-white/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
                                 <span className="text-2xl font-black text-honey mb-1">300+</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Honey Varieties</span>
                             </div>
-                            <div className="hidden lg:flex bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
+                            <div className="hidden lg:flex bg-white/40 backdrop-blur-xl border border-border p-6 rounded-[2.5rem] flex flex-col items-center text-center">
                                 <span className="text-2xl font-black text-honey mb-1">50+</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Protocols</span>
                             </div>
@@ -428,7 +428,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 )}
                                 <div className={`px-8 py-6 text-[15px] leading-relaxed whitespace-pre-wrap shadow-sm ${msg.role === "user"
                                         ? "bg-honey text-white rounded-[2rem] rounded-tr-lg font-bold"
-                                        : "bg-white text-foreground border border-border rounded-[2.5rem] rounded-tl-lg font-medium prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-headings:font-black prose-headings:tracking-tight prose-headings:uppercase prose-headings:flex prose-headings:items-center prose-headings:gap-2 prose-a:text-honey max-w-none"
+                                        : "bg-white text-foreground border border-border rounded-[2.5rem] rounded-tl-lg font-medium prose prose-sm prose-p:leading-relaxed prose-headings:font-black prose-headings:tracking-tight prose-headings:uppercase prose-headings:flex prose-headings:items-center prose-headings:gap-2 prose-a:text-honey max-w-none"
                                     }`}>
                                     {msg.role === "user" ? (
                                         msg.content
@@ -539,7 +539,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                         type="button"
                                         onClick={toggleListening}
                                         className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm ${isListening
-                                                ? "bg-destructive text-white animate-pulse"
+                                                ? "bg-destructive text-gray-900 animate-pulse"
                                                 : "text-muted-foreground hover:bg-honey/10 hover:text-honey"
                                             }`}
                                     >
@@ -550,7 +550,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 <button
                                     type="submit"
                                     disabled={(!input.trim() && !attachedImage && !attachedAudio) || isLoading}
-                                    className="w-14 h-14 rounded-2xl bg-gradient-amber text-white flex items-center justify-center hover:opacity-90 disabled:opacity-30 transition-all shadow-xl hover:scale-105 active:scale-95"
+                                    className="w-14 h-14 rounded-2xl bg-gradient-amber text-gray-900 flex items-center justify-center hover:opacity-90 disabled:opacity-30 transition-all shadow-xl hover:scale-105 active:scale-95"
                                 >
                                     {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
                                 </button>
@@ -577,7 +577,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setAboutOpen(false)}
-                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                            className="absolute inset-0 bg-white/80 backdrop-blur-md"
                         />
                         <AboutBeeYieldAI onClose={() => setAboutOpen(false)} />
                     </div>
@@ -589,7 +589,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setGalleryOpen(false)}
-                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                            className="absolute inset-0 bg-white/80 backdrop-blur-md"
                         />
                         <div className="relative w-full h-full bg-background rounded-[3rem] overflow-hidden shadow-3xl border border-border z-10">
                             <button 

@@ -88,18 +88,18 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className={cn(glass.card, "p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden border-honey/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+            className={cn(glass.card, "p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden border-honey/10 bg-white/60 backdrop-blur-3xl")}
         >
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-honey/[0.03] rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40" />
 
-            <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-10 border-b border-white/10 pb-12 relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-10 border-b border-gray-200 pb-12 relative z-10">
                 <div className="space-y-3">
                     <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Financial <span className="text-honey">Intelligence</span></h3>
                     <p className={cn(glass.microLabel, "opacity-40 italic mt-2 font-black uppercase tracking-[0.2em]")}>Profitability audit across global distribution nodes.</p>
                 </div>
                 <button
                     onClick={handleExportCSV}
-                    className={cn(glass.btnSecondary, "h-16 px-12 gap-4 font-black shadow-3xl border-white/10 rounded-2xl hover:border-honey/20 transition-all")}
+                    className={cn(glass.btnSecondary, "h-16 px-12 gap-4 font-black shadow-3xl border-gray-200 rounded-2xl hover:border-honey/20 transition-all")}
                 >
                     <Download className="w-5 h-5 text-honey" />
                     Export Ledger Bundle
@@ -107,7 +107,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
             </div>
 
             {/* Analytics Sub-tabs */}
-            <div className="flex bg-white/40 dark:bg-black/30 backdrop-blur-3xl p-3 rounded-[2.5rem] border border-white/10 gap-3 shadow-2xl w-fit mb-16 relative z-10">
+            <div className="flex bg-white/40 backdrop-blur-3xl p-3 rounded-[2.5rem] border border-gray-200 gap-3 shadow-2xl w-fit mb-16 relative z-10">
                 {analyticsTabs.map((tab) => (
                     <button
                         key={tab}
@@ -115,7 +115,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                         className={cn(
                             "h-14 px-10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500",
                             activeAnalyticsTab === tab
-                                ? "bg-white dark:bg-black/60 text-honey shadow-2xl border border-honey/10"
+                                ? "bg-white text-honey shadow-2xl border border-honey/10"
                                 : "text-foreground/40 hover:text-honey"
                         )}
                     >
@@ -200,7 +200,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                                     initial={{ opacity: 0, x: 30 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: i * 0.1, duration: 0.6 }}
-                                    className="flex justify-between items-center p-8 bg-white/40 dark:bg-black/30 rounded-[2.5rem] border border-white/5 group hover:border-honey/40 transition-all duration-700 shadow-xl"
+                                    className="flex justify-between items-center p-8 bg-white/40 rounded-[2.5rem] border border-white/5 group hover:border-honey/40 transition-all duration-700 shadow-xl"
                                 >
                                     <div className="flex items-center gap-6">
                                         <div className={cn("w-4 h-4 rounded-full shadow-[0_0_15px_rgba(251,191,36,0.5)] transition-all group-hover:scale-125", i % 2 === 0 ? "bg-honey" : "bg-honey/40")} />
@@ -227,14 +227,14 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                                 className={cn(
                                     glass.card,
                                     "p-12 space-y-10 shadow-3xl transition-all duration-700 border-white/5",
-                                    item.highlight ? "bg-honey/10 dark:bg-white/[0.03] border-honey/30 shadow-[0_40px_100px_-20px_rgba(251,191,36,0.2)]" : "bg-white/40 dark:bg-black/30"
+                                    item.highlight ? "bg-honey/10 border-honey/30 shadow-[0_40px_100px_-20px_rgba(251,191,36,0.2)]" : "bg-white/40"
                                 )}
                             >
                                 <div className="flex justify-between items-start">
                                     <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl border border-white/5", item.bg)}>
                                         <item.icon className={cn("w-7 h-7", item.color)} />
                                     </div>
-                                    <Badge className="bg-white/5 text-[9px] font-black tracking-widest uppercase border-white/10">{i === 2 ? 'FINAL_AUDIT' : 'VECTOR_BATCH'}</Badge>
+                                    <Badge className="bg-white/5 text-[9px] font-black tracking-widest uppercase border-gray-200">{i === 2 ? 'FINAL_AUDIT' : 'VECTOR_BATCH'}</Badge>
                                 </div>
                                 <div className="space-y-3">
                                     <p className={cn(glass.microLabel, "opacity-40 tracking-[0.3em] font-black uppercase text-xs italic")}>{item.label}</p>
@@ -412,7 +412,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             />
 
             {/* Top Navigation */}
-            <div className="flex bg-white/40 dark:bg-black/30 backdrop-blur-3xl p-3 rounded-[2.8rem] border border-white/10 gap-3 shadow-2xl w-full md:w-fit relative z-10 transition-all">
+            <div className="flex bg-white/40 backdrop-blur-3xl p-3 rounded-[2.8rem] border border-gray-200 gap-3 shadow-2xl w-full md:w-fit relative z-10 transition-all">
                 {['Dashboard', 'Ledger', 'Subscription', 'Regulatory Sync'].map((tab) => (
                     <button
                         key={tab}
@@ -420,7 +420,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         className={cn(
                             "h-16 px-12 rounded-[2.2rem] text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-700 w-full md:w-auto",
                             activeSubTab === tab
-                                ? "bg-white dark:bg-black/80 text-honey shadow-2xl border border-honey/20"
+                                ? "bg-white text-honey shadow-2xl border border-honey/20"
                                 : "text-foreground/40 hover:text-honey hover:bg-honey/5"
                         )}
                     >
@@ -455,14 +455,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
                         <motion.div
                             whileHover={{ y: -10, scale: 1.02 }}
-                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group/qa border-honey/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group/qa border-honey/10 bg-white/60 backdrop-blur-3xl")}
                         >
                             <div className="p-5 bg-honey/10 rounded-2xl w-fit border border-honey/10 group-hover/qa:rotate-12 transition-transform duration-700 shadow-xl">
                                 <History className="w-9 h-9 text-honey" />
                             </div>
                             <div className="space-y-3">
                                 <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic group-hover/qa:text-honey transition-colors")}>Recent <span className="text-honey">Ledger</span></h3>
-                                <p className={cn(glass.microLabel, "opacity-40 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-white/10")}>Review high-capacity synchronization events.</p>
+                                <p className={cn(glass.microLabel, "opacity-40 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-gray-200")}>Review high-capacity synchronization events.</p>
                             </div>
                             <button onClick={() => setActiveSubTab('Ledger')} className={cn(glass.btnSecondary, "w-full h-16 mt-6 font-black text-[11px] uppercase tracking-widest border-none bg-honey/5 hover:bg-honey/10 rounded-[1.8rem] flex items-center justify-center gap-3")}>
                                 Open Archive <ChevronRight className="w-5 h-5 group-hover/qa:translate-x-1 transition-all" />
@@ -471,14 +471,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
                         <motion.div
                             whileHover={{ y: -10, scale: 1.02 }}
-                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group/qa border-emerald-500/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+                            className={cn(glass.card, "p-12 space-y-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group/qa border-emerald-500/10 bg-white/60 backdrop-blur-3xl")}
                         >
                             <div className="p-5 bg-emerald-500/10 rounded-2xl w-fit border border-emerald-500/10 group-hover/qa:-rotate-12 transition-transform duration-700 shadow-xl">
                                 <Shield className="w-9 h-9 text-emerald-500" />
                             </div>
                             <div className="space-y-3">
                                 <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic group-hover/qa:text-emerald-500 transition-colors")}>Premium <span className="text-emerald-500/60">Tier</span></h3>
-                                <p className={cn(glass.microLabel, "opacity-40 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-white/10")}>Managed capacity and industrial audit features.</p>
+                                <p className={cn(glass.microLabel, "opacity-40 normal-case italic font-black uppercase text-xs tracking-widest pl-6 border-l border-gray-200")}>Managed capacity and industrial audit features.</p>
                             </div>
                             <button onClick={() => setActiveSubTab('Subscription')} className={cn(glass.btnSecondary, "w-full h-16 mt-6 font-black text-[11px] uppercase tracking-widest border-none bg-emerald-500/5 hover:bg-emerald-500/10 rounded-[1.8rem] flex items-center justify-center gap-3")}>
                                 Tier Details <ChevronRight className="w-5 h-5 group-hover/qa:translate-x-1 transition-all" />
@@ -508,9 +508,9 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative border-honey/10 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}
+                        className={cn(glass.card, "p-0 overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative border-honey/10 bg-white/60 backdrop-blur-3xl")}
                     >
-                        <div className="p-14 border-b border-white/10 bg-white/40 dark:bg-black/20 flex flex-col xl:row-span-12 xl:flex-row gap-10 items-center justify-between relative z-10">
+                        <div className="p-14 border-b border-gray-200 bg-white/40 flex flex-col xl:row-span-12 xl:flex-row gap-10 items-center justify-between relative z-10">
                             <div className="flex items-center gap-8">
                                 <div className="w-16 h-16 rounded-[1.8rem] bg-honey/5 flex items-center justify-center border border-honey/10 shadow-inner">
                                     <History className="w-8 h-8 text-honey" />
@@ -522,14 +522,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             </div>
                             <div className="relative group w-full xl:w-[500px]">
                                 <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground group-focus-within:text-honey transition-all duration-500" />
-                                <Input placeholder="FILTER_LEDGER_ENTRIES..." className={cn(glass.input, "h-20 pl-20 font-black text-xl italic bg-black/5 dark:bg-black/30 rounded-[2.2rem]")} />
+                                <Input placeholder="FILTER_LEDGER_ENTRIES..." className={cn(glass.input, "h-20 pl-20 font-black text-xl italic bg-gray-50 rounded-[2.2rem]")} />
                             </div>
                         </div>
 
                         <div className="overflow-x-auto custom-scrollbar-modern relative z-10">
                             <table className="w-full text-left border-separate border-spacing-0">
                                 <thead>
-                                    <tr className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl">
+                                    <tr className="bg-white/40 backdrop-blur-3xl">
                                         <th className={cn(glass.microLabel, "px-14 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>VECTOR_IDENTIFIER</th>
                                         <th className={cn(glass.microLabel, "px-10 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>LOG_DESCRIPTION</th>
                                         <th className={cn(glass.microLabel, "px-10 py-10 opacity-40 border-b border-white/5 font-black uppercase tracking-[0.3em] text-[10px]")}>TEMPORAL_FIXATION</th>
@@ -587,11 +587,11 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-10 group-hover:translate-x-0">
                                                         <button
                                                             onClick={() => handleSync(tx.id)}
-                                                            className={cn(glass.btnSecondary, "h-14 w-14 p-0 rounded-2xl bg-white dark:bg-black border-white/5 hover:text-honey hover:shadow-honey/10 transition-all duration-500 shadow-2xl")}
+                                                            className={cn(glass.btnSecondary, "h-14 w-14 p-0 rounded-2xl bg-white border-white/5 hover:text-honey hover:shadow-honey/10 transition-all duration-500 shadow-2xl")}
                                                         >
                                                             {syncingId === tx.id ? <Loader2 className="w-6 h-6 animate-spin" /> : <RefreshCw className="w-6 h-6" />}
                                                         </button>
-                                                        <button className={cn(glass.btnSecondary, "h-14 w-14 p-0 rounded-2xl bg-white dark:bg-black border-white/5 hover:text-honey hover:shadow-honey/10 transition-all duration-500 shadow-2xl")}>
+                                                        <button className={cn(glass.btnSecondary, "h-14 w-14 p-0 rounded-2xl bg-white border-white/5 hover:text-honey hover:shadow-honey/10 transition-all duration-500 shadow-2xl")}>
                                                             <FileDown className="w-6 h-6" />
                                                         </button>
                                                     </div>
@@ -603,13 +603,13 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             </table>
                         </div>
 
-                        <div className="p-14 border-t border-white/5 bg-white/40 dark:bg-black/30 flex flex-col md:flex-row justify-between items-center gap-10 relative z-10">
+                        <div className="p-14 border-t border-white/5 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-10 relative z-10">
                             <div className="flex flex-col gap-2">
                                 <p className={cn(glass.microLabel, "opacity-30 tracking-[0.4em] font-black italic uppercase text-[10px] pl-6 border-l border-honey/20")}>PRIMARY_LEDGER_INDEX_STABLE · SHA-512_ENCRYPTED · IMMUTABLE_VAULT</p>
                                 <p className="text-[9px] font-bold opacity-10 uppercase tracking-widest pl-6">Industrial Kernel Financial Security Protocol Active</p>
                             </div>
                             <div className="flex gap-6">
-                                <button className={cn(glass.btnSecondary, "h-18 px-12 gap-5 font-black text-xs uppercase tracking-widest rounded-3xl shadow-3xl bg-white dark:bg-black/40 border-white/10")}>
+                                <button className={cn(glass.btnSecondary, "h-18 px-12 gap-5 font-black text-xs uppercase tracking-widest rounded-3xl shadow-3xl bg-white border-gray-200")}>
                                     <FileText className="w-6 h-6 text-honey" /> Full Narrative Statements
                                 </button>
                             </div>
@@ -630,7 +630,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         <div className="absolute -bottom-60 -left-60 w-[50rem] h-[50rem] bg-honey/[0.03] rounded-full blur-[150px] pointer-events-none" />
 
                         <div className="relative z-10 flex flex-col xl:flex-row gap-16 items-center">
-                            <div className="w-48 h-48 rounded-[3.5rem] bg-gradient-amber flex items-center justify-center text-white shadow-[0_40px_80px_-15px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform duration-1000 rotate-6">
+                            <div className="w-48 h-48 rounded-[3.5rem] bg-gradient-amber flex items-center justify-center text-gray-900 shadow-[0_40px_80px_-15px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform duration-1000 rotate-6">
                                 <Zap className="w-24 h-24" />
                             </div>
                             <div className="flex-1 space-y-6 text-center xl:text-left">
@@ -640,7 +640,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             </div>
                             <div className="flex flex-col items-center xl:items-end gap-5">
                                 <div className="text-6xl font-serif font-black text-honey tracking-tighter">1,200 <span className="text-xl font-sans tracking-tight opacity-30 uppercase font-black">{currency}/mo</span></div>
-                                <div className="flex items-center gap-4 bg-black/5 dark:bg-black/30 px-6 py-3 rounded-2xl border border-white/5 backdrop-blur-xl">
+                                <div className="flex items-center gap-4 bg-gray-50 px-6 py-3 rounded-2xl border border-white/5 backdrop-blur-xl">
                                     <Clock className="w-5 h-5 text-honey/60" />
                                     <span className={cn(glass.microLabel, "opacity-40 font-black tracking-widest text-xs")}>SYNC_RENEWAL: 12_OCT_2026</span>
                                 </div>
@@ -666,16 +666,16 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-3xl"
+                            className="absolute inset-0 bg-white/80 backdrop-blur-3xl"
                             onClick={() => setIsNewDocFormOpen(false)}
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 50, rotateX: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 50, rotateX: 20 }}
-                            className={cn(glass.card, "w-full max-w-5xl p-0 overflow-hidden shadow-[0_50px_200px_-40px_rgba(0,0,0,0.6)] bg-white/90 dark:bg-[#0A0A0A]/90 border-honey/20 relative z-10")}
+                            className={cn(glass.card, "w-full max-w-5xl p-0 overflow-hidden shadow-[0_50px_200px_-40px_rgba(0,0,0,0.6)] bg-white/90 border-honey/20 relative z-10")}
                         >
-                            <div className="p-14 border-b border-white/10 flex justify-between items-center bg-white/40 dark:bg-black/40">
+                            <div className="p-14 border-b border-gray-200 flex justify-between items-center bg-white/40">
                                 <div className="space-y-2">
                                     <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>Execute Fiscal <span className="text-honey">Audit Log</span></h3>
                                     <p className={cn(glass.microLabel, "font-black tracking-[0.3em] uppercase text-[10px] opacity-40")}>NEW_IMMUTABLE_FINANCIAL_VECTOR_EVENT</p>
@@ -694,14 +694,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-12">
                                         <div className="space-y-6">
                                             <Label className={cn(glass.microLabel, "ml-8 opacity-60 font-black tracking-widest text-xs uppercase")}>Audit Classification*</Label>
-                                            <div className="flex bg-black/5 dark:bg-black/30 p-3 rounded-[2.5rem] border border-white/5 gap-3 shadow-inner backdrop-blur-3xl">
+                                            <div className="flex bg-gray-50 p-3 rounded-[2.5rem] border border-white/5 gap-3 shadow-inner backdrop-blur-3xl">
                                                 {['invoice', 'receipt', 'expense'].map((t) => (
                                                     <button
                                                         key={t}
                                                         onClick={() => setNewDocType(t)}
                                                         className={cn(
                                                             "h-16 flex-1 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] transition-all duration-700",
-                                                            newDocType === t ? "bg-white dark:bg-black/80 text-honey shadow-2xl border border-honey/20" : "text-foreground/30 hover:bg-white/5"
+                                                            newDocType === t ? "bg-white text-honey shadow-2xl border border-honey/20" : "text-foreground/30 hover:bg-white/5"
                                                         )}
                                                     >
                                                         {t}
@@ -719,7 +719,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     value={newDocAmount || ''}
                                                     onChange={(e) => setNewDocAmount(parseFloat(e.target.value) || 0)}
                                                     placeholder="0.00"
-                                                    className={cn(glass.input, "h-22 font-black text-4xl px-20 shadow-inner rounded-[2.5rem] bg-black/5 dark:bg-black/30 tabular-nums border-none")}
+                                                    className={cn(glass.input, "h-22 font-black text-4xl px-20 shadow-inner rounded-[2.5rem] bg-gray-50 tabular-nums border-none")}
                                                 />
                                             </div>
                                         </div>
@@ -732,7 +732,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     value={newDocDescription}
                                                     onChange={(e) => setNewDocDescription(e.target.value)}
                                                     placeholder="Industrial vector description..."
-                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl italic bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl italic bg-gray-50 rounded-[2.2rem] border-none")}
                                                 />
                                             </div>
                                         </div>
@@ -745,7 +745,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                             <Input
                                                 value={sellerName}
                                                 onChange={(e) => setSellerName(e.target.value)}
-                                                className={cn(glass.input, "h-20 px-10 font-black text-xl bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                className={cn(glass.input, "h-20 px-10 font-black text-xl bg-gray-50 rounded-[2.2rem] border-none")}
                                             />
                                         </div>
 
@@ -757,7 +757,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     value={buyerName}
                                                     onChange={(e) => setBuyerName(e.target.value)}
                                                     placeholder="Full legal authority name..."
-                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl bg-gray-50 rounded-[2.2rem] border-none")}
                                                 />
                                             </div>
                                         </div>
@@ -770,14 +770,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     type="date"
                                                     value={newDocDate}
                                                     onChange={(e) => setNewDocDate(e.target.value)}
-                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl tabular-nums bg-black/5 dark:bg-black/30 rounded-[2.2rem] border-none")}
+                                                    className={cn(glass.input, "h-20 px-20 font-black text-xl tabular-nums bg-gray-50 rounded-[2.2rem] border-none")}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex justify-between items-center pt-16 border-t border-white/10 gap-10">
+                                <div className="flex justify-between items-center pt-16 border-t border-gray-200 gap-10">
                                     <div className="flex items-center gap-6 opacity-30">
                                         <div className="p-3 bg-white/5 rounded-xl">
                                             <Lock className="w-6 h-6" />
@@ -787,7 +787,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     <div className="flex gap-8">
                                         <button
                                             onClick={() => setIsNewDocFormOpen(false)}
-                                            className={cn(glass.btnSecondary, "h-20 px-12 font-black text-sm uppercase tracking-widest rounded-[2rem] border-white/10")}
+                                            className={cn(glass.btnSecondary, "h-20 px-12 font-black text-sm uppercase tracking-widest rounded-[2rem] border-gray-200")}
                                         >
                                             Discard Audit
                                         </button>

@@ -138,7 +138,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                 <div className="flex items-center gap-4">
                     <div className="w-3 h-12 bg-[#F4D03F] rounded-full" />
                     <div>
-                        <h1 className="text-[3rem] font-black text-[#F4D03F] dark:text-white tracking-tighter uppercase leading-none">MY REQUESTS</h1>
+                        <h1 className="text-[3rem] font-black text-[#F4D03F] tracking-tighter uppercase leading-none">MY REQUESTS</h1>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">{filteredRequests.length} Requests Filed</p>
                     </div>
                 </div>
@@ -147,7 +147,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         onClick={() => setShowWizard(!showWizard)}
                         className={cn(
                             "rounded-full px-6 transition-all duration-300 shadow-lg hover:shadow-xl h-11",
-                            showWizard ? "bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200" : "bg-[#F4D03F] text-black hover:bg-[#E5C135]"
+                            showWizard ? "bg-slate-200 text-slate-700 hover:bg-slate-300" : "bg-[#F4D03F] text-black hover:bg-[#E5C135]"
                         )}
                     >
                         {showWizard ? "Close Form" : (
@@ -170,8 +170,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                             setIsHivesOpen(false);
                         }}
                         className={cn(
-                            "flex items-center gap-4 px-5 py-3.5 bg-white dark:bg-[#09090b] border border-gray-200 dark:border-gray-800 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
-                            isPlacesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10 dark:ring-orange-900/20"
+                            "flex items-center gap-4 px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
+                            isPlacesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10"
                         )}
                     >
                         <div className="w-5 h-5 flex items-center justify-center">
@@ -181,7 +181,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                             <span className="text-[11px] font-[800] text-[#64748B] uppercase tracking-[0.1em] text-left">
                                 MY PLACES {apiariesData?.length ? `(${apiariesData.length})` : ''}
                             </span>
-                            <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate w-full text-left -mt-0.5 uppercase">
+                            <span className="text-sm font-bold text-slate-800 truncate w-full text-left -mt-0.5 uppercase">
                                 {selectedPlace || "Select Territory"}
                             </span>
                         </div>
@@ -194,7 +194,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#09090b] border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden"
+                                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden"
                             >
                                 <div className="p-2 max-h-[300px] overflow-y-auto">
 
@@ -213,10 +213,10 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 setSelectedPlaceId(place.id);
                                                 setIsPlacesOpen(false);
                                             }}
-                                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/5 dark:hover:bg-orange-900/10 rounded-lg transition-colors group"
+                                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/5:bg-orange-900/10 rounded-lg transition-colors group"
                                         >
                                             <LayoutGrid className="w-4 h-4 text-slate-400 group-hover:text-[#F4D03F]" />
-                                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{place.name}</span>
+                                            <span className="text-sm font-semibold text-slate-700">{place.name}</span>
                                             {selectedPlaceId === place.id && <Check className="w-4 h-4 ml-auto text-[#F4D03F]" />}
                                         </button>
                                     ))}
@@ -235,8 +235,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                             setIsPlacesOpen(false);
                         }}
                         className={cn(
-                            "flex items-center gap-4 px-5 py-3.5 bg-white dark:bg-[#09090b] border border-gray-200 dark:border-gray-800 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
-                            isHivesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10 dark:ring-orange-900/20"
+                            "flex items-center gap-4 px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
+                            isHivesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10"
                         )}
                     >
                         <div className="w-5 h-5 flex items-center justify-center">
@@ -250,7 +250,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                             <span className="text-[11px] font-[800] text-[#64748B] uppercase tracking-[0.1em] text-left">
                                 HIVE {filteredHives.length ? `(${filteredHives.length})` : ''}
                             </span>
-                            <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate w-full text-left -mt-0.5 uppercase">
+                            <span className="text-sm font-bold text-slate-800 truncate w-full text-left -mt-0.5 uppercase">
                                 {selectedHive || "Select Hive"}
                             </span>
                         </div>
@@ -263,7 +263,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#09090b] border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden"
+                                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden"
                             >
                                 <div className="p-2 max-h-[300px] overflow-y-auto">
 
@@ -283,10 +283,10 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     setSelectedHive(hive.hive_code);
                                                     setIsHivesOpen(false);
                                                 }}
-                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/5 dark:hover:bg-orange-900/10 rounded-lg transition-colors group"
+                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/5:bg-orange-900/10 rounded-lg transition-colors group"
                                             >
                                                 <Box className="w-4 h-4 text-slate-400 group-hover:text-[#F4D03F]" />
-                                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{hive.hive_code}</span>
+                                                <span className="text-sm font-semibold text-slate-700">{hive.hive_code}</span>
                                                 {selectedHive === hive.hive_code && <Check className="w-4 h-4 ml-auto text-[#F4D03F]" />}
                                             </button>
                                         ))
@@ -307,7 +307,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-[24px] shadow-xl p-8 mb-12">
+                        <div className="bg-white border border-slate-100 rounded-[24px] shadow-xl p-8 mb-12">
                             <div className="max-w-3xl mx-auto">
                                 {/* Wizard Header */}
                                 <div className="flex items-center justify-between mb-10">
@@ -316,7 +316,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                             {wizardStep + 1}
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                                            <h3 className="text-xl font-bold text-slate-800">
                                                 {wizardStep === 0 && "Select Request Category"}
                                                 {wizardStep === 1 && "Request Details"}
                                                 {wizardStep === 2 && "Review and Submit"}
@@ -330,7 +330,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 key={i}
                                                 className={cn(
                                                     "h-1.5 w-12 rounded-full transition-all duration-500",
-                                                    i <= wizardStep ? "bg-[#F4D03F]" : "bg-slate-200 dark:bg-slate-800"
+                                                    i <= wizardStep ? "bg-[#F4D03F]" : "bg-slate-200"
                                                 )}
                                             />
                                         ))}
@@ -355,14 +355,14 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     }}
                                                     className={cn(
                                                         "flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all group hover:border-[#F4D03F]/50",
-                                                        category === cat.id ? "border-[#F4D03F] bg-[#F4D03F]/5 shadow-sm" : "border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800/20"
+                                                        category === cat.id ? "border-[#F4D03F] bg-[#F4D03F]/5 shadow-sm" : "border-slate-100 bg-white/50"
                                                     )}
                                                 >
                                                     <div className={cn("mt-1 p-3 rounded-xl transition-colors", cat.bg, cat.color)}>
                                                         <cat.icon className="w-6 h-6" />
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-1">{cat.label}</h4>
+                                                        <h4 className="font-bold text-slate-800 mb-1">{cat.label}</h4>
                                                         <p className="text-xs text-slate-500 leading-relaxed">{cat.description}</p>
                                                     </div>
                                                 </button>
@@ -386,7 +386,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     value={subject}
                                                     onChange={(e) => setSubject(e.target.value)}
                                                     placeholder="What can we help you with?"
-                                                    className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl h-12 focus:ring-[#F4D03F]"
+                                                    className="bg-white border-slate-200 rounded-xl h-12 focus:ring-[#F4D03F]"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -397,7 +397,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     value={description}
                                                     onChange={(e) => setDescription(e.target.value)}
                                                     placeholder="Describe your issue or request in detail..."
-                                                    className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl min-h-[150px] focus:ring-[#F4D03F]"
+                                                    className="bg-white border-slate-200 rounded-xl min-h-[150px] focus:ring-[#F4D03F]"
                                                 />
                                             </div>
                                             <div className="flex items-center justify-between">
@@ -410,7 +410,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                                 "px-4 py-2 rounded-lg text-xs font-bold border transition-all",
                                                                 priority === p
                                                                     ? "bg-[#F4D03F] border-[#F4D03F] text-black"
-                                                                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500"
+                                                                    : "bg-white border-slate-200 text-slate-500"
                                                             )}
                                                         >
                                                             {p}
@@ -420,7 +420,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 <Button
                                                     onClick={() => setWizardStep(2)}
                                                     disabled={!subject || !description}
-                                                    className="bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 hover:opacity-90 rounded-full px-8"
+                                                    className="bg-slate-800 text-gray-900 hover:opacity-90 rounded-full px-8"
                                                 >
                                                     Review <ArrowRight className="w-4 h-4 ml-2" />
                                                 </Button>
@@ -436,8 +436,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                             exit={{ opacity: 0, x: -20 }}
                                             className="space-y-8"
                                         >
-                                            <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 space-y-4">
-                                                <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-4">
+                                            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
+                                                <div className="flex justify-between items-start border-b border-slate-100 pb-4">
                                                     <div>
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Category</p>
                                                         <div className="flex items-center gap-2">
@@ -454,16 +454,16 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Related Hive</p>
-                                                        <p className="font-bold text-slate-700 dark:text-slate-200">{selectedHive || "General Fleet"}</p>
+                                                        <p className="font-bold text-slate-700">{selectedHive || "General Fleet"}</p>
                                                     </div>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Subject</p>
-                                                    <p className="text-lg font-bold text-slate-800 dark:text-white leading-tight">{subject}</p>
+                                                    <p className="text-lg font-bold text-slate-800 leading-tight">{subject}</p>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</p>
-                                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-4">"{description}"</p>
+                                                    <p className="text-sm text-slate-600 leading-relaxed line-clamp-4">"{description}"</p>
                                                 </div>
                                             </div>
 
@@ -471,7 +471,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 <Button
                                                     variant="ghost"
                                                     onClick={() => setWizardStep(1)}
-                                                    className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                                                    className="rounded-full hover:bg-slate-100:bg-slate-800"
                                                 >
                                                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                                                 </Button>
@@ -502,11 +502,11 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                        <div className="p-2 bg-slate-100 rounded-xl">
                             <History className="w-5 h-5 text-slate-500" />
                         </div>
-                        <h2 className="text-2xl font-bold dark:text-white">Request History</h2>
-                        <Badge variant="outline" className="text-slate-400 border-slate-200 dark:border-slate-800">{filteredRequests.length}</Badge>
+                        <h2 className="text-2xl font-bold">Request History</h2>
+                        <Badge variant="outline" className="text-slate-400 border-slate-200">{filteredRequests.length}</Badge>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
@@ -518,10 +518,10 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 placeholder="Search by ID or Subject..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl w-64 focus:ring-[#F4D03F]"
+                                className="pl-9 bg-white border-slate-200 rounded-xl w-64 focus:ring-[#F4D03F]"
                             />
                         </div>
-                        <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                        <div className="flex p-1 bg-slate-100 rounded-xl">
                             {['All', 'Open', 'In Progress', 'Resolved'].map((s) => (
                                 <button
                                     key={s}
@@ -529,8 +529,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                     className={cn(
                                         "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
                                         statusFilter === s
-                                            ? "bg-white dark:bg-slate-700 text-[#F4D03F] shadow-sm"
-                                            : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                                            ? "bg-white text-[#F4D03F] shadow-sm"
+                                            : "text-slate-500 hover:text-slate-700:text-slate-300"
                                     )}
                                 >
                                     {s}
@@ -540,7 +540,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#0c0c0e] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
                     {isLoadingRequests ? (
                         <div className="flex flex-col items-center justify-center py-24 gap-4">
                             <Loader2 className="w-10 h-10 text-[#F4D03F] animate-spin" />
@@ -548,17 +548,17 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         </div>
                     ) : filteredRequests.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-24 text-center px-10">
-                            <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
                                 <MessageSquare className="w-8 h-8 text-slate-300" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No Requests Found</h3>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">No Requests Found</h3>
                             <p className="text-slate-500 max-w-sm">No support requests match your current filters. Start a new request using the button above.</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className="bg-slate-50/50 dark:bg-slate-800/30">
-                                    <TableRow className="border-slate-100 dark:border-slate-800 hover:bg-transparent">
+                                <TableHeader className="bg-slate-50/50">
+                                    <TableRow className="border-slate-100 hover:bg-transparent">
                                         <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Reference ID</TableHead>
                                         <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Request Subject</TableHead>
                                         <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Category</TableHead>
@@ -573,7 +573,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                         return (
                                             <TableRow
                                                 key={req.id}
-                                                className="group border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors cursor-pointer"
+                                                className="group border-slate-50 hover:bg-slate-50/50:bg-slate-800/20 transition-colors cursor-pointer"
                                                 onClick={() => {
                                                     // This would open the request detail/chat view
                                                     // For now just toast it
@@ -585,7 +585,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 </TableCell>
                                                 <TableCell className="py-5">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-700 dark:text-slate-200">{req.subject}</span>
+                                                        <span className="font-bold text-slate-700">{req.subject}</span>
                                                         <span className="text-[10px] text-slate-400 line-clamp-1">{req.description}</span>
                                                     </div>
                                                 </TableCell>
@@ -595,7 +595,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                         {req.category === 'Software' && <Cpu className="w-3.5 h-3.5 text-purple-500" />}
                                                         {req.category === 'Traceability' && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />}
                                                         {req.category === 'General' && <HelpCircle className="w-3.5 h-3.5 text-orange-500" />}
-                                                        <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">{req.category}</span>
+                                                        <span className="text-xs font-semibold text-slate-600">{req.category}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="py-5">

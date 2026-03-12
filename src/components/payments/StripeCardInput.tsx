@@ -211,9 +211,9 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
             </div>
 
             {/* Security Notice */}
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
                 <Shield className="w-4 h-4 text-green-600" />
-                <p className="text-xs text-green-700 dark:text-green-400">
+                <p className="text-xs text-green-700">
                     Your card information is encrypted and securely processed by Stripe
                 </p>
             </div>

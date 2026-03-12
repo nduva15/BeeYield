@@ -1,4 +1,4 @@
-ï»¿import React from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,7 @@ const PollinationServices = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white font-black rounded-2xl px-10 h-14 shadow-xl uppercase tracking-widest text-xs transition-all hover:scale-105" asChild>
+                                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-gray-900 font-black rounded-2xl px-10 h-14 shadow-xl uppercase tracking-widest text-xs transition-all hover:scale-105" asChild>
                                     <Link to="/pollination-request">Get Free Consultation</Link>
                                 </Button>
                                 <Button size="lg" variant="outline" className="border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 uppercase tracking-widest text-xs" asChild>
@@ -145,7 +145,7 @@ const PollinationServices = () => {
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent opacity-90" />
 
                                 {/* Floating Overlay Info */}
-                                <div className="absolute bottom-10 left-10 text-white">
+                                <div className="absolute bottom-10 left-10 text-gray-900">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-green-500">Live Telemetry Active</span>
@@ -277,7 +277,7 @@ const PollinationServices = () => {
                         <Badge className="bg-amber-500 text-neutral-900 border-none px-6 py-1.5 font-black uppercase tracking-widest text-xs">
                             Direct Records
                         </Badge>
-                        <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter uppercase leading-[0.9]">
                             Three Ways to <br /> <span className="text-amber-500">Track Your Results</span>
                         </h2>
                     </div>
@@ -294,12 +294,12 @@ const PollinationServices = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-white/5 backdrop-blur-md p-10 rounded-[3rem] border border-white/10 group hover:border-white/20 transition-all"
+                                className="bg-white/5 backdrop-blur-md p-10 rounded-[3rem] border border-gray-200 group hover:border-gray-300 transition-all"
                             >
                                 <div className={`h-16 w-16 mb-8 rounded-2xl ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                                     <item.icon className="h-8 w-8 text-neutral-900" />
                                 </div>
-                                <h3 className="text-2xl font-black text-white mb-4 uppercase italic tracking-tighter">{item.title}</h3>
+                                <h3 className="text-2xl font-black text-gray-900 mb-4 uppercase italic tracking-tighter">{item.title}</h3>
                                 <p className="text-neutral-400 font-medium mb-8 leading-relaxed">{item.desc}</p>
                                 <Button variant="link" className="text-amber-500 font-black p-0 h-auto uppercase tracking-widest text-[10px] group" asChild>
                                     <Link to={item.link}>Explore Module <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" /></Link>
@@ -314,7 +314,7 @@ const PollinationServices = () => {
             <section className="py-32 bg-background relative overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-24 space-y-4">
-                        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 px-6">
+                        <Badge className="bg-amber-100 text-amber-800 px-6">
                             The Standard
                         </Badge>
                         <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
@@ -329,10 +329,10 @@ const PollinationServices = () => {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
                         {differences.map((diff, index) => (
                             <Link key={index} to={diff.link} className="block group">
-                                <Card className="h-full bg-muted/5 border-none group-hover:bg-white dark:group-hover:bg-gray-900 group-hover:shadow-premium transition-all duration-500 rounded-[2.5rem] p-4">
+                                <Card className="h-full bg-muted/5 border-none group-hover:bg-white:bg-gray-900 group-hover:shadow-premium transition-all duration-500 rounded-[2.5rem] p-4">
                                     <CardContent className="p-8">
                                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                            <diff.icon className="h-8 w-8 text-white" />
+                                            <diff.icon className="h-8 w-8 text-gray-900" />
                                         </div>
                                         <h3 className="text-2xl font-black text-foreground mb-4 tracking-tight">{diff.title}</h3>
                                         <p className="text-muted-foreground font-medium leading-relaxed">{diff.description}</p>
@@ -425,7 +425,7 @@ const PollinationServices = () => {
                                     <Badge className="mb-2 bg-amber-500 text-neutral-900 text-[9px] font-black border-none px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
                                         {crop.beeDependence.split('(')[0].trim()}
                                     </Badge>
-                                    <h3 className="font-black text-lg text-white leading-tight uppercase tracking-tighter">
+                                    <h3 className="font-black text-lg text-gray-900 leading-tight uppercase tracking-tighter">
                                         {crop.cropName}
                                     </h3>
                                     <div className="h-0.5 w-0 group-hover:w-12 bg-amber-500 transition-all duration-700 mt-2 rounded-full" />
@@ -436,7 +436,7 @@ const PollinationServices = () => {
 
                     <div className="mt-20 text-center">
                         <Link to="/contact">
-                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-white font-black rounded-2xl px-12 h-14 shadow-2xl uppercase tracking-[0.2em] text-[10px] transition-all hover:scale-105 active:scale-95">
+                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-gray-900 font-black rounded-2xl px-12 h-14 shadow-2xl uppercase tracking-[0.2em] text-[10px] transition-all hover:scale-105 active:scale-95">
                                 Start Pollination Project
                             </Button>
                         </Link>
@@ -545,12 +545,12 @@ const PollinationServices = () => {
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link to="/contact">
-                            <Button size="default" className="bg-green-700 text-white hover:bg-green-800 text-xl font-black h-16 px-8 rounded-[2rem] shadow-2xl">
+                            <Button size="default" className="bg-green-700 text-gray-900 hover:bg-green-800 text-xl font-black h-16 px-8 rounded-[2rem] shadow-2xl">
                                 Get Your Custom Plan
                             </Button>
                         </Link>
                     </div>
-                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support â€¢ Real-time Data â€¢ Measurable Impact</p>
+                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support • Real-time Data • Measurable Impact</p>
                 </div>
             </section>
         </div>

@@ -300,8 +300,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 className={cn(
                                     "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300",
                                     activeSubPage === opt.id
-                                        ? "bg-white dark:bg-black text-foreground shadow-sm scale-100"
-                                        : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 scale-95 hover:scale-100"
+                                        ? "bg-white text-foreground shadow-sm scale-100"
+                                        : "text-muted-foreground hover:bg-gray-50:bg-white/5 scale-95 hover:scale-100"
                                 )}
                             >
                                 <opt.icon className="w-4 h-4" />
@@ -327,7 +327,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 <div className="space-y-6 relative z-10">
                                     <div className="flex items-center gap-4 text-emerald-500">
                                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                                        <span className={cn(glass.microLabel, "text-emerald-600 dark:text-emerald-400 font-bold")}>System Status: Active</span>
+                                        <span className={cn(glass.microLabel, "text-emerald-600 font-bold")}>System Status: Active</span>
                                     </div>
                                     <h2 className={cn(glass.sectionTitle, "text-5xl leading-[1.1]")}>
                                         Farm <br /> <span className="text-emerald-500">Overview</span>
@@ -353,7 +353,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-honey/10 to-transparent pointer-events-none" />
                                     <div className="flex items-center gap-3 mb-6 relative z-10">
                                         <Zap className="w-5 h-5 text-amber-500" />
-                                        <span className={cn(glass.microLabel, "text-amber-700 dark:text-amber-500 font-bold")}>Flower Coverage</span>
+                                        <span className={cn(glass.microLabel, "text-amber-700 font-bold")}>Flower Coverage</span>
                                     </div>
                                     <p className={cn(glass.sectionTitle, "text-5xl tabular-nums mb-2 relative z-10")}>72%</p>
                                     <p className={cn(glass.microLabel, "opacity-60 normal-case italic font-semibold relative z-10")}>Variety: Nonpareil Almond</p>
@@ -363,9 +363,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
                                     <div className="flex items-center gap-3 mb-6 relative z-10">
                                         <Activity className="w-5 h-5 text-emerald-500" />
-                                        <span className={cn(glass.microLabel, "text-emerald-700 dark:text-emerald-500 font-bold")}>Activity Index</span>
+                                        <span className={cn(glass.microLabel, "text-emerald-700 font-bold")}>Activity Index</span>
                                     </div>
-                                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums mb-2 text-emerald-600 dark:text-emerald-400 relative z-10")}>8.4</p>
+                                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums mb-2 text-emerald-600 relative z-10")}>8.4</p>
                                     <p className={cn(glass.microLabel, "opacity-60 normal-case italic font-semibold relative z-10")}>High Intensity Detected</p>
                                 </div>
                             </div>
@@ -409,7 +409,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     placeholder="Search nodes..."
-                                    className={cn("w-full h-12 rounded-xl pl-12 pr-4 bg-white/40 dark:bg-black/20 border border-border focus:ring-2 focus:ring-honey/50 outline-none transition-all shadow-inner", glass.microLabel, "normal-case font-semibold")}
+                                    className={cn("w-full h-12 rounded-xl pl-12 pr-4 bg-white/40 border border-border focus:ring-2 focus:ring-honey/50 outline-none transition-all shadow-inner", glass.microLabel, "normal-case font-semibold")}
                                 />
                             </div>
                             <div className={cn(glass.card, "p-2 overflow-hidden h-[600px] flex flex-col")}>
@@ -423,11 +423,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                     "w-full p-4 rounded-xl text-left transition-all duration-200 flex items-center justify-between group border",
                                                     selectedDeviceId === device.id
                                                         ? "bg-emerald-500/10 border-emerald-500/30 shadow-sm"
-                                                        : "bg-white/40 dark:bg-black/20 border-transparent hover:bg-muted/50 hover:border-border/50"
+                                                        : "bg-white/40 border-transparent hover:bg-muted/50 hover:border-border/50"
                                                 )}
                                             >
                                                 <div className="space-y-1">
-                                                    <p className={cn(glass.microLabel, "font-bold", selectedDeviceId === device.id ? "text-emerald-700 dark:text-emerald-400" : "")}>
+                                                    <p className={cn(glass.microLabel, "font-bold", selectedDeviceId === device.id ? "text-emerald-700" : "")}>
                                                         {device.device_code}
                                                     </p>
                                                     <p className={cn(glass.microLabel, "normal-case text-[10px] opacity-60")}>
@@ -437,8 +437,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                 <div className={cn(
                                                     glass.badge, "px-3 py-1 font-bold border-transparent shadow-none",
                                                     device.status === 'active'
-                                                        ? (selectedDeviceId === device.id ? "bg-emerald-500 text-white" : "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400")
-                                                        : "bg-red-500/20 text-red-700 dark:text-red-400"
+                                                        ? (selectedDeviceId === device.id ? "bg-emerald-500 text-white" : "bg-emerald-500/20 text-emerald-700")
+                                                        : "bg-red-500/20 text-red-700"
                                                 )}>
                                                     {device.status}
                                                 </div>
@@ -461,12 +461,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <div className="absolute inset-0 w-24 h-24 border border-emerald-500 rounded-full animate-ping opacity-30" />
                                             <div className="absolute inset-0 w-32 h-32 border border-emerald-500 rounded-full animate-ping opacity-10" style={{ animationDelay: '500ms' }} />
 
-                                            <div className="w-8 h-8 rounded-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)] border-4 border-white dark:border-black flex items-center justify-center relative z-10" />
+                                            <div className="w-8 h-8 rounded-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)] border-4 border-white flex items-center justify-center relative z-10" />
 
                                             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 whitespace-nowrap z-20">
                                                 <div className={cn(glass.card, "py-2 px-4 shadow-xl border-emerald-500/30 flex items-center gap-2")}>
                                                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                    <p className={cn(glass.microLabel, "font-bold text-emerald-700 dark:text-emerald-400")}>{selectedDevice.device_code}</p>
+                                                    <p className={cn(glass.microLabel, "font-bold text-emerald-700")}>{selectedDevice.device_code}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -522,7 +522,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="space-y-8">
                                         <div className="space-y-3">
                                             <label className={cn(glass.microLabel, "font-bold opacity-80 block")}>Total Area (Acres)</label>
-                                            <div className="flex items-center bg-white/40 dark:bg-black/20 rounded-2xl border border-border p-1">
+                                            <div className="flex items-center bg-white/40 rounded-2xl border border-border p-1">
                                                 <button
                                                     onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: Math.max(1, prev.totalAcres - 5) }))}
                                                     className={cn(glass.btnSecondary, "w-12 h-12 rounded-xl p-0 shrink-0 border-transparent shadow-none hover:bg-muted/80")}
@@ -586,7 +586,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                             <div className="lg:col-span-2 flex flex-col gap-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className={cn(glass.card, "p-8 space-y-4 shadow-md bg-white/60 dark:bg-black/40")}>
+                                    <div className={cn(glass.card, "p-8 space-y-4 shadow-md bg-white/60")}>
                                         <p className={cn(glass.microLabel, "opacity-70 font-bold")}>Total Frames Deployed</p>
                                         <h4 className={cn(glass.sectionTitle, "text-5xl lg:text-6xl tabular-nums tracking-tight")}>{metrics.totalFrames}</h4>
                                         <div className={cn(glass.badge, "border-transparent bg-muted/50 px-3 py-1")}>
@@ -596,11 +596,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                     <div className={cn(glass.card, "p-8 space-y-4 shadow-lg border-honey/30 bg-honey/5 overflow-hidden relative")}>
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-                                        <p className={cn(glass.microLabel, "text-amber-700 dark:text-amber-500 font-bold relative z-10")}>Effective Frames <span className="opacity-60 font-semibold italic">(Bee Math™)</span></p>
+                                        <p className={cn(glass.microLabel, "text-amber-700 font-bold relative z-10")}>Effective Frames <span className="opacity-60 font-semibold italic">(Bee Math™)</span></p>
                                         <h4 className={cn(glass.sectionTitle, "text-5xl lg:text-6xl tabular-nums tracking-tight relative z-10")}>{metrics.effectiveFrames}</h4>
-                                        <div className={cn(glass.badge, "border-amber-500/30 bg-white/50 dark:bg-black/30 backdrop-blur-md px-3 py-1 relative z-10")}>
+                                        <div className={cn(glass.badge, "border-amber-500/30 bg-white/50 backdrop-blur-md px-3 py-1 relative z-10")}>
                                             <Zap className="w-3.5 h-3.5 text-amber-500 mr-2 fill-amber-500/20" />
-                                            <span className="text-amber-700 dark:text-amber-400 font-bold">Adjusted Force</span>
+                                            <span className="text-amber-700 font-bold">Adjusted Force</span>
                                         </div>
                                     </div>
                                 </div>
@@ -658,7 +658,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         >
                                             <button
                                                 onClick={() => setCalcInputs(prev => ({ ...prev, hives: prev.hives.filter((_, i) => i !== idx) }))}
-                                                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-gray-900"
                                             >
                                                 <Minus className="w-4 h-4" />
                                             </button>
@@ -684,7 +684,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                     }}
                                                     className={cn(
                                                         "flex-1 py-2 px-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
-                                                        hive.isStrong ? "bg-emerald-500 text-white border-emerald-500 shadow-sm" : "bg-white/40 dark:bg-black/20 text-muted-foreground border-border hover:bg-muted"
+                                                        hive.isStrong ? "bg-emerald-500 text-white border-emerald-500 shadow-sm" : "bg-white/40 text-muted-foreground border-border hover:bg-muted"
                                                     )}
                                                 >
                                                     Strong
@@ -697,7 +697,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                     }}
                                                     className={cn(
                                                         "flex-1 py-2 px-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
-                                                        hive.isLarge ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white/40 dark:bg-black/20 text-muted-foreground border-border hover:bg-muted"
+                                                        hive.isLarge ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-white/40 text-muted-foreground border-border hover:bg-muted"
                                                     )}
                                                 >
                                                     Large
@@ -714,21 +714,21 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 {
                     activeSubPage === 'map' && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
-                            <div className={cn(glass.card, "p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 dark:bg-black/40 shadow-sm")}>
+                            <div className={cn(glass.card, "p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 shadow-sm")}>
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-full bg-honey/10 flex items-center justify-center border border-honey/20">
                                         <MapIcon className="w-5 h-5 text-honey" />
                                     </div>
                                     <div>
                                         <h3 className={cn(glass.sectionTitle, "text-xl normal-case placeholder-transparent")}>Spatial Optimizer</h3>
-                                        <p className={cn(glass.microLabel, "text-emerald-600 dark:text-emerald-400 font-bold")}>Algorithms driving maximum FPI.</p>
+                                        <p className={cn(glass.microLabel, "text-emerald-600 font-bold")}>Algorithms driving maximum FPI.</p>
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                                     <button
                                         onClick={handleOptimize}
                                         disabled={isOptimizing}
-                                        className={cn(glass.btnSecondary, "flex-1 sm:flex-none border-honey/20 hover:border-honey hover:text-honey bg-white/50 dark:bg-black/20")}
+                                        className={cn(glass.btnSecondary, "flex-1 sm:flex-none border-honey/20 hover:border-honey hover:text-honey bg-white/50")}
                                     >
                                         {isOptimizing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCw className="w-4 h-4 mr-2" />}
                                         Run Optimizer
@@ -774,7 +774,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                         <div className="text-center p-1">
                                                             <p className={cn(glass.sectionTitle, "text-lg normal-case mb-1")}>Unit #{pos.metadata?.index || idx + 1}</p>
                                                             <div className="bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 inline-block">
-                                                                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Score: {pos.score}</p>
+                                                                <p className="text-xs font-bold text-emerald-600">Score: {pos.score}</p>
                                                             </div>
                                                         </div>
                                                     </Popup>
@@ -801,10 +801,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="bg-emerald-500/10 p-6 border-b border-border flex justify-between items-center backdrop-blur-sm">
                                         <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Bloom Saturation Report</h4>
                                         <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                                            <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                            <Terminal className="w-5 h-5 text-emerald-600" />
                                         </div>
                                     </div>
-                                    <div className="p-8 space-y-8 bg-white/20 dark:bg-black/10">
+                                    <div className="p-8 space-y-8 bg-white/20">
                                         <div className="flex justify-between items-end border-b border-border pb-4">
                                             <span className={cn(glass.microLabel, "font-bold opacity-60")}>Period Coverage</span>
                                             <span className={cn(glass.sectionTitle, "text-xl normal-case")}>MAR 14 - MAR 28</span>
@@ -815,7 +815,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </div>
                                         <button
                                             onClick={() => handleExport('Bloom')}
-                                            className={cn(glass.btnSecondary, "w-full border-transparent bg-white/50 dark:bg-black/20 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]")}
+                                            className={cn(glass.btnSecondary, "w-full border-transparent bg-white/50 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]")}
                                         >
                                             <FileDown className="w-4 h-4 mr-2" />
                                             Export Geodata (.CSV)
@@ -827,17 +827,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="bg-honey/10 p-6 border-b border-border flex justify-between items-center backdrop-blur-sm">
                                         <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Hive Efficiency Audit</h4>
                                         <div className="w-10 h-10 rounded-full bg-honey/20 flex items-center justify-center border border-honey/30">
-                                            <Activity className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                                            <Activity className="w-5 h-5 text-amber-600" />
                                         </div>
                                     </div>
-                                    <div className="p-8 space-y-8 bg-white/20 dark:bg-black/10">
+                                    <div className="p-8 space-y-8 bg-white/20">
                                         <div className="flex justify-between items-end border-b border-border pb-4">
                                             <span className={cn(glass.microLabel, "font-bold opacity-60")}>Audit Units</span>
                                             <span className={cn(glass.sectionTitle, "text-xl normal-case")}>45 Nodes</span>
                                         </div>
                                         <button
                                             onClick={() => handleExport('Diagnostic')}
-                                            className={cn(glass.btnSecondary, "w-full border-transparent mt-[4.5rem] bg-white/50 dark:bg-black/20 hover:bg-honey hover:text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]")}
+                                            className={cn(glass.btnSecondary, "w-full border-transparent mt-[4.5rem] bg-white/50 hover:bg-honey hover:text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]")}
                                         >
                                             <Activity className="w-4 h-4 mr-2" />
                                             Run Health Check
@@ -858,8 +858,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </div>
                                     ) : (
                                         deployments.map((d, i) => (
-                                            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 p-4 rounded-xl bg-white/40 dark:bg-black/20 border border-border hover:bg-muted/50 transition-colors">
-                                                <span className={cn(glass.microLabel, "font-bold text-emerald-600 dark:text-emerald-400 shrink-0 w-32")}>
+                                            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 p-4 rounded-xl bg-white/40 border border-border hover:bg-muted/50 transition-colors">
+                                                <span className={cn(glass.microLabel, "font-bold text-emerald-600 shrink-0 w-32")}>
                                                     {new Date(d.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                                 <span className={cn(glass.badge, "border-transparent bg-muted/60 self-start sm:self-auto shrink-0")}>Deployment</span>

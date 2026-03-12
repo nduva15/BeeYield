@@ -28,7 +28,7 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({
 }) => {
     return (
         <div className={cn(
-            "bg-white dark:bg-card rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-border",
+            "bg-white rounded-2xl p-5 shadow-sm border border-gray-100",
             className
         )}>
             <div className="flex items-start justify-between gap-4">
@@ -50,8 +50,8 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({
                             <div className={cn(
                                 "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
                                 trend.isPositive
-                                    ? "bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400"
-                                    : "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400"
+                                    ? "bg-green-100 text-green-600"
+                                    : "bg-red-100 text-red-600"
                             )}>
                                 {trend.isPositive ? (
                                     <TrendingUp className="w-3 h-3" />

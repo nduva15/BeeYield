@@ -69,7 +69,7 @@ const GatewayHub: React.FC = () => {
                 <div className="space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
                         <Cpu className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Mesh Network Infrastructure</span>
+                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Mesh Network Infrastructure</span>
                     </div>
                     <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
                         Gateway <span className="text-[#10b981]">Hub</span>
@@ -99,7 +99,7 @@ const GatewayHub: React.FC = () => {
                             <p className="text-sm font-bold text-[#064e3b]/60 uppercase leading-snug mt-1">
                                 Multiple sensors (30+ months) approaching the end of their 3-year reliability protocol. Preventive maintenance required.
                             </p>
-                            <Button className="mt-4 rounded-none bg-[#064e3b] text-white font-black uppercase text-[10px] tracking-widest h-10 px-6 transition-none translate-y-[-2px] hover:translate-y-0 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                            <Button className="mt-4 rounded-none bg-[#064e3b] text-gray-900 font-black uppercase text-[10px] tracking-widest h-10 px-6 transition-none translate-y-[-2px] hover:translate-y-0 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
                                 Schedule Bulk Replacement
                             </Button>
                         </div>

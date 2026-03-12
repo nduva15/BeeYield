@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -74,7 +74,7 @@ const ProfessionalAuth: React.FC = () => {
                         <div>
                             <h1 className="text-2xl font-black tracking-tighter leading-none text-beeyield-green flex items-center gap-2">
                                 BEE<span className="text-beeyield-gold">YIELD</span>
-                                <span className="text-[10px] bg-beeyield-green text-white px-2 py-0.5 rounded-full font-mono uppercase">Farmer</span>
+                                <span className="text-[10px] bg-beeyield-green text-gray-900 px-2 py-0.5 rounded-full font-mono uppercase">Farmer</span>
                             </h1>
                             <p className="text-[10px] text-beeyield-green/50 font-bold tracking-[0.3em] uppercase mt-1">Farmer Dashboard</p>
                         </div>
@@ -150,7 +150,7 @@ const ProfessionalAuth: React.FC = () => {
                                         <div className="inline-flex rounded-xl bg-beeyield-cream p-1 border border-beeyield-green/10 shadow-inner">
                                             <button
                                                 onClick={() => setAuthMode('login')}
-                                                className={`px-6 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${authMode === 'login' ? 'bg-beeyield-green text-white shadow-sm' : 'text-beeyield-green/40 hover:text-beeyield-green'}`}
+                                                className={`px-6 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${authMode === 'login' ? 'bg-beeyield-green text-gray-900 shadow-sm' : 'text-beeyield-green/40 hover:text-beeyield-green'}`}
                                             >
                                                 Log In
                                             </button>

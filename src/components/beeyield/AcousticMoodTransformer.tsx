@@ -50,7 +50,7 @@ const AcousticMoodTransformer: React.FC = () => {
             color: '#f59e0b',
             bg: 'bg-amber-500/10',
             border: 'border-amber-500/20',
-            text: 'text-amber-600 dark:text-amber-400',
+            text: 'text-amber-600',
             icon: AlertCircle
         },
         'swarm-intent': {
@@ -59,7 +59,7 @@ const AcousticMoodTransformer: React.FC = () => {
             color: '#ef4444',
             bg: 'bg-red-500/10',
             border: 'border-red-500/20',
-            text: 'text-red-600 dark:text-red-400',
+            text: 'text-red-600',
             icon: Zap
         }
     };
@@ -90,14 +90,14 @@ const AcousticMoodTransformer: React.FC = () => {
                 </div>
 
                 <div className="flex gap-6">
-                    <div className={cn(glass.card, "px-12 py-6 bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl border-white/5 rounded-[3rem] shadow-4xl text-right group")}>
+                    <div className={cn(glass.card, "px-12 py-6 bg-white/80 backdrop-blur-3xl border-white/5 rounded-[3rem] shadow-4xl text-right group")}>
                         <p className="text-[14px] font-black italic uppercase tracking-[0.3em] opacity-40 mb-2 group-hover:text-honey transition-colors">Confidence</p>
                         <p className="text-6xl font-black text-honey tabular-nums italic tracking-tighter leading-none">{confidence.toFixed(1)}%</p>
                     </div>
                 </div>
             </div>
 
-            <div className={cn(glass.card, "flex flex-col xl:flex-row overflow-hidden bg-white/90 dark:bg-[#0D0D0D]/90 backdrop-blur-3xl rounded-[6rem] relative border-white/5 shadow-4xl")}>
+            <div className={cn(glass.card, "flex flex-col xl:flex-row overflow-hidden bg-white/90 backdrop-blur-3xl rounded-[6rem] relative border-white/5 shadow-4xl")}>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-honey/10 rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40" />
 
                 {/* Spectral View */}
@@ -113,7 +113,7 @@ const AcousticMoodTransformer: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex gap-6">
-                            <div className={cn(glass.badge, 'bg-black/20 dark:bg-white/5 border-white/5 px-8 py-3 rounded-full')}>
+                            <div className={cn(glass.badge, 'bg-gray-100 border-white/5 px-8 py-3 rounded-full')}>
                                 <span className="text-[12px] font-black uppercase italic tracking-[0.4em] opacity-40">Frequency Array</span>
                             </div>
                             <div className={cn(glass.badge, 'bg-honey text-black border-transparent px-8 py-3 rounded-full font-black italic shadow-4xl animate-pulse')}>
@@ -122,7 +122,7 @@ const AcousticMoodTransformer: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className={cn(glass.card, "h-[500px] w-full p-12 relative overflow-hidden bg-black/5 dark:bg-white/5 border-none rounded-[4rem] shadow-inner")}>
+                    <div className={cn(glass.card, "h-[500px] w-full p-12 relative overflow-hidden bg-gray-50 border-none rounded-[4rem] shadow-inner")}>
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={mfccData} margin={{ top: 20, right: 0, left: -40, bottom: 0 }}>
                                 <defs>
@@ -143,9 +143,9 @@ const AcousticMoodTransformer: React.FC = () => {
                                     content={({ active, payload }) => {
                                         if (active && payload && payload.length) {
                                             return (
-                                                <div className="bg-black/90 backdrop-blur-3xl p-6 rounded-3xl border border-white/10 shadow-4xl">
+                                                <div className="bg-white/90 backdrop-blur-3xl p-6 rounded-3xl border border-gray-200 shadow-4xl">
                                                     <p className="text-lg font-black text-honey uppercase italic tracking-widest mb-2">{payload[0].payload.freq} Hz</p>
-                                                    <p className="text-4xl font-black text-white italic tracking-tighter tabular-nums">{payload[0].value?.toFixed(1)} <span className="text-xl opacity-40">dB</span></p>
+                                                    <p className="text-4xl font-black text-gray-900 italic tracking-tighter tabular-nums">{payload[0].value?.toFixed(1)} <span className="text-xl opacity-40">dB</span></p>
                                                 </div>
                                             );
                                         }
@@ -171,7 +171,7 @@ const AcousticMoodTransformer: React.FC = () => {
                             { label: 'Vibration', val: 'Normal', icon: Zap },
                             { label: 'Loudness', val: '58.2 dB', icon: Volume2 }
                         ].map((stat, i) => (
-                            <div key={i} className={cn(glass.card, "p-10 text-center shadow-4xl border-white/5 bg-white/40 dark:bg-black/20 group hover:border-honey/40 transition-all rounded-[3rem]")}>
+                            <div key={i} className={cn(glass.card, "p-10 text-center shadow-4xl border-white/5 bg-white/40 group hover:border-honey/40 transition-all rounded-[3rem]")}>
                                 <p className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40 mb-4 group-hover:text-honey transition-colors">{stat.label}</p>
                                 <p className="text-4xl font-black italic uppercase tracking-tighter leading-none">{stat.val}</p>
                             </div>
@@ -194,7 +194,7 @@ const AcousticMoodTransformer: React.FC = () => {
                         )}>
                             <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl pointer-events-none group-hover/diag:bg-white/20 transition-all duration-1000" />
                             <div className="flex items-center gap-6 mb-8 relative z-10">
-                                <div className="w-20 h-20 rounded-[2rem] bg-white/80 dark:bg-black/80 flex items-center justify-center border-2 border-current shadow-4xl">
+                                <div className="w-20 h-20 rounded-[2rem] bg-white/80 flex items-center justify-center border-2 border-current shadow-4xl">
                                     <StatusIcon className={cn("w-10 h-10", STATUS_MAP[status].text)} />
                                 </div>
                                 <h4 className={cn("text-5xl font-black italic uppercase tracking-tighter leading-none", STATUS_MAP[status].text)}>{STATUS_MAP[status].label}</h4>
@@ -210,7 +210,7 @@ const AcousticMoodTransformer: React.FC = () => {
                     <section className="space-y-12">
                         <div className="flex justify-between items-center px-4">
                             <h4 className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Analysis Options</h4>
-                            <div className="w-12 h-12 rounded-[1.5rem] bg-white/40 dark:bg-black/20 flex items-center justify-center border border-white/5">
+                            <div className="w-12 h-12 rounded-[1.5rem] bg-white/40 flex items-center justify-center border border-white/5">
                                 <Settings className="w-6 h-6 text-foreground/20" />
                             </div>
                         </div>
@@ -251,7 +251,7 @@ const AcousticMoodTransformer: React.FC = () => {
                             <div className="w-4 h-4 bg-emerald-500 animate-pulse rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
                             <p className="text-[12px] font-black italic uppercase tracking-[0.4em] text-emerald-500">AI Processing</p>
                         </div>
-                        <div className="font-mono text-[14px] text-white/40 leading-relaxed italic relative z-10 space-y-2 uppercase tracking-widest">
+                        <div className="font-mono text-[14px] text-gray-600 leading-relaxed italic relative z-10 space-y-2 uppercase tracking-widest">
                             <p className="animate-pulse">Analyzing sound patterns...</p>
                             <p className="text-emerald-500 font-black">Everything looks healthy</p>
                         </div>
@@ -264,7 +264,7 @@ const AcousticMoodTransformer: React.FC = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={cn(glass.card, "p-16 lg:p-24 bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] border-white/5 shadow-4xl flex flex-col md:flex-row items-center gap-20 relative overflow-hidden group")}
+                className={cn(glass.card, "p-16 lg:p-24 bg-white/80 backdrop-blur-3xl rounded-[6rem] border-white/5 shadow-4xl flex flex-col md:flex-row items-center gap-20 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-[600px] h-[600px] bg-honey/5 rounded-full blur-[150px] pointer-events-none group-hover:bg-honey/10 transition-all duration-1000" />
                 <div className="w-32 h-32 rounded-[4rem] bg-honey/10 flex items-center justify-center shrink-0 border-2 border-honey/20 shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 relative z-10">
@@ -278,7 +278,7 @@ const AcousticMoodTransformer: React.FC = () => {
                         We don't see any signs of swarming in the next few days.
                     </p>
                 </div>
-                <button className={cn(glass.btnSecondary, "h-24 px-16 group/btn bg-white dark:bg-black overflow-hidden rounded-[3.5rem] border-white/10 shadow-4xl mt-8 md:mt-0")}>
+                <button className={cn(glass.btnSecondary, "h-24 px-16 group/btn bg-white overflow-hidden rounded-[3.5rem] border-gray-200 shadow-4xl mt-8 md:mt-0")}>
                     <div className="absolute inset-0 bg-honey/0 group-hover/btn:bg-honey/10 transition-all" />
                     <div className="relative flex items-center gap-8">
                         <span className="text-2xl font-black italic uppercase">Details</span>

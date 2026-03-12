@@ -22,11 +22,11 @@ const MetricCard: React.FC<MetricCardProps> = ({
     return (
         <div className={cn("bg-white border-2 border-black rounded-none p-6 relative overflow-hidden group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-none", className)}>
             <div className="flex justify-between items-start mb-6">
-                <div className="p-3 bg-black text-white rounded-none">
+                <div className="p-3 bg-black text-gray-900 rounded-none">
                     <Icon className="w-6 h-6" />
                 </div>
                 {trend && (
-                    <div className="flex items-center gap-1 text-white bg-[#FF4F00] px-2 py-1 border-2 border-black font-black text-[10px] uppercase">
+                    <div className="flex items-center gap-1 text-gray-900 bg-[#FF4F00] px-2 py-1 border-2 border-black font-black text-[10px] uppercase">
                         <TrendingUp className="w-3 h-3" />
                         {trend}
                     </div>

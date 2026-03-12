@@ -503,14 +503,14 @@ const BeeYieldDashboard: React.FC = () => {
                 return <LabelGeneratorView onTabChange={handleTabChange} />;
             default:
                 return (
-                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-dashed border-gray-200 dark:border-[#1e1e1e]">
-                        <div className="w-16 h-16 bg-gray-50 dark:bg-[#1e1e1e] rounded-2xl flex items-center justify-center mb-4">
+                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white rounded-[2.5rem] border border-dashed border-gray-200">
+                        <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
                             <Box className="w-8 h-8 text-gray-400" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-medium text-gray-900">
                             {navItems.find(i => i.id === activeTab)?.label || t('view_content')}
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1 max-w-sm font-medium">
+                        <p className="text-gray-500 mt-1 max-w-sm font-medium">
                             {t('under_development')}
                         </p>
                     </div>
@@ -555,7 +555,7 @@ const BeeYieldDashboard: React.FC = () => {
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <button
                                 onClick={() => navigate('/login')}
-                                className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-white font-black uppercase text-xs tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3"
+                                className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-gray-900 font-black uppercase text-xs tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3"
                             >
                                 <Lock className="w-4 h-4" />
                                 Login

@@ -75,8 +75,8 @@ const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({ title, value, trend
                     {trend} <ArrowUpRight size={12} className="ml-1" />
                 </motion.span>
             </div>
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{value}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">{title}</p>
+            <h3 className="text-3xl font-bold text-gray-900 mb-1">{value}</h3>
+            <p className="text-sm text-gray-600 font-medium">{title}</p>
 
             {/* Hover glow effect */}
             <motion.div
@@ -100,20 +100,20 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ text, time, alert }) => {
         <motion.li
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-start gap-3 text-sm py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            className="flex items-start gap-3 text-sm py-2 px-3 rounded-lg hover:bg-gray-50:bg-gray-800/50 transition-colors"
         >
             <div className={cn(
                 "mt-1.5 w-2 h-2 rounded-full",
-                alert ? "bg-red-500 animate-pulse shadow-[0_0_8px_#ef4444]" : "bg-gray-400 dark:bg-gray-600"
+                alert ? "bg-red-500 animate-pulse shadow-[0_0_8px_#ef4444]" : "bg-gray-400"
             )} />
             <div className="flex-1">
                 <p className={cn(
                     "font-medium",
-                    alert ? "text-red-500" : "text-gray-700 dark:text-gray-300"
+                    alert ? "text-red-500" : "text-gray-700"
                 )}>
                     {text}
                 </p>
-                <span className="text-xs text-gray-500 dark:text-gray-500">{time}</span>
+                <span className="text-xs text-gray-500">{time}</span>
             </div>
         </motion.li>
     );
@@ -134,8 +134,8 @@ const FramerDashboard: React.FC<FramerDashboardProps> = ({ onTabChange }) => {
                 className="flex justify-between items-center"
             >
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
+                    <p className="text-gray-600 mt-1">
                         Welcome back. Operations are <span className="text-emerald-500 font-semibold">94% nominal</span>.
                     </p>
                 </div>
@@ -197,11 +197,11 @@ const FramerDashboard: React.FC<FramerDashboardProps> = ({ onTabChange }) => {
                 >
                     <div className="flex items-center gap-2 mb-4">
                         <TrendingUp className="text-[hsl(var(--honey-gold))]" size={20} />
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                             Yield Trends (2026)
                         </h3>
                     </div>
-                    <div className="h-64 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+                    <div className="h-64 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
                         [Chart Component Here]
                     </div>
                 </motion.div>
@@ -215,7 +215,7 @@ const FramerDashboard: React.FC<FramerDashboardProps> = ({ onTabChange }) => {
                 >
                     <div className="flex items-center gap-2 mb-4">
                         <Activity className="text-[hsl(var(--honey-gold))]" size={20} />
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                             Live Activity
                         </h3>
                     </div>

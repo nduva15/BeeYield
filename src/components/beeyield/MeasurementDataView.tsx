@@ -117,17 +117,17 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </div>
 
             {/* Main Chart Area */}
-            <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 overflow-hidden">
+            <Card className="rounded-[3rem] border border-slate-200/60 bg-white shadow-2xl shadow-black/5 overflow-hidden">
                 <CardContent className="p-10">
                     <div className="flex justify-between items-center mb-12">
                         <div className="space-y-1">
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Thermal Stability Registry</h3>
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Thermal Stability Registry</h3>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Internal environmental control audit</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-900/40">
+                            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 border border-amber-100">
                                 <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest">Internal Node 01</span>
+                                <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Internal Node 01</span>
                             </div>
                         </div>
                     </div>
@@ -174,10 +174,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 p-10">
+                <Card className="rounded-[3rem] border border-slate-200/60 bg-white shadow-2xl shadow-black/5 p-10">
                     <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Mass Variation (kg)</h3>
-                        <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-none font-black text-[10px] uppercase tracking-widest">Active Scale</Badge>
+                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Mass Variation (kg)</h3>
+                        <Badge className="bg-emerald-50 text-emerald-700 border-none font-black text-[10px] uppercase tracking-widest">Active Scale</Badge>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -192,10 +192,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     </div>
                 </Card>
 
-                <Card className="rounded-[3rem] border border-slate-200/60 dark:border-white/5 bg-white dark:bg-white/5 shadow-2xl shadow-black/5 p-10">
+                <Card className="rounded-[3rem] border border-slate-200/60 bg-white shadow-2xl shadow-black/5 p-10">
                     <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Saturation Profile (%)</h3>
-                        <Badge className="bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-none font-black text-[10px] uppercase tracking-widest">Balanced</Badge>
+                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Saturation Profile (%)</h3>
+                        <Badge className="bg-amber-50 text-amber-700 border-none font-black text-[10px] uppercase tracking-widest">Balanced</Badge>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">

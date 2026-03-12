@@ -62,7 +62,7 @@ export default function MeasurementData() {
     // --- Components ---
 
     const StatCard = ({ title, value, unit, icon: Icon, color, trend }: any) => (
-        <Card className="bg-white/5 border-white/10 overflow-hidden relative group">
+        <Card className="bg-white/5 border-gray-200 overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Icon size={64} className={color} />
             </div>
@@ -99,7 +99,7 @@ export default function MeasurementData() {
 
                 <div className="flex items-center gap-4">
                     <Select value={selectedHive} onValueChange={setSelectedHive}>
-                        <SelectTrigger className="w-[180px] bg-white/5 border-white/10">
+                        <SelectTrigger className="w-[180px] bg-white/5 border-gray-200">
                             <SelectValue placeholder="Select Hive" />
                         </SelectTrigger>
                         <SelectContent>
@@ -108,7 +108,7 @@ export default function MeasurementData() {
                         </SelectContent>
                     </Select>
 
-                    <Tabs value={timeRange} onValueChange={setTimeRange} className="bg-white/5 p-1 rounded-lg border border-white/10">
+                    <Tabs value={timeRange} onValueChange={setTimeRange} className="bg-white/5 p-1 rounded-lg border border-gray-200">
                         <TabsList className="bg-transparent border-none">
                             <TabsTrigger value="24h" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">24h</TabsTrigger>
                             <TabsTrigger value="7d" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">7d</TabsTrigger>
@@ -127,7 +127,7 @@ export default function MeasurementData() {
             </div>
 
             <Tabs defaultValue="charts" className="space-y-6">
-                <TabsList className="bg-white/5 border border-white/10">
+                <TabsList className="bg-white/5 border border-gray-200">
                     <TabsTrigger value="charts">Analytics</TabsTrigger>
                     <TabsTrigger value="detections">Bio-Detections</TabsTrigger>
                 </TabsList>
@@ -135,7 +135,7 @@ export default function MeasurementData() {
                 <TabsContent value="charts" className="space-y-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Temperature Chart */}
-                        <Card className="bg-white/5 border-white/10">
+                        <Card className="bg-white/5 border-gray-200">
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Internal Hive Temperature</CardTitle>
                             </CardHeader>
@@ -167,7 +167,7 @@ export default function MeasurementData() {
                         </Card>
 
                         {/* Weight Change Chart */}
-                        <Card className="bg-white/5 border-white/10">
+                        <Card className="bg-white/5 border-gray-200">
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Hive Weight Gain/Loss</CardTitle>
                             </CardHeader>
@@ -195,7 +195,7 @@ export default function MeasurementData() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Humidity Distribution */}
-                        <Card className="bg-white/5 border-white/10 lg:col-span-2">
+                        <Card className="bg-white/5 border-gray-200 lg:col-span-2">
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Humidity Levels</CardTitle>
                             </CardHeader>
@@ -220,7 +220,7 @@ export default function MeasurementData() {
                         </Card>
 
                         {/* System Health Status */}
-                        <Card className="bg-white/5 border-white/10">
+                        <Card className="bg-white/5 border-gray-200">
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Sensor Health</CardTitle>
                             </CardHeader>
@@ -261,18 +261,18 @@ export default function MeasurementData() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-4">
                             {!diseaseEvents || diseaseEvents.length === 0 ? (
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
+                                <div className="bg-white/5 border border-gray-200 rounded-2xl p-12 text-center">
                                     <ShieldAlert className="w-12 h-12 text-green-500/50 mx-auto mb-4" />
                                     <h3 className="text-xl font-semibold">All Clear</h3>
                                     <p className="text-muted-foreground">No detections triggered in the last 7 days.</p>
                                 </div>
                             ) : (
                                 diseaseEvents.map((event: any) => (
-                                    <Card key={event.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors">
+                                    <Card key={event.id} className="bg-white/5 border-gray-200 hover:bg-white/10 transition-colors">
                                         <div className="p-4 flex items-center justify-between gap-4">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-white uppercase tracking-tight">{event.threat_type}</span>
+                                                    <span className="font-bold text-gray-900 uppercase tracking-tight">{event.threat_type}</span>
                                                     <Badge className={event.severity === 'critical' ? 'bg-red-500' : 'bg-yellow-500'}>
                                                         {event.severity}
                                                     </Badge>
@@ -283,7 +283,7 @@ export default function MeasurementData() {
                                                 <span className="text-xs font-mono text-muted-foreground">Confidence</span>
                                                 <div className="font-bold text-amber-500">{(event.confidence * 100).toFixed(0)}%</div>
                                             </div>
-                                            <div className="w-16 h-12 bg-black rounded border border-white/10 bg-cover bg-center" style={{ backgroundImage: `url(${event.image_evidence_url})` }} />
+                                            <div className="w-16 h-12 bg-black rounded border border-gray-200 bg-cover bg-center" style={{ backgroundImage: `url(${event.image_evidence_url})` }} />
                                         </div>
                                     </Card>
                                 ))

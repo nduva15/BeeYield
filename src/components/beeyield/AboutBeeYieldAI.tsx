@@ -8,7 +8,7 @@ interface AboutBeeYieldAIProps {
 }
 
 const StatCard = ({ icon: Icon, value, label }: { icon: any, value: string, label: string }) => (
-    <div className="bg-white dark:bg-neutral-800 p-6 rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center group hover:border-honey/30 transition-all duration-500 hover:shadow-honey/5">
+    <div className="bg-white p-6 rounded-[2.5rem] border border-border shadow-sm flex flex-col items-center text-center group hover:border-honey/30 transition-all duration-500 hover:shadow-honey/5">
         <div className="w-14 h-14 rounded-2xl bg-honey/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
             <Icon className="w-7 h-7 text-honey" />
         </div>
@@ -19,7 +19,7 @@ const StatCard = ({ icon: Icon, value, label }: { icon: any, value: string, labe
 
 const CapabilityCard = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => (
     <div className="flex gap-5 p-6 rounded-[2rem] hover:bg-honey/5 transition-all duration-500 group">
-        <div className="w-12 h-12 rounded-2xl bg-white dark:bg-neutral-800 flex items-center justify-center shadow-lg border border-border group-hover:border-honey/20 flex-shrink-0">
+        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-lg border border-border group-hover:border-honey/20 flex-shrink-0">
             <Icon className="w-6 h-6 text-honey" />
         </div>
         <div className="flex flex-col gap-1">
@@ -35,7 +35,7 @@ export const AboutBeeYieldAI: React.FC<AboutBeeYieldAIProps> = ({ onClose }) => 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scroll bg-white dark:bg-neutral-900 rounded-[3rem] shadow-3xl border border-border relative p-8 sm:p-12"
+            className="w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scroll bg-white rounded-[3rem] shadow-3xl border border-border relative p-8 sm:p-12"
         >
             <button 
                 onClick={onClose}

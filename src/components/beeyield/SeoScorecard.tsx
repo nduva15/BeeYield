@@ -70,7 +70,7 @@ const IssueList = ({ issues, passes }: { issues: string[], passes: string[] }) =
 
             {passes.length > 0 && (
                 <div>
-                    <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold text-green-600 dark:text-green-500">
+                    <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold text-green-600">
                         <CheckCircle2 className="w-4 h-4" />
                         Passed Checks ({passes.length})
                     </h4>

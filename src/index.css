@@ -10,38 +10,36 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Design System 3.0 - Obsidian & Citrus */
-    --background: 0 0% 0%; /* #000000 */
-    --foreground: 0 0% 100%; /* #FFFFFF */
+    /* Design System — Bright Light Only */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 222 47% 11%; /* #0F172A */
 
-    --card: 0 0% 4%; /* #0A0A0A */
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 222 47% 11%;
     
-    --primary: 25 100% 50%; /* #FF6B00 - Citrus */
+    --primary: 38 92% 50%; /* Honey Gold #F59E0B */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 10%; /* Dark Grey */
-    --secondary-foreground: 25 100% 50%;
+    --secondary: 210 40% 96%; /* Light grey-blue */
+    --secondary-foreground: 222 47% 11%;
 
-    --accent: 25 100% 50%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 64%;
+    --muted: 210 40% 96%; /* #F1F5F9 */
+    --muted-foreground: 215 16% 47%; /* #64748B */
 
-    --border: 0 0% 100% / 0.2; /* border-white/20 */
-    --input: 0 0% 100% / 0.1;
-    --ring: 25 100% 50%;
+    --border: 214 32% 91%; /* #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 38 92% 50%;
 
     --radius: 1.5rem;
-  }
 
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 4%; 
-    --border: 0 0% 100% / 0.2;
-    --primary: 25 100% 50%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
   }
 }
 
@@ -340,6 +338,10 @@ All colors MUST be HSL.
   animation: spin 3s linear infinite;
 }
 
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -396,11 +398,6 @@ All colors MUST be HSL.
   border: 1px solid #e2e8f0;
 }
 
-.dark .by-card {
-  background-color: #111111;
-  border: 1px solid #1A1A1A;
-}
-
 .by-card:hover {
   border-color: rgba(0, 0, 0, 0.12);
 }
@@ -411,10 +408,6 @@ All colors MUST be HSL.
 
 .by-separator {
   border-color: #e2e8f0;
-}
-
-.dark .by-separator {
-  border-color: #1A1A1A;
 }
 
 .by-accent {
@@ -462,14 +455,6 @@ All colors MUST be HSL.
   background: #a1a1aa;
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1A1A1A;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #333333;
-}
-
 /* ===== SHADOW UTILITIES ===== */
 @layer utilities {
   .shadow-soft {
@@ -505,7 +490,7 @@ All colors MUST be HSL.
   }
 
   .glass-morphism {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-diffuse;
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-diffuse;
   }
 
   /* === INTELLIGENT HIVE COMPONENT STYLES === */
@@ -557,7 +542,7 @@ All colors MUST be HSL.
 
   /* 5. Glass Hive Card */
   .glass-hive {
-    @apply bg-white dark:bg-[#1E293B] rounded-[20px] border border-gray-100 dark:border-gray-800;
+    @apply bg-white rounded-[20px] border border-gray-100;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
@@ -599,8 +584,8 @@ All colors MUST be HSL.
 
   /* 1. Honeycomb SVG background pattern - Obsidian & Citrus */
   .honeycomb-bg {
-    background-color: #000000;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zm0-2.25L54 49.13V18.87L28 3.25 2 18.87v30.26L28 63.75z' fill='%23FF6B00' fill-opacity='0.03'/%3E%3C/svg%3E");
+    background-color: #FEFCE8;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zm0-2.25L54 49.13V18.87L28 3.25 2 18.87v30.26L28 63.75z' fill='%23F59E0B' fill-opacity='0.04'/%3E%3C/svg%3E");
   }
 
   .bg-gradient-citrus {

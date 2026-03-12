@@ -180,7 +180,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
                     {/* Main Form Area */}
                     <div className="lg:col-span-8 space-y-12">
-                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}>
+                        <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 backdrop-blur-3xl")}>
                             {/* Title Field */}
                             <div className="space-y-6">
                                 <label className={glass.microLabel}>Title / Summary</label>
@@ -269,7 +269,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
                     {/* Meta Sidebar */}
                     <div className="lg:col-span-4 space-y-12">
-                        <div className={cn(glass.card, "p-12 space-y-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}>
+                        <div className={cn(glass.card, "p-12 space-y-12 bg-white/60 backdrop-blur-3xl")}>
                             {/* Priority Selection */}
                             <div className="space-y-8">
                                 <label className={glass.microLabel}>{t('priority_label')}</label>
@@ -287,7 +287,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                                         p === 'medium' && "bg-honey/10 text-honey border-honey/20",
                                                         p === 'high' && "bg-red-500/10 text-red-500 border-red-500/20"
                                                     )
-                                                    : "bg-black/5 dark:bg-black/40 text-foreground/30 hover:text-honey hover:border-honey/40"
+                                                    : "bg-gray-50 text-foreground/30 hover:text-honey hover:border-honey/40"
                                             )}
                                         >
                                             <div className={cn(
@@ -315,7 +315,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                                 "px-8 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all outline-none cursor-pointer italic border border-white/5 shadow-4xl",
                                                 category === cat
                                                     ? "bg-honey text-black border-honey"
-                                                    : "bg-black/5 dark:bg-black/40 text-foreground/40 hover:text-honey hover:border-honey/40"
+                                                    : "bg-gray-50 text-foreground/40 hover:text-honey hover:border-honey/40"
                                             )}
                                         >
                                             {cat}
@@ -415,7 +415,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                         </select>
                     </div>
 
-                    <div className="flex items-center gap-6 px-10 py-4 bg-black/5 dark:bg-white/5 rounded-full border border-white/5 shadow-4xl skew-x-[-15deg]">
+                    <div className="flex items-center gap-6 px-10 py-4 bg-gray-50 rounded-full border border-white/5 shadow-4xl skew-x-[-15deg]">
                         <span className="text-[12px] font-black uppercase tracking-[0.4em] skew-x-[15deg] italic text-foreground/40">
                             {filteredNotes.length} Observations
                         </span>
@@ -456,11 +456,11 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     )} />
 
                                     <div className="flex items-center justify-between mb-10">
-                                        <div className={cn(glass.badge, "bg-black/5 dark:bg-white/5 text-foreground/40 border-white/5")}>
+                                        <div className={cn(glass.badge, "bg-gray-50 text-foreground/40 border-white/5")}>
                                             <span className="skew-x-[15deg] block">{note.category?.toUpperCase() || "GENERAL"}</span>
                                         </div>
                                         <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-4 group-hover:translate-x-0">
-                                            <button onClick={() => setIsEditingNote(note)} className="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center hover:bg-honey/20 hover:text-honey transition-all">
+                                            <button onClick={() => setIsEditingNote(note)} className="w-14 h-14 rounded-2xl bg-white/10 border border-gray-200 flex items-center justify-center hover:bg-honey/20 hover:text-honey transition-all">
                                                 <Edit className="w-7 h-7" />
                                             </button>
                                             <button onClick={() => handleDeleteNote(note.id)} className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/10 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">
@@ -473,7 +473,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                         {note.title || "Observation Log"}
                                     </h4>
 
-                                    <div className="bg-black/5 dark:bg-black/30 rounded-[2.5rem] p-8 border border-white/5 shadow-inner mb-8 group-hover:border-honey/20 transition-all duration-1000">
+                                    <div className="bg-gray-50 rounded-[2.5rem] p-8 border border-white/5 shadow-inner mb-8 group-hover:border-honey/20 transition-all duration-1000">
                                         <p className="text-xl font-black text-foreground/40 italic leading-relaxed line-clamp-4 lowercase first-letter:uppercase">
                                             {note.content}
                                         </p>

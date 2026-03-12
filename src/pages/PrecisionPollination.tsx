@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Cpu, Wifi, LayoutDashboard, ArrowRight,
@@ -40,7 +40,7 @@ const PrecisionPollination = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-white border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
+              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-gray-900 border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
                 Professional Suite
                 <ChevronDown className="w-3 h-3" />
               </button>
@@ -190,7 +190,7 @@ const PrecisionPollination = () => {
                   <Thermometer className="h-4 w-4 text-primary" />
                   Optimal Temp
                 </div>
-                <p className="text-2xl font-bold text-foreground">35.4Â°C</p>
+                <p className="text-2xl font-bold text-foreground">35.4°C</p>
               </div>
             </div>
 
@@ -204,7 +204,7 @@ const PrecisionPollination = () => {
                 All the key metrics for each orchard, from the day the bees are delivered until the day the beekeepers remove them, are displayed on the dashboard.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                These include the current frames-per-acre count of the orchards, along with bee activity, flight time, location and temperature for drop points, and more â€” giving growers complete confidence that they are getting the pollination they have paid for.
+                These include the current frames-per-acre count of the orchards, along with bee activity, flight time, location and temperature for drop points, and more — giving growers complete confidence that they are getting the pollination they have paid for.
               </p>
               <ul className="space-y-3">
                 {["Frames-per-acre count", "Bee activity & flight time", "GPS Location & Temperature"].map((item, i) => (
@@ -267,7 +267,7 @@ const PrecisionPollination = () => {
               </p>
               <div className="bg-primary/10 p-4 rounded-lg border-l-4 border-primary mb-6">
                 <p className="text-sm text-foreground">
-                  ðŸ’¡ 2x8 does not equal sixteen when it comes to bee frames. A sixteen frame hive actually has 30% more foraging force than that of two 8 framers.
+                  💡 2x8 does not equal sixteen when it comes to bee frames. A sixteen frame hive actually has 30% more foraging force than that of two 8 framers.
                 </p>
               </div>
               <p className="text-muted-foreground mb-6">
@@ -283,7 +283,7 @@ const PrecisionPollination = () => {
                 <div className="w-48 h-64 bg-gradient-to-br from-primary to-primary/70 rounded-lg flex flex-col items-center justify-center text-primary-foreground p-4 text-center">
                   <p className="text-xs font-bold uppercase tracking-wider opacity-80">Bee Math</p>
                   <p className="text-lg font-bold mt-2">The Grower's Guide to Precision Pollination</p>
-                  <p className="text-4xl mt-4">ðŸ</p>
+                  <p className="text-4xl mt-4">🐝</p>
                 </div>
               </div>
             </div>
@@ -320,7 +320,7 @@ const PrecisionPollination = () => {
             <PollinationContactForm
               type="in_hive"
               title="Try BeeYield In-Hive in your apiary"
-              description="BeeYield is constantly evolving. We invite you to take part in the international testing of our system â€“ together, we can advance technology that protects bees worldwide."
+              description="BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide."
             />
           </div>
 

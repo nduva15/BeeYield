@@ -117,8 +117,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20 print:hidden">
                 {/* Header Section */}
                 <div>
-                    <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Support Centre</h1>
-                    <p className="text-sm font-medium text-slate-400 dark:text-slate-500">How can we help you today?</p>
+                    <h1 className="text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">Support Centre</h1>
+                    <p className="text-sm font-medium text-slate-400">How can we help you today?</p>
                 </div>
 
                 {/* KPI Section */}
@@ -130,7 +130,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         { label: 'IN PROGRESS', value: stats.active, color: 'text-green-600', bg: 'bg-green-500' },
                         { label: 'RESOLVED', value: stats.completed, color: 'text-slate-400', bg: 'bg-slate-300' },
                     ].map((stat, i) => (
-                        <div key={i} className="bg-white dark:bg-[#111111] p-6 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm relative overflow-hidden h-32 flex flex-col justify-between group hover:border-amber-200 transition-all">
+                        <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden h-32 flex flex-col justify-between group hover:border-amber-200 transition-all">
                             <div className={cn("absolute top-0 left-0 w-full h-[3px]", stat.bg)} />
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
                             <span className={cn("text-3xl font-black tracking-tighter", stat.color)}>{stat.value}</span>
@@ -139,13 +139,13 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                 </div>
 
                 {/* Contact & Support Actions */}
-                <div className="bg-white dark:bg-[#0c0c0e] rounded-[2.5rem] border border-slate-100 dark:border-white/5 p-12 shadow-sm relative overflow-hidden group">
+                <div className="bg-white rounded-[2.5rem] border border-slate-100 p-12 shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/[0.03] rounded-full -mr-32 -mt-32 blur-3xl transition-transform group-hover:scale-110" />
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
                         <div className="lg:col-span-8 space-y-10">
                             <div>
-                                <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-4">Contact Support Centre</h2>
+                                <h2 className="text-2xl font-black text-slate-800 mb-4">Contact Support Centre</h2>
                                 <p className="text-slate-500 font-medium max-w-xl leading-relaxed">
                                     Our technical team is available 24/7 to assist with your BeeHUB devices, harvest software, or farm data questions.
                                 </p>
@@ -156,24 +156,24 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                                         <Mail className="w-3.5 h-3.5" /> Email
                                     </div>
-                                    <p className="text-slate-800 dark:text-slate-200 font-bold">support@beeyield.com</p>
+                                    <p className="text-slate-800 font-bold">support@beeyield.com</p>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                                         <Phone className="w-3.5 h-3.5" /> WhatsApp
                                     </div>
-                                    <p className="text-slate-800 dark:text-slate-200 font-bold">+254 700 000 000</p>
+                                    <p className="text-slate-800 font-bold">+254 700 000 000</p>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                                         <MapPin className="w-3.5 h-3.5" /> Office
                                     </div>
-                                    <p className="text-slate-800 dark:text-slate-200 font-bold">Kibwezi, Kenya</p>
+                                    <p className="text-slate-800 font-bold">Kibwezi, Kenya</p>
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-slate-50 dark:border-white/5">
-                                <p className="text-green-600 dark:text-green-500 text-sm font-bold flex items-center gap-2">
+                            <div className="pt-6 border-t border-slate-50">
+                                <p className="text-green-600 text-sm font-bold flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
                                     Expected response time: Under 2 hours.
                                 </p>
@@ -183,7 +183,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         <div className="lg:col-span-4 flex flex-col gap-4 justify-center">
                             <Button
                                 variant="outline"
-                                className="h-14 rounded-2xl border-2 border-slate-100 dark:border-white/10 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all dark:bg-white/[0.02]"
+                                className="h-14 rounded-2xl border-2 border-slate-100 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all"
                                 onClick={() => toast.info("Manuals loading...")}
                             >
                                 Technical Manuals
@@ -197,14 +197,14 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                 <DialogTrigger asChild>
-                                    <Button className="h-14 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-500/10 hover:scale-[1.02] transition-all">
+                                    <Button className="h-14 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-gray-900 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-500/10 hover:scale-[1.02] transition-all">
                                         Open Ticket Online
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[700px] p-0 rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#FAF9F6] dark:bg-[#0c0c0e]">
+                                <DialogContent className="sm:max-w-[700px] p-0 rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#FAF9F6]">
                                     <div className="p-12 relative">
                                         <div className="mb-10">
-                                            <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tighter">New Support Ticket</h2>
+                                            <h2 className="text-3xl font-black text-slate-800 mb-2 tracking-tighter">New Support Ticket</h2>
                                             <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Secure help request</p>
                                         </div>
 
@@ -213,7 +213,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                 <div className="space-y-3">
                                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
                                                     <Select name="category" value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
-                                                        <SelectTrigger id="support-category" className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-700 dark:text-slate-300">
+                                                        <SelectTrigger id="support-category" className="h-16 rounded-2xl border-2 border-slate-200 bg-white px-6 font-bold text-slate-700">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
@@ -228,7 +228,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                 <div className="space-y-3">
                                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Priority</Label>
                                                     <Select name="priority" value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
-                                                        <SelectTrigger id="support-priority" className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-700 dark:text-slate-300">
+                                                        <SelectTrigger id="support-priority" className="h-16 rounded-2xl border-2 border-slate-200 bg-white px-6 font-bold text-slate-700">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
@@ -248,7 +248,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                     value={formData.subject}
                                                     onChange={handleInputChange}
                                                     placeholder="Briefly describe the issue..."
-                                                    className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-800 dark:text-white focus-visible:border-amber-400 transition-colors"
+                                                    className="h-16 rounded-2xl border-2 border-slate-200 bg-white px-6 font-bold text-slate-800 focus-visible:border-amber-400 transition-colors"
                                                 />
                                             </div>
 
@@ -260,7 +260,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                     value={formData.description}
                                                     onChange={handleInputChange}
                                                     placeholder="Detailed explanation..."
-                                                    className="min-h-[160px] rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 font-medium text-slate-800 dark:text-white resize-none focus-visible:border-amber-400 transition-colors"
+                                                    className="min-h-[160px] rounded-2xl border-2 border-slate-200 bg-white p-6 font-medium text-slate-800 resize-none focus-visible:border-amber-400 transition-colors"
                                                 />
                                             </div>
 
@@ -273,7 +273,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                     <Button
                                                         type="submit"
                                                         disabled={isSubmitting}
-                                                        className="h-14 px-8 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-500/10"
+                                                        className="h-14 px-8 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-gray-900 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-green-500/10"
                                                     >
                                                         {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Submit Ticket"}
                                                     </Button>
@@ -298,7 +298,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     className={cn(
                                         "px-6 h-11 rounded-full text-[11px] font-black uppercase tracking-widest transition-all",
                                         activeTab === tab
-                                            ? "bg-slate-900 text-white shadow-xl shadow-slate-900/10"
+                                            ? "bg-slate-900 text-gray-900 shadow-xl shadow-slate-900/10"
                                             : "hover:bg-slate-100 text-slate-400"
                                     )}
                                 >
@@ -315,29 +315,29 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)}
                                 placeholder="Search tickets..."
-                                className="w-full h-11 bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-full pl-11 pr-4 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500/30 transition-all"
+                                className="w-full h-11 bg-white border border-slate-100 rounded-full pl-11 pr-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500/30 transition-all"
                             />
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-[#0c0c0e] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden min-h-[400px]">
+                    <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden min-h-[400px]">
                         {loading ? (
                             <div className="flex items-center justify-center h-[400px]">
                                 <Loader2 className="w-8 h-8 animate-spin text-slate-200" />
                             </div>
                         ) : filteredRequests.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-[400px] text-center p-8">
-                                <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mb-6">
+                                <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6">
                                     <Send className="w-8 h-8 text-slate-200" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No tickets found</h3>
+                                <h3 className="text-xl font-bold text-slate-800 mb-2">No tickets found</h3>
                                 <p className="text-sm font-medium text-slate-400 max-w-xs leading-relaxed">
                                     {filterText ? "Try searching for something else." : "You're all set! No active support tickets."}
                                 </p>
                             </div>
                         ) : (
                             <table className="w-full">
-                                <thead className="bg-slate-50/50 dark:bg-white/[0.02] border-b border-slate-50 dark:border-white/5">
+                                <thead className="bg-slate-50/50 border-b border-slate-50">
                                     <tr>
                                         <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subject</th>
                                         <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Priority</th>
@@ -345,12 +345,12 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                         <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Created</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-50 dark:divide-white/5">
+                                <tbody className="divide-y divide-slate-50">
                                     {filteredRequests.map((request) => (
-                                        <tr key={request.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors cursor-pointer group">
+                                        <tr key={request.id} className="hover:bg-slate-50/50:bg-white/[0.01] transition-colors cursor-pointer group">
                                             <td className="px-10 py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-black text-slate-800 dark:text-slate-200 group-hover:text-[#1B9157] transition-colors">{request.subject}</span>
+                                                    <span className="text-sm font-black text-slate-800 group-hover:text-[#1B9157] transition-colors">{request.subject}</span>
                                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{request.category}</span>
                                                 </div>
                                             </td>
@@ -370,7 +370,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                             request.status === 'in_progress' ? "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" :
                                                                 "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"
                                                     )} />
-                                                    <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">{request.status.replace('_', ' ')}</span>
+                                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{request.status.replace('_', ' ')}</span>
                                                 </div>
                                             </td>
                                             <td className="px-10 py-6 text-[11px] font-bold text-slate-400 tabular-nums">
