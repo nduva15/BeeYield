@@ -46,14 +46,14 @@ const ToggleSwitch = ({ checked, onCheckedChange, label }: { checked: boolean, o
             {label && <span className={cn(glass.microLabel, "opacity-60 font-bold")}>{label}</span>}
             <div
                 className={cn(
-                    "relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honey/50",
-                    checked ? "bg-honey/80 shadow-lg shadow-honey/20" : "bg-white/10"
+                    "relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F4D03F]/50",
+                    checked ? "bg-[#F4D03F]/80 shadow-lg shadow-honey/20" : "bg-[#F4D03F]/10"
                 )}
                 onClick={() => onCheckedChange(!checked)}
             >
                 <span
                     className={cn(
-                        "pointer-events-none inline-block h-8 w-8 transform rounded-full bg-white shadow-xl ring-0 transition duration-500 ease-in-out mt-0.5 ml-0.5",
+                        "pointer-events-none inline-block h-8 w-8 transform rounded-full bg-[#FFF9F0] shadow-xl ring-0 transition duration-500 ease-in-out mt-0.5 ml-0.5",
                         checked ? "translate-x-10" : "translate-x-0"
                     )}
                 />
@@ -66,7 +66,7 @@ const MeasurementIntervalSelector = () => {
     const options = [15, 30, 60, 120, 180, 360, 720];
     const [selected, setSelected] = React.useState(60);
     return (
-        <div className="flex bg-white/20 backdrop-blur-md border border-border/50 rounded-[1.8rem] overflow-hidden w-full p-2 gap-2 shadow-inner">
+        <div className="flex bg-gray-200 backdrop-blur-md border border-border/50 rounded-[1.8rem] overflow-hidden w-full p-2 gap-2 shadow-inner">
             {options.map((opt) => (
                 <button
                     key={opt}
@@ -74,7 +74,7 @@ const MeasurementIntervalSelector = () => {
                     className={cn(
                         "flex-1 py-4 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest",
                         selected === opt
-                            ? "bg-white text-honey shadow-xl scale-[1.05] z-10 border border-honey/20"
+                            ? "bg-[#FFF9F0] text-[#F4D03F] shadow-xl scale-[1.05] z-10 border border-[#F4D03F]/20"
                             : "text-foreground/40 hover:text-foreground/60"
                     )}
                 >
@@ -102,16 +102,16 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-honey/10 bg-white/95 backdrop-blur-2xl")}
+                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-[#F4D03F]/10 bg-[#FFF9F0]/95 backdrop-blur-2xl")}
                 >
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-honey/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
 
-                    <div className="bg-white/40 px-12 py-12 border-b border-border/50 relative z-10">
-                        <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 mb-6')}>
+                    <div className="bg-gray-400 px-12 py-12 border-b border-border/50 relative z-10">
+                        <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-6')}>
                             <Settings className="w-3.5 h-3.5 mr-2" />
                             Bridge Configuration v5.1
                         </div>
-                        <DialogTitle className={cn(glass.sectionTitle, 'text-4xl normal-case italic')}>Node <span className="text-honey">Architecture</span></DialogTitle>
+                        <DialogTitle className={cn(glass.sectionTitle, 'text-4xl normal-case italic')}>Node <span className="text-[#F4D03F]">Architecture</span></DialogTitle>
                         <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-3 tracking-[0.1em]")}>Identify biosphere parameters and establish neural handshake protocol.</DialogDescription>
                     </div>
 
@@ -130,8 +130,8 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                             ].map((item, i) => (
                                 <div key={i} className="space-y-5">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="w-8 h-8 rounded-xl bg-honey/5 flex items-center justify-center border border-honey/10">
-                                            <item.icon className="w-4 h-4 text-honey" />
+                                        <div className="w-8 h-8 rounded-xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
+                                            <item.icon className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
                                         <h4 className={cn(glass.microLabel, "opacity-80 font-black uppercase tracking-[0.15em]")}>{item.label}</h4>
                                     </div>
@@ -180,11 +180,11 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-destructive/10 bg-white/95 backdrop-blur-2xl")}
+                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-destructive/10 bg-[#FFF9F0]/95 backdrop-blur-2xl")}
                 >
                     <div className="absolute top-0 right-0 w-80 h-80 bg-destructive/5 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
 
-                    <div className="bg-white/40 px-12 py-12 border-b border-border/50 relative z-10">
+                    <div className="bg-gray-400 px-12 py-12 border-b border-border/50 relative z-10">
                         <div className={cn(glass.badge, 'bg-destructive/10 text-destructive border-destructive/20 mb-6')}>
                             <Bell className="w-3.5 h-3.5 mr-2" />
                             Biosphere Alert Matrix v2.0
@@ -211,32 +211,32 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                                 <Input
                                     type="email"
                                     placeholder="ENDPOINT_TARGET@BEEYIELD.AI"
-                                    className={cn(glass.input, "h-16 font-black tracking-widest bg-gray-50")}
+                                    className={cn(glass.input, "h-16 font-black tracking-widest bg-[#F9F7F2]")}
                                 />
                                 <button className={cn(glass.btnSecondary, "h-16 px-10 font-black tracking-widest border-border/50")}>VERIFY</button>
                             </div>
                         </div>
 
                         <div className="pt-12 border-t border-border/50 space-y-10">
-                            <h4 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Diagnostic <span className="text-honey">Trigger Sensitivity</span></h4>
+                            <h4 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Diagnostic <span className="text-[#F4D03F]">Trigger Sensitivity</span></h4>
                             <div className="grid grid-cols-2 gap-8">
-                                <div className="p-8 bg-honey/5 rounded-[2rem] border border-honey/10 space-y-6 relative overflow-hidden group hover:border-honey/30 transition-all">
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-honey/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
+                                <div className="p-8 bg-[#F4D03F]/5 rounded-[2rem] border border-[#F4D03F]/10 space-y-6 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#F4D03F]/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
                                     <div className="flex items-center gap-4 relative z-10">
-                                        <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-lg shadow-honey/10">
-                                            <Thermometer className="w-5 h-5 text-honey" />
+                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/10">
+                                            <Thermometer className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
-                                        <span className={cn(glass.microLabel, "font-black text-honey tracking-widest")}>THERMAL_SPIKE</span>
+                                        <span className={cn(glass.microLabel, "font-black text-[#F4D03F] tracking-widest")}>THERMAL_SPIKE</span>
                                     </div>
                                     <ToggleSwitch checked={tempAlerts} onCheckedChange={setTempAlerts} />
                                 </div>
-                                <div className="p-8 bg-emerald-500/5 rounded-[2rem] border border-emerald-500/10 space-y-6 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
+                                <div className="p-8 bg-[#1B9157]/ rounded-[2rem] border border-[#1B9157]/ space-y-6 relative overflow-hidden group hover:border-[#1B9157]/ transition-all">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#1B9157]/ rounded-full blur-2xl group-hover:scale-150 transition-transform" />
                                     <div className="flex items-center gap-4 relative z-10">
-                                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
-                                            <Weight className="w-5 h-5 text-emerald-500" />
+                                        <div className="w-10 h-10 rounded-xl bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-lg shadow-emerald-500/10">
+                                            <Weight className="w-5 h-5 text-[#1B9157]" />
                                         </div>
-                                        <span className={cn(glass.microLabel, "font-black text-emerald-500 tracking-widest")}>MASS_FLUX</span>
+                                        <span className={cn(glass.microLabel, "font-black text-[#1B9157] tracking-widest")}>MASS_FLUX</span>
                                     </div>
                                     <ToggleSwitch checked={weightAlerts} onCheckedChange={setWeightAlerts} />
                                 </div>
@@ -334,7 +334,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             <PageHeader
                 icon={Wifi}
                 label="Live Multi-Sensor Bridge v2.6"
-                title={<>Hive <span className="text-honey">Monitoring</span></>}
+                title={<>Hive <span className="text-[#F4D03F]">Monitoring</span></>}
                 subtitle="Remote telemetry ingest of colony health and real-time environmental metrics."
                 actions={
                     <div className="flex gap-4">
@@ -363,19 +363,19 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-14 shadow-2xl relative overflow-hidden group border-honey/10")}
+                className={cn(glass.card, "p-14 shadow-2xl relative overflow-hidden group border-[#F4D03F]/10")}
             >
                 <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-honey/[0.02] to-transparent pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 relative z-10">
                     <div className="space-y-6">
                         <Label className={cn(glass.microLabel, "ml-4 opacity-40 font-black tracking-[0.2em]")}>INDUSTRIAL_SECTOR_IDENTIFIER</Label>
                         <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-honey/10 hover:border-honey/30 transition-all rounded-[2rem] bg-white/40")}>
+                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-[#F4D03F]/10 hover:border-[#F4D03F]/30 transition-all rounded-[2rem] bg-gray-400")}>
                                 <div className="flex items-center gap-6">
-                                    <div className="w-12 h-12 rounded-[1.2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-lg shadow-honey/5">
-                                        <Grid3X3 className="w-6 h-6 text-honey" />
+                                    <div className="w-12 h-12 rounded-[1.2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/5">
+                                        <Grid3X3 className="w-6 h-6 text-[#F4D03F]" />
                                     </div>
                                     <SelectValue placeholder="LOCATE_APIARY_SITE..." />
                                 </div>
@@ -394,10 +394,10 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                     <div className="space-y-6">
                         <Label className={cn(glass.microLabel, "ml-4 opacity-40 font-black tracking-[0.2em]")}>NODE_NEURAL_ASSET_ID</Label>
                         <Select value={selectedHive} onValueChange={setSelectedHive}>
-                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-emerald-500/10 hover:border-emerald-500/30 transition-all rounded-[2rem] bg-white/40")}>
+                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-[#1B9157]/ hover:border-[#1B9157]/ transition-all rounded-[2rem] bg-gray-400")}>
                                 <div className="flex items-center gap-6">
-                                    <div className="w-12 h-12 rounded-[1.2rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
-                                        <Box className="w-6 h-6 text-emerald-500" />
+                                    <div className="w-12 h-12 rounded-[1.2rem] bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-lg shadow-emerald-500/5">
+                                        <Box className="w-6 h-6 text-[#1B9157]" />
                                     </div>
                                     <SelectValue placeholder="TARGET_NODE_HEX..." />
                                 </div>
@@ -429,9 +429,9 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         className="grid grid-cols-1 md:grid-cols-3 gap-10"
                     >
                         {[
-                            { label: 'THERMAL_PROFILE', value: latestReading ? `${latestReading.temperature || 0}°C` : '--', icon: Thermometer, color: 'text-honey', sub: 'INTERNAL_BROOD_STATUS' },
+                            { label: 'THERMAL_PROFILE', value: latestReading ? `${latestReading.temperature || 0}°C` : '--', icon: Thermometer, color: 'text-[#F4D03F]', sub: 'INTERNAL_BROOD_STATUS' },
                             { label: 'AMBIENT_SATURATION', value: latestReading ? `${latestReading.humidity || 0}%` : '--', icon: Droplet, color: 'text-blue-500', sub: 'OPTIMAL_NECTAR_STRESS' },
-                            { label: 'COMPOSITE_MASS', value: latestReading ? `${latestReading.weight || 0}kg` : '--', icon: Weight, color: 'text-emerald-500', sub: 'YIELD_FLUX_STABILITY' }
+                            { label: 'COMPOSITE_MASS', value: latestReading ? `${latestReading.weight || 0}kg` : '--', icon: Weight, color: 'text-[#1B9157]', sub: 'YIELD_FLUX_STABILITY' }
                         ].map((stat, i) => (
                             <GlassStatCard
                                 key={i}
@@ -448,13 +448,13 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         key="placeholder"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className={cn(glass.card, "p-24 text-center flex flex-col items-center justify-center space-y-10 bg-honey/[0.02] border-honey/10 border-dashed rounded-[4rem]")}
+                        className={cn(glass.card, "p-24 text-center flex flex-col items-center justify-center space-y-10 bg-[#F4D03F]/[0.02] border-[#F4D03F]/10 border-dashed rounded-[4rem]")}
                     >
-                        <div className="w-28 h-28 rounded-[2.5rem] bg-white/40 flex items-center justify-center border border-honey/20 shadow-2xl shadow-honey/5 opacity-40 group hover:scale-110 transition-transform duration-700">
-                            <SearchCode className="w-14 h-14 text-honey" />
+                        <div className="w-28 h-28 rounded-[2.5rem] bg-gray-400 flex items-center justify-center border border-[#F4D03F]/20 shadow-2xl shadow-honey/5 opacity-40 group hover:scale-110 transition-transform duration-700">
+                            <SearchCode className="w-14 h-14 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-4">
-                            <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic opacity-40")}>Identify <span className="text-honey">Neural Asset</span></h3>
+                            <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic opacity-40")}>Identify <span className="text-[#F4D03F]">Neural Asset</span></h3>
                             <p className={cn(glass.microLabel, "opacity-30 max-w-xl mx-auto leading-relaxed font-bold")}>Establish an industrial telemetry bridge by identifying target hex-sectors via the registry interface.</p>
                         </div>
                     </motion.div>
@@ -464,15 +464,15 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             {/* Diagnostic Footer */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {[
-                    { label: 'DEVICE_INTEGRITY', icon: Zap, status: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'NOMINAL' : 'AWAITING_LINK', desc: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'High-fidelity temporal bridge established.' : 'Establish node registry connection for deep ingest.', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                    { label: 'REGISTRY_BRIDGE', icon: Info, status: 'ENCRYPTED', desc: 'Enterprise-grade end-to-end data security active for all egress ports.', color: 'text-honey', bg: 'bg-honey/10' }
+                    { label: 'DEVICE_INTEGRITY', icon: Zap, status: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'NOMINAL' : 'AWAITING_LINK', desc: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'High-fidelity temporal bridge established.' : 'Establish node registry connection for deep ingest.', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/' },
+                    { label: 'REGISTRY_BRIDGE', icon: Info, status: 'ENCRYPTED', desc: 'Enterprise-grade end-to-end data security active for all egress ports.', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' }
                 ].map((panel, i) => (
                     <motion.div
                         key={i}
                         whileHover={{ y: -8, scale: 1.02 }}
-                        className={cn(glass.card, "p-10 border-honey/10 flex items-center gap-10 group cursor-default shadow-2xl transition-all duration-500 relative overflow-hidden")}
+                        className={cn(glass.card, "p-10 border-[#F4D03F]/10 flex items-center gap-10 group cursor-default shadow-2xl transition-all duration-500 relative overflow-hidden")}
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-honey/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-honey/10 transition-all pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#F4D03F]/10 transition-all pointer-events-none" />
                         <div className={cn("w-22 h-22 rounded-[1.8rem] flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-110", panel.bg, `border-${panel.color.split('-')[1]}-500/20`)}>
                             <panel.icon className={cn("w-11 h-11", panel.color)} />
                         </div>
@@ -553,7 +553,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
             <PageHeader
                 icon={BluetoothIcon}
                 label="Wireless Node Connectivity Library v4.2"
-                title={<>Wireless <span className="text-honey">Interface</span></>}
+                title={<>Wireless <span className="text-[#F4D03F]">Interface</span></>}
                 subtitle="Configure BeeYield sensors via Bluetooth for calibration and industrial telemetry offloading."
                 actions={
                     <button
@@ -579,7 +579,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
             <div className="space-y-12">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-80 gap-6 opacity-30">
-                        <Loader2 className="w-16 h-16 animate-spin text-honey" />
+                        <Loader2 className="w-16 h-16 animate-spin text-[#F4D03F]" />
                         <span className={cn(glass.microLabel, "font-black tracking-[0.3em]")}>SCANNING_COMM_PORTS</span>
                     </div>
                 ) : devices.length > 0 ? (
@@ -590,29 +590,29 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                                 initial={{ opacity: 0, y: 24 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1, duration: 0.6 }}
-                                className={cn(glass.card, "p-12 shadow-2xl border-honey/10 flex flex-col justify-between group relative overflow-hidden hover:border-honey/40 transition-all")}
+                                className={cn(glass.card, "p-12 shadow-2xl border-[#F4D03F]/10 flex flex-col justify-between group relative overflow-hidden hover:border-[#F4D03F]/40 transition-all")}
                             >
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-honey/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-honey/15 transition-all pointer-events-none" />
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-[#F4D03F]/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-[#F4D03F]/15 transition-all pointer-events-none" />
                                 <div className="flex items-center gap-8 mb-10 relative z-10">
-                                    <div className="w-20 h-20 rounded-[1.8rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-xl group-hover:scale-110 group-hover:shadow-honey/10 transition-all duration-700">
-                                        <BluetoothIcon className="w-10 h-10 text-honey" />
+                                    <div className="w-20 h-20 rounded-[1.8rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-xl group-hover:scale-110 group-hover:shadow-honey/10 transition-all duration-700">
+                                        <BluetoothIcon className="w-10 h-10 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-2">
                                         <h4 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>{device.serial_number ? device.serial_number.toUpperCase() : 'NODE_UNKNOWN'}</h4>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                            <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                                             <p className={cn(glass.microLabel, "opacity-40 font-black tracking-widest text-[9px]")}>{device.device_uid}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between relative z-10 pt-8 border-t border-border/50">
                                     <div className="flex flex-col gap-1">
-                                        <span className={cn(glass.microLabel, "text-emerald-500 font-black italic tracking-widest text-[8px]")}>ACTIVE_ENCRYPTED</span>
+                                        <span className={cn(glass.microLabel, "text-[#1B9157] font-black italic tracking-widest text-[8px]")}>ACTIVE_ENCRYPTED</span>
                                         <p className="text-[10px] font-bold opacity-30 italic">STATION_LINK_STABLE</p>
                                     </div>
                                     <div className="text-right">
                                         <span className={cn(glass.microLabel, "opacity-40 font-black tabular-nums text-[10px]")}>FIRMWARE_V{device.firmware_version || '1.0'}</span>
-                                        <p className="text-[9px] font-bold text-honey/60 uppercase tracking-widest mt-1 italic">GEN_3_HUB</p>
+                                        <p className="text-[9px] font-bold text-[#F4D03F]/60 uppercase tracking-widest mt-1 italic">GEN_3_HUB</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -622,13 +622,13 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "p-32 text-center flex flex-col items-center justify-center space-y-12 bg-honey/[0.02] border-honey/10 border-dashed rounded-[4rem]")}
+                        className={cn(glass.card, "p-32 text-center flex flex-col items-center justify-center space-y-12 bg-[#F4D03F]/[0.02] border-[#F4D03F]/10 border-dashed rounded-[4rem]")}
                     >
-                        <div className="w-32 h-32 rounded-[3.5rem] bg-white/40 flex items-center justify-center border border-honey/20 shadow-2xl shadow-honey/5 opacity-20 group hover:scale-110 transition-transform duration-700">
-                            <BluetoothIcon className="w-16 h-16 text-honey" />
+                        <div className="w-32 h-32 rounded-[3.5rem] bg-gray-400 flex items-center justify-center border border-[#F4D03F]/20 shadow-2xl shadow-honey/5 opacity-20 group hover:scale-110 transition-transform duration-700">
+                            <BluetoothIcon className="w-16 h-16 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-6">
-                            <h3 className={cn(glass.sectionTitle, "text-5xl normal-case italic opacity-40")}>No Wireless <span className="text-honey">Handshake</span></h3>
+                            <h3 className={cn(glass.sectionTitle, "text-5xl normal-case italic opacity-40")}>No Wireless <span className="text-[#F4D03F]">Handshake</span></h3>
                             <p className={cn(glass.microLabel, "opacity-30 max-w-2xl mx-auto leading-relaxed font-bold tracking-widest")}>
                                 Ensure industrial BeeYield Hub hardware is in broadcast discovery mode. BLE terminal requires recursive provisioning permissions for provisioning.
                             </p>
@@ -650,7 +650,7 @@ export const USBView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
         <PageHeader
             icon={Usb}
             label="Serial Terminal Dashboard v1.8"
-            title={<>USB <span className="text-honey">Architecture</span></>}
+            title={<>USB <span className="text-[#F4D03F]">Architecture</span></>}
             subtitle="Manage industrial hub firmware and monitor raw serial output directly via encrypted physical link."
         />
 

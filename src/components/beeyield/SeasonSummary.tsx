@@ -16,9 +16,9 @@ const blockResults = [
 ];
 
 function calcGrade(score: number): { letter: string; color: string; bg: string } {
-    if (score >= 90) return { letter: 'A', color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/30 shadow-emerald-500/10' };
-    if (score >= 75) return { letter: 'B', color: 'text-emerald-400', bg: 'bg-emerald-400/10 border-emerald-400/30 shadow-emerald-400/10' };
-    if (score >= 60) return { letter: 'C', color: 'text-honey', bg: 'bg-honey/10 border-honey/30 shadow-honey/10' };
+    if (score >= 90) return { letter: 'A', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/ border-[#1B9157]/ shadow-emerald-500/10' };
+    if (score >= 75) return { letter: 'B', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/ border-[#1B9157]/ shadow-emerald-400/10' };
+    if (score >= 60) return { letter: 'C', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10 border-[#F4D03F]/30 shadow-honey/10' };
     if (score >= 45) return { letter: 'D', color: 'text-orange-500', bg: 'bg-orange-500/10 border-orange-500/30 shadow-orange-500/10' };
     return { letter: 'F', color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/30 shadow-red-500/10' };
 }
@@ -104,12 +104,12 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20')}>
+                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
                         <TrendingUp className="w-3.5 h-3.5" />
                         <span className="uppercase tracking-[0.1em]">End-of-Season Pollination Report</span>
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Season <span className="text-honey">Summary</span>
+                        Season <span className="text-[#F4D03F]">Summary</span>
                     </h1>
                     <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
                         Comprehensive performance grading
@@ -117,7 +117,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                 </div>
                 <button
                     onClick={handleExportCSV}
-                    className={cn(glass.btnPrimary, "h-14 px-8 text-xs bg-honey text-white border-honey hover:bg-amber-600 shadow-honey/20")}
+                    className={cn(glass.btnPrimary, "h-14 px-8 text-xs bg-[#F4D03F] text-white border-[#F4D03F] hover:bg-amber-600 shadow-honey/20")}
                 >
                     {exportDone ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Download className="w-4 h-4 mr-2" />}
                     {exportDone ? 'Data Exported' : 'Export CSV Dataset'}
@@ -156,7 +156,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                 <p className={cn(glass.microLabel, "font-bold opacity-80")}>{p.label}</p>
                                 <p className={cn(
                                     glass.sectionTitle, "text-xl tabular-nums tracking-tight",
-                                    p.val >= 85 ? "text-emerald-500" : p.val >= 60 ? "text-honey" : "text-red-500"
+                                    p.val >= 85 ? "text-[#1B9157]" : p.val >= 60 ? "text-[#F4D03F]" : "text-red-500"
                                 )}>{p.val}<span className="text-sm text-muted-foreground">/100</span></p>
                                 <p className="text-[10px] text-muted-foreground/60 italic leading-tight pt-1">{p.sub}</p>
                             </div>
@@ -168,7 +168,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
             {/* Block Data Table */}
             <div className="space-y-6">
                 <div className="flex items-center gap-4 border-b border-border pb-4">
-                    <Calculator className="w-6 h-6 text-honey" />
+                    <Calculator className="w-6 h-6 text-[#F4D03F]" />
                     <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Block Performance Data</h3>
                 </div>
 
@@ -182,14 +182,14 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/50 bg-white/30">
+                            <tbody className="divide-y divide-border/50 bg-gray-300">
                                 {blockResults.map(b => {
                                     const strengthPct = Math.round((b.delivered / b.contracted) * 100);
                                     const timingDelta = Math.abs(b.peakFlightDay - b.peakBloomDay);
                                     const isGood = strengthPct >= 85 && timingDelta <= 1 && b.coverageVariance <= 15;
                                     const isWarn = !isGood && strengthPct >= 60;
                                     return (
-                                        <tr key={b.block} className="hover:bg-white/50:bg-white/5 transition-colors group">
+                                        <tr key={b.block} className="hover:bg-[#F9F7F2]0:bg-[#F9F7F2] transition-colors group">
                                             <td className="px-8 py-5">
                                                 <span className={cn(glass.sectionTitle, "text-lg normal-case")}>{b.block}</span>
                                             </td>
@@ -197,7 +197,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                                 <span className={cn(glass.microLabel, "opacity-70 normal-case font-bold tabular-nums")}>{b.contracted.toFixed(2)}</span>
                                             </td>
                                             <td className="px-8 py-5">
-                                                <span className={cn(glass.sectionTitle, "text-xl tabular-nums tracking-tight", b.delivered >= b.contracted ? "text-emerald-500" : b.delivered >= b.contracted * 0.8 ? "text-honey" : "text-red-500")}>
+                                                <span className={cn(glass.sectionTitle, "text-xl tabular-nums tracking-tight", b.delivered >= b.contracted ? "text-[#1B9157]" : b.delivered >= b.contracted * 0.8 ? "text-[#F4D03F]" : "text-red-500")}>
                                                     {b.delivered.toFixed(2)}
                                                 </span>
                                             </td>
@@ -205,7 +205,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-2 w-20 bg-muted rounded-full overflow-hidden">
                                                         <div
-                                                            className={cn("h-full rounded-full", strengthPct >= 85 ? "bg-emerald-500" : strengthPct >= 60 ? "bg-honey" : "bg-red-500")}
+                                                            className={cn("h-full rounded-full", strengthPct >= 85 ? "bg-[#1B9157]" : strengthPct >= 60 ? "bg-[#F4D03F]" : "bg-red-500")}
                                                             style={{ width: `${Math.min(100, strengthPct)}%` }}
                                                         />
                                                     </div>
@@ -213,7 +213,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                                 </div>
                                             </td>
                                             <td className="px-8 py-5">
-                                                <span className={cn("text-xs font-bold tabular-nums flex items-center gap-2", timingDelta > 2 ? "text-red-500" : timingDelta > 0 ? "text-amber-500" : "text-emerald-500")}>
+                                                <span className={cn("text-xs font-bold tabular-nums flex items-center gap-2", timingDelta > 2 ? "text-red-500" : timingDelta > 0 ? "text-[#F4D03F]" : "text-[#1B9157]")}>
                                                     {timingDelta === 0 ? <><CheckCircle2 className="w-3.5 h-3.5" /> Aligned</> : `+${timingDelta} days`}
                                                 </span>
                                             </td>
@@ -222,8 +222,8 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                             </td>
                                             <td className="px-8 py-5">
                                                 <span className={cn(glass.badge, "border-transparent px-3",
-                                                    isGood ? "bg-emerald-500/10 text-emerald-500 font-bold" :
-                                                        isWarn ? "bg-amber-500/10 text-amber-500 font-bold" :
+                                                    isGood ? "bg-[#1B9157]/ text-[#1B9157] font-bold" :
+                                                        isWarn ? "bg-[#F4D03F]/ text-[#F4D03F] font-bold" :
                                                             "bg-red-500/10 text-red-500 font-bold"
                                                 )}>
                                                     {isGood ? 'Optimal' : isWarn ? 'Deficit' : 'Critical'}

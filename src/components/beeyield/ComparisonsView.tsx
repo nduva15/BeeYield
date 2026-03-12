@@ -73,12 +73,12 @@ const ComparisonsView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
                         <ArrowLeftRight className="w-4 h-4 mr-2" />
                         Recursive Diagnostic Engine v3.0
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Yield <span className="text-honey">Variance</span>
+                        Yield <span className="text-[#F4D03F]">Variance</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
                         Multi-Node Performance Benchmarking · Predictive Yield Delta
@@ -94,7 +94,7 @@ const ComparisonsView: React.FC = () => {
                 className={cn(glass.card, "p-8 shadow-xl")}
             >
                 <div className="flex items-center gap-3 mb-8">
-                    <Settings2 className="w-5 h-5 text-honey" />
+                    <Settings2 className="w-5 h-5 text-[#F4D03F]" />
                     <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Comparison Parameters</h3>
                 </div>
 
@@ -105,7 +105,7 @@ const ComparisonsView: React.FC = () => {
                         <Select name="apiary_id" value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
                             <SelectTrigger className={cn(glass.input, "h-14 text-sm font-semibold")}>
                                 <div className="flex items-center gap-2">
-                                    <MapPin className="w-4 h-4 text-honey" />
+                                    <MapPin className="w-4 h-4 text-[#F4D03F]" />
                                     <SelectValue placeholder="Select Apiary" />
                                 </div>
                             </SelectTrigger>
@@ -163,7 +163,7 @@ const ComparisonsView: React.FC = () => {
 
                     {/* Export */}
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-honey")}>Digital_Archive</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Digital_Archive</label>
                         <div className="flex gap-2">
                             <button className={cn(glass.btnSecondary, "flex-1 h-14 justify-center text-[10px] font-bold")}>
                                 <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -185,21 +185,21 @@ const ComparisonsView: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative")}
             >
-                <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-white/40 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-gray-400 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
                     <div className="space-y-1">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
-                                <TrendingUp className="w-6 h-6 text-honey" />
+                            <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm">
+                                <TrendingUp className="w-6 h-6 text-[#F4D03F]" />
                             </div>
-                            <h2 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Aggregated <span className="text-honey">Benchmarks</span></h2>
+                            <h2 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Aggregated <span className="text-[#F4D03F]">Benchmarks</span></h2>
                         </div>
                         <p className={cn(glass.microLabel, "opacity-60 italic mt-3 ml-2")}>Performance metrics across selected registry nodes.</p>
                     </div>
 
                     {/* Comparison Pills */}
-                    <div className="flex bg-white/40 p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
+                    <div className="flex bg-gray-400 p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
                         {(['apt12', 'apt24', 'main'] as const).map((tab) => (
                             <button
                                 key={tab}
@@ -207,8 +207,8 @@ const ComparisonsView: React.FC = () => {
                                 className={cn(
                                     "px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
                                     selectedComparisonTab === tab
-                                        ? "bg-white text-honey shadow-sm ring-1 ring-border"
-                                        : "text-foreground/40 hover:text-foreground hover:bg-white/40:bg-gray-100"
+                                        ? "bg-[#FFF9F0] text-[#F4D03F] shadow-sm ring-1 ring-border"
+                                        : "text-foreground/40 hover:text-foreground hover:bg-gray-400:bg-[#F4D03F]/10"
                                 )}
                             >
                                 {tab === 'apt12' ? 'APT_NODE_01' : tab === 'apt24' ? 'APT_NODE_02' : 'MAIN_REGISTRY'}
@@ -227,7 +227,7 @@ const ComparisonsView: React.FC = () => {
                                     exit={{ opacity: 0 }}
                                     className="absolute inset-0 z-20 bg-background/40 backdrop-blur-sm rounded-3xl flex items-center justify-center"
                                 >
-                                    <div className="flex flex-col items-center gap-4 text-honey">
+                                    <div className="flex flex-col items-center gap-4 text-[#F4D03F]">
                                         <Loader2 className="w-12 h-12 animate-spin" />
                                         <span className={cn(glass.microLabel, "animate-pulse font-bold")}>RECURSIVE_DIAGNOSTIC_FETCH...</span>
                                     </div>
@@ -236,7 +236,7 @@ const ComparisonsView: React.FC = () => {
                         </AnimatePresence>
 
                         {comparisonData.length === 0 && !isLoading ? (
-                            <div className="h-full w-full flex flex-col items-center justify-center bg-white/20 rounded-3xl border border-dashed border-border text-foreground/40">
+                            <div className="h-full w-full flex flex-col items-center justify-center bg-gray-200 rounded-3xl border border-dashed border-border text-foreground/40">
                                 <ArrowLeftRight className="w-16 h-16 mb-6 opacity-20" />
                                 <p className={cn(glass.microLabel, "normal-case text-lg font-semibold")}>No comparison data available for this selection.</p>
                             </div>
@@ -309,11 +309,11 @@ const ComparisonsView: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
-                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-8 h-8 text-honey" />
+                <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
                     <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Comparison Diagnostic Summary</h5>

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, ArrowLeft, CheckCircle, Shield, Terminal } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, CheckCircle, Shield, LogIn } from 'lucide-react';
 
 interface CebaForgotPasswordFormProps {
     onBackToLogin: () => void;
@@ -25,10 +25,10 @@ const CebaForgotPasswordForm: React.FC<CebaForgotPasswordFormProps> = ({
         const { error } = await resetPassword(email, 'ceba');
 
         if (error) {
-            toast.error('Reset Protocol Failed', { description: error.message });
+            toast.error('Error', { description: error.message });
         } else {
             setEmailSent(true);
-            toast.success('Secure reset directive transmitted.');
+            toast.success('Reset email sent');
         }
         setLoading(false);
     };
@@ -36,59 +36,49 @@ const CebaForgotPasswordForm: React.FC<CebaForgotPasswordFormProps> = ({
     if (emailSent) {
         return (
             <div className="space-y-6 text-center">
-                <div className="w-20 h-20 rounded-xl bg-beeyield-green/5 flex items-center justify-center mx-auto border-2 border-beeyield-green/20">
+                <div className="w-16 h-16 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="h-10 w-10 text-beeyield-green" />
                 </div>
                 <div className="space-y-2">
-                    <h3 className="text-sm font-black text-beeyield-green uppercase tracking-[0.3em]">
-                        Directive Transmitted
-                    </h3>
-                    <p className="text-[10px] font-black text-black/40 uppercase tracking-widest font-mono leading-relaxed max-w-xs mx-auto">
-                        Check your secure terminal (<span className="text-beeyield-green">{email}</span>) for the administrative reset link.
+                    <h3 className="text-xl font-bold text-gray-900">Check your email</h3>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                        We've sent a password reset link to <span className="text-beeyield-green font-bold">{email}</span>.
                     </p>
                 </div>
                 <Button
-                    type="button"
-                    className="w-full h-12 bg-white border-2 border-beeyield-green/10 hover:border-beeyield-gold/40 text-beeyield-green font-black uppercase tracking-widest text-[9px] rounded-none shadow-none"
                     variant="outline"
+                    className="w-full h-12 bg-gray-50 border-gray-200 text-gray-600 hover:text-gray-900 font-bold rounded-xl transition-all"
                     onClick={onBackToLogin}
                 >
-                    <ArrowLeft className="mr-2 h-3 w-3" />
-                    Return to Terminal
+                    Return to login
                 </Button>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="text-center space-y-4">
-                <div className="w-16 h-16 rounded-xl bg-beeyield-green/5 flex items-center justify-center mx-auto border-2 border-beeyield-green/20">
-                    <Shield className="h-6 w-6 text-beeyield-green" />
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
+                    <Mail className="h-6 w-6 text-honey" />
                 </div>
-                <div className="space-y-1">
-                    <h3 className="text-sm font-black text-beeyield-green uppercase tracking-[0.3em]">
-                        Access Key Reset
-                    </h3>
-                    <p className="text-[9px] font-black text-black/30 uppercase tracking-widest font-mono leading-loose">
-                        Initiate secure administrative key recovery
-                    </p>
-                </div>
+                <h3 className="text-lg font-bold text-gray-900">Reset your password</h3>
+                <p className="text-sm text-gray-500 font-medium">
+                    Enter your admin email to receive a reset link
+                </p>
             </div>
 
-            <div className="space-y-3">
-                <Label htmlFor="ceba-reset-email" className="text-beeyield-green font-black uppercase text-[9px] tracking-widest pl-1">
-                    Administrator Terminal ID
-                </Label>
-                <div className="relative group">
-                    <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
+            <div className="space-y-2">
+                <Label htmlFor="ceba-reset-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Admin Email</Label>
+                <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="ceba-reset-email"
                         type="email"
-                        placeholder="admin@ceba.sys"
+                        placeholder="admin@beeyield.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-14 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm rounded-none transition-all"
+                        className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                         required
                         autoFocus
                     />
@@ -97,26 +87,19 @@ const CebaForgotPasswordForm: React.FC<CebaForgotPasswordFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-glow transition-all active:scale-95 rounded-none"
+                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                 disabled={loading}
             >
-                {loading ? (
-                    <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Transmitting...
-                    </div>
-                ) : (
-                    'Transmit Reset Directive'
-                )}
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+                Send Reset Link
             </Button>
 
             <button
                 type="button"
                 onClick={onBackToLogin}
-                className="w-full flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
+                className="w-full text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors py-2 flex items-center justify-center gap-2"
             >
-                <ArrowLeft className="h-3 w-3" />
-                Abort — Return to Primary Authentication
+                <ArrowLeft className="h-4 w-4" /> Back to login
             </button>
         </form>
     );

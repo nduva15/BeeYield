@@ -42,7 +42,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
     };
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+        <div className="p-8 space-y-12 bg-[#FFF9F0] min-h-screen text-[#064e3b] antialiased">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
                 <div>
@@ -61,7 +61,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
 
                 <button
                     onClick={handleDownloadCert}
-                    className="flex items-center gap-4 px-8 py-4 bg-[#064e3b] border-4 border-[#064e3b] text-gray-900 font-black text-xs uppercase tracking-widest shadow-[8px_8px_0px_0px_#10b981] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                    className="flex items-center gap-4 px-8 py-4 bg-[#064e3b] border-4 border-[#064e3b] text-[#1A1A1A] font-black text-xs uppercase tracking-widest shadow-[8px_8px_0px_0px_#10b981] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
                 >
                     {generatingCert ? (
                         <Activity className="w-5 h-5 animate-spin" />
@@ -74,7 +74,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {auditMetrics.map((metric, i) => (
-                    <div key={i} className="border-4 border-[#064e3b] p-8 bg-white shadow-[10px_10px_0px_0px_#064e3b] flex flex-col h-full">
+                    <div key={i} className="border-4 border-[#064e3b] p-8 bg-[#FFF9F0] shadow-[10px_10px_0px_0px_#064e3b] flex flex-col h-full">
                         <div className="flex items-center justify-between mb-8">
                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">{metric.label}</p>
                             <CheckCircle2 className="w-5 h-5 text-[#10b981]" />
@@ -115,7 +115,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                             <p className="text-[10px] font-bold text-red-600/70 uppercase leading-relaxed max-w-md">
                                 {alert.detail}
                             </p>
-                            <button className="mt-6 px-6 py-3 bg-red-600 text-gray-900 font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-none">
+                            <button className="mt-6 px-6 py-3 bg-red-600 text-[#1A1A1A] font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-none">
                                 Issue Exception Order: {alert.action}
                             </button>
                         </div>

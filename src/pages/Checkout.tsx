@@ -358,8 +358,8 @@ const Checkout = () => {
                                 <span className="font-black text-xl text-foreground">BeeYield</span>
                             </div>
 
-                            <div className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce">
-                                <CheckCircle2 className="w-12 h-12 text-green-500" />
+                            <div className="w-24 h-24 rounded-full bg-[#1B9157]/ flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce">
+                                <CheckCircle2 className="w-12 h-12 text-[#1B9157]" />
                             </div>
                             <h1 className="text-4xl font-black mb-4">Order Confirmed!</h1>
                             <p className="text-muted-foreground text-lg max-w-md mx-auto">
@@ -462,14 +462,14 @@ const Checkout = () => {
                             {/* Traceability Indicator */}
                             {orderTraceabilityBatches.length > 0 && (
                                 <div className="p-6 bg-green-50 rounded-[2rem] border border-green-100 relative overflow-hidden">
-                                    <Tag className="absolute -right-4 -bottom-4 w-24 h-24 text-green-500/10 -rotate-12" />
+                                    <Tag className="absolute -right-4 -bottom-4 w-24 h-24 text-[#1B9157]/10 -rotate-12" />
                                     <div className="flex items-start gap-4 mb-2">
-                                        <ShieldCheck className="w-6 h-6 text-green-600 mt-1" />
+                                        <ShieldCheck className="w-6 h-6 text-[#1B9157] mt-1" />
                                         <div className="w-full">
-                                            <h4 className="font-black text-green-900">
+                                            <h4 className="font-black text-[#1B9157]">
                                                 Honey History Verification {orderTraceabilityBatches.length > 1 ? 'Codes' : 'Code'}
                                             </h4>
-                                            <p className="text-green-700/80 text-sm mb-4">
+                                            <p className="text-[#1B9157]/80 text-sm mb-4">
                                                 {orderTraceabilityBatches.length > 1
                                                     ? 'These batches have been verified for authenticity.'
                                                     : 'This batch has been verified for authenticity.'
@@ -478,8 +478,8 @@ const Checkout = () => {
                                             <div className="flex flex-wrap gap-2">
                                                 {orderTraceabilityBatches.map((batch, idx) => (
                                                     <div key={idx} className="inline-flex items-center gap-3 px-4 py-2 bg-green-100 rounded-full border border-green-200">
-                                                        <span className="text-xs font-black text-green-600 uppercase tracking-tighter">Trace ID:</span>
-                                                        <span className="font-mono font-bold text-green-900">{batch}</span>
+                                                        <span className="text-xs font-black text-[#1B9157] uppercase tracking-tighter">Trace ID:</span>
+                                                        <span className="font-mono font-bold text-[#1B9157]">{batch}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -571,8 +571,8 @@ const Checkout = () => {
                             const isPast = stepList.indexOf(currentStep) > idx;
                             return (
                                 <div key={step.id} className="flex items-center gap-2 md:gap-4">
-                                    <div className={`flex items-center gap-2 ${isActive ? 'text-primary' : isPast ? 'text-green-600' : 'text-muted-foreground'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isActive ? 'bg-primary text-gray-900' : isPast ? 'bg-green-600 text-gray-900' : 'bg-muted'}`}>
+                                    <div className={`flex items-center gap-2 ${isActive ? 'text-primary' : isPast ? 'text-[#1B9157]' : 'text-muted-foreground'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isActive ? 'bg-primary text-[#1A1A1A]' : isPast ? 'bg-green-600 text-[#1A1A1A]' : 'bg-muted'}`}>
                                             {isPast ? <CheckCircle2 className="w-5 h-5" /> : <step.icon className="w-4 h-4" />}
                                         </div>
                                         <span className="font-semibold hidden sm:inline">{step.label}</span>
@@ -746,7 +746,7 @@ const Checkout = () => {
                                                         {/* Stock Status */}
                                                         <div className="col-span-2 w-full md:w-auto hidden md:block">
                                                             {item.inStock ? (
-                                                                <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">In Stock</Badge>
+                                                                <Badge variant="outline" className="border-green-200 text-[#1B9157] bg-green-50">In Stock</Badge>
                                                             ) : (
                                                                 <Badge variant="outline" className="border-red-200 text-red-700 bg-red-50">Out of Stock</Badge>
                                                             )}
@@ -758,7 +758,7 @@ const Checkout = () => {
                                                                 size="sm"
                                                                 disabled={!item.inStock}
                                                                 onClick={() => moveFromWishlistToCart(item)}
-                                                                className="w-full rounded-full bg-primary hover:bg-primary/90 text-gray-900 font-bold"
+                                                                className="w-full rounded-full bg-primary hover:bg-primary/90 text-[#1A1A1A] font-bold"
                                                             >
                                                                 Add To Cart
                                                             </Button>
@@ -787,8 +787,8 @@ const Checkout = () => {
                                             onClick={() => setPaymentMethod('mpesa')}
                                         >
                                             <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center">
-                                                    <Smartphone className="text-green-600 w-8 h-8" />
+                                                <div className="w-14 h-14 rounded-2xl bg-[#1B9157]/ flex items-center justify-center">
+                                                    <Smartphone className="text-[#1B9157] w-8 h-8" />
                                                 </div>
                                                 <div>
                                                     <span className="font-bold text-lg">M-Pesa</span>
@@ -851,8 +851,8 @@ const Checkout = () => {
                                                 </div>
                                                 {stripeCardReady && (
                                                     <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                                                        <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                                        <p className="text-sm text-green-700 font-medium">
+                                                        <CheckCircle2 className="w-5 h-5 text-[#1B9157]" />
+                                                        <p className="text-sm text-[#1B9157] font-medium">
                                                             Card ending in {paymentDetails.cardNumber.slice(-4)} verified
                                                         </p>
                                                     </div>
@@ -1015,8 +1015,8 @@ const Checkout = () => {
                                         <h2 className="text-2xl font-black">Shipment Status</h2>
                                         <p className="text-muted-foreground">Order ID: {orderNumber}</p>
                                     </div>
-                                    <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center">
-                                        <Package className="w-8 h-8 text-green-600" />
+                                    <div className="w-16 h-16 rounded-full bg-[#1B9157]/ flex items-center justify-center">
+                                        <Package className="w-8 h-8 text-[#1B9157]" />
                                     </div>
                                 </div>
 
@@ -1068,11 +1068,11 @@ const Checkout = () => {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {appliedCoupon ? (
-                                    <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-xl border border-green-500/20">
+                                    <div className="flex items-center justify-between p-3 bg-[#1B9157]/ rounded-xl border border-[#1B9157]/">
                                         <div className="flex items-center gap-2">
-                                            <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                            <span className="font-bold text-green-700">{appliedCoupon.code}</span>
-                                            <Badge variant="secondary" className="text-green-700 bg-green-100">
+                                            <CheckCircle2 className="w-5 h-5 text-[#1B9157]" />
+                                            <span className="font-bold text-[#1B9157]">{appliedCoupon.code}</span>
+                                            <Badge variant="secondary" className="text-[#1B9157] bg-green-100">
                                                 {appliedCoupon.discount}% OFF
                                             </Badge>
                                         </div>
@@ -1162,7 +1162,7 @@ const Checkout = () => {
                                             <button
                                                 key={amount}
                                                 onClick={() => { setSelectedTip(amount); setCustomTipPercent(''); }}
-                                                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${selectedTip === amount ? 'bg-primary text-gray-900 border-primary' : 'border-border hover:border-primary'}`}
+                                                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${selectedTip === amount ? 'bg-primary text-[#1A1A1A] border-primary' : 'border-border hover:border-primary'}`}
                                             >
                                                 {formatPrice(amount)}
                                             </button>
@@ -1198,7 +1198,7 @@ const Checkout = () => {
                                         <span>{formatPrice(taxAmount)}</span>
                                     </div>
                                     {appliedCoupon && (
-                                        <div className="flex justify-between text-green-600">
+                                        <div className="flex justify-between text-[#1B9157]">
                                             <span>Coupon Discount</span>
                                             <span>-{formatPrice(couponDiscount)}</span>
                                         </div>

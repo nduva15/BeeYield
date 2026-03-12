@@ -66,7 +66,7 @@ const InLandPollination = () => {
                 <div className="absolute -bottom-4 -right-4 bg-background rounded-xl shadow-lg p-4 border border-border">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-foreground">Acoustic Monitoring</p>
-                    <div className="flex items-center gap-1 text-xs text-green-600">
+                    <div className="flex items-center gap-1 text-xs text-[#1B9157]">
                       <Activity className="h-3 w-3" />
                       Detecting Flight Signatures
                     </div>

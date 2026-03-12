@@ -327,7 +327,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 <div>
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                            <Tag className="w-6 h-6 text-gray-900" />
+                            <Tag className="w-6 h-6 text-[#1A1A1A]" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600">
@@ -352,7 +352,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         size="sm"
                         onClick={handleGeneratePDF}
                         disabled={isGenerating}
-                        className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-gray-900 shadow-soft transition-all hover:shadow-lg hover:-translate-y-0.5"
+                        className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-[#1A1A1A] shadow-soft transition-all hover:shadow-lg hover:-translate-y-0.5"
                     >
                         {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                         {isGenerating ? 'Exporting...' : 'Export PDF'}
@@ -364,21 +364,21 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Left Panel - Content Editor */}
                 <div className="lg:col-span-1 space-y-4">
-                    <Card className="glass-panel border-gray-300 shadow-sm overflow-hidden">
+                    <Card className="glass-panel border-[#F4D03F]/40 shadow-sm overflow-hidden">
                         <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent">
                             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
-                                <FileText className="w-4 h-4 text-amber-500" />
+                                <FileText className="w-4 h-4 text-[#F4D03F]" />
                                 Label Content
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 pt-4">
                             {/* Hive Selector */}
                             <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/50 space-y-2">
-                                <Label className="text-amber-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                                <Label className="text-[#F4D03F] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
                                     <Hexagon className="w-3 h-3" /> Auto-fill from Hive
                                 </Label>
                                 <Select onValueChange={handleHiveSelect}>
-                                    <SelectTrigger className="h-9 bg-white/50 text-xs border-amber-200/30">
+                                    <SelectTrigger className="h-9 bg-[#F9F7F2]0 text-xs border-amber-200/30">
                                         <SelectValue placeholder="Select a hive..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -395,11 +395,11 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                             {/* Harvest Selector */}
                             <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/50 space-y-2">
-                                <Label className="text-amber-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                                <Label className="text-[#F4D03F] text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
                                     <LinkIcon className="w-3 h-3" /> Auto-fill from Harvest
                                 </Label>
                                 <Select onValueChange={handleHarvestSelect}>
-                                    <SelectTrigger className="h-9 bg-white/50 text-xs border-amber-200/30">
+                                    <SelectTrigger className="h-9 bg-[#F9F7F2]0 text-xs border-amber-200/30">
                                         <SelectValue placeholder="Select a batch..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -421,7 +421,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         id="productName"
                                         value={design.productName}
                                         onChange={e => updateDesign({ productName: e.target.value })}
-                                        className="h-9 text-xs bg-white/50"
+                                        className="h-9 text-xs bg-[#F9F7F2]0"
                                         placeholder="e.g. Mountain Wildflower"
                                     />
                                 </div>
@@ -432,7 +432,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             id="weight"
                                             value={design.weight}
                                             onChange={e => updateDesign({ weight: e.target.value })}
-                                            className="h-9 text-xs bg-white/50"
+                                            className="h-9 text-xs bg-[#F9F7F2]0"
                                         />
                                     </div>
                                     <div className="space-y-1.5">
@@ -441,7 +441,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             id="weightUnit"
                                             value={design.weightUnit}
                                             onChange={e => updateDesign({ weightUnit: e.target.value })}
-                                            className="h-9 text-xs bg-white/50"
+                                            className="h-9 text-xs bg-[#F9F7F2]0"
                                         />
                                     </div>
                                 </div>
@@ -451,7 +451,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         id="producer"
                                         value={design.producer}
                                         onChange={e => updateDesign({ producer: e.target.value })}
-                                        className="h-9 text-xs bg-white/50"
+                                        className="h-9 text-xs bg-[#F9F7F2]0"
                                     />
                                 </div>
 
@@ -461,7 +461,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="h-5 px-2 text-[10px] gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-100/50"
+                                            className="h-5 px-2 text-[10px] gap-1 text-[#F4D03F] hover:text-[#F4D03F] hover:bg-[#F4D03F]/"
                                             onClick={generateBlurb}
                                             disabled={isGeneratingBlurb}
                                         >
@@ -471,7 +471,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </div>
                                     <textarea
                                         id="marketingNote"
-                                        className="w-full rounded-lg border border-input bg-white/50 px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all resize-none"
+                                        className="w-full rounded-lg border border-input bg-[#F9F7F2]0 px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all resize-none"
                                         rows={4}
                                         maxLength={180}
                                         value={design.marketingNote}
@@ -484,10 +484,10 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </CardContent>
                     </Card>
 
-                    <Card className="glass-panel border-gray-300 shadow-sm overflow-hidden">
+                    <Card className="glass-panel border-[#F4D03F]/40 shadow-sm overflow-hidden">
                         <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent">
                             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
-                                <Plus className="w-4 h-4 text-amber-500" />
+                                <Plus className="w-4 h-4 text-[#F4D03F]" />
                                 Details & QR
                             </CardTitle>
                         </CardHeader>
@@ -501,7 +501,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <Input
                                         value={design.batchNumber}
                                         onChange={e => updateDesign({ batchNumber: e.target.value })}
-                                        className="h-8 text-[11px] bg-white/50"
+                                        className="h-8 text-[11px] bg-[#F9F7F2]0"
                                         placeholder="LOT Number"
                                     />
                                 )}
@@ -515,7 +515,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         type="date"
                                         value={design.bestBeforeDate}
                                         onChange={e => updateDesign({ bestBeforeDate: e.target.value })}
-                                        className="h-8 text-[11px] bg-white/50"
+                                        className="h-8 text-[11px] bg-[#F9F7F2]0"
                                     />
                                 )}
 
@@ -537,7 +537,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 {/* Middle Panel - Visual Designer */}
                 <div className="lg:col-span-2 space-y-4">
                     <Card className="glass-card overflow-hidden shadow-2xl ring-1 ring-black/5">
-                        <div className="p-4 sm:p-12 flex items-center justify-center bg-gray-50/50 min-h-[500px] relative overflow-auto backdrop-blur-3xl">
+                        <div className="p-4 sm:p-12 flex items-center justify-center bg-[#F9F7F2]/50 min-h-[500px] relative overflow-auto backdrop-blur-3xl">
                             {/* Grid Background Effect */}
                             <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                                 style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
@@ -641,8 +641,8 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 </div>
 
                                 {design.showQRCode && (
-                                    <div className="absolute bottom-16 right-8 w-12 h-12 bg-white shadow-sm border border-black/5 flex items-center justify-center p-1 rounded-sm">
-                                        <Grid className="w-full h-full text-black/90" />
+                                    <div className="absolute bottom-16 right-8 w-12 h-12 bg-[#FFF9F0] shadow-sm border border-black/5 flex items-center justify-center p-1 rounded-sm">
+                                        <Grid className="w-full h-full text-[#1A1A1A]/90" />
                                     </div>
                                 )}
                             </div>
@@ -651,7 +651,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                     {/* Bottom Sections: Saved & Checklist */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="glass-panel border-gray-300">
+                        <Card className="glass-panel border-[#F4D03F]/40">
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">My Saved Labels</CardTitle>
                             </CardHeader>
@@ -664,7 +664,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 ) : (
                                     <div className="space-y-2">
                                         {savedDesigns.map(saved => (
-                                            <div key={saved.id} className="p-3 rounded-lg border bg-white/50 hover:bg-white/80:bg-white/5 transition-all group relative">
+                                            <div key={saved.id} className="p-3 rounded-lg border bg-[#F9F7F2]0 hover:bg-[#FFF9F0]/80:bg-[#F9F7F2] transition-all group relative">
                                                 <div className="flex justify-between items-start">
                                                     <div>
                                                         <p className="text-sm font-bold text-foreground">{saved.productName || 'Unnamed Label'}</p>
@@ -685,21 +685,21 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 )}
                             </CardContent>
                         </Card>
-                        <Card className="glass-panel border-gray-300">
+                        <Card className="glass-panel border-[#F4D03F]/40">
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Compliance Check</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="space-y-2">
-                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-green-500/10 border border-green-500/20 text-green-700">
+                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-[#1B9157]/ border border-[#1B9157]/ text-[#1B9157]">
                                         <ShieldCheck className="w-4 h-4 shrink-0" />
                                         <span>Product name is legible</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-green-500/10 border border-green-500/20 text-green-700">
+                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-[#1B9157]/ border border-[#1B9157]/ text-[#1B9157]">
                                         <ShieldCheck className="w-4 h-4 shrink-0" />
                                         <span>Net weight complies with EU/US std</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-700">
+                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-[#F4D03F]/ border border-amber-500/20 text-[#F4D03F]">
                                         <Shield className="w-4 h-4 shrink-0" />
                                         <span>Check local laws for address format</span>
                                     </div>
@@ -711,7 +711,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                 {/* Right Panel - Style & Export */}
                 <div className="lg:col-span-1 space-y-4">
-                    <Card className="glass-panel border-gray-300 shadow-sm">
+                    <Card className="glass-panel border-[#F4D03F]/40 shadow-sm">
                         <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent">
                             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <Palette className="w-4 h-4 text-orange-500" />
@@ -733,12 +733,12 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             "group p-2 rounded-xl border-2 text-left transition-all hover:scale-105 duration-200",
                                             design.template === tmp.id
                                                 ? 'border-amber-500 shadow-md ring-2 ring-amber-500/20'
-                                                : 'border-transparent hover:border-amber-200 bg-white/50'
+                                                : 'border-transparent hover:border-amber-200 bg-[#F9F7F2]0'
                                         )}
                                     >
                                         <div className="aspect-[3/2] rounded-lg mb-2 shadow-inner flex flex-col p-2 space-y-1 overflow-hidden relative" style={{ backgroundColor: tmp.color }}>
-                                            <div className="w-full h-1 rounded-full opacity-20 bg-current text-black" />
-                                            <div className="w-2/3 h-1 rounded-full opacity-10 bg-current text-black" />
+                                            <div className="w-full h-1 rounded-full opacity-20 bg-current text-[#1A1A1A]" />
+                                            <div className="w-2/3 h-1 rounded-full opacity-10 bg-current text-[#1A1A1A]" />
                                         </div>
                                         <p className="text-[10px] font-bold truncate leading-tight">{tmp.name}</p>
                                     </button>
@@ -747,7 +747,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </CardContent>
                     </Card>
 
-                    <Card className="glass-panel border-gray-300 shadow-sm">
+                    <Card className="glass-panel border-[#F4D03F]/40 shadow-sm">
                         <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent">
                             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <Grid className="w-4 h-4 text-orange-500" />
@@ -758,17 +758,17 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold uppercase opacity-60">Width (mm)</Label>
-                                    <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs bg-white/50" />
+                                    <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs bg-[#F9F7F2]0" />
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold uppercase opacity-60">Height (mm)</Label>
-                                    <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs bg-white/50" />
+                                    <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs bg-[#F9F7F2]0" />
                                 </div>
                             </div>
                             <div className="space-y-1">
                                 <Label className="text-[10px] font-bold uppercase opacity-60">Shape</Label>
                                 <Select value={design.customShape} onValueChange={v => updateDesign({ customShape: v })}>
-                                    <SelectTrigger className="h-8 text-xs bg-white/50">
+                                    <SelectTrigger className="h-8 text-xs bg-[#F9F7F2]0">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -781,7 +781,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </CardContent>
                     </Card>
 
-                    <Card className="glass-panel border-gray-300 shadow-sm">
+                    <Card className="glass-panel border-[#F4D03F]/40 shadow-sm">
                         <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent">
                             <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <ImageIcon className="w-4 h-4 text-orange-500" />
@@ -790,14 +790,14 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </CardHeader>
                         <CardContent className="pt-4">
                             <div
-                                className="w-full h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center bg-white/30 cursor-pointer hover:bg-amber-50/50:bg-white/10 transition-colors group"
+                                className="w-full h-24 rounded-xl border-2 border-dashed border-[#F4D03F]/20 flex flex-col items-center justify-center bg-gray-300 cursor-pointer hover:bg-amber-50/50:bg-[#F4D03F]/10 transition-colors group"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 {design.logoUrl ? (
                                     <img src={design.logoUrl} alt="Logo" className="h-16 object-contain" />
                                 ) : (
                                     <>
-                                        <Upload className="w-5 h-5 text-gray-400 group-hover:text-amber-500 transition-colors mb-2" />
+                                        <Upload className="w-5 h-5 text-gray-400 group-hover:text-[#F4D03F] transition-colors mb-2" />
                                         <p className="text-[9px] text-gray-400 uppercase font-bold">Click to Upload Brand Logo</p>
                                     </>
                                 )}

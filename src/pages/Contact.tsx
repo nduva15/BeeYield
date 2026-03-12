@@ -240,7 +240,7 @@ const Contact = () => {
               {quickSent ? (
                 <div className="text-center py-12 space-y-4 animate-in fade-in zoom-in duration-500">
                   <div className="mx-auto w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                    <CheckCircle2 className="h-8 w-8 text-[#1B9157]" />
                   </div>
                   <h3 className="text-2xl font-bold">Message Sent!</h3>
                   <p className="text-muted-foreground max-w-sm mx-auto">
@@ -321,7 +321,7 @@ const Contact = () => {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-gray-900 shadow-lg shadow-amber-500/20 font-bold"
+                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-[#1A1A1A] shadow-lg shadow-amber-500/20 font-bold"
                     disabled={quickLoading}
                   >
                     {quickLoading ? (

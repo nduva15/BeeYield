@@ -237,22 +237,22 @@ const OurStory = () => {
       {/* CTA Section */}
       <section className="py-16 sm:py-20 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="bg-[#0A2612] text-gray-900 border-none shadow-2xl rounded-[3rem] overflow-hidden">
+          <Card className="bg-[#0A2612] text-[#1A1A1A] border-none shadow-2xl rounded-[3rem] overflow-hidden">
             <CardContent className="p-8 sm:p-12 text-center relative">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-32 -mb-32" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157]/ rounded-full blur-3xl -mr-32 -mt-32" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F]/ rounded-full blur-3xl -ml-32 -mb-32" />
 
-              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-gray-900">
-                Join Us on Our <span className="text-green-400">Journey</span>
+              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-[#1A1A1A]">
+                Join Us on Our <span className="text-[#1B9157]">Journey</span>
               </h2>
-              <p className="text-green-100/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
+              <p className="text-[#1B9157]/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
                 From a family dream in rural Kenya to a growing presence in pollination services — we're just getting started. Partner with us to improve agriculture.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-                <Button size="lg" className="bg-white text-green-900 hover:bg-green-50 font-bold px-8 h-12 rounded-xl" asChild>
+                <Button size="lg" className="bg-[#FFF9F0] text-[#1B9157] hover:bg-green-50 font-bold px-8 h-12 rounded-xl" asChild>
                   <Link to="/contact">Get In Touch</Link>
                 </Button>
-                <Button variant="outline" size="lg" className="border-gray-300 text-gray-900 hover:bg-white/10 font-bold px-8 h-12 rounded-xl" asChild>
+                <Button variant="outline" size="lg" className="border-[#F4D03F]/40 text-[#1A1A1A] hover:bg-[#F4D03F]/10 font-bold px-8 h-12 rounded-xl" asChild>
                   <Link to="/careers">Join Our Team</Link>
                 </Button>
               </div>

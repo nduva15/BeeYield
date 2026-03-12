@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-white text-[#064e3b] font-sans antialiased selection:bg-[#facc15] selection:text-[#064e3b]">
+    <div className="min-h-screen bg-[#FFF9F0] text-[#064e3b] font-sans antialiased selection:bg-[#facc15] selection:text-[#064e3b]">
       {/* Hero Section - Swiss Brutalist */}
-      <section className="relative flex items-center border-b-4 border-[#064e3b] py-32 bg-white">
+      <section className="relative flex items-center border-b-4 border-[#064e3b] py-32 bg-[#FFF9F0]">
         <div className="container mx-auto px-8 relative z-10">
           <div className="max-w-5xl">
-            <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-[#064e3b] bg-[#10b981] text-gray-900 text-[10px] font-black uppercase tracking-widest mb-12 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+            <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-[#064e3b] bg-[#10b981] text-[#1A1A1A] text-[10px] font-black uppercase tracking-widest mb-12 shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
               EST. 2020 // KIBWEZI FARM
             </div>
 
@@ -24,13 +24,13 @@ const About = () => {
             <div className="flex flex-col sm:flex-row gap-6">
               <Link
                 to="/ourstory"
-                className="h-16 px-12 border-2 border-[#064e3b] bg-white text-[#064e3b] font-black uppercase text-xs tracking-widest hover:bg-[#10b981] hover:text-gray-900 transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none flex items-center justify-center transform active:translate-x-1 active:translate-y-1"
+                className="h-16 px-12 border-2 border-[#064e3b] bg-[#FFF9F0] text-[#064e3b] font-black uppercase text-xs tracking-widest hover:bg-[#10b981] hover:text-[#1A1A1A] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none flex items-center justify-center transform active:translate-x-1 active:translate-y-1"
               >
                 View History
               </Link>
               <Link
                 to="/contact"
-                className="h-16 px-12 border-2 border-[#064e3b] bg-[#facc15] text-[#064e3b] font-black uppercase text-xs tracking-widest hover:bg-black hover:text-gray-900 transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none flex items-center justify-center transform active:translate-x-1 active:translate-y-1"
+                className="h-16 px-12 border-2 border-[#064e3b] bg-[#facc15] text-[#064e3b] font-black uppercase text-xs tracking-widest hover:bg-[#FFF9F0] hover:text-[#1A1A1A] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none flex items-center justify-center transform active:translate-x-1 active:translate-y-1"
               >
                 Contact Us
               </Link>
@@ -40,11 +40,11 @@ const About = () => {
       </section>
 
       {/* Origin Section */}
-      <section className="py-32 border-b-4 border-[#064e3b] bg-white">
+      <section className="py-32 border-b-4 border-[#064e3b] bg-[#FFF9F0]">
         <div className="container mx-auto px-8">
           <div className="grid lg:grid-cols-2 gap-20 items-stretch">
-            <div className="border-2 border-[#064e3b] p-12 bg-white shadow-[10px_10px_0px_0px_rgba(6,78,59,1)] flex flex-col justify-center">
-              <div className="inline-block border-2 border-[#064e3b] bg-[#064e3b] text-gray-900 px-4 py-1 font-black uppercase tracking-widest text-[10px] mb-8">
+            <div className="border-2 border-[#064e3b] p-12 bg-[#FFF9F0] shadow-[10px_10px_0px_0px_rgba(6,78,59,1)] flex flex-col justify-center">
+              <div className="inline-block border-2 border-[#064e3b] bg-[#064e3b] text-[#1A1A1A] px-4 py-1 font-black uppercase tracking-widest text-[10px] mb-8">
                 How we started
               </div>
               <h2 className="text-5xl md:text-7xl font-black mb-10 leading-[0.85] tracking-tighter uppercase">
@@ -69,8 +69,8 @@ const About = () => {
                 />
               </div>
               <div className="absolute top-10 right-10 bg-[#10b981] border-2 border-[#064e3b] p-8 shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
-                <p className="text-6xl font-black text-gray-900">184</p>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest border-t border-gray-300 pt-2 mt-2">Active Hives</p>
+                <p className="text-6xl font-black text-[#1A1A1A]">184</p>
+                <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest border-t border-[#F4D03F]/40 pt-2 mt-2">Active Hives</p>
               </div>
             </div>
           </div>
@@ -78,7 +78,7 @@ const About = () => {
       </section>
 
       {/* System Modules */}
-      <section className="py-32 bg-white">
+      <section className="py-32 bg-[#FFF9F0]">
         <div className="container mx-auto px-8">
           <div className="flex items-center gap-4 mb-20">
             <Terminal className="w-8 h-8 text-[#10b981]" />
@@ -96,7 +96,7 @@ const About = () => {
                 to={item.link}
                 className="p-12 border-[#064e3b] border-r-4 last:border-r-0 hover:bg-[#facc15]/20 transition-all flex flex-col group"
               >
-                <div className="h-16 w-16 border-2 border-[#064e3b] flex items-center justify-center mb-10 bg-white group-hover:bg-[#10b981] group-hover:text-gray-900 transition-all">
+                <div className="h-16 w-16 border-2 border-[#064e3b] flex items-center justify-center mb-10 bg-[#FFF9F0] group-hover:bg-[#10b981] group-hover:text-[#1A1A1A] transition-all">
                   <item.icon className="h-8 w-8" />
                 </div>
                 <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter">{item.title}</h3>
@@ -115,7 +115,7 @@ const About = () => {
         <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fee74a62?auto=format&fit=crop&q=80&w=2600')] bg-cover grayscale" />
         <div className="relative z-10 max-w-4xl mx-auto text-center border-4 border-white p-12 bg-[#064e3b]/80 backdrop-blur-sm">
           <Hexagon className="w-12 h-12 text-[#facc15] mx-auto mb-8 fill-current" />
-          <h2 className="text-3xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter leading-none mb-6">Hive Monitoring</h2>
+          <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] uppercase tracking-tighter leading-none mb-6">Hive Monitoring</h2>
           <p className="text-xs font-black uppercase text-[#10b981] tracking-[0.4em]">Active since 2020</p>
         </div>
       </section>

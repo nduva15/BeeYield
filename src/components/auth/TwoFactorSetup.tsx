@@ -42,7 +42,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
         const { data, error } = await enrollMFA();
 
         if (error) {
-            toast.error('Failed to start 2FA enrollment', { description: error.message });
+            toast.error('Error starting setup', { description: error.message });
             setEnrolling(false);
             return;
         }
@@ -65,9 +65,9 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
         const { error } = await verifyMFAEnrollment(enrollmentData.id, verificationCode);
 
         if (error) {
-            toast.error('Verification failed', { description: error.message });
+            toast.error('Code verification failed', { description: error.message });
         } else {
-            toast.success('2FA enabled successfully! 🔐');
+            toast.success('Security enabled!');
             setEnrollmentData(null);
             setVerificationCode('');
             await loadFactors();
@@ -77,17 +77,13 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
     };
 
     const handleUnenroll = async (factorId: string) => {
-        if (!confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
-            return;
-        }
-
         setLoading(true);
         const { error } = await unenrollMFA(factorId);
 
         if (error) {
-            toast.error('Failed to disable 2FA', { description: error.message });
+            toast.error('Error disabling security', { description: error.message });
         } else {
-            toast.success('2FA has been disabled');
+            toast.success('Security disabled');
             await loadFactors();
         }
         setLoading(false);
@@ -98,103 +94,90 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
             navigator.clipboard.writeText(enrollmentData.secret);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-            toast.success('Secret key copied to clipboard');
+            toast.success('Secret key copied');
         }
     };
 
     if (!user) {
         return (
-            <Card>
-                <CardContent className="py-10 text-center text-muted-foreground">
-                    Please sign in to manage 2FA settings.
-                </CardContent>
-            </Card>
+            <div className="p-10 text-center text-gray-400 font-medium bg-white/50 rounded-[2rem] border border-gray-100">
+                Please sign in to manage security settings.
+            </div>
         );
     }
 
     if (loading && factors.length === 0) {
         return (
-            <Card>
-                <CardContent className="py-10 flex items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </CardContent>
-            </Card>
+            <div className="p-20 flex items-center justify-center bg-white/50 rounded-[2rem] border border-gray-100">
+                <Loader2 className="h-8 w-8 animate-spin text-honey" />
+            </div>
         );
     }
 
-    // Enrollment flow
     if (enrollmentData) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Shield className="h-5 w-5 text-primary" />
-                        Set Up Extra Security
-                    </CardTitle>
-                    <CardDescription>
-                        Scan the code with your security app (Google Authenticator, etc.)
-                    </CardDescription>
+            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+                <CardHeader className="p-8 pb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center">
+                            <Shield className="h-5 w-5 text-honey" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl font-bold tracking-tight">Setup Extra Security</CardTitle>
+                            <CardDescription className="text-gray-500 font-medium">Scan the QR code with your authenticator app</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* QR Code */}
-                    <div className="flex justify-center">
-                        <div className="p-4 bg-white rounded-lg border-2 border-dashed">
+                <CardContent className="p-8 pt-4 space-y-8">
+                    <div className="flex justify-center p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                        <div className="bg-white p-3 rounded-2xl shadow-sm">
                             <img
                                 src={enrollmentData.qr_code}
-                                alt="2FA QR Code"
-                                className="w-48 h-48"
+                                alt="QR Code"
+                                className="w-40 h-40"
                             />
                         </div>
                     </div>
 
-                    {/* Manual Entry */}
-                    <div className="space-y-2">
-                        <Label className="text-xs text-muted-foreground">
-                            Can't scan? Enter this code manually:
-                        </Label>
-                        <div className="flex items-center gap-2">
-                            <code className="flex-1 p-3 bg-muted rounded-md font-mono text-sm break-all">
+                    <div className="space-y-3">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Manual Entry Key</p>
+                        <div className="flex items-center gap-2 p-1 bg-gray-50 rounded-2xl border border-gray-100">
+                            <code className="flex-1 px-4 py-3 font-mono text-sm text-gray-600 break-all select-all">
                                 {enrollmentData.secret}
                             </code>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="ghost"
                                 size="icon"
                                 onClick={copySecret}
+                                className="h-12 w-12 rounded-xl text-gray-400 hover:text-honey"
                             >
-                                {copied ? (
-                                    <Check className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <Copy className="h-4 w-4" />
-                                )}
+                                {copied ? <Check className="h-5 w-5 text-beeyield-green" /> : <Copy className="h-5 w-5" />}
                             </Button>
                         </div>
                     </div>
 
-                    {/* Verification */}
-                    <form onSubmit={handleVerifyEnrollment} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="verify-code">
-                                Enter the 6-digit code from your app
+                    <form onSubmit={handleVerifyEnrollment} className="space-y-6">
+                        <div className="space-y-3">
+                            <Label htmlFor="verify-code" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                Verification Code
                             </Label>
                             <Input
                                 id="verify-code"
-                                name="verification-code"
-                                type="text"
                                 placeholder="000000"
                                 value={verificationCode}
                                 onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                className="text-center text-2xl tracking-[0.5em] font-mono"
+                                className="h-14 text-center text-3xl tracking-[0.4em] font-bold bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-2xl"
                                 maxLength={6}
                                 required
                             />
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-4 pt-2">
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="flex-1"
+                                className="flex-1 h-14 rounded-2xl font-bold border-gray-200 text-gray-500 hover:bg-gray-50"
                                 onClick={() => {
                                     setEnrollmentData(null);
                                     setVerificationCode('');
@@ -204,17 +187,10 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                             </Button>
                             <Button
                                 type="submit"
-                                className="flex-1"
+                                className="flex-1 h-14 rounded-2xl font-bold bg-beeyield-green hover:bg-beeyield-green/90 text-white shadow-lg active:scale-95 transition-all"
                                 disabled={loading || verificationCode.length !== 6}
                             >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Checking Code...
-                                    </>
-                                ) : (
-                                    'Turn On'
-                                )}
+                                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Confirm'}
                             </Button>
                         </div>
                     </form>
@@ -223,89 +199,55 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
         );
     }
 
-    // Status view
     const hasMFA = factors.length > 0;
 
     return (
-        <Card className="border-beeyield-gold/20 shadow-sm">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-beeyield-green">
-                    {hasMFA ? (
-                        <>
-                            <ShieldCheck className="h-5 w-5 text-beeyield-green" />
-                            Extra Security On
-                        </>
-                    ) : (
-                        <>
-                            <ShieldOff className="h-5 w-5 text-beeyield-orange" />
-                            Extra Security
-                        </>
-                    )}
-                </CardTitle>
-                <CardDescription className="text-beeyield-green/60">
-                    {hasMFA
-                        ? 'Your account is protected.'
-                        : 'Add extra protection to your account.'}
-                </CardDescription>
+        <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+            <CardHeader className="p-8 pb-4">
+                <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${hasMFA ? 'bg-beeyield-green/10' : 'bg-honey/10'}`}>
+                        {hasMFA ? <ShieldCheck className="h-5 w-5 text-beeyield-green" /> : <Shield className="h-5 w-5 text-honey" />}
+                    </div>
+                    <div>
+                        <CardTitle className="text-xl font-bold tracking-tight">Extra Security (MFA)</CardTitle>
+                        <CardDescription className="text-gray-500 font-medium">Add an extra layer of protection to your account</CardDescription>
+                    </div>
+                </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-8 pt-4 space-y-6">
+                <div className={`p-6 rounded-3xl border ${hasMFA ? 'bg-beeyield-green/5 border-beeyield-green/10' : 'bg-honey/5 border-honey/10'}`}>
+                    <p className={`text-sm font-bold ${hasMFA ? 'text-beeyield-green' : 'text-honey'}`}>
+                        {hasMFA ? 'Account is currently protected' : 'Account is not currently protected'}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2 font-medium leading-relaxed">
+                        {hasMFA 
+                            ? `Extra security was enabled on ${new Date(factors[0].created_at).toLocaleDateString()}.`
+                            : 'Setup a second step after your password to keep your account safe from unauthorized access.'
+                        }
+                    </p>
+                </div>
+
                 {hasMFA ? (
-                    <>
-                        <div className="p-4 bg-beeyield-green/5 rounded-lg border border-beeyield-green/20">
-                            <p className="text-sm text-beeyield-green font-bold">
-                                ✓ Security app is connected
-                            </p>
-                            <p className="text-xs text-beeyield-green/60 mt-1 font-medium">
-                                Added on {new Date(factors[0].created_at).toLocaleDateString()}
-                            </p>
-                        </div>
-                        <Button
-                            variant="destructive"
-                            className="w-full bg-beeyield-orange/10 hover:bg-beeyield-orange/20 text-beeyield-orange border border-beeyield-orange/20 hover:border-beeyield-orange/50 transition-all font-bold"
-                            onClick={() => handleUnenroll(factors[0].id)}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Disabling...
-                                </>
-                            ) : (
-                                <>
-                                    <ShieldOff className="mr-2 h-4 w-4" />
-                                    Turn Off
-                                </>
-                            )}
-                        </Button>
-                    </>
+                    <Button
+                        variant="outline"
+                        className="w-full h-14 rounded-2xl border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 transition-all font-bold active:scale-95"
+                        onClick={() => {
+                            if (confirm('Are you sure you want to disable extra security?')) {
+                                handleUnenroll(factors[0].id);
+                            }
+                        }}
+                        disabled={loading}
+                    >
+                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Disable Security'}
+                    </Button>
                 ) : (
-                    <>
-                        <div className="p-4 bg-beeyield-orange/5 rounded-lg border border-beeyield-orange/20">
-                            <p className="text-sm text-beeyield-orange font-bold">
-                                ⚠ Your account is not protected
-                            </p>
-                            <p className="text-xs text-beeyield-orange/70 mt-1 font-medium">
-                                We recommend turning this on to be safe.
-                            </p>
-                        </div>
-                        <Button
-                            className="w-full bg-beeyield-green hover:bg-beeyield-green-dark text-white font-bold shadow-soft hover:shadow-glow transition-all"
-                            onClick={handleEnroll}
-                            disabled={enrolling}
-                        >
-                            {enrolling ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Setting up...
-                                </>
-                            ) : (
-                                <>
-                                    <Shield className="mr-2 h-4 w-4" />
-                                    Turn On
-                                </>
-                            )}
-                        </Button>
-                    </>
+                    <Button
+                        className="w-full h-14 rounded-2xl bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold shadow-lg shadow-beeyield-green/10 active:scale-95 transition-all"
+                        onClick={handleEnroll}
+                        disabled={enrolling}
+                    >
+                        {enrolling ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Turn On Security'}
+                    </Button>
                 )}
             </CardContent>
         </Card>

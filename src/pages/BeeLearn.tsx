@@ -68,13 +68,13 @@ const workshops = [
     title: "Swarm Removal",
     description: "Learn expert methods to safely capture and relocate bee swarms",
     icon: Bug,
-    color: "bg-amber-100 text-amber-700"
+    color: "bg-amber-100 text-[#F4D03F]"
   },
   {
     title: "Harvesting",
     description: "Master sustainable honey extraction techniques and timing",
     icon: Leaf,
-    color: "bg-green-100 text-green-700"
+    color: "bg-green-100 text-[#1B9157]"
   },
   {
     title: "Specialization",
@@ -245,7 +245,7 @@ const BeeLearn = () => {
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-amber-500 text-amber-500" : "text-muted-foreground/30"
+            className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-amber-500 text-[#F4D03F]" : "text-muted-foreground/30"
               }`}
           />
         ))}
@@ -254,17 +254,17 @@ const BeeLearn = () => {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-[#FFF9F0]">
       {/* GUIDE MODAL */}
       {isGuideModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#F9F7F2]0 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-[#FFF9F0] rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
             <button onClick={() => setIsGuideModalOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600">
               <span className="text-2xl">&times;</span>
             </button>
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Download className="h-8 w-8 text-amber-600" />
+                <Download className="h-8 w-8 text-[#F4D03F]" />
               </div>
               <h3 className="text-2xl font-black text-neutral-900">Get Your Free Guide</h3>
               <p className="text-neutral-500 text-sm mt-2">Enter your email to receive the "Beekeeping Starter Guide" instantly.</p>
@@ -283,7 +283,7 @@ const BeeLearn = () => {
                   onChange={e => setGuideEmail(e.target.value)}
                 />
               </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-green-700 hover:bg-green-800 text-gray-900 font-bold rounded-xl">
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="animate-spin" /> : "Send Me The Guide"}
               </Button>
             </form>
@@ -293,13 +293,13 @@ const BeeLearn = () => {
 
       {/* QUOTE MODAL */}
       {isQuoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#F9F7F2]0 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-[#FFF9F0] rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
             <button onClick={() => setIsQuoteModalOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600">
               <span className="text-2xl">&times;</span>
             </button>
             <div className="mb-6">
-              <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-md uppercase">Corporate</span>
+              <span className="bg-green-100 text-[#1B9157] text-xs font-bold px-2 py-1 rounded-md uppercase">Corporate</span>
               <h3 className="text-2xl font-black text-neutral-900 mt-2">Request Training Quote</h3>
               <p className="text-neutral-500 text-sm mt-1">Tell us about your organization's needs.</p>
             </div>
@@ -322,7 +322,7 @@ const BeeLearn = () => {
                 <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Training Needs</label>
                 <textarea id="quote-message" name="training-needs" required rows={3} className="w-full p-3 rounded-lg border border-neutral-200" placeholder="Number of attendees, preferred dates, etc." value={quoteForm.message} onChange={e => setQuoteForm({ ...quoteForm, message: e.target.value })}></textarea>
               </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold rounded-xl">
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-[#F4D03F] hover:bg-amber-600 text-[#1A1A1A] font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Request"}
               </Button>
             </form>
@@ -342,7 +342,7 @@ const BeeLearn = () => {
             <div className="text-center lg:text-left order-2 lg:order-1">
               <Badge
                 variant="outline"
-                className="mb-6 px-4 py-1.5 border-green-300 bg-green-50 text-green-700 font-semibold"
+                className="mb-6 px-4 py-1.5 border-green-300 bg-green-50 text-[#1B9157] font-semibold"
               >
                 <GraduationCap className="h-4 w-4 mr-2" />
                 BeeYield Learn Platform
@@ -350,7 +350,7 @@ const BeeLearn = () => {
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-6 leading-[1.1] tracking-tight">
                 Master the Art of{" "}
-                <span className="text-green-700">Sustainable Beekeeping</span>
+                <span className="text-[#1B9157]">Sustainable Beekeeping</span>
               </h1>
 
               <p className="text-lg lg:text-xl text-neutral-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
@@ -383,7 +383,7 @@ const BeeLearn = () => {
               <div className="flex flex-wrap gap-6 justify-center lg:justify-start">
                 <div className="flex items-center gap-2">
                   <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-green-700" />
+                    <Users className="h-5 w-5 text-[#1B9157]" />
                   </div>
                   <div className="text-left">
                     <p className="text-xl font-black text-neutral-900">12,500+</p>
@@ -392,7 +392,7 @@ const BeeLearn = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <Star className="h-5 w-5 text-green-700 fill-green-700" />
+                    <Star className="h-5 w-5 text-[#1B9157] fill-green-700" />
                   </div>
                   <div className="text-left">
                     <p className="text-xl font-black text-neutral-900">4.9/5</p>
@@ -419,7 +419,7 @@ const BeeLearn = () => {
                   {/* Video Overlay UI */}
                   <div className="absolute inset-0 flex flex-col justify-between p-4">
                     <div>
-                      <Badge className="bg-amber-600 text-gray-900 font-bold text-[10px]">
+                      <Badge className="bg-amber-600 text-[#1A1A1A] font-bold text-[10px]">
                         LESSON 3
                       </Badge>
                     </div>
@@ -427,22 +427,22 @@ const BeeLearn = () => {
                     <div className="space-y-3">
                       {/* Play button */}
                       <div className="flex justify-center">
-                        <div className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/30 transition-all">
-                          <PlayCircle className="h-10 w-10 text-gray-900 fill-white/20" />
+                        <div className="h-16 w-16 rounded-full bg-gray-200 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-all">
+                          <PlayCircle className="h-10 w-10 text-[#1A1A1A] fill-white/20" />
                         </div>
                       </div>
 
                       {/* Video info */}
-                      <div className="bg-gray-100 backdrop-blur-md rounded-2xl p-4 space-y-2">
-                        <p className="text-gray-900 font-bold text-sm">Module 3: Queen Rearing</p>
-                        <div className="flex items-center justify-between text-gray-800 text-xs">
+                      <div className="bg-[#F4D03F]/10 backdrop-blur-md rounded-2xl p-4 space-y-2">
+                        <p className="text-[#1A1A1A] font-bold text-sm">Module 3: Queen Rearing</p>
+                        <div className="flex items-center justify-between text-[#1A1A1A] text-xs">
                           <span>14:20 / 45:00</span>
-                          <Button size="sm" variant="ghost" className="h-7 text-xs text-gray-900 hover:text-amber-300">
+                          <Button size="sm" variant="ghost" className="h-7 text-xs text-[#1A1A1A] hover:text-[#F4D03F]">
                             <Download className="h-3 w-3 mr-1" />
                             Resources
                           </Button>
                         </div>
-                        <Progress value={32} className="h-1 bg-white/20" />
+                        <Progress value={32} className="h-1 bg-gray-200" />
                       </div>
                     </div>
                   </div>
@@ -450,10 +450,10 @@ const BeeLearn = () => {
               </div>
 
               {/* Floating Stat Card - Left Top */}
-              <div className="absolute left-0 top-12 lg:-left-8 lg:top-20 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 animate-in slide-in-from-left duration-700">
+              <div className="absolute left-0 top-12 lg:-left-8 lg:top-20 bg-[#FFF9F0]/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 animate-in slide-in-from-left duration-700">
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <GraduationCap className="h-6 w-6 text-amber-600" />
+                    <GraduationCap className="h-6 w-6 text-[#F4D03F]" />
                   </div>
                   <div>
                     <p className="text-2xl font-black text-neutral-900">12,500+</p>
@@ -463,10 +463,10 @@ const BeeLearn = () => {
               </div>
 
               {/* Floating Stat Card - Right Top */}
-              <div className="absolute right-0 top-4 lg:-right-4 lg:top-8 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 animate-in slide-in-from-right duration-700 delay-150">
+              <div className="absolute right-0 top-4 lg:-right-4 lg:top-8 bg-[#FFF9F0]/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 animate-in slide-in-from-right duration-700 delay-150">
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <Star className="h-6 w-6 text-amber-600 fill-amber-600" />
+                    <Star className="h-6 w-6 text-[#F4D03F] fill-amber-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-black text-neutral-900">4.9/5</p>
@@ -476,9 +476,9 @@ const BeeLearn = () => {
               </div>
 
               {/* Floating Info Card - Left Bottom */}
-              <div className="absolute left-0 bottom-20 lg:-left-12 lg:bottom-32 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[200px] animate-in slide-in-from-left duration-700 delay-300">
+              <div className="absolute left-0 bottom-20 lg:-left-12 lg:bottom-32 bg-[#FFF9F0]/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[200px] animate-in slide-in-from-left duration-700 delay-300">
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-5 w-5 text-amber-600" />
+                  <FileText className="h-5 w-5 text-[#F4D03F]" />
                   <p className="text-sm font-bold text-neutral-900">50+ Digital Guides</p>
                 </div>
                 <p className="text-xs text-neutral-500 mb-3">Instant access to comprehensive field manuals</p>
@@ -488,11 +488,11 @@ const BeeLearn = () => {
               </div>
 
               {/* Floating Product Card - Right Bottom */}
-              <div className="absolute right-0 bottom-8 lg:-right-8 lg:bottom-16 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[220px] animate-in slide-in-from-right duration-700 delay-450">
-                <Badge className="mb-2 bg-amber-600 text-gray-900 text-[10px]">Best Seller</Badge>
+              <div className="absolute right-0 bottom-8 lg:-right-8 lg:bottom-16 bg-[#FFF9F0]/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[220px] animate-in slide-in-from-right duration-700 delay-450">
+                <Badge className="mb-2 bg-amber-600 text-[#1A1A1A] text-[10px]">Best Seller</Badge>
                 <p className="font-bold text-neutral-900 text-sm mb-1">Commercial Apiary Management</p>
                 <p className="text-xs text-neutral-500 mb-2">Video Course + PDF Bundle</p>
-                <p className="text-xl font-black text-amber-600">KES 14,900</p>
+                <p className="text-xl font-black text-[#F4D03F]">KES 14,900</p>
               </div>
             </div>
           </div>
@@ -560,7 +560,7 @@ const BeeLearn = () => {
               </div>
 
               {/* Experience Badge */}
-              <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 bg-green-700 text-gray-900 rounded-2xl p-4 lg:p-6 shadow-xl">
+              <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 bg-green-700 text-[#1A1A1A] rounded-2xl p-4 lg:p-6 shadow-xl">
                 <p className="text-4xl lg:text-5xl font-black">254+</p>
                 <p className="text-sm font-medium opacity-90">Years Combined Experience</p>
               </div>
@@ -568,12 +568,12 @@ const BeeLearn = () => {
 
             {/* Right - Content */}
             <div>
-              <Badge variant="outline" className="mb-4 border-green-300 text-green-700 font-semibold">
+              <Badge variant="outline" className="mb-4 border-green-300 text-[#1B9157] font-semibold">
                 About BeeYield Learn
               </Badge>
               <h2 className="text-3xl lg:text-5xl font-black text-neutral-900 mb-6 leading-tight">
                 Experience & Expertise in{" "}
-                <span className="text-green-700">Beekeeping</span>
+                <span className="text-[#1B9157]">Beekeeping</span>
               </h2>
               <p className="text-neutral-600 text-lg mb-8 leading-relaxed">
                 Our curriculum is developed by practicing apiarists, agricultural scientists, and business experts with decades of hands-on experience. Every course is designed to give you practical skills you can apply immediately.
@@ -582,7 +582,7 @@ const BeeLearn = () => {
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl">
                   <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="h-6 w-6 text-green-700" />
+                    <CheckCircle className="h-6 w-6 text-[#1B9157]" />
                   </div>
                   <div>
                     <p className="font-bold text-neutral-900">Professional Beekeepers</p>
@@ -591,7 +591,7 @@ const BeeLearn = () => {
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl">
                   <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="h-6 w-6 text-green-700" />
+                    <CheckCircle className="h-6 w-6 text-[#1B9157]" />
                   </div>
                   <div>
                     <p className="font-bold text-neutral-900">Educational Advocates</p>
@@ -612,8 +612,8 @@ const BeeLearn = () => {
       {/* Testimonial Section */}
       <section className="py-16 bg-gradient-to-r from-amber-50 to-orange-50">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 lg:p-12 shadow-xl relative">
-            <Quote className="absolute top-8 left-8 h-16 w-16 text-amber-200" />
+          <div className="max-w-4xl mx-auto bg-[#FFF9F0] rounded-3xl p-8 lg:p-12 shadow-xl relative">
+            <Quote className="absolute top-8 left-8 h-16 w-16 text-[#F4D03F]" />
             <div className="flex flex-col lg:flex-row items-center gap-8">
               <div className="lg:w-1/3 flex justify-center">
                 <div className="relative">
@@ -632,7 +632,7 @@ const BeeLearn = () => {
                 </p>
                 <div>
                   <p className="font-bold text-neutral-900 text-lg">Sarah Johnson</p>
-                  <p className="text-green-700 font-medium">Commercial Beekeeper, Nakuru</p>
+                  <p className="text-[#1B9157] font-medium">Commercial Beekeeper, Nakuru</p>
                 </div>
               </div>
             </div>
@@ -641,17 +641,17 @@ const BeeLearn = () => {
       </section>
 
       {/* Educational Workshops Section */}
-      <section className="py-20 lg:py-28 bg-[#0A2612] text-gray-900">
+      <section className="py-20 lg:py-28 bg-[#0A2612] text-[#1A1A1A]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-green-500 text-green-400 font-semibold">
+            <Badge variant="outline" className="mb-4 border-green-500 text-[#1B9157] font-semibold">
               Our Programs
             </Badge>
             <h2 className="text-3xl lg:text-5xl font-black mb-6">
               Educational Workshops on{" "}
-              <span className="text-green-400">Sustainable Beekeeping</span>
+              <span className="text-[#1B9157]">Sustainable Beekeeping</span>
             </h2>
-            <p className="text-green-100/60 text-lg max-w-2xl mx-auto">
+            <p className="text-[#1B9157]/60 text-lg max-w-2xl mx-auto">
               Join our comprehensive workshops designed for every level of expertise
             </p>
           </div>
@@ -663,7 +663,7 @@ const BeeLearn = () => {
                   <div className={`h-14 w-14 rounded-2xl ${workshop.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <workshop.icon className="h-7 w-7" />
                   </div>
-                  <h3 className="text-gray-900 font-bold text-xl mb-2">{workshop.title}</h3>
+                  <h3 className="text-[#1A1A1A] font-bold text-xl mb-2">{workshop.title}</h3>
                   <p className="text-neutral-400 text-sm leading-relaxed">{workshop.description}</p>
                 </CardContent>
               </Card>
@@ -671,7 +671,7 @@ const BeeLearn = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-gray-900 font-bold rounded-xl" onClick={() => setIsQuoteModalOpen(true)}>
+            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-[#1A1A1A] font-bold rounded-xl" onClick={() => setIsQuoteModalOpen(true)}>
               Request a Quote for Your Company
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
@@ -683,11 +683,11 @@ const BeeLearn = () => {
       <section id="courses" className="py-20 lg:py-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-green-300 text-green-700 font-semibold">
+            <Badge variant="outline" className="mb-4 border-green-300 text-[#1B9157] font-semibold">
               Course Catalog
             </Badge>
             <h2 className="text-3xl lg:text-5xl font-black text-neutral-900 mb-6">
-              All Courses & <span className="text-green-700">Field Guides</span>
+              All Courses & <span className="text-[#1B9157]">Field Guides</span>
             </h2>
             <p className="text-neutral-600 text-lg max-w-2xl mx-auto">
               From beginner fundamentals to advanced commercial operations—find the perfect learning path for your beekeeping journey.
@@ -696,13 +696,13 @@ const BeeLearn = () => {
 
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24 space-y-4">
-              <Loader2 className="h-12 w-12 animate-spin text-amber-600 opacity-50" />
+              <Loader2 className="h-12 w-12 animate-spin text-[#F4D03F] opacity-50" />
               <p className="text-neutral-500 font-medium">Loading courses...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {(products.length > 0 ? products : initialEducationProducts).map((product) => (
-                <Card key={product.id} className="group border-none shadow-xl shadow-amber-900/5 bg-white rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-amber-900/10 transition-all duration-500 flex flex-col h-full">
+                <Card key={product.id} className="group border-none shadow-xl shadow-amber-900/5 bg-[#FFF9F0] rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-amber-900/10 transition-all duration-500 flex flex-col h-full">
                   <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                     <img
                       src={product.images[0]}
@@ -710,7 +710,7 @@ const BeeLearn = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                    <Badge className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-neutral-900 border-none font-bold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-xl shadow-sm">
+                    <Badge className="absolute top-4 left-4 bg-[#FFF9F0]/90 backdrop-blur-md text-neutral-900 border-none font-bold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-xl shadow-sm">
                       {product.badge}
                     </Badge>
                     <button
@@ -729,8 +729,8 @@ const BeeLearn = () => {
                       }}
                       aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       className={`absolute top-4 right-4 p-2.5 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 ${isInWishlist(product.id)
-                        ? "bg-amber-500 text-gray-900"
-                        : "bg-white/80 hover:bg-amber-500 hover:text-gray-900 text-neutral-400 group-hover:opacity-100 opacity-0"
+                        ? "bg-[#F4D03F] text-[#1A1A1A]"
+                        : "bg-[#FFF9F0]/80 hover:bg-[#F4D03F] hover:text-[#1A1A1A] text-neutral-400 group-hover:opacity-100 opacity-0"
                         }`}
                     >
                       <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
@@ -744,7 +744,7 @@ const BeeLearn = () => {
                     </div>
 
                     <div className="flex-grow mb-6">
-                      <h3 className="text-lg font-black text-neutral-900 mb-2 leading-tight group-hover:text-amber-600 transition-colors">
+                      <h3 className="text-lg font-black text-neutral-900 mb-2 leading-tight group-hover:text-[#F4D03F] transition-colors">
                         {product.name}
                       </h3>
                       <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
@@ -755,14 +755,14 @@ const BeeLearn = () => {
                     <div className="mt-auto pt-6 border-t border-neutral-50 flex items-center justify-between">
                       <div>
                         <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-0.5">Price</p>
-                        <p className="text-xl font-black text-amber-600">
+                        <p className="text-xl font-black text-[#F4D03F]">
                           {formatPrice(product.variants[0].price_kes)}
                         </p>
                       </div>
                       <Button
                         size="sm"
                         onClick={() => handleAddToCart(product)}
-                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-gray-900 shadow-lg shadow-neutral-900/10 transition-all duration-300"
+                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-[#1A1A1A] shadow-lg shadow-neutral-900/10 transition-all duration-300"
                       >
                         <ShoppingCart className="h-4 w-4" />
                       </Button>
@@ -790,8 +790,8 @@ const BeeLearn = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="h-16 w-16 rounded-2xl bg-white shadow-lg flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-8 w-8 text-amber-600" />
+                <div className="h-16 w-16 rounded-2xl bg-[#FFF9F0] shadow-lg flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="h-8 w-8 text-[#F4D03F]" />
                 </div>
                 <p className="text-3xl lg:text-4xl font-black text-neutral-900 mb-2">{stat.value}</p>
                 <p className="text-neutral-600 font-medium">{stat.label}</p>
@@ -805,18 +805,18 @@ const BeeLearn = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="bg-[#0A2612] rounded-3xl p-8 lg:p-16 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-green-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157]/ rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#1B9157]/ rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
             <div className="relative z-10">
-              <Badge className="mb-6 bg-green-700 text-gray-900 font-bold">
+              <Badge className="mb-6 bg-green-700 text-[#1A1A1A] font-bold">
                 Join Our Community
               </Badge>
-              <h2 className="text-3xl lg:text-5xl font-black text-gray-900 mb-6">
+              <h2 className="text-3xl lg:text-5xl font-black text-[#1A1A1A] mb-6">
                 Trusted Source for{" "}
-                <span className="text-green-400">Premium Learning</span>
+                <span className="text-[#1B9157]">Premium Learning</span>
               </h2>
-              <p className="text-green-100/60 text-lg mb-10 max-w-2xl mx-auto">
+              <p className="text-[#1B9157]/60 text-lg mb-10 max-w-2xl mx-auto">
                 Get exclusive access to new courses, early bird discounts, and monthly beekeeping tips delivered straight to your inbox.
               </p>
               <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
@@ -824,7 +824,7 @@ const BeeLearn = () => {
                   type="email"
                   required
                   placeholder="Enter your email"
-                  className="flex-1 h-14 px-6 rounded-xl bg-white/10 border border-gray-300 text-gray-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="flex-1 h-14 px-6 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/40 text-[#1A1A1A] placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   value={newsletterEmail}
                   onChange={e => setNewsletterEmail(e.target.value)}
                 />

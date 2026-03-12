@@ -12,13 +12,12 @@ import {
     Package,
     Loader2
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useHivesWithTelemetry } from '@/hooks/useHives';
 import { Apiary } from '@/services/beeyieldService';
+import beeyieldService from '@/services/beeyieldService';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { glass, PageHeader } from './GlassTheme';
 import {
     AreaChart,
     Area,
@@ -27,47 +26,12 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    BarChart,
-    Bar,
 } from 'recharts';
 
 interface OrchardDashboardViewProps {
     apiary?: Apiary;
     onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
-
-const StatCard: React.FC<{
-    label: string;
-    value: string | number;
-    icon: React.ElementType;
-    iconColor?: string;
-    iconBg?: string;
-    subtitle?: string;
-    trend?: 'up' | 'down';
-}> = ({ label, value, icon: Icon, iconColor = 'text-beeyield-forest', iconBg = 'bg-beeyield-forest/5', subtitle, trend }) => (
-    <motion.div whileHover={{ y: -4, scale: 1.01 }}>
-        <Card className="border border-[#E0E0E0] bg-white shadow-sm rounded-[2rem] overflow-hidden group hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all duration-500">
-            <CardContent className="p-8">
-                <div className="flex items-start justify-between mb-6">
-                    <div className={cn('p-3.5 rounded-2xl border border-beeyield-forest/10 transition-all duration-500 group-hover:bg-beeyield-forest group-hover:text-gray-900', iconBg)}>
-                        <Icon className={cn('w-5 h-5 stroke-[2] transition-colors duration-500 group-hover:text-gray-900', iconColor)} />
-                    </div>
-                    {trend && (
-                        <div className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border',
-                            trend === 'up' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'
-                        )}>
-                            {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                            Live
-                        </div>
-                    )}
-                </div>
-                <h3 className="text-3xl font-bold text-beeyield-charcoal tracking-tight mb-1">{value}</h3>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">{label}</p>
-                {subtitle && <p className="text-[10px] text-gray-400 mt-2 font-medium">{subtitle}</p>}
-            </CardContent>
-        </Card>
-    </motion.div>
-);
 
 const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onTabChange }) => {
     const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(apiary?.id);
@@ -90,21 +54,16 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
         if (!hives.length) return null;
         const totalHives = hives.length;
         const activeHives = hives.filter(h => h.status === 'ACTIVE' || h.status === 'active').length;
-
-        // F2: Real Analytics — Calculate aggregate fleet strength from telemetry
         const avgStrength = hives.reduce((acc, h) => {
             let score = 0;
             const t = h.latest_temp || (h as any).telemetry?.temperature;
             const w = h.latest_weight || (h as any).telemetry?.weight;
-
             if (h.status === 'ACTIVE' || h.status === 'active') score += 50;
             if (w > 20) score += 30;
             if (t > 32 && t < 37) score += 20;
             return acc + score;
         }, 0) / (totalHives || 1);
-
         const avgWeight = hives.reduce((sum, h) => sum + (h.latest_weight || (h as any).telemetry?.weight || 0), 0) / (totalHives || 1);
-
         return {
             totalHives,
             activeHives,
@@ -114,258 +73,211 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
         };
     }, [hives]);
 
-    const activityData = React.useMemo(() => {
-        // Fallback for visual continuity if telemetry history is sparse
-        return [
-            { time: '06:00', activity: 20, foraging: 8 },
-            { time: '09:00', activity: 65, foraging: 40 },
-            { time: '12:00', activity: 95, foraging: 72 },
-            { time: '15:00', activity: 85, foraging: 60 },
-            { time: '18:00', activity: 40, foraging: 20 },
-            { time: '21:00', activity: 10, foraging: 3 },
-        ];
-    }, []);
+    const activityData = React.useMemo(() => [
+        { time: '06:00', activity: 20, foraging: 8 },
+        { time: '09:00', activity: 65, foraging: 40 },
+        { time: '12:00', activity: 95, foraging: 72 },
+        { time: '15:00', activity: 85, foraging: 60 },
+        { time: '18:00', activity: 40, foraging: 20 },
+        { time: '21:00', activity: 10, foraging: 3 },
+    ], []);
 
     if (hivesLoading && !hives.length) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="w-10 h-10 text-beeyield-forest animate-spin opacity-20" />
+            <div className="flex items-center justify-center min-h-[300px]">
+                <Loader2 className="w-8 h-8 text-[#1B9157] animate-spin opacity-30" />
             </div>
         );
     }
 
     if (!apiary) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="w-20 h-20 rounded-[2rem] bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center mx-auto mb-6">
-                        <MapPin className="w-10 h-10 text-beeyield-forest/30" />
+            <div className="flex items-center justify-center min-h-[300px]">
+                <div className="text-center space-y-3">
+                    <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto shadow-sm">
+                        <MapPin className="w-5 h-5 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-bold text-beeyield-charcoal mb-2">No Apiary Selected</h3>
-                    <p className="text-gray-400 font-medium">Select an apiary from the list to view its telemetry dashboard.</p>
+                    <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">No Apiary Selected</h3>
+                    <p className="text-xs font-medium text-gray-500">Select an apiary to view telemetry.</p>
                 </div>
             </div>
         );
     }
 
+    const statCards = [
+        { label: 'Total Hives', value: stats?.totalHives || 0, icon: Hexagon, color: 'text-[#1A1A1A]' },
+        { label: 'Active', value: stats?.activeHives || 0, icon: Activity, color: 'text-[#1B9157]', trend: 'up' as const },
+        { label: 'Strength', value: `${stats?.avgStrength || 0}%`, icon: TrendingUp, color: 'text-[#F4D03F]' },
+        { label: 'Avg Weight', value: `${stats?.avgWeight || 0} kg`, icon: Package, color: 'text-[#1A1A1A]' },
+    ];
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
+        >
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center">
-                            <MapPin className="w-5 h-5 text-beeyield-forest" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-beeyield-charcoal tracking-tight">
-                            {apiary.location_name || 'Orchard Sector'}
-                        </h2>
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm">
+                        <MapPin className="w-5 h-5 text-[#1B9157]" />
                     </div>
-                    <p className="text-sm text-gray-400 font-medium pl-1">
-                        Live telemetry · {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
+                    <div className="space-y-0.5">
+                        <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">{apiary.location_name || 'Orchard Sector'}</h2>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                            Live Telemetry · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <Sun className="w-4 h-4 text-beeyield-forest" />
-                    <span className="text-[11px] font-bold text-beeyield-forest uppercase tracking-widest">Optimal</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/20 shadow-sm">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                    <Sun className="w-3.5 h-3.5 text-[#F4D03F]" />
+                    <span className="text-xs font-bold text-[#1A1A1A]">Optimal</span>
                 </div>
             </div>
 
-            {/* Key Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <StatCard
-                    label="Total Hives"
-                    value={stats?.totalHives || 0}
-                    icon={Hexagon}
-                />
-                <StatCard
-                    label="Active Colonies"
-                    value={stats?.activeHives || 0}
-                    icon={Activity}
-                    trend="up"
-                    subtitle="+2 this week"
-                />
-                <StatCard
-                    label="Avg Strength"
-                    value={`${stats?.avgStrength || 0}%`}
-                    icon={TrendingUp}
-                />
-                <StatCard
-                    label="Avg Weight"
-                    value={`${stats?.avgWeight || 0} kg`}
-                    icon={Package}
-                />
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {statCards.map((s, i) => (
+                    <div key={i} className={cn(glass.card, "p-4 space-y-3 hover:border-gray-200 transition-all group")}>
+                        <div className="flex items-center justify-between">
+                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100 transition-all">
+                                <s.icon className={cn("w-4 h-4", s.color)} />
+                            </div>
+                            {s.trend && (
+                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#1B9157]/10 text-[#1B9157]">
+                                    <TrendingUp className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase">Live</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="space-y-0.5 mt-1">
+                            <p className="text-2xl font-bold tracking-tight text-[#1A1A1A]">{s.value}</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{s.label}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Activity Chart */}
-                <Card className="lg:col-span-2 border-[#E0E0E0] bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                    <CardHeader className="p-10 pb-4">
-                        <CardTitle className="text-xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                            <Activity className="w-6 h-6 text-beeyield-forest" />
-                            Foraging Activity
-                        </CardTitle>
-                        <p className="text-sm text-gray-400 font-medium mt-1">Colony movement pattern for today's cycle</p>
-                    </CardHeader>
-                    <CardContent className="p-10 pt-2">
-                        <ResponsiveContainer width="99%" height={300}>
-                            <AreaChart data={activityData}>
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className={cn(glass.card, "lg:col-span-2 p-0 overflow-hidden flex flex-col")}>
+                    <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-[#1B9157]" />
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Foraging Activity</h3>
+                        </div>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Today</span>
+                    </div>
+                    <div className="p-4 flex-1">
+                        <ResponsiveContainer width="99%" height={220}>
+                            <AreaChart data={activityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#1B4332" stopOpacity={0.12} />
-                                        <stop offset="95%" stopColor="#1B4332" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#1B9157" stopOpacity={0.12} />
+                                        <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
                                     </linearGradient>
                                     <linearGradient id="colorForaging" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#52B788" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#52B788" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.15} />
+                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F5F5F5" />
-                                <XAxis
-                                    dataKey="time"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#9CA3AF', fontWeight: 700 }}
-                                    dy={12}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#9CA3AF', fontWeight: 700 }}
-                                />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6B7280', fontWeight: 600 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6B7280', fontWeight: 600 }} width={40} />
                                 <Tooltip
                                     contentStyle={{
-                                        borderRadius: '24px',
-                                        border: '1px solid #E0E0E0',
-                                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.08)',
-                                        padding: '16px 20px',
-                                        fontSize: '13px',
-                                        fontWeight: 700
+                                        borderRadius: '8px',
+                                        border: '1px solid #E5E7EB',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                                        padding: '8px 12px',
+                                        fontSize: '11px',
+                                        fontWeight: 600,
+                                        backgroundColor: '#fff'
+                                    }}
+                                    itemStyle={{
+                                        paddingTop: '2px'
                                     }}
                                 />
-                                <Area
-                                    type="monotone"
-                                    dataKey="activity"
-                                    stroke="#1B4332"
-                                    strokeWidth={4}
-                                    fillOpacity={1}
-                                    fill="url(#colorActivity)"
-                                    dot={{ r: 6, strokeWidth: 3, fill: '#fff', stroke: '#1B4332' }}
-                                    activeDot={{ r: 8 }}
-                                    name="Activity"
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="foraging"
-                                    stroke="#52B788"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorForaging)"
-                                    dot={false}
-                                    name="Foraging"
-                                />
+                                <Area type="monotone" dataKey="activity" stroke="#1B9157" strokeWidth={2} fillOpacity={1} fill="url(#colorActivity)" dot={{ r: 3, strokeWidth: 2, fill: '#fff', stroke: '#1B9157' }} name="Activity" />
+                                <Area type="monotone" dataKey="foraging" stroke="#F4D03F" strokeWidth={2} fillOpacity={1} fill="url(#colorForaging)" dot={false} name="Foraging" />
                             </AreaChart>
                         </ResponsiveContainer>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                {/* Conditions Widget */}
-                <Card className="border-[#E0E0E0] bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                    <CardHeader className="p-10 pb-4">
-                        <CardTitle className="text-xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                            <Thermometer className="w-6 h-6 text-beeyield-forest" />
-                            Conditions
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-10 pt-4 flex flex-col items-center gap-8">
-                        {/* Temperature Gauge */}
-                        <div className="relative w-36 h-36 flex items-center justify-center">
+                <div className={cn(glass.card, "p-0 overflow-hidden flex flex-col")}>
+                    <div className="p-4 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
+                        <Thermometer className="w-4 h-4 text-[#F4D03F]" />
+                        <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Conditions</h3>
+                    </div>
+                    <div className="p-5 flex flex-col items-center gap-6 flex-1">
+                        <div className="relative w-28 h-28 flex items-center justify-center">
                             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
-                                <circle
-                                    strokeWidth="12"
-                                    stroke="#F0F0F0"
-                                    fill="transparent"
-                                    r="52"
-                                    cx="64"
-                                    cy="64"
-                                />
-                                <circle
-                                    strokeWidth="12"
-                                    strokeDasharray={327}
-                                    strokeDashoffset={327 - (327 * 0.75)}
-                                    strokeLinecap="round"
-                                    stroke="#1B4332"
-                                    fill="transparent"
-                                    r="52"
-                                    cx="64"
-                                    cy="64"
-                                />
+                                <circle strokeWidth="8" stroke="#F3F4F6" fill="transparent" r="52" cx="64" cy="64" />
+                                <circle strokeWidth="8" strokeDasharray={327} strokeDashoffset={327 - (327 * 0.75)} strokeLinecap="round" stroke="#1B9157" fill="transparent" r="52" cx="64" cy="64" />
                             </svg>
                             <div className="absolute flex flex-col items-center">
-                                <span className="text-3xl font-bold text-beeyield-charcoal">
+                                <span className="text-3xl font-bold tracking-tight text-[#1A1A1A]">
                                     {isWeatherLoading ? '...' : (weather?.temperature ? `${Math.round(weather.temperature)}°` : '24°')}
                                 </span>
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                                     {weather?.summary || 'Sunny'}
                                 </span>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 w-full">
-                            <div className="flex flex-col items-center p-4 bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl">
-                                <Wind className="w-5 h-5 text-blue-500 mb-2" />
-                                <span className="text-base font-bold text-beeyield-charcoal">
-                                    {weather?.wind_speed || '12'} km/h
-                                </span>
-                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Wind</span>
+                        <div className="grid grid-cols-2 gap-3 w-full">
+                            <div className="flex flex-col items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                <Wind className="w-4 h-4 text-blue-500 mb-1.5" />
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-sm font-bold text-[#1A1A1A]">{weather?.wind_speed || '12'}</span>
+                                    <span className="text-[10px] font-medium text-gray-500">km/h</span>
+                                </div>
+                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Wind</span>
                             </div>
-                            <div className="flex flex-col items-center p-4 bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl">
-                                <Droplets className="w-5 h-5 text-cyan-500 mb-2" />
-                                <span className="text-base font-bold text-beeyield-charcoal">
-                                    {weather?.humidity || '45'}%
-                                </span>
-                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Humidity</span>
+                            <div className="flex flex-col items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                <Droplets className="w-4 h-4 text-cyan-500 mb-1.5" />
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-sm font-bold text-[#1A1A1A]">{weather?.humidity || '45'}</span>
+                                    <span className="text-[10px] font-medium text-gray-500">%</span>
+                                </div>
+                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Humidity</span>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <motion.button
-                    whileHover={{ y: -4, scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
                     onClick={() => onTabChange && onTabChange('inspections', 'Filtering by apiary...', 'filter')}
-                    className="p-8 flex items-center gap-6 bg-white border border-[#E0E0E0] rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all text-left group"
+                    className={cn(glass.card, "p-4 flex items-center gap-4 text-left group hover:bg-gray-50 hover:border-gray-300 transition-all")}
                 >
-                    <div className="w-14 h-14 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center group-hover:bg-beeyield-forest transition-all duration-500">
-                        <Activity className="w-7 h-7 text-beeyield-forest group-hover:text-gray-900 transition-colors duration-500" />
+                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center group-hover:bg-[#1B9157]/10 group-hover:border-[#1B9157]/20 transition-all shadow-sm">
+                        <Activity className="w-5 h-5 text-[#1B9157]" />
                     </div>
-                    <div>
-                        <h4 className="text-base font-bold text-beeyield-charcoal">Schedule Inspection</h4>
-                        <p className="text-sm text-gray-400 font-medium mt-1">Check colony health for this apiary</p>
+                    <div className="space-y-0.5">
+                        <h4 className="text-sm font-bold text-[#1A1A1A]">Schedule Inspection</h4>
+                        <p className="text-[11px] font-medium text-gray-500">Check colony health for this apiary</p>
                     </div>
-                </motion.button>
-
-                <motion.button
-                    whileHover={{ y: -4, scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
+                </button>
+                <button
                     onClick={() => onTabChange && onTabChange('harvests')}
-                    className="p-8 flex items-center gap-6 bg-white border border-[#E0E0E0] rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all text-left group"
+                    className={cn(glass.card, "p-4 flex items-center gap-4 text-left group hover:bg-gray-50 hover:border-gray-300 transition-all")}
                 >
-                    <div className="w-14 h-14 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center group-hover:bg-beeyield-forest transition-all duration-500">
-                        <Hexagon className="w-7 h-7 text-beeyield-forest group-hover:text-gray-900 transition-colors duration-500" />
+                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center group-hover:bg-[#F4D03F]/10 group-hover:border-[#F4D03F]/20 transition-all shadow-sm">
+                        <Hexagon className="w-5 h-5 text-[#F4D03F]" />
                     </div>
-                    <div>
-                        <h4 className="text-base font-bold text-beeyield-charcoal">Log Harvest</h4>
-                        <p className="text-sm text-gray-400 font-medium mt-1">Record honey production for this location</p>
+                    <div className="space-y-0.5">
+                        <h4 className="text-sm font-bold text-[#1A1A1A]">Log Harvest</h4>
+                        <p className="text-[11px] font-medium text-gray-500">Record honey production for this location</p>
                     </div>
-                </motion.button>
+                </button>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

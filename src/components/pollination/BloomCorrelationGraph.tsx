@@ -7,7 +7,6 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    LineChart,
     Line
 } from 'recharts';
 
@@ -25,58 +24,61 @@ const data = [
 
 const BloomCorrelationGraph: React.FC = () => {
     return (
-        <div className="h-[400px] w-full bg-white">
+        <div className="h-[220px] w-full">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     data={data}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                 >
                     <defs>
                         <linearGradient id="colorBloom" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.12} />
+                            <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
                         </linearGradient>
                     </defs>
-                    <CartesianGrid vertical={false} stroke="#064e3b" strokeOpacity={0.05} strokeDasharray="3 3" />
+                    <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.04)" strokeDasharray="3 3" />
                     <XAxis
                         dataKey="date"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }}
-                        dy={10}
+                        tick={{ fill: '#999', fontWeight: 800, fontSize: 9 }}
+                        dy={8}
                     />
                     <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#064e3b', fontWeight: 900, fontSize: 10 }}
+                        tick={{ fill: '#999', fontWeight: 800, fontSize: 9 }}
+                        width={30}
                     />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: '#064e3b',
-                            border: '4px solid #10b981',
-                            borderRadius: '0px',
-                            padding: '12px'
+                            borderRadius: '12px',
+                            border: '1px solid rgba(244,208,63,0.1)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                            padding: '8px 12px',
+                            fontSize: '10px',
+                            fontWeight: 800,
+                            textTransform: 'uppercase' as const,
+                            backgroundColor: '#fff'
                         }}
-                        itemStyle={{ color: '#fff', fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' }}
-                        labelStyle={{ color: '#facc15', fontWeight: 900, marginBottom: '4px', fontSize: '12px' }}
                     />
                     <Area
                         type="monotone"
                         dataKey="bloom"
-                        stroke="#10b981"
-                        strokeWidth={4}
+                        stroke="#1B9157"
+                        strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorBloom)"
-                        animationDuration={2000}
+                        animationDuration={1000}
                     />
                     <Line
                         type="monotone"
                         dataKey="activity"
-                        stroke="#064e3b"
+                        stroke="#F4D03F"
                         strokeWidth={2}
-                        strokeDasharray="8 8"
-                        dot={{ r: 4, fill: '#064e3b', strokeWidth: 2, stroke: '#fff' }}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
+                        strokeDasharray="4 4"
+                        dot={{ r: 3, fill: '#fff', strokeWidth: 2, stroke: '#F4D03F' }}
+                        activeDot={{ r: 5, strokeWidth: 0 }}
                     />
                 </AreaChart>
             </ResponsiveContainer>

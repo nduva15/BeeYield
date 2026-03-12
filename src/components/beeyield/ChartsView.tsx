@@ -48,12 +48,12 @@ const ChartsView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
                         <BarChart3 className="w-4 h-4 mr-2" />
                         Telemetry Diagnostics v3.0
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Usage <span className="text-honey">Archive</span>
+                        Usage <span className="text-[#F4D03F]">Archive</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
                         Granular Consumption Analysis · Anomaly Marker Detection
@@ -116,7 +116,7 @@ const ChartsView: React.FC = () => {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-honey")}>Archival Export</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Archival Export</label>
                         <div className="flex gap-2">
                             <button className={cn(glass.btnSecondary, "flex-1 h-12 justify-center text-[10px] font-bold")}>
                                 <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -138,16 +138,16 @@ const ChartsView: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative")}
             >
-                <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-white/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-gray-400 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div>
-                        <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage Trend <span className="text-honey">Analysis</span></h3>
+                        <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage Trend <span className="text-[#F4D03F]">Analysis</span></h3>
                         <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Telemetry patterns with recursive anomaly detection</p>
                     </div>
-                    <div className="flex items-center gap-6 bg-white/60 p-2 px-4 rounded-2xl border border-border shadow-sm">
+                    <div className="flex items-center gap-6 bg-[#FFF9F0]/60 p-2 px-4 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-honey" />
+                            <div className="w-3 h-3 rounded-full bg-[#F4D03F]" />
                             <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Baseline_Sig</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -238,16 +238,16 @@ const ChartsView: React.FC = () => {
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Recursive Usage Spike</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>KIB_MAIN_C · T+03:00</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-destructive text-gray-900 border-transparent px-4 py-1 animate-pulse shadow-md relative z-10")}>
+                            <div className={cn(glass.badge, "bg-destructive text-[#1A1A1A] border-transparent px-4 py-1 animate-pulse shadow-md relative z-10")}>
                                 <Zap className="w-3 h-3 mr-1" /> HIGH_SEV
                             </div>
                         </div>
-                        <div className="p-6 rounded-2xl bg-white/40 border border-border flex items-center justify-between group hover:border-honey transition-colors cursor-pointer shadow-sm">
+                        <div className="p-6 rounded-2xl bg-gray-400 border border-border flex items-center justify-between group hover:border-[#F4D03F] transition-colors cursor-pointer shadow-sm">
                             <div className="space-y-1">
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Signal Drop Isolation</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>KIB_MAIN_B · T+12:00</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-honey text-white border-transparent px-4 py-1 shadow-md")}>
+                            <div className={cn(glass.badge, "bg-[#F4D03F] text-white border-transparent px-4 py-1 shadow-md")}>
                                 MED_SEV
                             </div>
                         </div>
@@ -262,29 +262,29 @@ const ChartsView: React.FC = () => {
                     className="space-y-6"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-sm">
-                            <Lightbulb className="w-6 h-6 text-emerald-500" />
+                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-sm">
+                            <Lightbulb className="w-6 h-6 text-[#1B9157]" />
                         </div>
                         <h3 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Optimization Hub</h3>
                     </div>
                     <div className={cn(glass.card, "p-8 space-y-4 shadow-xl")}>
-                        <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between group hover:bg-emerald-500/10 transition-colors cursor-pointer shadow-sm relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
+                        <div className="p-6 rounded-2xl bg-[#1B9157]/ border border-[#1B9157]/ flex items-center justify-between group hover:bg-[#1B9157]/ transition-colors cursor-pointer shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#1B9157]/ rounded-full blur-xl pointer-events-none" />
                             <div className="space-y-1 relative z-10">
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Efficiency Peak Phase</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>Optimized recursive window detected</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-emerald-600 text-white border-transparent px-4 py-2 shadow-lg flex items-center gap-2 relative z-10")}>
+                            <div className={cn(glass.badge, "bg-[#145A32] text-white border-transparent px-4 py-2 shadow-lg flex items-center gap-2 relative z-10")}>
                                 <TrendingUp className="w-4 h-4" />
                                 <span className="font-bold">+18%_GAIN</span>
                             </div>
                         </div>
-                        <div className="p-6 rounded-2xl bg-white/40 border border-border flex items-center justify-between group hover:border-destructive transition-colors cursor-pointer shadow-sm">
+                        <div className="p-6 rounded-2xl bg-gray-400 border border-border flex items-center justify-between group hover:border-destructive transition-colors cursor-pointer shadow-sm">
                             <div className="space-y-1">
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Load Compression Baseline</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>Minimum signal overhead window</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-destructive text-gray-900 border-transparent px-4 py-2 shadow-lg flex items-center gap-2")}>
+                            <div className={cn(glass.badge, "bg-destructive text-[#1A1A1A] border-transparent px-4 py-2 shadow-lg flex items-center gap-2")}>
                                 <TrendingDown className="w-4 h-4" />
                                 <span className="font-bold">-9%_LOSS</span>
                             </div>
@@ -298,11 +298,11 @@ const ChartsView: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
-                <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-8 h-8 text-honey" />
+                <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
                     <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Telemetry Insight Summary</h5>

@@ -163,7 +163,7 @@ const Careers = () => {
               <CardContent>
                 <div className="flex justify-center mb-6">
                   <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="h-10 w-10 text-green-600" />
+                    <CheckCircle className="h-10 w-10 text-[#1B9157]" />
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold mb-3">Application Received!</h2>
@@ -420,7 +420,7 @@ const Careers = () => {
             <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-green-600" />
+                  <Users className="h-6 w-6 text-[#1B9157]" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Bridge Builders</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">

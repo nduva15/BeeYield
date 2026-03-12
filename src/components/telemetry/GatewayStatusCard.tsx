@@ -1,17 +1,13 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
     Wifi,
     Battery,
-    Zap,
     Clock,
-    Shield,
     SignalHigh,
-    AlertTriangle,
     CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from '../beeyield/GlassTheme';
 
 interface GatewayProps {
     status?: 'ONLINE' | 'OFFLINE';
@@ -29,50 +25,51 @@ const GatewayStatusCard: React.FC<GatewayProps> = ({
     gatewayId = 'GW-ALPHA-01'
 }) => {
     return (
-        <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] overflow-hidden group">
-            <CardHeader className="p-4 border-b-4 border-[#064e3b]/5 bg-neutral-50/30 flex flex-row items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <Wifi className={cn("w-4 h-4", status === 'ONLINE' ? "text-[#10b981]" : "text-red-500")} />
-                    <span className="text-[10px] font-black uppercase text-[#064e3b]">{gatewayId}</span>
+        <div className={cn(glass.card, "p-0 overflow-hidden flex flex-col group w-full")}>
+            <div className="p-4 border-b border-gray-100 flex flex-row items-center justify-between bg-gray-50/50">
+                <div className="flex items-center gap-2">
+                    <Wifi className={cn("w-4 h-4", status === 'ONLINE' ? "text-[#1B9157]" : "text-red-500")} />
+                    <span className="text-xs font-bold text-[#1A1A1A]">{gatewayId}</span>
                 </div>
                 <div className={cn(
                     "w-2 h-2 rounded-full",
-                    status === 'ONLINE' ? "bg-[#10b981] animate-pulse" : "bg-red-500"
+                    status === 'ONLINE' ? "bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]"
                 )} />
-            </CardHeader>
-            <CardContent className="p-4 space-y-4">
+            </div>
+            
+            <div className="p-4 space-y-4 flex-1">
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-neutral-50 border-2 border-[#064e3b]/5 flex flex-col justify-between h-20">
-                        <Battery className="w-3.5 h-3.5 text-[#064e3b]/40" />
+                    <div className="p-3 bg-white border border-gray-100 rounded-xl flex flex-col justify-between h-20 shadow-sm transition-all hover:bg-gray-50">
+                        <Battery className="w-4 h-4 text-gray-400" />
                         <div>
-                            <span className="text-lg font-black text-[#064e3b] leading-none">{battery}%</span>
-                            <p className="text-[7px] font-black uppercase text-[#064e3b]/40 tracking-tighter">BATTERY LEVEL</p>
+                            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">{battery}%</span>
+                            <p className="text-[9px] font-bold uppercase text-gray-500 tracking-wider">BATTERY LEVEL</p>
                         </div>
                     </div>
-                    <div className="p-3 bg-neutral-50 border-2 border-[#064e3b]/5 flex flex-col justify-between h-20">
-                        <SignalHigh className="w-3.5 h-3.5 text-[#064e3b]/40" />
-                        <div>
-                            <span className="text-lg font-black text-[#064e3b] leading-none">{signal} <span className="text-[10px]">dBm</span></span>
-                            <p className="text-[7px] font-black uppercase text-[#064e3b]/40 tracking-tighter">RSSI STRENGTH</p>
+                    <div className="p-3 bg-white border border-gray-100 rounded-xl flex flex-col justify-between h-20 shadow-sm transition-all hover:bg-gray-50">
+                        <SignalHigh className="w-4 h-4 text-gray-400" />
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">{signal}</span>
+                            <span className="text-[10px] font-medium text-gray-400 leading-none">dBm</span>
                         </div>
+                        <p className="text-[9px] font-bold uppercase text-gray-500 tracking-wider mt-1">RSSI STRENGTH</p>
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between px-3 py-2 border-2 border-[#064e3b]/5 bg-[#facc15]/5">
+                <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg border border-gray-100">
                     <div className="flex items-center gap-2">
-                        <Clock className="w-3 h-3 text-[#064e3b]/40" />
-                        <span className="text-[8px] font-black uppercase text-[#064e3b]/60">LAST PING</span>
+                        <Clock className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">LAST PING</span>
                     </div>
-                    <span className="text-[8px] font-black uppercase text-[#064e3b]">{lastPing}</span>
+                    <span className="text-[10px] font-bold text-[#1A1A1A] uppercase">{lastPing}</span>
                 </div>
 
-                <div className="flex items-center gap-2 pt-1 transition-transform group-hover:translate-x-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#10b981]">SECURE LINK</span>
+                <div className="flex items-center gap-2 transition-transform group-hover:translate-x-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#1B9157]" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#1B9157]">SECURE LINK</span>
                 </div>
-            </CardContent>
-            <div className="h-1 w-full bg-[#064e3b]" />
-        </Card>
+            </div>
+        </div>
     );
 };
 

@@ -1,19 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, AlertTriangle, ShieldCheck, Microscope, History, ChevronRight, BarChart3, Loader2 } from 'lucide-react';
+import { TrendingUp, AlertTriangle, ShieldCheck, Microscope, History, ChevronRight, BarChart3, Loader2, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 import beeyieldService from '@/services/beeyieldService';
-
-interface VarroaHive {
-    id: string;
-    hive_id: string;
-    infestation_rate: number;
-    mite_count: number;
-    method: string;
-    reading_date: string;
-}
+import { glass, PageHeader, GlassStatCard } from './GlassTheme';
 
 const VarroaView: React.FC = () => {
     const [hives, setHives] = React.useState<{ id: string; infestation: number; status: string; trend: string; method: string; date: string }[]>([]);
@@ -40,7 +32,6 @@ const VarroaView: React.FC = () => {
                     }));
                     setHives(mapped);
                 } else {
-                    // Fallback to demo data if no backend data
                     setHives([
                         { id: 'H-001', infestation: 1.2, status: 'safe', trend: 'down', method: 'alcohol_wash', date: '-' },
                         { id: 'H-002', infestation: 3.5, status: 'warning', trend: 'up', method: 'sticky_board', date: '-' },
@@ -65,114 +56,143 @@ const VarroaView: React.FC = () => {
         fetchData();
     }, []);
 
+    const stats = React.useMemo(() => {
+        const safe = hives.filter(h => h.status === 'safe').length;
+        const warning = hives.filter(h => h.status === 'warning').length;
+        const critical = hives.filter(h => h.status === 'critical').length;
+        const avg = hives.length > 0 ? (hives.reduce((s, h) => s + h.infestation, 0) / hives.length).toFixed(1) : '0.0';
+        return { total: hives.length, safe, warning, critical, avg };
+    }, [hives]);
+
     const criticalHive = hives.find(h => h.status === 'critical');
 
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+                <RefreshCw className="w-6 h-6 animate-spin text-[#F4D03F]" />
             </div>
         );
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Varroa Monitoring</h1>
-                    <p className="text-slate-500 mt-1 text-sm font-medium">Scientific analysis for varroa mite detection.</p>
-                </div>
-                <div className="flex gap-2">
-                    <Button className="bg-green-600 hover:bg-green-700 text-gray-900 rounded-xl font-bold">
-                        <Microscope className="w-4 h-4 mr-2" />
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
+        >
+            {/* Header */}
+            <PageHeader
+                icon={Microscope}
+                label="Varroa Monitoring"
+                title={<>Varroa <span className="text-[#F4D03F]">Analysis</span></>}
+                subtitle="Track mite infestation levels across your colonies and manage treatments."
+                actions={
+                    <button className={cn(glass.btnPrimary)}>
+                        <Microscope className="w-4 h-4" />
                         Run Diagnosis
-                    </Button>
-                </div>
+                    </button>
+                }
+            />
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <GlassStatCard label="Total Hives" value={stats.total} icon={Microscope} index={0} />
+                <GlassStatCard label="Safe" value={stats.safe} icon={ShieldCheck} index={1} color="text-[#1B9157]" />
+                <GlassStatCard label="Warning" value={stats.warning} icon={AlertTriangle} index={2} color="text-[#F4D03F]" />
+                <GlassStatCard label="Avg Rate" value={`${stats.avg}%`} icon={BarChart3} index={3} color="text-red-500" />
             </div>
 
-            {/* Alert Banner if high infestation */}
+            {/* Alert Banner */}
             {criticalHive && (
-                <div className="bg-red-50 border border-red-100 rounded-2xl p-6 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-                        <AlertTriangle className="w-6 h-6 text-red-500" />
+                <div className="bg-red-50 border border-red-100 rounded-2xl p-5 flex items-center gap-4">
+                    <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
                     </div>
                     <div className="flex-1">
-                        <h3 className="font-bold text-red-900 uppercase text-[10px] tracking-wider mb-1">High Infestation Alert</h3>
-                        <p className="text-sm text-red-700 font-medium font-bold">Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.</p>
+                        <h3 className="text-[10px] font-bold text-red-800 uppercase tracking-wider mb-0.5">High Infestation Alert</h3>
+                        <p className="text-sm text-red-600 font-medium">Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.</p>
                     </div>
-                    <Button className="bg-red-500 hover:bg-red-600 text-gray-900 rounded-xl font-bold">
+                    <button className="h-9 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors">
                         Treatment Guide
-                    </Button>
+                    </button>
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Hive Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {hives.map(hive => (
-                    <Card key={hive.id} className="rounded-2xl border border-slate-100 bg-white shadow-sm p-6 relative overflow-hidden">
+                    <div key={hive.id} className="bg-white border border-[#F4D03F]/10 rounded-2xl p-5 relative overflow-hidden hover:border-[#F4D03F]/30 transition-all shadow-sm">
                         <div className={cn(
                             "absolute top-0 left-0 w-full h-[3px]",
-                            hive.status === 'safe' ? "bg-green-600" : hive.status === 'warning' ? "bg-amber-400" : "bg-red-500"
+                            hive.status === 'safe' ? "bg-[#1B9157]" : hive.status === 'warning' ? "bg-[#F4D03F]" : "bg-red-500"
                         )} />
-                        <div className="flex justify-between items-start mb-4">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{hive.id}</span>
+                        <div className="flex justify-between items-start mb-3">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{hive.id}</span>
                             <Badge className={cn(
-                                "border-none text-[10px] font-bold",
-                                hive.status === 'safe' ? "bg-green-100 text-green-700" : hive.status === 'warning' ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
+                                "border-none text-[9px] font-bold uppercase tracking-wider",
+                                hive.status === 'safe' ? "bg-[#1B9157]/10 text-[#1B9157]" : hive.status === 'warning' ? "bg-[#F4D03F]/10 text-[#F4D03F]" : "bg-red-500/10 text-red-500"
                             )}>
-                                {hive.status.toUpperCase()}
+                                {hive.status}
                             </Badge>
                         </div>
                         <div className="space-y-1">
-                            <p className="text-3xl font-bold text-slate-800">{hive.infestation}%</p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Infestation Rate</p>
+                            <p className="text-2xl font-bold text-[#1A1A1A] tabular-nums">{hive.infestation}%</p>
+                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Infestation Rate</p>
                         </div>
-                        <div className="mt-4 flex items-center gap-2">
-                            <TrendingUp className={cn("w-3 h-3", hive.trend === 'up' ? "text-red-500" : hive.trend === 'down' ? "text-green-600" : "text-slate-400")} />
-                            <span className="text-xs font-bold text-slate-500 capitalize">{hive.trend} trend</span>
+                        <div className="mt-3 flex items-center gap-2 pt-3 border-t border-[#F4D03F]/10">
+                            <TrendingUp className={cn("w-3 h-3", hive.trend === 'up' ? "text-red-500" : hive.trend === 'down' ? "text-[#1B9157]" : "text-gray-400")} />
+                            <span className="text-[10px] font-bold text-gray-500 capitalize">{hive.trend} trend</span>
                         </div>
-                    </Card>
+                    </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-sm p-8">
-                    <CardHeader className="px-0 pt-0">
-                        <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800">
-                            <History className="w-5 h-5 text-green-600" />
-                            Historic Trend
-                        </CardTitle>
-                        <CardDescription className="text-xs font-medium text-slate-500">Infestation levels over the last 30 days.</CardDescription>
-                    </CardHeader>
-                    <div className="h-[250px] w-full bg-slate-50 rounded-[1.5rem] flex items-center justify-center border border-dashed border-slate-200">
-                        <BarChart3 className="w-12 h-12 text-slate-200" />
+            {/* Bottom Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Historic Trend */}
+                <div className="bg-white border border-[#F4D03F]/10 rounded-2xl p-6 shadow-sm">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-9 h-9 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20">
+                            <History className="w-4 h-4 text-[#1B9157]" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Historic Trend</h3>
+                            <p className="text-[10px] text-gray-400 font-medium">Infestation levels over the last 30 days.</p>
+                        </div>
                     </div>
-                </Card>
+                    <div className="h-[200px] w-full bg-[#F9F7F2] rounded-xl flex items-center justify-center border border-dashed border-[#F4D03F]/20">
+                        <BarChart3 className="w-10 h-10 text-[#F4D03F]/20" />
+                    </div>
+                </div>
 
-                <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-sm p-8 border-t-4 border-t-amber-400">
-                    <CardHeader className="px-0 pt-0">
-                        <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800">
-                            <ShieldCheck className="w-5 h-5 text-amber-500" />
-                            Recommended Actions
-                        </CardTitle>
-                    </CardHeader>
+                {/* Recommended Actions */}
+                <div className="bg-white border border-[#F4D03F]/10 rounded-2xl p-6 shadow-sm">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-9 h-9 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                            <ShieldCheck className="w-4 h-4 text-[#F4D03F]" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recommended Actions</h3>
+                        </div>
+                    </div>
                     <div className="space-y-3">
                         {(treatments.length > 0 ? treatments.slice(0, 3) : [
                             { treatment_type: 'oxalic_acid', notes: 'Scheduled for next maintenance' },
                             { treatment_type: 'biotechnical', notes: 'Effective biological control' },
                             { treatment_type: 'formic_acid', notes: 'For high infestation levels' },
                         ]).map((t: any, i: number) => (
-                            <div key={i} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between group cursor-pointer hover:bg-amber-50 transition-colors">
+                            <div key={i} className="p-4 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-between group cursor-pointer hover:border-[#F4D03F]/20 transition-colors">
                                 <div>
-                                    <h4 className="font-bold text-slate-800 text-sm capitalize">{(t.treatment_type || 'treatment').replace(/_/g, ' ')}</h4>
-                                    <p className="text-[10px] font-medium text-slate-500 uppercase tracking-tight">{t.notes || 'No additional notes'}</p>
+                                    <h4 className="font-bold text-[#1A1A1A] text-sm capitalize tracking-tight">{(t.treatment_type || 'treatment').replace(/_/g, ' ')}</h4>
+                                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{t.notes || 'No additional notes'}</p>
                                 </div>
-                                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-amber-500 transition-colors" />
+                                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />
                             </div>
                         ))}
                     </div>
-                </Card>
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

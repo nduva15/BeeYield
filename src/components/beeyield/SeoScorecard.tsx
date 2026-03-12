@@ -70,14 +70,14 @@ const IssueList = ({ issues, passes }: { issues: string[], passes: string[] }) =
 
             {passes.length > 0 && (
                 <div>
-                    <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold text-green-600">
+                    <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold text-[#1B9157]">
                         <CheckCircle2 className="w-4 h-4" />
                         Passed Checks ({passes.length})
                     </h4>
                     <ul className="space-y-2">
                         {passes.map((pass, i) => (
                             <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                                <span className="mt-1 text-xs text-green-500">✓</span>
+                                <span className="mt-1 text-xs text-[#1B9157]">✓</span>
                                 <span>{pass.replace('✅ ', '')}</span>
                             </li>
                         ))}
@@ -171,7 +171,7 @@ const SeoScorecard: React.FC<SeoScorecardProps> = ({ analysis, focusKeywords }) 
                                 <div key={kw} className="bg-muted/50 p-2 rounded-md">
                                     <div className="flex justify-between text-sm mb-1">
                                         <span className="font-medium">{kw}</span>
-                                        <span className={data.density > 3 ? "text-red-500" : data.density < 0.5 ? "text-yellow-500" : "text-green-500"}>
+                                        <span className={data.density > 3 ? "text-red-500" : data.density < 0.5 ? "text-yellow-500" : "text-[#1B9157]"}>
                                             {data.density}% ({data.count})
                                         </span>
                                     </div>

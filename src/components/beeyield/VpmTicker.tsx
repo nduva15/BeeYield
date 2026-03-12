@@ -21,9 +21,9 @@ const VpmTicker: React.FC = () => {
     }, []);
 
     return (
-        <div className={cn(glass.card, "flex items-center gap-4 px-6 h-full p-0 shadow-none hover:shadow-none hover:border-honey/20 transition-all rounded-2xl group border-l-4 overflow-hidden border-l-honey bg-white/40")}>
+        <div className={cn(glass.card, "flex items-center gap-4 px-6 h-full p-0 shadow-none hover:shadow-none hover:border-[#F4D03F]/20 transition-all rounded-2xl group border-l-4 overflow-hidden border-l-honey bg-gray-400")}>
             <div className="flex items-center gap-2">
-                <Camera className="w-4 h-4 text-honey" />
+                <Camera className="w-4 h-4 text-[#F4D03F]" />
                 <span className={cn(glass.microLabel, "text-muted-foreground whitespace-nowrap")}>Live VPM</span>
             </div>
 
@@ -44,9 +44,9 @@ const VpmTicker: React.FC = () => {
                         exit={{ opacity: 0, scale: 0.5 }}
                     >
                         {trend === 'up' ? (
-                            <ArrowUp className="w-4 h-4 text-emerald-500" strokeWidth={3} />
+                            <ArrowUp className="w-4 h-4 text-[#1B9157]" strokeWidth={3} />
                         ) : (
-                            <ArrowDown className="w-4 h-4 text-amber-500" strokeWidth={3} />
+                            <ArrowDown className="w-4 h-4 text-[#F4D03F]" strokeWidth={3} />
                         )}
                     </motion.div>
                 </AnimatePresence>
@@ -60,7 +60,7 @@ const VpmTicker: React.FC = () => {
                             className="w-1.5 h-full rounded-t-sm bg-muted overflow-hidden relative"
                         >
                             <motion.div
-                                className="absolute bottom-0 left-0 right-0 bg-honey"
+                                className="absolute bottom-0 left-0 right-0 bg-[#F4D03F]"
                                 animate={{
                                     height: `${Math.random() * 80 + 20}%`
                                 }}
@@ -71,7 +71,7 @@ const VpmTicker: React.FC = () => {
                 </div>
             </div>
 
-            <div className={cn(glass.badge, "ml-auto bg-emerald-500/10 text-emerald-500 border-emerald-500/20 whitespace-nowrap hidden sm:flex")}>
+            <div className={cn(glass.badge, "ml-auto bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ whitespace-nowrap hidden sm:flex")}>
                 Optimal Flow
             </div>
         </div>

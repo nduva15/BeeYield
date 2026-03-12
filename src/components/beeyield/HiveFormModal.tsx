@@ -119,16 +119,16 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                         <div className={glass.modalHeader}>
                             <div className="relative z-10 flex justify-between items-start">
                                 <div className="space-y-6">
-                                    <div className="inline-flex items-center gap-6 px-8 py-3 bg-honey/10 rounded-full border border-honey/30 shadow-4xl skew-x-[-15deg]">
-                                        <Box className="w-6 h-6 text-honey skew-x-[15deg]" />
+                                    <div className="inline-flex items-center gap-6 px-8 py-3 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/30 shadow-4xl skew-x-[-15deg]">
+                                        <Box className="w-6 h-6 text-[#F4D03F] skew-x-[15deg]" />
                                         <span className="text-[12px] font-black uppercase tracking-[0.5em] skew-x-[15deg] italic">Hive Registry</span>
                                     </div>
                                     <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                                        {editingHive ? 'Edit' : 'Add New'} <span className="text-honey">Hive</span>
+                                        {editingHive ? 'Edit' : 'Add New'} <span className="text-[#F4D03F]">Hive</span>
                                     </h2>
-                                    <p className="text-2xl font-black text-foreground/30 uppercase italic border-l-4 border-honey/20 pl-10">Fill in the details to manage this hive in your dashboard.</p>
+                                    <p className="text-2xl font-black text-foreground/30 uppercase italic border-l-4 border-[#F4D03F]/20 pl-10">Fill in the details to manage this hive in your dashboard.</p>
                                 </div>
-                                <button onClick={onClose} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-gray-200 flex items-center justify-center hover:bg-neutral-800 transition-all duration-700">
+                                <button onClick={onClose} className="w-20 h-20 rounded-[2.5rem] bg-[#F9F7F2] border border-[#F4D03F]/20 flex items-center justify-center hover:bg-neutral-800 transition-all duration-700">
                                     <X className="w-10 h-10" />
                                 </button>
                             </div>
@@ -142,7 +142,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <div className="space-y-6">
                                         <Label className={glass.microLabel}>Hive ID / Name</Label>
                                         <div className="relative group">
-                                            <Hash className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within:opacity-100 transition-all" />
+                                            <Hash className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-[#F4D03F] opacity-20 group-focus-within:opacity-100 transition-all" />
                                             <Input
                                                 value={formData.hive_code}
                                                 onChange={(e) => setFormData({ ...formData, hive_code: e.target.value })}
@@ -157,7 +157,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
                                             <SelectTrigger className={glass.select}>
                                                 <div className="flex items-center gap-8">
-                                                    <MapPin className="w-8 h-8 text-honey opacity-30" />
+                                                    <MapPin className="w-8 h-8 text-[#F4D03F] opacity-30" />
                                                     <SelectValue placeholder="Select Location" />
                                                 </div>
                                             </SelectTrigger>
@@ -174,7 +174,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         <Select value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
                                             <SelectTrigger className={glass.select}>
                                                 <div className="flex items-center gap-8">
-                                                    <Layers className="w-8 h-8 text-honey opacity-30" />
+                                                    <Layers className="w-8 h-8 text-[#F4D03F] opacity-30" />
                                                     <SelectValue placeholder="Select Hive Type" />
                                                 </div>
                                             </SelectTrigger>
@@ -190,7 +190,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <div className="space-y-6">
                                         <Label className={glass.microLabel}>Number of Frames</Label>
                                         <div className="relative group">
-                                            <Settings className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-30 group-focus-within:opacity-100 transition-all" />
+                                            <Settings className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-[#F4D03F] opacity-30 group-focus-within:opacity-100 transition-all" />
                                             <Input
                                                 type="number"
                                                 value={formData.frame_count || ''}
@@ -209,7 +209,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
                                             <SelectTrigger className={glass.select}>
                                                 <div className="flex items-center gap-8">
-                                                    <Binary className="w-8 h-8 text-honey opacity-30" />
+                                                    <Binary className="w-8 h-8 text-[#F4D03F] opacity-30" />
                                                     <SelectValue placeholder="Select Bee Type" />
                                                 </div>
                                             </SelectTrigger>
@@ -227,7 +227,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
                                             <SelectTrigger className={glass.select}>
                                                 <div className="flex items-center gap-8">
-                                                    <ShieldCheck className="w-8 h-8 text-honey opacity-30" />
+                                                    <ShieldCheck className="w-8 h-8 text-[#F4D03F] opacity-30" />
                                                     <SelectValue placeholder="Select Status" />
                                                 </div>
                                             </SelectTrigger>
@@ -245,7 +245,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         <Select value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
                                             <SelectTrigger className={glass.select}>
                                                 <div className="flex items-center gap-8">
-                                                    <Cpu className="w-8 h-8 text-honey opacity-30" />
+                                                    <Cpu className="w-8 h-8 text-[#F4D03F] opacity-30" />
                                                     <SelectValue placeholder="Select Material" />
                                                 </div>
                                             </SelectTrigger>
@@ -270,7 +270,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                             </div>
 
                             {/* ── Footer ── */}
-                            <div className="flex flex-col sm:flex-row justify-end gap-10 pt-20 border-t border-white/5">
+                            <div className="flex flex-col sm:flex-row justify-end gap-10 pt-20 border-t border-[#F4D03F]/10">
                                 <button
                                     onClick={onClose}
                                     className={glass.btnSecondary}

@@ -35,9 +35,9 @@ const generateHistoryData = (months: number) => {
 };
 
 const acousticConfig: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-    'Healthy': { label: 'Normal Activity', color: 'text-emerald-500', bg: 'bg-emerald-500', icon: CheckCircle2 },
+    'Healthy': { label: 'Normal Activity', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]', icon: CheckCircle2 },
     'Queenless': { label: 'Queen Issues', color: 'text-destructive', bg: 'bg-destructive', icon: AlertTriangle },
-    'Swarm Risk': { label: 'Swarm Risk', color: 'text-amber-500', bg: 'bg-amber-500', icon: Zap },
+    'Swarm Risk': { label: 'Swarm Risk', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]', icon: Zap },
 };
 
 // --- Sub-components ---
@@ -53,8 +53,8 @@ const VitalsCard: React.FC<{
 }> = ({ label, value, unit, target, icon: Icon, status, trend }) => {
     const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
     const trendColor = status === 'ok'
-        ? 'text-emerald-500 bg-emerald-500/10'
-        : status === 'warn' ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10';
+        ? 'text-[#1B9157] bg-[#1B9157]/'
+        : status === 'warn' ? 'text-[#F4D03F] bg-[#F4D03F]/' : 'text-red-500 bg-red-500/10';
 
     return (
         <div className={cn(glass.card, "p-10 flex flex-col justify-between group transition-all h-full")}>
@@ -62,20 +62,20 @@ const VitalsCard: React.FC<{
                 <div className="space-y-4">
                     <p className={cn(glass.microLabel, "opacity-60 uppercase italic")}>{label}</p>
                     <div className="flex items-end gap-3">
-                        <span className={cn("text-7xl font-black italic tracking-tighter leading-none", status === 'ok' ? 'text-foreground' : status === 'warn' ? 'text-amber-500' : 'text-red-500')}>{value}</span>
+                        <span className={cn("text-7xl font-black italic tracking-tighter leading-none", status === 'ok' ? 'text-foreground' : status === 'warn' ? 'text-[#F4D03F]' : 'text-red-500')}>{value}</span>
                         <span className="text-2xl font-black italic opacity-30 mb-2">{unit}</span>
                     </div>
                 </div>
                 <div className={cn(
                     "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all",
-                    status === 'ok' ? "bg-emerald-500/10 text-emerald-500" :
-                        status === 'warn' ? "bg-amber-500/10 text-amber-500" :
+                    status === 'ok' ? "bg-[#1B9157]/ text-[#1B9157]" :
+                        status === 'warn' ? "bg-[#F4D03F]/ text-[#F4D03F]" :
                             "bg-red-500/10 text-red-500"
                 )}>
                     <Icon className="w-10 h-10" />
                 </div>
             </div>
-            <div className="flex items-center justify-between border-t border-white/5 pt-6 mt-auto">
+            <div className="flex items-center justify-between border-t border-[#F4D03F]/10 pt-6 mt-auto">
                 <div className="flex items-center gap-4">
                     <span className={cn(glass.microLabel, "opacity-40 italic")}>Target</span>
                     <span className="text-lg font-black italic text-foreground/60">{target}</span>
@@ -148,9 +148,9 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         return (
             <div className={cn(glass.page, "flex items-center justify-center min-h-[60vh]")}>
                 <div className="text-center space-y-10">
-                    <div className="w-32 h-32 rounded-[4rem] bg-honey/10 mx-auto flex items-center justify-center relative">
-                        <div className="absolute inset-0 rounded-[4rem] border-2 border-honey/30 animate-ping" />
-                        <Zap className="w-16 h-16 text-honey animate-pulse" />
+                    <div className="w-32 h-32 rounded-[4rem] bg-[#F4D03F]/10 mx-auto flex items-center justify-center relative">
+                        <div className="absolute inset-0 rounded-[4rem] border-2 border-[#F4D03F]/30 animate-ping" />
+                        <Zap className="w-16 h-16 text-[#F4D03F] animate-pulse" />
                     </div>
                     <h3 className="text-4xl font-black italic tracking-tighter uppercase animate-pulse">Loading Sensor Data...</h3>
                 </div>
@@ -170,21 +170,21 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             className={cn(glass.page, "p-8 -m-8 pb-24 space-y-16")}
         >
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 pb-12 border-b border-white/5">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 pb-12 border-b border-[#F4D03F]/10">
                 <div className="space-y-6">
-                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
+                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
                         <div className="flex items-center gap-4 skew-x-[12deg]">
                             <Activity className="w-5 h-5" />
                             <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Live Monitoring</span>
                         </div>
                     </div>
                     <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                        Hive <span className="text-honey">Health</span>
+                        Hive <span className="text-[#F4D03F]">Health</span>
                     </h1>
                     <p className={cn(glass.microLabel, 'opacity-40 italic font-black uppercase tracking-[0.4em] ml-2')}>Track hive conditions in real-time.</p>
                 </div>
-                <div className="flex items-center gap-6 bg-white/40 backdrop-blur-3xl px-8 py-4 rounded-full border border-gray-200 shadow-4xl">
-                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
+                <div className="flex items-center gap-6 bg-gray-400 backdrop-blur-3xl px-8 py-4 rounded-full border border-[#F4D03F]/20 shadow-4xl">
+                    <div className="w-3 h-3 bg-[#1B9157] rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
                     <span className="text-xl font-black italic tabular-nums text-foreground/80 tracking-widest">{liveTime.toLocaleTimeString()} — LIVE</span>
                 </div>
             </div>
@@ -199,15 +199,15 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             animate={{ x: 0, opacity: 1 }}
                             className={cn(
                                 glass.card,
-                                "p-8 border-l-[12px] flex items-center gap-10 bg-white/40",
+                                "p-8 border-l-[12px] flex items-center gap-10 bg-gray-400",
                                 alert.severity === 'critical' ? "border-red-500" : "border-amber-500"
                             )}
                         >
-                            <div className={cn("w-20 h-20 rounded-[2.5rem] flex items-center justify-center shadow-4xl", alert.severity === 'critical' ? "bg-red-500/10 text-red-500" : "bg-amber-500/10 text-amber-500")}>
+                            <div className={cn("w-20 h-20 rounded-[2.5rem] flex items-center justify-center shadow-4xl", alert.severity === 'critical' ? "bg-red-500/10 text-red-500" : "bg-[#F4D03F]/ text-[#F4D03F]")}>
                                 <AlertTriangle className="w-10 h-10" />
                             </div>
                             <div className="flex-1 space-y-2">
-                                <h4 className={cn("text-3xl font-black italic uppercase tracking-tighter", alert.severity === 'critical' ? "text-red-500" : "text-amber-500")}>
+                                <h4 className={cn("text-3xl font-black italic uppercase tracking-tighter", alert.severity === 'critical' ? "text-red-500" : "text-[#F4D03F]")}>
                                     Attention Needed: {alert.alert_type}
                                 </h4>
                                 <p className="text-xl font-black italic text-foreground/60">{alert.message}</p>
@@ -223,8 +223,8 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             {/* Hive Selector */}
             <div className="space-y-8">
                 <div className="flex items-center gap-6">
-                    <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20">
-                        <Layers className="w-6 h-6 text-honey" />
+                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                        <Layers className="w-6 h-6 text-[#F4D03F]" />
                     </div>
                     <h3 className={cn(glass.microLabel, "opacity-60 uppercase italic font-black tracking-[0.4em]")}>Select Hive</h3>
                 </div>
@@ -237,23 +237,23 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                 onClick={() => setSelectedHive(hive)}
                                 className={cn(
                                     glass.card,
-                                    "p-8 text-left transition-all relative overflow-hidden group border-white/5",
-                                    isSelected ? "bg-honey text-black border-honey shadow-4xl scale-110 z-10" : "hover:border-honey/40 hover:bg-honey/10"
+                                    "p-8 text-left transition-all relative overflow-hidden group border-[#F4D03F]/10",
+                                    isSelected ? "bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F] shadow-4xl scale-110 z-10" : "hover:border-[#F4D03F]/40 hover:bg-[#F4D03F]/10"
                                 )}
                             >
                                 <div className="space-y-4 relative z-10">
                                     <div className="flex justify-between items-center">
-                                        <span className={cn("text-4xl font-black italic tracking-tighter uppercase", isSelected ? "text-black" : "text-foreground")}>{hive.code}</span>
+                                        <span className={cn("text-4xl font-black italic tracking-tighter uppercase", isSelected ? "text-[#1A1A1A]" : "text-foreground")}>{hive.code}</span>
                                         {hive.alert && <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-4xl" />}
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className={cn("text-lg font-black italic", isSelected ? "text-black/60" : "text-foreground/40")}>{hive.temp}°C</span>
-                                        <div className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-gray-100" : "bg-white/10")} />
-                                        <span className={cn("text-lg font-black italic", isSelected ? "text-black/60" : "text-foreground/40")}>{hive.humidity}%</span>
+                                        <span className={cn("text-lg font-black italic", isSelected ? "text-[#1A1A1A]/60" : "text-foreground/40")}>{hive.temp}°C</span>
+                                        <div className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-[#F4D03F]/10" : "bg-[#F4D03F]/10")} />
+                                        <span className={cn("text-lg font-black italic", isSelected ? "text-[#1A1A1A]/60" : "text-foreground/40")}>{hive.humidity}%</span>
                                     </div>
                                 </div>
                                 {isSelected && (
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gray-200 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
                                 )}
                             </button>
                         );
@@ -292,20 +292,20 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         </div>
                         <div className={cn(
                             "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all",
-                            selectedHive.acoustic === 'Healthy' ? "bg-emerald-500/10 text-emerald-500" :
-                                selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-500/10 text-amber-500" :
+                            selectedHive.acoustic === 'Healthy' ? "bg-[#1B9157]/ text-[#1B9157]" :
+                                selectedHive.acoustic === 'Swarm Risk' ? "bg-[#F4D03F]/ text-[#F4D03F]" :
                                     "bg-red-500/10 text-red-500"
                         )}>
                             <Volume2 className="w-10 h-10" />
                         </div>
                     </div>
-                    <div className="flex items-end gap-2 h-20 border-t border-white/5 pt-6 mt-auto">
+                    <div className="flex items-end gap-2 h-20 border-t border-[#F4D03F]/10 pt-6 mt-auto">
                         {Array.from({ length: 32 }).map((_, i) => (
                             <div
                                 key={i}
                                 className={cn("flex-1 rounded-t-lg transition-all duration-300",
-                                    selectedHive.acoustic === 'Healthy' ? "bg-emerald-500" :
-                                        selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-500" : "bg-red-500"
+                                    selectedHive.acoustic === 'Healthy' ? "bg-[#1B9157]" :
+                                        selectedHive.acoustic === 'Swarm Risk' ? "bg-[#F4D03F]" : "bg-red-500"
                                 )}
                                 style={{
                                     height: `${Math.random() * (selectedHive.acoustic === 'Healthy' ? 60 : selectedHive.acoustic === 'Swarm Risk' ? 100 : 30)}%`,
@@ -319,14 +319,14 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
             {/* Trends Section */}
             <div className="space-y-10">
-                <div className="flex flex-col md:flex-row items-center justify-between border-b border-white/5 pb-10 gap-10">
+                <div className="flex flex-col md:flex-row items-center justify-between border-b border-[#F4D03F]/10 pb-10 gap-10">
                     <div className="flex items-center gap-8">
-                        <div className="w-16 h-16 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl">
-                            <Activity className="w-10 h-10 text-honey" />
+                        <div className="w-16 h-16 rounded-[2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-4xl">
+                            <Activity className="w-10 h-10 text-[#F4D03F]" />
                         </div>
-                        <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-none">History <span className="text-honey">Trends</span></h2>
+                        <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-none">History <span className="text-[#F4D03F]">Trends</span></h2>
                     </div>
-                    <div className="flex items-center gap-8 bg-white/40 p-4 rounded-[3.5rem] border border-gray-200 shadow-4xl">
+                    <div className="flex items-center gap-8 bg-gray-400 p-4 rounded-[3.5rem] border border-[#F4D03F]/20 shadow-4xl">
                         <span className={cn(glass.microLabel, "px-6 opacity-40 italic uppercase")}>Past {historyRange} months</span>
                         <div className="flex items-center gap-4">
                             <button onClick={() => setHistoryRange(r => Math.max(1, r - 1))} className={cn(glass.btnSecondary, "h-14 w-14 rounded-2xl")}><ChevronLeft className="w-6 h-6" /></button>
@@ -363,27 +363,27 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
             {/* List Table */}
             <div className="space-y-10">
-                <div className="flex items-center gap-8 border-b border-white/5 pb-8">
-                    <Shield className="w-10 h-10 text-emerald-500" />
+                <div className="flex items-center gap-8 border-b border-[#F4D03F]/10 pb-8">
+                    <Shield className="w-10 h-10 text-[#1B9157]" />
                     <h3 className="text-5xl font-black italic tracking-tighter uppercase">Global Status</h3>
                 </div>
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-4xl")}>
                     <div className="overflow-x-auto thin-scrollbar">
                         <table className="w-full">
-                            <thead className="bg-white/40">
+                            <thead className="bg-gray-400">
                                 <tr>
                                     {['Hive', 'Temp', 'Humidity', 'Sound', 'Signal', 'Status'].map(h => (
                                         <th key={h} className={cn(glass.microLabel, "px-10 py-10 opacity-40 uppercase italic text-left")}>{h}</th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-gray-100">
                                 {realHives.map(hive => (
-                                    <tr key={hive.id} onClick={() => setSelectedHive(hive)} className={cn("hover:bg-honey/10 transition-colors cursor-pointer group", selectedHive.id === hive.id && "bg-honey/5")}>
+                                    <tr key={hive.id} onClick={() => setSelectedHive(hive)} className={cn("hover:bg-[#F4D03F]/10 transition-colors cursor-pointer group", selectedHive.id === hive.id && "bg-[#F4D03F]/5")}>
                                         <td className="px-10 py-10">
                                             <div className="flex items-center gap-6">
-                                                <div className={cn("w-3 h-3 rounded-full", acousticConfig[hive.acoustic]?.bg || "bg-emerald-500")} />
-                                                <span className="text-3xl font-black italic tracking-tighter group-hover:text-honey">{hive.code}</span>
+                                                <div className={cn("w-3 h-3 rounded-full", acousticConfig[hive.acoustic]?.bg || "bg-[#1B9157]")} />
+                                                <span className="text-3xl font-black italic tracking-tighter group-hover:text-[#F4D03F]">{hive.code}</span>
                                             </div>
                                         </td>
                                         <td className="px-10 py-10 text-2xl font-black italic opacity-60 tabular-nums">{hive.temp}°C</td>
@@ -393,7 +393,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                         </td>
                                         <td className="px-10 py-10 text-xl font-black italic opacity-30 uppercase">{hive.lastSeen}</td>
                                         <td className="px-10 py-10">
-                                            {hive.alert ? <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">Alert</span> : <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">OK</span>}
+                                            {hive.alert ? <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">Alert</span> : <span className="bg-[#1B9157]/ text-[#1B9157] border border-[#1B9157]/ px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">OK</span>}
                                         </td>
                                     </tr>
                                 ))}

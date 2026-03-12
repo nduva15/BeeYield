@@ -503,11 +503,11 @@ const BeeYieldDashboard: React.FC = () => {
                 return <LabelGeneratorView onTabChange={handleTabChange} />;
             default:
                 return (
-                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white rounded-[2.5rem] border border-dashed border-gray-200">
-                        <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-[#FFF9F0] rounded-[2.5rem] border border-dashed border-[#F4D03F]/20">
+                        <div className="w-16 h-16 bg-[#F9F7F2] rounded-2xl flex items-center justify-center mb-4">
                             <Box className="w-8 h-8 text-gray-400" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-[#1A1A1A]">
                             {navItems.find(i => i.id === activeTab)?.label || t('view_content')}
                         </h3>
                         <p className="text-gray-500 mt-1 max-w-sm font-medium">
@@ -520,7 +520,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white">
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#FFF9F0]">
                 <img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" />
             </div>
         );
@@ -533,7 +533,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (!user || !isBeeYieldActive) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-white font-sans text-[#064e3b] antialiased">
+            <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#FFF9F0] font-sans text-[#064e3b] antialiased">
                 <div className="max-w-2xl w-full text-center space-y-12">
                     <div className="w-24 h-24 border-4 border-[#064e3b] bg-[#facc15] flex items-center justify-center mx-auto shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                         <Hexagon className="h-12 w-12 text-[#064e3b] fill-current" />
@@ -548,14 +548,14 @@ const BeeYieldDashboard: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="border-4 border-[#064e3b] p-10 bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
+                    <div className="border-4 border-[#064e3b] p-10 bg-[#FFF9F0] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
                         <p className="text-sm font-black uppercase leading-relaxed mb-10">
                             You need to log in to see this page.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <button
                                 onClick={() => navigate('/login')}
-                                className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-gray-900 font-black uppercase text-xs tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3"
+                                className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-[#1A1A1A] font-black uppercase text-xs tracking-widest hover:bg-[#FFF9F0] transition-all flex items-center justify-center gap-3"
                             >
                                 <Lock className="w-4 h-4" />
                                 Login

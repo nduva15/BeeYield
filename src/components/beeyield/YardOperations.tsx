@@ -34,9 +34,9 @@ const initialTasks: HiveTask[] = [
 
 const urgencyConfig: Record<Urgency, { label: string; color: string; bg: string; border: string; dot: string }> = {
     critical: { label: 'Critical', color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20', dot: 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]' },
-    high: { label: 'High', color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', dot: 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' },
+    high: { label: 'High', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/', border: 'border-amber-500/20', dot: 'bg-[#F4D03F] shadow-[0_0_10px_rgba(245,158,11,0.5)]' },
     medium: { label: 'Medium', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', dot: 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
-    low: { label: 'Low', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', dot: 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
+    low: { label: 'Low', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/', border: 'border-[#1B9157]/', dot: 'bg-[#1B9157] shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
 };
 
 const TOTAL_ACRES = 80;
@@ -80,12 +80,12 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20')}>
+                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
                         <ClipboardList className="w-3.5 h-3.5" />
                         <span className="uppercase tracking-[0.1em]">Smart Urgency Filter</span>
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Yard <span className="text-honey">Operations</span>
+                        Yard <span className="text-[#F4D03F]">Operations</span>
                     </h1>
                     <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
                         Digital FOB Audit Engine
@@ -93,9 +93,9 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                 </div>
 
                 {/* FPA KPI */}
-                <div className={cn(glass.card, "p-6 sm:px-8 border-honey/20 shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10")}>
+                <div className={cn(glass.card, "p-6 sm:px-8 border-[#F4D03F]/20 shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10")}>
                     <p className={cn(glass.microLabel, "text-muted-foreground mb-1 font-semibold")}>Current FPA</p>
-                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-honey leading-none mb-2")}>{fpa}</p>
+                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-[#F4D03F] leading-none mb-2")}>{fpa}</p>
                     <p className={cn(glass.microLabel, "text-muted-foreground/60 italic font-semibold normal-case")}>Frames Per Acre / {TOTAL_ACRES} ac</p>
                 </div>
             </div>
@@ -112,7 +112,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 className={cn(
                                     "px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
                                     filterUrgency === u
-                                        ? "bg-white text-foreground shadow-sm"
+                                        ? "bg-[#FFF9F0] text-foreground shadow-sm"
                                         : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -126,7 +126,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                     onClick={() => setShowResolved(r => !r)}
                     className={cn(
                         "px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ml-auto",
-                        showResolved ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-white/50 border-border text-muted-foreground hover:border-emerald-500/50 hover:text-emerald-500"
+                        showResolved ? "bg-[#1B9157] border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-[#F9F7F2]0 border-border text-muted-foreground hover:border-[#1B9157]/ hover:text-[#1B9157]"
                     )}
                 >
                     {showResolved ? 'Hide Resolved' : 'Show Resolved'}
@@ -137,8 +137,8 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
             <div className="space-y-4">
                 {filtered.length === 0 && (
                     <div className={glass.emptyState}>
-                        <div className="w-24 h-24 rounded-[2rem] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 shadow-sm">
-                            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+                        <div className="w-24 h-24 rounded-[2rem] bg-[#1B9157]/ border border-[#1B9157]/ flex items-center justify-center mb-6 shadow-sm">
+                            <CheckCircle2 className="w-10 h-10 text-[#1B9157]" />
                         </div>
                         <p className={cn(glass.sectionTitle, "text-2xl normal-case")}>All Clear</p>
                         <p className={cn(glass.microLabel, "opacity-70 normal-case italic font-bold max-w-sm mx-auto text-center mt-2")}>No tasks matching your current filter.</p>
@@ -152,7 +152,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 key={task.id}
                                 className={cn(
                                     glass.card,
-                                    "p-6 flex flex-col md:flex-row md:items-center gap-6 group hover:border-honey/40 transition-all",
+                                    "p-6 flex flex-col md:flex-row md:items-center gap-6 group hover:border-[#F4D03F]/40 transition-all",
                                     task.resolved ? "opacity-60 bg-muted/20" : "",
                                     !task.resolved && `hover:shadow-xl hover:shadow-black/5`
                                 )}
@@ -171,11 +171,11 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                     </p>
                                     <div className="flex flex-wrap items-center gap-4 gap-y-2">
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
-                                            <Hexagon className="w-3 h-3 text-honey" />
+                                            <Hexagon className="w-3 h-3 text-[#F4D03F]" />
                                             <span className={cn(glass.microLabel, "opacity-80")}>FOB: {task.fob}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
-                                            <Hexagon className="w-3 h-3 text-emerald-500" />
+                                            <Hexagon className="w-3 h-3 text-[#1B9157]" />
                                             <span className={cn(glass.microLabel, "opacity-80")}>FOBr: {task.fobr}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
@@ -199,7 +199,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                             </button>
                                             <button
                                                 onClick={() => handleResolve(task.id)}
-                                                className={cn(glass.btnPrimary, "px-6 h-10 text-[10px] bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20")}
+                                                className={cn(glass.btnPrimary, "px-6 h-10 text-[10px] bg-[#1B9157] text-white border-emerald-500 hover:bg-[#145A32] shadow-emerald-500/20")}
                                             >
                                                 Resolve
                                             </button>
@@ -215,21 +215,21 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
             {/* FOB Audit Modal */}
             {auditHive && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-gray-100 backdrop-blur-sm" onClick={() => setAuditHive(null)} />
+                    <div className="absolute inset-0 bg-[#F4D03F]/10 backdrop-blur-sm" onClick={() => setAuditHive(null)} />
                     <div className={cn(glass.card, "w-full max-w-md relative z-10 shadow-2xl p-0 overflow-hidden animate-in fade-in zoom-in-95 duration-200")}>
                         <div className="p-6 border-b border-border bg-muted/30 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Activity className="w-5 h-5 text-honey" />
+                                <Activity className="w-5 h-5 text-[#F4D03F]" />
                                 <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>FOB Audit <span className="text-muted-foreground mr-1">—</span> {auditHive.hive}</h3>
                             </div>
-                            <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white:bg-white/10 transition-all border border-border">✕</button>
+                            <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-[#F9F7F2]0 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-[#FFF9F0]:bg-[#F4D03F]/10 transition-all border border-border">✕</button>
                         </div>
                         <div className="p-8 space-y-8 pb-10">
                             <div className="space-y-4">
                                 <label className={cn(glass.microLabel, "text-muted-foreground font-semibold")}>Frames of Bees (FOB)</label>
                                 <div className="flex items-center gap-6">
                                     <button onClick={() => setAuditFob(f => Math.max(0, f - 1))} className={cn(glass.btnSecondary, "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl pb-1")}>−</button>
-                                    <span className={cn(glass.sectionTitle, "text-5xl tabular-nums w-16 text-center text-honey leading-none")}>{auditFob}</span>
+                                    <span className={cn(glass.sectionTitle, "text-5xl tabular-nums w-16 text-center text-[#F4D03F] leading-none")}>{auditFob}</span>
                                     <button onClick={() => setAuditFob(f => f + 1)} className={cn(glass.btnSecondary, "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl pb-1")}>+</button>
                                 </div>
                             </div>
@@ -240,14 +240,14 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 <label className={cn(glass.microLabel, "text-muted-foreground font-semibold")}>Frames of Brood (FOBr)</label>
                                 <div className="flex items-center gap-6">
                                     <button onClick={() => setAuditFobr(f => Math.max(0, f - 1))} className={cn(glass.btnSecondary, "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl pb-1")}>−</button>
-                                    <span className={cn(glass.sectionTitle, "text-5xl tabular-nums w-16 text-center text-emerald-500 leading-none")}>{auditFobr}</span>
+                                    <span className={cn(glass.sectionTitle, "text-5xl tabular-nums w-16 text-center text-[#1B9157] leading-none")}>{auditFobr}</span>
                                     <button onClick={() => setAuditFobr(f => f + 1)} className={cn(glass.btnSecondary, "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl pb-1")}>+</button>
                                 </div>
                             </div>
 
-                            <div className="p-4 rounded-xl bg-honey/10 border border-honey/20">
-                                <p className={cn(glass.microLabel, "normal-case italic font-semibold text-honey/80")}>
-                                    FPA contribution from this hive: <span className="text-honey font-black text-sm not-italic ml-1">{(auditFob / TOTAL_ACRES).toFixed(3)}</span> frames/acre
+                            <div className="p-4 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20">
+                                <p className={cn(glass.microLabel, "normal-case italic font-semibold text-[#F4D03F]/80")}>
+                                    FPA contribution from this hive: <span className="text-[#F4D03F] font-black text-sm not-italic ml-1">{(auditFob / TOTAL_ACRES).toFixed(3)}</span> frames/acre
                                 </p>
                             </div>
 

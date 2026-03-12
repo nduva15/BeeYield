@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, Shield, Terminal, Activity, Server, Globe } from 'lucide-react';
+import { Loader2, Mail, Lock, Shield, Terminal, Activity, Server, Globe, LogIn } from 'lucide-react';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 interface CebaLoginFormProps {
@@ -43,14 +43,14 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
         const { error, mfaRequired: needsMFA } = await signIn(email, password, 'ceba');
 
         if (error) {
-            toast.error('Authentication Failed', { description: error.message });
+            toast.error('Login failed', { description: error.message });
             setLoading(false);
             return;
         }
 
         if (needsMFA) {
             setShowMFAInput(true);
-            toast.info('Security Code Required', { description: 'Please enter your 6-digit verification code.' });
+            toast.info('Verification Required', { description: 'Please enter your security code.' });
             if (rememberMe) localStorage.setItem('savedEmail_ceba', email);
             else localStorage.removeItem('savedEmail_ceba');
             setLoading(false);
@@ -69,9 +69,8 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
         const { error } = await verifyMFAChallenge(mfaCode, 'ceba');
 
         if (error) {
-            toast.error('Invalid Code', { description: error.message });
+            toast.error('Invalid code', { description: error.message });
         } else {
-            toast.success('Code Accepted. Logging in...');
             setShowMFAInput(false);
             await handleFinalizeAccess();
         }
@@ -79,7 +78,6 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
     };
 
     const handleFinalizeAccess = async () => {
-        // Fetch user and check role
         const { supabaseCEBA } = await import('@/lib/supabase');
         if (supabaseCEBA) {
             const { data } = await supabaseCEBA.auth.getUser();
@@ -92,14 +90,13 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
 
                 if (!isAdmin) {
                     await signOut('ceba');
-                    toast.error('Access Restricted', {
-                        description: 'This terminal is for authorized CEBA administrators only.'
+                    toast.error('Unauthorized', {
+                        description: 'This area is restricted to administrators only.'
                     });
                     setLoading(false);
                     return;
                 }
 
-                // Ensure profile exists in ceba_profiles
                 const { error: profileError } = await supabaseCEBA
                     .from('ceba_profiles')
                     .select('id')
@@ -107,7 +104,6 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     .single();
 
                 if (profileError) {
-                    // Auto-provision admin profile
                     await supabaseCEBA.from('ceba_profiles').upsert({
                         id: loggedInUser.id,
                         email: loggedInUser.email,
@@ -117,7 +113,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     });
                 }
 
-                toast.success('Access Granted. Welcome back.');
+                toast.success('Login successful');
                 onSuccess?.();
             }
         }
@@ -130,47 +126,45 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
 
         const { error } = await signInWithGoogle(undefined, 'ceba');
         if (error) {
-            toast.error('Cloud Auth Failed', { description: error.message });
+            toast.error('Google login failed', { description: error.message });
             setGoogleLoading(false);
         }
     };
 
     if (showMFAInput || mfaRequired) {
         return (
-            <form onSubmit={handleMFAVerify} className="space-y-8">
-                <div className="text-center space-y-4">
-                    <div className="w-16 h-16 rounded-xl bg-beeyield-green/5 flex items-center justify-center mx-auto border-2 border-beeyield-green/20">
-                        <Shield className="h-6 w-6 text-beeyield-green" />
+            <form onSubmit={handleMFAVerify} className="space-y-6">
+                <div className="text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
+                        <Shield className="h-6 w-6 text-honey" />
                     </div>
-                    <div className="space-y-1">
-                        <h3 className="text-sm font-black text-beeyield-green uppercase tracking-[0.3em]">Identity Check</h3>
-                        <p className="text-[9px] font-black text-black/30 uppercase tracking-widest font-mono">
-                            Waiting for security code
-                        </p>
-                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">Security Check</h3>
+                    <p className="text-sm text-gray-500 font-medium">
+                        Enter the verification code to continue
+                    </p>
                 </div>
 
-                <div className="space-y-3">
-                    <Label htmlFor="ceba-mfa-code" className="text-beeyield-green font-black uppercase text-[9px] tracking-widest pl-1">Security Code</Label>
+                <div className="space-y-2">
+                    <Label htmlFor="ceba-mfa-code" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Verification Code</Label>
                     <Input
                         id="ceba-mfa-code"
                         type="text"
-                        placeholder="000000"
+                        placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-3xl tracking-[0.6em] font-mono h-20 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-0 text-beeyield-black rounded-none transition-all"
+                        className="text-center text-2xl tracking-[0.3em] font-bold h-14 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
                     />
                 </div>
 
-                <Button type="submit" className="w-full h-16 bg-beeyield-green text-white font-black uppercase tracking-[0.3em] text-[10px] rounded-none shadow-premium hover:shadow-glow transition-all" disabled={loading || mfaCode.length !== 6}>
-                    {loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                        'Verify Code'
-                    )}
+                <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95" 
+                    disabled={loading || mfaCode.length !== 6}
+                >
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Verify & Continue'}
                 </Button>
 
                 <button
@@ -179,9 +173,9 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         setShowMFAInput(false);
                         setMfaCode('');
                     }}
-                    className="w-full text-[9px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
+                    className="w-full text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors"
                 >
-                    &lt; Back to Login &gt;
+                    Back to Login
                 </button>
             </form>
         );
@@ -192,78 +186,77 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
             <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 bg-white border-2 border-beeyield-green/10 hover:border-beeyield-gold/40 text-beeyield-green font-black uppercase text-[10px] tracking-widest transition-all"
+                className="w-full h-12 bg-white border border-gray-200 hover:border-honey/50 hover:bg-gray-50 text-gray-600 font-bold rounded-xl transition-all flex items-center justify-center gap-3"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
             >
                 {googleLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-beeyield-gold" />
+                    <Loader2 className="h-5 w-5 animate-spin text-honey" />
                 ) : (
-                    <Globe className="mr-2 h-4 w-4 text-beeyield-gold" />
+                    <svg className="h-5 w-5" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                    </svg>
                 )}
-                Sign in with Google
+                Admin Login with Google
             </Button>
 
-            <div className="relative">
+            <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t-2 border-beeyield-green/5" />
+                    <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest">
-                    <span className="bg-white px-4 text-beeyield-green/40">Or sign in with email</span>
+                <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
+                    <span className="bg-white px-4 text-gray-300">or</span>
                 </div>
             </div>
 
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-email" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Email Address</Label>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Mail className="h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
-                        </div>
+                    <Label htmlFor="ceba-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="ceba-email"
                             type="email"
-                            placeholder="your@email.com"
+                            placeholder="admin@beeyield.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                             required
-                            autoComplete="username"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label htmlFor="ceba-password" className="text-beeyield-green font-black uppercase text-[10px] tracking-widest">Password</Label>
+                        <Label htmlFor="ceba-password" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
                         {onForgotPassword && (
                             <button
                                 type="button"
                                 onClick={onForgotPassword}
-                                className="text-[10px] font-black uppercase tracking-widest text-beeyield-gold hover:text-beeyield-orange transition-colors"
+                                className="text-xs font-bold text-honey hover:underline"
                             >
-                                Forgot Password?
+                                Forgot?
                             </button>
                         )}
                     </div>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Lock className="h-4 w-4 text-beeyield-gold/40 group-focus-within:text-beeyield-gold transition-colors" />
-                        </div>
+                    <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="ceba-password"
                             type="password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="pl-10 h-12 bg-white border-2 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/20 font-mono text-sm transition-all"
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                             required
-                            autoComplete="current-password"
                         />
                     </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 pt-1">
                     <Checkbox
                         id="ceba-remember"
                         checked={rememberMe}
@@ -271,39 +264,34 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     />
                     <label
                         htmlFor="ceba-remember"
-                        className="text-[10px] uppercase font-black tracking-widest text-beeyield-green/60 cursor-pointer hover:text-beeyield-green transition-colors"
+                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900"
                     >
-                        Remember Me
+                        Remember session
                     </label>
                 </div>
             </div>
 
             <Button
                 type="submit"
-                className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-glow transition-all active:scale-95"
+                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                 disabled={loading}
             >
-                {loading ? (
-                    <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Logging in...
-                    </div>
-                ) : (
-                    'Login'
-                )}
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+                Log In
             </Button>
 
-            <div className="flex flex-col gap-4 items-center">
-                {onSwitchToRegister && (
+            {onSwitchToRegister && (
+                <p className="text-center text-sm text-gray-500 font-medium pt-2">
+                    Need admin access?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToRegister}
-                        className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-green transition-colors"
+                        className="text-honey font-bold hover:underline"
                     >
-                        Create New Admin Account
+                        Request Account
                     </button>
-                )}
-            </div>
+                </p>
+            )}
         </form>
     );
 };

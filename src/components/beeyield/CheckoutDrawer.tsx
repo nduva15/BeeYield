@@ -119,7 +119,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={!isProcessing ? onClose : undefined}
-                        className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 cursor-crosshair"
+                        className="fixed inset-0 bg-[#FFF9F0]/80 backdrop-blur-sm z-50 cursor-crosshair"
                     />
 
                     {/* Drawer */}
@@ -132,11 +132,11 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                     >
                         {/* Header */}
                         <div className="h-16 flex items-center justify-between px-6 border-b border-[#1A1A1A]">
-                            <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Secure Checkout</span>
+                            <span className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Secure Checkout</span>
                             <button
                                 onClick={onClose}
                                 disabled={isProcessing}
-                                className="p-2 text-gray-400 hover:text-gray-900 transition-colors disabled:opacity-0"
+                                className="p-2 text-gray-400 hover:text-[#1A1A1A] transition-colors disabled:opacity-0"
                             >
                                 <X size={18} />
                             </button>
@@ -150,7 +150,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                     <div className="space-y-2">
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Selected Hive Plan</p>
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <h3 className="text-xl font-black text-gray-900 leading-none">{item?.name}</h3>
+                                            <h3 className="text-xl font-black text-[#1A1A1A] leading-none">{item?.name}</h3>
                                             <p className="text-[11px] text-gray-600 mt-1.5 leading-relaxed">{item?.description}</p>
                                         </div>
                                     </div>
@@ -162,7 +162,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         </div>
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
                                             <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Tax (16% VAT)</p>
-                                            <p className="text-lg font-black text-gray-900 mt-1">INCL</p>
+                                            <p className="text-lg font-black text-[#1A1A1A] mt-1">INCL</p>
                                         </div>
                                     </div>
 
@@ -170,7 +170,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={() => setStep('payment')}
                                             disabled={isProcessing}
-                                            className="w-full h-14 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                            className="w-full h-14 bg-[#FFF9F0] text-[#1A1A1A] font-black uppercase tracking-[0.15em] hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             Select Payment
                                             <ChevronRight size={16} />
@@ -193,15 +193,15 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                         "w-full flex items-center justify-between p-4 border transition-all text-left",
                                                         selectedMethod === method.id
                                                             ? "bg-[#111] border-[#F59E0B]"
-                                                            : "bg-transparent border-[#1A1A1A] hover:border-gray-200"
+                                                            : "bg-transparent border-[#1A1A1A] hover:border-[#F4D03F]/20"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 bg-white/5 flex items-center justify-center">
-                                                            {method.type === 'card' ? <CreditCard size={20} className="text-gray-600" /> : <Smartphone size={20} className="text-emerald-400" />}
+                                                        <div className="w-10 h-10 bg-[#F9F7F2] flex items-center justify-center">
+                                                            {method.type === 'card' ? <CreditCard size={20} className="text-gray-600" /> : <Smartphone size={20} className="text-[#1B9157]" />}
                                                         </div>
                                                         <div>
-                                                            <p className="text-[12px] font-bold text-gray-900">
+                                                            <p className="text-[12px] font-bold text-[#1A1A1A]">
                                                                 {method.type === 'card' ? `•••• ${method.last4}` : method.phone}
                                                             </p>
                                                             <p className="text-[9px] text-gray-400 uppercase font-black">{method.provider}</p>
@@ -213,9 +213,9 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         </div>
                                     </div>
 
-                                    <div className="p-4 bg-emerald-500/5 border border-emerald-500/10 flex gap-3">
-                                        <Shield size={16} className="text-emerald-500 flex-shrink-0 mt-0.5" />
-                                        <p className="text-[10px] text-emerald-500/80 leading-relaxed font-bold">
+                                    <div className="p-4 bg-[#1B9157]/ border border-[#1B9157]/ flex gap-3">
+                                        <Shield size={16} className="text-[#1B9157] flex-shrink-0 mt-0.5" />
+                                        <p className="text-[10px] text-[#1B9157]/80 leading-relaxed font-bold">
                                             Oxidized Security Enabled. This transaction is protected by memory-safe Rust cryptography and strict idempotency checks.
                                         </p>
                                     </div>
@@ -224,7 +224,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={handlePayment}
                                             disabled={isProcessing}
-                                            className="w-full h-14 bg-[#F59E0B] text-black font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-wait"
+                                            className="w-full h-14 bg-[#F59E0B] text-[#1A1A1A] font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-wait"
                                         >
                                             {isProcessing ? "Handshaking..." : `Pay ${item?.currency} ${item?.price.toLocaleString()}`}
                                             <Lock size={16} className={cn("transition-transform", isProcessing ? "animate-pulse" : "group-hover:translate-y-[-1px]")} />
@@ -232,7 +232,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={() => setStep('review')}
                                             disabled={isProcessing}
-                                            className="w-full h-11 text-gray-400 font-black uppercase tracking-[0.1em] hover:text-gray-900 transition-colors text-[10px] disabled:opacity-0"
+                                            className="w-full h-11 text-gray-400 font-black uppercase tracking-[0.1em] hover:text-[#1A1A1A] transition-colors text-[10px] disabled:opacity-0"
                                         >
                                             Back to Review
                                         </button>
@@ -260,15 +260,15 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                             <motion.div
                                                 initial={{ scale: 0 }}
                                                 animate={{ scale: 1 }}
-                                                className="w-20 h-20 bg-emerald-500 flex items-center justify-center"
+                                                className="w-20 h-20 bg-[#1B9157] flex items-center justify-center"
                                             >
-                                                <CheckCircle2 size={40} className="text-black" />
+                                                <CheckCircle2 size={40} className="text-[#1A1A1A]" />
                                             </motion.div>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+                                        <h3 className="text-xl font-black text-[#1A1A1A] uppercase tracking-tight">
                                             {step === 'processing' ? 'Verifying Fund Access' : 'Paid'}
                                         </h3>
                                         <p className="text-[11px] text-gray-500 max-w-[240px] leading-relaxed mx-auto">
@@ -282,18 +282,18 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <div className="pt-8 w-full space-y-3">
                                             <button
                                                 onClick={() => toast.info("Generating Paper Trail...", { description: "Rust Invoicing Engine starting up." })}
-                                                className="w-full h-14 bg-[#F59E0B] text-black font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2"
+                                                className="w-full h-14 bg-[#F59E0B] text-[#1A1A1A] font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2"
                                             >
                                                 Download Receipt
                                                 <ChevronRight size={16} />
                                             </button>
                                             <button
                                                 onClick={onClose}
-                                                className="w-full h-12 text-gray-600 font-black uppercase tracking-[0.1em] hover:text-gray-900 transition-colors text-[10px]"
+                                                className="w-full h-12 text-gray-600 font-black uppercase tracking-[0.1em] hover:text-[#1A1A1A] transition-colors text-[10px]"
                                             >
                                                 Return to Vault
                                             </button>
-                                            <p className="text-[9px] text-white/10 uppercase tracking-widest font-black">Ref: OX-7729-A12</p>
+                                            <p className="text-[9px] text-gray-400 uppercase tracking-widest font-black">Ref: OX-7729-A12</p>
                                         </div>
                                     )}
                                 </div>

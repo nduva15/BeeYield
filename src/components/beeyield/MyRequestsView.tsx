@@ -30,7 +30,7 @@ interface MyRequestsViewProps {
 const CATEGORIES = [
     { id: 'Hardware', label: 'Hardware', icon: HardDrive, description: 'Sensor issues, battery, physical hive damage', color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { id: 'Software', label: 'Software', icon: Cpu, description: 'Dashboard bugs, sync issues, smart analytics', color: 'text-purple-500', bg: 'bg-purple-500/10' },
-    { id: 'Traceability', label: 'Traceability', icon: ShieldCheck, description: 'HoneyChain™ verification, batch sealing errors', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { id: 'Traceability', label: 'Traceability', icon: ShieldCheck, description: 'HoneyChain™ verification, batch sealing errors', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/' },
     { id: 'General', label: 'General', icon: HelpCircle, description: 'Billing, account, or other general questions', color: 'text-orange-500', bg: 'bg-orange-500/10' },
 ];
 
@@ -113,11 +113,11 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
 
     const getStatusStyles = (status: string) => {
         switch (status) {
-            case 'Resolved': return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+            case 'Resolved': return "bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/";
             case 'In Progress': return "bg-blue-500/10 text-blue-600 border-blue-500/20";
             case 'Open': return "bg-orange-500/10 text-orange-600 border-orange-500/20";
-            case 'Closed': return "bg-slate-500/10 text-slate-600 border-slate-500/20";
-            default: return "bg-slate-500/10 text-slate-600 border-slate-500/20";
+            case 'Closed': return "bg-[#F9F7F2]0/10 text-slate-600 border-slate-500/20";
+            default: return "bg-[#F9F7F2]0/10 text-slate-600 border-slate-500/20";
         }
     };
 
@@ -147,7 +147,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         onClick={() => setShowWizard(!showWizard)}
                         className={cn(
                             "rounded-full px-6 transition-all duration-300 shadow-lg hover:shadow-xl h-11",
-                            showWizard ? "bg-slate-200 text-slate-700 hover:bg-slate-300" : "bg-[#F4D03F] text-black hover:bg-[#E5C135]"
+                            showWizard ? "bg-slate-200 text-slate-700 hover:bg-slate-300" : "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#E5C135]"
                         )}
                     >
                         {showWizard ? "Close Form" : (
@@ -170,7 +170,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                             setIsHivesOpen(false);
                         }}
                         className={cn(
-                            "flex items-center gap-4 px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
+                            "flex items-center gap-4 px-5 py-3.5 bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
                             isPlacesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10"
                         )}
                     >
@@ -194,7 +194,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden"
+                                className="absolute top-full left-0 right-0 mt-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-xl shadow-xl z-50 overflow-hidden"
                             >
                                 <div className="p-2 max-h-[300px] overflow-y-auto">
 
@@ -235,7 +235,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                             setIsPlacesOpen(false);
                         }}
                         className={cn(
-                            "flex items-center gap-4 px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
+                            "flex items-center gap-4 px-5 py-3.5 bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
                             isHivesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10"
                         )}
                     >
@@ -263,7 +263,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden"
+                                className="absolute top-full left-0 right-0 mt-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-xl shadow-xl z-50 overflow-hidden"
                             >
                                 <div className="p-2 max-h-[300px] overflow-y-auto">
 
@@ -307,7 +307,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-white border border-slate-100 rounded-[24px] shadow-xl p-8 mb-12">
+                        <div className="bg-[#FFF9F0] border border-slate-100 rounded-[24px] shadow-xl p-8 mb-12">
                             <div className="max-w-3xl mx-auto">
                                 {/* Wizard Header */}
                                 <div className="flex items-center justify-between mb-10">
@@ -355,7 +355,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     }}
                                                     className={cn(
                                                         "flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all group hover:border-[#F4D03F]/50",
-                                                        category === cat.id ? "border-[#F4D03F] bg-[#F4D03F]/5 shadow-sm" : "border-slate-100 bg-white/50"
+                                                        category === cat.id ? "border-[#F4D03F] bg-[#F4D03F]/5 shadow-sm" : "border-slate-100 bg-[#F9F7F2]0"
                                                     )}
                                                 >
                                                     <div className={cn("mt-1 p-3 rounded-xl transition-colors", cat.bg, cat.color)}>
@@ -386,7 +386,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     value={subject}
                                                     onChange={(e) => setSubject(e.target.value)}
                                                     placeholder="What can we help you with?"
-                                                    className="bg-white border-slate-200 rounded-xl h-12 focus:ring-[#F4D03F]"
+                                                    className="bg-[#FFF9F0] border-slate-200 rounded-xl h-12 focus:ring-[#F4D03F]"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -397,7 +397,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     value={description}
                                                     onChange={(e) => setDescription(e.target.value)}
                                                     placeholder="Describe your issue or request in detail..."
-                                                    className="bg-white border-slate-200 rounded-xl min-h-[150px] focus:ring-[#F4D03F]"
+                                                    className="bg-[#FFF9F0] border-slate-200 rounded-xl min-h-[150px] focus:ring-[#F4D03F]"
                                                 />
                                             </div>
                                             <div className="flex items-center justify-between">
@@ -409,8 +409,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                             className={cn(
                                                                 "px-4 py-2 rounded-lg text-xs font-bold border transition-all",
                                                                 priority === p
-                                                                    ? "bg-[#F4D03F] border-[#F4D03F] text-black"
-                                                                    : "bg-white border-slate-200 text-slate-500"
+                                                                    ? "bg-[#F4D03F] border-[#F4D03F] text-[#1A1A1A]"
+                                                                    : "bg-[#FFF9F0] border-slate-200 text-slate-500"
                                                             )}
                                                         >
                                                             {p}
@@ -420,7 +420,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 <Button
                                                     onClick={() => setWizardStep(2)}
                                                     disabled={!subject || !description}
-                                                    className="bg-slate-800 text-gray-900 hover:opacity-90 rounded-full px-8"
+                                                    className="bg-slate-800 text-[#1A1A1A] hover:opacity-90 rounded-full px-8"
                                                 >
                                                     Review <ArrowRight className="w-4 h-4 ml-2" />
                                                 </Button>
@@ -436,7 +436,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                             exit={{ opacity: 0, x: -20 }}
                                             className="space-y-8"
                                         >
-                                            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
+                                            <div className="bg-[#F9F7F2] rounded-2xl p-6 border border-slate-100 space-y-4">
                                                 <div className="flex justify-between items-start border-b border-slate-100 pb-4">
                                                     <div>
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Category</p>
@@ -471,14 +471,14 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 <Button
                                                     variant="ghost"
                                                     onClick={() => setWizardStep(1)}
-                                                    className="rounded-full hover:bg-slate-100:bg-slate-800"
+                                                    className="rounded-full hover:bg-[#F4D03F]/10:bg-slate-800"
                                                 >
                                                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                                                 </Button>
                                                 <Button
                                                     onClick={handleFormSubmit}
                                                     disabled={createRequest.isPending}
-                                                    className="bg-[#F4D03F] text-black hover:bg-[#E5C135] rounded-full px-10 h-12 shadow-lg"
+                                                    className="bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#E5C135] rounded-full px-10 h-12 shadow-lg"
                                                 >
                                                     {createRequest.isPending ? (
                                                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -502,7 +502,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 rounded-xl">
+                        <div className="p-2 bg-[#F4D03F]/10 rounded-xl">
                             <History className="w-5 h-5 text-slate-500" />
                         </div>
                         <h2 className="text-2xl font-bold">Request History</h2>
@@ -518,10 +518,10 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 placeholder="Search by ID or Subject..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 bg-white border-slate-200 rounded-xl w-64 focus:ring-[#F4D03F]"
+                                className="pl-9 bg-[#FFF9F0] border-slate-200 rounded-xl w-64 focus:ring-[#F4D03F]"
                             />
                         </div>
-                        <div className="flex p-1 bg-slate-100 rounded-xl">
+                        <div className="flex p-1 bg-[#F4D03F]/10 rounded-xl">
                             {['All', 'Open', 'In Progress', 'Resolved'].map((s) => (
                                 <button
                                     key={s}
@@ -529,7 +529,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                     className={cn(
                                         "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
                                         statusFilter === s
-                                            ? "bg-white text-[#F4D03F] shadow-sm"
+                                            ? "bg-[#FFF9F0] text-[#F4D03F] shadow-sm"
                                             : "text-slate-500 hover:text-slate-700:text-slate-300"
                                     )}
                                 >
@@ -540,7 +540,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                     </div>
                 </div>
 
-                <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                <div className="bg-[#FFF9F0] border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
                     {isLoadingRequests ? (
                         <div className="flex flex-col items-center justify-center py-24 gap-4">
                             <Loader2 className="w-10 h-10 text-[#F4D03F] animate-spin" />
@@ -548,7 +548,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         </div>
                     ) : filteredRequests.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-24 text-center px-10">
-                            <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-[#F9F7F2] flex items-center justify-center mb-4">
                                 <MessageSquare className="w-8 h-8 text-slate-300" />
                             </div>
                             <h3 className="text-xl font-bold text-slate-800 mb-2">No Requests Found</h3>
@@ -557,7 +557,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className="bg-slate-50/50">
+                                <TableHeader className="bg-[#F9F7F2]/50">
                                     <TableRow className="border-slate-100 hover:bg-transparent">
                                         <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Reference ID</TableHead>
                                         <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Request Subject</TableHead>
@@ -573,7 +573,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                         return (
                                             <TableRow
                                                 key={req.id}
-                                                className="group border-slate-50 hover:bg-slate-50/50:bg-slate-800/20 transition-colors cursor-pointer"
+                                                className="group border-slate-50 hover:bg-[#F9F7F2]/50:bg-slate-800/20 transition-colors cursor-pointer"
                                                 onClick={() => {
                                                     // This would open the request detail/chat view
                                                     // For now just toast it
@@ -593,7 +593,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                     <div className="flex items-center gap-2">
                                                         {req.category === 'Hardware' && <HardDrive className="w-3.5 h-3.5 text-blue-500" />}
                                                         {req.category === 'Software' && <Cpu className="w-3.5 h-3.5 text-purple-500" />}
-                                                        {req.category === 'Traceability' && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />}
+                                                        {req.category === 'Traceability' && <ShieldCheck className="w-3.5 h-3.5 text-[#1B9157]" />}
                                                         {req.category === 'General' && <HelpCircle className="w-3.5 h-3.5 text-orange-500" />}
                                                         <span className="text-xs font-semibold text-slate-600">{req.category}</span>
                                                     </div>

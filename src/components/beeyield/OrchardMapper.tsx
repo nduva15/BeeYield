@@ -1,6 +1,8 @@
 import React from 'react';
 import { Map, MapPin, MousePointer2, Calculator, Share2, Info, Zap, Layers, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass, PageHeader } from './GlassTheme';
+import { motion } from 'framer-motion';
 
 interface OrchardMapperProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -24,11 +26,10 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
             area += points[i].x * points[j].y;
             area -= points[j].x * points[i].y;
         }
-        return Math.abs(area) / (2 * 100); // Scale factor for pixels to acres
+        return Math.abs(area) / (2 * 100);
     }, [points]);
 
-    // Calculus-based saturation logic
-    const suggestedHives = Math.ceil(acreage * 2.5); // Baseline 2.5 hives per acre
+    const suggestedHives = Math.ceil(acreage * 2.5);
 
     const handleSVGClick = (e: React.MouseEvent) => {
         if (!isDrawing) return;
@@ -39,130 +40,124 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
     };
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_#facc15]">
-                            <Layers className="w-6 h-6 text-[#facc15]" />
-                        </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Farm <span className="text-[#10b981]">Setup</span>
-                        </h1>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
+        >
+            <PageHeader
+                icon={Layers}
+                label="Geospatial Node"
+                title={<>Farm <span className="text-[#F4D03F]">Setup</span></>}
+                subtitle="Map area, calculate hive count, and generate hive drop protocols."
+                actions={
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setIsDrawing(!isDrawing)}
+                            className={cn(
+                                isDrawing ? glass.btnPrimary : glass.btnSecondary,
+                                "h-9 px-4 text-xs font-bold flex items-center gap-2"
+                            )}
+                        >
+                            <MousePointer2 className="w-3.5 h-3.5" />
+                            {isDrawing ? "Finish" : "Draw Area"}
+                        </button>
+                        <button className={cn(glass.btnSecondary, "h-9 px-4 text-xs font-bold flex items-center gap-2")}>
+                            <Share2 className="w-3.5 h-3.5" />
+                            Save Map
+                        </button>
                     </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Map Area · Hive Count · Hive Drop Map
-                    </p>
-                </div>
+                }
+            />
 
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => setIsDrawing(!isDrawing)}
-                        className={cn(
-                            "px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
-                            isDrawing ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-gray-900 border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
-                        )}
-                    >
-                        {isDrawing ? "Finish Drawing" : "Draw New Area"}
-                    </button>
-                    <button className="flex items-center gap-3 px-8 py-4 border-4 border-[#064e3b] bg-white text-[#064e3b] font-black text-xs uppercase tracking-widest hover:bg-[#064e3b] hover:text-gray-900 transition-all group">
-                        <Share2 className="w-5 h-5 group-hover:text-[#facc15]" />
-                        Save Hive Map
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* SVG Drawing Canvas */}
-                <div className="lg:col-span-8 flex flex-col gap-6">
-                    <div className="border-8 border-[#064e3b] bg-white h-[600px] relative overflow-hidden shadow-[15px_15px_0px_0px_rgba(6,78,59,1)]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Drawing Canvas */}
+                <div className="lg:col-span-2">
+                    <div className={cn(glass.card, "h-[400px] p-0 relative overflow-hidden bg-white border-gray-200")}>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02),transparent)]" />
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                         <svg
                             ref={svgRef}
-                            className="absolute inset-0 w-full h-full cursor-crosshair"
+                            className="absolute inset-0 w-full h-full cursor-crosshair z-10"
                             onClick={handleSVGClick}
                         >
-                            <defs>
-                                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#064e3b" strokeWidth="0.5" strokeOpacity="0.1" />
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#grid)" />
-
                             {points.length > 0 && (
                                 <polygon
                                     points={points.map(p => `${p.x},${p.y}`).join(' ')}
-                                    fill="rgba(16,185,129,0.15)"
-                                    stroke="#10b981"
-                                    strokeWidth="4"
-                                    strokeDasharray="10 5"
+                                    fill="rgba(27,145,87,0.15)"
+                                    stroke="#1B9157"
+                                    strokeWidth="2"
+                                    strokeDasharray="6 4"
                                 />
                             )}
-
                             {points.map((p, i) => (
-                                <circle key={i} cx={p.x} cy={p.y} r="6" fill="#064e3b" stroke="white" strokeWidth="2" />
+                                <circle key={i} cx={p.x} cy={p.y} r="5" fill="#1B9157" stroke="white" strokeWidth="2" className="shadow-sm" />
                             ))}
                         </svg>
 
                         {isDrawing && (
-                            <div className="absolute top-6 left-6 p-3 bg-[#facc15] border-2 border-[#064e3b] font-black text-[10px] uppercase shadow-md flex items-center gap-2">
-                                <Activity className="w-4 h-4 animate-pulse" />
-                                Drawing Mode Active
+                            <div className="absolute top-4 left-4 px-3 py-1.5 bg-[#F9F7F2] border border-[#F4D03F]/30 rounded-lg flex items-center gap-2 z-20 shadow-sm">
+                                <Activity className="w-3.5 h-3.5 animate-pulse text-[#1B9157]" />
+                                <span className="text-xs font-bold text-[#1A1A1A] tracking-tight">Drawing Mode Active</span>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Logistics & Saturation Panel */}
-                <div className="lg:col-span-4 space-y-8">
-                    <div className="border-4 border-[#064e3b] p-8 bg-white shadow-[10px_10px_0px_0px_#064e3b]">
-                        <div className="flex items-center gap-3 mb-8 border-b-2 border-[#064e3b]/10 pb-4">
-                            <Calculator className="w-5 h-5 text-[#10b981]" />
-                            <h3 className="text-xl font-black uppercase text-[#064e3b] tracking-tight">Area Stats</h3>
+                {/* Stats Panel */}
+                <div className="lg:col-span-1 space-y-4">
+                    <div className={cn(glass.card, "p-5 bg-white space-y-4")}>
+                        <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100">
+                                <Calculator className="w-4 h-4 text-[#1B9157]" />
+                            </div>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Area Stats</h3>
                         </div>
-                        <div className="space-y-10">
-                            <div>
-                                <p className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest">Total Area</p>
-                                <div className="flex items-end gap-2 mt-1">
-                                    <span className="text-5xl font-black text-[#064e3b]">{acreage.toFixed(1)}</span>
-                                    <span className="text-xl font-black text-[#10b981] mb-1">Acres</span>
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Area</p>
+                                <div className="flex items-end gap-2">
+                                    <p className="text-3xl font-bold tracking-tight text-[#1A1A1A]">{acreage.toFixed(1)}</p>
+                                    <span className="text-[10px] font-bold text-[#1B9157] mb-1.5">ACRES</span>
                                 </div>
                             </div>
-                            <div className="pt-8 border-t-2 border-[#064e3b]/5">
-                                <p className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest">Suggested Hives</p>
-                                <div className="flex items-end gap-2 mt-1">
-                                    <span className="text-5xl font-black text-[#064e3b]">{suggestedHives}</span>
-                                    <span className="text-xl font-black text-[#facc15] mb-1">Hives</span>
+                            <div className="space-y-1 pt-4 border-t border-gray-100">
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Suggested Hives</p>
+                                <div className="flex items-end gap-2">
+                                    <p className="text-3xl font-bold tracking-tight text-[#1A1A1A]">{suggestedHives}</p>
+                                    <span className="text-[10px] font-bold text-[#F4D03F] mb-1.5">HIVES</span>
                                 </div>
-                                <p className="mt-4 text-[9px] font-bold text-[#064e3b]/50 uppercase leading-relaxed">
-                                    Based on **2.5 Hives/Acre** (Standard density). Adjust in "Pollination Math" for specific needs.
+                                <p className="text-[10px] font-medium text-gray-400 leading-tight mt-2">
+                                    Based on <span className="text-gray-600 font-bold">2.5 hives/acre</span> (standard density).
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-[#064e3b] border-4 border-[#064e3b] p-8 text-gray-900 shadow-[10px_10px_0px_0px_#10b981]">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Zap className="w-5 h-5 text-[#facc15]" />
-                            <h4 className="text-lg font-black uppercase tracking-tight">Hive Placement</h4>
+                    <div className={cn(glass.card, "p-4 bg-[#F9F7F2] border-[#F4D03F]/20 space-y-2")}>
+                        <div className="flex items-center gap-2 text-[#1B9157]">
+                            <Zap className="w-4 h-4" />
+                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement Protocol</h4>
                         </div>
-                        <p className="text-[10px] font-bold text-gray-600 leading-relaxed uppercase">
-                            The system uses a special **Hive Placement Plan** to make sure bees cover the whole area. This helps pollination by **18%**.
+                        <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
+                            Optimal hive placement algorithm increases pollination coverage by <span className="text-[#1A1A1A] font-bold">18%</span> through geospatial saturation analysis.
                         </p>
                     </div>
 
-                    <div className="border-4 border-[#064e3b]/10 p-6 bg-[#064e3b]/3 flex items-start gap-4">
-                        <Info className="w-10 h-10 text-[#064e3b]/20" />
-                        <div>
-                            <p className="text-[9px] font-black text-[#064e3b] uppercase">Location Data Export</p>
-                            <p className="text-[8px] font-bold text-[#064e3b]/40 uppercase mt-1">
-                                Hive map data can be saved as a simple file for drone drops or manual placement.
+                    <div className={cn(glass.card, "p-4 bg-white flex items-start gap-3")}>
+                        <div className="w-6 h-6 rounded flex items-center justify-center shrink-0 bg-gray-50 border border-gray-100">
+                            <Info className="w-3.5 h-3.5 text-[#F4D03F]" />
+                        </div>
+                        <div className="space-y-0.5">
+                            <p className="text-xs font-bold text-[#1A1A1A]">Location Export</p>
+                            <p className="text-[10px] font-medium text-gray-500 leading-relaxed">
+                                Map data can be exported as CSV for drone drops or manual field placement.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

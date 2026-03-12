@@ -34,59 +34,46 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
         const { error } = await resetPassword(email, activeBackend);
 
         if (error) {
-            toast.error('Could not reset password', { description: error.message });
+            toast.error('Error', { description: error.message });
         } else {
             setEmailSent(true);
-            toast.success('Link sent! 📧', {
-                description: 'Check your email to reset your password.',
-            });
+            toast.success('Reset link sent');
         }
 
         setLoading(false);
     };
 
-    // Success state - email has been sent
     if (emailSent) {
         return (
-            <div className="space-y-6">
-                <div className="text-center space-y-4">
-                    <div className="w-20 h-20 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto border-2 border-beeyield-green/20">
-                        <CheckCircle className="h-10 w-10 text-beeyield-green" />
-                    </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-black text-beeyield-green">Check your inbox</h3>
-                        <p className="text-sm text-beeyield-green/70 max-w-sm mx-auto font-medium">
-                            We've sent a password reset link to <span className="font-bold text-beeyield-green">{email}</span>.
-                            Click the link in the email to reset your password.
-                        </p>
-                    </div>
+            <div className="space-y-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="h-10 w-10 text-beeyield-green" />
                 </div>
-
-                <div className="space-y-3 pt-4">
-                    <p className="text-xs text-center text-beeyield-green/50">
-                        Didn't receive the email? Check your spam folder or try again.
+                <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-gray-900">Check your email</h3>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                        We've sent a password reset link to <span className="text-beeyield-green font-bold">{email}</span>.
                     </p>
-
+                </div>
+                <div className="space-y-4 pt-4">
                     <Button
-                        type="button"
                         variant="outline"
-                        className="w-full border-2 border-beeyield-green/20 hover:border-beeyield-green hover:text-beeyield-green text-beeyield-green/60 font-bold"
+                        className="w-full h-12 bg-gray-50 border-gray-200 text-gray-600 hover:text-gray-900 font-bold rounded-xl transition-all"
                         onClick={() => {
                             setEmailSent(false);
                             setEmail('');
                         }}
                     >
-                        Try a different email
+                        Try another email
                     </Button>
 
                     {onBackToLogin && (
                         <button
                             type="button"
                             onClick={onBackToLogin}
-                            className="w-full flex items-center justify-center gap-2 text-sm text-beeyield-gold hover:text-beeyield-orange transition-colors font-bold"
+                            className="w-full text-sm font-bold text-honey hover:text-honey/80 transition-colors flex items-center justify-center gap-2"
                         >
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to login
+                            <ArrowLeft className="h-4 w-4" /> Back to login
                         </button>
                     )}
                 </div>
@@ -94,32 +81,29 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
         );
     }
 
-    const isAdminVariant = variant === 'admin';
-
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center space-y-2">
-                <div className="w-16 h-16 rounded-full bg-beeyield-gold/10 flex items-center justify-center mx-auto border border-beeyield-gold/20">
-                    <Mail className="h-8 w-8 text-beeyield-gold" />
+                <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
+                    <Mail className="h-6 w-6 text-honey" />
                 </div>
-                <h3 className="text-xl font-black text-beeyield-green">Forgot your password?</h3>
-                <p className="text-sm text-beeyield-green/60 font-medium">
-                    No worries! Enter your email and we'll send you a reset link.
+                <h3 className="text-lg font-bold text-gray-900">Reset your password</h3>
+                <p className="text-sm text-gray-500 font-medium">
+                    Enter your email to receive a reset link
                 </p>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="reset-email" className="text-beeyield-green font-bold">Email Address</Label>
+                <Label htmlFor="reset-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
                 <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="reset-email"
-                        name="email"
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="you@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
+                        className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                         required
                         autoFocus
                     />
@@ -128,27 +112,21 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-12 text-sm font-black uppercase tracking-widest text-white shadow-soft hover:shadow-glow transition-all bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold"
+                className={`w-full h-12 text-sm font-bold text-white rounded-xl shadow-lg transition-all active:scale-95
+                    ${variant === 'shop' ? 'bg-honey hover:bg-honey/90' : 'bg-beeyield-green hover:bg-beeyield-green/90'}
+                `}
                 disabled={loading}
             >
-                {loading ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                    </>
-                ) : (
-                    'Reset Password'
-                )}
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send Reset Link'}
             </Button>
 
             {onBackToLogin && (
                 <button
                     type="button"
                     onClick={onBackToLogin}
-                    className="w-full flex items-center justify-center gap-2 text-sm text-beeyield-green/60 hover:text-beeyield-green transition-colors font-bold"
+                    className="w-full text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors py-2 flex items-center justify-center gap-2"
                 >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to login
+                    <ArrowLeft className="h-4 w-4" /> Back to login
                 </button>
             )}
         </form>

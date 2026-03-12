@@ -89,7 +89,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
     const alerts = hives.filter(h => h.status !== 'nominal');
 
     return (
-        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-white min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
+        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-[#FFF9F0] min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
                 <div>
@@ -108,15 +108,15 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                 <div className="flex items-center gap-4">
                     {alerts.length > 0 && (
                         <div className="flex items-center gap-2 px-5 py-2 bg-red-500 border-2 border-red-700">
-                            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                            <span className="text-gray-900 font-black text-[10px] uppercase tracking-widest">{alerts.length} Location Alert{alerts.length > 1 ? 's' : ''}</span>
+                            <div className="w-2 h-2 bg-[#FFF9F0] rounded-full animate-pulse" />
+                            <span className="text-[#1A1A1A] font-black text-[10px] uppercase tracking-widest">{alerts.length} Location Alert{alerts.length > 1 ? 's' : ''}</span>
                         </div>
                     )}
                     <button
                         onClick={() => setShowHeatmap(h => !h)}
                         className={cn(
                             "px-5 py-2 border-4 text-[10px] font-black uppercase tracking-widest",
-                            showHeatmap ? "bg-[#064e3b] border-[#064e3b] text-gray-900" : "bg-white border-[#064e3b] text-[#064e3b]"
+                            showHeatmap ? "bg-[#064e3b] border-[#064e3b] text-[#1A1A1A]" : "bg-[#FFF9F0] border-[#064e3b] text-[#064e3b]"
                         )}
                     >
                         {showHeatmap ? 'Hide Heatmap' : 'Show Heatmap'}
@@ -209,7 +209,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                         "w-5 h-5 rounded-full border-2 border-white", s.dot,
                                         isSelected ? "scale-150" : "group-hover:scale-125"
                                     )} />
-                                    <span className="absolute left-6 top-0 bg-[#064e3b] text-gray-900 text-[8px] font-black uppercase px-2 py-0.5 tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100">
+                                    <span className="absolute left-6 top-0 bg-[#064e3b] text-[#1A1A1A] text-[8px] font-black uppercase px-2 py-0.5 tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100">
                                         {h.id}
                                     </span>
                                 </button>
@@ -264,11 +264,11 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className={cn("w-2.5 h-2.5 rounded-full", s.dot.split(' ')[0])} />
-                                            <span className={cn("text-xs font-black uppercase", isSelected ? "text-gray-900" : "text-[#064e3b]")}>{h.id}</span>
+                                            <span className={cn("text-xs font-black uppercase", isSelected ? "text-[#1A1A1A]" : "text-[#064e3b]")}>{h.id}</span>
                                         </div>
                                         <span className={cn(
                                             "text-[9px] font-black uppercase px-2 py-0.5",
-                                            isSelected ? "bg-white/10 text-gray-900" :
+                                            isSelected ? "bg-[#F4D03F]/10 text-[#1A1A1A]" :
                                                 h.status === 'nominal' ? "bg-[#10b981]/10 text-[#10b981]" : "bg-[#facc15]/30 text-[#b45309]"
                                         )}>{s.label}</span>
                                     </div>
@@ -281,7 +281,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                             <p className={cn("text-[8px] font-black uppercase text-right", isSelected ? "text-gray-600" : "text-[#064e3b]/30")}>
                                                 Density {h.saturation}%
                                             </p>
-                                            <div className="h-1.5 bg-gray-50 w-full">
+                                            <div className="h-1.5 bg-[#F9F7F2] w-full">
                                                 <div
                                                     className={cn("h-full", h.saturation > 60 ? "bg-[#10b981]" : h.saturation > 30 ? "bg-[#facc15]" : "bg-red-500")}
                                                     style={{ width: `${h.saturation}%` }}

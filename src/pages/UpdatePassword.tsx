@@ -56,7 +56,7 @@ const UpdatePasswordForm: React.FC = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans">
                 <div className="w-full max-w-md">
-                    <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10 space-y-8 text-center">
+                    <div className="bg-[#FFF9F0]/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10 space-y-8 text-center">
                         <div className="space-y-4">
                             <div className="w-20 h-20 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto border-2 border-beeyield-green/20">
                                 <CheckCircle className="h-10 w-10 text-beeyield-green" />
@@ -71,7 +71,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             onClick={() => navigate(loginPath)}
-                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-gray-900 font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-[#1A1A1A] font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
                         >
                             Return to Sign In
                         </Button>
@@ -95,7 +95,7 @@ const UpdatePasswordForm: React.FC = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans">
             <div className="w-full max-w-md">
-                <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10">
+                <div className="bg-[#FFF9F0]/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="text-center space-y-3">
                             <div className="w-16 h-16 rounded-2xl bg-beeyield-gold/10 flex items-center justify-center mx-auto border border-beeyield-gold/20">
@@ -118,7 +118,7 @@ const UpdatePasswordForm: React.FC = () => {
                                         placeholder="Min. 6 alphanumeric"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="pl-10 h-14 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl bg-white"
+                                        className="pl-10 h-14 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl bg-[#FFF9F0]"
                                         required
                                         autoFocus
                                     />
@@ -135,7 +135,7 @@ const UpdatePasswordForm: React.FC = () => {
                                         placeholder="Repeat your access key"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="pl-10 h-14 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl bg-white"
+                                        className="pl-10 h-14 border-beeyield-green/10 focus:border-beeyield-gold focus:ring-beeyield-gold/10 rounded-xl bg-[#FFF9F0]"
                                         required
                                     />
                                 </div>
@@ -144,7 +144,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-gray-900 font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-[#1A1A1A] font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
                             disabled={loading}
                         >
                             {loading ? (

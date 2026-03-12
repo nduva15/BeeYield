@@ -130,7 +130,7 @@ const CommitmentPage = () => {
                   {/* Icon & Number Header */}
                   <div className="flex justify-between items-start mb-6">
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${sdg.color} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-500`}>
-                      <span className="text-gray-900 font-black text-2xl">{sdg.number}</span>
+                      <span className="text-[#1A1A1A] font-black text-2xl">{sdg.number}</span>
                     </div>
                     <div className={`p-3 rounded-xl bg-gradient-to-br ${sdg.color} bg-opacity-10 text-transparent bg-clip-text`}>
                       <sdg.icon className={`h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors`} />

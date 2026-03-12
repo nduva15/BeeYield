@@ -10,36 +10,36 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Design System — Bright Light Only */
-    --background: 0 0% 100%; /* #FFFFFF */
-    --foreground: 222 47% 11%; /* #0F172A */
+    /* Design System — BeeYield Logo Palette */
+    --background: 45 33% 96%; /* #F9F7F2 (Sand) */
+    --foreground: 0 0% 10%; /* #1A1A1A (Charcoal) */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 222 47% 11%;
+    --card: 37 100% 97%; /* #FFF9F0 (Cream) */
+    --card-foreground: 0 0% 10%;
     
-    --primary: 38 92% 50%; /* Honey Gold #F59E0B */
-    --primary-foreground: 0 0% 100%;
+    --primary: 48 89% 60%; /* #F4D03F (Gold) */
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 210 40% 96%; /* Light grey-blue */
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 45 33% 96%;
+    --secondary-foreground: 0 0% 10%;
 
-    --accent: 38 92% 50%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 150 69% 34%; /* #1B9157 (Green center dot) */
+    --accent-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96%; /* #F1F5F9 */
-    --muted-foreground: 215 16% 47%; /* #64748B */
+    --muted: 45 33% 92%;
+    --muted-foreground: 0 0% 40%;
 
-    --border: 214 32% 91%; /* #E2E8F0 */
-    --input: 214 32% 91%;
-    --ring: 38 92% 50%;
+    --border: 48 89% 20% / 0.1; /* Muted gold border */
+    --input: 48 89% 20% / 0.1;
+    --ring: 48 89% 60%;
 
-    --radius: 1.5rem;
+    --radius: 0.75rem;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 37 100% 97%;
+    --popover-foreground: 0 0% 10%;
   }
 }
 

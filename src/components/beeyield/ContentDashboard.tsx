@@ -39,8 +39,8 @@ const KanbanColumn = ({
                 <h3 className="font-semibold flex items-center gap-2">
                     {status === 'idea' && <LayoutList className="w-4 h-4 text-slate-500" />}
                     {status === 'writing' && <Edit3 className="w-4 h-4 text-blue-500" />}
-                    {status === 'seo_review' && <Search className="w-4 h-4 text-amber-500" />}
-                    {status === 'published' && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                    {status === 'seo_review' && <Search className="w-4 h-4 text-[#F4D03F]" />}
+                    {status === 'published' && <CheckCircle2 className="w-4 h-4 text-[#1B9157]" />}
                     {title}
                 </h3>
                 <Badge variant="secondary" className="rounded-full px-2">
@@ -214,7 +214,7 @@ const ContentDashboard = () => {
                 <Card>
                     <CardHeader className="py-4">
                         <CardTitle className="text-sm font-medium text-muted-foreground">Published</CardTitle>
-                        <div className="text-2xl font-bold text-green-600">
+                        <div className="text-2xl font-bold text-[#1B9157]">
                             {stats?.byStatus?.published || 0}
                         </div>
                     </CardHeader>

@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 const FlightMapping: React.FC = () => {
     return (
-        <div className="min-h-screen bg-white text-[#064e3b] font-sans antialiased p-8 md:p-12">
+        <div className="min-h-screen bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12">
             <div className="max-w-7xl mx-auto space-y-12">
                 {/* Back Link */}
                 <Link to="/precision-pollination" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#10b981] hover:text-[#064e3b] transition-colors">
@@ -27,7 +27,7 @@ const FlightMapping: React.FC = () => {
                 </div>
 
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
-                    <div className="border-4 border-[#064e3b] bg-white h-[700px] relative overflow-hidden group shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
+                    <div className="border-4 border-[#064e3b] bg-[#FFF9F0] h-[700px] relative overflow-hidden group shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
                         {/* Interactive Background */}
                         <div className="absolute inset-0 grayscale opacity-20 contrast-150" style={{
                             backgroundImage: 'url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200")',
@@ -49,7 +49,7 @@ const FlightMapping: React.FC = () => {
                             {/* Hive A */}
                             <div className="absolute top-[30%] left-[20%]">
                                 <div className="w-4 h-4 bg-[#facc15] border-2 border-black rotate-45 shadow-[4px_4px_0px_0px_#000]" />
-                                <div className="mt-4 px-2 py-1 bg-white border-2 border-black font-black text-[8px] uppercase">Node_Alpha</div>
+                                <div className="mt-4 px-2 py-1 bg-[#FFF9F0] border-2 border-black font-black text-[8px] uppercase">Node_Alpha</div>
                                 {/* Flight Vector */}
                                 <svg className="absolute top-2 left-2 w-48 h-48 pointer-events-none overflow-visible">
                                     <path d="M 0 0 Q 50 -100 150 -50" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 4" className="animate-[dash_10s_linear_infinite]" />
@@ -62,12 +62,12 @@ const FlightMapping: React.FC = () => {
                             {/* Hive B */}
                             <div className="absolute top-[60%] left-[70%]">
                                 <div className="w-4 h-4 bg-[#facc15] border-2 border-black rotate-45 shadow-[4px_4px_0px_0px_#000]" />
-                                <div className="mt-4 px-2 py-1 bg-white border-2 border-black font-black text-[8px] uppercase">Node_Beta</div>
+                                <div className="mt-4 px-2 py-1 bg-[#FFF9F0] border-2 border-black font-black text-[8px] uppercase">Node_Beta</div>
                             </div>
                         </div>
 
                         {/* Legend Overlay */}
-                        <div className="absolute bottom-8 right-8 space-y-2 p-6 bg-white border-4 border-[#064e3b] shadow-[6px_6px_0px_0px_#064e3b]">
+                        <div className="absolute bottom-8 right-8 space-y-2 p-6 bg-[#FFF9F0] border-4 border-[#064e3b] shadow-[6px_6px_0px_0px_#064e3b]">
                             <h5 className="font-black uppercase text-[10px] tracking-widest border-b-2 border-black pb-2 mb-4">Flight Analysis</h5>
                             <div className="flex items-center gap-3">
                                 <div className="w-3 h-1 bg-[#10b981] dashed" />
@@ -81,21 +81,21 @@ const FlightMapping: React.FC = () => {
 
                         {/* Map Controls */}
                         <div className="absolute top-8 right-8 flex flex-col gap-2">
-                            <button className="w-10 h-10 bg-white border-4 border-[#064e3b] flex items-center justify-center font-black hover:bg-[#facc15] transition-none">+</button>
-                            <button className="w-10 h-10 bg-white border-4 border-[#064e3b] flex items-center justify-center font-black hover:bg-[#facc15] transition-none">-</button>
+                            <button className="w-10 h-10 bg-[#FFF9F0] border-4 border-[#064e3b] flex items-center justify-center font-black hover:bg-[#facc15] transition-none">+</button>
+                            <button className="w-10 h-10 bg-[#FFF9F0] border-4 border-[#064e3b] flex items-center justify-center font-black hover:bg-[#facc15] transition-none">-</button>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="border-4 border-[#064e3b] p-6 bg-white space-y-2">
+                        <div className="border-4 border-[#064e3b] p-6 bg-[#FFF9F0] space-y-2">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Active Map Layer</p>
                             <h4 className="text-xl font-black">Satellite / Tactical Overlay</h4>
                         </div>
-                        <div className="border-4 border-[#064e3b] p-6 bg-white space-y-2">
+                        <div className="border-4 border-[#064e3b] p-6 bg-[#FFF9F0] space-y-2">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Tracked Units</p>
                             <h4 className="text-xl font-black">45 Colonies</h4>
                         </div>
-                        <div className="border-4 border-[#064e3b] p-6 bg-white space-y-2">
+                        <div className="border-4 border-[#064e3b] p-6 bg-[#FFF9F0] space-y-2">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Coverage Index</p>
                             <h4 className="text-xl font-black text-[#10b981]">98.2% Optimal</h4>
                         </div>

@@ -1,18 +1,14 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
     Map as MapIcon, Zap, Maximize2, Filter, Info, Layers, Crosshair, Target, AlertCircle, CheckCircle2, ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 
 const SpatialCoverageView: React.FC = () => {
     const [zoom, setZoom] = React.useState(1);
 
-    // Mock Pallets for the map
     const pallets = [
         { id: 'P1', x: 30, y: 40, type: 'ALMOND' },
         { id: 'P2', x: 60, y: 25, type: 'ALMOND' },
@@ -20,185 +16,181 @@ const SpatialCoverageView: React.FC = () => {
     ];
 
     return (
-        <div className={cn(glass.page, "p-8 -m-8 min-h-screen")}>
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
-                <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-honey/10 text-honey border-honey/20')}>
-                        <Target className="w-3.5 h-3.5" />
-                        <span className="uppercase tracking-[0.1em]">Spatial Decoupling Engine</span>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
+        >
+            <PageHeader
+                icon={Target}
+                label="Spatial Kernel"
+                title={<>Saturation <span className="text-[#F4D03F]">Math</span></>}
+                subtitle="Exponential decay visualization and coverage integrals."
+                actions={
+                    <div className="flex gap-2">
+                        <button className={cn(glass.btnSecondary, "h-9 px-3 text-xs font-bold flex items-center gap-2")}>
+                            <Layers className="w-3.5 h-3.5" />
+                            Heatmap
+                        </button>
+                        <button className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold")}>
+                            Recalculate
+                        </button>
                     </div>
-                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Saturation <span className="text-honey">Math</span>
-                    </h1>
-                    <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
-                        P(d) = P0 e^(-lambda * d) · Exponential Decay Visualizer · Orchard Coverage Integrals
-                    </p>
-                </div>
+                }
+            />
 
-                <div className="flex gap-4">
-                    <button className={cn(glass.btnSecondary, "gap-2 px-6")}>
-                        <Layers className="w-4 h-4" />
-                        Toggle Heatmap
-                    </button>
-                    <button className={cn(glass.btnPrimary, "px-6")}>
-                        Recalculate Overlaps
-                    </button>
-                </div>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <div className="lg:col-span-3 space-y-4">
+                    {/* SVG Map */}
+                    <div className={cn(glass.card, "relative overflow-hidden h-[400px] p-0 bg-gray-50 border-gray-200 group")}>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02),transparent)]" />
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-            {/* Matrix Definitions */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div className="lg:col-span-3 space-y-8">
-                    {/* The Visual Map (SVG Based) */}
-                    <div className={cn(glass.card, "relative overflow-hidden h-[600px] p-0 border-border group")}>
-                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#f59e0b 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-
-                        <div className="absolute top-8 left-8 p-6 rounded-[2rem] bg-white/60 border border-border backdrop-blur-md z-10 hidden md:block shadow-xl">
-                            <h3 className={cn(glass.microLabel, "mb-4 border-b border-border pb-2")}>Coverage Legend</h3>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-4 h-4 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] border border-emerald-500/20" />
-                                    <span className={cn(glass.microLabel, "text-muted-foreground")}>Optimal Intensity ({'>'}85%)</span>
+                        <div className="absolute top-4 left-4 p-3 rounded-xl bg-white/90 border border-gray-200 shadow-sm backdrop-blur-md z-10 hidden md:block">
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Coverage Legend</p>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157] shadow-sm" />
+                                    <span className="text-xs font-medium text-gray-600">Optimal ({'>'}85%)</span>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-4 h-4 rounded-full bg-emerald-500/40 border border-emerald-500/20" />
-                                    <span className={cn(glass.microLabel, "text-muted-foreground")}>Marginal (P ≈ 50%)</span>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-white border-2 border-[#1B9157]/40" />
+                                    <span className="text-xs font-medium text-gray-600">Marginal (~50%)</span>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-4 h-4 rounded-full border-2 border-dashed border-destructive" />
-                                    <span className={cn(glass.microLabel, "text-destructive")}>Blind Spot (Under-Pollinated)</span>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-white border-2 border-dashed border-red-400" />
+                                    <span className="text-xs font-medium text-red-500">Blind Spot</span>
                                 </div>
                             </div>
                         </div>
 
-                        <svg className="w-full h-full cursor-grab active:cursor-grabbing relative z-0" viewBox="0 0 100 100">
+                        <svg className="w-full h-full cursor-grab relative z-0" viewBox="0 0 100 100">
                             {pallets.map((p) => (
                                 <g key={p.id}>
-                                    {/* Exponential Decay Halos */}
                                     <motion.circle
                                         cx={p.x} cy={p.y} r="25"
                                         className="fill-emerald-500/10 stroke-emerald-500/30 stroke-[0.2]"
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
+                                        initial={{ scale: 0 }} animate={{ scale: 1 }}
                                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                     />
                                     <motion.circle
                                         cx={p.x} cy={p.y} r="15"
                                         className="fill-emerald-500/20 stroke-emerald-500/50 stroke-[0.3]"
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                                        initial={{ scale: 0 }} animate={{ scale: 1 }}
+                                        transition={{ duration: 1 }}
                                     />
                                     <motion.circle
-                                        cx={p.x} cy={p.y} r="6"
-                                        className="fill-emerald-500 stroke-emerald-500 stroke-1 shadow-lg"
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                                        cx={p.x} cy={p.y} r="3"
+                                        className="fill-emerald-500 stroke-none shadow-sm"
+                                        initial={{ scale: 0 }} animate={{ scale: 1 }}
+                                        transition={{ duration: 1.2 }}
                                     />
-                                    <text x={p.x} y={p.y - 8} className="fill-foreground font-black text-[2px] uppercase tracking-widest text-center" textAnchor="middle">{p.id} ({p.type})</text>
+                                    <text x={p.x} y={p.y - 5} className="fill-[#1A1A1A] font-bold text-[2.5px]" textAnchor="middle">{p.id} <tspan className="fill-gray-500 text-[2px]">({p.type})</tspan></text>
                                 </g>
                             ))}
-
-                            {/* Blind Spot Indicator */}
-                            <circle cx="85" cy="80" r="10" className="fill-destructive/10 stroke-destructive stroke-[0.5] stroke-dasharray-1" />
-                            <text x="85" y="75" className="fill-destructive font-black text-[2px] uppercase tracking-widest" textAnchor="middle">BLIND SPOT DETECTED</text>
+                            <circle cx="85" cy="80" r="6" className="fill-red-500/5 stroke-red-400 stroke-[0.5]" strokeDasharray="1 1.5" />
+                            <text x="85" y="72" className="fill-red-500 font-bold text-[2px]" textAnchor="middle">BLIND SPOT</text>
+                            <circle cx="85" cy="80" r="1" className="fill-red-500 stroke-none" />
                         </svg>
 
-                        <div className="absolute bottom-8 right-8 flex gap-4">
-                            <button className="w-14 h-14 rounded-2xl bg-white/60 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-lg hover:border-honey/50">
-                                <Maximize2 className="w-6 h-6" />
+                        <div className="absolute bottom-4 right-4 flex gap-2">
+                            <button className="w-8 h-8 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-500 hover:text-[#1A1A1A] transition-all">
+                                <Maximize2 className="w-4 h-4" />
                             </button>
-                            <button className="w-14 h-14 rounded-2xl bg-white/60 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-lg hover:border-honey/50">
-                                <Crosshair className="w-6 h-6" />
+                            <button className="w-8 h-8 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-500 hover:text-[#1A1A1A] transition-all">
+                                <Crosshair className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
 
-                    {/* Coverage Analysis Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className={cn(glass.card, "p-8")}>
-                            <p className={cn(glass.microLabel, "text-muted-foreground mb-4")}>Total Saturation</p>
-                            <div className="flex flex-col items-start gap-2">
-                                <span className={cn(glass.sectionTitle, "text-5xl tabular-nums leading-none")}>84.2%</span>
-                                <Badge className={cn(glass.badge, "bg-destructive/10 text-destructive border-destructive/20 scale-90 origin-left mt-2")}>INSUFFICIENT</Badge>
+                    {/* Coverage Stats */}
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className={cn(glass.card, "p-4 space-y-1 bg-white border-l-2 border-l-red-500")}>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Saturation</p>
+                            <div className="flex items-end justify-between">
+                                <p className="text-2xl font-bold tracking-tight text-[#1A1A1A]">84.2%</p>
+                                <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-md border border-red-100 mb-1">Low</span>
                             </div>
                         </div>
-                        <div className={cn(glass.card, "p-8")}>
-                            <p className={cn(glass.microLabel, "text-muted-foreground mb-4")}>Overlapping Flow</p>
-                            <span className={cn(glass.sectionTitle, "text-5xl tabular-nums leading-none text-emerald-500")}>1,280 m²</span>
+                        <div className={cn(glass.card, "p-4 space-y-1 bg-white border-l-2 border-l-[#1B9157]")}>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Overlap Zone</p>
+                            <div className="flex items-end justify-between">
+                                <p className="text-2xl font-bold tracking-tight text-[#1B9157]">1,280</p>
+                                <span className="text-[10px] font-medium text-gray-400 mb-1">m²</span>
+                            </div>
                         </div>
-                        <div className={cn(glass.card, "p-8")}>
-                            <p className={cn(glass.microLabel, "text-muted-foreground mb-4")}>Predicted Yield Impact</p>
-                            <span className={cn(glass.sectionTitle, "text-5xl tabular-nums leading-none text-honey")}>+12.5%</span>
+                        <div className={cn(glass.card, "p-4 space-y-1 bg-[#F9F7F2] border-l-2 border-l-[#F4D03F]")}>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Yield Impact</p>
+                            <p className="text-2xl font-bold tracking-tight text-[#1A1A1A]">+12.5%</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-8">
-                    {/* Decay Settings */}
-                    <div className={cn(glass.card, "p-0")}>
-                        <div className="p-8 border-b border-border bg-muted/20">
-                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Decay Coefficient (λ)</h3>
+                {/* Right Panel */}
+                <div className="space-y-4">
+                    <div className={cn(glass.card, "p-0 bg-white")}>
+                        <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Decay Coefficient (λ)</h3>
                         </div>
-                        <div className="p-8 space-y-8">
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className={cn(glass.microLabel, "font-bold text-muted-foreground")}>Almond (Standard)</span>
-                                    <span className={cn(glass.sectionTitle, "text-xl text-emerald-500")}>0.024</span>
+                        <div className="p-4 space-y-5">
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[11px] font-bold text-gray-500">Almond (Std)</span>
+                                    <span className="text-sm font-bold text-[#1B9157]">0.024</span>
                                 </div>
-                                <div className="h-2 w-full bg-muted/50 rounded-full relative overflow-hidden">
-                                    <div className="absolute inset-y-0 left-0 bg-emerald-500 w-[24%] rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                                </div>
-                            </div>
-                            <div className="space-y-4 pt-2">
-                                <div className="flex items-center justify-between">
-                                    <span className={cn(glass.microLabel, "font-bold text-muted-foreground")}>Fruiting Period Intensity (P0)</span>
-                                    <span className={cn(glass.sectionTitle, "text-xl")}>0.95</span>
-                                </div>
-                                <div className="h-2 w-full bg-muted/50 rounded-full relative overflow-hidden">
-                                    <div className="absolute inset-y-0 left-0 bg-honey w-[95%] rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#1B9157] w-[24%] rounded-full shadow-sm" />
                                 </div>
                             </div>
-                            <p className={cn(glass.microLabel, "text-muted-foreground/60 leading-relaxed italic border-t border-border pt-6")}>
-                                Adjust these parameters to match current botanical blooming density and local bee forage behavior.
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[11px] font-bold text-gray-500">Intensity (P0)</span>
+                                    <span className="text-sm font-bold text-[#1A1A1A]">0.95</span>
+                                </div>
+                                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#F4D03F] w-[95%] rounded-full shadow-sm" />
+                                </div>
+                            </div>
+                            <p className="text-[10px] font-medium text-gray-400 leading-relaxed pt-2">
+                                Adjust parameters for current botanical density and local forage behavior.
                             </p>
                         </div>
                     </div>
 
-                    {/* Optimization Console */}
-                    <div className={cn(glass.card, "p-0 overflow-hidden relative shadow-2xl")}>
-                        <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay" />
-                        <div className="relative z-10 p-8 border-b border-border/10 bg-emerald-500/10 backdrop-blur-md">
-                            <div className="flex items-center gap-3">
-                                <Zap className="w-6 h-6 text-emerald-500" />
-                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case text-emerald-500")}>BeeYield Optimizer</h3>
-                            </div>
+                    <div className={cn(glass.card, "p-0 bg-[#F9F7F2] border-[#F4D03F]/20 overflow-hidden")}>
+                        <div className="p-4 border-b border-[#F4D03F]/10 flex items-center gap-2 bg-white/50">
+                            <Zap className="w-4 h-4 text-[#F4D03F]" />
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Optimizer</h3>
                         </div>
-                        <div className="relative z-10 p-8 space-y-6 bg-background/80 backdrop-blur-md">
-                            <p className={cn(glass.microLabel, "text-muted-foreground leading-relaxed")}>
-                                The system has identified <span className="text-foreground">4.2 acres</span> of under-pollinated orchard.
+                        <div className="p-4 space-y-4">
+                            <p className="text-[11px] font-medium text-gray-600 leading-relaxed">
+                                Identified <span className="text-[#1A1A1A] font-bold">4.2 acres</span> of under-pollinated orchard.
                             </p>
-                            <div className="p-5 rounded-2xl bg-muted/40 border border-border space-y-4 shadow-inner">
-                                <div className="flex items-center gap-3">
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                    <span className={cn(glass.microLabel, "font-semibold")}>Optimal Drop Points Found</span>
+                            <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-sm space-y-3">
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1B9157]" />
+                                        <span className="text-xs font-bold text-[#1A1A1A]">Drop Points Located</span>
+                                    </div>
+                                    <p className="text-[10px] text-gray-500 pl-5">Optimal new locations found.</p>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <AlertCircle className="w-5 h-5 text-honey" />
-                                    <span className={cn(glass.microLabel, "font-semibold text-honey")}>Move PLT-1105 to (X:85, Y:80)</span>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                                        <span className="text-xs font-bold text-red-600">Move Required</span>
+                                    </div>
+                                    <p className="text-[10px] font-medium text-gray-600 pl-5">Move <span className="font-bold">PLT-1105</span> → <span className="text-[#1A1A1A]">X:85, Y:80</span></p>
                                 </div>
                             </div>
-                            <button className={cn(glass.btnPrimary, "w-full bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20 mt-4")}>
+                            <button className={cn(glass.btnPrimary, "w-full h-10 bg-[#1B9157] text-white hover:bg-[#145A32] shadow-sm text-xs font-bold")}>
                                 Apply Auto-Layout
-                                <ArrowRight className="w-4 h-4 ml-2" />
+                                <ArrowRight className="w-3.5 h-3.5 ml-2" />
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

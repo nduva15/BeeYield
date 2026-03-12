@@ -16,9 +16,9 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                 }
                 `}
             </style>
-            <div ref={ref} className="bg-white text-black p-[60px] max-w-[210mm] mx-auto min-h-[297mm] relative print:w-screen print:h-screen print:max-w-none print:m-0 print:p-[60px] font-sans flex flex-col overflow-hidden">
+            <div ref={ref} className="bg-[#FFF9F0] text-[#1A1A1A] p-[60px] max-w-[210mm] mx-auto min-h-[297mm] relative print:w-screen print:h-screen print:max-w-none print:m-0 print:p-[60px] font-sans flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-10 border-b-2 border-gray-100 pb-8">
+                <div className="flex items-center justify-between mb-10 border-b-2 border-[#F4D03F]/10 pb-8">
                     <div className="flex items-center gap-6">
                         <img src={Logo} alt="BeeYield Logo" className="h-[140px] w-auto" />
                         <div className="flex flex-col">
@@ -45,7 +45,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Full name</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                     {/* Email */}
@@ -53,7 +53,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Email</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                     {/* Phone number */}
@@ -61,7 +61,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Phone number</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                     {/* Device short id / serial */}
@@ -69,7 +69,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Device short id / serial</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                     {/* Issue description */}
@@ -78,8 +78,8 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                             <span className="text-[13px] font-bold text-[#0F172A]">Issue description</span>
                         </div>
                         <div className="flex-1 space-y-7">
-                            <div className="border-b border-gray-300 h-4 w-full"></div>
-                            <div className="border-b border-gray-300 h-4 w-full"></div>
+                            <div className="border-b border-[#F4D03F]/40 h-4 w-full"></div>
+                            <div className="border-b border-[#F4D03F]/40 h-4 w-full"></div>
                         </div>
                     </div>
 
@@ -89,8 +89,8 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                             <span className="text-[13px] font-bold text-[#0F172A]">Return address</span>
                         </div>
                         <div className="flex-1 space-y-7">
-                            <div className="border-b border-gray-300 h-4 w-full"></div>
-                            <div className="border-b border-gray-300 h-4 w-full"></div>
+                            <div className="border-b border-[#F4D03F]/40 h-4 w-full"></div>
+                            <div className="border-b border-[#F4D03F]/40 h-4 w-full"></div>
                         </div>
                     </div>
 
@@ -99,7 +99,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Preferred contact</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                     {/* Date */}
@@ -107,7 +107,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Date</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                     {/* Signature */}
@@ -115,7 +115,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                         <div className="w-[180px] shrink-0">
                             <span className="text-[13px] font-bold text-[#0F172A]">Signature</span>
                         </div>
-                        <div className="flex-1 border-b border-gray-300 h-5"></div>
+                        <div className="flex-1 border-b border-[#F4D03F]/40 h-5"></div>
                     </div>
 
                 </div>

@@ -680,15 +680,15 @@ const Shop = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-[#F4D03F] text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
             >
               <Zap className="w-3.5 h-3.5" />
               Verified Authenticity Hub
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
-              The Gold <span className="text-amber-600">Standard.</span> <br />
-              <span className="text-green-700">Traceable</span> by Default.
+              The Gold <span className="text-[#F4D03F]">Standard.</span> <br />
+              <span className="text-[#1B9157]">Traceable</span> by Default.
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl leading-relaxed font-medium">
@@ -696,12 +696,12 @@ const Shop = () => {
             </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
-                <Truck className="h-5 w-5 text-green-700" />
+              <div className="flex items-center gap-3 bg-[#FFF9F0]/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
+                <Truck className="h-5 w-5 text-[#1B9157]" />
                 <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Global Purity Standards</span>
               </div>
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
-                <ShieldCheck className="h-5 w-5 text-amber-600" />
+              <div className="flex items-center gap-3 bg-[#FFF9F0]/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
+                <ShieldCheck className="h-5 w-5 text-[#F4D03F]" />
                 <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Zero-Trust Verified</span>
               </div>
             </div>
@@ -771,7 +771,7 @@ const Shop = () => {
                       key={product.id}
                       className={cn(
                         "group relative overflow-hidden border-none transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]",
-                        product.category === 'hardware' ? "bg-white" : "bg-card hover:bg-white/50"
+                        product.category === 'hardware' ? "bg-[#FFF9F0]" : "bg-card hover:bg-[#F9F7F2]0"
                       )}
                     >
                       <div className="relative">
@@ -796,7 +796,7 @@ const Shop = () => {
 
                         {product.category === 'honey' && (
                           <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
-                            <Badge className="bg-white/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-white transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
+                            <Badge className="bg-[#FFF9F0]/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-[#FFF9F0] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
                               <ShieldCheck className="h-3.5 w-3.5" />
                               Verified Quality
                             </Badge>
@@ -841,7 +841,7 @@ const Shop = () => {
                         }}
                         className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
                           ? "bg-primary text-primary-foreground shadow-primary/25"
-                          : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
+                          : "bg-[#FFF9F0] text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
                           }`}
                       >
                         <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
@@ -918,7 +918,7 @@ const Shop = () => {
                                 className={cn(
                                   "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
                                   (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
-                                    ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
+                                    ? "bg-[#F9F7F2] text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
                                     : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
                                 )}
                                 onClick={() => handleAddToCart(product)}
@@ -960,11 +960,11 @@ const Shop = () => {
 
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             <div>
-              <Badge className="bg-amber-500 text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
+              <Badge className="bg-[#F4D03F] text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
                 BeeYield HoneyChain™
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-8 leading-[0.9] tracking-tighter uppercase">
-                Trust in Every <span className="text-amber-500">Blockchain</span> Sealed Jar
+              <h2 className="text-4xl md:text-5xl font-black text-[#1A1A1A] mb-8 leading-[0.9] tracking-tighter uppercase">
+                Trust in Every <span className="text-[#F4D03F]">Blockchain</span> Sealed Jar
               </h2>
               <p className="text-neutral-400 text-lg mb-10 leading-relaxed font-medium">
                 Africa's leader in honey traceability. Our HoneyChain™ protocol guarantees authenticity, purity, and full transparency. Look for the QR code on your boutique jar.
@@ -977,9 +977,9 @@ const Shop = () => {
                   "Direct Impact Tracking",
                   "Zero-Trust Verification"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-900 font-bold text-sm">
-                    <div className="h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <ShieldCheck className="h-3 w-3 text-green-500" />
+                  <li key={i} className="flex items-center gap-3 text-[#1A1A1A] font-bold text-sm">
+                    <div className="h-5 w-5 rounded-full bg-[#1B9157]/ flex items-center justify-center">
+                      <ShieldCheck className="h-3 w-3 text-[#1B9157]" />
                     </div>
                     {item}
                   </li>
@@ -988,7 +988,7 @@ const Shop = () => {
 
               <Button
                 variant="outline"
-                className="h-14 border-2 border-gray-300 text-gray-900 hover:bg-white hover:text-neutral-900 font-black rounded-2xl px-10 uppercase tracking-widest text-xs transition-all"
+                className="h-14 border-2 border-[#F4D03F]/40 text-[#1A1A1A] hover:bg-[#FFF9F0] hover:text-neutral-900 font-black rounded-2xl px-10 uppercase tracking-widest text-xs transition-all"
                 asChild
               >
                 <Link to="/traceability">Explore HoneyChain™</Link>
@@ -1001,9 +1001,9 @@ const Shop = () => {
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="relative"
               >
-                <div className="absolute inset-0 bg-amber-500/20 blur-[100px] rounded-full" />
-                <div className="w-64 h-64 border-2 border-gray-200 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/5">
-                  <Cpu className="w-24 h-24 text-amber-500/40" />
+                <div className="absolute inset-0 bg-[#F4D03F]/ blur-[100px] rounded-full" />
+                <div className="w-64 h-64 border-2 border-[#F4D03F]/20 rounded-full flex items-center justify-center backdrop-blur-sm bg-[#F9F7F2]">
+                  <Cpu className="w-24 h-24 text-[#F4D03F]/40" />
                 </div>
               </motion.div>
             </div>
@@ -1028,7 +1028,7 @@ const Shop = () => {
             { label: "Traceability Core", icon: ShieldCheck }
           ].map((partner, i) => (
             <div key={i} className="flex items-center gap-4 group cursor-pointer">
-              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-gray-900 transition-all">
+              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-[#1A1A1A] transition-all">
                 <partner.icon className="h-6 w-6" />
               </div>
               <span className="font-black text-xs uppercase tracking-[0.2em] text-neutral-400 group-hover:text-neutral-900 transition-colors">

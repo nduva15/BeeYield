@@ -202,7 +202,7 @@ const FlightMapView: React.FC = () => {
 
     if (loading && places.length === 0) {
         return (
-            <div className="h-[600px] w-full flex items-center justify-center bg-slate-50 rounded-[2.5rem] border border-slate-100">
+            <div className="h-[600px] w-full flex items-center justify-center bg-[#F9F7F2] rounded-[2.5rem] border border-slate-100">
                 <div className="text-center space-y-4">
                     <Loader2 className="w-12 h-12 text-[#1B9157] animate-spin mx-auto" />
                     <p className="font-bold text-slate-400 uppercase tracking-widest">Enabling Tactical Map...</p>
@@ -216,7 +216,7 @@ const FlightMapView: React.FC = () => {
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
             {/* Header Controls */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[2rem] shadow-sm border border-slate-50">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#FFF9F0] p-6 rounded-[2rem] shadow-sm border border-slate-50">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
                         <MapIcon className="w-6 h-6 text-[#1B9157]" />
@@ -233,7 +233,7 @@ const FlightMapView: React.FC = () => {
                 <div className="flex flex-wrap gap-4 items-center">
                     <div className="w-64">
                         <Select value={selectedPlaceId} onValueChange={handlePlaceChange}>
-                            <SelectTrigger className="bg-slate-50 border-none rounded-xl font-bold h-12">
+                            <SelectTrigger className="bg-[#F9F7F2] border-none rounded-xl font-bold h-12">
                                 <SelectValue placeholder="Select Location" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-none shadow-xl">
@@ -248,7 +248,7 @@ const FlightMapView: React.FC = () => {
                     <Button
                         onClick={handlePlanRoute}
                         disabled={planningRoute}
-                        className="bg-[#1B9157] hover:bg-[#157a48] text-gray-900 rounded-xl font-black h-12 px-6 shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95"
+                        className="bg-[#1B9157] hover:bg-[#157a48] text-[#1A1A1A] rounded-xl font-black h-12 px-6 shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95"
                     >
                         {planningRoute ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Route className="w-4 h-4 mr-2" />}
                         PLAN OPTIMAL ROUTE
@@ -260,8 +260,8 @@ const FlightMapView: React.FC = () => {
                 {/* Tactical Sidebar */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Live Weather Metrics */}
-                    <Card className="rounded-[2.5rem] border-none bg-white shadow-xl overflow-hidden">
-                        <div className="bg-[#0F172A] p-6 text-gray-900">
+                    <Card className="rounded-[2.5rem] border-none bg-[#FFF9F0] shadow-xl overflow-hidden">
+                        <div className="bg-[#0F172A] p-6 text-[#1A1A1A]">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 mb-4">Bee-Specific Meteo</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
@@ -296,12 +296,12 @@ const FlightMapView: React.FC = () => {
                                     <span className="text-[10px] font-black uppercase text-slate-400">Flight Status</span>
                                     <Badge className={cn(
                                         "rounded-full font-black text-[10px] px-3",
-                                        weather?.bee_flight_status === 'Enabled' ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+                                        weather?.bee_flight_status === 'Enabled' ? "bg-green-100 text-[#1B9157]" : "bg-amber-100 text-[#F4D03F]"
                                     )}>
                                         {weather?.bee_flight_status?.toUpperCase() || 'OPTIMAL'}
                                     </Badge>
                                 </div>
-                                <div className="h-1 lg:h-1.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                                <div className="h-1 lg:h-1.5 w-full bg-[#F9F7F2] rounded-full overflow-hidden">
                                     <div className="h-full bg-[#1B9157]" style={{ width: `${foragePotential?.score || 70}%` }} />
                                 </div>
                             </div>
@@ -309,7 +309,7 @@ const FlightMapView: React.FC = () => {
                     </Card>
 
                     {/* Radius Controls */}
-                    <Card className="rounded-[2.5rem] border-none bg-white shadow-xl p-8 space-y-8">
+                    <Card className="rounded-[2.5rem] border-none bg-[#FFF9F0] shadow-xl p-8 space-y-8">
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Foraging Range</h3>
@@ -366,7 +366,7 @@ const FlightMapView: React.FC = () => {
                                     variant={showUtility ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setShowUtility(!showUtility)}
-                                    className={cn("rounded-full font-black text-[10px] px-6 h-10", showUtility && "bg-[#F4D03F] text-black hover:bg-[#ebd04c]")}
+                                    className={cn("rounded-full font-black text-[10px] px-6 h-10", showUtility && "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#ebd04c]")}
                                 >
                                     UTILITY POTENTIAL
                                 </Button>
@@ -376,18 +376,18 @@ const FlightMapView: React.FC = () => {
 
                     {/* Active Sources */}
                     {foragePotential?.active_sources?.length > 0 && (
-                        <Card className="rounded-[2.5rem] border-none bg-white shadow-xl p-8">
+                        <Card className="rounded-[2.5rem] border-none bg-[#FFF9F0] shadow-xl p-8">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">Nectar Engines</h3>
                             <div className="space-y-4">
                                 {foragePotential.active_sources.map((source: any, i: number) => (
-                                    <div key={i} className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-all hover:bg-slate-100">
+                                    <div key={i} className="flex items-center gap-4 bg-[#F9F7F2] p-4 rounded-2xl border border-slate-100 transition-all hover:bg-[#F4D03F]/10">
                                         <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center border-2 border-white shadow-sm font-black text-xs">
                                             {source.name[0]}
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-black text-xs uppercase">{source.name}</p>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <div className="h-1 flex-1 bg-white rounded-full">
+                                                <div className="h-1 flex-1 bg-[#FFF9F0] rounded-full">
                                                     <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${source.potential * 100}%` }} />
                                                 </div>
                                                 <span className="text-[8px] font-black">{(source.potential * 100).toFixed(0)}%</span>
@@ -402,7 +402,7 @@ const FlightMapView: React.FC = () => {
 
                 {/* Primary Tactical Map (Leaflet) */}
                 <div className="lg:col-span-8 space-y-6">
-                    <Card className="rounded-[3rem] border-8 border-white bg-slate-50 shadow-2xl overflow-hidden relative h-[700px]">
+                    <Card className="rounded-[3rem] border-8 border-white bg-[#F9F7F2] shadow-2xl overflow-hidden relative h-[700px]">
                         <MapContainer
                             center={mapCenter}
                             zoom={14}
@@ -449,7 +449,7 @@ const FlightMapView: React.FC = () => {
                                                 </div>
                                                 <Badge className={cn(
                                                     "font-black uppercase text-[8px]",
-                                                    hive.status?.toLowerCase().includes('healthy') ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                                    hive.status?.toLowerCase().includes('healthy') ? "bg-green-100 text-[#1B9157]" : "bg-red-100 text-red-700"
                                                 )}>
                                                     {hive.status || 'ACTIVE'}
                                                 </Badge>
@@ -511,7 +511,7 @@ const FlightMapView: React.FC = () => {
 
                         {/* Tactical HUD Overlay on Map */}
                         <div className="absolute top-8 left-8 z-[1000] pointer-events-none">
-                            <div className="bg-white/80 backdrop-blur-md border-4 border-white p-4 rounded-3xl shadow-xl flex items-center gap-6">
+                            <div className="bg-[#FFF9F0]/80 backdrop-blur-md border-4 border-white p-4 rounded-3xl shadow-xl flex items-center gap-6">
                                 <div className="flex items-center gap-3 pr-6 border-r border-slate-200">
                                     <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-[#1B9157]">
                                         <Crosshair className="w-5 h-5" />
@@ -536,7 +536,7 @@ const FlightMapView: React.FC = () => {
                         {/* Route Legend */}
                         {route.length > 0 && (
                             <div className="absolute bottom-8 left-8 z-[1000] animate-in slide-in-from-left-4">
-                                <Card className="rounded-3xl border-none shadow-2xl p-6 bg-[#0F172A] text-gray-900">
+                                <Card className="rounded-3xl border-none shadow-2xl p-6 bg-[#0F172A] text-[#1A1A1A]">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Route className="w-5 h-5 text-blue-400" />
                                         <span className="text-sm font-black uppercase tracking-widest">Active Route Protocol</span>
@@ -544,7 +544,7 @@ const FlightMapView: React.FC = () => {
                                     <div className="space-y-3">
                                         {route.slice(0, 3).map((stop, i) => (
                                             <div key={i} className="flex items-center gap-3">
-                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-black text-gray-900">
+                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-black text-[#1A1A1A]">
                                                     {i + 1}
                                                 </div>
                                                 <span className="text-[10px] font-bold uppercase opacity-80">{stop.name}</span>
@@ -559,14 +559,14 @@ const FlightMapView: React.FC = () => {
 
                     {/* Educational Logic Section */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="rounded-[2.5rem] p-6 bg-white shadow-sm border-l-8 border-l-[#1B9157]">
+                        <Card className="rounded-[2.5rem] p-6 bg-[#FFF9F0] shadow-sm border-l-8 border-l-[#1B9157]">
                             <h4 className="text-xs font-black uppercase mb-2">Environmental Influence</h4>
                             <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
                                 Current conditions suggests forage efficiency is {foragePotential?.score > 60 ? 'optimal' : 'restricted'}.
                                 Solar pressure and humidity impacts nectar thinning. Monitor hives for potential washout.
                             </p>
                         </Card>
-                        <Card className="rounded-[2.5rem] p-6 bg-white shadow-sm border-l-8 border-l-[#F4D03F]">
+                        <Card className="rounded-[2.5rem] p-6 bg-[#FFF9F0] shadow-sm border-l-8 border-l-[#F4D03F]">
                             <h4 className="text-xs font-black uppercase mb-2">Protocol Recommendation</h4>
                             <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
                                 {foragePotential?.recommendation || 'Standard monitoring protocol. Check alert sectors if activity drops.'}

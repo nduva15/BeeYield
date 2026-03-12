@@ -24,7 +24,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'data', 'precision-pollination-folder', 'management-folder']);
     const { theme, setTheme } = useTheme();
 
-    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    // Dark mode is disabled.
+    const isDark = false;
 
     const toggleFolder = (id: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
@@ -36,22 +37,22 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     return (
         <div
             className={cn(
-                "fixed left-0 top-0 bottom-0 w-[280px] bg-white border-r border-gray-200 z-50 hidden md:flex flex-col antialiased transition-all",
+                "fixed left-0 top-0 bottom-0 w-[280px] bg-[#FFF9F0] border-r border-[#F4D03F]/20 z-50 hidden md:flex flex-col antialiased transition-all",
                 className
             )}
         >
             {/* Brand Header */}
             <button
                 onClick={() => onTabChange('home')}
-                className="h-16 flex items-center px-5 border-b border-gray-200 w-full text-left group hover:bg-gray-50 transition-colors"
+                className="h-16 flex items-center px-5 border-b border-[#F4D03F]/20 w-full text-left group hover:bg-[#F9F7F2] transition-colors"
             >
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 flex items-center justify-center flex-shrink-0 bg-[#FF6B00]/10 rounded-xl border border-[#FF6B00]/20 p-1.5">
+                    <div className="w-9 h-9 flex items-center justify-center flex-shrink-0 bg-[#F4D03F]/10 rounded-xl border border-[#F4D03F]/20 p-1.5">
                         <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-base font-bold text-gray-900 tracking-tight leading-none">BeeYield</span>
-                        <span className="text-[10px] text-white/25 font-medium mt-0.5">Management Platform</span>
+                        <span className="text-base font-bold text-[#1A1A1A] tracking-tight leading-none">BeeYield</span>
+                        <span className="text-[10px] text-gray-500 font-medium mt-0.5">Management Platform</span>
                     </div>
                 </div>
             </button>
@@ -71,18 +72,18 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                     className={cn(
                                         "w-full flex items-center justify-between h-9 px-3 transition-all rounded-lg group relative text-[13px]",
                                         isActive
-                                            ? "bg-[#FF6B00]/10 text-white"
-                                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                                            ? "bg-[#F4D03F]/10 text-white"
+                                            : "text-gray-600 hover:text-white hover:bg-[#F9F7F2]"
                                     )}
                                 >
                                     <div className="flex items-center gap-2.5">
                                         <item.icon className={cn(
                                             "w-4 h-4 flex-shrink-0",
-                                            isActive ? "text-[#FF6B00]" : "opacity-40 group-hover:opacity-70"
+                                            isActive ? "text-[#F4D03F]" : "opacity-40 group-hover:opacity-70"
                                         )} />
                                         <span className={cn(
                                             "font-medium truncate",
-                                            isActive ? "text-gray-900" : ""
+                                            isActive ? "text-[#1A1A1A]" : ""
                                         )}>
                                             {item.label}
                                         </span>
@@ -91,13 +92,13 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                     {isFolder && (
                                         <ChevronDown className={cn(
                                             "w-3.5 h-3.5 flex-shrink-0 transition-transform",
-                                            isActive ? "text-[#FF6B00]/60" : "text-gray-300",
+                                            isActive ? "text-[#F4D03F]/60" : "text-gray-300",
                                             isExpanded ? "rotate-180" : ""
                                         )} />
                                     )}
 
                                     {isActive && (
-                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#FF6B00] rounded-r-full" />
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#F4D03F] rounded-r-full" />
                                     )}
                                 </button>
 
@@ -108,7 +109,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="ml-3 pl-4 border-l border-gray-200 space-y-0.5 py-1 overflow-hidden"
+                                            className="ml-3 pl-4 border-l border-[#F4D03F]/20 space-y-0.5 py-1 overflow-hidden"
                                         >
                                             {item.submenuItems?.map((sub: any, idx: number) => {
                                                 if ('title' in sub) {
@@ -124,13 +125,13 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                                     className={cn(
                                                                         "w-full text-left h-8 px-3 text-[12px] rounded-md transition-all flex items-center gap-2 group/sub",
                                                                         activeTab === subItem.id
-                                                                            ? "text-[#FF6B00] bg-[#FF6B00]/10 font-medium"
-                                                                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                                                                            ? "text-[#F4D03F] bg-[#F4D03F]/10 font-medium"
+                                                                            : "text-gray-500 hover:text-white hover:bg-[#F4D03F]/10"
                                                                     )}
                                                                 >
                                                                     <div className={cn(
                                                                         "w-1 h-1 rounded-full flex-shrink-0 transition-all",
-                                                                        activeTab === subItem.id ? "bg-[#FF6B00]" : "bg-gray-300 group-hover/sub:bg-gray-400"
+                                                                        activeTab === subItem.id ? "bg-[#F4D03F]" : "bg-gray-300 group-hover/sub:bg-gray-400"
                                                                     )} />
                                                                     {subItem.label}
                                                                 </button>
@@ -145,13 +146,13 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                         className={cn(
                                                             "w-full text-left h-8 px-3 text-[12px] rounded-md transition-all flex items-center gap-2 group/sub",
                                                             activeTab === sub.id
-                                                                ? "text-[#FF6B00] bg-[#FF6B00]/10 font-medium"
-                                                                : "text-gray-500 hover:text-gray-700 hover:bg-white"
+                                                                ? "text-[#F4D03F] bg-[#F4D03F]/10 font-medium"
+                                                                : "text-gray-500 hover:text-white hover:bg-[#F4D03F]/10"
                                                         )}
                                                     >
                                                         <div className={cn(
                                                             "w-1 h-1 rounded-full flex-shrink-0 transition-all",
-                                                            activeTab === sub.id ? "bg-[#FF6B00]" : "bg-white/15 group-hover/sub:bg-white/30"
+                                                            activeTab === sub.id ? "bg-[#F4D03F]" : "bg-gray-300 group-hover/sub:bg-gray-400"
                                                         )} />
                                                         {sub.label}
                                                     </button>
@@ -167,39 +168,19 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-gray-200 space-y-2">
-                <button
-                    onClick={() => setTheme(isDark ? 'light' : 'dark')}
-                    className="w-full h-9 flex items-center justify-between px-3 bg-white text-gray-600 hover:text-gray-700 rounded-lg transition-all border border-gray-100 hover:border-gray-200 group text-sm"
-                >
-                    <div className="flex items-center gap-2.5">
-                        {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-                        <span className="text-[12px] font-medium">{isDark ? 'Dark Mode' : 'Light Mode'}</span>
-                    </div>
-                    <div className={cn(
-                        "w-8 h-[18px] rounded-full p-[2px] transition-all",
-                        isDark ? "bg-[#FF6B00]" : "bg-white/10"
-                    )}>
-                        <motion.div
-                            layout
-                            className="w-[14px] h-[14px] rounded-full bg-black shadow-sm"
-                            animate={{ x: isDark ? 14 : 0 }}
-                            transition={{ type: "spring", stiffness: 600, damping: 40 }}
-                        />
-                    </div>
-                </button>
+            <div className="p-3 border-t border-[#F4D03F]/20 space-y-2">
 
                 <div className="grid grid-cols-2 gap-2">
                     <button
                         onClick={() => onTabChange('settings')}
-                        className="h-9 flex items-center justify-center gap-2 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all border border-gray-100 hover:border-gray-200 text-[12px] font-medium"
+                        className="h-9 flex items-center justify-center gap-2 bg-[#FFF9F0] text-gray-500 hover:text-gray-700 hover:bg-[#F4D03F]/10 rounded-lg transition-all border border-[#F4D03F]/10 hover:border-[#F4D03F]/20 text-[12px] font-medium"
                     >
                         <Settings className="w-3.5 h-3.5" />
                         Settings
                     </button>
                     <button
                         onClick={onLogout}
-                        className="h-9 flex items-center justify-center gap-2 bg-white text-gray-500 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all border border-gray-100 hover:border-red-500/20 text-[12px] font-medium"
+                        className="h-9 flex items-center justify-center gap-2 bg-[#FFF9F0] text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all border border-[#F4D03F]/10 hover:border-red-200 text-[12px] font-medium"
                     >
                         <LogOut className="w-3.5 h-3.5" />
                         Sign Out
@@ -214,8 +195,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 3px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.1); border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 0, 0.3); }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.1); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(244, 208, 63, 0.3); }
             `}</style>
         </div>
     );

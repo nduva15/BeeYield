@@ -415,7 +415,7 @@ const ShopDashboard = () => {
             case 'processing': return <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200">Processing</Badge>;
             case 'shipped': return <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-200">Shipped</Badge>;
             case 'delivered':
-            case 'completed': return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-200">Delivered</Badge>;
+            case 'completed': return <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-green-200">Delivered</Badge>;
             case 'cancelled': return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-200">Cancelled</Badge>;
             default: return <Badge variant="outline">{status}</Badge>;
         }
@@ -480,7 +480,7 @@ const ShopDashboard = () => {
                                                 <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
                                                 <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
                                             </div>
-                                            <Badge className="bg-primary text-gray-900">{trackingInfo.estimated_delivery}</Badge>
+                                            <Badge className="bg-primary text-[#1A1A1A]">{trackingInfo.estimated_delivery}</Badge>
                                         </div>
 
                                         <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
@@ -559,7 +559,7 @@ const ShopDashboard = () => {
                                         <button
                                             key={i}
                                             onClick={() => setActiveTab(action.tab)}
-                                            className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border border-gray-300 hover:scale-105 transition-all shadow-sm"
+                                            className="flex flex-col items-center justify-center p-6 bg-[#FFF9F0] rounded-3xl border border-[#F4D03F]/40 hover:scale-105 transition-all shadow-sm"
                                         >
                                             <action.icon className="w-8 h-8 text-primary mb-3" />
                                             <span className="text-sm font-bold">{action.label}</span>
@@ -806,7 +806,7 @@ const ShopDashboard = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {paymentMethods.map((pm) => (
-                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-900 border-none overflow-hidden relative">
+                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-[#1A1A1A] border-none overflow-hidden relative">
                                     {/* Card chip decoration */}
                                     <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                     <CardContent className="p-6 pt-16 relative">
@@ -814,7 +814,7 @@ const ShopDashboard = () => {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="text-gray-600 hover:text-gray-900 hover:bg-white/10"
+                                                className="text-gray-600 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/10"
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
                                             >
                                                 <XCircle className="h-5 w-5" />
@@ -968,7 +968,7 @@ const ShopDashboard = () => {
                                         <button
                                             onClick={() => removeFromWishlist(item.id)}
                                             aria-label={`Remove ${item.name} from favorites`}
-                                            className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-red-50 hover:text-red-500 transition-colors"
+                                            className="absolute top-4 right-4 z-10 p-2 bg-[#FFF9F0]/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-red-50 hover:text-red-500 transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -1088,8 +1088,8 @@ const ShopDashboard = () => {
 
                         {checkoutStep === 'confirmation' ? (
                             <Card className="border-none shadow-premium rounded-[2.5rem] p-12 text-center">
-                                <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6 animate-bounce">
-                                    <CheckCircle2 className="w-10 h-10 text-green-500" />
+                                <div className="w-20 h-20 rounded-full bg-[#1B9157]/ flex items-center justify-center mx-auto mb-6 animate-bounce">
+                                    <CheckCircle2 className="w-10 h-10 text-[#1B9157]" />
                                 </div>
                                 <h1 className="text-3xl font-black mb-4">Order Confirmed! 🎉</h1>
                                 <p className="text-muted-foreground mb-8 text-lg">Thank you for your purchase. We're preparing your honey.</p>
@@ -1109,13 +1109,13 @@ const ShopDashboard = () => {
                                     <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-2xl w-fit">
                                         <button
                                             onClick={() => setCheckoutStep('shipping')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-gray-900 shadow-sm' : 'text-muted-foreground'}`}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
                                         >
                                             1. Shipping
                                         </button>
                                         <button
                                             onClick={() => setCheckoutStep('payment')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'payment' ? 'bg-primary text-gray-900 shadow-sm' : 'text-muted-foreground'}`}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'payment' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
                                         >
                                             2. Payment
                                         </button>
@@ -1261,8 +1261,8 @@ const ShopDashboard = () => {
                                             <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
                                                 <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('mpesa')}>
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center">
-                                                            <Smartphone className="text-green-600" />
+                                                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/ flex items-center justify-center">
+                                                            <Smartphone className="text-[#1B9157]" />
                                                         </div>
                                                         <span className="font-bold text-lg">M-Pesa</span>
                                                     </div>
@@ -1318,7 +1318,7 @@ const ShopDashboard = () => {
             }
             default:
                 return (
-                    <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-muted">
+                    <div className="text-center py-32 bg-[#FFF9F0] rounded-[3rem] border-2 border-dashed border-muted">
                         <Loader2 className="w-12 h-12 animate-spin text-primary/30 mx-auto mb-6" />
                         <h2 className="text-2xl font-bold">In Development</h2>
                         <p className="text-muted-foreground mt-2">This section is being custom built for your account.</p>
@@ -1341,7 +1341,7 @@ const ShopDashboard = () => {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-gold/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-96 h-96 bg-beeyield-orange/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-                <div className="max-w-md w-full p-8 rounded-[2.5rem] shadow-premium bg-white border border-beeyield-gold/20 relative z-10 mx-4">
+                <div className="max-w-md w-full p-8 rounded-[2.5rem] shadow-premium bg-[#FFF9F0] border border-beeyield-gold/20 relative z-10 mx-4">
                     <div className="flex justify-center mb-8 relative">
                         <div className="absolute inset-0 bg-beeyield-gold/20 blur-xl rounded-full scale-150 animate-pulse" />
                         <img src="/logo.png" alt="BeeYield Logo" className="w-20 h-20 relative z-10" />
@@ -1428,7 +1428,7 @@ const ShopDashboard = () => {
                                     <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
                                     <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
                                 </div>
-                                <Badge className="bg-primary text-gray-900">{trackingInfo.estimated_delivery}</Badge>
+                                <Badge className="bg-primary text-[#1A1A1A]">{trackingInfo.estimated_delivery}</Badge>
                             </div>
 
                             <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">

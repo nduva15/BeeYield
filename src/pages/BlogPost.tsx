@@ -57,24 +57,24 @@ const BlogPost = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
 
-                <div className="relative h-full container mx-auto px-4 flex flex-col justify-end pb-12 text-gray-900">
+                <div className="relative h-full container mx-auto px-4 flex flex-col justify-end pb-12 text-[#1A1A1A]">
                     <Button
                         variant="ghost"
-                        className="text-gray-800 hover:text-gray-900 hover:bg-white/10 w-fit mb-6 pl-0"
+                        className="text-[#1A1A1A] hover:text-[#1A1A1A] hover:bg-[#F4D03F]/10 w-fit mb-6 pl-0"
                         onClick={() => navigate("/blogs")}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Blog
                     </Button>
 
                     <div className="space-y-4 max-w-4xl">
-                        <Badge className="bg-primary hover:bg-primary/90 text-gray-900 border-none text-sm py-1 px-4">
+                        <Badge className="bg-primary hover:bg-primary/90 text-[#1A1A1A] border-none text-sm py-1 px-4">
                             {post.category}
                         </Badge>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
                             {post.title}
                         </h1>
 
-                        <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-gray-900 pt-4">
+                        <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-[#1A1A1A] pt-4">
                             <div className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
                                 <span>{post.author_name}</span>

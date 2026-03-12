@@ -124,10 +124,10 @@ const activityFeed: ActivityItem[] = [
 ];
 
 const statusConfig = {
-    ok: { label: 'Online', color: 'text-emerald-400', bg: 'bg-emerald-500/10', dot: 'bg-emerald-400' },
-    warn: { label: 'Alert', color: 'text-[#FF6B00]', bg: 'bg-[#FF6B00]/10', dot: 'bg-[#FF6B00]' },
+    ok: { label: 'Online', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/', dot: 'bg-emerald-400' },
+    warn: { label: 'Alert', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10', dot: 'bg-[#F4D03F]' },
     error: { label: 'Error', color: 'text-red-400', bg: 'bg-red-500/10', dot: 'bg-red-400' },
-    pending: { label: 'Pending', color: 'text-gray-600', bg: 'bg-white/5', dot: 'bg-white/30' },
+    pending: { label: 'Pending', color: 'text-gray-600', bg: 'bg-[#F9F7F2]', dot: 'bg-gray-300' },
 };
 
 const typeIcon: Record<ActivityItem['type'], React.ElementType> = {
@@ -156,9 +156,9 @@ const HiveStatusMatrix: React.FC = () => {
     );
 
     const cellColors = {
-        high: 'bg-[#FF6B00]',
-        med: 'bg-[#FF6B00]/40',
-        low: 'bg-white/[0.08]'
+        high: 'bg-[#F4D03F]',
+        med: 'bg-[#F4D03F]/40',
+        low: 'bg-[#F4D03F]/10'
     };
 
     return (
@@ -197,7 +197,7 @@ const YieldForecastBar: React.FC<{ label: string; value: number; max: number; co
             className="flex items-center gap-3 group"
         >
             <span className="text-[11px] font-medium text-gray-600 w-32 flex-shrink-0 truncate group-hover:text-gray-700 transition-colors">{label}</span>
-            <div className="flex-1 h-2 bg-white/5 rounded-full relative overflow-hidden">
+            <div className="flex-1 h-2 bg-[#F9F7F2] rounded-full relative overflow-hidden">
                 <motion.div
                     className="absolute left-0 top-0 h-full rounded-full"
                     style={{ backgroundColor: color === '#FFFFFF' ? 'rgba(255,255,255,0.4)' : '#FF6B00' }}
@@ -206,7 +206,7 @@ const YieldForecastBar: React.FC<{ label: string; value: number; max: number; co
                     transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
                 />
             </div>
-            <span className="text-sm font-semibold text-gray-900 tabular-nums w-16 text-right">{value} kg</span>
+            <span className="text-sm font-semibold text-[#1A1A1A] tabular-nums w-16 text-right">{value} kg</span>
         </motion.div>
     );
 };
@@ -267,7 +267,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                             onClick={() => onTabChange('assistant')}
                             className={cn(glass.btnSecondary, "gap-2")}
                         >
-                            <Bot className="w-4 h-4 text-[#FF6B00]" />
+                            <Bot className="w-4 h-4 text-[#F4D03F]" />
                             AI Assistant
                         </button>
                         <button
@@ -294,21 +294,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                     value={stats?.total_honey_kg?.toLocaleString() || "—"}
                     icon={TrendingUp}
                     index={1}
-                    color="text-emerald-400"
+                    color="text-[#1B9157]"
                 />
                 <GlassStatCard
                     label="System Status"
                     value="Healthy"
                     icon={ShieldCheck}
                     index={2}
-                    color="text-emerald-400"
+                    color="text-[#1B9157]"
                 />
                 <GlassStatCard
                     label="Apiaries"
                     value={apiaries.length.toString()}
                     icon={MapPin}
                     index={3}
-                    color="text-[#FF6B00]"
+                    color="text-[#F4D03F]"
                 />
             </div>
 
@@ -322,13 +322,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                     className="xl:col-span-8"
                 >
                     <div className={cn(glass.section, "overflow-hidden")}>
-                        <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#FF6B00]/10 flex items-center justify-center">
-                                    <Activity className="w-4 h-4 text-[#FF6B00]" />
+                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center">
+                                    <Activity className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-gray-900">Recent Activity</h3>
+                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Recent Activity</h3>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                         <span className="text-[10px] text-gray-500">Live</span>
@@ -337,13 +337,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                             </div>
                             <button
                                 onClick={() => onTabChange('harvests')}
-                                className="text-[12px] text-gray-500 hover:text-white/60 transition-colors flex items-center gap-1"
+                                className="text-[12px] text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1"
                             >
                                 View all <ArrowRight className="w-3 h-3" />
                             </button>
                         </div>
 
-                        <div className="divide-y divide-white/5 max-h-[400px] overflow-y-auto">
+                        <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
                             <AnimatePresence mode="popLayout">
                                 {realActivities.map((item, i) => {
                                     const cfg = statusConfig[item.status];
@@ -357,7 +357,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                             onClick={() => setSelectedActivity(selectedActivity === item.id ? null : item.id)}
                                             className={cn(
                                                 "w-full flex items-center gap-4 px-5 py-3.5 text-left transition-colors group/item",
-                                                selectedActivity === item.id ? "bg-gray-50" : "hover:bg-white/[0.02]"
+                                                selectedActivity === item.id ? "bg-[#F9F7F2]" : "hover:bg-[#F9F7F2]"
                                             )}
                                         >
                                             <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0", cfg.bg)}>
@@ -365,7 +365,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                             </div>
 
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
+                                                <p className="text-sm font-medium text-[#1A1A1A] truncate">{item.title}</p>
                                                 <p className="text-[12px] text-gray-500 truncate">{item.subtitle}</p>
                                             </div>
 
@@ -394,21 +394,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                     >
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-900">Fleet Health</h3>
+                                <h3 className="text-sm font-semibold text-[#1A1A1A]">Fleet Health</h3>
                                 <p className="text-[11px] text-gray-500">12-week activity</p>
                             </div>
-                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                                <Network className="w-4 h-4 text-[#FF6B00]/60" />
+                            <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center">
+                                <Network className="w-4 h-4 text-[#F4D03F]/60" />
                             </div>
                         </div>
-                        <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 flex justify-center">
+                        <div className="p-4 bg-[#F9F7F2] rounded-xl border border-[#F4D03F]/10 flex justify-center">
                             <HiveStatusMatrix />
                         </div>
-                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-white/5">
+                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[#F4D03F]/10">
                             {[
-                                { label: 'High', color: 'bg-[#FF6B00]' },
-                                { label: 'Normal', color: 'bg-[#FF6B00]/40' },
-                                { label: 'Idle', color: 'bg-white/[0.08]' },
+                                { label: 'High', color: 'bg-[#F4D03F]' },
+                                { label: 'Normal', color: 'bg-[#F4D03F]/40' },
+                                { label: 'Idle', color: 'bg-[#F4D03F]/10' },
                             ].map(l => (
                                 <div key={l.label} className="flex items-center gap-1.5">
                                     <div className={cn("w-2 h-2 rounded-sm", l.color)} />
@@ -426,7 +426,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                         className={cn(glass.section, "p-5")}
                     >
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-gray-900">Sensor Overview</h3>
+                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Sensor Overview</h3>
                             <Waves className="w-4 h-4 text-gray-400" />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
@@ -436,9 +436,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                 { icon: Activity, label: 'Vibration', value: 'Normal', color: '#fff' },
                                 { icon: Cpu, label: 'Uptime', value: '98%', color: '#FF6B00' },
                             ].map((s) => (
-                                <div key={s.label} className="bg-white p-3.5 rounded-xl border border-white/5 hover:border-gray-200 transition-colors">
+                                <div key={s.label} className="bg-[#FFF9F0] p-3.5 rounded-xl border border-[#F4D03F]/10 hover:border-[#F4D03F]/20 transition-colors">
                                     <s.icon className="w-4 h-4 mb-2" style={{ color: s.color, opacity: 0.6 }} />
-                                    <p className="text-lg font-bold text-gray-900 tracking-tight leading-none mb-0.5">{s.value}</p>
+                                    <p className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none mb-0.5">{s.value}</p>
                                     <p className="text-[10px] text-gray-500">{s.label}</p>
                                 </div>
                             ))}
@@ -454,18 +454,18 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                 transition={{ delay: 0.15 }}
                 className={cn(glass.section, "overflow-hidden grid grid-cols-1 lg:grid-cols-12")}
             >
-                <div className="lg:col-span-7 p-6 border-b lg:border-b-0 lg:border-r border-gray-200">
+                <div className="lg:col-span-7 p-6 border-b lg:border-b-0 lg:border-r border-[#F4D03F]/20">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#FF6B00]/10 rounded-lg border border-[#FF6B00]/20 mb-2">
-                                <Sparkles className="w-3 h-3 text-[#FF6B00]" />
-                                <span className="text-[10px] font-semibold text-[#FF6B00]">Forecast</span>
+                            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#F4D03F]/10 rounded-lg border border-[#F4D03F]/20 mb-2">
+                                <Sparkles className="w-3 h-3 text-[#F4D03F]" />
+                                <span className="text-[10px] font-semibold text-[#F4D03F]">Forecast</span>
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900">Harvest Projection</h3>
+                            <h3 className="text-lg font-bold text-[#1A1A1A]">Harvest Projection</h3>
                         </div>
                         <div className="text-right">
-                            <div className="text-3xl font-bold text-gray-900 tabular-nums">742.4 <span className="text-sm text-gray-400">kg</span></div>
-                            <span className="text-[11px] text-[#FF6B00]">Predicted 2026</span>
+                            <div className="text-3xl font-bold text-[#1A1A1A] tabular-nums">742.4 <span className="text-sm text-gray-400">kg</span></div>
+                            <span className="text-[11px] text-[#F4D03F]">Predicted 2026</span>
                         </div>
                     </div>
                     <div className="space-y-4">
@@ -480,13 +480,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                     </div>
                 </div>
 
-                <div className="lg:col-span-5 p-6 flex flex-col justify-between bg-[#FF6B00]/[0.02]">
+                <div className="lg:col-span-5 p-6 flex flex-col justify-between bg-[#F4D03F]/[0.02]">
                     <div>
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-white/5 rounded-lg border border-gray-200 mb-3">
+                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#F9F7F2] rounded-lg border border-[#F4D03F]/20 mb-3">
                             <span className="text-[11px] text-gray-600">+12.8% Growth</span>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                            Peak Season <span className="text-[#FF6B00]">Target</span>
+                        <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">
+                            Peak Season <span className="text-[#F4D03F]">Target</span>
                         </h3>
                         <p className="text-sm text-gray-500 leading-relaxed">
                             Conditions are optimal across all sectors. Production targets set for the 2026 season cycle.
@@ -514,7 +514,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                 >
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900">Your Apiaries</h3>
+                            <h3 className="text-lg font-bold text-[#1A1A1A]">Your Apiaries</h3>
                             <p className="text-[12px] text-gray-500">{apiaries.length} active locations</p>
                         </div>
                         <button
@@ -540,9 +540,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                 >
                                     <div className="flex items-start justify-between mb-3">
                                         <div className="min-w-0">
-                                            <h4 className="text-base font-semibold text-gray-900 truncate">{apiary.name}</h4>
+                                            <h4 className="text-base font-semibold text-[#1A1A1A] truncate">{apiary.name}</h4>
                                             <div className="flex items-center gap-1.5 mt-1">
-                                                <MapPin className="w-3 h-3 text-[#FF6B00]" />
+                                                <MapPin className="w-3 h-3 text-[#F4D03F]" />
                                                 <p className="text-[11px] text-gray-500 truncate">
                                                     {apiary.location_name || 'Unknown'}
                                                 </p>
@@ -550,13 +550,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                         </div>
                                         <span className={cn(
                                             "text-[10px] font-medium px-2 py-0.5 rounded-md flex-shrink-0",
-                                            health >= 85 ? "bg-emerald-500/10 text-emerald-400" : "bg-[#FF6B00]/10 text-[#FF6B00]"
+                                            health >= 85 ? "bg-[#1B9157]/ text-[#1B9157]" : "bg-[#F4D03F]/10 text-[#F4D03F]"
                                         )}>
                                             {health}%
                                         </span>
                                     </div>
 
-                                    <div className="h-12 mb-3 px-2 bg-white/[0.02] rounded-lg border border-white/5 flex items-center">
+                                    <div className="h-12 mb-3 px-2 bg-[#F9F7F2] rounded-lg border border-[#F4D03F]/10 flex items-center">
                                         <SparkLine data={spark} color={health >= 85 ? '#10b981' : '#FF6B00'} height={32} />
                                     </div>
 
@@ -566,9 +566,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                                             { l: 'Flow', v: `${Math.floor(Math.random() * 20 + 75)}%` },
                                             { l: 'Temp', v: (Math.random() * 2 + 32).toFixed(1) },
                                         ].map((s, idx) => (
-                                            <div key={idx} className="bg-white py-2 px-2.5 rounded-lg border border-white/5 text-center">
-                                                <p className="text-sm font-semibold text-gray-900 tabular-nums leading-none mb-0.5">{s.v}</p>
-                                                <p className="text-[9px] text-white/25">{s.l}</p>
+                                            <div key={idx} className="bg-[#FFF9F0] py-2 px-2.5 rounded-lg border border-[#F4D03F]/10 text-center">
+                                                <p className="text-sm font-semibold text-[#1A1A1A] tabular-nums leading-none mb-0.5">{s.v}</p>
+                                                <p className="text-[9px] text-gray-500">{s.l}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -580,9 +580,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-center gap-3 pt-8 border-t border-white/5">
+            <div className="flex items-center justify-center gap-3 pt-8 border-t border-[#F4D03F]/10">
                 <img src={Logo} alt="BeeYield" className="h-6 w-auto grayscale opacity-10" />
-                <span className="text-[11px] text-white/10">BeeYield Platform © 2026</span>
+                <span className="text-[11px] text-gray-400">BeeYield Platform © 2026</span>
             </div>
         </motion.div>
     );
