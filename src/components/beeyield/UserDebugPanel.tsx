@@ -218,7 +218,7 @@ const UserDebugPanel: React.FC = () => {
                                                 setLoading(false);
                                             }
                                         }}
-                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 uppercase tracking-wider text-[10px]"
+                                        className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 uppercase tracking-wider text-[10px]"
                                     >
                                         Claim Kibwezi Main Apiary
                                     </Button>

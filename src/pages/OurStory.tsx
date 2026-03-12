@@ -237,12 +237,12 @@ const OurStory = () => {
       {/* CTA Section */}
       <section className="py-16 sm:py-20 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="bg-[#0A2612] text-white border-none shadow-2xl rounded-[3rem] overflow-hidden">
+          <Card className="bg-[#0A2612] text-gray-900 border-none shadow-2xl rounded-[3rem] overflow-hidden">
             <CardContent className="p-8 sm:p-12 text-center relative">
               <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -mr-32 -mt-32" />
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-32 -mb-32" />
 
-              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-white">
+              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-gray-900">
                 Join Us on Our <span className="text-green-400">Journey</span>
               </h2>
               <p className="text-green-100/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
@@ -252,7 +252,7 @@ const OurStory = () => {
                 <Button size="lg" className="bg-white text-green-900 hover:bg-green-50 font-bold px-8 h-12 rounded-xl" asChild>
                   <Link to="/contact">Get In Touch</Link>
                 </Button>
-                <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10 font-bold px-8 h-12 rounded-xl" asChild>
+                <Button variant="outline" size="lg" className="border-gray-300 text-gray-900 hover:bg-white/10 font-bold px-8 h-12 rounded-xl" asChild>
                   <Link to="/careers">Join Our Team</Link>
                 </Button>
               </div>

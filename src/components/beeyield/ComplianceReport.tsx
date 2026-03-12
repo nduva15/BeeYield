@@ -31,7 +31,7 @@ const ComplianceReport: React.FC = () => {
             {/* Report Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-border/50 pb-10">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <ShieldCheck className="w-4 h-4 mr-2" />
                         Certified Pollination Document v2.4
                     </div>
@@ -83,11 +83,11 @@ const ComplianceReport: React.FC = () => {
                             <Separator className="bg-border/50 h-[1px]" />
 
                             <div className="grid grid-cols-2 gap-8">
-                                <div className="space-y-2 text-center p-8 bg-white/40 dark:bg-black/20 rounded-2xl border border-dashed border-border shadow-sm">
+                                <div className="space-y-2 text-center p-8 bg-white/40 rounded-2xl border border-dashed border-border shadow-sm">
                                     <p className={cn(glass.sectionTitle, "text-4xl")}>1,284</p>
                                     <p className={cn(glass.microLabel, "opacity-60")}>Certified Hives</p>
                                 </div>
-                                <div className="space-y-2 text-center p-8 bg-white/40 dark:bg-black/20 rounded-2xl border border-dashed border-border shadow-sm">
+                                <div className="space-y-2 text-center p-8 bg-white/40 rounded-2xl border border-dashed border-border shadow-sm">
                                     <p className={cn(glass.sectionTitle, "text-4xl")}>98.2%</p>
                                     <p className={cn(glass.microLabel, "opacity-60")}>Contract Adherence</p>
                                 </div>
@@ -96,7 +96,7 @@ const ComplianceReport: React.FC = () => {
                             <div className={cn(glass.card, "p-8 bg-honey/10 border-honey/20 shadow-xl relative overflow-hidden group")}>
                                 <div className="absolute inset-0 bg-honey/5 group-hover:bg-honey/10 transition-colors animate-pulse" />
                                 <div className="flex items-center gap-4 mb-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-honey shadow-sm">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-honey shadow-sm">
                                         <Stamp className="w-6 h-6 text-honey" />
                                     </div>
                                     <h4 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Pollination Quality Guarantee</h4>
@@ -107,7 +107,7 @@ const ComplianceReport: React.FC = () => {
                                 <div className="flex items-center justify-between border-t border-honey/20 pt-6 relative z-10">
                                     <div className="flex items-center gap-3">
                                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                        <span className={cn(glass.microLabel, "font-bold text-emerald-600 dark:text-emerald-400")}>AUTHENTICATED_SECURE</span>
+                                        <span className={cn(glass.microLabel, "font-bold text-emerald-600")}>AUTHENTICATED_SECURE</span>
                                     </div>
                                     <div className="text-right">
                                         <p className={cn(glass.microLabel, "opacity-40 italic font-bold")}>DIGITAL_SIGNATURE</p>
@@ -161,7 +161,7 @@ const ComplianceReport: React.FC = () => {
                         className={cn(glass.card, "p-10 space-y-8 shadow-xl bg-gradient-to-br from-indigo-500/5 to-transparent border-indigo-500/10")}
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
                                 <Info className="w-6 h-6 text-indigo-500" />
                             </div>
                             <h4 className={cn(glass.sectionTitle, "text-xl normal-case")}>About Report</h4>
@@ -177,7 +177,7 @@ const ComplianceReport: React.FC = () => {
                                 { label: 'Sensor Calibration logs', icon: Activity },
                                 { label: 'Pesticide Data Feed', icon: Leaf }
                             ].map(item => (
-                                <div key={item.label} className="flex items-center justify-between group cursor-pointer p-2 -m-2 rounded-xl hover:bg-white/40 dark:hover:bg-black/20 transition-all">
+                                <div key={item.label} className="flex items-center justify-between group cursor-pointer p-2 -m-2 rounded-xl hover:bg-white/40:bg-gray-100 transition-all">
                                     <div className="flex items-center gap-3">
                                         <item.icon className="w-4 h-4 text-indigo-500/50 group-hover:text-indigo-500 transition-colors" />
                                         <span className={cn(glass.microLabel, "font-bold opacity-70 group-hover:opacity-100 group-hover:text-honey transition-all")}>{item.label}</span>

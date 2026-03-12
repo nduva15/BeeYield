@@ -309,7 +309,7 @@ const ContentEditor = () => {
                     {post.status !== 'published' && (
                         <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white font-bold"
+                            className="bg-green-600 hover:bg-green-700 text-gray-900 font-bold"
                             onClick={handlePublish}
                             disabled={publishing}
                         >
@@ -370,7 +370,7 @@ const ContentEditor = () => {
                 </div>
 
                 {/* Center: Writing Area */}
-                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full bg-white dark:bg-zinc-950 shadow-sm border-x">
+                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full bg-white shadow-sm border-x">
                     {activeChapter ? (
                         <>
                             <div className="p-6 border-b pb-4">
@@ -429,7 +429,7 @@ const ContentEditor = () => {
                                     />
                                 </TabsContent>
 
-                                <TabsContent value="preview" className="flex-1 p-6 overflow-auto prose dark:prose-invert max-w-none">
+                                <TabsContent value="preview" className="flex-1 p-6 overflow-auto prose max-w-none">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                         {editedContent}
                                     </ReactMarkdown>
@@ -479,7 +479,7 @@ const ContentEditor = () => {
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md text-xs text-blue-700 dark:text-blue-300">
+                            <div className="p-3 bg-blue-50 rounded-md text-xs text-blue-700">
                                 <strong>Tip:</strong> {analysis.seo.issues[0]?.replace('⚠️ ', '') || "Good job! Keep writing."}
                             </div>
                         </div>

@@ -73,7 +73,7 @@ const MetersAlarms: React.FC = () => {
             <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
                     <Bell className="w-3.5 h-3.5 text-[#facc15]" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Priority Protocol Feed</span>
+                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Priority Protocol Feed</span>
                 </div>
                 <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">System <span className="text-[#10b981]">Updates</span></h1>
             </div>
@@ -89,7 +89,7 @@ const MetersAlarms: React.FC = () => {
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <div className="divide-y divide-gray-100">
                         {loading ? (
                             <div className="p-12 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-gray-300" /></div>
                         ) : events.length === 0 ? (
@@ -101,11 +101,11 @@ const MetersAlarms: React.FC = () => {
                                         <div className="flex items-center gap-3">
                                             {event.is_resolved ? (
                                                 <div className="w-6 h-6 rounded-none bg-[#10b981] flex items-center justify-center border-2 border-[#064e3b] shadow-[2px_2px_0px_0px_rgba(6,78,59,1)]">
-                                                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                                    <CheckCircle2 className="w-3.5 h-3.5 text-gray-900" />
                                                 </div>
                                             ) : (
                                                 <div className="w-6 h-6 rounded-none bg-red-500 flex items-center justify-center border-2 border-[#064e3b] shadow-[2px_2px_0px_0px_rgba(6,78,59,1)]">
-                                                    <AlertTriangle className="w-3.5 h-3.5 text-white" />
+                                                    <AlertTriangle className="w-3.5 h-3.5 text-gray-900" />
                                                 </div>
                                             )}
                                             <h4 className="font-black text-[#064e3b] uppercase tracking-tighter text-lg">{event.event_type}</h4>
@@ -119,18 +119,18 @@ const MetersAlarms: React.FC = () => {
                                     <div className="flex items-center gap-6">
                                         <div className="flex gap-4">
                                             <Badge className={cn("rounded-none border-2 px-3 py-1 font-black text-[9px] uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(6,78,59,1)]",
-                                                event.severity.toUpperCase() === 'CRITICAL' ? "bg-red-500 text-white border-[#064e3b]" :
-                                                    event.severity.toUpperCase() === 'WARNING' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-white border-[#10b981]"
+                                                event.severity.toUpperCase() === 'CRITICAL' ? "bg-red-500 text-gray-900 border-[#064e3b]" :
+                                                    event.severity.toUpperCase() === 'WARNING' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-gray-900 border-[#10b981]"
                                             )}>
                                                 {event.severity}
                                             </Badge>
                                             <Badge className={cn("rounded-none border-2 px-3 py-1 font-black text-[9px] uppercase tracking-[0.2em] items-center gap-2",
-                                                event.is_resolved ? 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/20' : 'bg-red-500 text-white border-[#064e3b] animate-pulse'
+                                                event.is_resolved ? 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/20' : 'bg-red-500 text-gray-900 border-[#064e3b] animate-pulse'
                                             )}>
                                                 {event.is_resolved ? 'RESOLVED' : 'ACTIVE_INCIDENT'}
                                             </Badge>
                                         </div>
-                                        <Button variant="ghost" size="sm" className="hidden md:flex rounded-none border-2 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#064e3b] hover:text-white font-black text-[10px] uppercase tracking-widest h-10 px-6 transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1">COMMAND FIX</Button>
+                                        <Button variant="ghost" size="sm" className="hidden md:flex rounded-none border-2 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#064e3b] hover:text-gray-900 font-black text-[10px] uppercase tracking-widest h-10 px-6 transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1">COMMAND FIX</Button>
                                     </div>
                                 </div>
                             ))
@@ -181,7 +181,7 @@ const MetersAlarms: React.FC = () => {
                 {/* Info Card */}
                 <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[8px_8px_0px_0px_rgba(250,204,21,1)] overflow-hidden">
                     <CardHeader className="p-8">
-                        <CardTitle className="text-xl font-black text-white uppercase tracking-tighter italic">System Integrity</CardTitle>
+                        <CardTitle className="text-xl font-black text-gray-900 uppercase tracking-tighter italic">System Integrity</CardTitle>
                     </CardHeader>
                     <CardContent className="p-8 pt-0 space-y-8">
                         <div className="p-6 rounded-none bg-white border-2 border-[#10b981] flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(16,185,129,0.2)]">

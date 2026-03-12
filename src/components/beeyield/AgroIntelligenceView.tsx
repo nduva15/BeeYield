@@ -82,7 +82,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <div className={cn(glass.card, "px-8 py-4 bg-white/40 dark:bg-black/20 border-border/50 shadow-xl flex items-center gap-4")}>
+                    <div className={cn(glass.card, "px-8 py-4 bg-white/40 border-border/50 shadow-xl flex items-center gap-4")}>
                         <Terminal className="w-6 h-6 text-honey animate-pulse" />
                         <div className="flex flex-col">
                             <span className={cn(glass.microLabel, "opacity-40 font-bold")}>SYS_ORBIT_LINK</span>
@@ -167,7 +167,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             {/* Sector Dynamics */}
             <div className="space-y-10">
                 <div className="flex items-center gap-6 border-b border-border/50 pb-8 px-2">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-xl">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center border border-border shadow-xl">
                         <Target className="w-8 h-8 text-honey" />
                     </div>
                     <h3 className={cn(glass.sectionTitle, "text-5xl normal-case italic")}>Sector <span className="text-honey">Dynamics</span></h3>
@@ -188,8 +188,8 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                             className={cn(glass.card, "group p-12 flex flex-col items-center text-center shadow-xl hover:shadow-2xl hover:scale-[1.05] transition-all relative overflow-hidden")}
                         >
                             <div className="absolute top-0 left-0 w-full h-1 bg-honey opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="w-24 h-24 rounded-[2.5rem] bg-white/40 dark:bg-black/40 flex items-center justify-center mb-8 border border-border group-hover:border-honey group-hover:bg-honey transition-all shadow-lg group-active:scale-95">
-                                <btn.icon className="w-11 h-11 text-honey group-hover:text-white transition-all" />
+                            <div className="w-24 h-24 rounded-[2.5rem] bg-white/40 flex items-center justify-center mb-8 border border-border group-hover:border-honey group-hover:bg-honey transition-all shadow-lg group-active:scale-95">
+                                <btn.icon className="w-11 h-11 text-honey group-hover:text-gray-900 transition-all" />
                             </div>
                             <h4 className={cn(glass.sectionTitle, "text-base normal-case mb-2")}>{btn.title}</h4>
                             <p className={cn(glass.microLabel, "opacity-40 italic font-bold tracking-widest")}>{btn.desc}</p>
@@ -201,7 +201,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             {/* Global Pipeline Pipeline */}
             <div className="space-y-10">
                 <div className="flex items-center gap-6 border-b border-border/50 pb-8 px-2">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-xl">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center border border-border shadow-xl">
                         <Activity className="w-8 h-8 text-honey" />
                     </div>
                     <h3 className={cn(glass.sectionTitle, "text-5xl normal-case italic")}>Global <span className="text-honey">Pipeline</span></h3>
@@ -224,10 +224,10 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                             <React.Fragment key={step.title}>
                                 <div className="flex flex-col items-center gap-10 flex-1 group">
                                     <div className="relative">
-                                        <div className="w-36 h-36 rounded-[2.5rem] bg-white/40 dark:bg-black/20 flex items-center justify-center border border-honey shadow-xl transition-all group-hover:scale-110 group-hover:shadow-honey/20">
+                                        <div className="w-36 h-36 rounded-[2.5rem] bg-white/40 flex items-center justify-center border border-honey shadow-xl transition-all group-hover:scale-110 group-hover:shadow-honey/20">
                                             <step.icon className="w-16 h-16 text-honey" />
                                         </div>
-                                        <div className="absolute -top-4 -right-4 w-12 h-12 rounded-2xl bg-honey text-white flex items-center justify-center font-bold text-base shadow-xl border-4 border-white dark:border-black">
+                                        <div className="absolute -top-4 -right-4 w-12 h-12 rounded-2xl bg-honey text-white flex items-center justify-center font-bold text-base shadow-xl border-4 border-white">
                                             0{i + 1}
                                         </div>
                                     </div>
@@ -278,7 +278,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                             <feature.icon className="w-48 h-48 text-foreground" />
                         </div>
                         <div className="flex items-center gap-6 mb-12 relative z-10">
-                            <div className="w-20 h-20 rounded-[1.8rem] bg-white/60 dark:bg-black/40 flex items-center justify-center border border-honey shadow-xl">
+                            <div className="w-20 h-20 rounded-[1.8rem] bg-white/60 flex items-center justify-center border border-honey shadow-xl">
                                 <feature.icon className="w-10 h-10 text-honey" />
                             </div>
                             <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>{feature.title}</h3>
@@ -303,7 +303,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 className={cn(glass.card, "p-10 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-72 h-72 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-20 h-20 rounded-[2rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-xl group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-20 h-20 rounded-[2rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-xl group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-10 h-10 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

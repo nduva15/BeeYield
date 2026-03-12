@@ -75,14 +75,14 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl border-white/5 rounded-[4rem] shadow-[0_100px_200px_-50px_rgba(0,0,0,0.5)] p-0 overflow-hidden antialiased outline-none thin-scrollbar">
+            <DialogContent className="max-w-3xl bg-white/80 backdrop-blur-3xl border-white/5 rounded-[4rem] shadow-[0_100px_200px_-50px_rgba(0,0,0,0.5)] p-0 overflow-hidden antialiased outline-none thin-scrollbar">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98, y: 30 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 1.02, y: -30 }}
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 >
-                    <div className="bg-gradient-to-br from-[#121212] to-black px-14 py-16 text-white relative overflow-hidden border-b border-white/10">
+                    <div className="bg-gradient-to-br from-[#121212] to-black px-14 py-16 text-gray-900 relative overflow-hidden border-b border-gray-200">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-honey/10 rounded-full -mr-40 -mt-20 blur-[120px] animate-pulse pointer-events-none" />
                         <div className="absolute bottom-0 left-0 w-60 h-60 bg-emerald-500/5 rounded-full -ml-30 -mb-20 blur-[80px] pointer-events-none" />
 
@@ -102,14 +102,14 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">
                                         Initialize <span className="text-honey">Node</span>
                                     </h2>
-                                    <p className="text-white/30 font-black text-[11px] uppercase tracking-[0.4em] mt-3 italic border-l-2 border-honey/20 pl-8 max-w-sm">
+                                    <p className="text-gray-500 font-black text-[11px] uppercase tracking-[0.4em] mt-3 italic border-l-2 border-honey/20 pl-8 max-w-sm">
                                         Pairing industrial IOT hardware with strategic sector registry hub_v4
                                     </p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => onOpenChange(false)}
-                                className="w-16 h-16 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-500 transition-all duration-700 shadow-2xl group"
+                                className="w-16 h-16 rounded-[2rem] bg-white/5 border border-gray-200 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-500 transition-all duration-700 shadow-2xl group"
                             >
                                 <X className="w-8 h-8 group-hover:rotate-90 transition-transform" />
                             </button>
@@ -126,7 +126,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                         placeholder="E.G. HUB_KIB_PRIME_001"
                                         value={deviceCode}
                                         onChange={(e) => setDeviceCode(e.target.value)}
-                                        className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-2xl bg-black/5 dark:bg-black/30 border-none shadow-inner normal-case placeholder:opacity-10")}
+                                        className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-2xl bg-gray-50 border-none shadow-inner normal-case placeholder:opacity-10")}
                                     />
                                 </div>
                             </div>
@@ -134,7 +134,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             <div className="space-y-6">
                                 <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Node Classification</Label>
                                 <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
-                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner')}>
+                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-gray-50 border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Zap className="w-6 h-6 text-blue-400" />
                                             <SelectValue />
@@ -153,7 +153,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             <div className="space-y-6">
                                 <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-honey/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Strategic Sector</Label>
                                 <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner')}>
+                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-gray-50 border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Database className="w-6 h-6 text-honey" />
                                             <SelectValue placeholder="LOCATE_SECTOR..." />
@@ -176,7 +176,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     onValueChange={setSelectedHiveId}
                                     disabled={!selectedApiaryId}
                                 >
-                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner disabled:opacity-20')}>
+                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-gray-50 border-none shadow-inner disabled:opacity-20')}>
                                         <div className="flex items-center gap-6">
                                             <ShieldCheck className="w-6 h-6 text-emerald-500" />
                                             <SelectValue placeholder="SELECT_UNIT_ID..." />
@@ -203,16 +203,16 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     value={deviceName}
                                     onChange={(e) => setDeviceName(e.target.value)}
                                     placeholder="E.G. ALPHA_GATEWAY_PRIME"
-                                    className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner normal-case placeholder:opacity-10")}
+                                    className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-gray-50 border-none shadow-inner normal-case placeholder:opacity-10")}
                                 />
                             </div>
                         </div>
 
-                        <div className="p-14 bg-white/40 dark:bg-black/60 border-t border-white/5 flex gap-10 rounded-[3rem] shadow-inner mt-10">
+                        <div className="p-14 bg-white/40 border-t border-white/5 flex gap-10 rounded-[3rem] shadow-inner mt-10">
                             <button
                                 type="button"
                                 onClick={() => onOpenChange(false)}
-                                className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic uppercase text-lg tracking-widest transition-all bg-white/40 dark:bg-black/20")}
+                                className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic uppercase text-lg tracking-widest transition-all bg-white/40")}
                             >
                                 Abort Protocol
                             </button>
@@ -239,7 +239,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             className={cn(glass.card, "p-10 bg-honey/[0.03] border-honey/20 flex items-center gap-10 relative overflow-hidden group rounded-[3rem]")}
                         >
                             <div className="absolute top-0 right-0 w-40 h-40 bg-honey/10 blur-3xl pointer-events-none" />
-                            <div className="w-16 h-16 rounded-2xl bg-white/40 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey/20 shadow-4xl group-hover:rotate-[360deg] transition-transform duration-1000 relative z-10">
+                            <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center shrink-0 border border-honey/20 shadow-4xl group-hover:rotate-[360deg] transition-transform duration-1000 relative z-10">
                                 <Info className="w-8 h-8 text-honey" />
                             </div>
                             <div className="relative z-10 space-y-2">

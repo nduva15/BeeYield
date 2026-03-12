@@ -480,7 +480,7 @@ const ShopDashboard = () => {
                                                 <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
                                                 <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
                                             </div>
-                                            <Badge className="bg-primary text-white">{trackingInfo.estimated_delivery}</Badge>
+                                            <Badge className="bg-primary text-gray-900">{trackingInfo.estimated_delivery}</Badge>
                                         </div>
 
                                         <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
@@ -559,7 +559,7 @@ const ShopDashboard = () => {
                                         <button
                                             key={i}
                                             onClick={() => setActiveTab(action.tab)}
-                                            className="flex flex-col items-center justify-center p-6 bg-white dark:bg-black/40 rounded-3xl border border-white/20 hover:scale-105 transition-all shadow-sm"
+                                            className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border border-gray-300 hover:scale-105 transition-all shadow-sm"
                                         >
                                             <action.icon className="w-8 h-8 text-primary mb-3" />
                                             <span className="text-sm font-bold">{action.label}</span>
@@ -792,21 +792,21 @@ const ShopDashboard = () => {
                         </div>
 
                         {/* Info banner about Stripe security */}
-                        <Card className="border-none bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+                        <Card className="border-none bg-gradient-to-r from-blue-50 to-indigo-50">
                             <CardContent className="p-4 flex items-center gap-4">
                                 <div className="p-2 bg-blue-500/10 rounded-full">
                                     <Shield className="h-6 w-6 text-blue-600" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-semibold text-blue-900 dark:text-blue-100">Secured by Stripe</p>
-                                    <p className="text-sm text-blue-700 dark:text-blue-300">Your payment information is encrypted and never stored on our servers.</p>
+                                    <p className="font-semibold text-blue-900">Secured by Stripe</p>
+                                    <p className="text-sm text-blue-700">Your payment information is encrypted and never stored on our servers.</p>
                                 </div>
                             </CardContent>
                         </Card>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {paymentMethods.map((pm) => (
-                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-none overflow-hidden relative">
+                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-900 border-none overflow-hidden relative">
                                     {/* Card chip decoration */}
                                     <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                     <CardContent className="p-6 pt-16 relative">
@@ -814,7 +814,7 @@ const ShopDashboard = () => {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="text-white/50 hover:text-white hover:bg-white/10"
+                                                className="text-gray-600 hover:text-gray-900 hover:bg-white/10"
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
                                             >
                                                 <XCircle className="h-5 w-5" />
@@ -830,11 +830,11 @@ const ShopDashboard = () => {
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <div>
-                                                <p className="text-[10px] uppercase text-white/50 mb-1">Card Holder</p>
+                                                <p className="text-[10px] uppercase text-gray-600 mb-1">Card Holder</p>
                                                 <p className="font-medium truncate max-w-[150px]">{pm.card_holder_name || 'Customer'}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] uppercase text-white/50 mb-1">Valid Thru</p>
+                                                <p className="text-[10px] uppercase text-gray-600 mb-1">Valid Thru</p>
                                                 <p className="font-medium">{String(pm.expiry_month).padStart(2, '0')}/{pm.expiry_year}</p>
                                             </div>
                                             <div className="text-right">
@@ -1109,13 +1109,13 @@ const ShopDashboard = () => {
                                     <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-2xl w-fit">
                                         <button
                                             onClick={() => setCheckoutStep('shipping')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground'}`}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-gray-900 shadow-sm' : 'text-muted-foreground'}`}
                                         >
                                             1. Shipping
                                         </button>
                                         <button
                                             onClick={() => setCheckoutStep('payment')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'payment' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground'}`}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'payment' ? 'bg-primary text-gray-900 shadow-sm' : 'text-muted-foreground'}`}
                                         >
                                             2. Payment
                                         </button>
@@ -1318,7 +1318,7 @@ const ShopDashboard = () => {
             }
             default:
                 return (
-                    <div className="text-center py-32 bg-white dark:bg-black/20 rounded-[3rem] border-2 border-dashed border-muted">
+                    <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-muted">
                         <Loader2 className="w-12 h-12 animate-spin text-primary/30 mx-auto mb-6" />
                         <h2 className="text-2xl font-bold">In Development</h2>
                         <p className="text-muted-foreground mt-2">This section is being custom built for your account.</p>
@@ -1428,7 +1428,7 @@ const ShopDashboard = () => {
                                     <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
                                     <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
                                 </div>
-                                <Badge className="bg-primary text-white">{trackingInfo.estimated_delivery}</Badge>
+                                <Badge className="bg-primary text-gray-900">{trackingInfo.estimated_delivery}</Badge>
                             </div>
 
                             <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">

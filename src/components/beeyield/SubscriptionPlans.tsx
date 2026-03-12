@@ -112,7 +112,7 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             isCurrent ? "scale-[1.02] border-honey shadow-2xl shadow-honey/20 ring-1 ring-honey/50" : "hover:border-foreground/20 hover:shadow-xl"
                         )}
                     >
-                        <div className="p-8 border-b border-white/10 dark:border-black/10 bg-white/40 dark:bg-black/20">
+                        <div className="p-8 border-b border-gray-200 bg-white/40">
                             <div className="flex justify-between items-start mb-6">
                                 <div className={cn("p-4 rounded-2xl flex items-center justify-center border", plan.color)}>
                                     <Icon className="w-8 h-8" />
@@ -126,7 +126,7 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             <h3 className={cn(glass.sectionTitle, "text-3xl normal-case mb-2 leading-none", plan.id === 'Free' ? 'text-foreground' : plan.color.split(' ')[1])}>{plan.name}</h3>
                             <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-80 leading-relaxed")}>{plan.description}</p>
                         </div>
-                        <div className="p-8 flex-1 flex flex-col bg-white/20 dark:bg-black/10">
+                        <div className="p-8 flex-1 flex flex-col bg-white/20">
                             <div className="mb-8">
                                 <span className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none tracking-tight", plan.id === 'Free' ? 'text-foreground' : plan.color.split(' ')[1])}>{plan.price}</span>
                                 <span className={cn(glass.microLabel, "opacity-60 ml-2 normal-case font-semibold")}>{plan.period}</span>

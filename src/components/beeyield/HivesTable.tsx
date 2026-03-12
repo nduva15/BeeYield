@@ -43,7 +43,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             },
             cell: ({ row }) => (
                 <div className="flex items-center gap-8 pl-6">
-                    <div className="w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/5 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-125 group-hover:rotate-6 group-hover:bg-honey/10 group-hover:border-honey/40 transition-all duration-1000">
+                    <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-white/5 flex items-center justify-center shadow-4xl group-hover:scale-125 group-hover:rotate-6 group-hover:bg-honey/10 group-hover:border-honey/40 transition-all duration-1000">
                         <Hash className="w-6 h-6 text-honey group-hover:scale-110 transition-transform" />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -141,7 +141,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                                 <span className="text-[9px] font-black text-foreground/20 uppercase tracking-[0.4em] italic leading-none group-hover/bat:text-honey/60 transition-colors">PWR_LVL: </span>
                                 <span className="text-2xl font-black tabular-nums italic text-foreground tracking-tighter leading-none">{batVal}%</span>
                             </div>
-                            <div className="w-24 h-2 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[1px] border border-white/5">
+                            <div className="w-24 h-2 bg-gray-50 rounded-full overflow-hidden shadow-inner p-[1px] border border-white/5">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${batVal}%` }}
@@ -185,7 +185,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-4 px-12 shadow-4xl border-white/5 flex flex-col md:flex-row items-center gap-10 group bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[3.5rem]")}
+                className={cn(glass.card, "p-4 px-12 shadow-4xl border-white/5 flex flex-col md:flex-row items-center gap-10 group bg-white/40 backdrop-blur-3xl rounded-[3.5rem]")}
             >
                 <div className="flex-1 w-full relative group/search">
                     <Search className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-honey opacity-20 group-focus-within/search:opacity-100 transition-opacity duration-700" />
@@ -211,13 +211,13 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className={cn(glass.card, "p-0 overflow-hidden shadow-4xl border-white/5 relative bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem]")}
+                className={cn(glass.card, "p-0 overflow-hidden shadow-4xl border-white/5 relative bg-white/40 backdrop-blur-3xl rounded-[4rem]")}
             >
                 <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-honey/[0.04] rounded-full blur-[150px] pointer-events-none -mr-80 -mt-80" />
 
                 <div className="overflow-x-auto thin-scrollbar">
                     <table className="w-full text-left border-separate border-spacing-0">
-                        <thead className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl">
+                        <thead className="bg-white/40 backdrop-blur-3xl">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
@@ -274,7 +274,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             {/* ── Industrial Pagination Matrix ── */}
             {table.getPageCount() > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-10">
-                    <div className={cn(glass.card, "bg-white/40 dark:bg-black/60 text-foreground border-white/5 py-4 px-12 h-18 shadow-4xl backdrop-blur-3xl rounded-[2.5rem] font-black tracking-[0.4em] italic text-[11px] uppercase flex items-center gap-6")}>
+                    <div className={cn(glass.card, "bg-white/40 text-foreground border-white/5 py-4 px-12 h-18 shadow-4xl backdrop-blur-3xl rounded-[2.5rem] font-black tracking-[0.4em] italic text-[11px] uppercase flex items-center gap-6")}>
                         <div className="w-2.5 h-2.5 rounded-full bg-honey animate-pulse" />
                         Segment {table.getState().pagination.pageIndex + 1} <span className="opacity-20">/</span> {table.getPageCount()}
                     </div>
@@ -282,7 +282,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                         <button
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
-                            className={cn(glass.btnSecondary, "h-18 px-12 font-black italic uppercase tracking-widest text-xs rounded-[2rem] disabled:opacity-10 disabled:cursor-not-allowed bg-white/40 dark:bg-black/60 shadow-4xl border-white/5 hover:bg-honey hover:text-black transition-all duration-700")}
+                            className={cn(glass.btnSecondary, "h-18 px-12 font-black italic uppercase tracking-widest text-xs rounded-[2rem] disabled:opacity-10 disabled:cursor-not-allowed bg-white/40 shadow-4xl border-white/5 hover:bg-honey hover:text-black transition-all duration-700")}
                         >
                             <ChevronLeft className="w-6 h-6 mr-4" />
                             Prev_Seg

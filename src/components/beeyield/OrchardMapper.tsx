@@ -61,12 +61,12 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                         onClick={() => setIsDrawing(!isDrawing)}
                         className={cn(
                             "px-8 py-4 border-4 font-black text-xs uppercase tracking-widest transition-all",
-                            isDrawing ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-white border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
+                            isDrawing ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-gray-900 border-[#064e3b] shadow-[8px_8px_0px_0px_#10b981]"
                         )}
                     >
                         {isDrawing ? "Finish Drawing" : "Draw New Area"}
                     </button>
-                    <button className="flex items-center gap-3 px-8 py-4 border-4 border-[#064e3b] bg-white text-[#064e3b] font-black text-xs uppercase tracking-widest hover:bg-[#064e3b] hover:text-white transition-all group">
+                    <button className="flex items-center gap-3 px-8 py-4 border-4 border-[#064e3b] bg-white text-[#064e3b] font-black text-xs uppercase tracking-widest hover:bg-[#064e3b] hover:text-gray-900 transition-all group">
                         <Share2 className="w-5 h-5 group-hover:text-[#facc15]" />
                         Save Hive Map
                     </button>
@@ -141,12 +141,12 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                         </div>
                     </div>
 
-                    <div className="bg-[#064e3b] border-4 border-[#064e3b] p-8 text-white shadow-[10px_10px_0px_0px_#10b981]">
+                    <div className="bg-[#064e3b] border-4 border-[#064e3b] p-8 text-gray-900 shadow-[10px_10px_0px_0px_#10b981]">
                         <div className="flex items-center gap-3 mb-4">
                             <Zap className="w-5 h-5 text-[#facc15]" />
                             <h4 className="text-lg font-black uppercase tracking-tight">Hive Placement</h4>
                         </div>
-                        <p className="text-[10px] font-bold text-white/50 leading-relaxed uppercase">
+                        <p className="text-[10px] font-bold text-gray-600 leading-relaxed uppercase">
                             The system uses a special **Hive Placement Plan** to make sure bees cover the whole area. This helps pollination by **18%**.
                         </p>
                     </div>

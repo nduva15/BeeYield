@@ -188,7 +188,7 @@ const BeeCalculatorPage: React.FC = () => {
             {/* Header Section */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-border/50 pb-10">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <Calculator className="w-4 h-4 mr-2" />
                         BeeYield Precision Analytics v3.0
                     </div>
@@ -235,13 +235,13 @@ const BeeCalculatorPage: React.FC = () => {
                                 glass.card,
                                 "w-full p-6 flex flex-col gap-4 text-left transition-all duration-300 group hover:shadow-xl hover:border-border",
                                 activeSection === item.id
-                                    ? "bg-white/60 dark:bg-black/40 border-border shadow-xl ring-1 ring-foreground/5 scale-[1.02]"
-                                    : "bg-white/20 dark:bg-black/10 border-transparent opacity-80"
+                                    ? "bg-white/60 border-border shadow-xl ring-1 ring-foreground/5 scale-[1.02]"
+                                    : "bg-white/20 border-transparent opacity-80"
                             )}
                         >
                             <div className="flex justify-between items-center w-full">
                                 <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm transition-colors duration-300",
-                                    activeSection === item.id ? "bg-background border-border" : "bg-white/40 dark:bg-black/20 border-border/50 group-hover:bg-background")}>
+                                    activeSection === item.id ? "bg-background border-border" : "bg-white/40 border-border/50 group-hover:bg-background")}>
                                     <item.icon className={cn("w-6 h-6", activeSection === item.id ? item.color : "text-foreground/50 group-hover:text-foreground")} />
                                 </div>
                                 <div className={cn(glass.badge, "border-none !py-1 text-[10px]",
@@ -297,18 +297,18 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
                                             <div className="space-y-3">
                                                 <label className={cn(glass.microLabel, "font-bold opacity-80 pl-1")}>Concentration Ratio</label>
-                                                <div className="grid grid-cols-2 gap-3 p-1 rounded-2xl bg-white/40 dark:bg-black/20 border border-border">
+                                                <div className="grid grid-cols-2 gap-3 p-1 rounded-2xl bg-white/40 border border-border">
                                                     <button
                                                         onClick={() => setSyrupRatio('1:1')}
                                                         className={cn("h-12 rounded-xl text-sm font-bold transition-all duration-300",
-                                                            syrupRatio === '1:1' ? "bg-background text-foreground shadow-sm ring-1 ring-border" : "text-foreground/50 hover:bg-white/60 dark:hover:bg-black/30")}
+                                                            syrupRatio === '1:1' ? "bg-background text-foreground shadow-sm ring-1 ring-border" : "text-foreground/50 hover:bg-white/60:bg-black/30")}
                                                     >
                                                         1:1 (Stimulation)
                                                     </button>
                                                     <button
                                                         onClick={() => setSyrupRatio('2:1')}
                                                         className={cn("h-12 rounded-xl text-sm font-bold transition-all duration-300",
-                                                            syrupRatio === '2:1' ? "bg-background text-foreground shadow-sm ring-1 ring-border" : "text-foreground/50 hover:bg-white/60 dark:hover:bg-black/30")}
+                                                            syrupRatio === '2:1' ? "bg-background text-foreground shadow-sm ring-1 ring-border" : "text-foreground/50 hover:bg-white/60:bg-black/30")}
                                                     >
                                                         2:1 (Storage)
                                                     </button>
@@ -318,12 +318,12 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-6 pt-4">
                                             <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center flex flex-col items-center justify-center h-32 relative overflow-hidden">
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 to-transparent pointer-events-none" />
-                                                <p className={cn(glass.sectionTitle, "text-4xl tabular-nums text-emerald-600 dark:text-emerald-400")}>{syrupResult.sugarKg}</p>
+                                                <p className={cn(glass.sectionTitle, "text-4xl tabular-nums text-emerald-600")}>{syrupResult.sugarKg}</p>
                                                 <p className={cn(glass.microLabel, "opacity-60 italic mt-2")}>Sugar (kg)</p>
                                             </div>
                                             <div className="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-center flex flex-col items-center justify-center h-32 relative overflow-hidden">
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
-                                                <p className={cn(glass.sectionTitle, "text-4xl tabular-nums text-blue-600 dark:text-blue-400")}>{syrupResult.waterL}</p>
+                                                <p className={cn(glass.sectionTitle, "text-4xl tabular-nums text-blue-600")}>{syrupResult.waterL}</p>
                                                 <p className={cn(glass.microLabel, "opacity-60 italic mt-2")}>Water (L)</p>
                                             </div>
                                         </div>
@@ -357,7 +357,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="p-8 rounded-3xl bg-white/40 dark:bg-black/20 border border-border space-y-6">
+                                            <div className="p-8 rounded-3xl bg-white/40 border border-border space-y-6">
                                                 <div className="flex justify-between items-center">
                                                     <span className={cn(glass.microLabel, "font-bold")}>Weight Deficit</span>
                                                     <span className={cn(glass.sectionTitle, "text-3xl tabular-nums text-red-500")}>{winterResult.deficitKg} <span className="text-base italic opacity-50 ml-1">KG</span></span>
@@ -376,7 +376,7 @@ const BeeCalculatorPage: React.FC = () => {
                                 </section>
 
                                 <div className={cn(glass.card, "p-10 bg-gradient-to-br from-honey/10 to-transparent border-honey/20 flex flex-col md:flex-row items-center gap-10")}>
-                                    <div className="w-24 h-24 rounded-[2rem] bg-white/60 dark:bg-black/40 border border-border shadow-xl flex items-center justify-center shrink-0 -rotate-6 hover:rotate-0 transition-transform duration-500 relative">
+                                    <div className="w-24 h-24 rounded-[2rem] bg-white/60 border border-border shadow-xl flex items-center justify-center shrink-0 -rotate-6 hover:rotate-0 transition-transform duration-500 relative">
                                         <div className="absolute inset-0 bg-honey/10 rounded-[2rem] animate-pulse" />
                                         <TrendingUp className="w-10 h-10 text-honey relative z-10" />
                                     </div>
@@ -426,14 +426,14 @@ const BeeCalculatorPage: React.FC = () => {
                                                     varroaResult.status === 'warning' ? "bg-amber-500/10 border-amber-500/20" : "bg-red-500/10 border-red-500/20"
                                             )}>
                                                 <p className={cn(glass.sectionTitle, "text-7xl tabular-nums leading-none tracking-tighter m-0",
-                                                    varroaResult.status === 'safe' ? "text-emerald-600 dark:text-emerald-400" :
-                                                        varroaResult.status === 'warning' ? "text-amber-600 dark:text-amber-400" : "text-red-500"
+                                                    varroaResult.status === 'safe' ? "text-emerald-600" :
+                                                        varroaResult.status === 'warning' ? "text-amber-600" : "text-red-500"
                                                 )}>{varroaResult.percentage}%</p>
                                                 <p className={cn(glass.microLabel, "opacity-60 italic mb-2")}>Current Infestation Rate</p>
                                                 <div className={cn(
                                                     glass.badge, "font-bold px-4 py-1 mt-4 shadow-sm",
                                                     varroaResult.status === 'safe' ? "bg-emerald-500 text-white border-transparent" :
-                                                        varroaResult.status === 'warning' ? "bg-amber-500 text-white border-transparent" : "bg-red-500 text-white border-transparent"
+                                                        varroaResult.status === 'warning' ? "bg-amber-500 text-gray-900 border-transparent" : "bg-red-500 text-gray-900 border-transparent"
                                                 )}>
                                                     {varroaResult.status.toUpperCase()}_ZONE
                                                 </div>
@@ -452,7 +452,7 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="space-y-8 relative z-10 flex-1 flex flex-col justify-end">
-                                            <div className="space-y-4 p-8 rounded-3xl bg-white/40 dark:bg-black/20 border border-border">
+                                            <div className="space-y-4 p-8 rounded-3xl bg-white/40 border border-border">
                                                 <label className={cn(glass.microLabel, "font-bold opacity-80")}>Local Ambient Temp (℃)</label>
                                                 <div className="flex items-center gap-6">
                                                     <input
@@ -461,7 +461,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                         max="40"
                                                         value={temp}
                                                         onChange={(e) => setTemp(Number(e.target.value))}
-                                                        className="flex-1 h-2 bg-black/10 dark:bg-white/10 appearance-none rounded-full cursor-pointer accent-foreground/80 hover:accent-foreground transition-all"
+                                                        className="flex-1 h-2 bg-gray-50 appearance-none rounded-full cursor-pointer accent-foreground/80 hover:accent-foreground transition-all"
                                                     />
                                                     <span className={cn(glass.sectionTitle, "text-3xl tabular-nums min-w-[3.5rem] text-right")}>{temp}℃</span>
                                                 </div>
@@ -475,11 +475,11 @@ const BeeCalculatorPage: React.FC = () => {
                                                         { name: 'Apivar (Amitraz)', max: 40, risk: temp > 40 },
                                                         { name: 'Oxalic Vapor', max: 25, risk: temp > 25 }
                                                     ].map((p) => (
-                                                        <div key={p.name} className="flex justify-between items-center p-4 rounded-2xl bg-white/30 dark:bg-black/15 border border-border/50 hover:bg-white/50 dark:hover:bg-black/30 transition-colors">
+                                                        <div key={p.name} className="flex justify-between items-center p-4 rounded-2xl bg-white/30 border border-border/50 hover:bg-white/50:bg-black/30 transition-colors">
                                                             <span className={cn(glass.microLabel, "font-bold text-sm")}>{p.name}</span>
                                                             <div className={cn(
                                                                 glass.badge, "border-transparent px-3 py-1 font-bold shadow-sm",
-                                                                p.risk ? "bg-red-500 text-white" : "bg-emerald-500 text-white"
+                                                                p.risk ? "bg-red-500 text-gray-900" : "bg-emerald-500 text-white"
                                                             )}>
                                                                 {p.risk ? 'RISK: BROOD LOSS' : 'SAFE: OPTIMAL'}
                                                             </div>
@@ -527,7 +527,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     { label: 'Frames (Wired)', val: bomResult.totalFrames },
                                                     { label: 'Wax Foundations', val: bomResult.foundations }
                                                 ].map((item) => (
-                                                    <div key={item.label} className="flex justify-between items-center p-5 rounded-2xl bg-white/40 dark:bg-black/20 border border-border hover:shadow-sm transition-shadow">
+                                                    <div key={item.label} className="flex justify-between items-center p-5 rounded-2xl bg-white/40 border border-border hover:shadow-sm transition-shadow">
                                                         <span className={cn(glass.microLabel, "font-bold italic opacity-80")}>{item.label}</span>
                                                         <span className={cn(glass.sectionTitle, "text-2xl tabular-nums")}>{item.val}</span>
                                                     </div>
@@ -571,10 +571,10 @@ const BeeCalculatorPage: React.FC = () => {
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="p-8 rounded-3xl bg-honey border shadow-sm border-honey flex flex-col items-center justify-center text-center relative overflow-hidden text-white group">
                                                     <div className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-110 transition-transform duration-500 rounded-full blur-xl pointer-events-none" />
-                                                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-white")}>{harvestResult.jars}</p>
-                                                    <p className={cn(glass.microLabel, "italic opacity-80 mt-2 text-white")}>Jars Needed</p>
+                                                    <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-gray-900")}>{harvestResult.jars}</p>
+                                                    <p className={cn(glass.microLabel, "italic opacity-80 mt-2 text-gray-900")}>Jars Needed</p>
                                                 </div>
-                                                <div className="p-8 rounded-3xl bg-white/40 dark:bg-black/20 border border-border flex flex-col items-center justify-center text-center">
+                                                <div className="p-8 rounded-3xl bg-white/40 border border-border flex flex-col items-center justify-center text-center">
                                                     <p className={cn(glass.sectionTitle, "text-5xl tabular-nums")}>{harvestResult.labels}</p>
                                                     <p className={cn(glass.microLabel, "italic opacity-60 mt-2")}>Labels <span className="text-[9px]">(inc. 5% ext)</span></p>
                                                 </div>
@@ -610,14 +610,14 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
                                             <div className="space-y-4">
                                                 <label className={cn(glass.microLabel, "font-bold opacity-80 pl-1")}>Annual Turnover Rate (%)</label>
-                                                <div className="flex items-center gap-6 p-4 rounded-2xl bg-white/40 dark:bg-black/20 border border-border">
-                                                    <input type="range" min="5" max="50" step="5" value={replacementRate} onChange={(e) => setReplacementRate(Number(e.target.value))} className="flex-1 h-2 bg-black/10 dark:bg-white/10 appearance-none rounded-full cursor-pointer accent-foreground/80 hover:accent-foreground transition-all" />
+                                                <div className="flex items-center gap-6 p-4 rounded-2xl bg-white/40 border border-border">
+                                                    <input type="range" min="5" max="50" step="5" value={replacementRate} onChange={(e) => setReplacementRate(Number(e.target.value))} className="flex-1 h-2 bg-gray-50 appearance-none rounded-full cursor-pointer accent-foreground/80 hover:accent-foreground transition-all" />
                                                     <span className={cn(glass.sectionTitle, "text-2xl tabular-nums min-w-[3rem] text-right")}>{replacementRate}%</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="lg:col-span-2 flex flex-col sm:flex-row gap-6">
-                                            <div className="flex-1 p-10 rounded-3xl bg-white/60 dark:bg-black/40 border border-border flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden">
+                                            <div className="flex-1 p-10 rounded-3xl bg-white/60 border border-border flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden">
                                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
                                                 <p className={cn(glass.sectionTitle, "text-7xl tabular-nums text-foreground relative z-10")}>{queensNeeded}</p>
                                                 <p className={cn(glass.microLabel, "opacity-60 italic mt-4 relative z-10")}>Mated Queens Required</p>
@@ -670,13 +670,13 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <input type="number" value={equipCost} onChange={(e) => setEquipCost(Number(e.target.value))} className={cn(glass.input, "w-full h-14 rounded-2xl text-xl font-bold font-mono")} />
                                             </div>
                                         </div>
-                                        <div className="p-8 rounded-3xl bg-indigo-500 border border-indigo-400 text-white flex flex-col sm:flex-row justify-between items-center gap-6 shadow-lg shadow-indigo-500/20 group relative overflow-hidden">
+                                        <div className="p-8 rounded-3xl bg-indigo-500 border border-indigo-400 text-gray-900 flex flex-col sm:flex-row justify-between items-center gap-6 shadow-lg shadow-indigo-500/20 group relative overflow-hidden">
                                             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                                             <div>
-                                                <p className={cn(glass.microLabel, "italic opacity-80 mb-2 text-white")}>Break-Even Point</p>
-                                                <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-white")}><span className="opacity-70 mr-1">$</span>{marginResult.costPerKg} <span className="text-xl italic opacity-60 ml-1">/ KG</span></p>
+                                                <p className={cn(glass.microLabel, "italic opacity-80 mb-2 text-gray-900")}>Break-Even Point</p>
+                                                <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-gray-900")}><span className="opacity-70 mr-1">$</span>{marginResult.costPerKg} <span className="text-xl italic opacity-60 ml-1">/ KG</span></p>
                                             </div>
-                                            <div className={cn(glass.badge, "bg-white/20 text-white border-transparent px-4 py-2 font-bold backdrop-blur-md self-start sm:self-center")}>
+                                            <div className={cn(glass.badge, "bg-white/20 text-gray-900 border-transparent px-4 py-2 font-bold backdrop-blur-md self-start sm:self-center")}>
                                                 Target Profit: 40%
                                             </div>
                                         </div>
@@ -709,12 +709,12 @@ const BeeCalculatorPage: React.FC = () => {
                                             )}>
                                                 <div className="flex flex-col items-center gap-4 text-center">
                                                     <div className={cn("w-14 h-14 rounded-full flex items-center justify-center border shadow-sm",
-                                                        hikingROI.isWorthIt ? "bg-white/60 dark:bg-black/40 border-emerald-500/30 text-emerald-500" : "bg-white/60 dark:bg-black/40 border-red-500/30 text-red-500"
+                                                        hikingROI.isWorthIt ? "bg-white/60 border-emerald-500/30 text-emerald-500" : "bg-white/60 border-red-500/30 text-red-500"
                                                     )}>
                                                         {hikingROI.isWorthIt ? <CheckCircle2 className="w-8 h-8" /> : <AlertCircle className="w-8 h-8" />}
                                                     </div>
                                                     <p className={cn(glass.sectionTitle, "text-4xl tabular-nums leading-none tracking-tight",
-                                                        hikingROI.isWorthIt ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"
+                                                        hikingROI.isWorthIt ? "text-emerald-600" : "text-red-500"
                                                     )}>
                                                         {hikingROI.isWorthIt ? 'Deploy Hives' : 'Abort Hike'}
                                                     </p>
@@ -759,7 +759,7 @@ const BeeCalculatorPage: React.FC = () => {
                         >
                             <div className="flex justify-between items-center mb-10 border-b border-border/50 pb-6">
                                 <h2 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Math <span className="text-honey">Ledger</span></h2>
-                                <button onClick={() => setShowHistory(false)} className="w-10 h-10 rounded-full bg-white/10 dark:bg-black/10 border border-border flex items-center justify-center hover:bg-white/20 dark:hover:bg-black/20 transition-colors">
+                                <button onClick={() => setShowHistory(false)} className="w-10 h-10 rounded-full bg-white/10 border border-border flex items-center justify-center hover:bg-white/20:bg-gray-100 transition-colors">
                                     <span className={cn(glass.microLabel, "font-bold")}>✕</span>
                                 </button>
                             </div>
@@ -800,7 +800,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 {log.sub_type === 'snapshot' ? 'Manual Snapshot' : 'Auto-Log'}
                                             </h4>
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div className="p-5 rounded-2xl bg-white/40 dark:bg-black/20 border border-border shadow-inner">
+                                                <div className="p-5 rounded-2xl bg-white/40 border border-border shadow-inner">
                                                     <p className={cn(glass.microLabel, "opacity-60 mb-3 italic font-semibold")}>Inputs</p>
                                                     <div className="space-y-2">
                                                         {Object.entries(log.inputs || {}).slice(0, 3).map(([k, v]: any) => (

@@ -150,7 +150,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                 <div className="space-y-2">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
                         <Microscope className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Health & Biology DB</span>
+                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Health & Biology DB</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
                         Health <span className="text-[#10b981]">Guide</span>
@@ -210,7 +210,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     </div>
                                     <Button
                                         onClick={() => onTabChange?.('assistant', `Tell me more about ${selectedItem.name} from the Health Guide.`)}
-                                        className="h-14 px-8 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-white transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest shrink-0"
+                                        className="h-14 px-8 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-gray-900 transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest shrink-0"
                                     >
                                         <Bot className="w-5 h-5 mr-3" />
                                         Ask BeeYield
@@ -262,7 +262,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                                 <ShieldCheck className="w-6 h-6 text-[#10b981]" />
                                                 <h3 className="text-3xl font-black uppercase tracking-tighter">Treatment & Management</h3>
                                             </div>
-                                            <div className="p-8 border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
+                                            <div className="p-8 border-4 border-[#064e3b] bg-[#064e3b] text-gray-900 shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
                                                 <p className="text-sm font-black uppercase tracking-loose leading-relaxed">{selectedItem.treatment}</p>
                                             </div>
                                         </section>
@@ -299,7 +299,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                             <Globe className="w-6 h-6 text-[#10b981]" />
                                             <h3 className="text-3xl font-black uppercase tracking-tighter">Locations & Habitats</h3>
                                         </div>
-                                        <div className="p-10 border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[10px_10px_0px_0px_rgba(16,185,129,1)]">
+                                        <div className="p-10 border-4 border-[#064e3b] bg-[#064e3b] text-gray-900 shadow-[10px_10px_0px_0px_rgba(16,185,129,1)]">
                                             <span className="block text-[10px] text-[#facc15] font-black uppercase tracking-widest mb-4">Natural / Adapted Domain</span>
                                             <p className="text-2xl font-black uppercase tracking-tighter">{selectedItem.suitability}</p>
                                         </div>

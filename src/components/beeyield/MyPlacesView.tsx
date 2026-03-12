@@ -127,11 +127,11 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             <ChevronLeft className="w-12 h-12" />
                         </button>
 
-                        <div className="flex bg-white/40 dark:bg-black/60 p-3 rounded-[3.5rem] border border-white/5 gap-3 shadow-4xl relative overflow-hidden group">
+                        <div className="flex bg-white/40 p-3 rounded-[3.5rem] border border-white/5 gap-3 shadow-4xl relative overflow-hidden group">
                             <button
                                 onClick={() => setActiveView('dashboard')}
                                 className={cn('h-18 px-14 rounded-[2.5rem] text-[15px] font-black uppercase tracking-[0.3em] italic transition-all duration-700 relative z-10 flex items-center gap-6',
-                                    activeView === 'dashboard' ? 'bg-white dark:bg-black text-honey shadow-4xl' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
+                                    activeView === 'dashboard' ? 'bg-white text-honey shadow-4xl' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
                                 )}
                             >
                                 <Target className="w-6 h-6" />
@@ -140,7 +140,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             <button
                                 onClick={() => setActiveView('details')}
                                 className={cn('h-18 px-14 rounded-[2.5rem] text-[15px] font-black uppercase tracking-[0.3em] italic transition-all duration-700 relative z-10 flex items-center gap-6',
-                                    activeView === 'details' ? 'bg-white dark:bg-black text-honey shadow-4xl' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
+                                    activeView === 'details' ? 'bg-white text-honey shadow-4xl' : 'text-foreground/30 hover:text-honey hover:bg-honey/10'
                                 )}
                             >
                                 <Activity className="w-6 h-6" />
@@ -190,15 +190,15 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         <h3 className="text-5xl font-black italic text-foreground tracking-tighter uppercase leading-none italic">Asset <span className="text-honey">Grid</span></h3>
                                         <p className={cn(glass.microLabel, "opacity-30")}>Live Status Matrix</p>
                                     </div>
-                                    <div className="flex bg-black/5 dark:bg-white/5 p-3 rounded-[2.5rem] gap-3 shadow-inner border border-white/5">
+                                    <div className="flex bg-gray-50 p-3 rounded-[2.5rem] gap-3 shadow-inner border border-white/5">
                                         <button
-                                            className={cn("h-16 w-16 rounded-[1.8rem] transition-all duration-700 flex items-center justify-center", viewMode === 'grid' ? "bg-white dark:bg-black shadow-4xl text-honey" : "text-foreground/10 hover:text-foreground/30")}
+                                            className={cn("h-16 w-16 rounded-[1.8rem] transition-all duration-700 flex items-center justify-center", viewMode === 'grid' ? "bg-white shadow-4xl text-honey" : "text-foreground/10 hover:text-foreground/30")}
                                             onClick={() => setViewMode('grid')}
                                         >
                                             <LayoutGrid className="w-7 h-7" />
                                         </button>
                                         <button
-                                            className={cn("h-16 w-16 rounded-[1.8rem] transition-all duration-700 flex items-center justify-center", viewMode === 'list' ? "bg-white dark:bg-black shadow-4xl text-honey" : "text-foreground/10 hover:text-foreground/30")}
+                                            className={cn("h-16 w-16 rounded-[1.8rem] transition-all duration-700 flex items-center justify-center", viewMode === 'list' ? "bg-white shadow-4xl text-honey" : "text-foreground/10 hover:text-foreground/30")}
                                             onClick={() => setViewMode('list')}
                                         >
                                             <ListIcon className="w-7 h-7" />
@@ -217,7 +217,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                     transition={{ delay: i * 0.02, duration: 0.5 }}
                                                     whileHover={{ scale: 1.4, zIndex: 50, rotate: 10, shadow: '0 20px 40px rgba(0,0,0,0.4)' }}
                                                     className={cn(
-                                                        "aspect-square rounded-[1.8rem] flex items-center justify-center text-[16px] font-black text-white cursor-pointer shadow-4xl relative overflow-hidden border-2 border-white/20",
+                                                        "aspect-square rounded-[1.8rem] flex items-center justify-center text-[16px] font-black text-gray-900 cursor-pointer shadow-4xl relative overflow-hidden border-2 border-gray-300",
                                                         getStatusColor(hive.status)
                                                     )}
                                                     onClick={() => handleEditHive(hive)}
@@ -242,11 +242,11 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                     animate={{ opacity: 1, x: 0 }}
                                                     transition={{ delay: i * 0.05, duration: 0.8 }}
                                                     whileHover={{ x: 20, scale: 1.02 }}
-                                                    className="flex items-center justify-between p-12 rounded-[3.5rem] bg-white/40 dark:bg-black/40 border border-white/5 hover:border-honey/60 hover:bg-honey/15 transition-all cursor-pointer group shadow-4xl"
+                                                    className="flex items-center justify-between p-12 rounded-[3.5rem] bg-white/40 border border-white/5 hover:border-honey/60 hover:bg-honey/15 transition-all cursor-pointer group shadow-4xl"
                                                     onClick={() => handleEditHive(hive)}
                                                 >
                                                     <div className="flex items-center gap-10">
-                                                        <div className={cn("w-5 h-5 rounded-full border-2 border-white/20 shadow-4xl animate-pulse", getStatusColor(hive.status))} />
+                                                        <div className={cn("w-5 h-5 rounded-full border-2 border-gray-300 shadow-4xl animate-pulse", getStatusColor(hive.status))} />
                                                         <div className="flex flex-col gap-1">
                                                             <span className="text-3xl font-black italic text-foreground tracking-tighter uppercase group-hover:text-honey transition-colors">#{hive.hive_code}</span>
                                                             <span className="text-[10px] font-black text-foreground/20 uppercase italic tracking-widest">Biometric Unit</span>
@@ -456,8 +456,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                 </div>
 
                 {/* Form Card */}
-                <div className={cn(glass.card, 'max-w-7xl shadow-4xl p-0 overflow-hidden bg-white/40 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem] mx-auto')}>
-                    <div className="p-14 pb-12 border-b border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-3xl relative z-10 flex items-center justify-between">
+                <div className={cn(glass.card, 'max-w-7xl shadow-4xl p-0 overflow-hidden bg-white/40 backdrop-blur-3xl rounded-[4rem] mx-auto')}>
+                    <div className="p-14 pb-12 border-b border-white/5 bg-white/40 backdrop-blur-3xl relative z-10 flex items-center justify-between">
                         <div className="flex items-center gap-8">
                             <div className="w-16 h-16 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-3xl">
                                 <Layers className="w-10 h-10 text-honey" />
@@ -563,7 +563,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     <Textarea
                                         value={formData.notes}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                        className="min-h-[200px] p-12 font-black italic text-xl resize-none rounded-[3rem] bg-black/5 dark:bg-black/40 border-2 border-white/5"
+                                        className="min-h-[200px] p-12 font-black italic text-xl resize-none rounded-[3rem] bg-gray-50 border-2 border-white/5"
                                         placeholder="Add notes about security, access, or environment..."
                                     />
                                 </div>
@@ -655,19 +655,19 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 <div
                                     className={cn(
                                         glass.card,
-                                        "p-0 cursor-pointer shadow-4xl hover:border-honey/40 transition-all duration-1000 relative flex flex-col h-full group bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem]"
+                                        "p-0 cursor-pointer shadow-4xl hover:border-honey/40 transition-all duration-1000 relative flex flex-col h-full group bg-white/60 backdrop-blur-3xl rounded-[4rem]"
                                     )}
                                     onClick={() => setViewingApiary(apiary)}
                                 >
                                     <div className="p-14 pb-12 flex flex-col gap-10 relative z-10">
                                         <div className="flex justify-between items-start">
-                                            <div className={cn(glass.badge, "bg-white/40 dark:bg-black/60 text-foreground/40 border-white/5 group-hover:bg-honey group-hover:text-black group-hover:border-honey/40 transition-all duration-1000 px-8 py-2.5 skew-x-[-12deg]")}>
+                                            <div className={cn(glass.badge, "bg-white/40 text-foreground/40 border-white/5 group-hover:bg-honey group-hover:text-black group-hover:border-honey/40 transition-all duration-1000 px-8 py-2.5 skew-x-[-12deg]")}>
                                                 <div className="flex items-center gap-4 skew-x-[12deg]">
                                                     <Navigation className="w-4 h-4" />
                                                     <span className="uppercase tracking-[0.3em] font-black italic text-[12px]">{apiary.type || 'Permanent'}</span>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col items-center justify-center w-36 h-36 rounded-[4rem] bg-white/40 dark:bg-[#151515]/60 border border-white/10 group-hover:bg-honey/10 transition-all shadow-4xl">
+                                            <div className="flex flex-col items-center justify-center w-36 h-36 rounded-[4rem] bg-white/40 border border-gray-200 group-hover:bg-honey/10 transition-all shadow-4xl">
                                                 <span className="text-6xl font-black italic tabular-nums text-foreground group-hover:text-honey">{apiary.hive_count || 0}</span>
                                                 <p className="text-[12px] font-black uppercase tracking-[0.4em] opacity-30 group-hover:opacity-60 italic">HIVES</p>
                                             </div>
@@ -683,7 +683,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         </div>
                                     </div>
 
-                                    <div className="px-14 py-14 grid grid-cols-2 gap-10 border-t border-white/5 bg-black/[0.02] dark:bg-white/[0.01] mt-6">
+                                    <div className="px-14 py-14 grid grid-cols-2 gap-10 border-t border-white/5 bg-gray-50 mt-6">
                                         <div className="space-y-4">
                                             <p className={cn(glass.microLabel, "opacity-20 italic uppercase")}>Environment</p>
                                             <div className="flex items-center gap-4">
@@ -715,7 +715,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         </button>
                                     </div>
 
-                                    <div className="px-14 py-12 bg-white/60 dark:bg-black/60 border-t border-white/5 flex items-center justify-between mt-auto group-hover:bg-honey/5 transition-colors duration-1000">
+                                    <div className="px-14 py-12 bg-white/60 border-t border-white/5 flex items-center justify-between mt-auto group-hover:bg-honey/5 transition-colors duration-1000">
                                         <div className="flex items-center gap-6">
                                             <div className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse shadow-4xl" />
                                             <div className="flex flex-col">

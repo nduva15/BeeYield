@@ -185,7 +185,7 @@ const MetersReports: React.FC = () => {
     return (
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
             <div className="space-y-4">
-                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                     <Database className="w-4 h-4 mr-2" />
                     Operational Archive Hub
                 </div>
@@ -210,7 +210,7 @@ const MetersReports: React.FC = () => {
                         className={cn(glass.card, "p-8 flex flex-col group hover:shadow-xl hover:border-border")}
                     >
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-white/40 dark:bg-black/20 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <div className="w-12 h-12 rounded-2xl bg-white/40 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300">
                                 <item.icon className={cn("w-6 h-6", item.color)} />
                             </div>
                             <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>{item.id}</h3>
@@ -233,7 +233,7 @@ const MetersReports: React.FC = () => {
 
             {/* History Registry */}
             <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
-                <div className="p-8 border-b border-border bg-white/40 dark:bg-black/20 flex items-center gap-4">
+                <div className="p-8 border-b border-border bg-white/40 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                         <ShieldCheck className="w-5 h-5 text-emerald-500" />
                     </div>
@@ -260,7 +260,7 @@ const MetersReports: React.FC = () => {
                                         <span className={cn(glass.microLabel, "opacity-60")}>{report.date}</span>
                                     </td>
                                     <td className="p-6">
-                                        <span className={cn(glass.badge, "bg-white/50 dark:bg-black/30 border-border group-hover:border-foreground/30")}>
+                                        <span className={cn(glass.badge, "bg-white/50 border-border group-hover:border-foreground/30")}>
                                             {report.type}
                                         </span>
                                     </td>

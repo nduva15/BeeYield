@@ -82,14 +82,14 @@ const SensorAlertsView: React.FC = () => {
                     </h1>
                 </div>
 
-                <div className="flex bg-white/40 dark:bg-black/60 p-3 rounded-[3rem] border border-white/10 gap-3 shadow-4xl relative overflow-hidden group">
+                <div className="flex bg-white/40 p-3 rounded-[3rem] border border-gray-200 gap-3 shadow-4xl relative overflow-hidden group">
                     {(['active', 'resolved', 'all'] as const).map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
                             className={cn(
                                 "px-10 py-3 rounded-full text-[12px] font-black uppercase tracking-[0.2em] italic transition-all duration-700 relative z-10",
-                                filter === f ? "bg-white dark:bg-black text-honey shadow-4xl" : "text-muted-foreground/30 hover:text-honey hover:bg-honey/5"
+                                filter === f ? "bg-white text-honey shadow-4xl" : "text-muted-foreground/30 hover:text-honey hover:bg-honey/5"
                             )}
                         >
                             {f}
@@ -102,9 +102,9 @@ const SensorAlertsView: React.FC = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] relative")}
+                className={cn(glass.card, "p-0 overflow-hidden bg-white/80 backdrop-blur-3xl rounded-[6rem] relative")}
             >
-                <div className="p-16 border-b border-white/5 bg-white/40 dark:bg-black/20 flex items-center justify-between relative z-10">
+                <div className="p-16 border-b border-white/5 bg-white/40 flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-8">
                         <div className="w-16 h-16 rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl">
                             <Bell className="w-8 h-8 text-honey" />
@@ -113,7 +113,7 @@ const SensorAlertsView: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="divide-y divide-white/5 bg-white/20 dark:bg-black/10">
+                <div className="divide-y divide-white/5 bg-white/20">
                     <AnimatePresence mode="popLayout">
                         {loading && alerts.length === 0 ? (
                             <div className="p-48 flex flex-col items-center justify-center gap-10">
@@ -124,7 +124,7 @@ const SensorAlertsView: React.FC = () => {
                             <div className="p-48 flex flex-col items-center justify-center space-y-10 group/null opacity-20">
                                 <CheckCircle2 className="w-32 h-32" />
                                 <h3 className="text-6xl font-black italic tracking-tighter uppercase">All Clear</h3>
-                                <p className="text-2xl italic uppercase tracking-widest pl-4 border-l-8 border-white/20">No {filter !== 'all' ? filter : ''} items to show.</p>
+                                <p className="text-2xl italic uppercase tracking-widest pl-4 border-l-8 border-gray-300">No {filter !== 'all' ? filter : ''} items to show.</p>
                             </div>
                         ) : (
                             alerts.map((alert) => (
@@ -150,7 +150,7 @@ const SensorAlertsView: React.FC = () => {
                                             </div>
                                             <p className="text-2xl font-black italic text-foreground opacity-60 leading-tight pl-2 border-l-8 border-white/5">{alert.message}</p>
                                             <div className="flex flex-wrap items-center gap-4 pt-2">
-                                                <span className={cn(glass.badge, "bg-white/40 dark:bg-black/60 shadow-4xl px-8 py-2.5 skew-x-[-12deg]")}>
+                                                <span className={cn(glass.badge, "bg-white/40 shadow-4xl px-8 py-2.5 skew-x-[-12deg]")}>
                                                     <span className="skew-x-[12deg] font-black italic uppercase text-[12px] opacity-40">{getHiveName(alert.hive_id)} · {getApiaryName(alert.apiary_id)}</span>
                                                 </span>
                                                 <span className="text-[14px] font-black italic opacity-20 uppercase tracking-widest">{new Date(alert.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
@@ -161,7 +161,7 @@ const SensorAlertsView: React.FC = () => {
                                     <div className="flex flex-row items-center gap-8 mt-10 xl:mt-0 xl:pl-0 shrink-0">
                                         <div className="flex gap-4">
                                             <div className={cn("px-8 py-3 rounded-full font-black italic text-[12px] uppercase shadow-4xl",
-                                                alert.severity === 'critical' ? "bg-red-500 text-white" : alert.severity === 'warning' ? "bg-amber-500 text-black" : "bg-emerald-500 text-white"
+                                                alert.severity === 'critical' ? "bg-red-500 text-gray-900" : alert.severity === 'warning' ? "bg-amber-500 text-black" : "bg-emerald-500 text-white"
                                             )}>
                                                 {alert.severity}
                                             </div>
@@ -185,7 +185,7 @@ const SensorAlertsView: React.FC = () => {
                         )}
                     </AnimatePresence>
 
-                    <div className="p-10 bg-white/40 dark:bg-black/20 flex justify-center border-t border-white/5">
+                    <div className="p-10 bg-white/40 flex justify-center border-t border-white/5">
                         <button
                             onClick={loadData}
                             className={cn(glass.btnSecondary, "h-16 px-12 rounded-full text-xs font-black uppercase italic border-white/5 opacity-40 hover:opacity-100 hover:text-honey transition-all flex items-center gap-4")}
@@ -199,12 +199,12 @@ const SensorAlertsView: React.FC = () => {
 
             {/* Metrics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-8">
-                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl rounded-[4rem]")}>
-                    <div className="p-12 border-b border-white/5 bg-white/40 dark:bg-black/20">
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/60 backdrop-blur-3xl rounded-[4rem]")}>
+                    <div className="p-12 border-b border-white/5 bg-white/40">
                         <h3 className="text-4xl font-black italic tracking-tighter uppercase">Alert Summary</h3>
                         <p className={cn(glass.microLabel, "opacity-40 italic mt-2")}>Alerts by priority</p>
                     </div>
-                    <div className="p-16 space-y-12 bg-white/20 dark:bg-black/10">
+                    <div className="p-16 space-y-12 bg-white/20">
                         {(['critical', 'warning', 'info'] as const).map(s => {
                             const count = alerts.filter(e => e.severity === s).length;
                             const total = alerts.length || 1;
@@ -215,7 +215,7 @@ const SensorAlertsView: React.FC = () => {
                                         <span className={cn("text-[14px] font-black italic uppercase tracking-widest opacity-40", s === 'critical' ? 'text-red-500' : s === 'warning' ? 'text-amber-500' : 'text-emerald-500')}>Priority: {s}</span>
                                         <span className={cn("text-5xl font-black italic tracking-tighter leading-none", s === 'critical' ? 'text-red-500' : s === 'warning' ? 'text-amber-500' : 'text-emerald-500')}>{count}</span>
                                     </div>
-                                    <div className="h-4 w-full bg-black/10 dark:bg-white/5 rounded-full overflow-hidden shadow-inner p-[2px] border border-white/5">
+                                    <div className="h-4 w-full bg-gray-50 rounded-full overflow-hidden shadow-inner p-[2px] border border-white/5">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${pct}%` }}

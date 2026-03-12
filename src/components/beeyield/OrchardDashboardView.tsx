@@ -49,8 +49,8 @@ const StatCard: React.FC<{
         <Card className="border border-[#E0E0E0] bg-white shadow-sm rounded-[2rem] overflow-hidden group hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all duration-500">
             <CardContent className="p-8">
                 <div className="flex items-start justify-between mb-6">
-                    <div className={cn('p-3.5 rounded-2xl border border-beeyield-forest/10 transition-all duration-500 group-hover:bg-beeyield-forest group-hover:text-white', iconBg)}>
-                        <Icon className={cn('w-5 h-5 stroke-[2] transition-colors duration-500 group-hover:text-white', iconColor)} />
+                    <div className={cn('p-3.5 rounded-2xl border border-beeyield-forest/10 transition-all duration-500 group-hover:bg-beeyield-forest group-hover:text-gray-900', iconBg)}>
+                        <Icon className={cn('w-5 h-5 stroke-[2] transition-colors duration-500 group-hover:text-gray-900', iconColor)} />
                     </div>
                     {trend && (
                         <div className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border',
@@ -342,7 +342,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                     className="p-8 flex items-center gap-6 bg-white border border-[#E0E0E0] rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all text-left group"
                 >
                     <div className="w-14 h-14 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center group-hover:bg-beeyield-forest transition-all duration-500">
-                        <Activity className="w-7 h-7 text-beeyield-forest group-hover:text-white transition-colors duration-500" />
+                        <Activity className="w-7 h-7 text-beeyield-forest group-hover:text-gray-900 transition-colors duration-500" />
                     </div>
                     <div>
                         <h4 className="text-base font-bold text-beeyield-charcoal">Schedule Inspection</h4>
@@ -357,7 +357,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                     className="p-8 flex items-center gap-6 bg-white border border-[#E0E0E0] rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all text-left group"
                 >
                     <div className="w-14 h-14 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center group-hover:bg-beeyield-forest transition-all duration-500">
-                        <Hexagon className="w-7 h-7 text-beeyield-forest group-hover:text-white transition-colors duration-500" />
+                        <Hexagon className="w-7 h-7 text-beeyield-forest group-hover:text-gray-900 transition-colors duration-500" />
                     </div>
                     <div>
                         <h4 className="text-base font-bold text-beeyield-charcoal">Log Harvest</h4>

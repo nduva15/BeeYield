@@ -169,21 +169,21 @@ const AccountSettings = () => {
                         <Separator className="bg-border/50" />
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
+                            <div className="p-6 bg-white/40 rounded-3xl border border-border/50 space-y-1">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">User ID</span>
                                 <p className="font-mono text-sm text-foreground overflow-hidden text-ellipsis">{user.id}</p>
                             </div>
-                            <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
+                            <div className="p-6 bg-white/40 rounded-3xl border border-border/50 space-y-1">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Login Method</span>
                                 <p className="font-black text-lg text-foreground uppercase tracking-widest">{user.app_metadata?.provider || 'Email'}</p>
                             </div>
-                            <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
+                            <div className="p-6 bg-white/40 rounded-3xl border border-border/50 space-y-1">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</span>
                                 <p className={`font-black text-lg uppercase tracking-widest ${user.email_confirmed_at ? 'text-nature-green' : 'text-honey-dark'}`}>
                                     {user.email_confirmed_at ? 'Verified' : 'Unverified'}
                                 </p>
                             </div>
-                            <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
+                            <div className="p-6 bg-white/40 rounded-3xl border border-border/50 space-y-1">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Member Since</span>
                                 <p className="font-black text-lg text-foreground">{new Date(user.created_at).toLocaleDateString()}</p>
                             </div>

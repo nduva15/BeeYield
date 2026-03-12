@@ -135,15 +135,15 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
 
             {/* Hero Section */}
-            <Card className="rounded-[3rem] border-none bg-white dark:bg-[#09090b] shadow-xl overflow-hidden">
+            <Card className="rounded-[3rem] border-none bg-white shadow-xl overflow-hidden">
                 <CardContent className="p-0">
                     <div className="grid grid-cols-1 lg:grid-cols-2">
                         <div className="p-12 lg:p-20 space-y-8 flex flex-col justify-center">
                             <div className="space-y-4">
-                                <h1 className="text-6xl font-black text-[#0F172A] dark:text-white tracking-tight leading-[1.1]">
+                                <h1 className="text-6xl font-black text-[#0F172A] tracking-tight leading-[1.1]">
                                     Hive monitoring system
                                 </h1>
-                                <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-xl">
+                                <p className="text-lg text-gray-500 leading-relaxed max-w-xl">
                                     What to use when monitoring your apiary? BeeYield Hub gives beekeepers one place to see hive health, honey production, and early warnings—all in real time.
                                 </p>
                             </div>
@@ -151,20 +151,20 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             <div className="flex flex-wrap gap-4">
                                 <Button
                                     onClick={() => onTabChange('requests')}
-                                    className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-10 h-16 text-lg font-bold shadow-xl shadow-green-500/20"
+                                    className="bg-[#1B9157] hover:bg-[#146c43] text-gray-900 rounded-2xl px-10 h-16 text-lg font-bold shadow-xl shadow-green-500/20"
                                 >
                                     Start a conversation
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={() => toast.info("Development tools coming soon to global hive network.")}
-                                    className="rounded-2xl px-10 h-16 text-lg font-bold border-gray-200 dark:border-gray-800"
+                                    className="rounded-2xl px-10 h-16 text-lg font-bold border-gray-200"
                                 >
                                     View development tools
                                 </Button>
                             </div>
 
-                            <div className="pt-8 flex gap-12 border-t border-gray-100 dark:border-gray-800">
+                            <div className="pt-8 flex gap-12 border-t border-gray-100">
                                 {stats.map(stat => (
                                     <div key={stat.label}>
                                         <p className="text-3xl font-black text-[#F4D03F]">{stat.value}</p>
@@ -173,7 +173,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                 ))}
                             </div>
                         </div>
-                        <div className="relative h-[400px] lg:h-auto overflow-hidden bg-gray-50 dark:bg-[#1e1e1e]">
+                        <div className="relative h-[400px] lg:h-auto overflow-hidden bg-gray-50">
                             <img
                                 src={heroImage}
                                 alt="BeeYield Hub IoT System"
@@ -188,19 +188,19 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             <div className="space-y-12 py-12">
                 <div className="text-center space-y-4 max-w-3xl mx-auto">
                     <h2 className="text-4xl font-black tracking-tight">User-friendly Interface</h2>
-                    <p className="text-gray-500 dark:text-gray-400 lg:text-lg">
+                    <p className="text-gray-500 lg:text-lg">
                         Built for beekeepers: clear dashboards, simple setup, and support when you need it.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, i) => (
-                        <Card key={i} className="rounded-[2.5rem] border-none bg-[#FAFAFA] dark:bg-white/5 p-8 hover:transform hover:-translate-y-2 transition-all duration-300">
-                            <div className="w-14 h-14 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm mb-6">
+                        <Card key={i} className="rounded-[2.5rem] border-none bg-[#FAFAFA] p-8 hover:transform hover:-translate-y-2 transition-all duration-300">
+                            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-6">
                                 <feature.icon className="w-7 h-7 text-[#F4D03F]" />
                             </div>
                             <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
+                            <p className="text-gray-500 text-sm leading-relaxed mb-4">
                                 {feature.description}
                             </p>
                             {feature.points && (
@@ -222,7 +222,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             <div className="space-y-12 py-12">
                 <div className="space-y-4">
                     <h2 className="text-4xl font-black tracking-tight">BeeYield family</h2>
-                    <p className="text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+                    <p className="text-gray-500 max-w-2xl leading-relaxed">
                         A modular ecosystem of IoT devices designed to work together in harmony. Choose the components that fit your specific apiary needs.
                     </p>
                 </div>
@@ -235,8 +235,8 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             </div>
                             <div className="p-8 flex-1 flex flex-col justify-between">
                                 <div className="space-y-4">
-                                    <h3 className="text-2xl font-black text-[#1A1A1A] dark:text-white uppercase tracking-tighter">{item.name}</h3>
-                                    <p className="text-[#1A1A1A]/70 dark:text-gray-300 text-sm leading-relaxed">
+                                    <h3 className="text-2xl font-black text-[#1A1A1A] uppercase tracking-tighter">{item.name}</h3>
+                                    <p className="text-[#1A1A1A]/70 text-sm leading-relaxed">
                                         {item.description}
                                     </p>
                                 </div>
@@ -260,22 +260,22 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PRODUCT CODE</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm">
                     <Table>
-                        <TableHeader className="bg-gray-50 dark:bg-gray-900/50">
+                        <TableHeader className="bg-gray-50">
                             <TableRow className="border-none hover:bg-transparent">
-                                <TableHead className="font-bold text-gray-900 dark:text-white px-8 h-14">ID</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14">SERIAL NO</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14">DESCRIPTION</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14">LAST LAT</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14">LAST LONG</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14">STATUS</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white px-8 h-14 text-right">UP TIME</TableHead>
+                                <TableHead className="font-bold text-gray-900 px-8 h-14">ID</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14">SERIAL NO</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14">DESCRIPTION</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14">LAST LAT</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14">LAST LONG</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14">STATUS</TableHead>
+                                <TableHead className="font-bold text-gray-900 px-8 h-14 text-right">UP TIME</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {inventory.map((item) => (
-                                <TableRow key={item.id} className="border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
+                                <TableRow key={item.id} className="border-gray-50 hover:bg-gray-50/50:bg-gray-800/30">
                                     <TableCell className="px-8 py-6 font-medium text-gray-500">{item.id}</TableCell>
                                     <TableCell className="py-6 font-bold">{item.sn}</TableCell>
                                     <TableCell className="py-6 text-gray-500">{item.desc}</TableCell>
@@ -302,13 +302,13 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                 <div className="relative flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="space-y-2">
-                        <h3 className="text-3xl font-bold text-white tracking-tight">User-friendly Interface</h3>
+                        <h3 className="text-3xl font-bold text-gray-900 tracking-tight">User-friendly Interface</h3>
                         <p className="text-blue-200/60 font-medium">Advanced power management for IoT platforms</p>
                     </div>
                     <div className="flex gap-4">
                         <Button
                             onClick={() => toast.info("Device configuration panel will be available in next update.")}
-                            className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-8 h-14 font-bold border-none"
+                            className="bg-[#1B9157] hover:bg-[#146c43] text-gray-900 rounded-2xl px-8 h-14 font-bold border-none"
                         >
                             Configuration & Maintenance
                         </Button>
@@ -332,18 +332,18 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">SMART SENSORS</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm">
                     <Table>
-                        <TableHeader className="bg-gray-50 dark:bg-gray-900/50">
+                        <TableHeader className="bg-gray-50">
                             <TableRow className="border-none hover:bg-transparent">
-                                <TableHead className="font-bold text-gray-900 dark:text-white px-8 h-14 w-16">ID</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14 w-[300px]">PARAMETER</TableHead>
-                                <TableHead className="font-bold text-gray-900 dark:text-white h-14 px-8">DESCRIPTION</TableHead>
+                                <TableHead className="font-bold text-gray-900 px-8 h-14 w-16">ID</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14 w-[300px]">PARAMETER</TableHead>
+                                <TableHead className="font-bold text-gray-900 h-14 px-8">DESCRIPTION</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {parameters.map((p, i) => (
-                                <TableRow key={i} className="border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
+                                <TableRow key={i} className="border-gray-50 hover:bg-gray-50/50:bg-gray-800/30">
                                     <TableCell className="px-8 py-4 font-medium text-gray-500">{i + 1}</TableCell>
                                     <TableCell className="py-4 font-bold text-[#1B9157]">{p.name}</TableCell>
                                     <TableCell className="px-8 py-4 text-gray-500 text-sm">{p.description}</TableCell>

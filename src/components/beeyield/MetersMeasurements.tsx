@@ -61,7 +61,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
             <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
                     <TrendingUp className="w-3.5 h-3.5 text-[#facc15]" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Signal & Load Analytics</span>
+                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Signal & Load Analytics</span>
                 </div>
                 <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Diagnostic <span className="text-[#10b981]">Engine</span></h1>
             </div>
@@ -77,7 +77,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                             className={cn(
                                 "p-6 rounded-none border-4 cursor-pointer transition-none",
                                 isActive
-                                    ? "bg-[#064e3b] border-[#064e3b] text-white shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]"
+                                    ? "bg-[#064e3b] border-[#064e3b] text-gray-900 shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]"
                                     : "bg-white border-[#064e3b] text-[#064e3b] hover:bg-[#facc15]/5 hover:shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]"
                             )}
                         >
@@ -89,7 +89,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                             </h3>
                             <p className={cn(
                                 "text-[9px] font-black uppercase tracking-widest",
-                                isActive ? "text-white/40" : "text-[#064e3b]/30"
+                                isActive ? "text-gray-600" : "text-[#064e3b]/30"
                             )}>
                                 {tab.subtext}
                             </p>

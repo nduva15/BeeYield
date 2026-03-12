@@ -71,7 +71,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             onClick={() => navigate(loginPath)}
-                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-gray-900 font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
                         >
                             Return to Sign In
                         </Button>
@@ -144,7 +144,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-white font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-gray-900 font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
                             disabled={loading}
                         >
                             {loading ? (

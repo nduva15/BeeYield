@@ -86,7 +86,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 className={cn(
                                     glass.btnPrimary,
                                     "w-full h-20 text-sm gap-4 transition-all duration-300",
-                                    recording ? "bg-destructive text-white border-destructive hover:bg-destructive shadow-destructive/20 scale-[0.98] ring-4 ring-destructive/20" : "hover:border-honey hover:shadow-xl hover:shadow-honey/10"
+                                    recording ? "bg-destructive text-gray-900 border-destructive hover:bg-destructive shadow-destructive/20 scale-[0.98] ring-4 ring-destructive/20" : "hover:border-honey hover:shadow-xl hover:shadow-honey/10"
                                 )}
                             >
                                 {recording ? <Square className="fill-current w-5 h-5 drop-shadow-md" /> : <Mic2 className="w-6 h-6 shrink-0" />}
@@ -156,7 +156,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
                 {/* Waveform Visualization */}
                 <div className={cn(glass.card, "p-0 overflow-hidden lg:col-span-7 flex flex-col group")}>
-                    <div className="flex items-center justify-between p-8 border-b border-border bg-white/30 dark:bg-black/20">
+                    <div className="flex items-center justify-between p-8 border-b border-border bg-white/30">
                         <div className="flex items-center gap-4">
                             <Activity className="w-6 h-6 text-honey" />
                             <h3 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Spectral Wave</h3>
@@ -173,7 +173,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 <motion.div
                                     key={i}
                                     className={cn(
-                                        "w-3 rounded-t-full transition-colors duration-500 border-x border-t border-black/5 dark:border-white/5",
+                                        "w-3 rounded-t-full transition-colors duration-500 border-x border-t border-black/5",
                                         recording ? "bg-destructive/80" : (analyzing ? "bg-honey/80" : "bg-muted-foreground/20")
                                     )}
                                     animate={{

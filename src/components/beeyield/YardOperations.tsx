@@ -93,7 +93,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                 </div>
 
                 {/* FPA KPI */}
-                <div className={cn(glass.card, "p-6 sm:px-8 border-honey/20 shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10 dark:from-white/10 dark:to-honey/10")}>
+                <div className={cn(glass.card, "p-6 sm:px-8 border-honey/20 shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10")}>
                     <p className={cn(glass.microLabel, "text-muted-foreground mb-1 font-semibold")}>Current FPA</p>
                     <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-honey leading-none mb-2")}>{fpa}</p>
                     <p className={cn(glass.microLabel, "text-muted-foreground/60 italic font-semibold normal-case")}>Frames Per Acre / {TOTAL_ACRES} ac</p>
@@ -112,7 +112,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 className={cn(
                                     "px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
                                     filterUrgency === u
-                                        ? "bg-white dark:bg-black text-foreground shadow-sm"
+                                        ? "bg-white text-foreground shadow-sm"
                                         : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -126,7 +126,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                     onClick={() => setShowResolved(r => !r)}
                     className={cn(
                         "px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ml-auto",
-                        showResolved ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-white/50 dark:bg-black/20 border-border text-muted-foreground hover:border-emerald-500/50 hover:text-emerald-500"
+                        showResolved ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-white/50 border-border text-muted-foreground hover:border-emerald-500/50 hover:text-emerald-500"
                     )}
                 >
                     {showResolved ? 'Hide Resolved' : 'Show Resolved'}
@@ -215,14 +215,14 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
             {/* FOB Audit Modal */}
             {auditHive && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setAuditHive(null)} />
+                    <div className="absolute inset-0 bg-gray-100 backdrop-blur-sm" onClick={() => setAuditHive(null)} />
                     <div className={cn(glass.card, "w-full max-w-md relative z-10 shadow-2xl p-0 overflow-hidden animate-in fade-in zoom-in-95 duration-200")}>
                         <div className="p-6 border-b border-border bg-muted/30 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Activity className="w-5 h-5 text-honey" />
                                 <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>FOB Audit <span className="text-muted-foreground mr-1">—</span> {auditHive.hive}</h3>
                             </div>
-                            <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-white/50 dark:bg-black/20 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white dark:hover:bg-white/10 transition-all border border-border">✕</button>
+                            <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white:bg-white/10 transition-all border border-border">✕</button>
                         </div>
                         <div className="p-8 space-y-8 pb-10">
                             <div className="space-y-4">
@@ -246,7 +246,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                             </div>
 
                             <div className="p-4 rounded-xl bg-honey/10 border border-honey/20">
-                                <p className={cn(glass.microLabel, "normal-case italic font-semibold text-honey/80 dark:text-honey/60")}>
+                                <p className={cn(glass.microLabel, "normal-case italic font-semibold text-honey/80")}>
                                     FPA contribution from this hive: <span className="text-honey font-black text-sm not-italic ml-1">{(auditFob / TOTAL_ACRES).toFixed(3)}</span> frames/acre
                                 </p>
                             </div>

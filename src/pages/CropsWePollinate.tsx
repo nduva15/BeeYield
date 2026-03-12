@@ -54,7 +54,7 @@ const CropsWePollinate = () => {
                 Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring maximized crop yields and sustainable practices.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-white font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
+                <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-gray-900 font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-white/50 font-bold h-14 px-8" asChild>
@@ -199,7 +199,7 @@ const CropsWePollinate = () => {
               <Badge
                 key={i}
                 variant="outline"
-                className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all rounded-full border-neutral-200 dark:border-zinc-800"
+                className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all rounded-full border-neutral-200"
               >
                 {c.cropName}
               </Badge>
@@ -209,7 +209,7 @@ const CropsWePollinate = () => {
           {/* Crops Cards */}
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {pollinationCrops.map((crop, index) => (
-              <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-white dark:bg-zinc-900/50">
+              <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-white">
                 <div className="relative h-64 overflow-hidden">
                   <div className="absolute top-4 right-4 z-20">
                     <Badge className="bg-emerald-500/90 text-white backdrop-blur-md border-none px-3 py-1 font-black">
@@ -223,8 +223,8 @@ const CropsWePollinate = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A2612]/90 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 space-y-1">
-                    <h3 className="text-[2.5rem] font-black text-white leading-none uppercase tracking-tighter">{crop.cropName}</h3>
-                    <Link to="/media" className="inline-flex items-center gap-2 text-white/50 hover:text-white text-xs font-black uppercase tracking-widest mt-2 transition-colors">
+                    <h3 className="text-[2.5rem] font-black text-gray-900 leading-none uppercase tracking-tighter">{crop.cropName}</h3>
+                    <Link to="/media" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 text-xs font-black uppercase tracking-widest mt-2 transition-colors">
                       View Media <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>

@@ -1127,7 +1127,7 @@ const AdminDashboard: React.FC = () => {
 
                                 <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                     <div className="flex gap-2 mb-4">
-                                        <Button size="sm" className="rounded-full bg-amber-500 text-white text-xs px-4 h-7">Active</Button>
+                                        <Button size="sm" className="rounded-full bg-amber-500 text-gray-900 text-xs px-4 h-7">Active</Button>
                                         <Button size="sm" variant="outline" className="rounded-full text-xs px-4 h-7">Inactive</Button>
                                     </div>
 
@@ -1191,7 +1191,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
 
                                     {/* Interactive Map Styles */}
-                                    <div className="flex-1 relative bg-slate-100 dark:bg-slate-900 min-h-[350px]">
+                                    <div className="flex-1 relative bg-slate-100 min-h-[350px]">
                                         {/* Map Controls */}
                                         <div className="absolute top-4 left-4 z-10 flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                                             <button className="px-3 py-1.5 text-xs font-medium hover:bg-gray-50 border-r border-gray-200">Map</button>
@@ -1229,7 +1229,7 @@ const AdminDashboard: React.FC = () => {
                                                 >
                                                     <div className="w-6 h-6 bg-amber-500/20 rounded-full flex items-center justify-center animate-pulse absolute"></div>
                                                     <div className="relative w-6 h-6">
-                                                        <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-[10px]">
+                                                        <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-gray-900 font-bold text-[10px]">
                                                             {idx + 1}
                                                         </div>
                                                     </div>
@@ -1275,7 +1275,7 @@ const AdminDashboard: React.FC = () => {
                         <Grid cols={2} gap="lg">
                             {/* Activity Overview Summary */}
                             <Col span={1}>
-                                <Card className="bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                                <Card className="bg-amber-600 rounded-2xl p-6 text-gray-900 relative overflow-hidden flex flex-col justify-center h-48">
                                     <div className="relative z-10 max-w-xs">
                                         <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
                                         <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
@@ -1290,7 +1290,7 @@ const AdminDashboard: React.FC = () => {
                             </Col>
                             <Col span={1}>
 
-                                <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                                <Card className="bg-indigo-600 rounded-2xl p-6 text-gray-900 relative overflow-hidden flex flex-col justify-center h-48">
                                     <div className="relative z-10 max-w-xs">
                                         <h3 className="text-lg font-bold mb-1 leading-tight">Log</h3>
                                         <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
@@ -1384,7 +1384,7 @@ const AdminDashboard: React.FC = () => {
                             <div className="p-4 border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&lt;</Button>
-                                    <Button size="sm" className="w-8 h-8 rounded-lg bg-amber-500 text-white">1</Button>
+                                    <Button size="sm" className="w-8 h-8 rounded-lg bg-amber-500 text-gray-900">1</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">2</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">3</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&gt;</Button>
@@ -1451,8 +1451,8 @@ const AdminDashboard: React.FC = () => {
                                                 className={cn(
                                                     "py-1.5 rounded-lg",
                                                     !isCurrentMonth && "text-muted-foreground/30",
-                                                    isToday && "bg-amber-500 text-white font-bold",
-                                                    hasEvent && !isToday && "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium"
+                                                    isToday && "bg-amber-500 text-gray-900 font-bold",
+                                                    hasEvent && !isToday && "bg-amber-100 text-amber-700 font-medium"
                                                 )}
                                             >
                                                 {isCurrentMonth ? day : day <= 0 ? 30 + day : day - 30}
@@ -1478,7 +1478,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="space-y-4">
                                     {orders.slice(0, 4).map((order, i) => (
                                         <div key={order.id || i} className="flex items-start gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-gray-900 text-xs font-bold">
                                                 O
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -1490,7 +1490,7 @@ const AdminDashboard: React.FC = () => {
                                     ))}
                                     {batches.slice(0, 2).map((batch, i) => (
                                         <div key={batch.id || i} className="flex items-start gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-gray-900 text-xs font-bold">
                                                 B
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -1513,7 +1513,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="space-y-4">
                                     {orders.slice(0, 4).map((order, i) => (
                                         <div key={order.id || i} className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-gray-900 text-xs font-bold">
                                                 {order.shipping_address?.first_name?.charAt(0) || 'U'}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -2087,7 +2087,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="grid gap-6 py-4">
                                     {/* Basic Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-gray-200 pb-2">Batch Details</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Honey Variety</Label>
@@ -2152,7 +2152,7 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Source Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-gray-200 pb-2">Source Origin</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
@@ -2262,7 +2262,7 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Quality Metrics */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Quality Assurance</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-gray-200 pb-2">Quality Assurance</h4>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>

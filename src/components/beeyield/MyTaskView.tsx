@@ -260,7 +260,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                 />
 
                 <div className="max-w-4xl mx-auto relative z-10">
-                    <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl")}>
+                    <div className={cn(glass.card, "p-16 space-y-12 bg-white/60 backdrop-blur-3xl")}>
                         <div className="space-y-6">
                             <label className={glass.microLabel}>{t('task_title_label')}</label>
                             <input
@@ -353,7 +353,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                 subtitle="Track and coordinate maintenance, inspections, and logistics across your entire apiary network."
                 actions={
                     <div className="flex gap-8 relative z-10">
-                        <div className="flex bg-black/5 dark:bg-black/40 p-3 rounded-[2.5rem] border border-white/5 shadow-inner">
+                        <div className="flex bg-gray-50 p-3 rounded-[2.5rem] border border-white/5 shadow-inner">
                             <button
                                 onClick={() => setView('list')}
                                 className={cn(
@@ -390,7 +390,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "p-12 bg-white/60 dark:bg-[#0D0D0D]/60 backdrop-blur-3xl min-h-[800px]")}
+                        className={cn(glass.card, "p-12 bg-white/60 backdrop-blur-3xl min-h-[800px]")}
                     >
                         {/* Month Navigation */}
                         <div className="flex items-center justify-between mb-12">
@@ -430,7 +430,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                         key={i}
                                         className={cn(
                                             "min-h-[160px] rounded-[3rem] p-6 border transition-all duration-500 group/day relative",
-                                            isCurrentMonth ? "bg-white/40 dark:bg-black/40 border-white/5" : "opacity-10 pointer-events-none",
+                                            isCurrentMonth ? "bg-white/40 border-white/5" : "opacity-10 pointer-events-none",
                                             isTodayDate ? "ring-4 ring-honey/40 border-honey/40" : "hover:border-honey/20"
                                         )}
                                     >
@@ -496,7 +496,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                         "w-14 h-14 rounded-2xl border flex items-center justify-center transition-all duration-700",
                                                         task.is_completed
                                                             ? "bg-emerald-500 border-emerald-500 text-black shadow-4xl"
-                                                            : "bg-black/20 border-white/10 text-white/20 hover:border-honey hover:text-honey"
+                                                            : "bg-gray-100 border-gray-200 text-gray-400 hover:border-honey hover:text-honey"
                                                     )}
                                                 >
                                                     <CheckCircle2 className="w-8 h-8" />
@@ -521,14 +521,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                                 <div className={cn(
                                                     "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] skew-x-[-15deg] shadow-4xl border",
                                                     task.priority === 'High' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                                        task.priority === 'Medium' ? "bg-honey/10 text-honey border-honey/20" : "bg-black/10 text-foreground/20 border-white/5"
+                                                        task.priority === 'Medium' ? "bg-honey/10 text-honey border-honey/20" : "bg-gray-50 text-foreground/20 border-white/5"
                                                 )}>
                                                     <span className="skew-x-[15deg] block">{task.priority?.toUpperCase()} PRIORITY</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="bg-black/5 dark:bg-black/30 rounded-[3rem] p-8 border border-white/5 shadow-inner group-hover:border-honey/20 transition-all duration-1000">
+                                        <div className="bg-gray-50 rounded-[3rem] p-8 border border-white/5 shadow-inner group-hover:border-honey/20 transition-all duration-1000">
                                             <p className="text-xl font-black text-foreground/30 italic leading-relaxed line-clamp-2 uppercase tracking-tight">
                                                 {task.description || "No operational notes provided for this mission protocol."}
                                             </p>

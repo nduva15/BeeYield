@@ -66,7 +66,7 @@ const MetersSettings: React.FC = () => {
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
             <div className="space-y-4">
-                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                     <Settings2 className="w-4 h-4 mr-2" />
                     Logic & Protocol Tuning
                 </div>
@@ -74,9 +74,9 @@ const MetersSettings: React.FC = () => {
             </div>
 
             {/* Meter Rules and Preferences */}
-            <div className={cn(glass.card, "p-8 shadow-sm flex items-center gap-4 bg-white/40 dark:bg-black/20")}>
+            <div className={cn(glass.card, "p-8 shadow-sm flex items-center gap-4 bg-white/40")}>
                 <div className="w-12 h-12 rounded-2xl bg-muted/60 flex items-center justify-center border border-border shadow-sm">
-                    <Settings2 className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
+                    <Settings2 className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h2 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Sensor Rules and Protocols</h2>
             </div>
@@ -84,7 +84,7 @@ const MetersSettings: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Notifications */}
                 <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
-                    <div className="p-8 border-b border-border bg-white/40 dark:bg-black/20 flex items-center gap-4">
+                    <div className="p-8 border-b border-border bg-white/40 flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-honey/10 flex items-center justify-center border border-honey/20">
                             <Bell className="w-5 h-5 text-honey" />
                         </div>
@@ -99,7 +99,7 @@ const MetersSettings: React.FC = () => {
                                 </div>
                                 <button
                                     onClick={() => handleEdit('notification', item.id, item.value)}
-                                    className={cn(glass.btnSecondary, "text-xs h-9 px-6 bg-white/50 dark:bg-black/20 border-border shadow-sm w-full sm:w-auto")}
+                                    className={cn(glass.btnSecondary, "text-xs h-9 px-6 bg-white/50 border-border shadow-sm w-full sm:w-auto")}
                                 >
                                     Config
                                 </button>
@@ -110,7 +110,7 @@ const MetersSettings: React.FC = () => {
 
                 {/* Alert Thresholds */}
                 <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
-                    <div className="p-8 border-b border-border bg-white/40 dark:bg-black/20 flex items-center gap-4">
+                    <div className="p-8 border-b border-border bg-white/40 flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                             <Shield className="w-5 h-5 text-emerald-500" />
                         </div>
@@ -125,7 +125,7 @@ const MetersSettings: React.FC = () => {
                                 </div>
                                 <button
                                     onClick={() => handleEdit('threshold', item.id, item.value)}
-                                    className={cn(glass.btnSecondary, "text-xs h-9 px-6 bg-white/50 dark:bg-black/20 border-border shadow-sm w-full sm:w-auto")}
+                                    className={cn(glass.btnSecondary, "text-xs h-9 px-6 bg-white/50 border-border shadow-sm w-full sm:w-auto")}
                                 >
                                     Tune
                                 </button>
@@ -140,7 +140,7 @@ const MetersSettings: React.FC = () => {
                 <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-transform group-hover:scale-110" />
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
                     <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-full bg-white/40 dark:bg-black/20 flex items-center justify-center border border-border shadow-sm">
+                        <div className="w-14 h-14 rounded-full bg-white/40 flex items-center justify-center border border-border shadow-sm">
                             <Plug className="w-6 h-6 text-honey" />
                         </div>
                         <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>External<br /> System Interconnect</h3>
@@ -154,14 +154,14 @@ const MetersSettings: React.FC = () => {
             {/* Edit Dialog */}
             <Dialog open={!!activeDialog} onOpenChange={(open) => !open && setActiveDialog(null)}>
                 <DialogContent className={cn(glass.card, "p-0 overflow-hidden border-border/50 shadow-2xl max-w-lg mx-auto")}>
-                    <DialogHeader className="p-8 border-b border-border bg-white/40 dark:bg-black/20 relative">
+                    <DialogHeader className="p-8 border-b border-border bg-white/40 relative">
                         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                        <DialogTitle className={cn(glass.sectionTitle, "text-3xl normal-case text-emerald-600 dark:text-emerald-400 relative z-10")}>{getDialogTitle()}</DialogTitle>
+                        <DialogTitle className={cn(glass.sectionTitle, "text-3xl normal-case text-emerald-600 relative z-10")}>{getDialogTitle()}</DialogTitle>
                         <DialogDescription className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70 mt-2 relative z-10")}>
                             Update system preferences below.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="p-8 space-y-6 bg-white/20 dark:bg-black/10">
+                    <div className="p-8 space-y-6 bg-white/20">
                         <div className="space-y-4">
                             <Label htmlFor="setting-value" className={cn(glass.microLabel, "font-bold opacity-80 block")}>
                                 {activeDialog?.type === 'notification' ? 'Protocol Method' : 'Target Threshold'}
@@ -171,7 +171,7 @@ const MetersSettings: React.FC = () => {
                                     <SelectTrigger className={cn(glass.input, "h-14 rounded-xl")}>
                                         <SelectValue placeholder="Select method" />
                                     </SelectTrigger>
-                                    <SelectContent className={cn("rounded-xl border border-border bg-white/90 dark:bg-black/90 backdrop-blur-xl shadow-xl")}>
+                                    <SelectContent className={cn("rounded-xl border border-border bg-white/90 backdrop-blur-xl shadow-xl")}>
                                         <SelectItem value="Email" className={cn(glass.microLabel, "hover:bg-muted py-3")}>Email</SelectItem>
                                         <SelectItem value="SMS" className={cn(glass.microLabel, "hover:bg-muted py-3")}>SMS</SelectItem>
                                         <SelectItem value="Push" className={cn(glass.microLabel, "hover:bg-muted py-3")}>Push</SelectItem>
@@ -191,7 +191,7 @@ const MetersSettings: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    <DialogFooter className="p-8 border-t border-border bg-white/30 dark:bg-black/20 flex flex-col sm:flex-row gap-4">
+                    <DialogFooter className="p-8 border-t border-border bg-white/30 flex flex-col sm:flex-row gap-4">
                         <button onClick={() => setActiveDialog(null)} className={cn(glass.btnSecondary, "flex-1 border-transparent hover:bg-muted/80")}>Abort</button>
                         <button onClick={handleSave} className={cn(glass.btnPrimary, "flex-1")}>Commit Changes</button>
                     </DialogFooter>

@@ -183,7 +183,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     </h1>
                     <p className={cn(glass.microLabel, 'opacity-40 italic font-black uppercase tracking-[0.4em] ml-2')}>Track hive conditions in real-time.</p>
                 </div>
-                <div className="flex items-center gap-6 bg-white/40 dark:bg-black/60 backdrop-blur-3xl px-8 py-4 rounded-full border border-white/10 shadow-4xl">
+                <div className="flex items-center gap-6 bg-white/40 backdrop-blur-3xl px-8 py-4 rounded-full border border-gray-200 shadow-4xl">
                     <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
                     <span className="text-xl font-black italic tabular-nums text-foreground/80 tracking-widest">{liveTime.toLocaleTimeString()} — LIVE</span>
                 </div>
@@ -199,7 +199,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             animate={{ x: 0, opacity: 1 }}
                             className={cn(
                                 glass.card,
-                                "p-8 border-l-[12px] flex items-center gap-10 bg-white/40 dark:bg-black/40",
+                                "p-8 border-l-[12px] flex items-center gap-10 bg-white/40",
                                 alert.severity === 'critical' ? "border-red-500" : "border-amber-500"
                             )}
                         >
@@ -248,7 +248,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <span className={cn("text-lg font-black italic", isSelected ? "text-black/60" : "text-foreground/40")}>{hive.temp}°C</span>
-                                        <div className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-black/20" : "bg-white/10")} />
+                                        <div className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-gray-100" : "bg-white/10")} />
                                         <span className={cn("text-lg font-black italic", isSelected ? "text-black/60" : "text-foreground/40")}>{hive.humidity}%</span>
                                     </div>
                                 </div>
@@ -326,7 +326,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         </div>
                         <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-none">History <span className="text-honey">Trends</span></h2>
                     </div>
-                    <div className="flex items-center gap-8 bg-white/40 dark:bg-black/60 p-4 rounded-[3.5rem] border border-white/10 shadow-4xl">
+                    <div className="flex items-center gap-8 bg-white/40 p-4 rounded-[3.5rem] border border-gray-200 shadow-4xl">
                         <span className={cn(glass.microLabel, "px-6 opacity-40 italic uppercase")}>Past {historyRange} months</span>
                         <div className="flex items-center gap-4">
                             <button onClick={() => setHistoryRange(r => Math.max(1, r - 1))} className={cn(glass.btnSecondary, "h-14 w-14 rounded-2xl")}><ChevronLeft className="w-6 h-6" /></button>
@@ -370,7 +370,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-4xl")}>
                     <div className="overflow-x-auto thin-scrollbar">
                         <table className="w-full">
-                            <thead className="bg-white/40 dark:bg-black/40">
+                            <thead className="bg-white/40">
                                 <tr>
                                     {['Hive', 'Temp', 'Humidity', 'Sound', 'Signal', 'Status'].map(h => (
                                         <th key={h} className={cn(glass.microLabel, "px-10 py-10 opacity-40 uppercase italic text-left")}>{h}</th>

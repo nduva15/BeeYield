@@ -32,8 +32,8 @@ const PollinationReports: React.FC = () => {
                         {/* Bloom Report Card */}
                         <div className="border-4 border-[#064e3b] bg-white overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                             <div className="bg-[#10b981] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                <h4 className="text-xl font-black text-white uppercase tracking-tight">Bloom Saturation Report</h4>
-                                <Terminal className="w-5 h-5 text-white" />
+                                <h4 className="text-xl font-black text-gray-900 uppercase tracking-tight">Bloom Saturation Report</h4>
+                                <Terminal className="w-5 h-5 text-gray-900" />
                             </div>
                             <div className="p-10 space-y-8">
                                 <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
@@ -48,7 +48,7 @@ const PollinationReports: React.FC = () => {
                                     <span className="text-[10px] font-black uppercase text-neutral-400">Foraging Overlap</span>
                                     <span className="font-black text-lg">88.1%</span>
                                 </div>
-                                <button className="w-full py-4 bg-[#064e3b] text-white font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-black transition-none">
+                                <button className="w-full py-4 bg-[#064e3b] text-gray-900 font-black uppercase tracking-widest text-xs hover:bg-[#facc15] hover:text-black transition-none">
                                     Export Geodata (.CSV)
                                 </button>
                             </div>
@@ -73,7 +73,7 @@ const PollinationReports: React.FC = () => {
                                     <span className="text-[10px] font-black uppercase text-neutral-400">Avg Colony Health</span>
                                     <span className="font-black text-lg text-[#10b981]">OPTIMAL</span>
                                 </div>
-                                <button className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-white transition-none">
+                                <button className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black uppercase tracking-widest text-xs hover:bg-[#064e3b] hover:text-gray-900 transition-none">
                                     Run Deep Diagnostic
                                 </button>
                             </div>

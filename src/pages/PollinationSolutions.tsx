@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight, Activity, Sprout, BarChart3,
@@ -146,7 +146,7 @@ const PollinationSolutions = () => {
                   </div>
                 </div>
 
-                <Button size="lg" variant="outline" className="w-full gap-2 border-green-500/20 text-green-700 hover:bg-green-600 hover:text-white" asChild>
+                <Button size="lg" variant="outline" className="w-full gap-2 border-green-500/20 text-green-700 hover:bg-green-600 hover:text-gray-900" asChild>
                   <Link to="/diseases">Explore Disease Technology <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
@@ -171,7 +171,7 @@ const PollinationSolutions = () => {
           <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
             <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
             <p className="text-muted-foreground mb-6">
-              BeeYield is constantly evolving. We invite you to take part in the international testing of our system â€“ together, we can advance technology that protects bees worldwide.
+              BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
             </p>
             <Button size="lg" className="w-full sm:w-auto" asChild>
               <Link to="/contact">Join the Program</Link>

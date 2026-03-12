@@ -269,7 +269,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                     <div className="flex items-center gap-14 relative z-10">
                         <button
                             onClick={() => { setIsAddingInspection(false); resetForm(); }}
-                            className={cn(glass.btnSecondary, "h-24 w-24 p-0 rounded-[2.5rem] bg-white dark:bg-black/60 shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
+                            className={cn(glass.btnSecondary, "h-24 w-24 p-0 rounded-[2.5rem] bg-white shadow-4xl border-white/5 flex items-center justify-center hover:text-honey hover:scale-110 active:scale-95 transition-all duration-700")}
                         >
                             <ChevronLeft className="w-12 h-12" />
                         </button>
@@ -285,7 +285,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                     <div className="flex gap-10 relative z-10">
                         <button
                             onClick={() => { setIsAddingInspection(false); resetForm(); }}
-                            className={cn(glass.btnSecondary, "h-22 px-14 font-black italic uppercase tracking-[0.3em] text-lg rounded-[2.5rem] bg-white dark:bg-black/60 border-white/5 shadow-4xl hover:text-red-500 transition-all duration-700")}
+                            className={cn(glass.btnSecondary, "h-22 px-14 font-black italic uppercase tracking-[0.3em] text-lg rounded-[2.5rem] bg-white border-white/5 shadow-4xl hover:text-red-500 transition-all duration-700")}
                         >
                             Cancel
                         </button>
@@ -306,9 +306,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-0 overflow-visible bg-white/20 dark:bg-black/60 rounded-[4rem] group/card")}
+                            className={cn(glass.card, "p-0 overflow-visible bg-white/20 rounded-[4rem] group/card")}
                         >
-                            <div className="p-12 border-b border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-3xl rounded-t-[4rem] flex items-center gap-10 relative">
+                            <div className="p-12 border-b border-white/5 bg-white/40 backdrop-blur-3xl rounded-t-[4rem] flex items-center gap-10 relative">
                                 <div className="w-14 h-14 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl group-hover/card:rotate-12 transition-transform">
                                     <Target className="w-8 h-8 text-honey" />
                                 </div>
@@ -406,9 +406,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-0 overflow-visible bg-white/20 dark:bg-black/60 rounded-[4rem] relative group/vitals")}
+                            className={cn(glass.card, "p-0 overflow-visible bg-white/20 rounded-[4rem] relative group/vitals")}
                         >
-                            <div className={cn(glass.sectionHeader, 'p-12 border-b border-white/5 bg-white/40 dark:bg-black/60 rounded-t-[4rem] flex flex-col xl:flex-row items-center justify-between gap-12 relative z-10')}>
+                            <div className={cn(glass.sectionHeader, 'p-12 border-b border-white/5 bg-white/40 rounded-t-[4rem] flex flex-col xl:flex-row items-center justify-between gap-12 relative z-10')}>
                                 <div className="flex items-center gap-8">
                                     <div className="w-16 h-16 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20 shadow-4xl group-hover/vitals:scale-110 transition-transform">
                                         <HeartPulse className="w-8 h-8 text-honey animate-pulse" />
@@ -418,7 +418,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         <p className={cn(glass.microLabel, 'opacity-30 italic')}>Standard Assessment Protocol</p>
                                     </div>
                                 </div>
-                                <div className="flex bg-black/10 dark:bg-black/40 backdrop-blur-3xl p-2 rounded-[3rem] border border-white/5 gap-2 shadow-4xl w-full xl:w-fit">
+                                <div className="flex bg-gray-50 backdrop-blur-3xl p-2 rounded-[3rem] border border-white/5 gap-2 shadow-4xl w-full xl:w-fit">
                                     {['healthy', 'weak', 'diseased', 'critical'].map(s => (
                                         <button
                                             key={s}
@@ -446,10 +446,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         ].map((item) => (
                                             <div
                                                 key={item.id}
-                                                className="flex items-center justify-between p-10 rounded-[3.5rem] bg-black/5 dark:bg-black/40 border border-white/5 hover:border-honey/40 transition-all shadow-4xl"
+                                                className="flex items-center justify-between p-10 rounded-[3.5rem] bg-gray-50 border border-white/5 hover:border-honey/40 transition-all shadow-4xl"
                                             >
                                                 <div className="flex items-center gap-8">
-                                                    <div className="w-16 h-16 rounded-2xl border border-white/5 bg-white/40 dark:bg-black/40 flex items-center justify-center shadow-4xl">
+                                                    <div className="w-16 h-16 rounded-2xl border border-white/5 bg-white/40 flex items-center justify-center shadow-4xl">
                                                         <item.icon className={cn("w-8 h-8", item.color)} />
                                                     </div>
                                                     <div className="flex flex-col gap-1">
@@ -467,7 +467,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
                                         <div className="pt-4 space-y-6">
                                             <Label className={glass.microLabel}>Temperament Profile</Label>
-                                            <div className="grid grid-cols-3 bg-black/10 dark:bg-black/40 p-2 rounded-[3rem] border border-white/5 gap-2 shadow-4xl">
+                                            <div className="grid grid-cols-3 bg-gray-50 p-2 rounded-[3rem] border border-white/5 gap-2 shadow-4xl">
                                                 {['calm', 'nervous', 'aggressive'].map(t => (
                                                     <button
                                                         key={t}
@@ -581,7 +581,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             placeholder="ARCHIVE OBSERVATIONS..."
                                             value={formData.findings}
                                             onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
-                                            className={cn(glass.input, 'min-h-[250px] rounded-[3.5rem] p-12 pl-16 text-2xl font-black italic bg-black/5 dark:bg-black/40 border-none resize-none placeholder:opacity-5')}
+                                            className={cn(glass.input, 'min-h-[250px] rounded-[3.5rem] p-12 pl-16 text-2xl font-black italic bg-gray-50 border-none resize-none placeholder:opacity-5')}
                                         />
                                     </div>
                                     <div className="space-y-6">
@@ -590,13 +590,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             placeholder="RECORD ACTIONS..."
                                             value={formData.actions_taken}
                                             onChange={(e) => setFormData({ ...formData, actions_taken: e.target.value })}
-                                            className={cn(glass.input, 'min-h-[250px] rounded-[3.5rem] p-12 pl-16 text-2xl font-black italic bg-black/5 dark:bg-black/40 border-none resize-none placeholder:opacity-5')}
+                                            className={cn(glass.input, 'min-h-[250px] rounded-[3.5rem] p-12 pl-16 text-2xl font-black italic bg-gray-50 border-none resize-none placeholder:opacity-5')}
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="p-12 border-t border-white/5 bg-white/40 dark:bg-black/60 backdrop-blur-3xl flex flex-col sm:flex-row justify-between items-center rounded-b-[4rem] gap-8">
+                            <div className="p-12 border-t border-white/5 bg-white/40 backdrop-blur-3xl flex flex-col sm:flex-row justify-between items-center rounded-b-[4rem] gap-8">
                                 <div className="flex items-center gap-6 opacity-20 px-8">
                                     <Shield className="w-8 h-8" />
                                     <p className="text-[12px] font-black uppercase tracking-[0.4em] italic">Encryption Layer Active</p>
@@ -754,7 +754,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             {/* Details Section */}
                                             <div className="w-full xl:w-[400px] shrink-0 space-y-10 relative">
                                                 <div className="flex items-center gap-8">
-                                                    <div className="w-20 h-20 rounded-[2.5rem] bg-black/5 dark:bg-black/60 flex items-center justify-center border border-white/5 transition-all duration-1000 shadow-4xl group-hover/item:scale-110 group-hover/item:rotate-12">
+                                                    <div className="w-20 h-20 rounded-[2.5rem] bg-gray-50 flex items-center justify-center border border-white/5 transition-all duration-1000 shadow-4xl group-hover/item:scale-110 group-hover/item:rotate-12">
                                                         <Hexagon className="w-10 h-10 text-honey opacity-40 group-hover/item:opacity-100 transition-opacity" />
                                                     </div>
                                                     <div className="space-y-2">
@@ -777,7 +777,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         )} />
                                                         {health.toUpperCase()}
                                                     </div>
-                                                    <div className="px-8 py-4 rounded-[2.5rem] bg-white/5 dark:bg-black/80 border border-white/5 font-black italic text-xl uppercase tracking-tighter shadow-4xl flex items-center justify-center gap-4">
+                                                    <div className="px-8 py-4 rounded-[2.5rem] bg-white/5 border border-white/5 font-black italic text-xl uppercase tracking-tighter shadow-4xl flex items-center justify-center gap-4">
                                                         <Calendar className="w-6 h-6 text-honey opacity-20" />
                                                         {new Date(inspection.inspection_date).toLocaleDateString([], { month: 'short', day: 'numeric' }).toUpperCase()}
                                                     </div>
@@ -793,7 +793,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         { l: 'B.Matrix', v: (inspection.brood_pattern || 'Solid').toUpperCase(), i: Target, c: 'text-emerald-500', b: 'bg-emerald-500/10' },
                                                         { l: 'Weather', v: (inspection.weather_condition || 'Sunny').toUpperCase(), i: Sun, c: 'text-orange-400', b: 'bg-orange-400/10' }
                                                     ].map((s, idx) => (
-                                                        <div key={idx} className="bg-white/5 dark:bg-black/60 p-8 rounded-[3.5rem] border border-white/5 group-hover/item:border-honey/20 transition-all duration-1000 shadow-4xl">
+                                                        <div key={idx} className="bg-white/5 p-8 rounded-[3.5rem] border border-white/5 group-hover/item:border-honey/20 transition-all duration-1000 shadow-4xl">
                                                             <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 shadow-3xl", s.b)}>
                                                                 <s.i className={cn("w-6 h-6", s.c)} />
                                                             </div>
@@ -803,7 +803,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                     ))}
                                                 </div>
 
-                                                <div className="bg-black/5 dark:bg-black/60 p-10 rounded-[4rem] border border-white/5 relative overflow-hidden group-hover/item:border-honey/20 transition-all">
+                                                <div className="bg-gray-50 p-10 rounded-[4rem] border border-white/5 relative overflow-hidden group-hover/item:border-honey/20 transition-all">
                                                     <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-honey/10 to-transparent" />
                                                     <div className="flex items-center gap-6 mb-4">
                                                         <FileText className="w-6 h-6 text-honey opacity-20" />
@@ -819,7 +819,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             <div className="xl:w-40 xl:border-l border-white/5 pl-4 flex flex-col items-center justify-center gap-10 group-hover/item:bg-white/5 transition-colors rounded-r-[4rem] relative">
                                                 <button
                                                     onClick={(e) => handleDelete(inspection.id, e)}
-                                                    className="w-20 h-20 rounded-3xl bg-white/5 dark:bg-black/60 border border-white/5 flex items-center justify-center text-foreground/20 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 hover:scale-110 transition-all shadow-4xl"
+                                                    className="w-20 h-20 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-center text-foreground/20 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 hover:scale-110 transition-all shadow-4xl"
                                                     title="Purge Record"
                                                 >
                                                     <Trash2 className="w-10 h-10" />

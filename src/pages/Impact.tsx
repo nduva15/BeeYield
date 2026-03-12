@@ -161,7 +161,7 @@ const Impact = () => {
               <button
                 onClick={handleDownloadImpactReport}
                 disabled={downloading}
-                className="group relative inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
+                className="group relative inline-flex items-center gap-3 bg-slate-900 text-gray-900 px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
                 {downloading ? (
@@ -230,7 +230,7 @@ const Impact = () => {
               <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group">
                 <img src={impactImage} alt="BeYield Sustainable Beekeeping" className="w-full aspect-[4/5] object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
-                <div className="absolute bottom-10 left-10 text-white">
+                <div className="absolute bottom-10 left-10 text-gray-900">
                   <p className="text-sm font-black uppercase tracking-[0.3em] mb-2">Location: Kibwezi, Kenya</p>
                   <h4 className="text-2xl font-bold">Resilient Landscapes</h4>
                 </div>
@@ -277,7 +277,7 @@ const Impact = () => {
               </div>
 
               <div className="flex items-center gap-6 pt-6">
-                <div className="h-14 w-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-xl">
+                <div className="h-14 w-14 rounded-2xl bg-slate-900 flex items-center justify-center text-gray-900 shadow-xl">
                   <Zap className="w-6 h-6" />
                 </div>
                 <div>
@@ -291,7 +291,7 @@ const Impact = () => {
       </section>
 
       {/* 2030 Roadmap */}
-      <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
+      <section className="py-24 bg-slate-900 text-gray-900 overflow-hidden relative">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">The 2030 <br />Biosphere Roadmap.</h2>
@@ -312,7 +312,7 @@ const Impact = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md"
+                className="p-8 rounded-[2.5rem] bg-white/5 border border-gray-200 backdrop-blur-md"
               >
                 <item.icon className="h-8 w-8 text-beeyield-gold mb-6" />
                 <h4 className="text-xl font-bold mb-4">{item.title}</h4>
@@ -338,7 +338,7 @@ const Impact = () => {
               Whether you're a consumer, partner, or researcher, you're part of this ecosystem. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
+              <Link to="/contact" className="px-8 py-4 bg-slate-900 text-gray-900 rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
                 Contact the Hive <ArrowRight className="h-4 w-4" />
               </Link>
               <Link to="/global-hive-network" className="px-8 py-4 bg-white text-slate-900 border-2 border-slate-100 rounded-2xl font-black hover:bg-slate-50 transition-all">

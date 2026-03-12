@@ -93,7 +93,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={cn(glass.card, "p-12 space-y-10 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[5rem] border-white/5")}
+                        className={cn(glass.card, "p-12 space-y-10 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[5rem] border-white/5")}
                     >
                         <div className="flex items-center justify-between border-b-4 border-white/5 pb-8">
                             <h3 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Connected <span className="text-honey">Farms</span></h3>
@@ -125,13 +125,13 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                         <p className="text-3xl font-black italic uppercase tracking-tighter leading-none transition-colors">{apiary.name}</p>
                                         <p className={cn("text-[12px] font-black italic uppercase tracking-widest leading-none", activeHub === apiary.id ? "text-black/60" : "opacity-40")}>Active Farm</p>
                                     </div>
-                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border-2 transition-all", activeHub === apiary.id ? "bg-black/10 border-black/20" : "bg-white/5 border-white/5 group-hover:bg-honey/10 group-hover:border-honey/20")}>
+                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border-2 transition-all", activeHub === apiary.id ? "bg-gray-50 border-black/20" : "bg-white/5 border-white/5 group-hover:bg-honey/10 group-hover:border-honey/20")}>
                                         <Activity className={cn("w-6 h-6", activeHub === apiary.id ? "text-black" : "text-foreground/20 group-hover:text-honey")} />
                                     </div>
                                 </motion.button>
                             ))}
                         </div>
-                        <button className="w-full h-20 border-4 border-dashed border-white/10 rounded-[2.5rem] flex items-center justify-center gap-4 text-xl font-black italic uppercase opacity-40 hover:opacity-100 hover:border-honey/40 transition-all">
+                        <button className="w-full h-20 border-4 border-dashed border-gray-200 rounded-[2.5rem] flex items-center justify-center gap-4 text-xl font-black italic uppercase opacity-40 hover:opacity-100 hover:border-honey/40 transition-all">
                             <Plus className="w-6 h-6" />
                             Connect New Farm
                         </button>
@@ -140,7 +140,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                     <div className={cn(glass.card, "p-12 shadow-4xl bg-honey/10 border-honey/20 rounded-[4rem] group hover:bg-honey/15 transition-all relative overflow-hidden flex flex-col gap-8")}>
                         <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
                         <div className="flex items-center gap-8 mb-4 relative z-10">
-                            <div className="w-20 h-20 rounded-[2rem] bg-white/80 dark:bg-black/80 flex items-center justify-center border-2 border-honey/20 shadow-4xl text-honey">
+                            <div className="w-20 h-20 rounded-[2rem] bg-white/80 flex items-center justify-center border-2 border-honey/20 shadow-4xl text-honey">
                                 <Cpu className="w-10 h-10" />
                             </div>
                             <h3 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Hive Check</h3>
@@ -156,9 +156,9 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "p-0 flex flex-col overflow-hidden shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[6rem] border-white/5")}
+                        className={cn(glass.card, "p-0 flex flex-col overflow-hidden shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[6rem] border-white/5")}
                     >
-                        <div className="flex flex-col md:flex-row items-center justify-between p-12 border-b border-white/5 bg-black/10 dark:bg-black/40">
+                        <div className="flex flex-col md:flex-row items-center justify-between p-12 border-b border-white/5 bg-gray-50">
                             <div className="space-y-4">
                                 <h3 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Growth <span className="text-honey">Charts</span></h3>
                                 <p className="text-xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-white/5">Flower Stage vs. Bee Activity</p>
@@ -204,7 +204,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                         {/* Gap Alert */}
                         <motion.div
                             whileHover={{ y: -10 }}
-                            className={cn(glass.card, "p-12 space-y-8 bg-black/80 backdrop-blur-3xl border-4 border-red-500/20 shadow-4xl rounded-[4rem] group")}
+                            className={cn(glass.card, "p-12 space-y-8 bg-white/80 backdrop-blur-3xl border-4 border-red-500/20 shadow-4xl rounded-[4rem] group")}
                         >
                             <div className="flex items-center gap-8">
                                 <div className="w-20 h-20 rounded-[2rem] bg-red-500/10 flex items-center justify-center border-2 border-red-500/20 shadow-4xl group-hover:scale-110 transition-transform">
@@ -220,11 +220,11 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                         {/* Audit Summary */}
                         <motion.div
                             whileHover={{ y: -10 }}
-                            className={cn(glass.card, "p-12 space-y-8 bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl border-4 border-white/5 shadow-4xl rounded-[4rem] group relative overflow-hidden")}
+                            className={cn(glass.card, "p-12 space-y-8 bg-white/80 backdrop-blur-3xl border-4 border-white/5 shadow-4xl rounded-[4rem] group relative overflow-hidden")}
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="flex items-center gap-8 relative z-10">
-                                <div className="w-20 h-20 rounded-[2rem] bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-white/10 shadow-4xl group-hover:scale-110 transition-transform">
+                                <div className="w-20 h-20 rounded-[2rem] bg-gray-50 flex items-center justify-center border-2 border-gray-200 shadow-4xl group-hover:scale-110 transition-transform">
                                     <FileText className="w-10 h-10 text-emerald-500" />
                                 </div>
                                 <h4 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Seasonal <span className="text-emerald-500">Report</span></h4>

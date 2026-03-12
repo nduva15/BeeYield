@@ -57,7 +57,7 @@ const AdminDonutChart: React.FC<AdminDonutChartProps> = ({
                     />
                 ))}
                 {/* Inner circle for donut effect */}
-                <circle cx="50" cy="50" r="25" className="fill-white dark:fill-card" />
+                <circle cx="50" cy="50" r="25" className="fill-white" />
             </svg>
 
             {/* Center text */}

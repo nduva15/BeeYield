@@ -112,12 +112,12 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                     />
                                 </svg>
 
-                                <div className="absolute top-1/4 left-1/3 p-10 bg-white dark:bg-[#0D0D0D] border-4 border-honey rounded-[3rem] shadow-4xl group hover:-translate-y-4 transition-transform duration-700">
+                                <div className="absolute top-1/4 left-1/3 p-10 bg-white border-4 border-honey rounded-[3rem] shadow-4xl group hover:-translate-y-4 transition-transform duration-700">
                                     <p className="text-[12px] font-black italic uppercase text-honey mb-2 tracking-[0.2em]">Best Spot</p>
                                     <p className="text-3xl font-black italic uppercase tracking-tighter leading-none">Healthy Bloom</p>
                                 </div>
 
-                                <div className="absolute bottom-16 right-16 flex items-center gap-10 bg-black/80 backdrop-blur-3xl p-10 rounded-[3.5rem] border-4 border-honey shadow-4xl group">
+                                <div className="absolute bottom-16 right-16 flex items-center gap-10 bg-white/80 backdrop-blur-3xl p-10 rounded-[3.5rem] border-4 border-honey shadow-4xl group">
                                     <div className="w-16 h-16 bg-honey/20 rounded-2xl flex items-center justify-center border-2 border-honey/40 shadow-4xl group-hover:scale-110 transition-transform">
                                         <Crosshair className="w-8 h-8 text-honey" />
                                     </div>
@@ -134,10 +134,10 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.8 }}
-                                className={cn(glass.card, "bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl h-[700px] p-16 flex flex-col rounded-[6rem] shadow-4xl border-white/5 border-8")}
+                                className={cn(glass.card, "bg-white/80 backdrop-blur-3xl h-[700px] p-16 flex flex-col rounded-[6rem] shadow-4xl border-white/5 border-8")}
                             >
                                 <div className="flex-1 space-y-12">
-                                    <div className="flex items-center justify-between border-b-4 border-black/5 dark:border-white/5 pb-12">
+                                    <div className="flex items-center justify-between border-b-4 border-black/5 pb-12">
                                         <div className="space-y-4">
                                             <h3 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Honey <span className="text-honey">Gain</span></h3>
                                             <p className="text-xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-white/5">How much honey is being made.</p>
@@ -166,7 +166,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
-                                <div className="mt-12 border-t-4 border-black/5 dark:border-white/5 pt-12 grid grid-cols-3 gap-12">
+                                <div className="mt-12 border-t-4 border-black/5 pt-12 grid grid-cols-3 gap-12">
                                     <div className="space-y-4">
                                         <p className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Energy Use</p>
                                         <p className="text-4xl font-black italic uppercase tracking-tighter leading-none">Normal</p>
@@ -190,7 +190,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[5rem] border-white/5 relative overflow-hidden flex flex-col gap-12 group")}
+                        className={cn(glass.card, "p-16 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[5rem] border-white/5 relative overflow-hidden flex flex-col gap-12 group")}
                     >
                         <div className="absolute top-0 right-0 w-80 h-80 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-40 -mt-40" />
 
@@ -210,7 +210,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                         <p className="text-[14px] font-black italic uppercase tracking-[0.3em] opacity-30">{item.label}</p>
                                         <p className="text-4xl font-black italic uppercase tracking-tighter leading-none group-hover/item:text-honey transition-colors">{item.val}</p>
                                     </div>
-                                    <span className="text-[12px] font-black italic uppercase px-6 py-2 bg-black/5 dark:bg-white/5 border border-white/5 rounded-full opacity-60">{item.status}</span>
+                                    <span className="text-[12px] font-black italic uppercase px-6 py-2 bg-gray-50 border border-white/5 rounded-full opacity-60">{item.status}</span>
                                 </div>
                             ))}
                         </div>
@@ -219,7 +219,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                     <div className={cn(glass.card, "p-16 shadow-4xl bg-honey/10 border-honey/20 rounded-[4rem] group hover:bg-honey/15 transition-all relative overflow-hidden flex flex-col gap-8")}>
                         <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
                         <div className="flex items-center gap-8 mb-4 relative z-10">
-                            <div className="w-20 h-20 rounded-[2rem] bg-white/80 dark:bg-black/80 flex items-center justify-center border-2 border-current shadow-4xl text-red-500">
+                            <div className="w-20 h-20 rounded-[2rem] bg-white/80 flex items-center justify-center border-2 border-current shadow-4xl text-red-500">
                                 <Wind className="w-10 h-10" />
                             </div>
                             <h3 className="text-4xl font-black italic uppercase tracking-tighter text-red-500 leading-none">Weather Check</h3>
@@ -234,13 +234,13 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                         </button>
                     </div>
 
-                    <div className={cn(glass.card, "p-12 shadow-4xl bg-[#0D0D0D] border-4 border-honey/20 rounded-[4rem] group hover:border-honey/40 transition-all relative overflow-hidden flex items-start gap-10")}>
+                    <div className={cn(glass.card, "p-12 shadow-4xl bg-white border-4 border-honey/20 rounded-[4rem] group hover:border-honey/40 transition-all relative overflow-hidden flex items-start gap-10")}>
                         <div className="w-20 h-20 rounded-[2.5rem] bg-honey/10 flex items-center justify-center border-2 border-honey/30 shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
                             <Waves className="w-10 h-10 text-honey" />
                         </div>
                         <div className="space-y-4">
                             <p className="text-[14px] font-black italic uppercase tracking-[0.3em] text-honey">Live Tracking</p>
-                            <p className="text-xl font-black italic opacity-40 leading-tight uppercase tracking-widest pl-4 border-l-4 border-white/10">
+                            <p className="text-xl font-black italic opacity-40 leading-tight uppercase tracking-widest pl-4 border-l-4 border-gray-200">
                                 Our sensors are tracking bee flight patterns to make sure they return home safely.
                             </p>
                         </div>

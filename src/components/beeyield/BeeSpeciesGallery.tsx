@@ -150,7 +150,7 @@ export const BeeSpeciesGallery: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.05 }}
                             onClick={() => setSelectedBee(bee)}
-                            className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-[2.5rem] border border-border overflow-hidden hover:border-honey/30 transition-all duration-500 hover:shadow-2xl hover:shadow-honey/5"
+                            className="group cursor-pointer bg-white rounded-[2.5rem] border border-border overflow-hidden hover:border-honey/30 transition-all duration-500 hover:shadow-2xl hover:shadow-honey/5"
                         >
                             <div className="aspect-square overflow-hidden relative">
                                 <img 
@@ -185,7 +185,7 @@ export const BeeSpeciesGallery: React.FC = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.05 }}
                             onClick={() => setSelectedBee(bee)}
-                            className="flex items-center gap-6 p-4 bg-white dark:bg-neutral-900 border border-border rounded-3xl hover:border-honey/30 transition-all cursor-pointer group"
+                            className="flex items-center gap-6 p-4 bg-white border border-border rounded-3xl hover:border-honey/30 transition-all cursor-pointer group"
                         >
                             <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0">
                                 <img src={bee.image} alt={bee.name} className="w-full h-full object-cover" />
@@ -215,13 +215,13 @@ export const BeeSpeciesGallery: React.FC = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSelectedBee(null)}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-xl"
+                            className="fixed inset-0 bg-white/80 backdrop-blur-xl"
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 40 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                            className="relative w-full max-w-5xl bg-white dark:bg-neutral-900 rounded-[3.5rem] overflow-hidden shadow-3xl border border-border z-10 flex flex-col lg:flex-row"
+                            className="relative w-full max-w-5xl bg-white rounded-[3.5rem] overflow-hidden shadow-3xl border border-border z-10 flex flex-col lg:flex-row"
                         >
                             <button 
                                 onClick={() => setSelectedBee(null)}
@@ -235,7 +235,7 @@ export const BeeSpeciesGallery: React.FC = () => {
                                 <img src={selectedBee.image} alt={selectedBee.name} className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />
                                 <div className="absolute bottom-8 left-8 lg:hidden">
-                                     <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">{selectedBee.name}</h2>
+                                     <h2 className="text-3xl font-black text-gray-900 italic tracking-tighter uppercase">{selectedBee.name}</h2>
                                      <p className="text-white/60 font-serif italic">{selectedBee.scientificName}</p>
                                 </div>
                             </div>

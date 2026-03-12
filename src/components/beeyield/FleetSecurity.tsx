@@ -83,7 +83,7 @@ const FleetSecurity: React.FC = () => {
                         animate={{ height: 'auto', opacity: 1 }}
                         className="bg-[#FF6B00] text-black px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_0_50px_rgba(255,107,0,0.3)] relative z-50 mb-10 overflow-hidden"
                     >
-                        <div className="absolute inset-0 bg-black/5 animate-pulse pointer-events-none" />
+                        <div className="absolute inset-0 bg-gray-50 animate-pulse pointer-events-none" />
                         <div className="flex items-center gap-8 relative z-10">
                             <AlertTriangle className="w-12 h-12 animate-pulse" />
                             <div className="space-y-1">
@@ -92,8 +92,8 @@ const FleetSecurity: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-6 relative z-10">
-                            <button className="px-10 py-4 bg-black text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Suppress_Alarm</button>
-                            <button onClick={() => setGlobalAlert(false)} className="w-16 h-16 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black/10 transition-all">
+                            <button className="px-10 py-4 bg-black text-gray-900 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Suppress_Alarm</button>
+                            <button onClick={() => setGlobalAlert(false)} className="w-16 h-16 flex items-center justify-center border border-black/20 rounded-xl hover:bg-gray-50 transition-all">
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
@@ -109,8 +109,8 @@ const FleetSecurity: React.FC = () => {
                 subtitle="High-fidelity telemetry of pallet movement, geo-fencing, and nodal integrity."
                 actions={
                     <div className="flex gap-6">
-                        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-6 py-2">
-                            <Lock className="w-5 h-5 text-white/40" />
+                        <div className="flex items-center gap-4 bg-white/5 border border-gray-200 rounded-xl px-6 py-2">
+                            <Lock className="w-5 h-5 text-gray-600" />
                             <span className="text-[10px] font-mono font-black text-[#FF6B00] uppercase tracking-widest">ENCRYPTED_UPLINK</span>
                         </div>
                         <button className="h-14 px-8 bg-[#FF6B00] text-black font-black uppercase tracking-widest text-xs rounded-xl shadow-3xl hover:brightness-125 transition-all">LOCK_ALL_PALLETS</button>
@@ -123,16 +123,16 @@ const FleetSecurity: React.FC = () => {
 
                 {/* Asset Registry */}
                 <div className="lg:col-span-8 space-y-16">
-                        <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden relative group">
-                            <div className="p-10 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                        <div className="bg-white/5 border border-gray-200 rounded-3xl overflow-hidden relative group">
+                            <div className="p-10 border-b border-gray-200 flex items-center justify-between bg-white/[0.02]">
                                 <div className="flex items-center gap-6">
                                     <MapPin className="w-8 h-8 text-[#FF6B00]" />
-                                    <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Asset_Vector_Map</h3>
+                                    <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Asset_Vector_Map</h3>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-3 px-4 py-1 bg-white/5 rounded-lg border border-white/10">
+                                    <div className="flex items-center gap-3 px-4 py-1 bg-white/5 rounded-lg border border-gray-200">
                                         <div className="w-2 h-2 rounded-full bg-white opacity-40" />
-                                        <span className="text-[9px] font-mono font-black text-white/40 uppercase tracking-widest">GEO_SYNCED</span>
+                                        <span className="text-[9px] font-mono font-black text-gray-600 uppercase tracking-widest">GEO_SYNCED</span>
                                     </div>
                                     <RefreshCw className="w-5 h-5 text-white/10 hover:text-[#FF6B00] cursor-pointer transition-colors" />
                                 </div>
@@ -166,8 +166,8 @@ const FleetSecurity: React.FC = () => {
                                 ))}
                                 
                                 <div className="absolute bottom-6 right-6 flex flex-col gap-4">
-                                    <button className="h-10 w-10 bg-white/10 border border-white/10 rounded-lg flex items-center justify-center text-white hover:bg-[#FF6B00] hover:text-black transition-all">+</button>
-                                    <button className="h-10 w-10 bg-white/10 border border-white/10 rounded-lg flex items-center justify-center text-white hover:bg-[#FF6B00] hover:text-black transition-all">-</button>
+                                    <button className="h-10 w-10 bg-white/10 border border-gray-200 rounded-lg flex items-center justify-center text-gray-900 hover:bg-[#FF6B00] hover:text-black transition-all">+</button>
+                                    <button className="h-10 w-10 bg-white/10 border border-gray-200 rounded-lg flex items-center justify-center text-gray-900 hover:bg-[#FF6B00] hover:text-black transition-all">-</button>
                                 </div>
                             </div>
                         </div>
@@ -178,19 +178,19 @@ const FleetSecurity: React.FC = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="bg-white/5 border border-white/10 rounded-3xl p-10 flex flex-col gap-10 sticky top-32"
+                        className="bg-white/5 border border-gray-200 rounded-3xl p-10 flex flex-col gap-10 sticky top-32"
                     >
                         <div className="flex items-center gap-6 border-l-4 border-[#FF6B00] pl-6">
                             <Activity className="w-8 h-8 text-[#FF6B00]" />
-                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Unit_Matrix</h3>
+                            <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Unit_Matrix</h3>
                         </div>
 
                         <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4 thin-scrollbar">
                             {pallets.map((p, i) => (
-                                <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-center justify-between hover:border-[#FF6B00]/40 transition-all group">
+                                <div key={i} className="bg-white/5 border border-gray-200 p-6 rounded-2xl flex items-center justify-between hover:border-[#FF6B00]/40 transition-all group">
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[13px] font-mono font-black text-white group-hover:text-[#FF6B00] transition-colors tracking-widest uppercase">{p.id}</span>
-                                        <span className="text-[9px] font-mono font-black text-white/20 uppercase tracking-[0.2em]">{p.vibration.toFixed(2)}v_CORE_ECHO</span>
+                                        <span className="text-[13px] font-mono font-black text-gray-900 group-hover:text-[#FF6B00] transition-colors tracking-widest uppercase">{p.id}</span>
+                                        <span className="text-[9px] font-mono font-black text-gray-400 uppercase tracking-[0.2em]">{p.vibration.toFixed(2)}v_CORE_ECHO</span>
                                     </div>
                                     <div className="text-right flex flex-col items-end gap-1">
                                         <span className={cn(
@@ -210,9 +210,9 @@ const FleetSecurity: React.FC = () => {
                             ))}
                         </div>
 
-                        <div className="pt-6 border-t border-white/10 space-y-6">
+                        <div className="pt-6 border-t border-gray-200 space-y-6">
                             <button className="w-full h-16 bg-white text-black font-black uppercase tracking-widest text-xs rounded-xl hover:bg-[#FF6B00] transition-all">MANUAL_OVERRIDE</button>
-                            <button className="w-full h-16 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs rounded-xl hover:border-[#FF6B00]/40 transition-all">SYSTEM_DIAGNOSTIC</button>
+                            <button className="w-full h-16 bg-white/5 border border-gray-200 text-gray-900 font-black uppercase tracking-widest text-xs rounded-xl hover:border-[#FF6B00]/40 transition-all">SYSTEM_DIAGNOSTIC</button>
                         </div>
                     </motion.div>
                 </div>

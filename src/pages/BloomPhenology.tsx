@@ -44,7 +44,7 @@ const BloomPhenology: React.FC = () => {
                 <div className="space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
                         <Flower2 className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Floral Phenology Engine</span>
+                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Floral Phenology Engine</span>
                     </div>
                     <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
                         Bloom <span className="text-[#10b981]">Synchronization</span>
@@ -86,7 +86,7 @@ const BloomPhenology: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="p-6 bg-[#064e3b] text-white">
+                        <div className="p-6 bg-[#064e3b] text-gray-900">
                             <div className="flex items-center gap-2 mb-2">
                                 <Sprout className="w-4 h-4 text-[#10b981]" />
                                 <span className="text-[10px] font-black uppercase">Optimization Notice</span>

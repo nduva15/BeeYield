@@ -119,7 +119,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={!isProcessing ? onClose : undefined}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 cursor-crosshair"
+                        className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 cursor-crosshair"
                     />
 
                     {/* Drawer */}
@@ -132,11 +132,11 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                     >
                         {/* Header */}
                         <div className="h-16 flex items-center justify-between px-6 border-b border-[#1A1A1A]">
-                            <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Secure Checkout</span>
+                            <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Secure Checkout</span>
                             <button
                                 onClick={onClose}
                                 disabled={isProcessing}
-                                className="p-2 text-white/20 hover:text-white transition-colors disabled:opacity-0"
+                                className="p-2 text-gray-400 hover:text-gray-900 transition-colors disabled:opacity-0"
                             >
                                 <X size={18} />
                             </button>
@@ -148,21 +148,21 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                             {step === 'review' && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                     <div className="space-y-2">
-                                        <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Selected Hive Plan</p>
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Selected Hive Plan</p>
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <h3 className="text-xl font-black text-white leading-none">{item?.name}</h3>
-                                            <p className="text-[11px] text-white/40 mt-1.5 leading-relaxed">{item?.description}</p>
+                                            <h3 className="text-xl font-black text-gray-900 leading-none">{item?.name}</h3>
+                                            <p className="text-[11px] text-gray-600 mt-1.5 leading-relaxed">{item?.description}</p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <p className="text-[8px] font-black text-white/20 uppercase tracking-tighter">Amount Due</p>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Amount Due</p>
                                             <p className="text-lg font-black text-[#F59E0B] mt-1">{item?.currency} {item?.price.toLocaleString()}</p>
                                         </div>
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <p className="text-[8px] font-black text-white/20 uppercase tracking-tighter">Tax (16% VAT)</p>
-                                            <p className="text-lg font-black text-white mt-1">INCL</p>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Tax (16% VAT)</p>
+                                            <p className="text-lg font-black text-gray-900 mt-1">INCL</p>
                                         </div>
                                     </div>
 
@@ -182,7 +182,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                             {step === 'payment' && (
                                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                                     <div className="space-y-4">
-                                        <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Select Method</p>
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Select Method</p>
 
                                         <div className="space-y-2">
                                             {paymentMethods.map((method) => (
@@ -193,18 +193,18 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                         "w-full flex items-center justify-between p-4 border transition-all text-left",
                                                         selectedMethod === method.id
                                                             ? "bg-[#111] border-[#F59E0B]"
-                                                            : "bg-transparent border-[#1A1A1A] hover:border-white/10"
+                                                            : "bg-transparent border-[#1A1A1A] hover:border-gray-200"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-10 h-10 bg-white/5 flex items-center justify-center">
-                                                            {method.type === 'card' ? <CreditCard size={20} className="text-white/40" /> : <Smartphone size={20} className="text-emerald-400" />}
+                                                            {method.type === 'card' ? <CreditCard size={20} className="text-gray-600" /> : <Smartphone size={20} className="text-emerald-400" />}
                                                         </div>
                                                         <div>
-                                                            <p className="text-[12px] font-bold text-white">
+                                                            <p className="text-[12px] font-bold text-gray-900">
                                                                 {method.type === 'card' ? `•••• ${method.last4}` : method.phone}
                                                             </p>
-                                                            <p className="text-[9px] text-white/20 uppercase font-black">{method.provider}</p>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black">{method.provider}</p>
                                                         </div>
                                                     </div>
                                                     {method.isDefault && <span className="text-[8px] font-black text-[#F59E0B] border border-[#F59E0B]/20 px-1.5 py-0.5">DEFAULT</span>}
@@ -232,7 +232,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={() => setStep('review')}
                                             disabled={isProcessing}
-                                            className="w-full h-11 text-white/20 font-black uppercase tracking-[0.1em] hover:text-white transition-colors text-[10px] disabled:opacity-0"
+                                            className="w-full h-11 text-gray-400 font-black uppercase tracking-[0.1em] hover:text-gray-900 transition-colors text-[10px] disabled:opacity-0"
                                         >
                                             Back to Review
                                         </button>
@@ -268,10 +268,10 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                     </div>
 
                                     <div className="space-y-2">
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tight">
+                                        <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">
                                             {step === 'processing' ? 'Verifying Fund Access' : 'Paid'}
                                         </h3>
-                                        <p className="text-[11px] text-white/30 max-w-[240px] leading-relaxed mx-auto">
+                                        <p className="text-[11px] text-gray-500 max-w-[240px] leading-relaxed mx-auto">
                                             {step === 'processing'
                                                 ? 'Performing multi-hop handshake with regional payment clusters...'
                                                 : `Your ${item?.name} is now active. Receipt has been logged to the ledger.`}
@@ -289,7 +289,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                             </button>
                                             <button
                                                 onClick={onClose}
-                                                className="w-full h-12 text-white/40 font-black uppercase tracking-[0.1em] hover:text-white transition-colors text-[10px]"
+                                                className="w-full h-12 text-gray-600 font-black uppercase tracking-[0.1em] hover:text-gray-900 transition-colors text-[10px]"
                                             >
                                                 Return to Vault
                                             </button>
@@ -304,10 +304,10 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                         {/* Footer Info */}
                         <div className="p-6 bg-[#050505] border-t border-[#1A1A1A] flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Lock size={12} className="text-white/20" />
-                                <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em]">256-BIT RSA</span>
+                                <Lock size={12} className="text-gray-400" />
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">256-BIT RSA</span>
                             </div>
-                            <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.1em]">PCI-DSS v4.0</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">PCI-DSS v4.0</span>
                         </div>
                     </motion.div>
                 </>

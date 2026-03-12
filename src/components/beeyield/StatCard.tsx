@@ -24,7 +24,7 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => {
     return (
         <div className={cn("h-full", className)}>
-            <Card className="h-full border border-border bg-white/80 dark:bg-white/[0.04] backdrop-blur-md rounded-[2.5rem] shadow-xl shadow-black/5 flex flex-col transition-all duration-300 hover:scale-[1.02] hover:border-honey/30 hover:shadow-honey/5 group overflow-hidden">
+            <Card className="h-full border border-border bg-white/80 backdrop-blur-md rounded-[2.5rem] shadow-xl shadow-black/5 flex flex-col transition-all duration-300 hover:scale-[1.02] hover:border-honey/30 hover:shadow-honey/5 group overflow-hidden">
                 <CardContent className="p-8 flex flex-col justify-between h-full bg-transparent">
                     <div className="flex justify-between items-start mb-8">
                         <div className="w-14 h-14 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20 group-hover:scale-110 transition-transform">

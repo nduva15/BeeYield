@@ -159,11 +159,11 @@ const Careers = () => {
           </Button>
 
           {uploadSuccess ? (
-            <Card className="max-w-md mx-auto text-center py-12 border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-900">
+            <Card className="max-w-md mx-auto text-center py-12 border-green-200 bg-green-50/50">
               <CardContent>
                 <div className="flex justify-center mb-6">
-                  <div className="h-20 w-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+                  <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="h-10 w-10 text-green-600" />
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold mb-3">Application Received!</h2>
@@ -196,7 +196,7 @@ const Careers = () => {
                 </div>
 
                 <Card className="border-none shadow-sm bg-card/50">
-                  <CardContent className="p-8 prose prose-gray max-w-none dark:prose-invert">
+                  <CardContent className="p-8 prose prose-gray max-w-none">
                     <div dangerouslySetInnerHTML={{ __html: selectedJob.description_html }} />
 
                     {!selectedJob.description_html && (

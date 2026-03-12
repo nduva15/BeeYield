@@ -78,7 +78,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                     />
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className={cn(glass.btnSecondary, "h-20 px-12 font-black italic uppercase rounded-full shadow-4xl flex items-center gap-6 border-white/10 hover:bg-white/5")}
+                        className={cn(glass.btnSecondary, "h-20 px-12 font-black italic uppercase rounded-full shadow-4xl flex items-center gap-6 border-gray-200 hover:bg-white/5")}
                     >
                         <Upload className="w-8 h-8" />
                         {selectedFile ? selectedFile.name.substring(0, 15) : "Select Photo"}
@@ -128,7 +128,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                             <span className="text-xl font-black italic text-honey uppercase tracking-[0.5em]">Analyzing</span>
                                         </div>
                                     </div>
-                                    <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest text-white text-center px-12">
+                                    <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest text-gray-900 text-center px-12">
                                         Identifying bees and counting markers...
                                     </p>
                                 </motion.div>
@@ -142,7 +142,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                     <div className="w-32 h-32 bg-black rounded-[2.5rem] flex items-center justify-center mb-10 shadow-4xl">
                                         <Award className="w-16 h-16 text-honey" />
                                     </div>
-                                    <h3 className="text-7xl font-black italic uppercase tracking-tighter mb-12 leading-none">Healthy <span className="text-white">Colony</span></h3>
+                                    <h3 className="text-7xl font-black italic uppercase tracking-tighter mb-12 leading-none">Healthy <span className="text-gray-900">Colony</span></h3>
 
                                     <div className="grid grid-cols-3 gap-16 border-y-4 border-black/10 py-12 my-8 w-full">
                                         <div className="space-y-2">
@@ -159,7 +159,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                         </div>
                                     </div>
 
-                                    <div className="text-left w-full mt-10 bg-black/5 p-10 rounded-[3rem] border-2 border-black/10">
+                                    <div className="text-left w-full mt-10 bg-gray-50 p-10 rounded-[3rem] border-2 border-black/10">
                                         <div className="flex items-center gap-6 mb-8">
                                             <Activity className="w-8 h-8 opacity-40" />
                                             <p className="text-[14px] font-black italic uppercase tracking-[0.4em] opacity-40">Detections</p>
@@ -168,7 +168,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                             {scanResults.detections?.slice(0, 4).map((d: any, i: number) => (
                                                 <div key={i} className="flex justify-between items-center bg-white/20 p-6 rounded-3xl border border-black/5">
                                                     <span className="text-xl font-black italic uppercase tracking-widest">{d.label}</span>
-                                                    <span className="text-[12px] font-black italic bg-black/10 px-4 py-1 rounded-full">{Math.round(d.confidence * 100)}% Match</span>
+                                                    <span className="text-[12px] font-black italic bg-gray-50 px-4 py-1 rounded-full">{Math.round(d.confidence * 100)}% Match</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -176,7 +176,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
 
                                     <button
                                         onClick={() => setScanResults(null)}
-                                        className="mt-16 h-20 px-16 bg-black text-white rounded-full font-black italic text-2xl uppercase tracking-widest shadow-4xl hover:scale-105 active:scale-95 transition-all flex items-center gap-6"
+                                        className="mt-16 h-20 px-16 bg-black text-gray-900 rounded-full font-black italic text-2xl uppercase tracking-widest shadow-4xl hover:scale-105 active:scale-95 transition-all flex items-center gap-6"
                                     >
                                         <Camera className="w-8 h-8" />
                                         New Scan
@@ -198,14 +198,14 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                         </AnimatePresence>
 
                         {/* Decoration Elements */}
-                        <div className="absolute top-16 left-16 border-t-8 border-l-8 border-white/10 w-24 h-24 rounded-tl-[3.5rem]" />
-                        <div className="absolute top-16 right-16 border-t-8 border-r-8 border-white/10 w-24 h-24 rounded-tr-[3.5rem]" />
-                        <div className="absolute bottom-16 left-16 border-b-8 border-l-8 border-white/10 w-24 h-24 rounded-bl-[3.5rem]" />
-                        <div className="absolute bottom-16 right-16 border-b-8 border-r-8 border-white/10 w-24 h-24 rounded-br-[3.5rem]" />
+                        <div className="absolute top-16 left-16 border-t-8 border-l-8 border-gray-200 w-24 h-24 rounded-tl-[3.5rem]" />
+                        <div className="absolute top-16 right-16 border-t-8 border-r-8 border-gray-200 w-24 h-24 rounded-tr-[3.5rem]" />
+                        <div className="absolute bottom-16 left-16 border-b-8 border-l-8 border-gray-200 w-24 h-24 rounded-bl-[3.5rem]" />
+                        <div className="absolute bottom-16 right-16 border-b-8 border-r-8 border-gray-200 w-24 h-24 rounded-br-[3.5rem]" />
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className={cn(glass.card, "p-12 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4rem] border-white/5 group hover:border-honey/20 transition-all")}>
+                        <div className={cn(glass.card, "p-12 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[4rem] border-white/5 group hover:border-honey/20 transition-all")}>
                             <div className="flex items-center gap-8 mb-8">
                                 <div className="w-16 h-16 bg-honey/10 rounded-3xl flex items-center justify-center border border-honey/20 shadow-4xl group-hover:scale-110 transition-transform">
                                     <Cpu className="w-8 h-8 text-honey" />
@@ -216,7 +216,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                 Our tool automatically checks your bees. No more manual counting or guessing.
                             </p>
                         </div>
-                        <div className={cn(glass.card, "p-12 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4rem] border-white/5 group hover:border-honey/20 transition-all")}>
+                        <div className={cn(glass.card, "p-12 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[4rem] border-white/5 group hover:border-honey/20 transition-all")}>
                             <div className="flex items-center gap-8 mb-8">
                                 <div className="w-16 h-16 bg-honey/10 rounded-3xl flex items-center justify-center border border-honey/20 shadow-4xl group-hover:scale-110 transition-transform">
                                     <Award className="w-8 h-8 text-honey" />
@@ -235,13 +235,13 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={cn(glass.card, "p-12 shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4.5rem] border-white/5 relative overflow-hidden group")}
+                        className={cn(glass.card, "p-12 shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[4.5rem] border-white/5 relative overflow-hidden group")}
                     >
                         <div className="absolute top-0 right-0 w-48 h-48 bg-honey/5 rounded-full blur-[80px] -mr-24 -mt-24 pointer-events-none group-hover:bg-honey/10 transition-all" />
 
                         <div className="flex items-center justify-between mb-12 border-b-4 border-white/5 pb-8 relative z-10">
                             <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none">History</h3>
-                            <div className="w-12 h-12 bg-black/5 rounded-2xl flex items-center justify-center border border-white/5 shadow-inner">
+                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center border border-white/5 shadow-inner">
                                 <FileCheck className="w-6 h-6 text-honey" />
                             </div>
                         </div>
@@ -279,7 +279,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                     <div className={cn(glass.card, "p-12 shadow-4xl bg-honey/10 border-honey/20 rounded-[4rem] group hover:bg-honey/15 transition-all relative overflow-hidden")}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                         <div className="flex items-center gap-6 mb-8 relative z-10">
-                            <div className="w-16 h-16 bg-white/60 dark:bg-black/60 rounded-[1.5rem] flex items-center justify-center border-2 border-honey shadow-4xl">
+                            <div className="w-16 h-16 bg-white/60 rounded-[1.5rem] flex items-center justify-center border-2 border-honey shadow-4xl">
                                 <Info className="w-8 h-8 text-honey" />
                             </div>
                             <h4 className="text-3xl font-black italic uppercase tracking-tighter leading-none">Healthy standards</h4>

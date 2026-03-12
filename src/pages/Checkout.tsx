@@ -572,7 +572,7 @@ const Checkout = () => {
                             return (
                                 <div key={step.id} className="flex items-center gap-2 md:gap-4">
                                     <div className={`flex items-center gap-2 ${isActive ? 'text-primary' : isPast ? 'text-green-600' : 'text-muted-foreground'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isActive ? 'bg-primary text-white' : isPast ? 'bg-green-600 text-white' : 'bg-muted'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isActive ? 'bg-primary text-gray-900' : isPast ? 'bg-green-600 text-gray-900' : 'bg-muted'}`}>
                                             {isPast ? <CheckCircle2 className="w-5 h-5" /> : <step.icon className="w-4 h-4" />}
                                         </div>
                                         <span className="font-semibold hidden sm:inline">{step.label}</span>
@@ -758,7 +758,7 @@ const Checkout = () => {
                                                                 size="sm"
                                                                 disabled={!item.inStock}
                                                                 onClick={() => moveFromWishlistToCart(item)}
-                                                                className="w-full rounded-full bg-primary hover:bg-primary/90 text-white font-bold"
+                                                                className="w-full rounded-full bg-primary hover:bg-primary/90 text-gray-900 font-bold"
                                                             >
                                                                 Add To Cart
                                                             </Button>
@@ -850,9 +850,9 @@ const Checkout = () => {
                                                     />
                                                 </div>
                                                 {stripeCardReady && (
-                                                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                                    <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
                                                         <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                                        <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+                                                        <p className="text-sm text-green-700 font-medium">
                                                             Card ending in {paymentDetails.cardNumber.slice(-4)} verified
                                                         </p>
                                                     </div>
@@ -1162,7 +1162,7 @@ const Checkout = () => {
                                             <button
                                                 key={amount}
                                                 onClick={() => { setSelectedTip(amount); setCustomTipPercent(''); }}
-                                                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${selectedTip === amount ? 'bg-primary text-white border-primary' : 'border-border hover:border-primary'}`}
+                                                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${selectedTip === amount ? 'bg-primary text-gray-900 border-primary' : 'border-border hover:border-primary'}`}
                                             >
                                                 {formatPrice(amount)}
                                             </button>

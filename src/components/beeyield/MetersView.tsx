@@ -125,7 +125,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
             {/* Header */}
             <div className="space-y-4">
-                <div className={cn(glass.badge, "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold mb-4")}>
+                <div className={cn(glass.badge, "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 font-bold mb-4")}>
                     <Activity className="w-4 h-4 mr-2" />
                     Operational Telemetry Hub
                 </div>
@@ -162,7 +162,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 </div>
                                 <div className={cn(
                                     glass.badge, "text-[10px] font-bold px-3 py-1 shadow-none transition-colors",
-                                    alertCount > 0 ? 'bg-red-500 text-white border-transparent' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white'
+                                    alertCount > 0 ? 'bg-red-500 text-gray-900 border-transparent' : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white'
                                 )}>
                                     {alertCount > 0 ? 'ALERT' : 'NOMINAL'}
                                 </div>
@@ -183,12 +183,12 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div className="w-12 h-12 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center mb-6 shadow-sm">
                                 <AlertTriangle className="w-6 h-6 text-red-500 animate-pulse" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, "text-5xl tabular-nums text-red-600 dark:text-red-500")}>{activeAlarmsCount}</h3>
+                            <h3 className={cn(glass.sectionTitle, "text-5xl tabular-nums text-red-600")}>{activeAlarmsCount}</h3>
                             <p className={cn(glass.microLabel, "normal-case italic opacity-70 font-bold mt-2")}>Active Protocol Alerts</p>
                         </div>
                         <button
                             onClick={() => onTabChange('meters-alarms')}
-                            className={cn(glass.btnSecondary, "mt-6 text-red-600 dark:text-red-400 bg-white/50 dark:bg-black/20 border-red-500/30 hover:bg-red-500 hover:text-white hover:border-transparent group-hover:-translate-y-1")}
+                            className={cn(glass.btnSecondary, "mt-6 text-red-600 bg-white/50 border-red-500/30 hover:bg-red-500 hover:text-gray-900 hover:border-transparent group-hover:-translate-y-1")}
                         >
                             Interrogate Records →
                         </button>
@@ -210,8 +210,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 className={cn(
                                     "px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300",
                                     usageFilter === m
-                                        ? "bg-white dark:bg-black text-foreground shadow-sm scale-100"
-                                        : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 scale-95 hover:scale-100"
+                                        ? "bg-white text-foreground shadow-sm scale-100"
+                                        : "text-muted-foreground hover:bg-gray-50:bg-white/5 scale-95 hover:scale-100"
                                 )}
                                 onClick={() => setUsageFilter(m)}
                             >
@@ -284,12 +284,12 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         </div>
                     </div>
 
-                    <div className="bg-white/40 dark:bg-black/20 border border-border rounded-2xl p-6 mb-8 min-h-[140px] flex-1 max-h-[250px] overflow-y-auto custom-scrollbar flex flex-col gap-4">
+                    <div className="bg-white/40 border border-border rounded-2xl p-6 mb-8 min-h-[140px] flex-1 max-h-[250px] overflow-y-auto custom-scrollbar flex flex-col gap-4">
                         {chatMessages.map((msg, idx) => (
                             <div key={idx} className={cn("flex w-full", msg.role === 'user' ? "justify-end" : "justify-start")}>
                                 <div className={cn(
                                     "px-4 py-3 rounded-2xl max-w-[85%] shadow-sm",
-                                    msg.role === 'user' ? "bg-honey text-white rounded-br-none" : "bg-white dark:bg-zinc-900 border border-border text-foreground rounded-bl-none"
+                                    msg.role === 'user' ? "bg-honey text-white rounded-br-none" : "bg-white border border-border text-foreground rounded-bl-none"
                                 )}>
                                     <p className="text-sm font-medium leading-relaxed">
                                         {msg.content}
@@ -344,7 +344,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     key={event.id}
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    className="flex items-center justify-between p-4 rounded-xl bg-white/40 dark:bg-black/20 border border-border hover:bg-white/60 dark:hover:bg-black/40 hover:border-border/80 transition-all group cursor-pointer"
+                                    className="flex items-center justify-between p-4 rounded-xl bg-white/40 border border-border hover:bg-white/60:bg-gray-100 hover:border-border/80 transition-all group cursor-pointer"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className={cn('w-3 h-3 rounded-full shrink-0 shadow-sm border border-transparent',
@@ -353,7 +353,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                                 : 'bg-emerald-500 shadow-emerald-500/50'
                                         )} />
                                         <div>
-                                            <span className={cn(glass.microLabel, "font-bold tracking-wider opacity-90 group-hover:opacity-100 transition-opacity block", event.severity === 'CRITICAL' ? "text-red-600 dark:text-red-400" : "")}>{event.event_type}</span>
+                                            <span className={cn(glass.microLabel, "font-bold tracking-wider opacity-90 group-hover:opacity-100 transition-opacity block", event.severity === 'CRITICAL' ? "text-red-600" : "")}>{event.event_type}</span>
                                             <p className="text-xs text-muted-foreground font-medium mt-1 truncate max-w-[200px] sm:max-w-[250px]">{event.reason}</p>
                                         </div>
                                     </div>

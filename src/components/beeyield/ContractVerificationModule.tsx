@@ -55,7 +55,7 @@ const ContractVerificationModule: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-10">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <FileCheck className="w-4 h-4 mr-2" />
                         Contract Verification Engine v3.1
                     </div>
@@ -84,7 +84,7 @@ const ContractVerificationModule: React.FC = () => {
                     className={cn(glass.card, "p-8 space-y-4 shadow-xl hover:shadow-2xl transition-all border-border/50")}
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
                             <Activity className="w-6 h-6 text-honey" />
                         </div>
                         <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Acoustic Brood Index</h3>
@@ -101,7 +101,7 @@ const ContractVerificationModule: React.FC = () => {
                     className={cn(glass.card, "p-8 space-y-4 shadow-xl hover:shadow-2xl transition-all border-border/50")}
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
                             <Scale className="w-6 h-6 text-emerald-500" />
                         </div>
                         <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Weight Threshold</h3>
@@ -119,7 +119,7 @@ const ContractVerificationModule: React.FC = () => {
                 >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-honey/5 rounded-full blur-2xl pointer-events-none group-hover:bg-honey/10 transition-colors" />
                     <div className="flex items-center gap-4 relative z-10">
-                        <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-honey shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-honey shadow-sm">
                             <Award className="w-6 h-6 text-honey" />
                         </div>
                         <h3 className={cn(glass.sectionTitle, "text-xl normal-case text-honey")}>Pricing Lift</h3>
@@ -139,7 +139,7 @@ const ContractVerificationModule: React.FC = () => {
             >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 border-b border-border bg-white/40 dark:bg-black/20 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 relative z-10">
+                <div className="p-10 border-b border-border bg-white/40 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 relative z-10">
                     <div>
                         <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Verified Asset Ledger</h3>
                         <p className={cn(glass.microLabel, "opacity-60 font-bold mt-2")}>Mathematically certified pollination infrastructure</p>
@@ -169,10 +169,10 @@ const ContractVerificationModule: React.FC = () => {
                         </thead>
                         <tbody className="divide-y divide-border/20">
                             {pallets.filter(p => p.id.includes(search) || p.location.includes(search)).map((p, idx) => (
-                                <tr key={p.id} className="group hover:bg-white/40 dark:hover:bg-black/20 transition-all">
+                                <tr key={p.id} className="group hover:bg-white/40:bg-gray-100 transition-all">
                                     <td className="p-8">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-white dark:bg-black/40 border border-border flex items-center justify-center font-bold text-honey shadow-sm group-hover:scale-110 transition-transform">
+                                            <div className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center font-bold text-honey shadow-sm group-hover:scale-110 transition-transform">
                                                 #
                                             </div>
                                             <span className="text-base font-bold text-foreground opacity-80 group-hover:opacity-100 transition-opacity">{p.id}</span>
@@ -202,7 +202,7 @@ const ContractVerificationModule: React.FC = () => {
                                         <div className={cn(
                                             glass.badge,
                                             "px-4 py-2 border-transparent font-bold",
-                                            p.grade === 'A' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                            p.grade === 'A' ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
                                         )}>
                                             {p.grade === 'A' ? <Award className="w-4 h-4 mr-2" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
                                             Grade {p.grade}
@@ -238,12 +238,12 @@ const ContractVerificationModule: React.FC = () => {
                         <p className="text-sm italic font-medium opacity-80 leading-relaxed border-t border-border/50 pt-6">
                             Every Grade A certification is backed by a salt-hashed biometric signature of the acoustic response and load-cell matrix.
                         </p>
-                        <div className="p-5 bg-white/40 dark:bg-black/20 rounded-2xl border border-border/50 font-mono text-[10px] break-all opacity-60 shadow-inner">
+                        <div className="p-5 bg-white/40 rounded-2xl border border-border/50 font-mono text-[10px] break-all opacity-60 shadow-inner">
                             0x7B2f9281A12C5D6E8...CERTIFIER_SIG_VERIFIED_BY_BEE_YIELD_CORE
                         </div>
                         <div className="flex items-center gap-4 pt-2">
-                            <Badge className="rounded-xl bg-emerald-500 dark:bg-emerald-600 text-white border-transparent px-4 py-1 font-bold shadow-md">F1 Score: 0.982</Badge>
-                            <Badge className="rounded-xl bg-indigo-500 dark:bg-indigo-600 text-white border-transparent px-4 py-1 font-bold shadow-md">Model: YOLOv11n-HHI</Badge>
+                            <Badge className="rounded-xl bg-emerald-500 text-white border-transparent px-4 py-1 font-bold shadow-md">F1 Score: 0.982</Badge>
+                            <Badge className="rounded-xl bg-indigo-500 text-gray-900 border-transparent px-4 py-1 font-bold shadow-md">Model: YOLOv11n-HHI</Badge>
                         </div>
                     </Card>
                 </motion.div>
@@ -257,7 +257,7 @@ const ContractVerificationModule: React.FC = () => {
                     <Card className={cn(glass.card, "p-0 h-full shadow-xl bg-honey/10 border-honey/20 relative overflow-hidden group")}>
                         <div className="absolute top-0 right-0 w-64 h-64 bg-honey/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-honey/20 transition-colors" />
                         <div className="p-10 flex items-center gap-10 h-full relative z-10">
-                            <div className="w-28 h-28 rounded-[2.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center p-6 border border-honey shadow-xl group-hover:scale-110 transition-transform duration-500">
+                            <div className="w-28 h-28 rounded-[2.5rem] bg-white/60 flex items-center justify-center p-6 border border-honey shadow-xl group-hover:scale-110 transition-transform duration-500">
                                 <Award className="w-full h-full text-honey" />
                             </div>
                             <div>
@@ -279,7 +279,7 @@ const ContractVerificationModule: React.FC = () => {
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

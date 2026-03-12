@@ -85,7 +85,7 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                                     }}
                                 >
                                     {activeSector === s.id && (
-                                        <div className="bg-[#064e3b] text-white p-2 border-2 border-white pointer-events-none transform -translate-y-8 animate-in fade-in slide-in-from-bottom-2">
+                                        <div className="bg-[#064e3b] text-gray-900 p-2 border-2 border-white pointer-events-none transform -translate-y-8 animate-in fade-in slide-in-from-bottom-2">
                                             <p className="text-[8px] font-black uppercase tracking-widest whitespace-nowrap">{s.vpm} Visits/Min</p>
                                         </div>
                                     )}
@@ -110,17 +110,17 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                                     <span className="text-[9px] font-black uppercase text-[#064e3b]/60">Low / Potential Gap</span>
                                 </div>
                             </div>
-                            <button className="w-full mt-6 py-3 border-4 border-[#064e3b] text-[9px] font-black uppercase tracking-widest hover:bg-[#064e3b] hover:text-white transition-none">
+                            <button className="w-full mt-6 py-3 border-4 border-[#064e3b] text-[9px] font-black uppercase tracking-widest hover:bg-[#064e3b] hover:text-gray-900 transition-none">
                                 Optimize Hive Placement
                             </button>
                         </div>
 
                         {/* Zoom Controls */}
                         <div className="absolute top-6 right-6 flex flex-col gap-2">
-                            <button className="w-10 h-10 bg-white border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-white transition-none">
+                            <button className="w-10 h-10 bg-white border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-gray-900 transition-none">
                                 <Maximize2 className="w-4 h-4" />
                             </button>
-                            <button className="w-10 h-10 bg-white border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-white transition-none">
+                            <button className="w-10 h-10 bg-white border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-gray-900 transition-none">
                                 <Minimize2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -177,8 +177,8 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                     </div>
 
                     {/* VPM Summary */}
-                    <div className="border-4 border-[#064e3b] p-8 bg-[#064e3b] text-white shadow-[10px_10px_0px_0px_#facc15]">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">Bloom-Sync Evaluation</h4>
+                    <div className="border-4 border-[#064e3b] p-8 bg-[#064e3b] text-gray-900 shadow-[10px_10px_0px_0px_#facc15]">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-6">Bloom-Sync Evaluation</h4>
                         <div className="space-y-6">
                             <div>
                                 <div className="flex justify-between items-baseline mb-2">
@@ -191,12 +191,12 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                                     <div className="absolute inset-y-0 border-x-4 border-white/40" style={{ left: '60%', width: '30%' }} />
                                 </div>
                                 <div className="flex justify-between mt-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-white/20">Target: 12-18</span>
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Target: 12-18</span>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-[#10b981]">Good VPM Range</span>
                                 </div>
                             </div>
 
-                            <p className="text-[9px] font-bold text-white/40 leading-relaxed uppercase">
+                            <p className="text-[9px] font-bold text-gray-600 leading-relaxed uppercase">
                                 Current flower visit density matches prediction for the 85% bloom stage. No immediate hive adjustment required for sector 12-F.
                             </p>
                         </div>

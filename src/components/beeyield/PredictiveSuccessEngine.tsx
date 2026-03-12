@@ -60,7 +60,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={cn(glass.card, "p-16 flex flex-col items-center shadow-4xl overflow-hidden relative bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[5rem] border-white/5")}
+                    className={cn(glass.card, "p-16 flex flex-col items-center shadow-4xl overflow-hidden relative bg-white/80 backdrop-blur-3xl rounded-[5rem] border-white/5")}
                 >
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none" />
 
@@ -71,7 +71,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
 
                     <div className="relative w-96 h-48 overflow-hidden mb-16 flex-shrink-0 z-10 transition-transform duration-700 hover:scale-110">
                         {/* Gauge background */}
-                        <div className="absolute inset-x-0 top-0 h-96 border-[40px] border-black/5 dark:border-white/5 rounded-full" />
+                        <div className="absolute inset-x-0 top-0 h-96 border-[40px] border-black/5 rounded-full" />
                         <motion.div
                             initial={{ rotate: -90 }}
                             animate={{ rotate: 55 }}
@@ -93,11 +93,11 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                     </div>
 
                     <div className="grid grid-cols-2 gap-8 w-full relative z-10 mb-12">
-                        <div className="rounded-[2.5rem] bg-black/5 dark:bg-white/5 p-8 text-center border border-white/5 shadow-inner group hover:bg-honey/10 transition-all duration-700">
+                        <div className="rounded-[2.5rem] bg-gray-50 p-8 text-center border border-white/5 shadow-inner group hover:bg-honey/10 transition-all duration-700">
                             <p className="text-[12px] font-black italic uppercase tracking-[0.3em] opacity-40 mb-3 group-hover:text-honey transition-colors">Accuracy</p>
                             <p className="text-4xl font-black italic tabular-nums text-emerald-500 tracking-tighter shadow-emerald-500/20">± 5%</p>
                         </div>
-                        <div className="rounded-[2.5rem] bg-black/5 dark:bg-white/5 p-8 text-center border border-white/5 shadow-inner group hover:bg-honey/10 transition-all duration-700">
+                        <div className="rounded-[2.5rem] bg-gray-50 p-8 text-center border border-white/5 shadow-inner group hover:bg-honey/10 transition-all duration-700">
                             <p className="text-[12px] font-black italic uppercase tracking-[0.3em] opacity-40 mb-3 group-hover:text-honey transition-colors">Improvement</p>
                             <p className="text-4xl font-black italic tabular-nums tracking-tighter">+12%</p>
                         </div>
@@ -112,9 +112,9 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={cn(glass.card, "lg:col-span-2 p-0 flex flex-col overflow-hidden bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[5rem] border-white/5 shadow-4xl")}
+                    className={cn(glass.card, "lg:col-span-2 p-0 flex flex-col overflow-hidden bg-white/80 backdrop-blur-3xl rounded-[5rem] border-white/5 shadow-4xl")}
                 >
-                    <div className="flex flex-col md:flex-row items-center justify-between p-12 border-b border-white/5 bg-black/10 dark:bg-black/40">
+                    <div className="flex flex-col md:flex-row items-center justify-between p-12 border-b border-white/5 bg-gray-50">
                         <div className="space-y-4">
                             <h3 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Flight <span className="text-honey">Time</span></h3>
                             <p className="text-xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-white/5">Our sensors vs. the local weather station.</p>
@@ -125,7 +125,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                 <span className="text-[12px] font-black italic uppercase tracking-widest opacity-60">Hive Sensors</span>
                             </div>
                             <div className="flex items-center gap-4">
-                                <div className="w-4 h-4 rounded-full border-4 border-white/20 border-dashed" />
+                                <div className="w-4 h-4 rounded-full border-4 border-gray-300 border-dashed" />
                                 <span className="text-[12px] font-black italic uppercase tracking-widest opacity-60">Weather Station</span>
                             </div>
                         </div>
@@ -173,11 +173,11 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                     <h3 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Success <span className="text-honey">Factors</span></h3>
                 </div>
 
-                <div className={cn(glass.card, "p-0 overflow-hidden shadow-4xl bg-white/80 dark:bg-[#0D0D0D]/80 backdrop-blur-3xl rounded-[4rem] border-white/5")}>
+                <div className={cn(glass.card, "p-0 overflow-hidden shadow-4xl bg-white/80 backdrop-blur-3xl rounded-[4rem] border-white/5")}>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left min-w-[1000px]">
                             <thead>
-                                <tr className="bg-black/10 dark:bg-black/40">
+                                <tr className="bg-gray-50">
                                     <th className="px-12 py-10 text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Factor</th>
                                     <th className="px-12 py-10 text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Current Status</th>
                                     <th className="px-12 py-10 text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">Focus</th>
@@ -200,7 +200,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                         </td>
                                         <td className="px-12 py-10">
                                             <div className="flex items-center gap-8">
-                                                <div className="h-4 w-48 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden p-1 shadow-inner">
+                                                <div className="h-4 w-48 bg-gray-50 rounded-full overflow-hidden p-1 shadow-inner">
                                                     <motion.div
                                                         initial={{ width: 0 }}
                                                         whileInView={{ width: row.weight }}
@@ -216,7 +216,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                             <div className={cn(
                                                 "inline-block px-10 py-3 rounded-full text-xl font-black italic tracking-widest border-2 shadow-4xl transition-all",
                                                 row.status === 'HIGH' ? "bg-emerald-500 text-black border-emerald-400" :
-                                                    row.status === 'STABLE' || row.status === 'NORMAL' ? "bg-honey text-black border-honey/40" : "bg-white/10 text-foreground/40 border-white/10"
+                                                    row.status === 'STABLE' || row.status === 'NORMAL' ? "bg-honey text-black border-honey/40" : "bg-white/10 text-foreground/40 border-gray-200"
                                             )}>{row.status}</div>
                                         </td>
                                     </tr>
@@ -230,7 +230,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
             <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={cn(glass.btnPrimary, "w-full h-32 text-3xl font-black italic uppercase tracking-[0.4em] rounded-[4rem] shadow-4xl relative overflow-hidden group border-white/10 flex items-center justify-center gap-10")}
+                className={cn(glass.btnPrimary, "w-full h-32 text-3xl font-black italic uppercase tracking-[0.4em] rounded-[4rem] shadow-4xl relative overflow-hidden group border-gray-200 flex items-center justify-center gap-10")}
             >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:animate-shimmer" />
                 <Download className="w-12 h-12" />

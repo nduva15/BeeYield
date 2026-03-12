@@ -31,7 +31,7 @@ const BeeCalculatorSuite: React.FC = () => {
                 <div className="space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
                         <Calculator className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Universal Calculator Suite</span>
+                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em]">Universal Calculator Suite</span>
                     </div>
                     <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
                         Precision <span className="text-[#10b981]">Forecasting</span>
@@ -90,7 +90,7 @@ const BeeCalculatorSuite: React.FC = () => {
                                             <span className="text-xl font-black text-[#064e3b]">+25.8%</span>
                                         </div>
                                     </div>
-                                    <Button className="w-full h-14 mt-8 rounded-none bg-[#064e3b] text-white font-black uppercase tracking-[0.2em] text-[10px]">
+                                    <Button className="w-full h-14 mt-8 rounded-none bg-[#064e3b] text-gray-900 font-black uppercase tracking-[0.2em] text-[10px]">
                                         Calculate ROI Lift
                                         <ArrowUpRight className="w-4 h-4 ml-2" />
                                     </Button>
@@ -100,7 +100,7 @@ const BeeCalculatorSuite: React.FC = () => {
 
                         {/* Recent PERSISTED Logs */}
                         <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(16,185,129,1)]">
-                            <CardHeader className="p-8 border-b-4 border-[#064e3b]/5 bg-[#064e3b] text-white">
+                            <CardHeader className="p-8 border-b-4 border-[#064e3b]/5 bg-[#064e3b] text-gray-900">
                                 <CardTitle className="text-2xl font-black uppercase tracking-tighter italic">Cloud Sync Audit</CardTitle>
                             </CardHeader>
                             <CardContent className="p-0">

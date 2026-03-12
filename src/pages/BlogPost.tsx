@@ -57,24 +57,24 @@ const BlogPost = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
 
-                <div className="relative h-full container mx-auto px-4 flex flex-col justify-end pb-12 text-white">
+                <div className="relative h-full container mx-auto px-4 flex flex-col justify-end pb-12 text-gray-900">
                     <Button
                         variant="ghost"
-                        className="text-white/80 hover:text-white hover:bg-white/10 w-fit mb-6 pl-0"
+                        className="text-gray-800 hover:text-gray-900 hover:bg-white/10 w-fit mb-6 pl-0"
                         onClick={() => navigate("/blogs")}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Blog
                     </Button>
 
                     <div className="space-y-4 max-w-4xl">
-                        <Badge className="bg-primary hover:bg-primary/90 text-white border-none text-sm py-1 px-4">
+                        <Badge className="bg-primary hover:bg-primary/90 text-gray-900 border-none text-sm py-1 px-4">
                             {post.category}
                         </Badge>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
                             {post.title}
                         </h1>
 
-                        <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-white/90 pt-4">
+                        <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-gray-900 pt-4">
                             <div className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
                                 <span>{post.author_name}</span>
@@ -101,7 +101,7 @@ const BlogPost = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     {/* Main Content */}
                     <div className="lg:col-span-8">
-                        <div className="prose prose-lg prose-slate dark:prose-invert max-w-none 
+                        <div className="prose prose-lg prose-slate max-w-none 
               prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary 
               prose-img:rounded-xl prose-img:shadow-lg">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>

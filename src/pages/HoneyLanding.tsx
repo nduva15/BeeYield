@@ -86,7 +86,7 @@ const HeroSection = () => {
             <div className="flex flex-wrap gap-4 mb-12">
               <Button
                 size="lg"
-                className="bg-neutral-900 hover:bg-beeyield-green text-white font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs"
+                className="bg-neutral-900 hover:bg-beeyield-green text-gray-900 font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs"
                 onClick={() => navigate("/shop")}
               >
                 Shop Collection
@@ -144,7 +144,7 @@ const HeroSection = () => {
                 className="absolute top-10 -right-4 lg:-right-12 z-20 bg-white/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white/50 flex flex-col items-center gap-2"
               >
                 <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
-                  <ShieldCheck className="w-6 h-6 text-white" />
+                  <ShieldCheck className="w-6 h-6 text-gray-900" />
                 </div>
                 <div className="text-center">
                   <span className="block text-sm font-black text-neutral-900">Verified</span>
@@ -210,7 +210,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
                   {/* Floating Tags */}
                   {product.badge && (
                     <div className="absolute top-4 left-4 z-10">
-                      <Badge className="bg-beeyield-gold text-white font-black uppercase text-[9px] tracking-widest px-3 py-1 shadow-md border-none">
+                      <Badge className="bg-beeyield-gold text-gray-900 font-black uppercase text-[9px] tracking-widest px-3 py-1 shadow-md border-none">
                         {product.badge}
                       </Badge>
                     </div>
@@ -265,7 +265,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
 
                     <Button
                       size="sm"
-                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-black uppercase tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
+                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-gray-900 font-black uppercase tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
                       onClick={() => handleAddToCart(product)}
                     >
                       Add
@@ -445,7 +445,7 @@ const AboutSection = () => {
               <motion.div
                 animate={{ rotate: [-12, -8, -12] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-8 -left-8 bg-beeyield-green text-white p-6 rounded-[2rem] shadow-2xl font-black text-sm uppercase tracking-widest leading-none text-center"
+                className="absolute -top-8 -left-8 bg-beeyield-green text-gray-900 p-6 rounded-[2rem] shadow-2xl font-black text-sm uppercase tracking-widest leading-none text-center"
               >
                 50 / 50<br />
                 <span className="text-[10px] opacity-70">Promise</span>
@@ -586,7 +586,7 @@ const FlashSaleSection = () => {
               <Badge className="bg-beeyield-gold text-neutral-900 border-none mb-8 px-6 py-2 font-black uppercase tracking-widest text-[10px] shadow-glow">
                 Limited Time Offer
               </Badge>
-              <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[0.9] tracking-tighter uppercase">
+              <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-8 leading-[0.9] tracking-tighter uppercase">
                 Claim Your <span className="text-beeyield-gold">20% Welcome</span> Discount
               </h2>
               <p className="text-neutral-400 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
@@ -595,7 +595,7 @@ const FlashSaleSection = () => {
 
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-white font-black rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
+                className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-gray-900 font-black rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
                 onClick={() => navigate("/shop")}
               >
                 Claim Discount Now
@@ -610,9 +610,9 @@ const FlashSaleSection = () => {
                 { label: "Seconds", value: timeLeft.seconds }
               ].map((time, i) => (
                 <div key={i} className="flex flex-col items-center group">
-                  <div className="bg-white/5 backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-white/10 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
+                  <div className="bg-white/5 backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-gray-200 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
                     <div className="absolute inset-0 bg-beeyield-gold/0 group-hover:bg-beeyield-gold/5 transition-colors duration-500" />
-                    <span className="text-4xl sm:text-5xl font-black text-white tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
+                    <span className="text-4xl sm:text-5xl font-black text-gray-900 tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
                   </div>
                   <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest group-hover:text-beeyield-gold transition-colors">{time.label}</span>
                 </div>
@@ -742,28 +742,28 @@ const NewsletterSection = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <div className="bg-white/10 backdrop-blur-2xl rounded-[3rem] p-8 md:p-20 border border-white/20 text-center relative overflow-hidden shadow-2xl">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-[3rem] p-8 md:p-20 border border-gray-300 text-center relative overflow-hidden shadow-2xl">
             <div className="absolute -top-32 -right-32 w-80 h-80 bg-beeyield-gold/20 rounded-full blur-3xl mix-blend-overlay" />
 
             <div className="relative z-10">
-              <div className="w-20 h-20 mx-auto mb-8 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner border border-white/20">
-                <Mail className="w-8 h-8 text-white" />
+              <div className="w-20 h-20 mx-auto mb-8 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner border border-gray-300">
+                <Mail className="w-8 h-8 text-gray-900" />
               </div>
 
-              <h2 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tighter">
+              <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 uppercase tracking-tighter">
                 Keep in <span className="text-beeyield-gold">Touch</span>
               </h2>
               <p className="text-beeyield-green-100/80 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium">
                 Subscribe for exclusive drops, blockchain reports, and the future of verifiable beekeeping.
               </p>
 
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-white/5 p-2 rounded-3xl border border-white/10">
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-white/5 p-2 rounded-3xl border border-gray-200">
                 <Input
                   type="email"
                   placeholder="Enter your email address..."
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 rounded-2xl bg-transparent border-none text-white placeholder:text-white/40 text-base px-6 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all font-medium"
+                  className="h-14 rounded-2xl bg-transparent border-none text-gray-900 placeholder:text-gray-600 text-base px-6 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all font-medium"
                   required
                 />
                 <Button
@@ -833,7 +833,7 @@ const AllProductsSection = ({
                     className="w-full h-full object-contain drop-shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ease-out"
                   />
                   {product.badge && (
-                    <Badge className="absolute top-4 left-4 bg-beeyield-gold text-white font-black uppercase text-[9px] tracking-widest px-3 py-1 rounded-full shadow-lg border-none">
+                    <Badge className="absolute top-4 left-4 bg-beeyield-gold text-gray-900 font-black uppercase text-[9px] tracking-widest px-3 py-1 rounded-full shadow-lg border-none">
                       {product.badge}
                     </Badge>
                   )}
@@ -873,7 +873,7 @@ const AllProductsSection = ({
 
                     <Button
                       size="sm"
-                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-white rounded-xl h-11 text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg shadow-neutral-900/10"
+                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-gray-900 rounded-xl h-11 text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg shadow-neutral-900/10"
                       onClick={() => handleAddToCart(product)}
                     >
                       <ShoppingCart className="h-3.5 w-3.5 mr-2" />
@@ -917,7 +917,7 @@ const MissionStatementSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-gray-900 text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
           >
             <Sparkles className="w-3.5 h-3.5 text-beeyield-gold" />
             The Mission

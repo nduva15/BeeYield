@@ -146,7 +146,7 @@ const IntegrationsView: React.FC = () => {
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "relative overflow-hidden p-0 border-white/5 bg-white/60 dark:bg-[#0D0D0D]/60 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.3)]")}
+                className={cn(glass.card, "relative overflow-hidden p-0 border-white/5 bg-white/60 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.3)]")}
             >
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-honey/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
@@ -174,7 +174,7 @@ const IntegrationsView: React.FC = () => {
                             </button>
                             <button
                                 onClick={() => setActiveTab('shopify')}
-                                className={cn(glass.btnSecondary, "h-22 px-14 text-xl font-black italic rounded-[2.5rem] bg-white dark:bg-black/40 border-white/10 shadow-3xl")}
+                                className={cn(glass.btnSecondary, "h-22 px-14 text-xl font-black italic rounded-[2.5rem] bg-white border-gray-200 shadow-3xl")}
                             >
                                 Setup Shopify
                             </button>
@@ -185,7 +185,7 @@ const IntegrationsView: React.FC = () => {
                         <div className="absolute inset-0 bg-honey/5 blur-3xl rounded-full" />
                         <motion.div
                             whileHover={{ y: -10, scale: 1.02 }}
-                            className={cn(glass.card, "p-12 space-y-8 bg-white/40 dark:bg-black/60 border-white/5 shadow-2xl text-center group")}
+                            className={cn(glass.card, "p-12 space-y-8 bg-white/40 border-white/5 shadow-2xl text-center group")}
                         >
                             <div className="w-24 h-24 mx-auto rounded-[2rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-inner group-hover:rotate-12 transition-transform duration-1000">
                                 <Calculator className="w-12 h-12 text-emerald-500" />
@@ -197,7 +197,7 @@ const IntegrationsView: React.FC = () => {
                         </motion.div>
                         <motion.div
                             whileHover={{ y: -10, scale: 1.02 }}
-                            className={cn(glass.card, "p-12 space-y-8 bg-white/40 dark:bg-black/60 border-white/5 shadow-2xl text-center group mt-12 md:mt-24")}
+                            className={cn(glass.card, "p-12 space-y-8 bg-white/40 border-white/5 shadow-2xl text-center group mt-12 md:mt-24")}
                         >
                             <div className="w-24 h-24 mx-auto rounded-[2rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-inner group-hover:-rotate-12 transition-transform duration-1000">
                                 <ShoppingBag className="w-12 h-12 text-honey" />
@@ -223,7 +223,7 @@ const IntegrationsView: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2 + (i * 0.1) }}
-                        className={cn(glass.card, "p-12 space-y-8 bg-white dark:bg-[#0D0D0D] border-white/5 shadow-2xl group hover:border-honey/40 transition-all duration-1000")}
+                        className={cn(glass.card, "p-12 space-y-8 bg-white border-white/5 shadow-2xl group hover:border-honey/40 transition-all duration-1000")}
                     >
                         <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-all duration-1000", f.color)}>
                             {f.icon}
@@ -263,13 +263,13 @@ const IntegrationsView: React.FC = () => {
                         onClick={() => handleConnectService('quickbooks')}
                         className={cn(glass.btnPrimary, "bg-emerald-500 hover:bg-emerald-600 shadow-[0_45px_100px_-20px_rgba(16,185,129,0.5)] h-22 px-14 rounded-[2.5rem] font-black text-2xl italic flex items-center gap-6")}
                     >
-                        <ShieldCheck className="w-10 h-10 text-white" />
+                        <ShieldCheck className="w-10 h-10 text-gray-900" />
                         {isConnected('quickbooks') ? "Renew Pulse" : "Initialize Link"}
                     </button>
                     <button
                         onClick={() => handleSyncNow('quickbooks')}
                         disabled={!isConnected('quickbooks')}
-                        className={cn(glass.btnSecondary, "h-22 px-14 rounded-[2.5rem] font-black text-xl italic bg-white dark:bg-black/40 border-white/5 shadow-2xl flex items-center gap-6 group")}
+                        className={cn(glass.btnSecondary, "h-22 px-14 rounded-[2.5rem] font-black text-xl italic bg-white border-white/5 shadow-2xl flex items-center gap-6 group")}
                     >
                         Force Sync <RefreshCw className="w-8 h-8 group-hover:rotate-180 transition-transform duration-1000 text-emerald-500" />
                     </button>
@@ -277,10 +277,10 @@ const IntegrationsView: React.FC = () => {
             </div>
 
             <Tabs defaultValue="overview" className="space-y-16">
-                <TabsList className="bg-white/40 dark:bg-black/40 p-2 h-20 w-fit grid grid-cols-3 rounded-[30px] border border-white/10 backdrop-blur-3xl shadow-2xl">
-                    <TabsTrigger value="overview" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 transition-all duration-700">Audit Dashboard</TabsTrigger>
-                    <TabsTrigger value="history" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 transition-all duration-700">Sync Pipeline</TabsTrigger>
-                    <TabsTrigger value="settings" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 transition-all duration-700">Node Config</TabsTrigger>
+                <TabsList className="bg-white/40 p-2 h-20 w-fit grid grid-cols-3 rounded-[30px] border border-gray-200 backdrop-blur-3xl shadow-2xl">
+                    <TabsTrigger value="overview" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white=active]:bg-white/10 transition-all duration-700">Audit Dashboard</TabsTrigger>
+                    <TabsTrigger value="history" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white=active]:bg-white/10 transition-all duration-700">Sync Pipeline</TabsTrigger>
+                    <TabsTrigger value="settings" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white=active]:bg-white/10 transition-all duration-700">Node Config</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-16 animate-in fade-in duration-700">
@@ -292,7 +292,7 @@ const IntegrationsView: React.FC = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                         <div className="lg:col-span-12">
-                            <div className={cn(glass.card, "p-16 space-y-16 bg-white/60 dark:bg-[#0D0D0D]/60 border-white/5 relative overflow-hidden")}>
+                            <div className={cn(glass.card, "p-16 space-y-16 bg-white/60 border-white/5 relative overflow-hidden")}>
                                 <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 blur-[100px] pointer-events-none" />
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
@@ -327,8 +327,8 @@ const IntegrationsView: React.FC = () => {
                                             <h4 className={cn(glass.sectionTitle, "text-3xl italic normal-case")}>High-Fidelity <span className="text-blue-500">Live Log</span></h4>
                                         </div>
                                         <div className="bg-[#09090b] rounded-[3rem] p-10 font-mono text-[13px] text-emerald-400 space-y-4 border-4 border-white/5 shadow-inner min-h-[300px] transition-all duration-1000">
-                                            <div className="flex gap-4"><span className="opacity-30">[11:23:44.982]</span> <span className="text-blue-400 font-black">INFO</span> <span className="text-white/80">Federated link established with master_ledger_node_77.</span></div>
-                                            <div className="flex gap-4"><span className="opacity-30">[11:23:45.102]</span> <span className="text-emerald-500 font-black">AUTH</span> <span className="text-white/80">Token sequence validated via Kernel Proxy. Key_Hash: ...{Math.random().toString(36).slice(6)}</span></div>
+                                            <div className="flex gap-4"><span className="opacity-30">[11:23:44.982]</span> <span className="text-blue-400 font-black">INFO</span> <span className="text-gray-800">Federated link established with master_ledger_node_77.</span></div>
+                                            <div className="flex gap-4"><span className="opacity-30">[11:23:45.102]</span> <span className="text-emerald-500 font-black">AUTH</span> <span className="text-gray-800">Token sequence validated via Kernel Proxy. Key_Hash: ...{Math.random().toString(36).slice(6)}</span></div>
                                             <div className="flex gap-4"><span className="opacity-30">[11:23:46.432]</span> <span className="text-honey font-black">WARN</span> <span className="text-white/60 italic">Deferred payload for APIARY_B7. Conflict: ID_COLLISION_04.</span></div>
                                             <div className="flex gap-4 animate-pulse"><span className="opacity-30">[11:23:47.012]</span> <span className="text-emerald-400 font-black">SYNC</span> <span className="text-emerald-400 italic">Aggregating production delta for industrial hive cluster #104...</span></div>
                                             <div className="pt-8 text-[11px] text-muted-foreground font-black tracking-[0.4em] uppercase opacity-20 italic">TRACER: STABLE_V4.4 · SYNC_FREQ: 2.1Hz</div>
@@ -341,11 +341,11 @@ const IntegrationsView: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="history" className="space-y-16 animate-in slide-in-from-right-5 duration-700">
-                    <div className={cn(glass.card, "p-0 overflow-hidden border-white/5 bg-white/60 dark:bg-[#0D0D0D]/60 shadow-3xl")}>
+                    <div className={cn(glass.card, "p-0 overflow-hidden border-white/5 bg-white/60 shadow-3xl")}>
                         <div className="overflow-x-auto custom-scrollbar">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="border-b border-white/5 bg-white/40 dark:bg-black/40">
+                                    <tr className="border-b border-white/5 bg-white/40">
                                         <th className="p-10 text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.5em] italic">Archive Timestamp</th>
                                         <th className="p-10 text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.5em] italic">Protocol Event</th>
                                         <th className="p-10 text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.5em] italic">Integrity Status</th>
@@ -373,7 +373,7 @@ const IntegrationsView: React.FC = () => {
 
                 <TabsContent value="settings" className="space-y-16 animate-in slide-in-from-right-5 duration-700">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                        <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 dark:bg-black/40 border-white/5 relative group overflow-hidden")}>
+                        <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 border-white/5 relative group overflow-hidden")}>
                             <div className="absolute top-0 right-0 w-40 h-40 bg-honey/5 blur-[60px] pointer-events-none" />
                             <div className="flex items-center gap-6">
                                 <div className="w-14 h-14 rounded-2xl bg-honey/10 flex items-center justify-center border border-honey/20">
@@ -386,12 +386,12 @@ const IntegrationsView: React.FC = () => {
                                 <Input
                                     value={qboIncomeAccount}
                                     onChange={(e) => setQboIncomeAccount(e.target.value)}
-                                    className={cn(glass.input, "h-20 px-10 rounded-[2rem] font-black italic text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner group-hover:bg-white dark:group-hover:bg-black/50 transition-all")}
+                                    className={cn(glass.input, "h-20 px-10 rounded-[2rem] font-black italic text-xl bg-gray-50 border-none shadow-inner group-hover:bg-white:bg-gray-500 transition-all")}
                                 />
                             </div>
                             <p className="text-lg font-medium text-muted-foreground/30 italic">Map all hive-level extraction invoices to this global ledger entry.</p>
                         </div>
-                        <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 dark:bg-black/40 border-white/5 relative group overflow-hidden")}>
+                        <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 border-white/5 relative group overflow-hidden")}>
                             <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 blur-[60px] pointer-events-none" />
                             <div className="flex items-center gap-6">
                                 <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
@@ -404,13 +404,13 @@ const IntegrationsView: React.FC = () => {
                                 <Input
                                     value={qboExpenseAccount}
                                     onChange={(e) => setQboExpenseAccount(e.target.value)}
-                                    className={cn(glass.input, "h-20 px-10 rounded-[2rem] font-black italic text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner group-hover:bg-white dark:group-hover:bg-black/50 transition-all")}
+                                    className={cn(glass.input, "h-20 px-10 rounded-[2rem] font-black italic text-xl bg-gray-50 border-none shadow-inner group-hover:bg-white:bg-gray-500 transition-all")}
                                 />
                             </div>
                             <p className="text-lg font-medium text-muted-foreground/30 italic">Map logistics, hardware vitals, and veterinary costs for reconciliation.</p>
                         </div>
                     </div>
-                    <div className="flex justify-end p-14 bg-white/40 dark:bg-black/60 rounded-[3rem] border-2 border-dashed border-white/5 shadow-inner">
+                    <div className="flex justify-end p-14 bg-white/40 rounded-[3rem] border-2 border-dashed border-white/5 shadow-inner">
                         <button
                             onClick={() => handleSaveMapping('quickbooks')}
                             className={cn(glass.btnPrimary, "h-22 px-24 font-black text-2xl italic shadow-[0_45px_100px_-20px_rgba(251,191,36,0.5)] rounded-[2.5rem] flex items-center gap-6 group/save pl-20")}
@@ -455,7 +455,7 @@ const IntegrationsView: React.FC = () => {
                     <button
                         onClick={() => handleSyncNow('shopify')}
                         disabled={!isConnected('shopify')}
-                        className={cn(glass.btnSecondary, "h-22 px-14 rounded-[2.5rem] font-black text-xl italic bg-white dark:bg-black/40 border-white/5 shadow-2xl flex items-center gap-6 group")}
+                        className={cn(glass.btnSecondary, "h-22 px-14 rounded-[2.5rem] font-black text-xl italic bg-white border-white/5 shadow-2xl flex items-center gap-6 group")}
                     >
                         Push Inventory <ArrowUpRight className="w-8 h-8 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-1000 text-honey" />
                     </button>
@@ -463,16 +463,16 @@ const IntegrationsView: React.FC = () => {
             </div>
 
             <Tabs defaultValue="overview" className="space-y-16">
-                <TabsList className="bg-white/40 dark:bg-black/40 p-2 h-20 w-fit grid grid-cols-3 rounded-[30px] border border-white/10 backdrop-blur-3xl shadow-2xl">
-                    <TabsTrigger value="overview" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 transition-all duration-700">Stock Core</TabsTrigger>
-                    <TabsTrigger value="history" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 transition-all duration-700">Sync Stream</TabsTrigger>
-                    <TabsTrigger value="webhooks" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 transition-all duration-700">Webhook Matrix</TabsTrigger>
+                <TabsList className="bg-white/40 p-2 h-20 w-fit grid grid-cols-3 rounded-[30px] border border-gray-200 backdrop-blur-3xl shadow-2xl">
+                    <TabsTrigger value="overview" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white=active]:bg-white/10 transition-all duration-700">Stock Core</TabsTrigger>
+                    <TabsTrigger value="history" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white=active]:bg-white/10 transition-all duration-700">Sync Stream</TabsTrigger>
+                    <TabsTrigger value="webhooks" className="px-12 rounded-[25px] font-black uppercase text-[11px] tracking-[0.2em] italic data-[state=active]:bg-white=active]:bg-white/10 transition-all duration-700">Webhook Matrix</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-16 animate-in fade-in duration-700">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                         <div className="space-y-12">
-                            <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 dark:bg-black/40 border-white/5 group relative overflow-hidden")}>
+                            <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 border-white/5 group relative overflow-hidden")}>
                                 <div className="absolute top-0 right-0 w-60 h-60 bg-honey/5 blur-[80px] pointer-events-none" />
                                 <div className="flex items-center gap-6">
                                     <Globe className="w-8 h-8 text-honey" />
@@ -484,23 +484,23 @@ const IntegrationsView: React.FC = () => {
                                         placeholder="your-apiary.myshopify.com"
                                         value={shopUrl}
                                         onChange={(e) => setShopUrl(e.target.value)}
-                                        className={cn(glass.input, "h-20 px-10 rounded-[2.5rem] font-black italic text-xl bg-black/5 dark:bg-black/30 border-none shadow-inner")}
+                                        className={cn(glass.input, "h-20 px-10 rounded-[2.5rem] font-black italic text-xl bg-gray-50 border-none shadow-inner")}
                                     />
                                 </div>
                                 <p className="text-lg font-medium text-muted-foreground/30 italic">Target boutique for federated product sync and checkout mapping.</p>
                             </div>
 
-                            <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 dark:bg-black/40 border-white/5")}>
+                            <div className={cn(glass.card, "p-12 space-y-10 bg-white/60 border-white/5")}>
                                 <div className="flex items-center gap-6">
                                     <Zap className="w-8 h-8 text-honey" />
                                     <h3 className={cn(glass.sectionTitle, "text-3xl italic normal-case")}>Live Burst <span className="text-honey">Stats</span></h3>
                                 </div>
                                 <div className="grid grid-cols-2 gap-10">
-                                    <div className="bg-black/5 dark:bg-black/40 p-10 rounded-[2.5rem] border border-white/5 space-y-4 shadow-inner">
+                                    <div className="bg-gray-50 p-10 rounded-[2.5rem] border border-white/5 space-y-4 shadow-inner">
                                         <span className="text-[10px] font-black uppercase text-muted-foreground/30 italic tracking-[0.2em]">Variants Tracked</span>
                                         <h4 className="text-5xl font-black italic tabular-nums">48</h4>
                                     </div>
-                                    <div className="bg-black/5 dark:bg-black/40 p-10 rounded-[2.5rem] border border-white/5 space-y-4 shadow-inner">
+                                    <div className="bg-gray-50 p-10 rounded-[2.5rem] border border-white/5 space-y-4 shadow-inner">
                                         <span className="text-[10px] font-black uppercase text-muted-foreground/30 italic tracking-[0.2em]">Sync Latency</span>
                                         <h4 className="text-5xl font-black italic tabular-nums">5m</h4>
                                     </div>
@@ -554,11 +554,11 @@ const IntegrationsView: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="history" className="space-y-16 animate-in slide-in-from-left-5 duration-700">
-                    <div className={cn(glass.card, "p-0 overflow-hidden border-white/5 bg-white/60 dark:bg-[#0D0D0D]/60 shadow-3xl")}>
+                    <div className={cn(glass.card, "p-0 overflow-hidden border-white/5 bg-white/60 shadow-3xl")}>
                         <div className="overflow-x-auto custom-scrollbar">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="border-b border-white/5 bg-white/40 dark:bg-black/40">
+                                    <tr className="border-b border-white/5 bg-white/40">
                                         <th className="p-10 text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.5em] italic">Pulse Timestamp</th>
                                         <th className="p-10 text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.5em] italic">Protocol Event</th>
                                         <th className="p-10 text-[11px] font-black text-muted-foreground/40 uppercase tracking-[0.5em] italic">Sync Status</th>
@@ -586,7 +586,7 @@ const IntegrationsView: React.FC = () => {
 
                 <TabsContent value="webhooks" className="space-y-16 animate-in slide-in-from-left-5 duration-700">
                     <div className="space-y-16">
-                        <div className={cn(glass.card, "p-16 bg-white/60 dark:bg-black/40 space-y-12 border-white/5 relative group overflow-hidden")}>
+                        <div className={cn(glass.card, "p-16 bg-white/60 space-y-12 border-white/5 relative group overflow-hidden")}>
                             <div className="absolute top-0 right-0 w-80 h-80 bg-honey/5 blur-[100px] pointer-events-none" />
                             <div className="flex items-center gap-8">
                                 <div className="w-16 h-16 rounded-[1.5rem] bg-honey/10 flex items-center justify-center border border-honey/20 shadow-3xl">
@@ -599,7 +599,7 @@ const IntegrationsView: React.FC = () => {
                                     type="password"
                                     value={shopifyWebhookSecret}
                                     readOnly
-                                    className={cn(glass.input, "h-22 pl-24 font-mono text-muted-foreground/40 bg-black/5 dark:bg-black/30 border-none rounded-[2.5rem] shadow-inner text-2xl")}
+                                    className={cn(glass.input, "h-22 pl-24 font-mono text-muted-foreground/40 bg-gray-50 border-none rounded-[2.5rem] shadow-inner text-2xl")}
                                 />
                                 <Lock className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-muted-foreground/10 group-focus-within:text-honey transition-colors" />
                             </div>
@@ -616,7 +616,7 @@ const IntegrationsView: React.FC = () => {
                                 <motion.div
                                     key={i}
                                     whileHover={{ x: 10 }}
-                                    className="flex justify-between items-center p-12 bg-white/40 dark:bg-[#0D0D0D]/40 border-2 border-white/5 rounded-[3rem] group hover:border-honey/40 transition-all duration-700 shadow-2xl backdrop-blur-3xl"
+                                    className="flex justify-between items-center p-12 bg-white/40 border-2 border-white/5 rounded-[3rem] group hover:border-honey/40 transition-all duration-700 shadow-2xl backdrop-blur-3xl"
                                 >
                                     <div className="flex gap-10 items-center">
                                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-3xl", `bg-${w.color}/10 border border-${w.color}/20 text-${w.color}`)}>
@@ -653,11 +653,11 @@ const IntegrationsView: React.FC = () => {
                 subtitle="High-fidelity autonomous bridging of apiary telemetry with global financial and e-commerce infrastructure protocols."
                 actions={
                     <div className="flex items-center gap-8">
-                        <div className="hidden xl:flex bg-white/40 dark:bg-black/40 border border-white/5 px-8 py-3 rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-2xl items-center gap-6 skew-x-[-12deg]">
+                        <div className="hidden xl:flex bg-white/40 border border-white/5 px-8 py-3 rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-2xl items-center gap-6 skew-x-[-12deg]">
                             <Binary className="w-5 h-5 text-honey animate-pulse" />
                             <span className="skew-x-[12deg]">Neural_Bridge: <span className="text-honey text-emerald-500">ACTIVE</span></span>
                         </div>
-                        <div className="flex bg-white/40 dark:bg-black/40 p-1.5 rounded-2xl border border-white/5 shadow-2xl">
+                        <div className="flex bg-white/40 p-1.5 rounded-2xl border border-white/5 shadow-2xl">
                             {[
                                 { id: 'landing', label: 'Ecosystem', icon: LayoutGrid },
                                 { id: 'quickbooks', label: 'QuickBooks', icon: Calculator },
@@ -669,7 +669,7 @@ const IntegrationsView: React.FC = () => {
                                     className={cn(
                                         "flex items-center gap-4 px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest italic transition-all duration-700",
                                         activeTab === tab.id
-                                            ? "bg-white dark:bg-white/10 text-foreground shadow-2xl"
+                                            ? "bg-white text-foreground shadow-2xl"
                                             : "text-muted-foreground/50 hover:text-foreground"
                                     )}
                                 >
@@ -714,7 +714,7 @@ const IntegrationsView: React.FC = () => {
                 whileInView={{ opacity: 1 }}
                 className="pt-40 flex flex-col items-center text-center space-y-12 pb-20"
             >
-                <div className="w-24 h-24 rounded-[3rem] bg-white dark:bg-black/60 border-2 border-white/5 flex items-center justify-center shadow-4xl transform hover:rotate-[360deg] transition-transform duration-1000 group">
+                <div className="w-24 h-24 rounded-[3rem] bg-white border-2 border-white/5 flex items-center justify-center shadow-4xl transform hover:rotate-[360deg] transition-transform duration-1000 group">
                     <HistoryIcon className="w-12 h-12 text-muted-foreground/20 group-hover:text-honey transition-colors" />
                 </div>
                 <div className="max-w-4xl space-y-8">
@@ -725,8 +725,8 @@ const IntegrationsView: React.FC = () => {
                     </p>
                 </div>
                 <div className="flex gap-10 pt-8">
-                    <button className={cn(glass.btnSecondary, "h-16 px-12 rounded-[2rem] font-black italic uppercase text-xs tracking-widest bg-white/40 dark:bg-black/40 border-white/10 shadow-3xl hover:bg-honey/10 transition-all")}>Kernel Docs</button>
-                    <button className={cn(glass.btnSecondary, "h-16 px-12 rounded-[2rem] font-black italic uppercase text-xs tracking-widest bg-white/40 dark:bg-black/40 border-white/10 shadow-3xl hover:bg-emerald-500/10 transition-all")}>Federation Status</button>
+                    <button className={cn(glass.btnSecondary, "h-16 px-12 rounded-[2rem] font-black italic uppercase text-xs tracking-widest bg-white/40 border-gray-200 shadow-3xl hover:bg-honey/10 transition-all")}>Kernel Docs</button>
+                    <button className={cn(glass.btnSecondary, "h-16 px-12 rounded-[2rem] font-black italic uppercase text-xs tracking-widest bg-white/40 border-gray-200 shadow-3xl hover:bg-emerald-500/10 transition-all")}>Federation Status</button>
                 </div>
             </motion.div>
 

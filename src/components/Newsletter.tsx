@@ -60,8 +60,8 @@ export const Newsletter = ({ className = "", source = "footer" }: NewsletterProp
 
     if (status === "success") {
         return (
-            <div className={`flex items-center gap-3 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-400 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-in fade-in slide-in-from-bottom-2 duration-500 ${className}`}>
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+            <div className={`flex items-center gap-3 text-emerald-600 bg-emerald-50 p-4 rounded-xl border border-emerald-200 animate-in fade-in slide-in-from-bottom-2 duration-500 ${className}`}>
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
                     <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -76,7 +76,7 @@ export const Newsletter = ({ className = "", source = "footer" }: NewsletterProp
         <form onSubmit={handleSubmit} className={`space-y-3 ${className}`}>
             <div className="flex items-center gap-1.5 mb-1">
                 <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">BeeYield Weekly</span>
+                <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider">BeeYield Weekly</span>
             </div>
             <div className="relative group">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />

@@ -53,7 +53,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
             {/* Header */}
             <div className="space-y-4">
-                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                     <CreditCard className="w-4 h-4 mr-2" />
                     Usage & Settlement Registry
                 </div>
@@ -62,21 +62,21 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
             {/* Consumption Summary */}
             <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
-                <div className="p-8 border-b border-border flex items-center gap-4 bg-white/40 dark:bg-black/20">
+                <div className="p-8 border-b border-border flex items-center gap-4 bg-white/40">
                     <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                         <CreditCard className="w-5 h-5 text-emerald-500" />
                     </div>
                     <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Consumption Matrix</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/50 bg-white/20 dark:bg-black/10">
+                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/50 bg-white/20">
                     {consumptionData.map((item, idx) => (
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
                             key={idx}
-                            className="p-8 flex flex-col items-center text-center group hover:bg-white/40 dark:hover:bg-black/20 transition-colors"
+                            className="p-8 flex flex-col items-center text-center group hover:bg-white/40:bg-gray-100 transition-colors"
                         >
                             <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-border group-hover:scale-110 transition-transform duration-300 bg-background", item.color)}>
                                 <item.icon className="w-6 h-6" />
@@ -97,7 +97,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                     <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-white/40 dark:bg-black/20 flex items-center justify-center border border-border shadow-sm">
+                        <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center border border-border shadow-sm">
                             <FileText className="w-8 h-8 text-emerald-500" />
                         </div>
                         <div className="space-y-1">
@@ -120,12 +120,12 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
             {/* Sample billing rates */}
             <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
-                <div className="p-8 border-b border-border bg-white/40 dark:bg-black/20">
+                <div className="p-8 border-b border-border bg-white/40">
                     <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Billing Parameterization</h3>
                     <p className={cn(glass.microLabel, "normal-case italic mt-2 opacity-70 font-semibold")}>Define resource-specific valuation weights.</p>
                 </div>
 
-                <div className="p-8 space-y-8 bg-white/10 dark:bg-black/5">
+                <div className="p-8 space-y-8 bg-white/10">
                     {loading ? (
                         <div className={glass.emptyState}>
                             <Loader2 className="w-10 h-10 animate-spin text-honey" />
@@ -144,7 +144,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     key={item.id}
-                                    className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-2xl bg-white/40 dark:bg-black/20 border border-border hover:shadow-md hover:bg-white/60 dark:hover:bg-black/40 transition-all group"
+                                    className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-2xl bg-white/40 border border-border hover:shadow-md hover:bg-white/60:bg-gray-100 transition-all group"
                                 >
                                     <div className="flex items-center gap-6">
                                         <div className="w-14 h-14 rounded-2xl bg-background flex flex-col items-center justify-center border border-border shadow-sm group-hover:scale-105 transition-transform duration-200">
@@ -162,7 +162,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                             {item.rate_per_unit.toFixed(2)} <span className="text-sm italic font-semibold opacity-50 ml-1">{item.currency} / {item.unit}</span>
                                         </p>
                                         <div className="flex items-center md:justify-end gap-3 mt-2">
-                                            {item.is_active && <div className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 px-2 py-0.5 text-[9px]")}>Active Protocol</div>}
+                                            {item.is_active && <div className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-2 py-0.5 text-[9px]")}>Active Protocol</div>}
                                             <p className={cn(glass.microLabel, "text-[9px] opacity-40 italic")}>Eff: {new Date(item.effective_from).toLocaleDateString()}</p>
                                         </div>
                                     </div>
@@ -172,7 +172,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     )}
                 </div>
 
-                <div className="p-8 border-t border-border bg-white/30 dark:bg-black/20 space-y-8">
+                <div className="p-8 border-t border-border bg-white/30 space-y-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                         <div className="space-y-3">
                             <label className={cn(glass.microLabel, "font-bold opacity-80 pl-1")}>Tele-Type</label>
@@ -180,7 +180,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                 <SelectTrigger className={cn(glass.input, "h-14 rounded-xl font-bold")}>
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border border-border shadow-xl backdrop-blur-xl bg-white/90 dark:bg-black/90">
+                                <SelectContent className="rounded-xl border border-border shadow-xl backdrop-blur-xl bg-white/90">
                                     <SelectItem value="water" className="py-3 font-bold">Water</SelectItem>
                                     <SelectItem value="heat" className="py-3 font-bold">Heat</SelectItem>
                                     <SelectItem value="energy" className="py-3 font-bold">Energy</SelectItem>

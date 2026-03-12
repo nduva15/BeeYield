@@ -35,7 +35,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-2')}>
+                    <div className={cn(glass.badge, 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 mb-2')}>
                         <Sprout className="w-4 h-4 mr-2" />
                         Phenological Analysis Engine
                     </div>
@@ -67,7 +67,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                         transition={{ delay: 0.1 }}
                         className={cn(glass.card, "p-0 overflow-hidden shadow-2xl")}
                     >
-                        <div className="p-8 border-b border-border bg-white/40 dark:bg-black/20">
+                        <div className="p-8 border-b border-border bg-white/40">
                             <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Orchard <span className="text-honey">Status</span></h3>
                         </div>
                         <div className="p-8">
@@ -83,7 +83,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                         className={cn(glass.card, "p-8 h-full shadow-xl bg-gradient-to-br from-honey/5 to-transparent border-honey/20")}
                     >
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-white/60 dark:bg-black/40 flex items-center justify-center border border-border shadow-sm">
+                            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center border border-border shadow-sm">
                                 <Activity className="w-6 h-6 text-honey" />
                             </div>
                             <h4 className={cn(glass.sectionTitle, "text-xl normal-case")}>Hive Metrics</h4>
@@ -110,7 +110,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                             <p className={cn(glass.microLabel, "normal-case italic opacity-60 mt-1")}>Visualizing the delta between bloom cycles and hive activity.</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-6 bg-white/40 dark:bg-black/20 p-2 px-4 rounded-2xl border border-border shadow-sm">
+                    <div className="flex items-center gap-6 bg-white/40 p-2 px-4 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500" />
                             <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Bloom %</span>
@@ -136,7 +136,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                 className={cn(glass.card, "p-8 shadow-xl bg-honey/5 border-honey/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-honey/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-honey/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 dark:bg-black/40 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white/60 flex items-center justify-center shrink-0 border border-honey shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-honey" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">

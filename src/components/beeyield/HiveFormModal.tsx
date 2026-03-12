@@ -128,7 +128,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     </h2>
                                     <p className="text-2xl font-black text-foreground/30 uppercase italic border-l-4 border-honey/20 pl-10">Fill in the details to manage this hive in your dashboard.</p>
                                 </div>
-                                <button onClick={onClose} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center hover:bg-neutral-800 transition-all duration-700">
+                                <button onClick={onClose} className="w-20 h-20 rounded-[2.5rem] bg-white/5 border border-gray-200 flex items-center justify-center hover:bg-neutral-800 transition-all duration-700">
                                     <X className="w-10 h-10" />
                                 </button>
                             </div>

@@ -51,10 +51,10 @@ const SpatialCoverageView: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <div className="lg:col-span-3 space-y-8">
                     {/* The Visual Map (SVG Based) */}
-                    <div className={cn(glass.card, "relative overflow-hidden h-[600px] p-0 border-border group dark:bg-black/20")}>
-                        <div className="absolute inset-0 opacity-20 dark:opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#f59e0b 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                    <div className={cn(glass.card, "relative overflow-hidden h-[600px] p-0 border-border group")}>
+                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#f59e0b 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
-                        <div className="absolute top-8 left-8 p-6 rounded-[2rem] bg-white/60 dark:bg-black/40 border border-border backdrop-blur-md z-10 hidden md:block shadow-xl">
+                        <div className="absolute top-8 left-8 p-6 rounded-[2rem] bg-white/60 border border-border backdrop-blur-md z-10 hidden md:block shadow-xl">
                             <h3 className={cn(glass.microLabel, "mb-4 border-b border-border pb-2")}>Coverage Legend</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
@@ -107,10 +107,10 @@ const SpatialCoverageView: React.FC = () => {
                         </svg>
 
                         <div className="absolute bottom-8 right-8 flex gap-4">
-                            <button className="w-14 h-14 rounded-2xl bg-white/60 dark:bg-black/40 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-lg hover:border-honey/50">
+                            <button className="w-14 h-14 rounded-2xl bg-white/60 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-lg hover:border-honey/50">
                                 <Maximize2 className="w-6 h-6" />
                             </button>
-                            <button className="w-14 h-14 rounded-2xl bg-white/60 dark:bg-black/40 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-lg hover:border-honey/50">
+                            <button className="w-14 h-14 rounded-2xl bg-white/60 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-lg hover:border-honey/50">
                                 <Crosshair className="w-6 h-6" />
                             </button>
                         </div>
