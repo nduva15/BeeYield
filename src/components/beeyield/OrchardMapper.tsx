@@ -56,15 +56,15 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             onClick={() => setIsDrawing(!isDrawing)}
                             className={cn(
                                 isDrawing ? glass.btnPrimary : glass.btnSecondary,
-                                "h-9 px-4 text-xs font-bold flex items-center gap-2"
+                                "h-8 px-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"
                             )}
                         >
-                            <MousePointer2 className="w-3.5 h-3.5" />
-                            {isDrawing ? "Finish" : "Draw Area"}
+                            <MousePointer2 className="w-3 h-3" />
+                            {isDrawing ? "FINISH" : "DRAW AREA"}
                         </button>
-                        <button className={cn(glass.btnSecondary, "h-9 px-4 text-xs font-bold flex items-center gap-2")}>
-                            <Share2 className="w-3.5 h-3.5" />
-                            Save Map
+                        <button className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-white")}>
+                            <Share2 className="w-3 h-3" />
+                            SAVE MAP
                         </button>
                     </div>
                 }

@@ -745,15 +745,15 @@ export const beeyieldService = {
     async getDashboardStats(): Promise<DashboardStats> {
         if (!sb) throw new Error('No client');
         const [devRes, readRes, hiveRes] = await Promise.all([
-            sb.from('devices').select('serial_number, status'),
-            sb.from('sensor_readings').select('temp_internal, humidity_internal, weight_kg').order('recorded_at', { ascending: false }).limit(50),
+            sb.from('devices').select('device_code, status'),
+            sb.from('sensor_readings').select('*').order('recorded_at', { ascending: false }).limit(50),
             sb.from('hives').select('id'),
         ]);
         const devices = devRes.data || [];
         const readings = readRes.data || [];
-        const avgTemp = readings.length ? readings.reduce((s, r) => s + (r.temp_internal || 0), 0) / readings.length : 0;
-        const avgHum = readings.length ? readings.reduce((s, r) => s + (r.humidity_internal || 0), 0) / readings.length : 0;
-        const avgWt = readings.length ? readings.reduce((s, r) => s + (r.weight_kg || 0), 0) / readings.length : 0;
+        const avgTemp = readings.length ? readings.reduce((s, r: any) => s + (r.temperature || r.readings?.temperature || 0), 0) / readings.length : 0;
+        const avgHum = readings.length ? readings.reduce((s, r: any) => s + (r.humidity || r.readings?.humidity || 0), 0) / readings.length : 0;
+        const avgWt = readings.length ? readings.reduce((s, r: any) => s + (r.weight || r.readings?.hive_weight || 0), 0) / readings.length : 0;
         return {
             totalDevices: devices.length,
             activeDevices: devices.filter((d: any) => d.status === 'online').length,
@@ -775,9 +775,9 @@ export const beeyieldService = {
         const [apiaries, hives, harvests] = await Promise.all([
             sb.from('apiaries').select('id', { count: 'exact', head: true }),
             sb.from('hives').select('id', { count: 'exact', head: true }),
-            sb.from('harvests').select('weight_kg'),
+            sb.from('harvests').select('quantity_kg'),
         ]);
-        const totalHoney = (harvests.data || []).reduce((s, h) => s + (h.weight_kg || 0), 0);
+        const totalHoney = (harvests.data || []).reduce((s, h) => s + (h.quantity_kg || 0), 0);
         return { total_apiaries: apiaries.count || 0, total_hives: hives.count || 0, total_honey_kg: totalHoney };
     },
 
@@ -882,7 +882,7 @@ export const beeyieldService = {
         }
         const { data, error } = await query;
         if (error) { console.error('getHarvests:', error); return []; }
-        return (data || []).map((h: any) => ({ ...h, harvest_date: h.date, quantity_kg: h.weight_kg })) as Harvest[];
+        return (data || []).map((h: any) => ({ ...h, harvest_date: h.date, quantity_kg: h.quantity_kg })) as Harvest[];
     },
 
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
@@ -936,7 +936,7 @@ export const beeyieldService = {
         if (!sb) return { data: null, error: 'No client' };
         const payload = {
             hive_id: input.hive_id,
-            weight_kg: input.quantity_kg,
+            quantity_kg: input.quantity_kg,
             floral_source: input.florage_type,
             date: input.harvest_date || new Date().toISOString().split('T')[0],
             honey_type: input.honey_type,
@@ -965,7 +965,7 @@ export const beeyieldService = {
             hive_id: input.hive_id,
             farmer_id: input.farmer_id,
             date: input.harvest_date,
-            weight_kg: input.quantity_kg,
+            quantity_kg: input.quantity_kg,
             quantity_left_for_bees_kg: input.quantity_left_for_bees_kg,
             extraction_method: input.extraction_method || 'Cold Extraction',
             floral_source: input.nectar_source || 'Acacia',
@@ -990,14 +990,14 @@ export const beeyieldService = {
         });
 
         toast.success('Harvest recorded!');
-        return { data: { ...data, harvest_date: data.date, quantity_kg: data.weight_kg } as any, error: null };
+        return { data: { ...data, harvest_date: data.date, quantity_kg: data.quantity_kg } as any, error: null };
     },
 
     async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
         if (!sb) return { data: null, error: 'No client' };
         const payload: any = { ...input };
         if (input.harvest_date) { payload.date = input.harvest_date; delete payload.harvest_date; }
-        if (input.quantity_kg) { payload.weight_kg = input.quantity_kg; delete payload.quantity_kg; }
+        if (input.quantity_kg) { payload.quantity_kg = input.quantity_kg; delete payload.quantity_kg; }
         if (input.nectar_source) { payload.floral_source = input.nectar_source; delete payload.nectar_source; }
         const { data, error } = await sb.from('harvests').update(payload).eq('id', id).select().single();
         if (error) { console.error('updateHarvest:', error); toast.error('Failed to update harvest'); return { data: null, error }; }
@@ -2210,7 +2210,7 @@ export const beeyieldService = {
         const [apiaries, hives, harvests, tasks] = await Promise.all([
             sb.from('apiaries').select('id, status', { count: 'exact' }),
             sb.from('hives').select('id, status', { count: 'exact' }),
-            sb.from('harvests').select('weight_kg'),
+            sb.from('harvests').select('quantity_kg'),
             sb.from('tasks').select('id, status, is_completed', { count: 'exact' }),
         ]);
         const harvestData = harvests.data || [];
@@ -2222,7 +2222,7 @@ export const beeyieldService = {
             total_hives: hives.count || 0,
             active_hives: hiveData.filter((h: any) => h.status === 'active' || !h.status).length,
             total_harvests: harvestData.length,
-            total_honey_kg: harvestData.reduce((s, h) => s + (h.weight_kg || 0), 0),
+            total_honey_kg: harvestData.reduce((s, h: any) => s + (h.quantity_kg || 0), 0),
             total_acres: 0,
             total_tasks: tasks.count || 0,
             pending_tasks: taskData.filter((t: any) => !t.is_completed && t.status !== 'completed').length,
@@ -2445,6 +2445,39 @@ export const beeyieldService = {
         } catch (error) {
             console.error('planRoute:', error);
             return { path: [] };
+        }
+    },
+
+    async getWeatherHistory(): Promise<any[]> {
+        try {
+            const { data, error } = await sb.from('weather_history').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (err) {
+            console.error('getWeatherHistory:', err);
+            return [];
+        }
+    },
+
+    async getSatelliteIndices(): Promise<any[]> {
+        try {
+            const { data, error } = await sb.from('satellite_indices').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (err) {
+            console.error('getSatelliteIndices:', err);
+            return [];
+        }
+    },
+
+    async getIotDevices(): Promise<any[]> {
+        try {
+            const { data, error } = await sb.from('iot_devices').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (err) {
+            console.error('getIotDevices:', err);
+            return [];
         }
     }
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Thermometer, Droplets, Activity, AlertTriangle, CheckCircle2, Volume2, Cpu, ChevronLeft, ChevronRight, Clock, Zap, Shield, ArrowUp, ArrowDown, Minus
+    Thermometer, Droplets, Activity, AlertTriangle, CheckCircle2, Volume2, Cpu, ChevronLeft, ChevronRight, Clock, Zap, Shield, ArrowUp, ArrowDown, Minus, Layers
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Bar
@@ -8,7 +8,7 @@ import {
 import { cn } from '@/lib/utils';
 import beeyieldService, { ActivityLog, SensorAlert, Hive } from '@/services/beeyieldService';
 import { formatDistanceToNow } from 'date-fns';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SensorHealthViewProps {
@@ -35,9 +35,9 @@ const generateHistoryData = (months: number) => {
 };
 
 const acousticConfig: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-    'Healthy': { label: 'Normal Activity', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]', icon: CheckCircle2 },
-    'Queenless': { label: 'Queen Issues', color: 'text-destructive', bg: 'bg-destructive', icon: AlertTriangle },
-    'Swarm Risk': { label: 'Swarm Risk', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]', icon: Zap },
+    'Healthy': { label: 'Normal Activity', color: 'text-emerald-600', bg: 'bg-emerald-500', icon: CheckCircle2 },
+    'Queenless': { label: 'Queen Issues', color: 'text-red-600', bg: 'bg-red-500', icon: AlertTriangle },
+    'Swarm Risk': { label: 'Swarm Risk', color: 'text-amber-600', bg: 'bg-amber-500', icon: Zap },
 };
 
 // --- Sub-components ---
@@ -53,36 +53,36 @@ const VitalsCard: React.FC<{
 }> = ({ label, value, unit, target, icon: Icon, status, trend }) => {
     const TrendIcon = trend === 'up' ? ArrowUp : trend === 'down' ? ArrowDown : Minus;
     const trendColor = status === 'ok'
-        ? 'text-[#1B9157] bg-[#1B9157]/'
-        : status === 'warn' ? 'text-[#F4D03F] bg-[#F4D03F]/' : 'text-red-500 bg-red-500/10';
+        ? 'text-emerald-600'
+        : status === 'warn' ? 'text-amber-600' : 'text-red-600';
 
     return (
-        <div className={cn(glass.card, "p-10 flex flex-col justify-between group transition-all h-full")}>
-            <div className="flex items-start justify-between mb-8">
-                <div className="space-y-4">
-                    <p className={cn(glass.microLabel, "opacity-60 uppercase italic")}>{label}</p>
-                    <div className="flex items-end gap-3">
-                        <span className={cn("text-7xl font-black italic tracking-tighter leading-none", status === 'ok' ? 'text-foreground' : status === 'warn' ? 'text-[#F4D03F]' : 'text-red-500')}>{value}</span>
-                        <span className="text-2xl font-black italic opacity-30 mb-2">{unit}</span>
+        <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all h-full bg-white shadow-sm")}>
+            <div className="flex items-start justify-between mb-4">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{label}</p>
+                    <div className="flex items-baseline gap-1">
+                        <span className={cn("text-3xl font-bold tracking-tight", status === 'ok' ? 'text-[#1A1A1A]' : status === 'warn' ? 'text-amber-600' : 'text-red-600')}>{value}</span>
+                        <span className="text-xs font-bold text-gray-400">{unit}</span>
                     </div>
                 </div>
                 <div className={cn(
-                    "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all",
-                    status === 'ok' ? "bg-[#1B9157]/ text-[#1B9157]" :
-                        status === 'warn' ? "bg-[#F4D03F]/ text-[#F4D03F]" :
-                            "bg-red-500/10 text-red-500"
+                    "w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm group-hover:scale-105 transition-transform",
+                    status === 'ok' ? "bg-emerald-50 border-emerald-100 text-emerald-600" :
+                        status === 'warn' ? "bg-amber-50 border-amber-100 text-amber-600" :
+                            "bg-red-50 border-red-100 text-red-600"
                 )}>
-                    <Icon className="w-10 h-10" />
+                    <Icon className="w-5 h-5" />
                 </div>
             </div>
-            <div className="flex items-center justify-between border-t border-[#F4D03F]/10 pt-6 mt-auto">
-                <div className="flex items-center gap-4">
-                    <span className={cn(glass.microLabel, "opacity-40 italic")}>Target</span>
-                    <span className="text-lg font-black italic text-foreground/60">{target}</span>
+            <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-4">
+                <div className="flex flex-col">
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Target</span>
+                    <span className="text-xs font-bold text-gray-600">{target}</span>
                 </div>
-                <div className={cn("px-4 py-1.5 rounded-full flex items-center gap-2", trendColor)}>
-                    <TrendIcon className="w-4 h-4" />
-                    <span className="text-[12px] font-black uppercase italic tracking-widest">{trend}</span>
+                <div className={cn("flex items-center gap-1 font-bold text-[10px] uppercase", trendColor)}>
+                    <TrendIcon className="w-3 h-3" />
+                    <span>{trend}</span>
                 </div>
             </div>
         </div>
@@ -146,13 +146,12 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
     if (loading || !selectedHive) {
         return (
-            <div className={cn(glass.page, "flex items-center justify-center min-h-[60vh]")}>
-                <div className="text-center space-y-10">
-                    <div className="w-32 h-32 rounded-[4rem] bg-[#F4D03F]/10 mx-auto flex items-center justify-center relative">
-                        <div className="absolute inset-0 rounded-[4rem] border-2 border-[#F4D03F]/30 animate-ping" />
-                        <Zap className="w-16 h-16 text-[#F4D03F] animate-pulse" />
+            <div className={cn(glass.page, "flex items-center justify-center min-h-[50vh]")}>
+                <div className="text-center space-y-4">
+                    <div className="w-16 h-16 rounded-2xl bg-[#F9F7F2] border border-gray-200 mx-auto flex items-center justify-center relative shadow-sm">
+                        <Zap className="w-8 h-8 text-[#F4D03F] animate-pulse" />
                     </div>
-                    <h3 className="text-4xl font-black italic tracking-tighter uppercase animate-pulse">Loading Sensor Data...</h3>
+                    <h3 className="text-xl font-bold text-[#1A1A1A] animate-pulse">Loading Sensor Matrix...</h3>
                 </div>
             </div>
         );
@@ -167,53 +166,46 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-8 -m-8 pb-24 space-y-16")}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
         >
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 pb-12 border-b border-[#F4D03F]/10">
-                <div className="space-y-6">
-                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
-                        <div className="flex items-center gap-4 skew-x-[12deg]">
-                            <Activity className="w-5 h-5" />
-                            <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Live Monitoring</span>
-                        </div>
+            <PageHeader
+                icon={Activity}
+                label="Monitoring Node"
+                title={<>Hive <span className="text-[#1B9157]">Health</span></>}
+                subtitle="High-precision telemetry and real-time vital sign tracking of colony status."
+                actions={
+                    <div className="flex items-center gap-3 bg-white px-4 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                         <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" />
+                         <span className="text-xs font-bold text-[#1A1A1A] tabular-nums">{liveTime.toLocaleTimeString()} — LIVE</span>
                     </div>
-                    <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                        Hive <span className="text-[#F4D03F]">Health</span>
-                    </h1>
-                    <p className={cn(glass.microLabel, 'opacity-40 italic font-black uppercase tracking-[0.4em] ml-2')}>Track hive conditions in real-time.</p>
-                </div>
-                <div className="flex items-center gap-6 bg-gray-400 backdrop-blur-3xl px-8 py-4 rounded-full border border-[#F4D03F]/20 shadow-4xl">
-                    <div className="w-3 h-3 bg-[#1B9157] rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-                    <span className="text-xl font-black italic tabular-nums text-foreground/80 tracking-widest">{liveTime.toLocaleTimeString()} — LIVE</span>
-                </div>
-            </div>
+                }
+            />
 
             {/* Alerts */}
             {realAlerts.filter(a => !a.resolved).length > 0 && (
-                <div className="space-y-6">
-                    {realAlerts.filter(a => !a.resolved).map(alert => (
+                <div className="space-y-3">
+                    {realAlerts.filter(a => !a.resolved).slice(0, 2).map(alert => (
                         <motion.div
                             key={alert.id}
-                            initial={{ x: -20, opacity: 0 }}
+                            initial={{ x: -10, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             className={cn(
                                 glass.card,
-                                "p-8 border-l-[12px] flex items-center gap-10 bg-gray-400",
-                                alert.severity === 'critical' ? "border-red-500" : "border-amber-500"
+                                "p-4 border-l-4 bg-white flex flex-col sm:flex-row items-start sm:items-center gap-4 relative overflow-hidden shadow-sm",
+                                alert.severity === 'critical' ? "border-red-500" : "border-amber-400"
                             )}
                         >
-                            <div className={cn("w-20 h-20 rounded-[2.5rem] flex items-center justify-center shadow-4xl", alert.severity === 'critical' ? "bg-red-500/10 text-red-500" : "bg-[#F4D03F]/ text-[#F4D03F]")}>
-                                <AlertTriangle className="w-10 h-10" />
+                            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm", alert.severity === 'critical' ? "bg-red-50 border-red-100 text-red-500" : "bg-amber-50 border-amber-100 text-amber-600")}>
+                                <AlertTriangle className="w-5 h-5" />
                             </div>
-                            <div className="flex-1 space-y-2">
-                                <h4 className={cn("text-3xl font-black italic uppercase tracking-tighter", alert.severity === 'critical' ? "text-red-500" : "text-[#F4D03F]")}>
+                            <div className="flex-1 space-y-0.5">
+                                <h4 className={cn("text-sm font-bold tracking-tight", alert.severity === 'critical' ? "text-red-600" : "text-amber-700")}>
                                     Attention Needed: {alert.alert_type}
                                 </h4>
-                                <p className="text-xl font-black italic text-foreground/60">{alert.message}</p>
+                                <p className="text-xs font-medium text-gray-500">{alert.message}</p>
                             </div>
-                            <div className="text-right">
-                                <p className="text-lg font-black italic opacity-30 uppercase">{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</p>
+                            <div className="shrink-0 text-right">
+                                <span className="text-[10px] font-bold text-gray-300 uppercase">{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</span>
                             </div>
                         </motion.div>
                     ))}
@@ -221,14 +213,12 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             )}
 
             {/* Hive Selector */}
-            <div className="space-y-8">
-                <div className="flex items-center gap-6">
-                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
-                        <Layers className="w-6 h-6 text-[#F4D03F]" />
-                    </div>
-                    <h3 className={cn(glass.microLabel, "opacity-60 uppercase italic font-black tracking-[0.4em]")}>Select Hive</h3>
+            <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-gray-400" />
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Node Selection</h3>
                 </div>
-                <div className="grid grid-cols-2 lg:grid-cols-6 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {realHives.map(hive => {
                         const isSelected = hive.id === selectedHive.id;
                         return (
@@ -237,24 +227,21 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                 onClick={() => setSelectedHive(hive)}
                                 className={cn(
                                     glass.card,
-                                    "p-8 text-left transition-all relative overflow-hidden group border-[#F4D03F]/10",
-                                    isSelected ? "bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F] shadow-4xl scale-110 z-10" : "hover:border-[#F4D03F]/40 hover:bg-[#F4D03F]/10"
+                                    "p-4 text-left transition-all relative overflow-hidden group border-gray-100 shadow-sm",
+                                    isSelected ? "bg-white border-[#1B9157] ring-1 ring-[#1B9157]/20" : "bg-gray-50 hover:bg-white hover:border-gray-200"
                                 )}
                             >
-                                <div className="space-y-4 relative z-10">
+                                <div className="space-y-3 relative z-10">
                                     <div className="flex justify-between items-center">
-                                        <span className={cn("text-4xl font-black italic tracking-tighter uppercase", isSelected ? "text-[#1A1A1A]" : "text-foreground")}>{hive.code}</span>
-                                        {hive.alert && <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-4xl" />}
+                                        <span className={cn("text-xs font-bold tracking-wider uppercase", isSelected ? "text-[#1B9157]" : "text-gray-500")}>{hive.code}</span>
+                                        {hive.alert && <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)] animate-pulse" />}
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <span className={cn("text-lg font-black italic", isSelected ? "text-[#1A1A1A]/60" : "text-foreground/40")}>{hive.temp}°C</span>
-                                        <div className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-[#F4D03F]/10" : "bg-[#F4D03F]/10")} />
-                                        <span className={cn("text-lg font-black italic", isSelected ? "text-[#1A1A1A]/60" : "text-foreground/40")}>{hive.humidity}%</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-bold text-[#1A1A1A] tabular-nums">{hive.temp}°C</span>
+                                        <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                        <span className="text-sm font-bold text-gray-400 tabular-nums">{hive.humidity}%</span>
                                     </div>
                                 </div>
-                                {isSelected && (
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gray-200 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
-                                )}
                             </button>
                         );
                     })}
@@ -262,7 +249,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             </div>
 
             {/* Vitals Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <VitalsCard
                     label="Internal Temperature"
                     value={selectedHive.temp}
@@ -281,31 +268,31 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     status={humidStatus}
                     trend="stable"
                 />
-                <div className={cn(glass.card, "p-10 flex flex-col justify-between group transition-all")}>
-                    <div className="flex items-start justify-between mb-8">
-                        <div className="space-y-4">
-                            <p className={cn(glass.microLabel, "opacity-60 uppercase italic")}>Hive Sound</p>
-                            <h3 className={cn("text-5xl font-black italic tracking-tighter uppercase", acoustic.color)}>
+                <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all bg-white shadow-sm overflow-hidden")}>
+                    <div className="flex items-start justify-between mb-2">
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Hive Sound</p>
+                            <h3 className={cn("text-xl font-bold tracking-tight uppercase", acoustic.color)}>
                                 {selectedHive.acoustic}
                             </h3>
-                            <p className="text-xl font-black italic opacity-40">{acoustic.label}</p>
+                            <p className="text-[10px] font-bold text-gray-400">{acoustic.label}</p>
                         </div>
                         <div className={cn(
-                            "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-4xl group-hover:scale-110 group-hover:rotate-6 transition-all",
-                            selectedHive.acoustic === 'Healthy' ? "bg-[#1B9157]/ text-[#1B9157]" :
-                                selectedHive.acoustic === 'Swarm Risk' ? "bg-[#F4D03F]/ text-[#F4D03F]" :
-                                    "bg-red-500/10 text-red-500"
+                            "w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm",
+                            selectedHive.acoustic === 'Healthy' ? "bg-emerald-50 border-emerald-100 text-emerald-600" :
+                                selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-50 border-amber-100 text-amber-600" :
+                                    "bg-red-50 border-red-100 text-red-600"
                         )}>
-                            <Volume2 className="w-10 h-10" />
+                            <Volume2 className="w-5 h-5" />
                         </div>
                     </div>
-                    <div className="flex items-end gap-2 h-20 border-t border-[#F4D03F]/10 pt-6 mt-auto">
-                        {Array.from({ length: 32 }).map((_, i) => (
+                    <div className="flex items-end gap-1 h-12 border-t border-gray-50 pt-3 mt-4">
+                        {Array.from({ length: 24 }).map((_, i) => (
                             <div
                                 key={i}
-                                className={cn("flex-1 rounded-t-lg transition-all duration-300",
-                                    selectedHive.acoustic === 'Healthy' ? "bg-[#1B9157]" :
-                                        selectedHive.acoustic === 'Swarm Risk' ? "bg-[#F4D03F]" : "bg-red-500"
+                                className={cn("flex-1 rounded-t-sm transition-all duration-300",
+                                    selectedHive.acoustic === 'Healthy' ? "bg-emerald-400" :
+                                        selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-400" : "bg-red-400"
                                 )}
                                 style={{
                                     height: `${Math.random() * (selectedHive.acoustic === 'Healthy' ? 60 : selectedHive.acoustic === 'Swarm Risk' ? 100 : 30)}%`,
@@ -318,43 +305,42 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             </div>
 
             {/* Trends Section */}
-            <div className="space-y-10">
-                <div className="flex flex-col md:flex-row items-center justify-between border-b border-[#F4D03F]/10 pb-10 gap-10">
-                    <div className="flex items-center gap-8">
-                        <div className="w-16 h-16 rounded-[2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-4xl">
-                            <Activity className="w-10 h-10 text-[#F4D03F]" />
+            <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 pb-4 gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm">
+                            <Activity className="w-5 h-5 text-gray-400" />
                         </div>
-                        <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-none">History <span className="text-[#F4D03F]">Trends</span></h2>
+                        <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">History Trends</h2>
                     </div>
-                    <div className="flex items-center gap-8 bg-gray-400 p-4 rounded-[3.5rem] border border-[#F4D03F]/20 shadow-4xl">
-                        <span className={cn(glass.microLabel, "px-6 opacity-40 italic uppercase")}>Past {historyRange} months</span>
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => setHistoryRange(r => Math.max(1, r - 1))} className={cn(glass.btnSecondary, "h-14 w-14 rounded-2xl")}><ChevronLeft className="w-6 h-6" /></button>
-                            <button onClick={() => setHistoryRange(r => Math.min(12, r + 1))} className={cn(glass.btnSecondary, "h-14 w-14 rounded-2xl")}><ChevronRight className="w-6 h-6" /></button>
+                    <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+                        <span className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Past {historyRange} Mo</span>
+                        <div className="flex items-center gap-1">
+                            <button onClick={() => setHistoryRange(r => Math.max(1, r - 1))} className="h-8 w-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"><ChevronLeft className="w-4 h-4" /></button>
+                            <button onClick={() => setHistoryRange(r => Math.min(12, r + 1))} className="h-8 w-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"><ChevronRight className="w-4 h-4" /></button>
                         </div>
                     </div>
                 </div>
 
-                <div className={cn(glass.card, "p-12 relative overflow-hidden")}>
-                    <div className="h-[450px]">
+                <div className={cn(glass.card, "p-5 bg-white shadow-sm")}>
+                    <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <ComposedChart data={visibleData}>
                                 <defs>
                                     <linearGradient id="tempGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#FBBE24" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#FBBE24" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.2} />
+                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid vertical={false} stroke="currentColor" strokeOpacity={0.05} />
-                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 14, fontWeight: 'black', fontStyle: 'italic' }} dy={20} />
-                                <YAxis yAxisId="temp" domain={[20, 40]} axisLine={false} tickLine={false} tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 14, fontWeight: 'black' }} dx={-20} />
+                                <CartesianGrid vertical={false} stroke="#E5E7EB" strokeDasharray="3 3" />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }} dy={10} />
+                                <YAxis yAxisId="temp" domain={[20, 40]} axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }} dx={-10} />
                                 <Tooltip
-                                    cursor={{ stroke: '#FBBE24', strokeWidth: 2, strokeDasharray: '10 10' }}
-                                    contentStyle={{ background: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '2rem', padding: '20px', backdropFilter: 'blur(20px)', color: 'white' }}
-                                    itemStyle={{ fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase' }}
+                                    contentStyle={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                                    itemStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}
                                 />
-                                <Area yAxisId="temp" type="monotone" dataKey="temp" stroke="#FBBE24" strokeWidth={6} fill="url(#tempGradient)" />
-                                <Bar yAxisId="temp" dataKey="humidity" fill="#10B981" fillOpacity={0.1} radius={[20, 20, 0, 0]} barSize={40} />
+                                <Area yAxisId="temp" type="monotone" dataKey="temp" stroke="#F4D03F" strokeWidth={3} fill="url(#tempGradient)" />
+                                <Bar yAxisId="temp" dataKey="humidity" fill="#1B9157" fillOpacity={0.05} radius={[4, 4, 0, 0]} barSize={30} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </div>
@@ -362,38 +348,44 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             </div>
 
             {/* List Table */}
-            <div className="space-y-10">
-                <div className="flex items-center gap-8 border-b border-[#F4D03F]/10 pb-8">
-                    <Shield className="w-10 h-10 text-[#1B9157]" />
-                    <h3 className="text-5xl font-black italic tracking-tighter uppercase">Global Status</h3>
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-sm">
+                        <Shield className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Global Status Matrix</h3>
                 </div>
-                <div className={cn(glass.card, "p-0 overflow-hidden shadow-4xl")}>
-                    <div className="overflow-x-auto thin-scrollbar">
-                        <table className="w-full">
-                            <thead className="bg-gray-400">
-                                <tr>
-                                    {['Hive', 'Temp', 'Humidity', 'Sound', 'Signal', 'Status'].map(h => (
-                                        <th key={h} className={cn(glass.microLabel, "px-10 py-10 opacity-40 uppercase italic text-left")}>{h}</th>
+                <div className={cn(glass.card, "p-0 overflow-hidden shadow-sm bg-white")}>
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50/50">
+                                    {['Hive Node', 'Temp', 'Humidity', 'Sound Profile', 'Last Sync', 'Health'].map(h => (
+                                        <th key={h} className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-50">
                                 {realHives.map(hive => (
-                                    <tr key={hive.id} onClick={() => setSelectedHive(hive)} className={cn("hover:bg-[#F4D03F]/10 transition-colors cursor-pointer group", selectedHive.id === hive.id && "bg-[#F4D03F]/5")}>
-                                        <td className="px-10 py-10">
-                                            <div className="flex items-center gap-6">
-                                                <div className={cn("w-3 h-3 rounded-full", acousticConfig[hive.acoustic]?.bg || "bg-[#1B9157]")} />
-                                                <span className="text-3xl font-black italic tracking-tighter group-hover:text-[#F4D03F]">{hive.code}</span>
+                                    <tr key={hive.id} onClick={() => setSelectedHive(hive)} className={cn("hover:bg-gray-50 transition-colors cursor-pointer group", selectedHive.id === hive.id && "bg-emerald-50/20")}>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn("w-2 h-2 rounded-full", acousticConfig[hive.acoustic]?.bg || "bg-emerald-500")} />
+                                                <span className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors">{hive.code}</span>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-10 text-2xl font-black italic opacity-60 tabular-nums">{hive.temp}°C</td>
-                                        <td className="px-10 py-10 text-2xl font-black italic opacity-60 tabular-nums">{hive.humidity}%</td>
-                                        <td className="px-10 py-10">
-                                            <span className={cn(glass.badge, "border-transparent", acousticConfig[hive.acoustic]?.color, acousticConfig[hive.acoustic]?.bg + "/10")}>{hive.acoustic}</span>
+                                        <td className="px-6 py-4 text-sm font-bold text-gray-500 tabular-nums">{hive.temp}°C</td>
+                                        <td className="px-6 py-4 text-sm font-bold text-gray-500 tabular-nums">{hive.humidity}%</td>
+                                        <td className="px-6 py-4">
+                                            <span className={cn("text-[10px] font-bold px-2.5 py-1 rounded-lg border", 
+                                                hive.acoustic === 'Healthy' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                                hive.acoustic === 'Swarm Risk' ? "bg-amber-50 text-amber-600 border-amber-100" :
+                                                "bg-red-50 text-red-600 border-red-100"
+                                            )}>{hive.acoustic}</span>
                                         </td>
-                                        <td className="px-10 py-10 text-xl font-black italic opacity-30 uppercase">{hive.lastSeen}</td>
-                                        <td className="px-10 py-10">
-                                            {hive.alert ? <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">Alert</span> : <span className="bg-[#1B9157]/ text-[#1B9157] border border-[#1B9157]/ px-6 py-2 rounded-full font-black italic text-xs uppercase shadow-4xl">OK</span>}
+                                        <td className="px-6 py-4 text-[10px] font-bold text-gray-300 uppercase tracking-tighter sm:tracking-normal">{hive.lastSeen}</td>
+                                        <td className="px-6 py-4">
+                                            {hive.alert ? <span className="bg-red-50 text-red-500 border border-red-100 px-3 py-1 rounded-lg font-bold text-[10px] uppercase shadow-sm">Alert</span> : <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-lg font-bold text-[10px] uppercase shadow-sm">OK</span>}
                                         </td>
                                     </tr>
                                 ))}
@@ -402,6 +394,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     </div>
                 </div>
             </div>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+            `}</style>
         </motion.div>
     );
 };

@@ -54,9 +54,9 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
             {/* Header Section */}
             <PageHeader
                 icon={Camera}
-                label="Photo Inspection"
-                title={<>Health <span className="text-[#F4D03F]">Check</span></>}
-                subtitle="Analyze hive health from images."
+                label="Orbital Intelligence Kernel"
+                title="Health Check"
+                subtitle="Analyze hive health from images using high-fidelity neural optics."
                 actions={
                     <div className="flex gap-4">
                         <input
@@ -134,23 +134,23 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
 
                                     <div className="grid grid-cols-3 gap-8 border-y-2 border-black/10 py-8 my-6 w-full">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase opacity-40">Mite Check</p>
+                                            <p className={glass.microLabel}>MITE_CHECK</p>
                                             <p className="text-3xl font-black text-red-600 tracking-tight tabular-nums">{scanResults.mite_count}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase opacity-40">Brood Area</p>
+                                            <p className={glass.microLabel}>BROOD_AREA</p>
                                             <p className="text-3xl font-black tracking-tight tabular-nums">{scanResults.brood_area_pct}%</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase opacity-40">Score</p>
+                                            <p className={glass.microLabel}>HEALTH_SCORE</p>
                                             <p className="text-3xl font-black tracking-tight tabular-nums">{scanResults.health_score}</p>
                                         </div>
                                     </div>
 
                                     <div className="text-left w-full mt-6 bg-white/50 p-6 rounded-2xl border border-black/5">
                                         <div className="flex items-center gap-4 mb-4">
-                                            <Activity className="w-4 h-4 opacity-40" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Detections</p>
+                                            <Activity className="w-4 h-4 text-[#F4D03F]" />
+                                            <p className={glass.microLabel}>ANALYSIS_DETECTIONS</p>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {scanResults.detections?.slice(0, 4).map((d: any, i: number) => (
@@ -226,8 +226,8 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                         className={cn(glass.card, "p-8 shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 relative overflow-hidden group")}
                     >
                         <div className="flex items-center justify-between mb-8 border-b-2 border-[#F4D03F]/10 pb-6 relative z-10">
-                            <h3 className="text-xl font-black uppercase tracking-tight leading-none">History</h3>
-                            <div className="w-10 h-10 bg-black/5 rounded-xl flex items-center justify-center border border-[#F4D03F]/10 shadow-inner">
+                            <h3 className={glass.sectionTitle}>AUDIT_HISTORY</h3>
+                            <div className="w-10 h-10 bg-white/40 rounded-xl flex items-center justify-center border border-[#F4D03F]/20 shadow-inner">
                                 <FileCheck className="w-5 h-5 text-[#F4D03F]" />
                             </div>
                         </div>
@@ -240,8 +240,8 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                             ].map((audit, i) => (
                                 <div key={i} className="flex justify-between items-center group/item cursor-pointer hover:bg-black/5 p-4 rounded-2xl border border-transparent hover:border-[#F4D03F]/10 transition-all">
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-black uppercase opacity-30">{audit.date}</p>
-                                        <p className="text-md font-black italic text-foreground tracking-tight">{audit.orchard}</p>
+                                        <p className={glass.microLabel}>{audit.date}</p>
+                                        <p className="text-sm font-black text-foreground tracking-tight uppercase">{audit.orchard}</p>
                                     </div>
                                     <div className="text-right space-y-2">
                                         <div className={cn(

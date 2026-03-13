@@ -107,173 +107,164 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className={cn(glass.modalOverlay, "flex items-center justify-center p-8")}>
+                <div className={cn(glass.modalOverlay)}>
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 100 }}
-                        className={glass.modalCard}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className={cn(glass.modalCard, "max-w-xl")}
                         onClick={e => e.stopPropagation()}
                     >
                         {/* ── Header ── */}
-                        <div className={glass.modalHeader}>
-                            <div className="relative z-10 flex justify-between items-start">
-                                <div className="space-y-6">
-                                    <div className="inline-flex items-center gap-6 px-8 py-3 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/30 shadow-4xl skew-x-[-15deg]">
-                                        <Box className="w-6 h-6 text-[#F4D03F] skew-x-[15deg]" />
-                                        <span className="text-[12px] font-black uppercase tracking-[0.5em] skew-x-[15deg] italic">Hive Registry</span>
-                                    </div>
-                                    <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                                        {editingHive ? 'Edit' : 'Add New'} <span className="text-[#F4D03F]">Hive</span>
-                                    </h2>
-                                    <p className="text-2xl font-black text-foreground/30 uppercase italic border-l-4 border-[#F4D03F]/20 pl-10">Fill in the details to manage this hive in your dashboard.</p>
+                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex justify-between items-center relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <Hexagon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                                <button onClick={onClose} className="w-20 h-20 rounded-[2.5rem] bg-[#F9F7F2] border border-[#F4D03F]/20 flex items-center justify-center hover:bg-neutral-800 transition-all duration-700">
-                                    <X className="w-10 h-10" />
-                                </button>
+                                <div className="space-y-0.5">
+                                    <h2 className="text-[10px] font-black tracking-[0.2em] uppercase text-[#1A1A1A]">
+                                        {editingHive ? 'Update_Protocol' : 'Initialize_Unit'}
+                                    </h2>
+                                    <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Hive registration node active.</p>
+                                </div>
                             </div>
+                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all">
+                                <X className="w-4 h-4 text-gray-400" />
+                            </button>
                         </div>
 
                         {/* ── Form ── */}
-                        <div className="p-20 space-y-20 relative z-10">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                {/* Left Section */}
-                                <div className="space-y-12">
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Hive ID / Name</Label>
-                                        <div className="relative group">
-                                            <Hash className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-[#F4D03F] opacity-20 group-focus-within:opacity-100 transition-all" />
-                                            <Input
-                                                value={formData.hive_code}
-                                                onChange={(e) => setFormData({ ...formData, hive_code: e.target.value })}
-                                                placeholder="e.g. Hive-01"
-                                                className={cn(glass.input, "pl-24")}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Location</Label>
-                                        <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
-                                            <SelectTrigger className={glass.select}>
-                                                <div className="flex items-center gap-8">
-                                                    <MapPin className="w-8 h-8 text-[#F4D03F] opacity-30" />
-                                                    <SelectValue placeholder="Select Location" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                {apiaries.map(apiary => (
-                                                    <SelectItem key={apiary.id} value={apiary.id} className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">{apiary.name.toUpperCase()}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Hive Type</Label>
-                                        <Select value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
-                                            <SelectTrigger className={glass.select}>
-                                                <div className="flex items-center gap-8">
-                                                    <Layers className="w-8 h-8 text-[#F4D03F] opacity-30" />
-                                                    <SelectValue placeholder="Select Hive Type" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                <SelectItem value="Langstroth" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Langstroth</SelectItem>
-                                                <SelectItem value="KTBH" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Kenya Top Bar</SelectItem>
-                                                <SelectItem value="Traditional Log" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Traditional Log</SelectItem>
-                                                <SelectItem value="Warre" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Warre</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Number of Frames</Label>
-                                        <div className="relative group">
-                                            <Settings className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-[#F4D03F] opacity-30 group-focus-within:opacity-100 transition-all" />
-                                            <Input
-                                                type="number"
-                                                value={formData.frame_count || ''}
-                                                onChange={(e) => setFormData({ ...formData, frame_count: parseInt(e.target.value) || 0 })}
-                                                placeholder="10"
-                                                className={cn(glass.input, "pl-24 text-4xl tabular-nums")}
-                                            />
-                                        </div>
+                        <div className="p-6 space-y-6 relative z-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Hive Identifier*</Label>
+                                    <div className="relative">
+                                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                        <Input
+                                            value={formData.hive_code}
+                                            onChange={(e) => setFormData({ ...formData, hive_code: e.target.value })}
+                                            placeholder="HIVE_ACACIA_01"
+                                            className={cn(glass.input, "pl-10 h-10 text-[11px] font-black uppercase tracking-wider")}
+                                        />
                                     </div>
                                 </div>
 
-                                {/* Right Section */}
-                                <div className="space-y-12">
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Bee Species</Label>
-                                        <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
-                                            <SelectTrigger className={glass.select}>
-                                                <div className="flex items-center gap-8">
-                                                    <Binary className="w-8 h-8 text-[#F4D03F] opacity-30" />
-                                                    <SelectValue placeholder="Select Bee Type" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                <SelectItem value="African Honey Bee" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">African Honey Bee</SelectItem>
-                                                <SelectItem value="Italian Bee" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Italian Bee</SelectItem>
-                                                <SelectItem value="Carniolan Bee" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Carniolan Bee</SelectItem>
-                                                <SelectItem value="Buckfast Bee" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Buckfast Bee</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Location Node</Label>
+                                    <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                            <div className="flex items-center gap-2">
+                                                <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                                <SelectValue placeholder="Select Location" />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                            {apiaries.map(apiary => (
+                                                <SelectItem key={apiary.id} value={apiary.id} className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10">{apiary.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Current Status</Label>
-                                        <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
-                                            <SelectTrigger className={glass.select}>
-                                                <div className="flex items-center gap-8">
-                                                    <ShieldCheck className="w-8 h-8 text-[#F4D03F] opacity-30" />
-                                                    <SelectValue placeholder="Select Status" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                <SelectItem value="ACTIVE" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Healthy</SelectItem>
-                                                <SelectItem value="WEAK" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Recovering</SelectItem>
-                                                <SelectItem value="INACTIVE" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Offline</SelectItem>
-                                                <SelectItem value="QUEENLESS" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">No Queen</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Hardware Blueprint</Label>
+                                    <Select value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                            <div className="flex items-center gap-2">
+                                                <Layers className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                                <SelectValue placeholder="Select Type" />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                            {['Langstroth', 'KTBH', 'Traditional Log', 'Warre'].map(t => (
+                                                <SelectItem key={t} value={t} className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10">{t}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Building Material</Label>
-                                        <Select value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
-                                            <SelectTrigger className={glass.select}>
-                                                <div className="flex items-center gap-8">
-                                                    <Cpu className="w-8 h-8 text-[#F4D03F] opacity-30" />
-                                                    <SelectValue placeholder="Select Material" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                <SelectItem value="Wood" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Wood</SelectItem>
-                                                <SelectItem value="Plastic" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Plastic</SelectItem>
-                                                <SelectItem value="Bamboo" className="p-6 font-black uppercase text-[15px] tracking-widest italic rounded-2xl">Bamboo</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <Label className={glass.microLabel}>Installation Date</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Frame Saturation</Label>
+                                    <div className="relative">
+                                        <Settings className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                         <Input
-                                            type="date"
-                                            value={formData.installation_date || ''}
-                                            onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}
-                                            className={cn(glass.input, "text-3xl")}
+                                            type="number"
+                                            value={formData.frame_count || ''}
+                                            onChange={(e) => setFormData({ ...formData, frame_count: parseInt(e.target.value) || 0 })}
+                                            placeholder="10"
+                                            className={cn(glass.input, "pl-10 h-10 text-[11px] font-black tabular-nums tracking-widest")}
                                         />
                                     </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Biological Vector</Label>
+                                    <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                            <div className="flex items-center gap-2">
+                                                <Binary className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                                <SelectValue placeholder="Select Bee Type" />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                            {['African Honey Bee', 'Italian Bee', 'Carniolan Bee', 'Buckfast Bee'].map(b => (
+                                                <SelectItem key={b} value={b} className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10">{b}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Operational State</Label>
+                                    <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                            <div className="flex items-center gap-2">
+                                                <ShieldCheck className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                                <SelectValue placeholder="Select Status" />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                            <SelectItem value="ACTIVE" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 text-[#1B9157]">NOMINAL</SelectItem>
+                                            <SelectItem value="WEAK" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 text-[#F4D03F]">OBSERVATION</SelectItem>
+                                            <SelectItem value="INACTIVE" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 text-red-500">OFFLINE</SelectItem>
+                                            <SelectItem value="QUEENLESS" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 text-purple-500">QUEENLESS</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Material Specification</Label>
+                                    <Select value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                            <div className="flex items-center gap-2">
+                                                <Cpu className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                                <SelectValue placeholder="Select Material" />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                            {['Wood', 'Plastic', 'Bamboo'].map(m => (
+                                                <SelectItem key={m} value={m} className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10">{m}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Deployment_Date</Label>
+                                    <Input
+                                        type="date"
+                                        value={formData.installation_date || ''}
+                                        onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}
+                                        className={cn(glass.input, "h-10 text-[11px] font-black tabular-nums tracking-widest")}
+                                    />
                                 </div>
                             </div>
 
                             {/* ── Footer ── */}
-                            <div className="flex flex-col sm:flex-row justify-end gap-10 pt-20 border-t border-[#F4D03F]/10">
+                            <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10 mt-6">
                                 <button
                                     onClick={onClose}
-                                    className={glass.btnSecondary}
+                                    className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black uppercase tracking-[0.3em]")}
                                     disabled={isSaving}
                                 >
                                     Cancel
@@ -281,14 +272,14 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 <button
                                     onClick={handleSubmit}
                                     disabled={isSaving}
-                                    className={cn(glass.btnPrimary, "h-24 min-w-[300px] text-3xl")}
+                                    className={cn(glass.btnPrimary, "h-11 px-10 text-[9px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#F4D03F]/10")}
                                 >
                                     {isSaving ? (
-                                        <RefreshCw className="w-12 h-12 animate-spin" />
+                                        <RefreshCw className="w-4 h-4 animate-spin mr-2" />
                                     ) : (
-                                        <ShieldCheck className="w-12 h-12" />
+                                        <ShieldCheck className="w-4 h-4 mr-2" />
                                     )}
-                                    {editingHive ? 'Update Hive' : 'Save Hive'}
+                                    {editingHive ? 'Commit_Protocol' : 'Initialize_Unit'}
                                 </button>
                             </div>
                         </div>

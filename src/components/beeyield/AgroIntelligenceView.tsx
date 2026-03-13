@@ -23,7 +23,7 @@ import {
     BarChart3,
     Info
 } from 'lucide-react';
-import beeyieldService from '@/services/beeyieldService';
+import { beeyieldService } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { glass, PageHeader } from './GlassTheme';
@@ -71,15 +71,15 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <PageHeader
                 icon={Satellite}
                 label="Orbital Intelligence Kernel"
-                title={<>Agro <span className="text-[#F4D03F]">Intelligence</span></>}
+                title="Agro Intelligence"
                 subtitle="High-fidelity spectral telemetry and ecosystem biome analytics."
                 actions={
                     <div className="flex items-center gap-3">
-                        <div className="px-4 py-2 bg-[#1A1A1A] rounded-xl border border-[#F4D03F]/10 flex items-center gap-3 shadow-lg">
+                        <div className={cn(glass.card, "px-4 py-2 flex items-center gap-3 shadow-lg bg-[#1A1A1A] border-[#F4D03F]/20")}>
                             <Terminal className="w-4 h-4 text-[#F4D03F] animate-pulse" />
                             <div className="flex flex-col">
-                                <span className="text-[7px] font-black text-white/40 uppercase tracking-widest">Orbit Link</span>
-                                <span className="text-[#F4D03F] font-black tracking-widest text-[9px]">CONNECTED</span>
+                                <span className="text-[7px] font-black text-white/40 uppercase tracking-[0.3em]">ORBIT_LINK</span>
+                                <span className="text-[#F4D03F] font-black tracking-[0.2em] text-[9px]">CONNECTED</span>
                             </div>
                         </div>
                     </div>
@@ -87,65 +87,83 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             />
 
             {/* Live Metrics Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Air Conditions', value: loading ? 'SCANNING...' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable'), icon: Sun, color: 'text-amber-500' },
-                    { label: 'Soil moisture', value: loading ? 'SCANNING...' : (moisture != null ? `${moisture}%` : '42%'), icon: CloudRain, color: 'text-blue-500' },
-                    { label: 'Vegetation NDVI', value: loading ? 'SCANNING...' : (vegetation != null ? vegetation.toString() : '0.64'), icon: Sprout, color: 'text-[#1B9157]' },
-                    { label: 'Carbon score', value: loading ? 'SCANNING...' : (carbonScore != null ? carbonScore.toLocaleString() : '1,240'), icon: Wind, color: 'text-[#F4D03F]' }
+                    { label: 'AIR_SCAN_PROTOCOL', value: loading ? 'SCANNING...' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable'), icon: Sun, color: 'text-amber-500' },
+                    { label: 'SOIL_MOISTURE_INDEX', value: loading ? 'SYNCING...' : (moisture != null ? `${moisture}%` : '42%'), icon: CloudRain, color: 'text-blue-500' },
+                    { label: 'VEGETATION_NDVI', value: loading ? 'MAPPING...' : (vegetation != null ? vegetation.toString() : '0.64'), icon: Sprout, color: 'text-[#1B9157]' },
+                    { label: 'CARBON_SEQUESTRATION', value: loading ? 'CALC...' : (carbonScore != null ? carbonScore.toLocaleString() : '1,240'), icon: Wind, color: 'text-[#1A1A1A]' }
                 ].map((stat, i) => (
                     <motion.div
                         key={stat.label}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="bg-white border border-[#F4D03F]/10 p-5 rounded-3xl flex flex-col gap-2 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all shadow-sm"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.05 }}
+                        className={cn(glass.card, "p-4 flex flex-col gap-1.5 border-white/40 shadow-sm group hover:border-[#F4D03F]/30 transition-all")}
                     >
                         <div className="flex items-center justify-between relative z-10">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]/30">{stat.label}</span>
-                            <stat.icon className={cn("w-4 h-4", stat.color)} />
+                            <span className={glass.microLabel}>{stat.label}</span>
+                            <stat.icon className={cn("w-3.5 h-3.5", stat.color)} />
                         </div>
-                        <span className={cn("text-2xl font-black tracking-tighter tabular-nums relative z-10", stat.color)}>{stat.value}</span>
+                        <span className={cn("text-xl font-black tracking-tighter tabular-nums relative z-10", stat.color)}>{stat.value}</span>
+                        <div className="absolute inset-x-0 bottom-0 h-0.5 bg-[#F4D03F]/10 group-hover:bg-[#F4D03F]/30 transition-all" />
                     </motion.div>
                 ))}
             </div>
 
             {/* Hero Card */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white border border-[#F4D03F]/10 p-10 rounded-[3rem] shadow-xl relative overflow-hidden group"
+                className={cn(glass.card, "p-8 lg:p-10 border-[#F4D03F]/20 shadow-xl relative overflow-hidden group")}
             >
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_70%_30%,#F4D03F0A_0%,transparent_60%)] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_70%_30%,#F4D03F05_0%,transparent_60%)] pointer-events-none" />
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                 
-                <div className="relative z-10 flex flex-col items-start gap-8">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm group-hover:scale-110 transition-all duration-500">
-                            <BrainCircuit className="w-6 h-6 text-[#F4D03F]" />
+                <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+                    <div className="space-y-6 max-w-2xl">
+                        <div className="flex items-center gap-3">
+                            <div className="w-11 h-11 rounded-xl bg-white border border-[#F4D03F]/20 flex items-center justify-center shadow-sm group-hover:rotate-12 transition-all duration-500">
+                                <BrainCircuit className="w-6 h-6 text-[#F4D03F]" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black tracking-[0.3em] text-[#1A1A1A] uppercase">Neural Biosphere</span>
+                                <span className="text-[8px] font-black text-[#F4D03F] tracking-[0.2em] uppercase italic">BIOSPHERE_TOPOLOGY_CORE</span>
+                            </div>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-xs font-black tracking-widest text-[#1A1A1A] uppercase">Neural Biosphere</span>
-                            <span className="text-[8px] font-black text-[#F4D03F] tracking-[0.3em] uppercase italic">ECOLOGICAL TOPOLOGY</span>
+
+                        <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-[0.9] max-w-xl">
+                            Ecosystem <span className="text-[#F4D03F]">Synthesizer</span> Interface
+                        </h2>
+
+                        <p className="text-[11px] font-black opacity-40 leading-relaxed max-w-xl text-[#1A1A1A] uppercase tracking-tighter">
+                            Synthesizing orbital spectral telemetry to decode the rhythmic architecture of your terrain. 
+                            Nectar flux optimization and precision trajectory modeling active.
+                        </p>
+
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => onTabChange('precision-pollination-home')}
+                                className={cn(glass.btnPrimary, "h-11 px-8 rounded-xl flex items-center gap-3 transition-all shadow-xl shadow-black/10")}
+                            >
+                                <Target className="w-4 h-4" />
+                                <span>INITIALIZE_NEURAL_MAPPING</span>
+                            </button>
                         </div>
                     </div>
 
-                    <h2 className="text-xl lg:text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-tight max-w-2xl">
-                        Ecosystem <span className="text-[#F4D03F]">Synthesizer</span>
-                    </h2>
-
-                    <p className="text-sm font-bold opacity-60 leading-relaxed max-w-2xl text-[#1A1A1A] italic">
-                        Global spectral telemetry reveals the rhythmic architecture of your ecosystem. Optimize nectar flux and pollinator trajectories
-                        with AI-enhanced terrain metrics provisioned from sub-meter orbital scans.
-                    </p>
-
-                    <div className="flex gap-4 w-full sm:w-auto">
-                        <button
-                            onClick={() => onTabChange('precision-pollination')}
-                            className="h-12 bg-[#1A1A1A] text-white hover:bg-[#F4D03F] hover:text-[#1A1A1A] rounded-2xl px-8 font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all shadow-lg active:scale-95"
-                        >
-                            <Target className="w-5 h-5" />
-                            Initialize Analysis
-                        </button>
+                    <div className="grid grid-cols-2 gap-3 w-full lg:w-auto">
+                        {[
+                            { label: 'NDVI_SIGNAL', value: 'High', color: 'text-[#1B9157]' },
+                            { label: 'SPECTRUM_SYNC', value: 'Locked', color: 'text-[#F4D03F]' },
+                            { label: 'BIOMASS_VAL', value: '0.84', color: 'text-[#1A1A1A]' },
+                            { label: 'ORBIT_REF', value: 'V-2', color: 'text-gray-400' }
+                        ].map((item, i) => (
+                            <div key={i} className="bg-white/40 border border-[#F4D03F]/10 p-4 rounded-2xl flex flex-col gap-1 min-w-[120px] shadow-sm">
+                                <span className={glass.microLabel}>{item.label}</span>
+                                <span className={cn("text-xs font-black uppercase tracking-widest", item.color)}>{item.value}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </motion.div>
@@ -153,77 +171,86 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             {/* Sector Dynamics */}
             <div className="space-y-6">
                 <div className="flex items-center gap-4 px-2">
-                    <div className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-white/40 border border-[#F4D03F]/20 flex items-center justify-center shadow-sm backdrop-blur-md">
                         <Target className="w-5 h-5 text-[#F4D03F]" />
                     </div>
-                    <h3 className="text-xl font-black text-[#1A1A1A] tracking-tighter uppercase">Sector <span className="text-[#F4D03F]">Dynamics</span></h3>
+                    <div className="space-y-0.5">
+                        <h3 className={glass.sectionTitle}>SECTOR_DYNAMICS</h3>
+                        <p className={glass.microLabel}>TERRAIN_INTERACTION_MODULES</p>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { title: 'Terrain Map', icon: MapIcon, desc: '3D GRID SCAN' },
-                        { title: 'Spectral Drifts', icon: Share2, desc: 'STRESS ANALYTICS' },
-                        { title: 'Hydration Log', icon: CloudRain, desc: 'MOISTURE FLUX' },
-                        { title: 'Biomass ROI', icon: Sprout, desc: 'YIELD PROJECTION' }
+                        { title: 'Terrain Map', icon: MapIcon, desc: '3D_GRID_SCAN' },
+                        { title: 'Spectral Drifts', icon: Share2, desc: 'DELTA_ANALYTICS' },
+                        { title: 'Hydration Log', icon: CloudRain, desc: 'FLUX_PROTOCOL' },
+                        { title: 'Biomass ROI', icon: Sprout, desc: 'YIELD_PROJECTION' }
                     ].map((btn, i) => (
                         <motion.button
                             key={btn.title}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * i }}
-                            className="bg-white border border-[#F4D03F]/10 p-6 rounded-3xl flex flex-col items-center text-center shadow-sm hover:border-[#F4D03F]/40 transition-all group"
+                            className={cn(glass.card, "p-4 flex flex-col items-center text-center shadow-sm hover:border-[#F4D03F]/40 transition-all group relative overflow-hidden bg-white/40")}
                         >
-                            <div className="w-12 h-12 rounded-2xl bg-[#1A1A1A]/5 flex items-center justify-center mb-4 border border-[#F4D03F]/10 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] transition-all">
-                                <btn.icon className="w-6 h-6 text-[#F4D03F] group-hover:text-[#1A1A1A]" />
+                            <div className="w-11 h-11 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center mb-4 group-hover:bg-[#F4D03F] transition-all shadow-sm">
+                                <btn.icon className="w-4 h-4 text-[#F4D03F] group-hover:text-white transition-colors" />
                             </div>
-                            <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest mb-1">{btn.title}</h4>
-                            <p className="text-[7px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">{btn.desc}</p>
+                            <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] mb-1">{btn.title}</h4>
+                            <p className="text-[7.5px] font-black text-[#F4D03F] uppercase tracking-widest italic">{btn.desc}</p>
+                            
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                            </div>
                         </motion.button>
                     ))}
                 </div>
             </div>
 
-            {/* Global Pipeline Pipeline */}
-            <div className="space-y-10">
-                <div className="flex items-center gap-4 border-b border-[#F4D03F]/20 pb-4 px-2">
-                    <div className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center shadow-sm">
+            {/* Global Pipeline */}
+            <div className="space-y-6">
+                <div className="flex items-center gap-4 px-2">
+                    <div className="w-10 h-10 rounded-xl bg-white/40 border border-[#F4D03F]/20 flex items-center justify-center shadow-sm backdrop-blur-md">
                         <Activity className="w-5 h-5 text-[#F4D03F]" />
                     </div>
-                    <h3 className={cn(glass.sectionTitle, "uppercase")}>Global <span className="text-[#F4D03F]">Pipeline</span></h3>
+                    <div className="space-y-0.5">
+                        <h3 className={glass.sectionTitle}>GLOBAL_PIPELINE</h3>
+                        <p className={glass.microLabel}>PROCESSING_LOGIC_SEQUENCE</p>
+                    </div>
                 </div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className={cn(glass.card, "p-8 shadow-sm relative overflow-hidden")}
+                    className={cn(glass.card, "p-8 border-[#F4D03F]/10 shadow-sm relative overflow-hidden bg-white/40")}
                 >
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none" />
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-20 relative z-10">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-[80px] pointer-events-none" />
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
                         {[
-                            { title: "Spectral Capture", icon: Satellite },
-                            { title: "Neural Layering", icon: Layers },
-                            { title: "Pattern Delta", icon: BrainCircuit },
-                            { title: "Precision Output", icon: Target }
+                            { title: "Spectral Capture", icon: Satellite, sub: "ORBITAL_SYNC" },
+                            { title: "Neural Layering", icon: Layers, sub: "AI_PROCESSING" },
+                            { title: "Pattern Delta", icon: BrainCircuit, sub: "ALGORITHMIC" },
+                            { title: "Precision Output", icon: Target, sub: "READY_PROTOCOL" }
                         ].map((step, i, arr) => (
                             <React.Fragment key={step.title}>
-                                <div className="flex flex-col items-center gap-10 flex-1 group">
+                                <div className="flex flex-col lg:flex-row items-center gap-4 flex-1 group">
                                     <div className="relative">
-                                        <div className="w-36 h-36 rounded-[2.5rem] bg-gray-400 flex items-center justify-center border border-[#F4D03F] shadow-xl transition-all group-hover:scale-110 group-hover:shadow-honey/20">
-                                            <step.icon className="w-16 h-16 text-[#F4D03F]" />
+                                        <div className="w-16 h-16 rounded-2xl bg-white border border-[#F4D03F]/20 flex items-center justify-center shadow-md transition-all group-hover:scale-105 group-hover:border-[#F4D03F]/40">
+                                            <step.icon className="w-7 h-7 text-[#F4D03F]" />
                                         </div>
-                                        <div className="absolute -top-4 -right-4 w-12 h-12 rounded-2xl bg-[#F4D03F] text-white flex items-center justify-center font-bold text-base shadow-xl border-4 border-white">
+                                        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-lg bg-[#1A1A1A] text-white flex items-center justify-center font-black text-[8px] shadow-lg border-2 border-white">
                                             0{i + 1}
                                         </div>
                                     </div>
-                                    <div className="text-center space-y-2">
-                                        <span className={cn(glass.sectionTitle, "text-lg normal-case")}>{step.title}</span>
-                                        <span className={cn(glass.microLabel, "text-[#F4D03F] opacity-60 font-bold italic tracking-widest")}>ACTIVE_PHASE</span>
+                                    <div className="text-center lg:text-left space-y-0.5">
+                                        <span className="text-[9px] font-black uppercase tracking-tight block text-[#1A1A1A]">{step.title}</span>
+                                        <span className="text-[7px] font-black text-[#F4D03F] tracking-widest uppercase italic">{step.sub}</span>
                                     </div>
                                 </div>
                                 {i < arr.length - 1 && (
-                                    <div className="hidden lg:block opacity-20">
-                                        <ArrowRight className="w-12 h-12 text-[#F4D03F] animate-[bounce_2s_infinite]" />
+                                    <div className="hidden lg:block opacity-10">
+                                        <ArrowRight className="w-5 h-5 text-[#1A1A1A]" />
                                     </div>
                                 )}
                             </React.Fragment>
@@ -233,46 +260,45 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             </div>
 
             {/* Detailed Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                     {
-                        title: 'Spatial Dynamics', icon: BarChart3, list: [
-                            "Boundary definition with sub-meter precision",
-                            "High-resolution terrain and slope mapping",
-                            "Sector-specific yield targets and ROI metrics",
-                            "Historical state archive with delta tracking"
-                        ], accent: 'honey'
+                        title: 'Spatial Dynamics Core', icon: BarChart3, list: [
+                            "Boundary definition precision mapping",
+                            "High-resolution terrain topography scans",
+                            "Sector-specific yield targets initialized",
+                            "Historical state archive tracking engine"
+                        ]
                     },
                     {
-                        title: 'Eco-Topology', icon: Layers, list: [
-                            "Multi-spectral layer visualization suite",
-                            "Nectar flow and bloom diversity indexes",
-                            "Real-time vegetation index (NDVI) tracking",
-                            "Seasonal drift analysis and climate modeling"
-                        ], accent: 'emerald-500'
+                        title: 'Eco-Topology Engine', icon: Layers, list: [
+                            "Multi-spectral layer visualization interface",
+                            "Nectar flow and bloom index tracking",
+                            "Real-time vegetation (NDVI) telemetry",
+                            "Seasonal drift analysis neural models"
+                        ]
                     }
                 ].map((feature, idx) => (
                     <motion.div
                         key={idx}
-                        initial={{ opacity: 0, x: idx === 0 ? -20 : 20 }}
+                        initial={{ opacity: 0, x: idx === 0 ? -10 : 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.8 }}
-                        className={cn(glass.card, "p-16 shadow-2xl border-[#F4D03F]/10 relative overflow-hidden group")}
+                        className={cn(glass.card, "p-8 border-white/40 shadow-lg relative overflow-hidden group bg-white/40")}
                     >
-                        <div className="absolute top-0 right-0 p-16 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-                            <feature.icon className="w-48 h-48 text-foreground" />
+                        <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
+                            <feature.icon className="w-24 h-24 text-[#1A1A1A]" />
                         </div>
-                        <div className="flex items-center gap-6 mb-12 relative z-10">
-                            <div className="w-20 h-20 rounded-[1.8rem] bg-[#FFF9F0]/60 flex items-center justify-center border border-[#F4D03F] shadow-xl">
-                                <feature.icon className="w-10 h-10 text-[#F4D03F]" />
+                        <div className="flex items-center gap-4 mb-6 relative z-10">
+                            <div className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/20 flex items-center justify-center shadow-sm">
+                                <feature.icon className="w-4 h-4 text-[#F4D03F]" />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic")}>{feature.title}</h3>
+                            <h3 className={glass.sectionTitle}>{feature.title}</h3>
                         </div>
-                        <ul className="space-y-12 relative z-10">
+                        <ul className="space-y-4 relative z-10">
                             {feature.list.map((item, i) => (
-                                <li key={i} className="flex gap-10 items-start group/li">
-                                    <div className="w-4 h-4 rounded-full bg-[#F4D03F] mt-2.5 shadow-lg group-hover/li:scale-125 transition-transform" />
-                                    <span className="text-lg italic font-medium opacity-80 leading-snug group-hover/li:opacity-100 transition-all">{item}</span>
+                                <li key={i} className="flex gap-4 items-center group/li">
+                                    <div className="w-1 h-1 rounded-full bg-[#F4D03F] shadow-sm" />
+                                    <span className="text-[9px] font-black uppercase tracking-tighter opacity-40 group-hover/li:opacity-100 transition-opacity leading-none">{item}</span>
                                 </li>
                             ))}
                         </ul>
@@ -280,23 +306,20 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 ))}
             </div>
 
-            {/* AI Diagnostic Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className={cn(glass.card, "p-10 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden group")}
+                className={cn(glass.card, "p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden group shadow-sm bg-[#F4D03F]/5 border-[#F4D03F]/20")}
             >
-                <div className="absolute right-0 top-0 w-72 h-72 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
-                <div className="w-20 h-20 rounded-[2rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-xl group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-10 h-10 text-[#F4D03F]" />
+                <div className="absolute right-0 top-0 w-48 h-48 bg-[#F4D03F]/10 rounded-full blur-[80px] pointer-events-none" />
+                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#F4D03F]/20 shadow-sm relative z-10">
+                    <Info className="w-5 h-5 text-[#F4D03F]" />
                 </div>
-                <div className="relative z-10 text-center md:text-left">
-                    <h5 className={cn(glass.sectionTitle, "text-3xl normal-case mb-4")}>Agro-Intelligence Summary</h5>
-                    <p className="text-base italic font-medium opacity-80 leading-relaxed max-w-5xl text-foreground">
-                        Our recursive neural layering of spectral telemetry indicates high vegetative health (NDVI: 0.64) across key forage sectors.
-                        Carbon sequestration scores have increased by 4.2% in the last 30-day bin. Soil moisture levels remain balanced,
-                        optimized for nectar production in upcoming bloom windows.
+                <div className="relative z-10 text-center md:text-left space-y-1">
+                    <h5 className={glass.sectionTitle}>AGRO_INTELLIGENCE_SUMMARY</h5>
+                    <p className="text-[10px] font-black opacity-40 leading-relaxed text-[#1A1A1A] uppercase tracking-tighter">
+                        Recursive neural layering of spectral telemetry indicates high vegetative health across forage sectors.
+                        Carbon sequestration scores increased by 4.2% in the last 30-day epoch.
                     </p>
                 </div>
             </motion.div>

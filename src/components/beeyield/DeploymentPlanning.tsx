@@ -67,52 +67,52 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "max-w-7xl mx-auto space-y-6 pb-24")}
+            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
         >
             <PageHeader
                 icon={Crosshair}
                 label="Geospatial Node"
-                title={<>Field <span className="text-[#F4D03F]">Planner</span></>}
+                title={<>Field <span className="text-[#1B9157]">Planner</span></>}
                 subtitle="Interactive geospatial deployment protocols for precision apiary logistics."
                 actions={
                     <div className="flex items-center gap-3">
-                        <div className="flex flex-col items-end px-4 py-1.5 bg-[#1B9157]/5 border border-[#1B9157]/10 rounded-xl">
-                            <span className="text-[7px] font-black uppercase text-[#1B9157] opacity-60 italic leading-none">Expected Coverage</span>
-                            <span className="text-[13px] font-black text-[#1B9157] italic mt-1">{avgCoverage}%</span>
+                        <div className="flex flex-col items-end px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-lg shadow-sm">
+                            <span className="text-[10px] font-bold uppercase text-emerald-600 opacity-60 leading-none mb-1">Coverage</span>
+                            <span className="text-sm font-bold text-emerald-700 leading-none">{avgCoverage}%</span>
                         </div>
-                        <div className="flex flex-col items-end px-4 py-1.5 bg-[#F4D03F]/5 border border-[#F4D03F]/10 rounded-xl">
-                            <span className="text-[7px] font-black uppercase text-[#F4D03F] opacity-60 italic leading-none">Active Units</span>
-                            <span className="text-[13px] font-black text-[#F4D03F] italic mt-1">{totalHives}</span>
+                        <div className="flex flex-col items-end px-3 py-1 bg-[#F9F7F2] border border-amber-100 rounded-lg shadow-sm">
+                            <span className="text-[10px] font-bold uppercase text-amber-600 opacity-60 leading-none mb-1">Units</span>
+                            <span className="text-sm font-bold text-amber-700 leading-none">{totalHives}</span>
                         </div>
                     </div>
                 }
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 {/* Simulation Area */}
-                <div className="lg:col-span-8 space-y-6">
+                <div className="lg:col-span-8 space-y-4">
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.section, "flex items-center justify-between p-4 bg-white/40")}
+                        className={cn(glass.card, "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white gap-4 border-gray-200")}
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
-                                <Info className="w-4 h-4 text-[#F4D03F]" />
+                        <div className="flex items-start sm:items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 shrink-0 shadow-sm">
+                                <Info className="w-5 h-5 text-gray-400" />
                             </div>
-                            <p className="text-[10px] font-black uppercase italic opacity-40 leading-tight">
+                            <p className="text-xs font-medium text-gray-500 leading-relaxed uppercase tracking-tighter sm:tracking-normal">
                                 Click grid to initialize units. <br /> Drag units to optimize geospatial flow.
                             </p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-full sm:w-auto">
                             <button
                                 onClick={() => setPallets([])}
-                                className={cn(glass.btnSecondary, "w-10 h-10 p-0 flex items-center justify-center")}
+                                className={cn(glass.btnSecondary, "w-10 h-10 p-0 flex items-center justify-center bg-white")}
                             >
                                 <RotateCcw className="w-4 h-4" />
                             </button>
-                            <button className={cn(glass.btnPrimary, "h-10 px-6 italic")}>
-                                <Save className="w-3.5 h-3.5 mr-2" />
+                            <button className={cn(glass.btnPrimary, "h-10 px-6 font-bold text-xs flex-1 sm:flex-none")}>
+                                <Save className="w-4 h-4 mr-2" />
                                 Commit Map
                             </button>
                         </div>
@@ -121,8 +121,9 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.99 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.section, "p-0 h-[480px] relative overflow-hidden bg-[#1A1A1A]/5")}
+                        className={cn(glass.card, "p-0 h-[480px] relative overflow-hidden bg-gray-50 border-gray-200")}
                     >
+                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02),transparent)]" />
                          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
                         <svg
@@ -142,10 +143,10 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                         exit={{ scale: 0, opacity: 0 }}
                                         cx={p.x} cy={p.y}
                                         fill="#F4D03F"
-                                        fillOpacity={0.08}
+                                        fillOpacity={0.06}
                                         stroke="#F4D03F"
-                                        strokeOpacity={0.1}
-                                        strokeWidth={1}
+                                        strokeOpacity={0.15}
+                                        strokeWidth={1.5}
                                         className="pointer-events-none"
                                     />
                                 ))}
@@ -163,8 +164,8 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                         animate={{ scale: 1 }}
                                         d="M 0 -15 L 13 -7.5 L 13 7.5 L 0 15 L -13 7.5 L -13 -7.5 Z"
                                         fill={draggingPallet === p.id ? "#F4D03F" : "white"}
-                                        stroke="#F4D03F"
-                                        strokeWidth={draggingPallet === p.id ? 3 : 1.5}
+                                        stroke={draggingPallet === p.id ? "#D97706" : "#F4D03F"}
+                                        strokeWidth={draggingPallet === p.id ? 2.5 : 1.5}
                                         className="transition-all duration-200 shadow-xl"
                                     />
                                     <text
@@ -172,8 +173,8 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                         dominantBaseline="central"
                                         fontSize="9"
                                         fontWeight="900"
-                                        fill={draggingPallet === p.id ? "white" : "#F4D03F"}
-                                        className="pointer-events-none italic"
+                                        fill={draggingPallet === p.id ? "white" : "#1A1A1A"}
+                                        className="pointer-events-none"
                                     >4</text>
                                 </g>
                             ))}
@@ -182,28 +183,28 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 </div>
 
                 {/* Operations & Logs */}
-                <div className="lg:col-span-4 space-y-6">
+                <div className="lg:col-span-4 space-y-4">
                     <motion.div
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={cn(glass.card, "p-5 bg-red-500/5 border-red-500/10 border-l-4 border-l-red-500 shadow-sm")}
+                        className={cn(glass.card, "p-5 bg-white border-red-100 shadow-sm overflow-hidden")}
                     >
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-9 h-9 rounded-xl bg-white/80 flex items-center justify-center border border-red-100 text-red-500">
+                            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 text-red-500 shadow-sm">
                                 <ShieldAlert className="w-5 h-5" />
                             </div>
-                            <h3 className="text-[12px] font-black uppercase italic tracking-tight text-red-600">Incident Registry</h3>
+                            <h3 className="text-sm font-bold text-red-600 tracking-tight">Incident Registry</h3>
                         </div>
                         <div className="space-y-3">
                             {[
                                 { title: 'Tilt Detected: Sector A4', desc: 'Acoustic spike at node 04. Ground verification required.' },
                                 { title: 'GPS Drift: Unit WAT-12', desc: 'Perimeter breach detected. Theft protocol initialized.' }
                             ].map((alert, i) => (
-                                <div key={i} className="flex gap-3 p-3 bg-white/40 rounded-xl border border-red-500/5 group">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1 shrink-0 animate-pulse" />
+                                <div key={i} className="flex gap-3 p-3 bg-red-50/50 rounded-xl border border-dotted border-red-200 group">
+                                    <div className="w-2 h-2 rounded-full bg-red-500 mt-1 shrink-0 animate-pulse" />
                                     <div>
-                                        <p className="text-[10px] font-black text-red-600 uppercase italic leading-none">{alert.title}</p>
-                                        <p className="text-[9px] font-medium opacity-60 uppercase italic mt-1 leading-tight">{alert.desc}</p>
+                                        <p className="text-[10px] font-bold text-red-700 uppercase tracking-wider mb-1 leading-none">{alert.title}</p>
+                                        <p className="text-[10px] font-medium text-gray-500 leading-relaxed">{alert.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -213,37 +214,39 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     <motion.div
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={cn(glass.section, "p-5 bg-white/40")}
+                        className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm")}
                     >
-                        <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4 mb-4">
-                            <div className="w-9 h-9 rounded-xl bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10">
-                                <ClipboardList className="w-4 h-4 text-[#1B9157]" />
+                        <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                                <ClipboardList className="w-5 h-5 text-gray-500" />
                             </div>
-                            <h3 className="text-[11px] font-black uppercase italic tracking-widest text-[#1A1A1A]">Operational Logs</h3>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Operational Logs</h3>
                         </div>
 
-                        <div className="space-y-4 max-h-[220px] overflow-y-auto custom-scrollbar">
+                        <div className="p-4 space-y-4 max-h-[250px] overflow-y-auto custom-scrollbar">
                             {logs.map((log, idx) => (
-                                <div key={log.id} className="group">
+                                <div key={log.id} className="group flex flex-col gap-1">
                                     <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center gap-2">
-                                            <div className={cn("w-1 h-1 rounded-full", log.type === 'syrup' ? 'bg-[#F4D03F]' : 'bg-blue-500')} />
-                                            <span className="text-[9px] font-black uppercase italic text-gray-400 group-hover:text-gray-600">
+                                            <div className={cn("w-1.5 h-1.5 rounded-full", log.type === 'syrup' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                                                 {log.type === 'syrup' ? 'System_Feeding' : 'Registry_Audit'}
                                             </span>
                                         </div>
-                                        <span className="text-[8px] font-black opacity-20 italic">{log.time}</span>
+                                        <span className="text-[10px] font-bold text-gray-300 group-hover:text-gray-400 transition-colors uppercase">{log.time}</span>
                                     </div>
-                                    <p className="text-[10px] font-medium opacity-70 uppercase italic leading-tight pl-3">
+                                    <p className="text-[11px] font-medium text-[#1A1A1A] leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">
                                         {log.desc}
                                     </p>
                                 </div>
                             ))}
                         </div>
 
-                        <button className={cn(glass.btnSecondary, "w-full h-10 mt-6 border-dashed text-[9px] italic")}>
-                            + Append Entry
-                        </button>
+                        <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+                            <button className={cn(glass.btnSecondary, "w-full h-9 bg-white border-dashed text-xs font-bold")}>
+                                + Append Entry
+                            </button>
+                        </div>
                     </motion.div>
                 </div>
             </div>
@@ -252,25 +255,25 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-6 bg-[#F4D03F]/5 border-[#F4D03F]/10 flex items-center gap-6 relative overflow-hidden group")}
+                className={cn(glass.card, "p-5 lg:p-6 bg-white border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-4 lg:gap-6 relative overflow-hidden group shadow-sm")}
             >
-                <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#F4D03F]/10 blur-3xl rounded-full" />
-                <div className="w-12 h-12 rounded-xl bg-white/80 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm">
-                    <Info className="w-6 h-6 text-[#F4D03F]" />
+                <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#F9F7F2]/50 blur-2xl rounded-full" />
+                <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center shrink-0 border border-gray-200 shadow-sm group-hover:bg-[#1B9157]/5 group-hover:border-[#1B9157]/20 transition-colors">
+                    <Info className="w-6 h-6 text-gray-400 group-hover:text-[#1B9157] transition-colors" />
                 </div>
                 <div className="flex-1 space-y-1 relative z-10">
-                    <h5 className="text-[13px] font-black uppercase italic tracking-tight text-[#1A1A1A]">Intelligence <span className="text-[#F4D03F]">Sync</span></h5>
-                    <p className="text-[10px] font-medium opacity-60 leading-relaxed uppercase italic tracking-tight border-l-2 border-[#F4D03F] pl-4">
-                        Current field plan coverage at <span className="text-black font-black">82%</span>. Shift Section A-4 trajectories North-East to close gap.
+                    <h5 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Intelligence Sync</h5>
+                    <p className="text-[11px] font-medium text-gray-500 leading-relaxed uppercase tracking-tighter sm:tracking-normal border-l-2 border-[#1B9157] pl-4">
+                        Current field plan coverage at <span className="text-[#1A1A1A] font-bold">82%</span>. Shift Section A-4 trajectories North-East to close gap.
                         Security flags in Sector 4 require urgent ground verification.
                     </p>
                 </div>
             </motion.div>
 
             <style>{`
-                .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.2); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
             `}</style>
         </motion.div>
     );

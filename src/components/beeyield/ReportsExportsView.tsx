@@ -8,41 +8,19 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    FileText, Download, Grid3X3, Box, Check, LayoutGrid,
-    Calendar, History, Plus, Bell, ExternalLink,
+    FileText, Download, Check, LayoutGrid,
+    Calendar, Plus, ExternalLink,
     Clock, Sparkles, X, Trash2, Shield, Loader2, FileBarChart,
-    Settings,
-    Mail,
-    ChevronRight,
-    Search,
-    Zap,
-    Cpu,
-    Database,
-    FileSpreadsheet,
-    FileJson,
-    PieChart,
-    BarChart3,
-    ArrowRight,
-    ShieldCheck,
-    Layers,
-    MapPin,
-    Network,
-    Terminal,
-    Fingerprint,
-    Lock,
-    SearchCode,
-    Activity,
-    Radio,
-    Info,
-    RefreshCw,
-    ChevronDown
+    ChevronRight, Search, Zap, Cpu, Database, FileSpreadsheet,
+    FileJson, PieChart, BarChart3, ArrowRight, ShieldCheck,
+    Layers, MapPin, Network, Terminal, Fingerprint, Lock,
+    SearchCode, Activity, Radio, Info, RefreshCw, ChevronDown, Box
 } from 'lucide-react';
 import beeyieldService, { Apiary, Hive, GeneratedReport, ScheduledReport } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 
 interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
@@ -268,60 +246,55 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "max-w-7xl mx-auto space-y-6 pb-24")}
+            className={glass.page}
         >
             <PageHeader
                 icon={FileBarChart}
                 label="Registry Node"
-                title={<>Audit <span className="text-[#F4D03F]">Archive</span></>}
+                title={<>Audit <span className="text-[#1B9157]">Archive</span></>}
                 subtitle="Synthesize historical yield vectors and industrial audit trails."
                 actions={
                     <button
                         onClick={() => setIsScheduleModalOpen(true)}
-                        className={cn(glass.btnPrimary, "h-9 px-4 text-[9px] italic flex items-center gap-2")}
+                        className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold flex items-center gap-2")}
                     >
-                        <Plus className="w-3.5 h-3.5" />
+                        <Plus className="w-4 h-4" />
                         Sync Node
                     </button>
                 }
             />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className={cn(glass.card, "p-4 flex flex-col items-center text-center")}>
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-30 italic mb-1">Total Audits</p>
-                    <p className="text-[20px] font-black italic">{reports.length}</p>
-                </div>
-                <div className={cn(glass.card, "p-4 flex flex-col items-center text-center")}>
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-30 italic mb-1">Active Nodes</p>
-                    <p className="text-[20px] font-black italic text-[#1B9157]">{schedules.length}</p>
-                </div>
-                <div className={cn(glass.card, "p-4 flex flex-col items-center text-center")}>
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-30 italic mb-1">Queue Size</p>
-                    <p className="text-[20px] font-black italic text-[#F4D03F]">{reports.filter(r => r.status === 'processing').length}</p>
-                </div>
-                <div className={cn(glass.card, "p-4 flex flex-col items-center text-center")}>
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-30 italic mb-1">AI Modules</p>
-                    <p className="text-[20px] font-black italic">04</p>
-                </div>
+                {[
+                    { label: 'Total Audits', value: reports.length, color: 'text-[#1A1A1A]' },
+                    { label: 'Active Nodes', value: schedules.length, color: 'text-emerald-600' },
+                    { label: 'Queue Size', value: reports.filter(r => r.status === 'processing').length, color: 'text-amber-500' },
+                    { label: 'AI Modules', value: '04', color: 'text-gray-400' }
+                ].map((stat, i) => (
+                    <div key={i} className={cn(glass.card, "p-4 flex flex-col items-center text-center bg-white shadow-sm")}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
+                        <p className={cn("text-xl font-bold tracking-tight", stat.color)}>{stat.value}</p>
+                    </div>
+                ))}
             </div>
 
             {/* Neural Insights Intelligence Banner */}
-            <div className={cn(glass.card, "p-6 bg-gradient-to-br from-[#1B9157] to-[#0A5D3B] border-none flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group")}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px] -mr-32 -mt-32" />
-                <div className="space-y-2 flex-1 relative z-10">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-white/10 text-[8px] font-black uppercase tracking-widest text-white italic">
-                        <Zap className="w-3 h-3 text-[#F4D03F]" />
+            <div className={cn(glass.card, "p-5 bg-emerald-600 border-none flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden group shadow-lg")}>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32" />
+                <div className="space-y-1.5 flex-1 relative z-10 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
+                        <Zap className="w-3 h-3 text-amber-300" />
                         Neural Engine Active
                     </div>
-                    <h2 className="text-[18px] font-black italic text-white uppercase tracking-tight">Synthesize <span className="text-[#F4D03F]">Intelligence</span></h2>
-                    <p className="text-[10px] uppercase font-medium text-white/60 italic leading-tight max-w-md">Predictive yield analysis and geospatial bloom trajectors via Neural MoE.</p>
+                    <h2 className="text-base font-bold text-white tracking-tight">Synthesize Intelligence</h2>
+                    <p className="text-[11px] font-medium text-emerald-100/70 max-w-md">Predictive yield analysis and geospatial bloom trajectories via Neural MoE.</p>
                 </div>
                 <button
                     onClick={handleGenerateAIInsights}
                     disabled={isAISynthesizing}
-                    className={cn(glass.btnSecondary, "h-10 px-6 bg-white text-[#1B9157] border-none italic text-[10px] shadow-xl relative z-10")}
+                    className={cn(glass.btnSecondary, "h-9 px-6 bg-white text-emerald-700 border-none font-bold text-xs shadow-xl relative z-10 shrink-0")}
                 >
-                    {isAISynthesizing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-2 inline" />}
+                    {isAISynthesizing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                     Deep Analysis
                 </button>
             </div>
@@ -329,18 +302,18 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Synthesis Parameters */}
                 <div className="lg:col-span-8 space-y-6">
-                    <div className={cn(glass.section, "bg-white/40")}>
-                        <div className="p-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
+                    <div className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm")}>
+                        <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <h3 className="text-[11px] font-black uppercase italic tracking-widest text-[#1A1A1A]">Extraction Parameters</h3>
-                                <p className="text-[8px] font-black opacity-30 uppercase italic">Configure audit trajectories</p>
+                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Extraction Parameters</h3>
+                                <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Configure audit trajectories</p>
                             </div>
-                            <Terminal className="w-4 h-4 text-[#F4D03F]" />
+                            <Terminal className="w-4 h-4 text-gray-400" />
                         </div>
 
                         <div className="p-5 space-y-6">
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 italic ml-1">Vector Selection</label>
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Vector Selection</label>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                     {sectionOptions.map((opt) => (
                                         <button
@@ -348,44 +321,44 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                             onClick={() => setSections({ ...sections, [opt.id]: !sections[opt.id as keyof typeof sections] })}
                                             className={cn(
                                                 "p-3 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all group",
-                                                sections[opt.id as keyof typeof sections] ? "bg-[#F4D03F]/10 border-[#F4D03F]/20" : "bg-white/20 border-transparent hover:border-[#F4D03F]/10"
+                                                sections[opt.id as keyof typeof sections] ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-gray-50 border-transparent text-gray-400 hover:border-gray-200"
                                             )}
                                         >
-                                            <opt.icon className={cn("w-4 h-4 transition-colors", sections[opt.id as keyof typeof sections] ? "text-[#F4D03F]" : "text-gray-300")} />
-                                            <span className="text-[8px] font-black uppercase tracking-tight italic opacity-40 group-hover:opacity-100">{opt.label}</span>
+                                            <opt.icon className={cn("w-5 h-5 transition-colors", sections[opt.id as keyof typeof sections] ? "text-emerald-500" : "text-gray-300")} />
+                                            <span className="text-[10px] font-bold uppercase tracking-tighter sm:tracking-normal">{opt.label}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-[#F4D03F]/10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 border-t border-gray-100">
                                 <div className="space-y-3">
-                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 italic ml-1">Temporal Audit</label>
-                                    <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#F4D03F]/10 gap-1 overflow-x-auto">
+                                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Temporal Audit</label>
+                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1 overflow-x-auto">
                                         {['7', '30', '90', '365'].map((d) => (
                                             <button
                                                 key={d}
                                                 onClick={() => setReportScope(d)}
                                                 className={cn(
-                                                    "h-8 px-4 rounded-lg text-[8px] font-black uppercase italic transition-all whitespace-nowrap",
-                                                    reportScope === d ? "bg-[#F4D03F] text-[#1A1A1A]" : "text-gray-400"
+                                                    "h-7 px-3 rounded-md text-[10px] uppercase font-bold tracking-wider transition-all whitespace-nowrap",
+                                                    reportScope === d ? "bg-white text-[#1A1A1A] shadow-sm border border-gray-100" : "text-gray-400 hover:text-[#1A1A1A]"
                                                 )}
                                             >
-                                                {d === '365' ? 'Annual Cycle' : `${d}_Day`}
+                                                {d === '365' ? 'Annual' : `${d}D`}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 italic ml-1">Archive Format</label>
-                                    <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#F4D03F]/10 gap-1">
+                                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Archive Format</label>
+                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1">
                                         {['PDF', 'XLSX'].map((f) => (
                                             <button
                                                 key={f}
                                                 onClick={() => setSelectedFormat(f as any)}
                                                 className={cn(
-                                                    "flex-1 h-8 rounded-lg text-[8px] font-black uppercase italic transition-all",
-                                                    selectedFormat === f ? "bg-white text-[#F4D03F] shadow-sm border border-[#F4D03F]/10" : "text-gray-400"
+                                                    "flex-1 h-7 rounded-md text-[10px] uppercase font-bold tracking-wider transition-all",
+                                                    selectedFormat === f ? "bg-white text-emerald-600 shadow-sm border border-emerald-100" : "text-gray-400 hover:text-emerald-600"
                                                 )}
                                             >
                                                 {f}
@@ -395,17 +368,17 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                 </div>
                             </div>
 
-                            <div className="pt-4">
+                            <div className="pt-2">
                                 <button
                                     onClick={handleGenerateReport}
                                     disabled={isGenerating}
-                                    className={cn(glass.btnPrimary, "w-full h-11 italic flex items-center justify-center gap-3 relative overflow-hidden")}
+                                    className={cn(glass.btnPrimary, "w-full relative shadow-lg")}
                                 >
-                                    {isGenerating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                                    {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                                     <span>Initialize Data Extraction</span>
                                     {isGenerating && (
                                         <motion.div 
-                                            className="absolute bottom-0 left-0 h-1 bg-[#F4D03F] shadow-[0_0_8px_#F4D03F]"
+                                            className="absolute bottom-0 left-0 h-1 bg-amber-400 shadow-[0_0_8px_#F4D03F]"
                                             initial={{ width: 0 }}
                                             animate={{ width: `${genProgress}%` }}
                                         />
@@ -416,27 +389,28 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     </div>
 
                     <div className="space-y-4">
-                        <div className="flex items-center gap-4 border-l-2 border-[#F4D03F] pl-4">
-                            <h3 className="text-[12px] font-black uppercase italic tracking-tight text-[#1A1A1A]">Processed Archives</h3>
-                            <p className="text-[8px] font-black opacity-30 uppercase italic">Historical Registry</p>
+                        <div className="flex items-center gap-3 border-l-4 border-emerald-500 pl-3">
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Processed Archives</h3>
+                            <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Historical Registry</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {reports.slice(0, 6).map((r, i) => (
-                                <div key={r.id} className={cn(glass.card, "p-3 bg-white/60 border-[#F4D03F]/10 hover:border-[#F4D03F]/40 transition-all flex items-center justify-between group")}>
-                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-[#F4D03F]/10 flex items-center justify-center text-[#F4D03F]/40 group-hover:text-[#F4D03F] transition-all">
-                                            <FileText className="w-4 h-4" />
+                                <div key={r.id} className={cn(glass.card, "p-4 bg-white border-gray-100 hover:border-emerald-200 transition-all flex items-center justify-between group shadow-sm")}>
+                                     <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-emerald-500 transition-all shadow-sm">
+                                            <FileText className="w-5 h-5" />
                                         </div>
                                         <div className="space-y-0.5">
-                                            <p className="text-[9px] font-black uppercase italic text-[#1A1A1A] truncate max-w-[120px]">{r.report_type}</p>
-                                            <p className="text-[7px] font-black uppercase opacity-20 italic">{new Date(r.created_at).toLocaleDateString()}</p>
+                                            <p className="text-xs font-bold text-[#1A1A1A] truncate max-w-[140px] uppercase tracking-tighter">{r.report_type.replace('_', ' ')}</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase">{new Date(r.created_at).toLocaleDateString()}</p>
                                         </div>
                                      </div>
                                      <button 
                                         onClick={() => r.file_url && window.open(r.file_url, '_blank')}
-                                        className="w-8 h-8 rounded-lg bg-[#1A1A1A]/5 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] transition-all"
+                                        className="w-9 h-9 rounded-xl bg-gray-50 border border-transparent hover:border-emerald-200 flex items-center justify-center text-gray-400 hover:text-emerald-500 transition-all shadow-sm"
                                      >
-                                        <Download className="w-3.5 h-3.5" />
+                                        <Download className="w-4 h-4" />
                                      </button>
                                 </div>
                             ))}
@@ -446,51 +420,51 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                 {/* Registry Nodes */}
                 <div className="lg:col-span-4 space-y-6">
-                    <div className={cn(glass.section, "bg-white/40 h-full flex flex-col min-h-[400px]")}>
-                        <div className="p-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
+                    <div className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm flex flex-col h-full min-h-[460px]")}>
+                        <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <h3 className="text-[11px] font-black uppercase italic tracking-widest text-[#1A1A1A]">Registry Nodes</h3>
-                                <p className="text-[8px] font-black opacity-30 uppercase italic">Automated Sync Flow</p>
+                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Registry Nodes</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Automated Sync Flow</p>
                             </div>
-                            <Network className="w-4 h-4 text-[#F4D03F]" />
+                            <Network className="w-4 h-4 text-gray-300" />
                         </div>
 
-                        <div className="p-4 space-y-3 flex-1">
+                        <div className="p-4 space-y-3 flex-1 overflow-y-auto custom-scrollbar">
                             {schedules.map((s) => (
-                                <div key={s.id} className="p-3 rounded-xl bg-white/60 border border-[#F4D03F]/10 flex items-center justify-between group hover:border-[#F4D03F]/30 transition-all">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center text-[#1B9157]">
-                                            <Radio className="w-4 h-4 animate-pulse" />
+                                <div key={s.id} className="p-4 rounded-2xl bg-gray-50/50 border border-gray-100 flex items-center justify-between group hover:border-emerald-200 transition-all shadow-sm">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 flex items-center justify-center text-emerald-500 shadow-sm">
+                                            <Radio className="w-5 h-5 animate-pulse" />
                                         </div>
                                         <div className="space-y-0.5">
-                                            <p className="text-[10px] font-black uppercase italic text-[#1A1A1A]">{s.name}</p>
-                                            <p className="text-[7px] font-black uppercase opacity-30 italic">{s.frequency}_Cycle</p>
+                                            <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-tight">{s.name}</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase">{s.frequency} Cycle</p>
                                         </div>
                                     </div>
                                     <button 
                                         onClick={() => handleDeleteSchedule(s.id)}
-                                        className="w-7 h-7 rounded-md bg-red-500/5 text-red-500 opacity-20 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                                        className="w-8 h-8 rounded-lg bg-red-50 text-red-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
                                     >
-                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
                             ))}
                             
                             <button 
                                 onClick={() => setIsScheduleModalOpen(true)}
-                                className="w-full h-10 border border-dashed border-[#F4D03F]/30 rounded-xl flex items-center justify-center gap-2 group hover:border-[#F4D03F]/60 transition-all mt-4"
+                                className={cn(glass.btnSecondary, "w-full border-dashed group")}
                             >
-                                <Plus className="w-3.5 h-3.5 text-[#F4D03F] group-hover:rotate-90 transition-transform" />
-                                <span className="text-[9px] font-black uppercase italic opacity-40">Establish Sync</span>
+                                <Plus className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 group-hover:rotate-90 transition-all" />
+                                <span className={cn(glass.microLabel, "group-hover:text-emerald-600")}>Establish Sync</span>
                             </button>
                         </div>
 
-                        <div className="p-4 bg-[#F4D03F]/5 border-t border-[#F4D03F]/10 rounded-b-3xl space-y-2">
-                             <div className="flex items-center gap-2 text-[#F4D03F]">
-                                <Lock className="w-3.5 h-3.5" />
-                                <span className="text-[9px] font-black uppercase italic">Secure Tunnel</span>
+                        <div className="p-5 bg-emerald-50/50 border-t border-gray-50 space-y-2">
+                             <div className="flex items-center gap-2 text-emerald-700">
+                                <Lock className="w-4 h-4" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
                              </div>
-                             <p className="text-[8px] font-medium opacity-40 leading-tight uppercase italic pr-4">Deep-encrypted SMTP tunnel dissemination active for kernel node_ST.</p>
+                             <p className="text-[10px] font-medium text-emerald-600/60 leading-relaxed uppercase tracking-tighter">Deep-encrypted SMTP tunnel dissemination active for kernel node_ST.</p>
                         </div>
                     </div>
                 </div>
@@ -499,64 +473,65 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             {/* Modal */}
             <AnimatePresence>
                 {isScheduleModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12">
+                    <div className={glass.modalOverlay} onClick={() => setIsScheduleModalOpen(false)}>
                         <motion.div 
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-white/80 backdrop-blur-md" 
-                            onClick={() => setIsScheduleModalOpen(false)}
-                        />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className={cn(glass.card, "w-full max-w-xl p-0 overflow-hidden shadow-2xl relative z-10 rounded-3xl border-[#F4D03F]/20")}
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className={cn(glass.modalCard, "p-0")}
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-6 border-b border-[#F4D03F]/10 bg-[#F4D03F]/10 flex justify-between items-center">
-                                <h3 className="text-[16px] font-black italic uppercase italic tracking-tight">Sync <span className="text-[#F4D03F]">Kernel</span></h3>
-                                <button onClick={() => setIsScheduleModalOpen(false)} className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all">
+                            <div className="p-4 border-b border-[#F4D03F]/20 bg-[#F9F7F2] flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shadow-sm">
+                                        <Network className="w-4 h-4 text-emerald-600" />
+                                    </div>
+                                    <h3 className={glass.sectionTitle}>Sync Kernel Configuration</h3>
+                                </div>
+                                <button onClick={() => setIsScheduleModalOpen(false)} className="w-8 h-8 rounded-md hover:bg-white text-gray-400 hover:text-red-500 transition-all flex items-center justify-center">
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
-                            <form onSubmit={handleCreateSchedule} className="p-8 space-y-6">
+                            <form onSubmit={handleCreateSchedule} className="p-5 space-y-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black uppercase italic opacity-40 ml-1">Sync Identifier</Label>
+                                    <Label className={glass.microLabel}>Sync Identifier</Label>
                                     <div className="relative">
-                                        <Terminal className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]" />
+                                        <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
                                         <input 
                                             value={newSchedule.name}
                                             onChange={(e) => setNewSchedule({ ...newSchedule, name: e.target.value })}
-                                            className={cn(glass.input, "h-11 pl-12 text-[12px] italic font-black uppercase placeholder:opacity-20")}
+                                            className={cn(glass.input, "w-full pl-9")}
                                             placeholder="IDENTIFIER_NODE_V5..."
                                         />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                      <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase italic opacity-40 ml-1">Pulse Cycle</Label>
+                                        <Label className={glass.microLabel}>Pulse Cycle</Label>
                                         <div className="relative">
                                             <select 
                                                 value={newSchedule.frequency}
                                                 onChange={(e) => setNewSchedule({ ...newSchedule, frequency: e.target.value as any })}
-                                                className={cn(glass.input, "h-11 px-4 text-[10px] font-black uppercase italic appearance-none pr-10")}
+                                                className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
                                             >
-                                                <option value="daily">Daily_Burst</option>
-                                                <option value="weekly">Weekly_Audit</option>
-                                                <option value="monthly">Monthly_Cycle</option>
+                                                <option value="daily">Daily Burst</option>
+                                                <option value="weekly">Weekly Audit</option>
+                                                <option value="monthly">Monthly Cycle</option>
                                             </select>
-                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 opacity-40" />
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40 pointer-events-none" />
                                         </div>
                                      </div>
                                      <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase italic opacity-40 ml-1">Kernel Status</Label>
-                                        <div className={cn(glass.input, "h-11 px-4 flex items-center justify-between")}>
-                                            <span className="text-[9px] font-black uppercase italic opacity-30">Active_Node</span>
-                                            <Checkbox 
+                                        <Label className={glass.microLabel}>Kernel Status</Label>
+                                        <div className={cn(glass.input, "w-full flex items-center justify-between")}>
+                                            <span className="text-[10px] font-bold uppercase text-[#1A1A1A]/60">Active Node</span>
+                                            <Switch 
                                                 checked={newSchedule.is_active}
                                                 onCheckedChange={(c) => setNewSchedule({ ...newSchedule, is_active: !!c })}
-                                                className="w-5 h-5 border-2 border-[#F4D03F]/20 data-[state=checked]:bg-[#F4D03F]"
+                                                className="data-[state=checked]:bg-[#1B9157]"
                                             />
                                         </div>
                                      </div>
                                 </div>
-                                <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "w-full h-11 italic text-[11px] shadow-xl flex items-center justify-center gap-3 mt-4")}>
+                                <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "w-full mt-4")}>
                                     {isSavingSchedule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                     Establish Data Sync Flow
                                 </button>
@@ -565,6 +540,11 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     </div>
                 )}
             </AnimatePresence>
+            
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+            `}</style>
         </motion.div>
     );
 };

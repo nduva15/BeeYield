@@ -13,127 +13,126 @@ import {
     Search,
     AlertTriangle,
     Save,
-    History
+    History,
+    RefreshCw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from '../beeyield/GlassTheme';
+import { motion } from 'framer-motion';
 
 const VarroaWashInterpreter: React.FC = () => {
     const [miteCount, setMiteCount] = React.useState('4');
     const [sampleSize, setSampleSize] = React.useState('300');
 
-    const infestationRate = (parseInt(miteCount) / parseInt(sampleSize)) * 100;
+    const infestationRate = (parseInt(miteCount) || 0) / (parseInt(sampleSize) || 1) * 100;
     const isCritical = infestationRate > 3;
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header / Intro */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-10">
-                <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b]">
-                        <Flame className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Varroa Diagnostic Module</span>
-                    </div>
-                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
-                        Mite <span className="text-[#10b981]">Interpretation</span>
-                    </h1>
-                    <p className="text-[#064e3b]/40 font-black text-sm uppercase tracking-widest mt-2 px-1">
-                        Wash Matrix · Seasonal Thresholds · Treatment Recommendation Engine
-                    </p>
-                </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" className="h-16 px-8 rounded-none border-4 border-[#064e3b] font-black uppercase tracking-widest text-xs">
-                        <History className="w-4 h-4 mr-2" />
-                        Treatment History
-                    </Button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Input Form */}
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                    <CardHeader className="p-10 border-b-4 border-[#064e3b]/5 bg-neutral-50/30">
-                        <CardTitle className="text-3xl font-black text-[#064e3b] uppercase tracking-tighter italic">Wash Parameters</CardTitle>
-                        <p className="text-[10px] font-black uppercase text-[#064e3b]/30">Input raw field data for mathematical normalization</p>
+                <Card className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                    <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                                <History className="w-4 h-4 text-[#F4D03F]" />
+                            </div>
+                            <div className="space-y-0.5">
+                                <CardTitle className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Wash Parameters</CardTitle>
+                                <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Normalize field data for analysis</p>
+                            </div>
+                        </div>
                     </CardHeader>
-                    <CardContent className="p-10 space-y-8">
-                        <div className="grid grid-cols-2 gap-8">
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase text-[#064e3b]/60 tracking-widest">Mite Count (Observed)</label>
+                    <CardContent className="p-5 space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className={glass.microLabel}>Mite Count (Observed)</label>
                                 <Input
                                     type="number"
                                     value={miteCount}
                                     onChange={(e) => setMiteCount(e.target.value)}
-                                    className="h-16 rounded-none border-4 border-[#064e3b] text-xl font-black focus-visible:ring-0 focus-visible:bg-[#facc15]/10"
+                                    className={cn(glass.input, "h-10 text-base font-black")}
                                 />
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase text-[#064e3b]/60 tracking-widest">Sample Size (Bees)</label>
+                            <div className="space-y-2">
+                                <label className={glass.microLabel}>Sample Size (Bees)</label>
                                 <Input
                                     type="number"
                                     value={sampleSize}
                                     onChange={(e) => setSampleSize(e.target.value)}
-                                    className="h-16 rounded-none border-4 border-[#064e3b] text-xl font-black focus-visible:ring-0 focus-visible:bg-[#facc15]/10"
+                                    className={cn(glass.input, "h-10 text-base font-black")}
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-4 pt-4">
-                            <label className="text-[10px] font-black uppercase text-[#064e3b]/60 tracking-widest">Current Season Threshold (Late Summer)</label>
-                            <div className="h-4 w-full bg-neutral-100 border-2 border-[#064e3b] relative">
-                                <div className="absolute top-0 left-0 bottom-0 bg-[#facc15] w-[3%]" />
-                                <div className="absolute top-0 left-[3%] bottom-0 bg-red-500 w-[97%]" />
-                                <div className="absolute top-[-8px] left-[3%] w-1 h-8 bg-[#064e3b]" />
-                                <span className="absolute top-[-24px] left-[3%] translate-x-[-50%] text-[8px] font-black uppercase">T: 3.0%</span>
+                        <div className="space-y-3 pt-2">
+                            <div className="flex justify-between items-center">
+                                <label className={glass.microLabel}>Seasonal Threshold</label>
+                                <span className="text-[10px] font-black text-red-500">LATE SUMMER: 3.0%</span>
+                            </div>
+                            <div className="h-2 w-full bg-[#1A1A1A]/5 rounded-full relative overflow-hidden border border-[#F4D03F]/10">
+                                <div className="absolute top-0 left-0 bottom-0 bg-[#F4D03F] w-[3%]" />
+                                <div className="absolute top-0 left-[3%] bottom-0 bg-red-400/20 w-[97%]" />
+                                <div className="absolute top-0 left-[3%] w-[1px] h-full bg-[#1A1A1A]/20" />
                             </div>
                         </div>
 
-                        <Button className="w-full h-16 rounded-none bg-[#064e3b] text-white font-black uppercase tracking-[0.2em] text-xs shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] hover:translate-y-1 hover:shadow-none transition-all">
-                            <Save className="w-4 h-4 mr-2" />
+                        <button className={cn(glass.btnPrimary, "w-full h-10 text-[10px] tracking-[0.2em]")}>
+                            <Save className="w-4 h-4" />
                             Serialize to Hive History
-                        </Button>
+                        </button>
                     </CardContent>
                 </Card>
 
                 {/* Interpretation Results */}
-                <div className="space-y-8">
+                <div className="space-y-6">
                     <Card className={cn(
-                        "rounded-none border-4 shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] flex flex-col items-center justify-center py-16 transition-colors",
-                        isCritical ? "border-red-500 bg-red-50" : "border-[#10b981] bg-[#10b981]/5"
+                        glass.card,
+                        "flex flex-col items-center justify-center py-10 transition-all duration-500 border-2",
+                        isCritical ? "border-red-500/30 bg-red-50/40" : "border-[#1B9157]/30 bg-[#1B9157]/[0.02]"
                     )}>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4">Calculated Infestation</h4>
-                        <div className="flex items-end gap-1">
-                            <span className={cn("text-8xl font-black italic tracking-tighter", isCritical ? "text-red-500" : "text-[#10b981]")}>
+                        <h4 className={glass.microLabel}>Calculated Infestation</h4>
+                        <div className="flex items-end gap-1 my-2">
+                            <span className={cn("text-7xl font-black tabular-nums tracking-tighter", isCritical ? "text-red-500" : "text-[#1B9157]")}>
                                 {infestationRate.toFixed(1)}
                             </span>
-                            <span className="text-4xl font-black mb-3">%</span>
+                            <span className="text-2xl font-black mb-2">%</span>
                         </div>
-                        <Badge className={cn(
-                            "mt-6 rounded-none px-6 py-2 text-xs font-black uppercase italic tracking-widest",
-                            isCritical ? "bg-red-500 text-white" : "bg-[#10b981] text-white"
+                        <div className={cn(
+                            "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm",
+                            isCritical ? "bg-red-500 text-white" : "bg-[#1B9157] text-white"
                         )}>
-                            {isCritical ? "ABOVE THRESHOLD" : "UNDER THRESHOLD"}
-                        </Badge>
+                            {isCritical ? "ALERT: OVER THRESHOLD" : "SECURE: UNDER THRESHOLD"}
+                        </div>
                     </Card>
 
-                    <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] text-white p-8">
-                        <div className="flex items-center gap-4 mb-6">
-                            <Zap className="w-8 h-8 text-[#facc15]" />
-                            <h3 className="text-2xl font-black uppercase tracking-tighter">AI Protocol Suggestion</h3>
+                    <Card className={cn(glass.card, "bg-[#1A1A1A] text-white border-transparent shadow-xl p-5")}>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                <Zap className="w-5 h-5 text-[#F4D03F]" />
+                            </div>
+                            <div className="space-y-0.5">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-[#F4D03F]">AI Protocol Suggestion</h3>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
+                                    <span className="text-[9px] font-black text-gray-400 tracking-widest uppercase">Recommendation Active</span>
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-sm font-bold uppercase leading-relaxed text-white/60">
+                        <p className="text-[11px] font-bold uppercase leading-relaxed text-gray-300">
                             {isCritical
                                 ? "Infestation exceeds late-season economic threshold. Recommend Formic Pro or Oxalic Acid vapor treatment cycle within 48 hours to minimize winter losses."
                                 : "Infestation is managed. Continue monitoring at 2-week intervals. No immediate chemical intervention required for this colony."
                             }
                         </p>
-                        <div className="mt-8 pt-8 border-t-2 border-white/10 flex items-center justify-between">
+                        <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <ShieldCheck className="w-5 h-5 text-[#10b981]" />
-                                <span className="text-[10px] font-black uppercase">Confidence Score: 0.99</span>
+                                <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
+                                <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Confidence: 99.8%</span>
                             </div>
-                            <Button variant="outline" className="rounded-none border-2 border-white text-white hover:bg-white hover:text-[#064e3b] font-black uppercase text-[10px] px-6">
-                                Order Treatment Kit
-                            </Button>
+                            <button className={cn(glass.btnSecondary, "h-8 bg-white border-transparent text-[#1A1A1A] hover:bg-gray-100 px-4 text-[9px] font-black tracking-widest")}>
+                                Order Kit
+                            </button>
                         </div>
                     </Card>
                 </div>
@@ -143,3 +142,4 @@ const VarroaWashInterpreter: React.FC = () => {
 };
 
 export default VarroaWashInterpreter;
+

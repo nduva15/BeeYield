@@ -5,6 +5,8 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock, User, ShieldCheck, Database, ArrowRight, Zap, UserPlus } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { glass } from '@/components/beeyield/GlassTheme';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -73,70 +75,70 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">First Name</Label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Given Name</Label>
                     <Input
                         placeholder="John"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                        className="h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                         required
                     />
                 </div>
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
+                <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Surname</Label>
                     <Input
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                        className="h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                         required
                     />
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
-                <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Kernel Designation</Label>
+                <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                     <Input
                         type="email"
-                        placeholder="name@example.com"
+                        placeholder="name@beeyield.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                        className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                         required
                     />
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Passphrase</Label>
+                    <div className="relative group">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
                             type="password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                             required
                         />
                     </div>
                 </div>
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Verify</Label>
+                    <div className="relative group">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
                             type="password"
                             placeholder="••••••••"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                             required
                         />
                     </div>
@@ -145,33 +147,33 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                className={cn(glass.btnPrimary, "w-full h-10 font-bold text-xs uppercase shadow-sm flex items-center justify-center gap-2 mt-2")}
                 disabled={loading}
             >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="w-5 h-5" />}
-                Create Account
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+                Initialize Identity
             </Button>
 
-            <div className="relative py-2">
+            <div className="relative py-1">
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
-                    <span className="bg-white px-4 text-gray-300">or</span>
+                <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.3em]">
+                    <span className="bg-white px-3 text-gray-300">Relay</span>
                 </div>
             </div>
 
             <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 bg-white border border-gray-200 hover:border-honey/50 hover:bg-gray-50 text-gray-600 font-bold rounded-xl transition-all flex items-center justify-center gap-3"
+                className={cn(glass.btnSecondary, "w-full h-10 bg-white border-gray-200 hover:border-[#F4D03F]/50 hover:bg-gray-50 text-gray-600 font-bold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2.5")}
                 onClick={handleGoogleSignUp}
                 disabled={googleLoading}
             >
                 {googleLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-honey" />
+                    <Loader2 className="h-4 w-4 animate-spin text-[#F4D03F]" />
                 ) : (
-                    <svg className="h-5 w-5" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24">
                         <path
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                             fill="#4285F4"
@@ -190,8 +192,20 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                         />
                     </svg>
                 )}
-                Sign up with Google
+                Federated Google Link
             </Button>
+            
+            {onSwitchToLogin && (
+               <div className="pt-2 text-center">
+                   <button 
+                        type="button" 
+                        onClick={onSwitchToLogin}
+                        className="text-[10px] font-bold text-gray-400 hover:text-[#F4D03F] transition-colors uppercase tracking-tight"
+                    >
+                        Already registered? <span className="text-[#F4D03F] ml-1">Secure Sign In</span>
+                    </button>
+               </div>
+            )}
         </form>
     );
 };

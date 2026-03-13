@@ -5,7 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, Hexagon, Zap, Activity, LogIn } from 'lucide-react';
+import { Loader2, Mail, Lock, Hexagon, Zap, Activity, LogIn, ShieldCheck } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { glass } from '@/components/beeyield/GlassTheme';
 
 interface BeeYieldLoginFormProps {
     onSuccess?: () => void;
@@ -87,37 +89,33 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
     if (showMFAInput || mfaRequired) {
         return (
-            <form onSubmit={handleMFAVerify} className="space-y-6">
+            <form onSubmit={handleMFAVerify} className="space-y-5">
                 <div className="text-center space-y-2">
-                    <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
-                        <Lock className="h-6 w-6 text-honey" />
+                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto mb-3 border border-[#F4D03F]/20">
+                        <Lock className="h-5 w-5 text-[#F4D03F]" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Verification Code</h3>
-                    <p className="text-sm text-gray-500 font-medium">
-                        Please enter the 6-digit code from your authenticator app
+                    <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Identity Verification</h3>
+                    <p className="text-[11px] font-medium text-gray-500 max-w-[200px] mx-auto">
+                        Enter the secondary access pulse from your authenticator.
                     </p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     <Input
                         id="by-mfa-code"
                         type="text"
                         placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 tracking-[0.2em] rounded-xl"
+                        className="text-center text-xl font-bold h-12 bg-gray-50 border-gray-200 focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 tracking-[0.2em] rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
                     />
                 </div>
 
-                <Button type="submit" className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-md transition-all active:scale-95" disabled={loading || mfaCode.length !== 6}>
-                    {loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                        'Verify and Continue'
-                    )}
+                <Button type="submit" className={cn(glass.btnPrimary, "w-full h-10 font-bold text-xs uppercase shadow-sm")} disabled={loading || mfaCode.length !== 6}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify Session'}
                 </Button>
 
                 <button
@@ -126,7 +124,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         setShowMFAInput(false);
                         setMfaCode('');
                     }}
-                    className="w-full text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors py-2"
+                    className="w-full text-[10px] font-bold text-gray-400 hover:text-[#1A1A1A] transition-colors py-1 uppercase tracking-widest"
                 >
                     Back to login
                 </button>
@@ -135,47 +133,47 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="by-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-3.5">
+                <div className="space-y-1.5">
+                    <Label htmlFor="by-email" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Kernel Designation</Label>
+                    <div className="relative group">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
                         <Input
                             id="by-email"
                             type="email"
-                            placeholder="name@example.com"
+                            placeholder="name@beeyield.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                             required
                             autoComplete="username"
                         />
                     </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     <div className="flex items-center justify-between ml-1">
-                        <Label htmlFor="by-password" className="text-xs font-bold text-gray-500 uppercase tracking-wider">Password</Label>
+                        <Label htmlFor="by-password" className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Access Secret</Label>
                         {onForgotPassword && (
                             <button
                                 type="button"
                                 onClick={onForgotPassword}
-                                className="text-xs font-bold text-honey hover:underline"
+                                className="text-[10px] font-bold text-[#F4D03F] hover:underline uppercase tracking-tight"
                             >
-                                Forgot?
+                                Recover
                             </button>
                         )}
                     </div>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <div className="relative group">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
                         <Input
                             id="by-password"
                             type="password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
                             required
                             autoComplete="current-password"
                         />
@@ -187,46 +185,46 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         id="by-remember"
                         checked={rememberMe}
                         onCheckedChange={(checked) => setRememberMe(checked === true)}
-                        className="rounded-md border-gray-300 text-honey focus:ring-honey/20"
+                        className="rounded-md border-gray-200 data-[state=checked]:bg-[#1B9157] data-[state=checked]:border-[#1B9157]"
                     />
                     <label
                         htmlFor="by-remember"
-                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900 transition-colors"
+                        className="text-[10px] font-bold text-gray-400 cursor-pointer hover:text-gray-900 transition-colors uppercase tracking-tight"
                     >
-                        Remember me on this device
+                        Persistent session hash
                     </label>
                 </div>
             </div>
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                className={cn(glass.btnPrimary, "w-full h-10 font-bold text-xs uppercase shadow-sm flex items-center justify-center gap-2")}
                 disabled={loading}
             >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
-                Log In
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                Authorize Access
             </Button>
 
-            <div className="relative py-2">
+            <div className="relative py-1">
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
-                    <span className="bg-white px-4 text-gray-300">or</span>
+                <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.3em]">
+                    <span className="bg-white px-3 text-gray-300">Relay</span>
                 </div>
             </div>
 
             <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 bg-white border border-gray-200 hover:border-honey/50 hover:bg-gray-50 text-gray-600 font-bold rounded-xl transition-all flex items-center justify-center gap-3"
+                className={cn(glass.btnSecondary, "w-full h-10 bg-white border-gray-200 hover:border-[#F4D03F]/50 hover:bg-gray-50 text-gray-600 font-bold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2.5")}
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
             >
                 {googleLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-honey" />
+                    <Loader2 className="h-4 w-4 animate-spin text-[#F4D03F]" />
                 ) : (
-                    <svg className="h-5 w-5" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24">
                         <path
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                             fill="#4285F4"
@@ -245,10 +243,23 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         />
                     </svg>
                 )}
-                Continue with Google
+                Federated Google Link
             </Button>
+            
+            {onSwitchToRegister && (
+               <div className="pt-2 text-center">
+                   <button 
+                        type="button" 
+                        onClick={onSwitchToRegister}
+                        className="text-[10px] font-bold text-gray-400 hover:text-[#F4D03F] transition-colors uppercase tracking-tight"
+                    >
+                        New Industrial Entity? <span className="text-[#F4D03F] ml-1">Register Hive</span>
+                    </button>
+               </div>
+            )}
         </form>
     );
 };
 
 export default BeeYieldLoginForm;
+

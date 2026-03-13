@@ -21,67 +21,65 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
 
 const MasterMapView: React.FC = () => {
     const [activeTool, setActiveTool] = React.useState<'select' | 'draw' | 'pallet'>('select');
     const [showGeofences, setShowGeofences] = React.useState(true);
 
     return (
-        <div className="flex flex-col h-[calc(100vh-140px)] animate-in fade-in duration-500">
-            {/* Header Area */}
-            <div className="flex items-center justify-between mb-8 border-b-4 border-[#064e3b] pb-6">
-                <div>
-                    <h1 className="text-4xl font-black text-[#064e3b] uppercase tracking-tighter">
-                        Master <span className="text-[#10b981]">GIS Map</span>
-                    </h1>
-                    <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-widest mt-1">
-                        Precision Asset Positioning · Orchard Geofencing · Spatial Intelligence
-                    </p>
-                </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" className="rounded-none border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest h-12 px-6">
-                        <Layers className="w-4 h-4 mr-2" />
-                        Terrain Overlay
-                    </Button>
-                    <Button className="rounded-none bg-[#064e3b] text-[#1A1A1A] font-black uppercase text-[10px] tracking-widest h-12 px-6 shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] hover:translate-y-1 hover:shadow-none transition-all">
-                        <Save className="w-4 h-4 mr-2" />
-                        Sync Changes
-                    </Button>
-                </div>
-            </div>
+        <div className={cn(glass.page, "flex flex-col h-[calc(100vh-140px)] space-y-6")}>
+            <PageHeader
+                icon={MapIcon}
+                label="Master GIS Kernel"
+                title={<>Master <span className="text-[#F4D03F]">GIS Map</span></>}
+                subtitle="Precision Asset Positioning · Orchard Geofencing · Spatial Intelligence"
+                actions={
+                    <div className="flex gap-3">
+                        <Button variant="outline" className="rounded-xl border border-gray-100 bg-white/50 text-gray-600 font-bold uppercase text-[10px] tracking-widest h-9 px-4 hover:bg-gray-50">
+                            <Layers className="w-3.5 h-3.5 mr-2" />
+                            Terrain Overlay
+                        </Button>
+                        <Button className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-[#1B9157]/10")}>
+                            <Save className="w-3.5 h-3.5 mr-2" />
+                            Sync Changes
+                        </Button>
+                    </div>
+                }
+            />
 
             {/* Main GIS Container */}
-            <div className="flex-1 flex gap-8 min-h-0">
+            <div className="flex-1 flex gap-6 min-h-0">
                 {/* Left Toolbar */}
-                <div className="w-20 flex flex-col gap-4">
+                <div className="w-14 flex flex-col gap-3">
                     {[
-                        { id: 'select', icon: MousePointer2, label: 'Select' },
-                        { id: 'draw', icon: Hexagon, label: 'Boundary' },
-                        { id: 'pallet', icon: MapIcon, label: 'Drop Pallet' },
+                        { id: 'select', icon: MousePointer2, label: 'SELECT' },
+                        { id: 'draw', icon: Hexagon, label: 'BOUND' },
+                        { id: 'pallet', icon: MapIcon, label: 'PALLET' },
                     ].map((tool) => (
                         <button
                             key={tool.id}
                             onClick={() => setActiveTool(tool.id as any)}
                             className={cn(
-                                "w-full aspect-square flex flex-col items-center justify-center border-4 transition-all group",
+                                "w-full aspect-square flex flex-col items-center justify-center rounded-xl border transition-all group",
                                 activeTool === tool.id
-                                    ? "bg-[#064e3b] border-[#064e3b] text-[#1A1A1A] shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]"
-                                    : "bg-[#FFF9F0] border-[#064e3b]/10 text-[#064e3b]/40 hover:border-[#064e3b]/40"
+                                    ? "bg-[#1A1A1A] border-[#1A1A1A] text-white shadow-md shadow-gray-200"
+                                    : "bg-white border-gray-100 text-gray-400 hover:border-[#F4D03F]/40 hover:text-gray-600"
                             )}
                         >
-                            <tool.icon className="w-6 h-6" />
-                            <span className="text-[7px] font-black uppercase mt-1 tracking-tighter">{tool.label}</span>
+                            <tool.icon className="w-4 h-4" />
+                            <span className="text-[6px] font-bold mt-1 tracking-widest">{tool.label}</span>
                         </button>
                     ))}
-                    <div className="mt-auto space-y-4">
-                        <button className="w-full aspect-square bg-[#facc15] border-4 border-[#064e3b] flex items-center justify-center text-[#064e3b] hover:bg-[#FFF9F0] transition-colors">
-                            <Plus className="w-6 h-6" />
+                    <div className="mt-auto space-y-3">
+                        <button className="w-full aspect-square bg-[#F4D03F] rounded-xl border border-[#F4D03F]/20 flex items-center justify-center text-[#1A1A1A] hover:opacity-90 transition-opacity">
+                            <Plus className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
 
                 {/* Map Interface */}
-                <Card className="flex-1 rounded-none border-4 border-[#064e3b] bg-neutral-900 shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] relative overflow-hidden group">
+                <div className={cn(glass.card, "flex-1 rounded-3xl bg-neutral-900 border-gray-200 shadow-sm relative overflow-hidden group")}>
                     {/* Map Mock Background */}
                     <div
                         className="absolute inset-0 opacity-40 grayscale"
@@ -93,22 +91,25 @@ const MasterMapView: React.FC = () => {
 
                     {/* SVG Layer for Drawings */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                        <polygon points="200,100 600,150 550,450 150,400" className="fill-[#10b981]/10 stroke-[#10b981] stroke-4 stroke-dasharray-4" />
-                        <circle cx="350" cy="280" r="10" className="fill-[#facc15] stroke-[#064e3b] stroke-2" />
-                        <circle cx="450" cy="220" r="10" className="fill-[#facc15] stroke-[#064e3b] stroke-2" />
+                        <polygon points="200,100 600,150 550,450 150,400" className="fill-[#1B9157]/10 stroke-[#1B9157] stroke-2 stroke-dasharray-4" />
+                        <circle cx="350" cy="280" r="8" className="fill-[#F4D03F] stroke-white stroke-2" />
+                        <circle cx="450" cy="220" r="8" className="fill-[#F4D03F] stroke-white stroke-2" />
                     </svg>
 
                     {/* Digital Hud */}
-                    <div className="absolute top-8 left-8 space-y-4 pointer-events-none">
-                        <div className="p-4 bg-[#FFF9F0] border-4 border-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] pointer-events-auto">
+                    <div className="absolute top-6 left-6 space-y-4 pointer-events-none">
+                        <div className="p-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm pointer-events-auto">
                             <div className="flex items-center gap-3 mb-3">
-                                <Compass className="w-5 h-5 text-[#064e3b]" />
-                                <span className="text-sm font-black text-[#064e3b] uppercase tracking-tighter">Coordinate Feed</span>
+                                <Compass className="w-4 h-4 text-gray-500" />
+                                <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Feed</span>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[9px] font-mono text-[#064e3b]/60">LAT: -1.2921°</p>
-                                <p className="text-[9px] font-mono text-[#064e3b]/60">LON: 36.8219°</p>
-                                <p className="text-[9px] font-mono text-red-500 font-black mt-2">SATELLITE LOCK: ACTIVE</p>
+                                <p className="text-[9px] font-mono text-gray-400">LAT: -1.2921°</p>
+                                <p className="text-[9px] font-mono text-gray-400">LON: 36.8219°</p>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                                    <p className="text-[8px] font-bold text-[#1B9157] uppercase tracking-widest">Satellite Lock</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -120,23 +121,23 @@ const MasterMapView: React.FC = () => {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
-                                className="absolute top-8 right-8 w-64 p-6 bg-[#064e3b] border-4 border-[#10b981] text-[#1A1A1A] shadow-[8px_8px_0px_0px_rgba(250,204,21,1)]"
+                                className="absolute top-6 right-6 w-60 p-5 bg-[#1A1A1A] text-white rounded-2xl shadow-xl border border-white/10"
                             >
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
-                                        <Shield className="w-4 h-4 text-[#facc15]" />
-                                        <span className="text-xs font-black uppercase tracking-tighter text-[#facc15]">VIRTUAL GEOFENCE</span>
+                                        <Shield className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Fence Active</span>
                                     </div>
-                                    <button onClick={() => setShowGeofences(false)} className="text-gray-600 hover:text-[#1A1A1A]">
-                                        <Trash2 className="w-4 h-4" />
+                                    <button onClick={() => setShowGeofences(false)} className="text-white/40 hover:text-white">
+                                        <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center bg-[#F9F7F2] p-3 border border-[#F4D03F]/20">
-                                        <span className="text-[9px] font-black uppercase">Main Orchard</span>
-                                        <Badge className="bg-[#10b981] text-xs rounded-none">SECURE</Badge>
+                                    <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/10">
+                                        <span className="text-[9px] font-bold uppercase tracking-wider">Main Orchard</span>
+                                        <Badge className="bg-[#1B9157] text-[8px] font-bold tracking-widest rounded-md h-5">SECURE</Badge>
                                     </div>
-                                    <p className="text-[8px] font-bold text-gray-600 uppercase leading-snug">
+                                    <p className="text-[8px] font-bold text-white/50 uppercase leading-snug tracking-wider">
                                         Tamper alert will trigger if pallet GPS drifts more than 5m outside polygon.
                                     </p>
                                 </div>
@@ -145,65 +146,62 @@ const MasterMapView: React.FC = () => {
                     </AnimatePresence>
 
                     {/* Map Controls */}
-                    <div className="absolute bottom-8 right-8 flex gap-4">
-                        <Button className="w-14 h-14 rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] p-0 hover:bg-[#facc15] transition-colors">
-                            <Locate className="w-6 h-6 text-[#064e3b]" />
+                    <div className="absolute bottom-6 right-6 flex gap-3">
+                        <Button className="w-10 h-10 rounded-xl bg-white border border-gray-100 p-0 hover:bg-gray-50 transition-colors shadow-sm">
+                            <Locate className="w-4 h-4 text-gray-600" />
                         </Button>
-                        <Button className="w-14 h-14 rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] p-0 hover:bg-[#facc15] transition-colors">
-                            <Maximize2 className="w-6 h-6 text-[#064e3b]" />
+                        <Button className="w-10 h-10 rounded-xl bg-white border border-gray-100 p-0 hover:bg-gray-50 transition-colors shadow-sm">
+                            <Maximize2 className="w-4 h-4 text-gray-600" />
                         </Button>
                     </div>
-                </Card>
+                </div>
 
                 {/* Properties Panel */}
-                <div className="w-96 flex flex-col gap-8">
-                    <Card className="rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <CardHeader className="p-8 border-b-4 border-[#064e3b]/5">
-                            <CardTitle className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Active Selection</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-8 space-y-6">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block mb-2">Block Name</label>
-                                    <Input value="Honey Block Alpha" className="h-12 rounded-none border-4 border-[#064e3b] font-black uppercase text-xs" readOnly />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block mb-2">Acreage</label>
-                                        <Input value="14.2 AC" className="h-12 rounded-none border-4 border-[#064e3b] font-black uppercase text-xs" readOnly />
-                                    </div>
-                                    <div>
-                                        <label className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block mb-2">Crop</label>
-                                        <Input value="Macadamia" className="h-12 rounded-none border-4 border-[#064e3b] font-black uppercase text-xs" readOnly />
-                                    </div>
-                                </div>
+                <div className="w-80 flex flex-col gap-6">
+                    <div className={cn(glass.card, "p-6 space-y-6 bg-white/80 backdrop-blur-md rounded-3xl border-gray-100 shadow-sm")}>
+                        <div className="border-b border-gray-100 pb-4">
+                            <h3 className="text-sm font-bold text-[#1A1A1A] uppercase tracking-tight">Active Selection</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-bold uppercase text-gray-400 tracking-widest ml-1">Block Name</label>
+                                <Input value="Honey Block Alpha" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-xs" readOnly />
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="flex-1 rounded-none border-4 border-[#064e3b] bg-[#064e3b] text-[#1A1A1A] shadow-[8px_8px_0px_0px_rgba(250,204,21,1)] overflow-hidden">
-                        <div className="p-8">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Settings className="w-6 h-6 text-[#facc15]" />
-                                <CardTitle className="text-xl font-black uppercase tracking-tighter">Asset Overlay</CardTitle>
-                            </div>
-                            <div className="space-y-4">
-                                {[
-                                    { label: 'Show Hive Pallets', active: true },
-                                    { label: 'Show Weather Stations', active: true },
-                                    { label: 'Saturation Heatmap', active: false },
-                                    { label: 'Grower Geofences', active: true },
-                                ].map((row, idx) => (
-                                    <div key={idx} className="flex items-center justify-between p-4 border-2 border-[#F4D03F]/20 bg-[#F9F7F2] hover:bg-[#F4D03F]/10 transition-colors cursor-pointer">
-                                        <span className="text-[10px] font-black uppercase">{row.label}</span>
-                                        <div className={cn("w-10 h-5 border-2 border-white relative transition-colors", row.active ? "bg-[#10b981]" : "bg-transparent")}>
-                                            <div className={cn("absolute top-1 bottom-1 w-3 bg-[#FFF9F0] transition-all", row.active ? "right-1" : "left-1")} />
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-bold uppercase text-gray-400 tracking-widest ml-1">Acreage</label>
+                                    <Input value="14.2 AC" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-bold uppercase text-gray-400 tracking-widest ml-1">Crop</label>
+                                    <Input value="Macadamia" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
+                                </div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
+
+                    <div className={cn(glass.card, "flex-1 p-6 space-y-6 bg-[#1A1A1A] text-white rounded-3xl border-white/5 relative overflow-hidden group")}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                            <Settings className="w-4 h-4 text-[#F4D03F]" />
+                            <h3 className="text-sm font-bold uppercase tracking-tight">Asset Overlay</h3>
+                        </div>
+                        <div className="space-y-3">
+                            {[
+                                { label: 'Hive Pallets', active: true },
+                                { label: 'Weather Stations', active: true },
+                                { label: 'Saturation Heatmap', active: false },
+                                { label: 'Geofences', active: true },
+                            ].map((row, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-3 border border-white/10 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/70 group-hover:text-white transition-colors">{row.label}</span>
+                                    <div className={cn("w-8 h-4 rounded-full border border-white/20 relative transition-all", row.active ? "bg-[#1B9157]" : "bg-transparent")}>
+                                        <div className={cn("absolute top-[2px] w-2.5 h-2.5 rounded-full bg-white transition-all shadow-sm", row.active ? "right-[2px]" : "left-[2px]")} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

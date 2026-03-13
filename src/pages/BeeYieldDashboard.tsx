@@ -14,7 +14,7 @@ import {
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
-    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug
+    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug, Calendar
 } from 'lucide-react';
 import { Award } from 'lucide-react';
 import { toast } from 'sonner';
@@ -321,6 +321,7 @@ const BeeYieldDashboard: React.FC = () => {
             submenuItems: [
                 { id: 'meters-dashboard', label: t('nav_dashboard'), icon: Gauge },
                 { id: 'meters-list', label: t('nav_meter_list'), icon: List },
+                { id: 'meters-heatmap', label: 'Density Map', icon: Calendar },
                 { id: 'meters-alarms', label: t('nav_alarms_events'), icon: Bell },
                 { id: 'meters-payments', label: t('nav_payments_settlements'), icon: Banknote },
                 { id: 'meters-reports', label: t('nav_reports'), icon: FileText },

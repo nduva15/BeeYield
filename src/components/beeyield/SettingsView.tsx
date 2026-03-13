@@ -53,19 +53,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
         >
             <PageHeader
                 icon={Settings}
-                label="Identity & Kernel Configuration v4.4"
+                label="Identity_Kernel_Configuration_V4.4"
                 title={<>System <span className="text-[#F4D03F]">Control</span></>}
                 subtitle="Manage your industrial identity patterns, module access permissions, and global notification routing protocols."
                 actions={
-                    <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-4 py-1.5 rounded-lg shadow-sm">
-                        <Activity className="w-3.5 h-3.5 text-[#1B9157] animate-pulse" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Kernel_Sync: <span className="text-[#1B9157]">OPTIMIZED</span></span>
+                    <div className="flex items-center gap-2.5 bg-white/60 border border-white/40 px-3 h-8 rounded-xl shadow-sm backdrop-blur-sm">
+                        <Activity className="w-3 h-3 text-[#1B9157] animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Kernel_Sync: <span className="text-[#1B9157]">OPTIMIZED</span></span>
                     </div>
                 }
             />
 
             <Tabs defaultValue="identity" className="w-full space-y-6">
-                <TabsList className="bg-gray-50/80 p-1 h-10 w-full grid grid-cols-4 rounded-lg border border-gray-100 backdrop-blur-xl">
+                <TabsList className="bg-white/40 p-1 h-9 w-full grid grid-cols-4 rounded-xl border border-white/40 backdrop-blur-xl">
                     {[
                         { value: 'identity', label: 'Identity', icon: User },
                         { value: 'modules', label: 'Modules', icon: Layers },
@@ -75,7 +75,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <TabsTrigger
                             key={tab.value}
                             value={tab.value}
-                            className="h-full rounded-md font-bold uppercase text-[10px] tracking-wider text-gray-500 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 transition-all flex items-center justify-center gap-1.5"
+                            className="h-full rounded-lg font-black uppercase text-[9px] tracking-[0.15em] text-gray-400 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-white/40 transition-all flex items-center justify-center gap-1.5"
                         >
                             <tab.icon className="w-3.5 h-3.5" /> {tab.label}
                         </TabsTrigger>
@@ -89,13 +89,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <motion.div
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn(glass.card, "text-center flex flex-col items-center justify-center py-8 px-6 bg-white relative overflow-hidden")}
+                                className={cn(glass.card, "text-center flex flex-col items-center justify-center py-8 px-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl relative overflow-hidden")}
                             >
                                 <div className="absolute -top-6 -left-6 opacity-[0.03] pointer-events-none">
                                     <Fingerprint className="w-32 h-32" />
                                 </div>
-                                <div className="w-24 h-24 rounded-full border-4 border-gray-50 bg-[#F4D03F]/10 p-1 flex items-center justify-center relative shadow-sm group">
-                                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center border border-gray-200 overflow-hidden">
+                                <div className="w-20 h-20 rounded-full border-4 border-white/40 bg-[#F4D03F]/10 p-1 flex items-center justify-center relative shadow-sm group">
+                                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center border border-gray-100 overflow-hidden">
                                         <User className="w-8 h-8 text-[#1A1A1A] group-hover:scale-110 transition-transform" />
                                     </div>
                                     <div className="absolute bottom-0 right-0 bg-[#1B9157] text-white p-1 rounded-full border-2 border-white shadow-sm">
@@ -103,22 +103,22 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     </div>
                                 </div>
                                 <div className="mt-6 space-y-1">
-                                    <h3 className="text-xl font-bold tracking-tight text-[#1A1A1A] leading-none">Autonomous <span className="text-[#F4D03F]">Identity</span></h3>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">System Hash v4 Verified</p>
+                                    <h3 className="text-[11px] font-black tracking-[0.3em] text-[#1A1A1A] uppercase leading-none">Autonomous_Identity</h3>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">SYSTEM_HASH_V4_VERIFIED</p>
                                 </div>
-                                <button className={cn(glass.btnPrimary, "mt-6 w-full h-9 font-bold text-xs uppercase shadow-sm")}>
-                                    Update Biometrics
+                                <button className={cn(glass.btnPrimary, "mt-6 w-full h-8 font-black text-[9px] uppercase tracking-[0.2em] shadow-sm")}>
+                                    Update_Biometrics
                                 </button>
                             </motion.div>
 
-                            <div className={cn(glass.card, "p-5 bg-white")}>
+                            <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
                                         <div className="flex items-center gap-2">
-                                            <Palette className="w-4 h-4 text-[#F4D03F]" />
-                                            <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Interface Skin</h4>
+                                            <Palette className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                            <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Interface_Skin</h4>
                                         </div>
-                                        <p className="text-[10px] font-medium text-gray-500">Toggle visual kernel state</p>
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">TOGGLE_VISUAL_KERNEL</p>
                                     </div>
                                     <Switch
                                         checked={theme === 'dark'}
@@ -130,10 +130,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                             <button
                                 onClick={() => signOut()}
-                                className={cn(glass.btnSecondary, "w-full h-10 border-red-100 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 font-bold text-xs uppercase flex items-center justify-center gap-2 group transition-all")}
+                                className={cn(glass.btnSecondary, "w-full h-8 border-red-500/10 bg-red-50/30 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 group transition-all rounded-xl")}
                             >
                                 <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                                Terminate Session
+                                Terminate_Session
                             </button>
                         </div>
 
@@ -142,49 +142,49 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn(glass.card, "p-0 overflow-hidden bg-white")}
+                                className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
                             >
-                                <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between flex-wrap gap-4">
+                                <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between flex-wrap gap-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                                            <Globe className="w-5 h-5 text-[#F4D03F]" />
+                                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                            <Globe className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
                                         <div className="space-y-0.5">
-                                            <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none">Profile <span className="text-[#F4D03F]">Audit</span></h2>
-                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Global Registry Metadata Protocol</p>
+                                            <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Profile_Audit</h2>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">GLOBAL_REGISTRY_METADATA</p>
                                         </div>
                                     </div>
-                                    <Badge className="bg-gray-100 text-gray-600 border-none rounded-md font-bold text-[9px] uppercase tracking-wider px-2 py-0.5">ARCHIVED_v5</Badge>
+                                    <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] uppercase tracking-widest px-2 py-0.5">ARCHIVED_V5</Badge>
                                 </div>
 
                                 <div className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-1.5 group">
-                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Full Designation</Label>
+                                            <Label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Full_Designation</Label>
                                             <div className="relative">
                                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <Input className="h-10 pl-10 bg-gray-50 border-gray-200 rounded-lg text-sm font-medium focus:bg-white transition-colors" placeholder="e.g. Timothy Nduva" />
+                                                <Input className="h-9 pl-10 bg-white/50 border-white/40 rounded-xl text-[11px] font-black uppercase tracking-tight focus:bg-white transition-colors" placeholder="e.g. Timothy Nduva" />
                                             </div>
                                         </div>
                                         <div className="space-y-1.5 group">
-                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Verified Comms</Label>
+                                            <Label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Verified_Comms</Label>
                                             <div className="relative">
-                                                <Input className="h-10 pl-4 pr-10 bg-gray-100 border-transparent rounded-lg text-sm font-medium text-gray-500 cursor-not-allowed" defaultValue={user?.email || ""} disabled />
+                                                <Input className="h-9 pl-4 pr-10 bg-gray-100/50 border-white/40 rounded-xl text-[11px] font-black text-gray-500 uppercase cursor-not-allowed" defaultValue={user?.email || ""} disabled />
                                                 <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                             </div>
                                         </div>
                                         <div className="space-y-1.5 group">
-                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Nexus Link (+254)</Label>
+                                            <Label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Nexus_Link_(+254)</Label>
                                             <div className="relative">
                                                 <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <Input className="h-10 pl-10 bg-gray-50 border-gray-200 rounded-lg text-sm font-medium focus:bg-white transition-colors" placeholder="+254 7XX XXX XXX" />
+                                                <Input className="h-9 pl-10 bg-white/50 border-white/40 rounded-xl text-[11px] font-black uppercase tracking-tight focus:bg-white transition-colors" placeholder="+254 7XX XXX XXX" />
                                             </div>
                                         </div>
                                         <div className="space-y-1.5 group">
-                                            <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Physical Sector</Label>
+                                            <Label className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Physical_Sector</Label>
                                             <div className="relative">
                                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <Input className="h-10 pl-10 bg-gray-50 border-gray-200 rounded-lg text-sm font-medium focus:bg-white transition-colors" placeholder="Kibwezi, Kenya" />
+                                                <Input className="h-9 pl-10 bg-white/50 border-white/40 rounded-xl text-[11px] font-black uppercase tracking-tight focus:bg-white transition-colors" placeholder="Kibwezi, Kenya" />
                                             </div>
                                         </div>
                                     </div>
@@ -197,10 +197,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <button
                                             onClick={() => handleAtomicSave("Profile")}
                                             disabled={loading["Profile"]}
-                                            className={cn(glass.btnPrimary, "w-full sm:w-auto h-10 px-8 font-bold text-xs uppercase flex items-center justify-center gap-2", loading["Profile"] && "opacity-70 cursor-not-allowed")}
+                                            className={cn(glass.btnPrimary, "w-full sm:w-auto h-8 px-6 font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2", loading["Profile"] && "opacity-70 cursor-not-allowed")}
                                         >
                                             {loading["Profile"] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                            Commit Identity
+                                            Commit_Identity
                                         </button>
                                     </div>
                                 </div>
@@ -213,24 +213,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden bg-white")}
+                        className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
                     >
-                        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                                    <Layers className="w-6 h-6 text-[#F4D03F]" />
+                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                    <Layers className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight leading-none">Module <span className="text-[#F4D03F]">Topography</span></h3>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Custom hardware & software routing protocols</p>
+                                    <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Module_Topography</h3>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">CUSTOM_HARDWARE_SOFTWARE_ROUTING</p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => resetWorkspace(true)} className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-[10px] uppercase")}>
-                                    Full Integration
+                                <button onClick={() => resetWorkspace(true)} className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[9px] uppercase tracking-[0.2em]")}>
+                                    Full_Integration
                                 </button>
-                                <button onClick={() => resetWorkspace(false)} className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-[10px] uppercase border-red-100 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600")}>
-                                    Purge Matrix
+                                <button onClick={() => resetWorkspace(false)} className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[9px] uppercase tracking-[0.2em] border-red-500/10 bg-red-50/30 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500")}>
+                                    Purge_Matrix
                                 </button>
                             </div>
                         </div>
@@ -247,15 +247,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         key={mod.id}
                                         initial={{ opacity: 0, scale: 0.98 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 flex items-start justify-between group hover:bg-white hover:border-[#F4D03F]/30 hover:shadow-sm transition-all"
+                                        className="p-3.5 rounded-xl border border-white/40 bg-white/30 flex items-start justify-between group hover:bg-white/60 hover:border-[#F4D03F]/30 hover:shadow-sm transition-all"
                                     >
-                                        <div className="flex gap-4">
-                                            <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 bg-white shadow-sm transition-transform group-hover:scale-105", mod.color)}>
-                                                <mod.icon className="w-5 h-5" />
+                                        <div className="flex gap-3">
+                                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center border border-gray-100 bg-white shadow-sm transition-transform group-hover:scale-105", mod.color)}>
+                                                <mod.icon className="w-4 h-4" />
                                             </div>
                                             <div className="space-y-0.5">
-                                                <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">{mod.label}</h4>
-                                                <p className="text-[11px] font-medium text-gray-500 max-w-[200px] leading-relaxed">{mod.desc}</p>
+                                                <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-tight uppercase">{mod.label}</h4>
+                                                <p className="text-[9px] font-black text-gray-400 max-w-[200px] leading-relaxed uppercase">{mod.desc}</p>
                                             </div>
                                         </div>
                                         <Switch
@@ -270,9 +270,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <div className="mt-6 flex justify-end">
                                 <button
                                     onClick={() => handleAtomicSave("Module Flags")}
-                                    className={cn(glass.btnPrimary, "h-10 px-6 font-bold text-xs uppercase shadow-sm")}
+                                    className={cn(glass.btnPrimary, "h-8 px-6 font-black text-[9px] uppercase tracking-[0.2em] shadow-sm")}
                                 >
-                                    Commit Feature Map
+                                    Commit_Feature_Map
                                 </button>
                             </div>
                         </div>
@@ -282,14 +282,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 <TabsContent value="alerts" className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Internal Telemetry */}
-                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white")}>
-                            <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                                    <Bell className="w-5 h-5 text-[#F4D03F]" />
+                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
+                            <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex flex-wrap items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                    <Bell className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h4 className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none">Internal <span className="text-[#F4D03F]">Telemetry</span></h4>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Anomalies & Guidance</p>
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Internal_Telemetry</h4>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">ANOMALIES_GUIDANCE</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-3">
@@ -298,10 +298,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     { id: 'swarmRisk', title: 'Swarm Frequency', desc: 'Acoustic pattern matching.', color: 'amber-500' },
                                     { id: 'onboardingHints', title: 'Contextual AI Hints', desc: 'Real-time guidance pulses.', color: 'blue-500' },
                                 ].map((alert) => (
-                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 bg-gray-50/50 hover:bg-white transition-colors group">
+                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-white/40 hover:border-[#F4D03F]/30 bg-white/30 hover:bg-white/60 transition-colors group">
                                         <div className="space-y-0.5">
-                                            <h5 className="text-sm font-bold text-[#1A1A1A]">{alert.title}</h5>
-                                            <p className="text-[10px] font-medium text-gray-500">{alert.desc}</p>
+                                            <h5 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tight">{alert.title}</h5>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
@@ -314,14 +314,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         </div>
 
                         {/* External Routing */}
-                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white")}>
-                            <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                                    <Smartphone className="w-5 h-5 text-blue-500" />
+                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
+                            <div className="p-4 border-b border-blue-500/10 bg-blue-500/[0.02] flex flex-wrap items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                    <Smartphone className="w-4 h-4 text-blue-500" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h4 className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none">External <span className="text-blue-500">Routing</span></h4>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Direct push protocols</p>
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">External_Routing</h4>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">DIRECT_PUSH_PROTOCOLS</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-3">
@@ -330,10 +330,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     { id: 'lowBattery', title: 'Energy Hub Vitals', desc: 'Low power threshold pulses.', color: 'blue-500' },
                                     { id: 'marketing', title: 'Boutique Intelligence', desc: 'Retail pricing updates.', color: 'amber-500' },
                                 ].map((alert) => (
-                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 bg-gray-50/50 hover:bg-white transition-colors group">
+                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-white/40 hover:border-blue-500/30 bg-white/30 hover:bg-white/60 transition-colors group">
                                         <div className="space-y-0.5">
-                                            <h5 className="text-sm font-bold text-[#1A1A1A]">{alert.title}</h5>
-                                            <p className="text-[10px] font-medium text-gray-500">{alert.desc}</p>
+                                            <h5 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tight">{alert.title}</h5>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
@@ -348,9 +348,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <div className="flex justify-center pt-2">
                         <button
                             onClick={() => handleAtomicSave("Notification Routes")}
-                            className={cn(glass.btnPrimary, "h-10 px-8 font-bold text-xs uppercase shadow-sm")}
+                            className={cn(glass.btnPrimary, "h-8 px-6 font-black text-[9px] uppercase tracking-[0.2em] shadow-sm")}
                         >
-                            Commit Alert Topology
+                            Commit_Alert_Topology
                         </button>
                     </div>
                 </TabsContent>
@@ -359,34 +359,34 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <motion.div
                             whileHover={{ scale: 1.01 }}
-                            className={cn(glass.card, "p-8 bg-white relative overflow-hidden group")}
+                            className={cn(glass.card, "p-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl relative overflow-hidden group")}
                         >
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 blur-3xl rounded-full" />
-                            <div className="w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 mb-6 shadow-sm group-hover:bg-white transition-colors">
-                                <Key className="w-6 h-6 text-[#F4D03F]" />
+                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-100 mb-5 shadow-sm group-hover:bg-white transition-colors">
+                                <Key className="w-5 h-5 text-[#F4D03F]" />
                             </div>
-                            <h3 className="text-2xl font-bold tracking-tight text-[#1A1A1A] leading-none mb-3">Vault <span className="text-[#F4D03F]">Integrity</span></h3>
-                            <p className="text-[11px] font-medium text-gray-500 leading-relaxed mb-8 max-w-sm border-l-2 border-[#F4D03F]/40 pl-4">
+                            <h3 className="text-[11px] font-black tracking-[0.3em] text-[#1A1A1A] uppercase leading-none mb-3">Vault_Integrity</h3>
+                            <p className="text-[9px] font-black text-gray-400 leading-relaxed mb-6 max-w-sm border-l-2 border-[#F4D03F]/40 pl-3 uppercase">
                                 Traceability Level 4 enabled. Kernel sessions are secured via cryptographic node relay. Generate ephemeral access pulses for third-party analysis.
                             </p>
-                            <button className={cn(glass.btnSecondary, "w-full h-10 font-bold text-xs uppercase")}>
-                                Initialize Access Pulse
+                            <button className={cn(glass.btnSecondary, "w-full h-8 font-black text-[9px] uppercase tracking-[0.2em]")}>
+                                Initialize_Access_Pulse
                             </button>
                         </motion.div>
 
                         <motion.div
                             whileHover={{ scale: 1.01 }}
-                            className={cn(glass.card, "p-8 bg-white border-red-100 relative overflow-hidden group")}
+                            className={cn(glass.card, "p-6 bg-white/40 backdrop-blur-xl border-red-500/10 rounded-[2.5rem] shadow-xl relative overflow-hidden group")}
                         >
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-red-500/5 blur-3xl rounded-full" />
-                            <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 mb-6 shadow-sm group-hover:bg-white transition-colors">
-                                <Trash2 className="w-6 h-6 text-red-500" />
+                            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 mb-5 shadow-sm group-hover:bg-white transition-colors">
+                                <Trash2 className="w-5 h-5 text-red-500" />
                             </div>
-                            <h3 className="text-2xl font-bold tracking-tight text-red-600 leading-none mb-3">Identity <span className="text-[#1A1A1A]">Termination</span></h3>
-                            <p className="text-[11px] font-medium text-red-600/80 leading-relaxed mb-8 max-w-sm border-l-2 border-red-500/40 pl-4">
+                            <h3 className="text-[11px] font-black tracking-[0.3em] text-red-500 uppercase leading-none mb-3">Identity_Termination</h3>
+                            <p className="text-[9px] font-black text-red-500/60 leading-relaxed mb-6 max-w-sm border-l-2 border-red-500/40 pl-3 uppercase">
                                 CRITICAL: Irreversibly destroy industrial hash identity, historical apiary metadata, and all node linkage records.
                             </p>
-                            <button className={cn("w-full h-10 bg-red-600 text-white hover:bg-red-700 rounded-lg font-bold text-xs uppercase flex items-center justify-center gap-2 transition-all shadow-sm")}>
+                            <button className={cn("w-full h-8 bg-red-500 text-white hover:bg-red-600 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all shadow-sm")}>
                                 <Shield className="w-3.5 h-3.5" />
                                 Initiate Absolute Purge
                             </button>

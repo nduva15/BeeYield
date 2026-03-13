@@ -130,13 +130,13 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 {/* Header */}
                 <PageHeader
                     icon={Activity}
-                    label="Harvest Log"
+                    label="Harvest_Log"
                     title={<>Honey <span className="text-[#F4D03F]">Harvest</span></>}
                     subtitle="Record production details."
                     actions={
                         <button
                             onClick={() => setIsAddingHarvest(false)}
-                            className={cn(glass.btnSecondary, "w-10 h-10 p-0 flex items-center justify-center")}
+                            className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
@@ -146,35 +146,35 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 relative z-10">
                     {/* Left Column */}
                     <div className="lg:col-span-1 space-y-4">
-                        <div className={cn(glass.card, 'bg-[#1B9157]/5 border-[#1B9157]/10 p-6 rounded-2xl shadow-sm relative overflow-hidden group')}>
-                            <div className="relative z-10 space-y-4">
-                                <div className="w-10 h-10 rounded-xl bg-[#1B9157] flex items-center justify-center shadow-sm">
-                                    <FlaskConical className="w-5 h-5 text-white" />
+                        <div className={cn(glass.card, 'bg-white/40 border-white/20 p-5 shadow-xl relative overflow-hidden group')}>
+                            <div className="relative z-10 space-y-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#1B9157] flex items-center justify-center shadow-sm">
+                                    <FlaskConical className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Production Intelligence</h3>
-                                    <p className="text-[10px] font-medium text-gray-500">Track yield distribution vectors and node productivity.</p>
+                                <div className="space-y-0.5">
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Production_Intelligence</h3>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">TRACK_YIELD_DISTRIBUTION</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className={glass.card}>
-                            <div className="space-y-1 mb-4">
-                                <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Current Batch</h4>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ID</span>
-                                    <span className="text-xs font-bold text-[#F4D03F] tabular-nums">BTCH_{new Date().getTime().toString().slice(-6)}</span>
+                        <div className={cn(glass.card, "bg-white/40 border-white/20 p-5 shadow-xl")}>
+                                <div className="space-y-1 mb-4">
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Current_Batch</h4>
                                 </div>
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sync</span>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                                        <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider">Stable</span>
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 border border-white/40 shadow-sm">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ID</span>
+                                        <span className="text-xs font-bold text-[#F4D03F] tabular-nums">BTCH_{new Date().getTime().toString().slice(-6)}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 border border-white/40 shadow-sm">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sync</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                                            <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider">Stable</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
 
@@ -183,16 +183,16 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-0 overflow-hidden relative")}
+                            className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl relative")}
                         >
-                            <div className="p-6 border-b border-[#F4D03F]/10 bg-[#F9F7F2] relative z-10">
+                            <div className="p-5 border-b border-white/20 bg-white/20 relative z-10 backdrop-blur-sm">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
-                                        <Layers className="w-5 h-5 text-[#F4D03F]" />
+                                    <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                        <Layers className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">Extraction <span className="text-[#F4D03F]">Log</span></h2>
-                                        <p className="text-[10px] font-medium text-gray-500">Input production analytics.</p>
+                                        <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Extraction_<span className="text-[#F4D03F]">Log</span></h2>
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">INPUT_PRODUCTION_ANALYTICS</p>
                                     </div>
                                 </div>
                             </div>
@@ -207,7 +207,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 type="date"
                                                 value={formData.harvest_date}
                                                 onChange={(e) => setFormData({ ...formData, harvest_date: e.target.value })}
-                                                className={cn(glass.input, "pl-10")}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white")}
                                                 required
                                             />
                                         </div>
@@ -222,7 +222,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 placeholder="0.0"
                                                 value={formData.quantity_kg || ''}
                                                 onChange={(e) => setFormData({ ...formData, quantity_kg: parseFloat(e.target.value) })}
-                                                className={cn(glass.input, "pl-10")}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white")}
                                                 required
                                             />
                                         </div>
@@ -233,7 +233,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             value={formData.honey_type}
                                             onValueChange={(val) => setFormData({ ...formData, honey_type: val })}
                                         >
-                                            <SelectTrigger className={glass.select}>
+                                            <SelectTrigger className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
                                                 <div className="flex items-center gap-2">
                                                     <Database className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                     <SelectValue placeholder="Select type" />
@@ -241,7 +241,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             </SelectTrigger>
                                             <SelectContent className={glass.selectContent}>
                                                 {['Acacia', 'Multifloral', 'Sunflower', 'Forest', 'Rapeseed'].map(v => (
-                                                    <SelectItem key={v} value={v} className="text-xs font-bold">{v}</SelectItem>
+                                                    <SelectItem key={v} value={v} className="text-xs font-semibold">{v}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -260,7 +260,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             </SelectTrigger>
                                             <SelectContent className={glass.selectContent}>
                                                 {['Extra Light Amber', 'Light Amber', 'Amber', 'Dark Amber'].map(g => (
-                                                    <SelectItem key={g} value={g} className="text-xs font-bold">{g}</SelectItem>
+                                                    <SelectItem key={g} value={g} className="text-xs font-semibold">{g}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -273,7 +273,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 placeholder="e.g. Cold Centrifuge"
                                                 value={formData.extraction_method || ''}
                                                 onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
-                                                className={cn(glass.input, "pl-10")}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight")}
                                             />
                                         </div>
                                     </div>
@@ -285,7 +285,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 placeholder="e.g. Sunny"
                                                 value={formData.weather_conditions || ''}
                                                 onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
-                                                className={cn(glass.input, "pl-10")}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight")}
                                             />
                                         </div>
                                     </div>
@@ -295,17 +295,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     <button
                                         type="button"
                                         onClick={() => setIsAddingHarvest(false)}
-                                        className={glass.btnSecondary}
+                                        className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}
                                     >
                                         Discard
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isCreating}
-                                        className={cn(glass.btnPrimary, "flex-1")}
+                                        className={cn(glass.btnPrimary, "flex-1 h-9 font-black uppercase tracking-[0.2em] text-[10px]")}
                                     >
                                         {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        Commit Log
+                                        Commit_Log
                                     </button>
                                 </div>
                             </form>
@@ -326,7 +326,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             {/* Header */}
             <PageHeader
                 icon={Package}
-                label="Production Intelligence"
+                label="Production_Intelligence"
                 title={<>Production <span className="text-[#F4D03F]">Registry</span></>}
                 subtitle="Track honey extraction and packaging cycles."
                 actions={
@@ -341,8 +341,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                             onClick={() => setIsAddingHarvest(true)}
                             className={glass.btnPrimary}
                         >
-                            <Plus className="w-4 h-4" />
-                            Log Extraction
+                            <Plus className="w-3.5 h-3.5" />
+                            Log_Extraction
                         </button>
                     </div>
                 }
@@ -360,7 +360,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={glass.filterBar}
+                className={cn(glass.filterBar, "bg-white/40 backdrop-blur-xl border-white/20 p-2 rounded-2xl")}
             >
                 <div className="flex-1 w-full relative group/search">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
@@ -368,12 +368,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                         placeholder="Filter batches..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-9 pl-9 bg-transparent border-none text-xs font-bold text-[#1A1A1A] placeholder:text-gray-400 focus-visible:ring-0"
+                        className="h-10 pl-10 bg-white/50 border border-white/40 rounded-xl text-[11px] font-black tracking-widest text-[#1A1A1A] uppercase placeholder:text-gray-400 focus:bg-white transition-colors"
                     />
                 </div>
-                <div className="flex items-center gap-2 w-full md:w-auto p-1 border-t md:border-t-0 md:border-l border-[#F4D03F]/10">
+                <div className="flex items-center gap-2 w-full md:w-auto p-1 border-t md:border-t-0 md:border-l border-white/20">
                     <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger className="h-8 w-full md:w-32 bg-transparent border-none focus:ring-0 text-xs font-bold text-gray-500">
+                        <SelectTrigger className="h-10 w-full md:w-32 bg-white/50 border border-white/40 rounded-xl focus:bg-white text-[11px] font-black uppercase tracking-widest text-gray-500 transition-colors">
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-3.5 h-3.5" />
                                 <SelectValue placeholder="Year" />
@@ -399,17 +399,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
             {/* Main Registry Table */}
             <div className="mt-4 relative z-10">
-                <div className={cn(glass.card, "p-0 overflow-hidden")}>
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="bg-[#F9F7F2]">
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#F4D03F]/10">Batch ID</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#F4D03F]/10">Timestamp</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#F4D03F]/10">Source Node</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#F4D03F]/10 text-center">Net Yield</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#F4D03F]/10 text-center">Grade</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#F4D03F]/10 text-right">Status</th>
+                                <tr className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
+                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Batch_ID</th>
+                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Timestamp</th>
+                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Source_Node</th>
+                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Net_Yield</th>
+                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Grade</th>
+                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F4D03F]/5">
@@ -437,7 +437,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 key={h.id}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
-                                                className="hover:bg-[#F9F7F2] transition-colors group"
+                                                className="hover:bg-white/50 transition-colors group"
                                             >
                                                 <td className="px-6 py-4">
                                                     <span className="text-xs font-bold text-[#1A1A1A]">

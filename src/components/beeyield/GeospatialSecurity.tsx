@@ -3,6 +3,8 @@ import { MapPin, Shield, AlertTriangle, CheckCircle2, Zap, Navigation, Activity 
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { glass, PageHeader } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface GeospatialSecurityProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -64,7 +66,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
 
     React.useEffect(() => {
         // Subscribe to real-time security alerts
-        const gatewaySub = beeyieldService.subscribeToGatewayStatus((payload) => {
+        const gatewaySub = beeyieldService.subscribeToGatewayStatus("*", (payload) => {
             const gatewayId = payload.new.id;
             toast.error(`Security Alert: Gateway ${gatewayId} is OFFLINE!`, {
                 description: "Immediate check required in Block 4B.",
@@ -73,7 +75,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
             // Update local state if we had real mapping
         });
 
-        const weightSub = beeyieldService.subscribeToWeightAlerts((payload) => {
+        const weightSub = beeyieldService.subscribeToWeightAlerts("*", (payload) => {
             toast.error("Critical Event: Step-function weight drop detected!", {
                 description: "Possible theft or swarming event in progress.",
                 duration: 10000
@@ -89,72 +91,73 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
     const alerts = hives.filter(h => h.status !== 'nominal');
 
     return (
-        <div className="p-4 md:p-8 space-y-8 md:space-y-12 bg-[#FFF9F0] min-h-screen text-[#064e3b] antialiased border-x-4 border-[#064e3b]">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center">
-                            <Shield className="w-6 h-6 text-[#facc15]" />
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Hive <span className="text-[#10b981]">Map</span>
-                        </h1>
-                    </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Live Hive Map · Hive Tracking · Bee Density
-                    </p>
-                </div>
-                <div className="flex items-center gap-4">
-                    {alerts.length > 0 && (
-                        <div className="flex items-center gap-2 px-5 py-2 bg-red-500 border-2 border-red-700">
-                            <div className="w-2 h-2 bg-[#FFF9F0] rounded-full animate-pulse" />
-                            <span className="text-[#1A1A1A] font-black text-[10px] uppercase tracking-widest">{alerts.length} Location Alert{alerts.length > 1 ? 's' : ''}</span>
-                        </div>
-                    )}
-                    <button
-                        onClick={() => setShowHeatmap(h => !h)}
-                        className={cn(
-                            "px-5 py-2 border-4 text-[10px] font-black uppercase tracking-widest",
-                            showHeatmap ? "bg-[#064e3b] border-[#064e3b] text-[#1A1A1A]" : "bg-[#FFF9F0] border-[#064e3b] text-[#064e3b]"
+            <PageHeader
+                icon={Shield}
+                label="Security_Kernel_Protocol"
+                title={<>Hive <span className="text-[#F4D03F]">Security</span></>}
+                subtitle="Live Hive Map · Asset Tracking · Environmental Density"
+                actions={
+                    <div className="flex items-center gap-3">
+                        {alerts.length > 0 && (
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-xl">
+                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                                <span className="text-red-500 font-bold text-[9px] uppercase tracking-widest">{alerts.length} ALERT{alerts.length > 1 ? 'S' : ''}</span>
+                            </div>
                         )}
-                    >
-                        {showHeatmap ? 'Hide Heatmap' : 'Show Heatmap'}
-                    </button>
-                </div>
-            </div>
+                        <button
+                            onClick={() => setShowHeatmap(h => !h)}
+                            className={cn(
+                                glass.btnSecondary,
+                                showHeatmap ? "bg-[#1A1A1A] text-white border-transparent" : "bg-white/60 border-white/40"
+                            )}
+                        >
+                            {showHeatmap ? 'Hide_Heatmap' : 'Show_Heatmap'}
+                        </button>
+                    </div>
+                }
+            />
 
             {/* Alert Banners */}
-            {alerts.map(hive => (
-                <div
-                    key={hive.id}
-                    className={cn(
-                        "flex items-start gap-4 p-4 border-l-8 border-4",
-                        hive.status === 'moved'
-                            ? "bg-red-50 border-red-400 border-l-red-500"
-                            : "bg-[#facc15]/10 border-[#facc15] border-l-[#facc15]"
-                    )}
-                >
-                    <AlertTriangle className={cn("w-5 h-5 mt-0.5 shrink-0", hive.status === 'moved' ? "text-red-500" : "text-[#b45309]")} />
-                    <div>
-                        <p className={cn("text-xs font-black uppercase tracking-widest", hive.status === 'moved' ? "text-red-700" : "text-[#b45309]")}>
-                            {hive.status === 'moved' ? `⚠ Hive Moved — ${hive.id} (${hive.name})` : `⚠ Location Alert — ${hive.id} (${hive.name})`}
-                        </p>
-                        <p className="text-[10px] font-bold text-neutral-500 mt-1">
-                            {hive.status === 'moved'
-                                ? `Hive moved from its spot in ${hive.block}. Marked RED on map.`
-                                : `Hive is close to the edge of ${hive.block}. Please check its position.`}
-                        </p>
-                    </div>
-                </div>
-            ))}
+            <AnimatePresence>
+                {alerts.map(hive => (
+                    <motion.div
+                        key={hive.id}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className={cn(
+                            "flex items-start gap-4 p-4 border rounded-2xl",
+                            hive.status === 'moved'
+                                ? "bg-red-50 border-red-100"
+                                : "bg-amber-50 border-amber-100"
+                        )}
+                    >
+                        <AlertTriangle className={cn("w-4 h-4 mt-0.5 shrink-0", hive.status === 'moved' ? "text-red-500" : "text-amber-500")} />
+                        <div>
+                            <p className={cn("text-[10px] font-bold uppercase tracking-widest", hive.status === 'moved' ? "text-red-600" : "text-amber-600")}>
+                                {hive.status === 'moved' ? `Security protocols breached — ${hive.id}` : `Location variance alert — ${hive.id}`}
+                            </p>
+                            <p className="text-[10px] font-medium text-gray-500 mt-0.5">
+                                {hive.status === 'moved'
+                                    ? `Hive confirmed outside authorized perimeter in ${hive.block}.`
+                                    : `Unexpected location drift detected in ${hive.block}. Please verify.`}
+                            </p>
+                        </div>
+                    </motion.div>
+                ))}
+            </AnimatePresence>
 
             {/* Map & Sidebar */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* The Orchard Map */}
-                <div className="lg:col-span-8 space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Farm Map</h3>
-                    <div className="border-4 border-[#064e3b] bg-[#064e3b]/3 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] relative overflow-hidden" style={{ aspectRatio: '16/10' }}>
+                <div className="lg:col-span-8 space-y-4">
+                    <div className={cn(glass.card, "bg-neutral-900 shadow-xl relative overflow-hidden group border-white/10")} style={{ aspectRatio: '16/10' }}>
                         {/* Heatmap layer */}
                         {showHeatmap && (
                             <div className="absolute inset-0 grid" style={{ gridTemplateColumns: 'repeat(8, 1fr)', gridTemplateRows: 'repeat(6, 1fr)' }}>
@@ -168,31 +171,18 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                     else blockName = 'Block 3A';
 
                                     const saturation = calculateSaturation(blockName, hives);
-                                    // Add some jitter for a more organic feel
                                     const jittered = Math.max(0, Math.min(100, saturation + (Math.sin(i) * 5)));
                                     return <div key={i} style={{ backgroundColor: getHeatColor(jittered) }} />;
                                 })}
                             </div>
                         )}
 
-                        {/* Grid Lines (orchard blocks) */}
-                        <div className="absolute inset-0 grid grid-cols-4 grid-rows-3 pointer-events-none">
+                        {/* Grid Lines */}
+                        <div className="absolute inset-0 grid grid-cols-4 grid-rows-3 pointer-events-none opacity-20">
                             {Array.from({ length: 12 }).map((_, i) => (
-                                <div key={i} className="border border-[#064e3b]/10" />
+                                <div key={i} className="border border-white/10" />
                             ))}
                         </div>
-
-                        {/* Block Labels */}
-                        {[
-                            { label: 'Block 1C', x: '2%', y: '2%' },
-                            { label: 'Block 2D', x: '27%', y: '2%' },
-                            { label: 'Block 3A', x: '52%', y: '2%' },
-                            { label: 'Block 4B', x: '2%', y: '52%' },
-                        ].map(b => (
-                            <span key={b.label} className="absolute text-[8px] font-black uppercase text-[#064e3b]/30 tracking-widest" style={{ left: b.x, top: b.y }}>
-                                {b.label}
-                            </span>
-                        ))}
 
                         {/* Hive Markers */}
                         {hives.map(h => {
@@ -202,16 +192,13 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                 <button
                                     key={h.id}
                                     onClick={() => setSelected(h)}
-                                    className="absolute transform -translate-x-1/2 -translate-y-1/2 focus:outline-none group"
+                                    className="absolute transform -translate-x-1/2 -translate-y-1/2 focus:outline-none group z-10"
                                     style={{ left: `${h.x}%`, top: `${h.y}%` }}
                                 >
                                     <div className={cn(
-                                        "w-5 h-5 rounded-full border-2 border-white", s.dot,
-                                        isSelected ? "scale-150" : "group-hover:scale-125"
+                                        "w-4 h-4 rounded-full border-2 border-white/80 transition-all", s.dot,
+                                        isSelected ? "scale-150 shadow-lg ring-4 ring-white/20" : "group-hover:scale-125 shadow-sm"
                                     )} />
-                                    <span className="absolute left-6 top-0 bg-[#064e3b] text-[#1A1A1A] text-[8px] font-black uppercase px-2 py-0.5 tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100">
-                                        {h.id}
-                                    </span>
                                 </button>
                             );
                         })}
@@ -220,82 +207,66 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                     <div className="flex flex-wrap items-center gap-6 pt-1">
                         {Object.entries(statusConfig).map(([key, s]) => (
                             <div key={key} className="flex items-center gap-2">
-                                <div className={cn("w-3 h-3 rounded-full", s.dot.split(' ')[0])} />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">{s.label}</span>
+                                <div className={cn("w-2.5 h-2.5 rounded-full", s.dot.split(' ')[0])} />
+                                <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">{s.label}</span>
                             </div>
                         ))}
-                        {showHeatmap && (
-                            <>
-                                {[
-                                    { color: 'bg-[#10b981]/60', label: 'High Density' },
-                                    { color: 'bg-[#facc15]/40', label: 'Medium' },
-                                    { color: 'bg-red-400/30', label: 'Low Density' },
-                                ].map(l => (
-                                    <div key={l.label} className="flex items-center gap-2">
-                                        <div className={cn("w-5 h-3", l.color)} />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">{l.label}</span>
-                                    </div>
-                                ))}
-                            </>
-                        )}
                     </div>
                 </div>
 
-                {/* Hive Detail Panel */}
                 <div className="lg:col-span-4 space-y-4">
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Hive List</h3>
-                    <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
-                        {hives.map(h => {
-                            const s = statusConfig[h.status];
-                            const isSelected = selected?.id === h.id;
-                            return (
-                                <button
-                                    key={h.id}
-                                    onClick={() => setSelected(h)}
-                                    className={cn(
-                                        "w-full p-4 border-4 text-left transition-none space-y-3",
-                                        isSelected
-                                            ? "bg-[#064e3b] border-[#064e3b]"
-                                            : h.status !== 'nominal'
-                                                ? "border-[#facc15] hover:bg-[#064e3b]/5"
-                                                : "border-[#064e3b]/20 hover:border-[#064e3b]"
-                                    )}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn("w-2.5 h-2.5 rounded-full", s.dot.split(' ')[0])} />
-                                            <span className={cn("text-xs font-black uppercase", isSelected ? "text-[#1A1A1A]" : "text-[#064e3b]")}>{h.id}</span>
+                    <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 shadow-xl space-y-4")}>
+                        <div className="border-b border-[#F4D03F]/10 pb-3">
+                            <h3 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.3em]">Node_Integrity</h3>
+                        </div>
+                        <div className="space-y-2 max-h-[440px] overflow-y-auto pr-1 custom-scrollbar">
+                            {hives.map(h => {
+                                const s = statusConfig[h.status];
+                                const isSelected = selected?.id === h.id;
+                                return (
+                                    <button
+                                        key={h.id}
+                                        onClick={() => setSelected(h)}
+                                        className={cn(
+                                            "w-full p-3 border rounded-2xl text-left transition-all",
+                                            isSelected
+                                                ? "bg-[#1A1A1A] border-[#1A1A1A] text-white shadow-xl"
+                                                : h.status !== 'nominal'
+                                                    ? "border-amber-200/40 bg-amber-50/20"
+                                                    : "border-white/40 bg-white/40 hover:border-[#F4D03F]/40"
+                                        )}
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className={cn("w-2 h-2 rounded-full", s.dot.split(' ')[0])} />
+                                                <span className="text-[10px] font-black uppercase tracking-tight">{h.id}</span>
+                                            </div>
+                                            <span className={cn(
+                                                "text-[8px] font-black uppercase px-2 py-0.5 rounded-lg tracking-widest",
+                                                isSelected ? "bg-white/10 text-white" :
+                                                    h.status === 'nominal' ? "bg-emerald-50 text-emerald-600" : "bg-amber-100 text-amber-600"
+                                            )}>{s.label}</span>
                                         </div>
-                                        <span className={cn(
-                                            "text-[9px] font-black uppercase px-2 py-0.5",
-                                            isSelected ? "bg-[#F4D03F]/10 text-[#1A1A1A]" :
-                                                h.status === 'nominal' ? "bg-[#10b981]/10 text-[#10b981]" : "bg-[#facc15]/30 text-[#b45309]"
-                                        )}>{s.label}</span>
-                                    </div>
-                                    <div className="flex items-end justify-between">
-                                        <div>
-                                            <p className={cn("text-[9px] font-bold uppercase", isSelected ? "text-gray-500" : "text-[#064e3b]/30")}>{h.block}</p>
-                                        </div>
-                                        {/* Saturation mini bar */}
-                                        <div className="w-24 space-y-1">
-                                            <p className={cn("text-[8px] font-black uppercase text-right", isSelected ? "text-gray-600" : "text-[#064e3b]/30")}>
-                                                Density {h.saturation}%
-                                            </p>
-                                            <div className="h-1.5 bg-[#F9F7F2] w-full">
-                                                <div
-                                                    className={cn("h-full", h.saturation > 60 ? "bg-[#10b981]" : h.saturation > 30 ? "bg-[#facc15]" : "bg-red-500")}
-                                                    style={{ width: `${h.saturation}%` }}
-                                                />
+                                        <div className="flex items-end justify-between">
+                                            <span className={cn("text-[8px] font-black uppercase tracking-widest", isSelected ? "text-white/40" : "text-gray-400")}>{h.block}</span>
+                                            <div className="text-right">
+                                                <p className={cn("text-[7px] font-black uppercase mb-1 tracking-widest", isSelected ? "text-white/40" : "text-gray-400")}>DENSITY_{h.saturation}%</p>
+                                                <div className={cn("h-1 w-16 rounded-full overflow-hidden", isSelected ? "bg-white/10" : "bg-gray-100")}>
+                                                    <div
+                                                        className={cn("h-full", h.saturation > 60 ? "bg-[#1B9157]" : h.saturation > 30 ? "bg-[#F4D03F]" : "bg-red-500")}
+                                                        style={{ width: `${h.saturation}%` }}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </button>
-                            );
-                        })}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

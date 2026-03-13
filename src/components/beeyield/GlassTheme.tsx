@@ -51,8 +51,8 @@ export const glass = {
 
     /** Table styles */
     table: 'rounded-xl border border-[#F4D03F]/30 bg-[#FFF9F0] shadow-sm overflow-hidden relative',
-    tableHead: 'bg-[#F9F7F2] text-[10px] font-bold text-[#1A1A1A]/60 uppercase tracking-widest h-10 px-4 border-b border-[#F4D03F]/20',
-    tableRow: 'hover:bg-[#F4D03F]/5 transition-colors duration-200 border-b border-[#F4D03F]/10 last:border-0 group/row text-[#1A1A1A]',
+    tableHead: 'bg-[#F9F7F2] text-[10px] font-bold text-[#1A1A1A]/60 uppercase tracking-widest h-9 px-4 border-b border-[#F4D03F]/20',
+    tableRow: 'hover:bg-[#F4D03F]/5 transition-colors duration-200 border-b border-[#F4D03F]/10 last:border-0 group/row text-[#1A1A1A] h-11',
 
     /** Compact status badge */
     badge: 'px-2 py-0.5 rounded-md text-[10px] font-bold border border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#1A1A1A] uppercase tracking-wider',
@@ -61,7 +61,7 @@ export const glass = {
     microLabel: 'text-[10px] font-bold text-[#1A1A1A]/60 uppercase tracking-widest',
 
     /** Section Title — controlled size */
-    sectionTitle: 'text-lg md:text-xl font-bold text-[#1A1A1A] tracking-tight',
+    sectionTitle: 'text-lg font-bold text-[#1A1A1A] tracking-tight',
 
     /** Loading skeleton */
     skeleton: 'bg-[#F4D03F]/20 animate-pulse rounded-xl overflow-hidden',
@@ -74,35 +74,53 @@ export const glass = {
 /* ─── Page Header Component ─── */
 interface PageHeaderProps {
     icon: LucideIcon;
-    label: string;
+    label?: string;
     title: React.ReactNode;
     subtitle?: string;
     actions?: React.ReactNode;
+    action?: React.ReactNode;
+    color?: string;
+    bg?: string;
+    borderColor?: string;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ icon: Icon, label, title, subtitle, actions }) => (
-    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-[#F4D03F]/20 relative mb-6">
-        <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F4D03F]/10 text-[#F4D03F] rounded-md text-[10px] font-bold uppercase tracking-widest border border-[#F4D03F]/20">
-                <Icon className="w-3 h-3" />
-                {label}
-            </div>
-            <h1 className={cn(glass.sectionTitle, 'text-xl md:text-2xl mt-1')}>
-                {typeof title === 'string' ? (
-                    <span>{title}</span>
-                ) : (
-                    title
+export const PageHeader: React.FC<PageHeaderProps> = ({
+    icon: Icon,
+    label,
+    title,
+    subtitle,
+    actions,
+    action,
+    color = "text-[#F4D03F]",
+    bg = "bg-[#F4D03F]/10",
+    borderColor = "border-[#F4D03F]/20"
+}) => {
+    const headerActions = actions || action;
+
+    return (
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-[#F4D03F]/20 relative mb-6">
+            <div className="space-y-1.5">
+                <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border", bg, color, borderColor)}>
+                    <Icon className="w-3 h-3" />
+                    {label || 'BEE_YIELD_MODULE'}
+                </div>
+                <h1 className={cn(glass.sectionTitle, 'mt-1')}>
+                    {typeof title === 'string' ? (
+                        <span>{title}</span>
+                    ) : (
+                        title
+                    )}
+                </h1>
+                {subtitle && (
+                    <p className="text-sm text-gray-500 max-w-2xl leading-relaxed">
+                        {subtitle}
+                    </p>
                 )}
-            </h1>
-            {subtitle && (
-                <p className="text-sm text-gray-500 max-w-2xl leading-relaxed">
-                    {subtitle}
-                </p>
-            )}
+            </div>
+            {headerActions && <div className="flex items-center gap-2.5 relative z-10">{headerActions}</div>}
         </div>
-        {actions && <div className="flex items-center gap-2.5 relative z-10">{actions}</div>}
-    </div>
-);
+    );
+};
 
 
 /* ─── Stat Card Component ─── */

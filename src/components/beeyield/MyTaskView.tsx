@@ -83,8 +83,6 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
     const [recurrenceDays, setRecurrenceDays] = React.useState("7");
     const [selectedApiary, setSelectedApiary] = React.useState<Apiary | null>(null);
     const [selectedHive, setSelectedHive] = React.useState<Hive | null>(null);
-    const [isApiaryOpen, setIsApiaryOpen] = React.useState(false);
-    const [isHiveOpen, setIsHiveOpen] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState(false);
 
     // Data States
@@ -93,11 +91,6 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
     const [tasks, setTasks] = React.useState<Task[]>([]);
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
-
-    // Clock UI State
-    const [isClockMinutes, setIsClockMinutes] = React.useState(false);
-
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     React.useEffect(() => {
         const fetchAllData = async () => {
@@ -218,117 +211,99 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
         }
     };
 
-    const updateRecurrenceStatus = async (task: Task, status: 'active' | 'paused' | 'stopped') => {
-        try {
-            const { error } = await beeyieldService.updateTask(task.id, {
-                recurrence_status: status
-            });
-            if (error) throw error;
-
-            toast.success(`Recurrence ${status}`);
-
-            // Refresh tasks
-            const latestTasks = await beeyieldService.getTasks();
-            setTasks(latestTasks);
-        } catch (error) {
-            console.error(error);
-            toast.error('Failed to update status');
-        }
-    };
-
     if (isAddingTask) {
         return (
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={glass.page}
+                className={cn(glass.page, "p-8 -m-8 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}
             >
                 <PageHeader
                     icon={LayoutGrid}
-                    label="Operations Protocol"
+                    label="OPERATIONS_PROTOCOL"
                     title={<>Schedule <span className="text-[#F4D03F]">Task</span></>}
-                    subtitle="Coordinate apiary logistics and maintenance schedules with precision-timed operational logs."
+                    subtitle="COORDINATE_APIARY_LOGISTICS_AND_MAINTENANCE_SCHEDULES"
                     actions={
                         <button
                             onClick={() => setIsAddingTask(false)}
-                            className={glass.btnSecondary}
+                            className={cn(glass.btnSecondary, "px-4 h-8 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 rounded-xl border-white/20 shadow-sm")}
                         >
-                            <ChevronDown className="w-6 h-6 rotate-90" />
+                            <ChevronDown className="w-4 h-4 rotate-90" />
                             Return
                         </button>
                     }
                 />
 
-                <div className="max-w-4xl mx-auto relative z-10">
-                    <div className={cn(glass.card, "p-16 space-y-12 bg-[#FFF9F0]/60 backdrop-blur-3xl")}>
-                        <div className="space-y-6">
-                            <label className={glass.microLabel}>{t('task_title_label')}</label>
+                <div className="max-w-3xl mx-auto relative z-10">
+                    <div className={cn(glass.card, "p-8 space-y-8 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-2xl relative overflow-hidden")}>
+                        <div className="space-y-2">
+                            <label className={glass.microLabel}>TASK_TITLE_ENTRY</label>
                             <input
-                                placeholder={t('task_title_placeholder')}
-                                className={glass.input}
+                                placeholder="ENTER_TASK_IDENTIFICATION"
+                                className={cn(glass.input, "px-4 h-12 w-full text-[11px] font-black tracking-widest uppercase bg-white/50 border-white/40 focus:bg-white rounded-2xl")}
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <div className="space-y-6">
-                                <label className={glass.microLabel}>{t('task_date')}</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className={glass.microLabel}>TEMPORAL_ASSIGNMENT</label>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <button className={cn(glass.btnSecondary, "w-full justify-between h-24 px-10 rounded-[2.5rem]")}>
-                                            <span className="font-black italic text-xl">{format(taskDate, "dd MMM yyyy")}</span>
-                                            <CalendarIcon className="w-8 h-8 text-[#F4D03F]" />
+                                        <button className={cn(glass.btnSecondary, "w-full justify-between h-12 px-5 rounded-2xl border-white/40 bg-white/40 hover:bg-white/60 group transition-all shadow-sm")}>
+                                            <span className="font-black text-[10px] uppercase tracking-widest">{format(taskDate, "dd/MM/yyyy")}</span>
+                                            <CalendarIcon className="w-4 h-4 text-[#F4D03F] group-hover:scale-110 transition-transform" />
                                         </button>
                                     </PopoverTrigger>
-                                    <PopoverContent className={glass.selectContent} align="start">
+                                    <PopoverContent className={cn(glass.selectContent, "p-0 rounded-3xl overflow-hidden border-white/20")} align="start">
                                         <Calendar
                                             mode="single"
                                             selected={taskDate}
                                             onSelect={(date) => date && setTaskDate(date)}
-                                            className="rounded-3xl border-none"
+                                            className="bg-white/90 backdrop-blur-xl"
                                         />
                                     </PopoverContent>
                                 </Popover>
                             </div>
-                            <div className="space-y-6">
-                                <label className={glass.microLabel}>{t('priority_label')}</label>
+                            <div className="space-y-2">
+                                <label className={glass.microLabel}>PRIORITY_VALUATION</label>
                                 <select
-                                    className={glass.select}
+                                    className={cn(glass.select, "h-12 w-full text-[10px] font-black uppercase tracking-widest px-5 rounded-2xl bg-white/50 border-white/40 focus:bg-white transition-all")}
                                     value={priority}
                                     onChange={(e) => setPriority(e.target.value as any)}
                                 >
-                                    <option value="Low">Low Priority</option>
-                                    <option value="Medium">Medium Priority</option>
-                                    <option value="High">High Priority</option>
+                                    <option value="Low">LOW_SEVERITY</option>
+                                    <option value="Medium">MEDIUM_SEVERITY</option>
+                                    <option value="High">HIGH_SEVERITY</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div className="space-y-6">
-                            <label className={glass.microLabel}>{t('description_label')}</label>
+                        <div className="space-y-2">
+                            <label className={glass.microLabel}>OPERATIONAL_LOGS</label>
                             <textarea
-                                placeholder="Operational details..."
-                                className={cn(glass.input, "min-h-[200px] p-10 py-12")}
+                                placeholder="DETAILED_LOGISTIC_DESCRIPTION..."
+                                className={cn(glass.input, "min-h-[160px] p-6 leading-relaxed resize-none bg-white/40 border-white/40 hover:bg-white/60 focus:bg-white transition-all text-[11px] font-bold shadow-sm rounded-3xl placeholder:text-gray-300 placeholder:italic")}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
 
-                        <div className="flex items-center gap-8 pt-4">
+                        <div className="flex items-center gap-4 pt-4">
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving}
-                                className={cn(glass.btnPrimary, "flex-1")}
+                                className={cn(glass.btnPrimary, "flex-1 h-12 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-lg hover:shadow-[#F4D03F]/20 active:scale-[0.98] transition-all")}
                             >
-                                {isSaving ? <Loader2 className="w-10 h-10 animate-spin" /> : <CheckCircle2 className="w-10 h-10" />}
-                                Initiate Protocol
+                                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+                                EXECUTE_SCHEDULE
                             </button>
                             <button
                                 onClick={() => setIsAddingTask(false)}
-                                className={cn(glass.btnSecondary, "px-16")}
+                                className={cn(glass.btnSecondary, "px-10 h-12 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl border-white/40 bg-white/20 hover:bg-white/40 transition-all")}
                             >
-                                {t('go_back')}
+                                ABORT
                             </button>
                         </div>
                     </div>
@@ -341,44 +316,44 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={glass.page}
+            className={cn(glass.page, "p-8 -m-8 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}
         >
-            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F]/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-[#F4D03F]/[0.05] rounded-full blur-[140px] -mr-32 -mt-32 pointer-events-none" />
 
             {/* Header */}
             <PageHeader
                 icon={CalendarIcon}
-                label="Operational Schedule"
+                label="OPERATIONAL_SCHEDULE"
                 title={<>Fleet <span className="text-[#F4D03F]">Logistics</span></>}
-                subtitle="Track and coordinate maintenance, inspections, and logistics across your entire apiary network."
+                subtitle="TRACK_AND_COORDINATE_MAINTENANCE_ACROSS_THE_REGISTRY"
                 actions={
-                    <div className="flex gap-8 relative z-10">
-                        <div className="flex bg-[#F9F7F2] p-3 rounded-[2.5rem] border border-[#F4D03F]/10 shadow-inner">
+                    <div className="flex gap-4 relative z-10 items-center">
+                        <div className="flex bg-white/30 p-1.5 rounded-2xl border border-white/40 shadow-inner backdrop-blur-xl">
                             <button
                                 onClick={() => setView('list')}
                                 className={cn(
-                                    "px-10 py-4 rounded-[2rem] font-black italic text-lg uppercase tracking-tight transition-all duration-500",
-                                    view === 'list' ? "bg-[#F4D03F] text-[#1A1A1A] shadow-4xl" : "text-foreground/40 hover:text-[#F4D03F]"
+                                    "px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all",
+                                    view === 'list' ? "bg-white text-[#1A1A1A] shadow-md" : "text-gray-400 hover:text-[#1A1A1A]"
                                 )}
                             >
-                                List
+                                ARCHIVE
                             </button>
                             <button
                                 onClick={() => setView('month')}
                                 className={cn(
-                                    "px-10 py-4 rounded-[2rem] font-black italic text-lg uppercase tracking-tight transition-all duration-500",
-                                    view === 'month' ? "bg-[#F4D03F] text-[#1A1A1A] shadow-4xl" : "text-foreground/40 hover:text-[#F4D03F]"
+                                    "px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all",
+                                    view === 'month' ? "bg-white text-[#1A1A1A] shadow-md" : "text-gray-400 hover:text-[#1A1A1A]"
                                 )}
                             >
-                                Calendar
+                                CALENDAR
                             </button>
                         </div>
                         <button
                             onClick={() => setIsAddingTask(true)}
-                            className={glass.btnPrimary}
+                            className={cn(glass.btnPrimary, "px-6 h-10 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 rounded-2xl shadow-lg shadow-[#F4D03F]/10")}
                         >
-                            <Plus className="w-10 h-10 group-hover:rotate-90 transition-transform duration-1000" />
-                            Schedule Task
+                            <Plus className="w-4 h-4" />
+                            SCHEDULE_TASK
                         </button>
                     </div>
                 }
@@ -390,33 +365,38 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "p-12 bg-[#FFF9F0]/60 backdrop-blur-3xl min-h-[800px]")}
+                        className={cn(glass.card, "p-8 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-2xl min-h-[700px] relative overflow-hidden")}
                     >
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F4D03F]/40 to-transparent" />
+                        
                         {/* Month Navigation */}
-                        <div className="flex items-center justify-between mb-12">
-                            <h3 className="text-6xl font-black italic text-foreground tracking-tighter uppercase leading-none">
-                                {format(currentDate, "MMMM")} <span className="text-[#F4D03F]">{format(currentDate, "yyyy")}</span>
-                            </h3>
-                            <div className="flex gap-4">
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="flex flex-col">
+                                <h3 className="text-4xl font-black text-foreground tracking-tighter uppercase leading-none">
+                                    {format(currentDate, "MMMM")} <span className="text-[#F4D03F] opacity-60">{format(currentDate, "yyyy")}</span>
+                                </h3>
+                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.3em] mt-2">CHRONIC_FLEET_INTERVAL</p>
+                            </div>
+                            <div className="flex gap-3">
                                 <button
                                     onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-                                    className={cn(glass.btnSecondary, "w-16 h-16 p-0 flex items-center justify-center")}
+                                    className={cn(glass.btnSecondary, "w-12 h-12 p-0 flex items-center justify-center rounded-2xl bg-white/40 border-white/40 hover:bg-white/60 shadow-sm")}
                                 >
-                                    <ChevronLeft className="w-8 h-8" />
+                                    <ChevronLeft className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-                                    className={cn(glass.btnSecondary, "w-16 h-16 p-0 flex items-center justify-center")}
+                                    className={cn(glass.btnSecondary, "w-12 h-12 p-0 flex items-center justify-center rounded-2xl bg-white/40 border-white/40 hover:bg-white/60 shadow-sm")}
                                 >
-                                    <ChevronRight className="w-8 h-8" />
+                                    <ChevronRight className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-7 gap-6">
+                        <div className="grid grid-cols-7 gap-4">
                             {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
-                                <div key={d} className="text-center py-6">
-                                    <span className="text-[12px] font-black text-foreground/20 italic tracking-[0.4em] uppercase">{d}</span>
+                                <div key={d} className="text-center py-4">
+                                    <span className="text-[10px] font-black text-gray-300 tracking-[0.25em]">{d}</span>
                                 </div>
                             ))}
                             {generateCalendarDays().map((date, i) => {
@@ -429,109 +409,118 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                     <div
                                         key={i}
                                         className={cn(
-                                            "min-h-[160px] rounded-[3rem] p-6 border transition-all duration-500 group/day relative",
-                                            isCurrentMonth ? "bg-gray-400 border-[#F4D03F]/10" : "opacity-10 pointer-events-none",
-                                            isTodayDate ? "ring-4 ring-[#F4D03F]/40 border-[#F4D03F]/40" : "hover:border-[#F4D03F]/20"
+                                            "min-h-[120px] rounded-[1.8rem] p-4 border transition-all duration-500 group/day relative overflow-hidden",
+                                            isCurrentMonth ? "bg-white/20 border-white/40 hover:bg-white/50 hover:border-[#F4D03F]/40" : "bg-transparent border-transparent opacity-[0.05] pointer-events-none",
+                                            isTodayDate ? "ring-2 ring-[#F4D03F]/50 border-[#F4D03F]/60 bg-white/60 shadow-lg shadow-[#F4D03F]/5" : "shadow-sm"
                                         )}
                                     >
                                         <span className={cn(
-                                            "text-4xl font-black italic tracking-tighter tabular-nums",
-                                            isTodayDate ? "text-[#F4D03F]" : "text-foreground/20"
+                                            "text-2xl font-black tracking-tighter tabular-nums transition-all",
+                                            isTodayDate ? "text-[#F4D03F]" : "text-gray-200 group-hover/day:text-gray-400"
                                         )}>
                                             {format(date, 'd')}
                                         </span>
 
-                                        <div className="mt-4 space-y-2">
+                                        <div className="mt-4 space-y-1.5">
                                             {dayTasks.map(task => (
                                                 <div
                                                     key={task.id}
                                                     className={cn(
-                                                        "px-4 py-2 rounded-full border border-[#F4D03F]/10 flex items-center gap-2 overflow-hidden",
-                                                        task.priority === 'High' ? "bg-red-500/10 text-red-500" :
-                                                            task.priority === 'Medium' ? "bg-[#F4D03F]/10 text-[#F4D03F]" : "bg-[#1B9157]/ text-[#1B9157]"
+                                                        "px-2.5 py-1.5 rounded-xl border flex items-center gap-2 group/task transition-all hover:scale-[1.05] relative z-10",
+                                                        task.priority === 'High' ? "bg-red-500/10 border-red-500/20 text-red-600" :
+                                                            task.priority === 'Medium' ? "bg-[#F4D03F]/10 border-[#F4D03F]/20 text-[#1A1A1A]" : "bg-[#1B9157]/10 border-[#1B9157]/20 text-[#1B9157]"
                                                     )}
                                                 >
-                                                    <div className={cn("w-2 h-2 rounded-full",
+                                                    <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse",
                                                         task.priority === 'High' ? "bg-red-500" :
                                                             task.priority === 'Medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
                                                     )} />
-                                                    <span className="text-[10px] font-black uppercase tracking-tight truncate italic">{task.title}</span>
+                                                    <span className="text-[8px] font-black uppercase tracking-tight truncate italic">{task.title}</span>
                                                 </div>
                                             ))}
                                         </div>
+                                        
+                                        {isTodayDate && (
+                                            <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-[#F4D03F]/10 rounded-full blur-xl animate-pulse" />
+                                        )}
                                     </div>
                                 );
                             })}
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="space-y-16">
+                    <div className="space-y-6 pt-6">
                         {/* Task List Grid */}
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
-                            <AnimatePresence>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <AnimatePresence mode="popLayout">
                                 {tasks.sort((a, b) => new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime()).map((task, i) => (
                                     <motion.div
                                         key={task.id}
-                                        initial={{ opacity: 0, x: -30 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: i * 0.05, duration: 0.8 }}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 30 }}
                                         className={cn(
                                             glass.card,
-                                            "p-12 pl-20 relative group hover:border-[#F4D03F]/60 cursor-default",
-                                            task.is_completed && "opacity-60"
+                                            "p-8 relative group hover:border-[#F4D03F]/60 cursor-default bg-white/40 backdrop-blur-xl border-white/20 shadow-xl overflow-hidden rounded-[2.5rem] transition-all duration-500 hover:shadow-2xl hover:shadow-[#F4D03F]/5",
+                                            task.is_completed && "opacity-40 grayscale-[0.5]"
                                         )}
                                     >
                                         <div className={cn(
-                                            "absolute left-0 top-0 w-4 h-full transition-all duration-700",
-                                            task.is_completed ? "bg-[#1B9157] shadow-[0_0_20px_rgba(16,185,129,0.4)]" :
-                                                task.priority === 'High' ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]" :
-                                                    task.priority === 'Medium' ? "bg-[#F4D03F] shadow-[0_0_20px_rgba(251,191,36,0.4)]" : "bg-slate-400"
+                                            "absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-transparent to-white/10 blur-2xl pointer-events-none"
                                         )} />
 
-                                        <div className="flex items-center justify-between mb-8">
-                                            <div className="flex items-center gap-6">
+                                        <div className="flex items-start justify-between mb-6 relative z-10">
+                                            <div className="flex items-center gap-5">
                                                 <button
                                                     onClick={() => toggleTaskCompletion(task)}
                                                     className={cn(
-                                                        "w-14 h-14 rounded-2xl border flex items-center justify-center transition-all duration-700",
+                                                        "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-300 relative overflow-hidden group/btn shadow-sm",
                                                         task.is_completed
-                                                            ? "bg-[#1B9157] border-emerald-500 text-[#1A1A1A] shadow-4xl"
-                                                            : "bg-[#F4D03F]/10 border-[#F4D03F]/20 text-gray-400 hover:border-[#F4D03F] hover:text-[#F4D03F]"
+                                                            ? "bg-[#1B9157] border-[#1B9157] text-white"
+                                                            : "bg-white/60 border-white/60 text-gray-300 hover:border-[#F4D03F]/60 hover:text-[#F4D03F]"
                                                     )}
                                                 >
-                                                    <CheckCircle2 className="w-8 h-8" />
+                                                    <CheckCircle2 className={cn("w-6 h-6 transition-transform", task.is_completed ? "scale-110" : "scale-90 group-hover/btn:scale-110")} />
                                                 </button>
                                                 <div className="flex flex-col">
                                                     <h3 className={cn(
-                                                        "text-4xl font-black italic tracking-tighter uppercase leading-none truncate max-w-[400px] transition-all",
-                                                        task.is_completed ? "text-foreground/30 line-through" : "text-foreground group-hover:text-[#F4D03F]"
+                                                        "text-xl font-black tracking-tighter uppercase leading-tight truncate max-w-[200px] transition-all duration-300",
+                                                        task.is_completed ? "text-gray-400 line-through" : "text-foreground group-hover:text-[#1A1A1A]"
                                                     )}>
                                                         {task.title}
                                                     </h3>
-                                                    <div className="flex items-center gap-4 mt-2">
-                                                        <ClockIcon className="w-4 h-4 text-[#F4D03F] opacity-30" />
-                                                        <span className="text-[11px] font-black text-foreground/20 italic tracking-[0.2em] uppercase">
-                                                            DUE: {task.due_date ? format(new Date(task.due_date), "dd MMM yyyy").toUpperCase() : "Indefinite"}
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <ClockIcon className="w-3.5 h-3.5 text-[#F4D03F] opacity-40" />
+                                                        <span className="text-[10px] font-black text-gray-400 tracking-[0.2em]">
+                                                            DUE_{task.due_date ? format(new Date(task.due_date), "dd/MM/yyyy").toUpperCase() : "INDEFINITE"}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-col items-end gap-3">
-                                                <div className={cn(
-                                                    "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] skew-x-[-15deg] shadow-4xl border",
-                                                    task.priority === 'High' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                                        task.priority === 'Medium' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : "bg-[#F9F7F2] text-foreground/20 border-[#F4D03F]/10"
-                                                )}>
-                                                    <span className="skew-x-[15deg] block">{task.priority?.toUpperCase()} PRIORITY</span>
-                                                </div>
+                                            <div className={cn(
+                                                "px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all duration-300 shadow-sm",
+                                                task.priority === 'High' ? "bg-red-500 text-white border-transparent" :
+                                                    task.priority === 'Medium' ? "bg-[#F4D03F] text-[#1A1A1A] border-transparent" : "bg-white/60 text-gray-400 border-white/60"
+                                            )}>
+                                                {task.priority || "LOW"}
                                             </div>
                                         </div>
 
-                                        <div className="bg-[#F9F7F2] rounded-[3rem] p-8 border border-[#F4D03F]/10 shadow-inner group-hover:border-[#F4D03F]/20 transition-all duration-1000">
-                                            <p className="text-xl font-black text-foreground/30 italic leading-relaxed line-clamp-2 uppercase tracking-tight">
-                                                {task.description || "No operational notes provided for this mission protocol."}
+                                        <div className="bg-white/30 backdrop-blur-md rounded-[2rem] p-6 border border-white/40 transition-all group-hover:bg-white/50 relative z-10">
+                                            <p className="text-[12px] font-medium text-gray-500 leading-relaxed line-clamp-3 uppercase tracking-tight italic">
+                                                {task.description || "NO_OPERATIONAL_LOGS_AVAILABLE"}
                                             </p>
+                                        </div>
+                                        
+                                        <div className="mt-6 flex items-center justify-between relative z-10 px-2">
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm animate-pulse" />
+                                                <span className="text-[8px] font-black text-gray-300 tracking-[0.2em]">{task.is_completed ? "SYSTEM_SYNC_OFFLINE" : "LIVE_TRACKING_SYNC"}</span>
+                                            </div>
+                                            <button className="text-[9px] font-black text-gray-400 hover:text-[#F4D03F] transition-colors tracking-widest uppercase">DETAILS_&rarr;</button>
                                         </div>
                                     </motion.div>
                                 ))}

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Shield, ShieldCheck, ShieldOff, Copy, Check } from 'lucide-react';
+import { Loader2, Shield, ShieldCheck, Copy, Check, RefreshCw } from 'lucide-react';
 import { Factor } from '@supabase/supabase-js';
+import { cn } from '@/lib/utils';
+import { glass } from '@/components/beeyield/GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TwoFactorSetupProps {
     onComplete?: () => void;
@@ -100,157 +102,167 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
 
     if (!user) {
         return (
-            <div className="p-10 text-center text-gray-400 font-medium bg-white/50 rounded-[2rem] border border-gray-100">
-                Please sign in to manage security settings.
+            <div className="p-8 text-center bg-white rounded-xl border border-gray-100 shadow-sm">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Authentication Required</p>
+                <p className="text-[11px] text-gray-400 mt-1 font-medium leading-relaxed">Please sign in to manage security settings.</p>
             </div>
         );
     }
 
     if (loading && factors.length === 0) {
         return (
-            <div className="p-20 flex items-center justify-center bg-white/50 rounded-[2rem] border border-gray-100">
-                <Loader2 className="h-8 w-8 animate-spin text-honey" />
+            <div className="p-12 flex flex-col items-center justify-center bg-white rounded-xl border border-gray-100 shadow-sm space-y-3">
+                <Loader2 className="h-6 w-6 animate-spin text-[#F4D03F] opacity-50" />
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Hydrating Security Kernel...</span>
             </div>
-        );
-    }
-
-    if (enrollmentData) {
-        return (
-            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-                <CardHeader className="p-8 pb-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center">
-                            <Shield className="h-5 w-5 text-honey" />
-                        </div>
-                        <div>
-                            <CardTitle className="text-xl font-bold tracking-tight">Setup Extra Security</CardTitle>
-                            <CardDescription className="text-gray-500 font-medium">Scan the QR code with your authenticator app</CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-8 pt-4 space-y-8">
-                    <div className="flex justify-center p-6 bg-gray-50 rounded-3xl border border-gray-100">
-                        <div className="bg-white p-3 rounded-2xl shadow-sm">
-                            <img
-                                src={enrollmentData.qr_code}
-                                alt="QR Code"
-                                className="w-40 h-40"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-3">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Manual Entry Key</p>
-                        <div className="flex items-center gap-2 p-1 bg-gray-50 rounded-2xl border border-gray-100">
-                            <code className="flex-1 px-4 py-3 font-mono text-sm text-gray-600 break-all select-all">
-                                {enrollmentData.secret}
-                            </code>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={copySecret}
-                                className="h-12 w-12 rounded-xl text-gray-400 hover:text-honey"
-                            >
-                                {copied ? <Check className="h-5 w-5 text-beeyield-green" /> : <Copy className="h-5 w-5" />}
-                            </Button>
-                        </div>
-                    </div>
-
-                    <form onSubmit={handleVerifyEnrollment} className="space-y-6">
-                        <div className="space-y-3">
-                            <Label htmlFor="verify-code" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
-                                Verification Code
-                            </Label>
-                            <Input
-                                id="verify-code"
-                                placeholder="000000"
-                                value={verificationCode}
-                                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                className="h-14 text-center text-3xl tracking-[0.4em] font-bold bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-2xl"
-                                maxLength={6}
-                                required
-                            />
-                        </div>
-
-                        <div className="flex gap-4 pt-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="flex-1 h-14 rounded-2xl font-bold border-gray-200 text-gray-500 hover:bg-gray-50"
-                                onClick={() => {
-                                    setEnrollmentData(null);
-                                    setVerificationCode('');
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="submit"
-                                className="flex-1 h-14 rounded-2xl font-bold bg-beeyield-green hover:bg-beeyield-green/90 text-white shadow-lg active:scale-95 transition-all"
-                                disabled={loading || verificationCode.length !== 6}
-                            >
-                                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Confirm'}
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
         );
     }
 
     const hasMFA = factors.length > 0;
 
     return (
-        <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-            <CardHeader className="p-8 pb-4">
-                <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${hasMFA ? 'bg-beeyield-green/10' : 'bg-honey/10'}`}>
-                        {hasMFA ? <ShieldCheck className="h-5 w-5 text-beeyield-green" /> : <Shield className="h-5 w-5 text-honey" />}
-                    </div>
-                    <div>
-                        <CardTitle className="text-xl font-bold tracking-tight">Extra Security (MFA)</CardTitle>
-                        <CardDescription className="text-gray-500 font-medium">Add an extra layer of protection to your account</CardDescription>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-8 pt-4 space-y-6">
-                <div className={`p-6 rounded-3xl border ${hasMFA ? 'bg-beeyield-green/5 border-beeyield-green/10' : 'bg-honey/5 border-honey/10'}`}>
-                    <p className={`text-sm font-bold ${hasMFA ? 'text-beeyield-green' : 'text-honey'}`}>
-                        {hasMFA ? 'Account is currently protected' : 'Account is not currently protected'}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2 font-medium leading-relaxed">
-                        {hasMFA 
-                            ? `Extra security was enabled on ${new Date(factors[0].created_at).toLocaleDateString()}.`
-                            : 'Setup a second step after your password to keep your account safe from unauthorized access.'
-                        }
-                    </p>
-                </div>
+        <AnimatePresence mode="wait">
+            {enrollmentData ? (
+                <motion.div
+                    key="enroll"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={cn(glass.card, "bg-white p-0 overflow-hidden shadow-sm")}
+                >
+                    <CardHeader className="p-6 pb-4 border-b border-gray-100 bg-gray-50/50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                                <Shield className="h-5 w-5 text-[#F4D03F]" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-lg font-bold text-[#1A1A1A] tracking-tight">Extra Security Setup</CardTitle>
+                                <CardDescription className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Scan QR with Authenticator App</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                        <div className="flex justify-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-100">
+                                <img
+                                    src={enrollmentData.qr_code}
+                                    alt="QR Code"
+                                    className="w-32 h-32"
+                                />
+                            </div>
+                        </div>
 
-                {hasMFA ? (
-                    <Button
-                        variant="outline"
-                        className="w-full h-14 rounded-2xl border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 transition-all font-bold active:scale-95"
-                        onClick={() => {
-                            if (confirm('Are you sure you want to disable extra security?')) {
-                                handleUnenroll(factors[0].id);
-                            }
-                        }}
-                        disabled={loading}
-                    >
-                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Disable Security'}
-                    </Button>
-                ) : (
-                    <Button
-                        className="w-full h-14 rounded-2xl bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold shadow-lg shadow-beeyield-green/10 active:scale-95 transition-all"
-                        onClick={handleEnroll}
-                        disabled={enrolling}
-                    >
-                        {enrolling ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Turn On Security'}
-                    </Button>
-                )}
-            </CardContent>
-        </Card>
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between px-1">
+                                <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Manual Entry Key</Label>
+                                <button onClick={copySecret} className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-wider hover:underline flex items-center gap-1">
+                                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    {copied ? 'Copied' : 'Copy'}
+                                </button>
+                            </div>
+                            <div className="px-4 py-2.5 bg-gray-50 rounded-lg border border-gray-100 font-mono text-[10px] text-gray-600 break-all select-all text-center">
+                                {enrollmentData.secret}
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleVerifyEnrollment} className="space-y-4">
+                            <div className="space-y-1.5 text-center">
+                                <Label htmlFor="verify-code" className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                                    Identity Verification Code
+                                </Label>
+                                <Input
+                                    id="verify-code"
+                                    placeholder="000 000"
+                                    value={verificationCode}
+                                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                    className="h-12 text-center text-2xl tracking-[0.3em] font-bold bg-gray-50 border-gray-100 focus:bg-white focus:border-[#F4D03F] rounded-xl"
+                                    maxLength={6}
+                                    required
+                                />
+                            </div>
+
+                            <div className="flex gap-2.5">
+                                <button
+                                    type="button"
+                                    className={cn(glass.btnSecondary, "flex-1 h-10")}
+                                    onClick={() => {
+                                        setEnrollmentData(null);
+                                        setVerificationCode('');
+                                    }}
+                                >
+                                    Abort
+                                </button>
+                                <button
+                                    type="submit"
+                                    className={cn(glass.btnPrimary, "flex-1 h-10")}
+                                    disabled={loading || verificationCode.length !== 6}
+                                >
+                                    {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : 'Confirm'}
+                                </button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </motion.div>
+            ) : (
+                <motion.div
+                    key="status"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={cn(glass.card, "bg-white p-0 overflow-hidden shadow-sm")}
+                >
+                    <CardHeader className="p-6 pb-4 border-b border-gray-100 bg-gray-50/50">
+                        <div className="flex items-center gap-3">
+                            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm transition-colors bg-white", hasMFA ? "border-[#1B9157]/20" : "border-[#F4D03F]/20")}>
+                                {hasMFA ? <ShieldCheck className="h-5 w-5 text-[#1B9157]" /> : <Shield className="h-5 w-5 text-[#F4D03F]" />}
+                            </div>
+                            <div>
+                                <CardTitle className="text-lg font-bold text-[#1A1A1A] tracking-tight">Extra Security (MFA)</CardTitle>
+                                <CardDescription className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Account Protection Layer</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                        <div className={cn("p-4 rounded-xl border transition-colors", hasMFA ? "bg-[#1B9157]/5 border-[#1B9157]/10" : "bg-[#F4D03F]/5 border-[#F4D03F]/10")}>
+                            <div className="flex items-center gap-2">
+                                <div className={cn("w-1.5 h-1.5 rounded-full", hasMFA ? "bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)]" : "bg-[#F4D03F]")} />
+                                <p className={cn("text-xs font-bold uppercase tracking-wider", hasMFA ? "text-[#1B9157]" : "text-[#F4D03F]")}>
+                                    {hasMFA ? 'Protected Identity' : 'Vulnerable Identity'}
+                                </p>
+                            </div>
+                            <p className="text-[11px] text-gray-500 mt-2 font-medium leading-relaxed">
+                                {hasMFA 
+                                    ? `Extra security was active since ${new Date(factors[0].created_at).toLocaleDateString()}.`
+                                    : 'Setup a second pulse verification to secure your industrial metadata from unauthorized access.'
+                                }
+                            </p>
+                        </div>
+
+                        {hasMFA ? (
+                            <button
+                                className={cn("w-full h-10 rounded-lg border border-red-100 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all font-bold text-xs uppercase shadow-sm")}
+                                onClick={() => {
+                                    if (confirm('Are you sure you want to disable extra security?')) {
+                                        handleUnenroll(factors[0].id);
+                                    }
+                                }}
+                                disabled={loading}
+                            >
+                                {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : 'Disable Security'}
+                            </button>
+                        ) : (
+                            <button
+                                className={cn(glass.btnPrimary, "w-full h-10 shadow-sm")}
+                                onClick={handleEnroll}
+                                disabled={enrolling}
+                            >
+                                {enrolling ? <RefreshCw className="h-4 w-4 animate-spin" /> : 'Activate Protection'}
+                            </button>
+                        )}
+                    </CardContent>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 };
 

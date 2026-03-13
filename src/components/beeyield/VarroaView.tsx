@@ -80,16 +80,15 @@ const VarroaView: React.FC = () => {
             animate={{ opacity: 1 }}
             className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
         >
-            {/* Header */}
             <PageHeader
                 icon={Microscope}
-                label="Varroa Monitoring"
-                title={<>Varroa <span className="text-[#F4D03F]">Analysis</span></>}
-                subtitle="Track mite infestation levels across your colonies and manage treatments."
+                label="Pathology Kernel"
+                title="Varroa Analysis"
+                subtitle="High-fidelity mite infestation monitoring and spectral diagnostic protocols."
                 actions={
-                    <button className={cn(glass.btnPrimary)}>
+                    <button className={cn(glass.btnPrimary, "h-10 px-6 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}>
                         <Microscope className="w-4 h-4" />
-                        Run Diagnosis
+                        <span>RUN_DIAGNOSIS</span>
                     </button>
                 }
             />
@@ -104,16 +103,19 @@ const VarroaView: React.FC = () => {
 
             {/* Alert Banner */}
             {criticalHive && (
-                <div className="bg-red-50 border border-red-100 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
+                <div className={cn(glass.card, "p-4 border-red-500/30 bg-red-500/5 shadow-red-500/10 flex items-center gap-4 relative overflow-hidden")}>
+                    <div className="absolute inset-0 opacity-[0.03] bg-red-500 blur-xl pointer-events-none" />
+                    <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center shrink-0 border border-red-500/20 relative z-10">
                         <AlertTriangle className="w-5 h-5 text-red-500" />
                     </div>
-                    <div className="flex-1">
-                        <h3 className="text-[10px] font-bold text-red-800 uppercase tracking-wider mb-0.5">High Infestation Alert</h3>
-                        <p className="text-sm text-red-600 font-medium">Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.</p>
+                    <div className="flex-1 relative z-10">
+                        <h3 className="text-[10px] font-black text-red-700 uppercase tracking-[0.2em] mb-0.5">HIGH_INFESTATION_ALERT</h3>
+                        <p className="text-[11px] font-black text-red-600/60 uppercase tracking-tighter">
+                            Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.
+                        </p>
                     </div>
-                    <button className="h-9 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors">
-                        Treatment Guide
+                    <button className={cn(glass.btnPrimary, "h-9 px-4 bg-red-500 border-red-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl relative z-10")}>
+                        TREATMENT_PROTOCOL
                     </button>
                 </div>
             )}
@@ -121,27 +123,31 @@ const VarroaView: React.FC = () => {
             {/* Hive Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {hives.map(hive => (
-                    <div key={hive.id} className="bg-white border border-[#F4D03F]/10 rounded-2xl p-5 relative overflow-hidden hover:border-[#F4D03F]/30 transition-all shadow-sm">
+                    <div key={hive.id} className={cn(glass.card, "p-4 space-y-4 border-white/40 shadow-sm relative overflow-hidden group hover:border-[#F4D03F]/40 transition-all")}>
                         <div className={cn(
-                            "absolute top-0 left-0 w-full h-[3px]",
+                            "absolute top-0 left-0 w-full h-1",
                             hive.status === 'safe' ? "bg-[#1B9157]" : hive.status === 'warning' ? "bg-[#F4D03F]" : "bg-red-500"
                         )} />
-                        <div className="flex justify-between items-start mb-3">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{hive.id}</span>
-                            <Badge className={cn(
-                                "border-none text-[9px] font-bold uppercase tracking-wider",
+                        <div className="flex justify-between items-start">
+                            <span className={glass.microLabel}>{hive.id}</span>
+                            <div className={cn(
+                                glass.badge,
+                                "border-none",
                                 hive.status === 'safe' ? "bg-[#1B9157]/10 text-[#1B9157]" : hive.status === 'warning' ? "bg-[#F4D03F]/10 text-[#F4D03F]" : "bg-red-500/10 text-red-500"
                             )}>
-                                {hive.status}
-                            </Badge>
+                                {hive.status.toUpperCase()}
+                            </div>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-2xl font-bold text-[#1A1A1A] tabular-nums">{hive.infestation}%</p>
-                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Infestation Rate</p>
+                        <div className="space-y-0.5">
+                            <p className="text-2xl font-black text-[#1A1A1A] tabular-nums tracking-tighter leading-none">{hive.infestation}%</p>
+                            <p className={glass.microLabel}>INFESTATION_RATE</p>
                         </div>
-                        <div className="mt-3 flex items-center gap-2 pt-3 border-t border-[#F4D03F]/10">
-                            <TrendingUp className={cn("w-3 h-3", hive.trend === 'up' ? "text-red-500" : hive.trend === 'down' ? "text-[#1B9157]" : "text-gray-400")} />
-                            <span className="text-[10px] font-bold text-gray-500 capitalize">{hive.trend} trend</span>
+                        <div className="pt-3 border-t border-[#F4D03F]/10 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <TrendingUp className={cn("w-3 h-3", hive.trend === 'up' ? "text-red-500" : hive.trend === 'down' ? "text-[#1B9157]" : "text-gray-400")} />
+                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{hive.trend}</span>
+                            </div>
+                            <span className="text-[7px] font-black text-gray-300 uppercase">AUDIT_NOMINAL</span>
                         </div>
                     </div>
                 ))}
@@ -150,43 +156,50 @@ const VarroaView: React.FC = () => {
             {/* Bottom Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Historic Trend */}
-                <div className="bg-white border border-[#F4D03F]/10 rounded-2xl p-6 shadow-sm">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-9 h-9 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20">
+                {/* Historic Trend */}
+                <div className={cn(glass.card, "p-5 space-y-4 border-white/40 shadow-sm")}>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20">
                             <History className="w-4 h-4 text-[#1B9157]" />
                         </div>
-                        <div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Historic Trend</h3>
-                            <p className="text-[10px] text-gray-400 font-medium">Infestation levels over the last 30 days.</p>
+                        <div className="space-y-0.5">
+                            <h3 className={glass.sectionTitle}>HISTORIC_TRENDS</h3>
+                            <p className={glass.microLabel}>Infestation levels last 30-day epoch.</p>
                         </div>
                     </div>
-                    <div className="h-[200px] w-full bg-[#F9F7F2] rounded-xl flex items-center justify-center border border-dashed border-[#F4D03F]/20">
-                        <BarChart3 className="w-10 h-10 text-[#F4D03F]/20" />
+                    <div className="h-[200px] w-full bg-white/20 rounded-2xl flex flex-col items-center justify-center border border-dashed border-[#F4D03F]/20 relative group">
+                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                        <BarChart3 className="w-10 h-10 text-[#F4D03F]/20 group-hover:scale-110 transition-transform duration-500" />
+                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-2">SYNCING_DATA_STREAM...</span>
                     </div>
                 </div>
 
                 {/* Recommended Actions */}
-                <div className="bg-white border border-[#F4D03F]/10 rounded-2xl p-6 shadow-sm">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-9 h-9 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                {/* Recommended Actions */}
+                <div className={cn(glass.card, "p-5 space-y-4 border-white/40 shadow-sm")}>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
                             <ShieldCheck className="w-4 h-4 text-[#F4D03F]" />
                         </div>
-                        <div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recommended Actions</h3>
+                        <div className="space-y-0.5">
+                            <h3 className={glass.sectionTitle}>ACTION_PROTOCOLS</h3>
+                            <p className={glass.microLabel}>Recommended field mitigation procedures.</p>
                         </div>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         {(treatments.length > 0 ? treatments.slice(0, 3) : [
                             { treatment_type: 'oxalic_acid', notes: 'Scheduled for next maintenance' },
                             { treatment_type: 'biotechnical', notes: 'Effective biological control' },
                             { treatment_type: 'formic_acid', notes: 'For high infestation levels' },
                         ]).map((t: any, i: number) => (
-                            <div key={i} className="p-4 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-between group cursor-pointer hover:border-[#F4D03F]/20 transition-colors">
-                                <div>
-                                    <h4 className="font-bold text-[#1A1A1A] text-sm capitalize tracking-tight">{(t.treatment_type || 'treatment').replace(/_/g, ' ')}</h4>
-                                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{t.notes || 'No additional notes'}</p>
+                            <div key={i} className="p-3.5 rounded-xl bg-white/40 border border-[#F4D03F]/10 flex items-center justify-between group cursor-pointer hover:border-[#F4D03F]/40 transition-all">
+                                <div className="space-y-0.5">
+                                    <h4 className="font-black text-[#1A1A1A] text-[11px] uppercase tracking-tight transition-colors group-hover:text-[#F4D03F]">{(t.treatment_type || 'treatment').replace(/_/g, ' ')}</h4>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{t.notes || 'REGISTRY_ENTRY_EMPTY'}</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />
+                                <div className="w-7 h-7 rounded-lg bg-white border border-transparent group-hover:border-[#F4D03F]/20 flex items-center justify-center transition-all">
+                                    <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />
+                                </div>
                             </div>
                         ))}
                     </div>

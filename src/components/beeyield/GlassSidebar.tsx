@@ -72,8 +72,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                     className={cn(
                                         "w-full flex items-center justify-between h-9 px-3 transition-all rounded-lg group relative text-[13px]",
                                         isActive
-                                            ? "bg-[#F4D03F]/10 text-white"
-                                            : "text-gray-600 hover:text-white hover:bg-[#F9F7F2]"
+                                            ? "bg-[#F4D03F]/10 text-[#1A1A1A]"
+                                            : "text-gray-600 hover:text-[#1A1A1A] hover:bg-[#F9F7F2]"
                                     )}
                                 >
                                     <div className="flex items-center gap-2.5">
@@ -125,8 +125,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                                     className={cn(
                                                                         "w-full text-left h-8 px-3 text-[12px] rounded-md transition-all flex items-center gap-2 group/sub",
                                                                         activeTab === subItem.id
-                                                                            ? "text-[#F4D03F] bg-[#F4D03F]/10 font-medium"
-                                                                            : "text-gray-500 hover:text-white hover:bg-[#F4D03F]/10"
+                                                                            ? "text-[#1A1A1A] bg-[#F4D03F]/20 font-bold"
+                                                                            : "text-gray-500 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/5"
                                                                     )}
                                                                 >
                                                                     <div className={cn(
@@ -146,8 +146,8 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                         className={cn(
                                                             "w-full text-left h-8 px-3 text-[12px] rounded-md transition-all flex items-center gap-2 group/sub",
                                                             activeTab === sub.id
-                                                                ? "text-[#F4D03F] bg-[#F4D03F]/10 font-medium"
-                                                                : "text-gray-500 hover:text-white hover:bg-[#F4D03F]/10"
+                                                                ? "text-[#1A1A1A] bg-[#F4D03F]/20 font-bold"
+                                                                : "text-gray-500 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/5"
                                                         )}
                                                     >
                                                         <div className={cn(

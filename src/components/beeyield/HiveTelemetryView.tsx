@@ -114,14 +114,14 @@ const HiveTelemetryView: React.FC = () => {
 
     React.useEffect(() => {
         // Subscribe to real-time weight alerts
-        const weightSub = beeyieldService.subscribeToWeightAlerts((payload) => {
+        const weightSub = beeyieldService.subscribeToWeightAlerts("*", (payload) => {
             console.log('Weight Alert Received:', payload);
             setRecentAlert(`Massive drop detected on Hive ${payload.new.hive_id}`);
             toast.error('CRITICAL: Weight anomaly detected!');
         });
 
         // Subscribe to gateway status
-        const gatewaySub = beeyieldService.subscribeToGatewayStatus((payload) => {
+        const gatewaySub = beeyieldService.subscribeToGatewayStatus("*", (payload) => {
             console.log('Gateway Status Change:', payload);
             setGatewayStatus(payload.new.status);
             if (payload.new.status === 'Offline') {
@@ -180,14 +180,14 @@ const HiveTelemetryView: React.FC = () => {
             {/* Matrix Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Weight Card */}
-                <Card className="rounded-[2.5rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 overflow-hidden group">
-                    <CardHeader className="p-10 pb-6 border-b border-slate-100 bg-[#F9F7F2]/50">
+                <Card className={cn(glass.card, "shadow-xl overflow-hidden group")}>
+                    <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 italic">Current Biomass Score</p>
                         <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
                             {latest.weight}<span className="text-2xl ml-1 opacity-20 not-italic">kg</span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-10 flex flex-col justify-between min-h-[220px]">
+                    <CardContent className="p-6 flex flex-col justify-between min-h-[220px]">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between p-4 rounded-2xl bg-[#F9F7F2] border border-slate-100">
                                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none">24h Delta</span>
@@ -217,14 +217,14 @@ const HiveTelemetryView: React.FC = () => {
                 </Card>
 
                 {/* Flux Calculus Card */}
-                <Card className="rounded-[2.5rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 overflow-hidden">
-                    <CardHeader className="p-10 pb-6 border-b border-slate-100 bg-[#F9F7F2]/50">
+                <Card className={cn(glass.card, "shadow-xl overflow-hidden")}>
+                    <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 italic">Flux Velocity ($dW/dt$)</p>
                         <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
                             {dwdt > 0 ? '+' : ''}{dwdt.toFixed(3)}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-10 pb-12 flex flex-col justify-between min-h-[220px]">
+                    <CardContent className="p-6 pb-8 flex flex-col justify-between min-h-[220px]">
                         <p className="text-[10px] font-bold text-slate-400 leading-relaxed uppercase italic">
                             Biometric rate of change protocol. Positive values indicate active forager influx and enzymatic dehydration.
                         </p>
@@ -246,15 +246,15 @@ const HiveTelemetryView: React.FC = () => {
                 </Card>
 
                 {/* Season Yield Card */}
-                <Card className="rounded-[2.5rem] border-none bg-neutral-900 shadow-2xl shadow-black/10 overflow-hidden relative group">
+                <Card className={cn(glass.card, "bg-neutral-900 border-neutral-800 shadow-xl overflow-hidden relative group")}>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CardHeader className="p-10 pb-6 border-b border-[#F4D03F]/10 relative z-10">
+                    <CardHeader className="p-6 pb-4 border-b border-[#F4D03F]/10 relative z-10">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 mb-2 italic">Integrative Season Total</p>
                         <CardTitle className="text-6xl font-black text-[#F4D03F] tracking-tighter italic tabular-nums leading-none">
                             {totalYield}<span className="text-2xl ml-1 text-[#1A1A1A] opacity-40 not-italic">kg</span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-10 flex flex-col justify-between min-h-[220px] relative z-10">
+                    <CardContent className="p-6 flex flex-col justify-between min-h-[220px] relative z-10">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
                                 <Zap className="w-5 h-5 text-[#F4D03F] group-hover:scale-125 transition-transform" />
@@ -273,12 +273,13 @@ const HiveTelemetryView: React.FC = () => {
 
                 {/* Alert Card */}
                 <Card className={cn(
-                    "rounded-[2.5rem] border overflow-hidden shadow-2xl transition-all duration-700",
+                    glass.card,
+                    "shadow-xl transition-all duration-700",
                     isAlert
                         ? "border-red-500/50 bg-red-500/5 shadow-red-500/10 animate-pulse"
-                        : "border-slate-200/60 bg-[#FFF9F0] shadow-black/5 opacity-60"
+                        : "opacity-60"
                 )}>
-                    <CardHeader className="p-10">
+                    <CardHeader className="p-6">
                         <div className="flex justify-between items-start">
                             <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border transition-all", isAlert ? "bg-red-500 text-[#1A1A1A] border-red-400" : "bg-[#F9F7F2] text-slate-300 border-slate-100")}>
                                 <AlertTriangle className="w-8 h-8" />
@@ -288,7 +289,7 @@ const HiveTelemetryView: React.FC = () => {
                             </Badge>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-10 pt-4">
+                    <CardContent className="p-6 pt-0">
                         <h3 className={cn("text-2xl font-black uppercase tracking-tighter italic mb-4", isAlert ? "text-red-600" : "text-[#1A1A1A]")}>
                             Theft Mitigation
                         </h3>
@@ -306,8 +307,8 @@ const HiveTelemetryView: React.FC = () => {
             </div>
 
             {/* Historical Logs */}
-            <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 overflow-hidden">
-                <CardHeader className="p-12 border-b border-slate-100 flex flex-row items-center justify-between bg-[#F9F7F2]/50">
+            <Card className={cn(glass.card, "shadow-xl overflow-hidden")}>
+                <CardHeader className="p-8 border-b border-[#F4D03F]/20 flex flex-row items-center justify-between bg-[#F9F7F2]">
                     <div className="space-y-1">
                         <CardTitle className="text-3xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Audit Ledger</CardTitle>
                         <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] px-1 italic">Industrial Telemetry Archive · Raw Mesh Frames</p>
@@ -319,7 +320,7 @@ const HiveTelemetryView: React.FC = () => {
                 <CardContent className="p-0">
                     <div className="divide-y divide-slate-50">
                         {data.slice(-5).reverse().map((row, idx) => (
-                            <div key={idx} className="px-12 py-8 flex items-center justify-between hover:bg-[#F4D03F]/:bg-[#F4D03F]/ transition-colors group">
+                            <div key={idx} className="px-8 py-5 flex items-center justify-between hover:bg-[#F4D03F]/10 transition-colors group">
                                 <div className="flex gap-16">
                                     <div className="min-w-[120px]">
                                         <span className="text-[9px] font-black text-slate-400 uppercase block mb-2 italic tracking-widest text-left">Sector Timestamp</span>
@@ -342,8 +343,8 @@ const HiveTelemetryView: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                    <div className="p-12 border-t border-slate-100 bg-[#F9F7F2]/30">
-                        <Button variant="ghost" className="h-16 px-12 rounded-2xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-black uppercase text-[10px] tracking-widest gap-4 shadow-sm transition-all group/dl">
+                    <div className="p-8 border-t border-slate-100 bg-[#F9F7F2]/30">
+                        <Button variant="ghost" className="h-12 px-8 rounded-xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-black uppercase text-[10px] tracking-widest gap-4 shadow-sm transition-all group/dl">
                             <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
                             Download Master Telemetry Bundle (.CSV)
                         </Button>

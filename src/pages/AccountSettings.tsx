@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import TwoFactorSetup from '@/components/auth/TwoFactorSetup';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
-import { User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn, Hexagon } from 'lucide-react';
+import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
+import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
+import { User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn, Hexagon, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
@@ -20,7 +20,7 @@ const AccountSettings = () => {
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     const handleSignOut = async () => {
-        await signOut();
+        await signOut('beeyield');
         navigate('/');
     };
 
@@ -44,12 +44,12 @@ const AccountSettings = () => {
                             <Hexagon className="h-8 w-8 text-[#F4D03F]" />
                         </div>
                         <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
-                            {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
+                            Identity <span className="text-[#F4D03F]">Relay</span>
                         </h1>
-                        <p className="text-xs font-medium text-gray-500">
+                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
                             {authMode === 'login'
-                                ? 'Sign in to manage your BeeYield account'
-                                : 'Join our community of honey enthusiasts'}
+                                ? 'Authorize access to BeeYield Kernel'
+                                : 'Initialize new industrial node'}
                         </p>
                     </div>
 
@@ -59,34 +59,34 @@ const AccountSettings = () => {
                                 <button
                                     type="button"
                                     onClick={() => setAuthMode('login')}
-                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-xs transition-all ${authMode === 'login'
-                                        ? 'bg-white text-[#1A1A1A] shadow-sm border border-gray-100'
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-[10px] uppercase transition-all ${authMode === 'login'
+                                        ? 'bg-white text-[#1A1A1A] shadow-sm border border-gray-200'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
-                                    Login
+                                    Authorize
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setAuthMode('register')}
-                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-xs transition-all ${authMode === 'register'
-                                        ? 'bg-white text-[#1A1A1A] shadow-sm border border-gray-100'
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-[10px] uppercase transition-all ${authMode === 'register'
+                                        ? 'bg-white text-[#1A1A1A] shadow-sm border border-gray-200'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
-                                    Register
+                                    Initialize
                                 </button>
                             </div>
 
                             {authMode === 'login' && (
-                                <LoginForm
+                                <BeeYieldLoginForm
                                     onSuccess={() => { }}
                                     onSwitchToRegister={() => setAuthMode('register')}
                                 />
                             )}
 
                             {authMode === 'register' && (
-                                <RegisterForm
+                                <BeeYieldRegisterForm
                                     onSuccess={() => { }}
                                     onSwitchToLogin={() => setAuthMode('login')}
                                 />

@@ -46,15 +46,15 @@ const ToggleSwitch = ({ checked, onCheckedChange, label }: { checked: boolean, o
             {label && <span className={cn(glass.microLabel, "opacity-60 font-bold")}>{label}</span>}
             <div
                 className={cn(
-                    "relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F4D03F]/50",
+                    "relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F4D03F]/50",
                     checked ? "bg-[#F4D03F]/80 shadow-lg shadow-honey/20" : "bg-[#F4D03F]/10"
                 )}
                 onClick={() => onCheckedChange(!checked)}
             >
                 <span
                     className={cn(
-                        "pointer-events-none inline-block h-8 w-8 transform rounded-full bg-[#FFF9F0] shadow-xl ring-0 transition duration-500 ease-in-out mt-0.5 ml-0.5",
-                        checked ? "translate-x-10" : "translate-x-0"
+                        "pointer-events-none inline-block h-6 w-6 transform rounded-full bg-[#FFF9F0] shadow-xl ring-0 transition duration-500 ease-in-out mt-0.5 ml-0.5",
+                        checked ? "translate-x-8" : "translate-x-0"
                     )}
                 />
             </div>
@@ -72,9 +72,9 @@ const MeasurementIntervalSelector = () => {
                     key={opt}
                     onClick={() => setSelected(opt)}
                     className={cn(
-                        "flex-1 py-4 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest",
+                        "flex-1 py-2 text-[9px] font-black rounded-lg transition-all uppercase tracking-widest",
                         selected === opt
-                            ? "bg-[#FFF9F0] text-[#F4D03F] shadow-xl scale-[1.05] z-10 border border-[#F4D03F]/20"
+                            ? "bg-[#FFF9F0] text-[#F4D03F] shadow-xl scale-[1.02] z-10 border border-[#F4D03F]/20"
                             : "text-foreground/40 hover:text-foreground/60"
                     )}
                 >
@@ -106,53 +106,53 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                 >
                     <div className="absolute top-0 right-0 w-80 h-80 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
 
-                    <div className="bg-gray-400 px-12 py-12 border-b border-border/50 relative z-10">
-                        <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-6')}>
-                            <Settings className="w-3.5 h-3.5 mr-2" />
+                    <div className="bg-[#FFF9F0] px-6 py-6 border-b border-border/50 relative z-10">
+                        <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3')}>
+                            <Settings className="w-3 h-3 mr-2" />
                             Bridge Configuration v5.1
                         </div>
-                        <DialogTitle className={cn(glass.sectionTitle, 'text-4xl normal-case italic')}>Node <span className="text-[#F4D03F]">Architecture</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-3 tracking-[0.1em]")}>Identify biosphere parameters and establish neural handshake protocol.</DialogDescription>
+                        <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Node <span className="text-[#F4D03F]">Architecture</span></DialogTitle>
+                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1 tracking-[0.1em]")}>Identify biosphere parameters and establish neural handshake protocol.</DialogDescription>
                     </div>
 
-                    <div className="p-12 space-y-14 relative z-10">
-                        <div className="space-y-6">
+                    <div className="p-6 space-y-8 relative z-10">
+                        <div className="space-y-3">
                             <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>Measurement Sync Cadence</h4>
                             <MeasurementIntervalSelector />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {[
                                 { checked: makePublic, set: setMakePublic, label: 'Public Registry', icon: Lock, desc: 'Share telemetry with decentralized Hub.' },
                                 { checked: keepUpdate, set: setKeepUpdate, label: 'Live Ingest', icon: Activity, desc: 'Establish real-time temporal polling.' },
                                 { checked: consent, set: setConsent, label: 'Global Egress', icon: CloudSync, desc: 'Contribute to algorithmic biodiversity.' },
                                 { checked: searchWireless, set: setSearchWireless, label: 'Node Discovery', icon: Wifi, desc: 'Recursive Bluetooth beacon scanning.' }
                             ].map((item, i) => (
-                                <div key={i} className="space-y-5">
-                                    <div className="flex items-center gap-4 mb-2">
-                                        <div className="w-8 h-8 rounded-xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
-                                            <item.icon className="w-4 h-4 text-[#F4D03F]" />
+                                <div key={i} className="space-y-3">
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
+                                            <item.icon className="w-3.5 h-3.5 text-[#F4D03F]" />
                                         </div>
                                         <h4 className={cn(glass.microLabel, "opacity-80 font-black uppercase tracking-[0.15em]")}>{item.label}</h4>
                                     </div>
                                     <ToggleSwitch checked={item.checked} onCheckedChange={item.set} />
-                                    <p className="text-[10px] text-foreground/40 italic font-bold leading-tight uppercase tracking-tighter">{item.desc}</p>
+                                    <p className="text-[9px] text-foreground/40 italic font-bold leading-tight uppercase tracking-tighter">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="pt-12 flex gap-6 border-t border-border/50">
+                        <div className="pt-6 flex gap-4 border-t border-border/50">
                             <button
-                                className={cn(glass.btnSecondary, "flex-1 h-16 font-black uppercase tracking-widest")}
+                                className={cn(glass.btnSecondary, "flex-1 h-10 text-[10px] font-black uppercase tracking-widest")}
                                 onClick={() => onOpenChange(false)}
                             >
-                                Discard_Changes
+                                Discard
                             </button>
                             <button
-                                className={cn(glass.btnPrimary, "flex-1 h-16 font-black uppercase tracking-widest shadow-xl shadow-honey/20")}
+                                className={cn(glass.btnPrimary, "flex-1 h-10 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-honey/20")}
                                 onClick={() => onOpenChange(false)}
                             >
-                                Persist_Settings
+                                Persist
                             </button>
                         </div>
                     </div>
@@ -184,59 +184,59 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                 >
                     <div className="absolute top-0 right-0 w-80 h-80 bg-destructive/5 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
 
-                    <div className="bg-gray-400 px-12 py-12 border-b border-border/50 relative z-10">
-                        <div className={cn(glass.badge, 'bg-destructive/10 text-destructive border-destructive/20 mb-6')}>
-                            <Bell className="w-3.5 h-3.5 mr-2" />
+                    <div className="bg-[#FFF9F0] px-6 py-6 border-b border-border/50 relative z-10">
+                        <div className={cn(glass.badge, 'bg-destructive/10 text-destructive border-destructive/20 mb-3')}>
+                            <Bell className="w-3 h-3 mr-2" />
                             Biosphere Alert Matrix v2.0
                         </div>
-                        <DialogTitle className={cn(glass.sectionTitle, 'text-4xl normal-case italic')}>Notify <span className="text-destructive">Engine</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-3 tracking-[0.1em]")}>Configuration of real-time sensor discrepancy triggers.</DialogDescription>
+                        <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Notify <span className="text-destructive">Engine</span></DialogTitle>
+                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1 tracking-[0.1em]")}>Configuration of real-time sensor discrepancy triggers.</DialogDescription>
                     </div>
 
-                    <div className="p-12 space-y-12 relative z-10">
-                        <div className="grid grid-cols-2 gap-10">
-                            <div className="space-y-4">
+                    <div className="p-6 space-y-6 relative z-10">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-2">
                                 <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>Mobile OS Interface</h4>
                                 <ToggleSwitch checked={appNotif} onCheckedChange={setAppNotif} />
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-2">
                                 <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>SMS Gateway</h4>
                                 <ToggleSwitch checked={smsNotif} onCheckedChange={setSmsNotif} />
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>Primary Email Endpoint</h4>
-                            <div className="flex gap-4">
+                            <div className="flex gap-3">
                                 <Input
                                     type="email"
-                                    placeholder="ENDPOINT_TARGET@BEEYIELD.AI"
-                                    className={cn(glass.input, "h-16 font-black tracking-widest bg-[#F9F7F2]")}
+                                    placeholder="TARGET@BEEYIELD.AI"
+                                    className={cn(glass.input, "h-10 text-[10px] font-black tracking-widest bg-[#F9F7F2]")}
                                 />
-                                <button className={cn(glass.btnSecondary, "h-16 px-10 font-black tracking-widest border-border/50")}>VERIFY</button>
+                                <button className={cn(glass.btnSecondary, "h-10 px-6 text-[10px] font-black tracking-widest border-border/50")}>VERIFY</button>
                             </div>
                         </div>
 
-                        <div className="pt-12 border-t border-border/50 space-y-10">
-                            <h4 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Diagnostic <span className="text-[#F4D03F]">Trigger Sensitivity</span></h4>
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="p-8 bg-[#F4D03F]/5 rounded-[2rem] border border-[#F4D03F]/10 space-y-6 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all">
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#F4D03F]/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
-                                    <div className="flex items-center gap-4 relative z-10">
-                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/10">
-                                            <Thermometer className="w-5 h-5 text-[#F4D03F]" />
+                        <div className="pt-6 border-t border-border/50 space-y-6">
+                            <h4 className={cn(glass.sectionTitle, "text-lg normal-case italic")}>Diagnostic <span className="text-[#F4D03F]">Triggers</span></h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-[#F4D03F]/5 rounded-xl border border-[#F4D03F]/10 space-y-4 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all">
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#F4D03F]/10 rounded-full blur-xl group-hover:scale-150 transition-transform" />
+                                    <div className="flex items-center gap-3 relative z-10">
+                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/10">
+                                            <Thermometer className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
-                                        <span className={cn(glass.microLabel, "font-black text-[#F4D03F] tracking-widest")}>THERMAL_SPIKE</span>
+                                        <span className={cn(glass.microLabel, "font-black text-[#F4D03F] tracking-widest text-[8px]")}>THERMAL</span>
                                     </div>
                                     <ToggleSwitch checked={tempAlerts} onCheckedChange={setTempAlerts} />
                                 </div>
-                                <div className="p-8 bg-[#1B9157]/ rounded-[2rem] border border-[#1B9157]/ space-y-6 relative overflow-hidden group hover:border-[#1B9157]/ transition-all">
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#1B9157]/ rounded-full blur-2xl group-hover:scale-150 transition-transform" />
-                                    <div className="flex items-center gap-4 relative z-10">
-                                        <div className="w-10 h-10 rounded-xl bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-lg shadow-emerald-500/10">
-                                            <Weight className="w-5 h-5 text-[#1B9157]" />
+                                <div className="p-4 bg-[#1B9157]/5 rounded-xl border border-[#1B9157]/10 space-y-4 relative overflow-hidden group hover:border-[#1B9157]/30 transition-all">
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#1B9157]/10 rounded-full blur-xl group-hover:scale-150 transition-transform" />
+                                    <div className="flex items-center gap-3 relative z-10">
+                                        <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20 shadow-lg shadow-emerald-500/10">
+                                            <Weight className="w-4 h-4 text-[#1B9157]" />
                                         </div>
-                                        <span className={cn(glass.microLabel, "font-black text-[#1B9157] tracking-widest")}>MASS_FLUX</span>
+                                        <span className={cn(glass.microLabel, "font-black text-[#1B9157] tracking-widest text-[8px]")}>MASS</span>
                                     </div>
                                     <ToggleSwitch checked={weightAlerts} onCheckedChange={setWeightAlerts} />
                                 </div>
@@ -244,10 +244,10 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                         </div>
 
                         <button
-                            className={cn(glass.btnPrimary, "w-full h-18 py-6 font-black uppercase tracking-[0.2em] shadow-2xl shadow-honey/30 mt-6")}
+                            className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-honey/20 mt-2")}
                             onClick={() => onOpenChange(false)}
                         >
-                            Sync_Alert_Matrix_Executable
+                            Sync_Matrix
                         </button>
                     </div>
                 </motion.div>
@@ -337,23 +337,23 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                 title={<>Hive <span className="text-[#F4D03F]">Monitoring</span></>}
                 subtitle="Remote telemetry ingest of colony health and real-time environmental metrics."
                 actions={
-                    <div className="flex gap-4">
+                    <div className="flex gap-3">
                         <button
                             onClick={() => setNotificationsOpen(true)}
-                            className={cn(glass.btnSecondary, "h-16 px-8 border-destructive/10 hover:shadow-lg hover:shadow-destructive/5 relative group overflow-hidden")}
+                            className={cn(glass.btnSecondary, "h-9 px-4 border-destructive/10 hover:shadow-lg hover:shadow-destructive/5 relative group overflow-hidden")}
                         >
                             <div className="absolute inset-0 bg-destructive/5 group-hover:bg-destructive/10 animate-pulse transition-colors" />
-                            <div className="relative z-10 flex items-center gap-3">
-                                <Bell className="w-5 h-5 text-destructive group-hover:scale-110 transition-transform" />
-                                <span className="text-destructive font-black tracking-widest text-[10px]">ALERT_MATRIX</span>
+                            <div className="relative z-10 flex items-center gap-2">
+                                <Bell className="w-3.5 h-3.5 text-destructive group-hover:scale-110 transition-transform" />
+                                <span className="text-destructive font-black tracking-widest text-[9px]">ALERT_MATRIX</span>
                             </div>
                         </button>
                         <button
                             onClick={() => setSettingsOpen(true)}
-                            className={cn(glass.btnPrimary, "h-16 px-10")}
+                            className={cn(glass.btnPrimary, "h-9 px-6")}
                         >
-                            <Settings className="w-5 h-5 mr-3" />
-                            CONFIGURE_BRIDGE
+                            <Settings className="w-3.5 h-3.5 mr-2" />
+                            <span className="text-[10px]">CONFIGURE</span>
                         </button>
                     </div>
                 }
@@ -361,29 +361,29 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
 
             {/* Selection Registry */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-14 shadow-2xl relative overflow-hidden group border-[#F4D03F]/10")}
+                className={cn(glass.card, "p-8 shadow-sm relative overflow-hidden group border-[#F4D03F]/10")}
             >
                 <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-honey/[0.02] to-transparent pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#F4D03F]/5 rounded-full blur-[80px] pointer-events-none" />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 relative z-10">
-                    <div className="space-y-6">
-                        <Label className={cn(glass.microLabel, "ml-4 opacity-40 font-black tracking-[0.2em]")}>INDUSTRIAL_SECTOR_IDENTIFIER</Label>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
+                    <div className="space-y-3">
+                        <Label className={cn(glass.microLabel, "ml-2 opacity-40 font-black tracking-[0.2em]")}>SITE_IDENTIFIER</Label>
                         <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-[#F4D03F]/10 hover:border-[#F4D03F]/30 transition-all rounded-[2rem] bg-gray-400")}>
-                                <div className="flex items-center gap-6">
-                                    <div className="w-12 h-12 rounded-[1.2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/5">
-                                        <Grid3X3 className="w-6 h-6 text-[#F4D03F]" />
+                            <SelectTrigger className={cn(glass.input, "h-14 shadow-sm font-black text-sm px-4 border-[#F4D03F]/10 hover:border-[#F4D03F]/30 transition-all rounded-xl bg-[#FFF9F0]")}>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow shadow-honey/5">
+                                        <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                    <SelectValue placeholder="LOCATE_APIARY_SITE..." />
+                                    <SelectValue placeholder="LOCATE_SITE..." />
                                 </div>
                             </SelectTrigger>
-                            <SelectContent className={cn(glass.selectContent, "p-3")}>
-                                <SelectItem value="none" className="p-6 rounded-xl font-black tracking-widest text-foreground/40 italic">GLOBAL_FLEET_VIEW</SelectItem>
+                            <SelectContent className={cn(glass.selectContent, "p-2")}>
+                                <SelectItem value="none" className="p-3 rounded-lg font-black tracking-widest text-[10px] text-foreground/40 italic">GLOBAL_FLEET</SelectItem>
                                 {apiaries.map(a => (
-                                    <SelectItem key={a.id} value={a.id} className="p-6 rounded-xl font-black tracking-widest text-lg">
+                                    <SelectItem key={a.id} value={a.id} className="p-3 rounded-lg font-black tracking-widest text-xs">
                                         {a.name.toUpperCase()}
                                     </SelectItem>
                                 ))}
@@ -391,24 +391,24 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         </Select>
                     </div>
 
-                    <div className="space-y-6">
-                        <Label className={cn(glass.microLabel, "ml-4 opacity-40 font-black tracking-[0.2em]")}>NODE_NEURAL_ASSET_ID</Label>
+                    <div className="space-y-3">
+                        <Label className={cn(glass.microLabel, "ml-2 opacity-40 font-black tracking-[0.2em]")}>ASSET_HANDSHAKE</Label>
                         <Select value={selectedHive} onValueChange={setSelectedHive}>
-                            <SelectTrigger className={cn(glass.input, "h-24 shadow-2xl font-black text-xl px-10 border-[#1B9157]/ hover:border-[#1B9157]/ transition-all rounded-[2rem] bg-gray-400")}>
-                                <div className="flex items-center gap-6">
-                                    <div className="w-12 h-12 rounded-[1.2rem] bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-lg shadow-emerald-500/5">
-                                        <Box className="w-6 h-6 text-[#1B9157]" />
+                            <SelectTrigger className={cn(glass.input, "h-14 shadow-sm font-black text-sm px-4 border-[#1B9157]/10 hover:border-[#1B9157]/30 transition-all rounded-xl bg-[#FFF9F0]")}>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20 shadow shadow-emerald-500/5">
+                                        <Box className="w-4 h-4 text-[#1B9157]" />
                                     </div>
-                                    <SelectValue placeholder="TARGET_NODE_HEX..." />
+                                    <SelectValue placeholder="NODE_UID..." />
                                 </div>
                             </SelectTrigger>
-                            <SelectContent className={cn(glass.selectContent, "p-3")}>
-                                <SelectItem value="none" className="p-6 rounded-xl font-black tracking-widest text-foreground/40 italic">DESELECT_NODE</SelectItem>
+                            <SelectContent className={cn(glass.selectContent, "p-2")}>
+                                <SelectItem value="none" className="p-3 rounded-lg font-black tracking-widest text-[10px] text-foreground/40 italic">DESELECT</SelectItem>
                                 {hives
                                     .filter(h => !selectedPlace || selectedPlace === 'none' || h.apiary_id === selectedPlace)
                                     .map(hive => (
-                                        <SelectItem key={hive.id} value={hive.id} className="p-6 rounded-xl font-black tracking-widest text-lg font-serif">
-                                            {hive.hive_code ? hive.hive_code.toUpperCase() : 'ASSET_UID_ERR'}
+                                        <SelectItem key={hive.id} value={hive.id} className="p-3 rounded-lg font-black tracking-widest text-xs">
+                                            {hive.hive_code ? hive.hive_code.toUpperCase() : 'UID_ERR'}
                                         </SelectItem>
                                     ))
                                 }
@@ -448,14 +448,14 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         key="placeholder"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className={cn(glass.card, "p-24 text-center flex flex-col items-center justify-center space-y-10 bg-[#F4D03F]/[0.02] border-[#F4D03F]/10 border-dashed rounded-[4rem]")}
+                        className={cn(glass.card, "p-12 text-center flex flex-col items-center justify-center space-y-6 bg-[#F4D03F]/[0.02] border-[#F4D03F]/10 border-dashed rounded-2xl")}
                     >
-                        <div className="w-28 h-28 rounded-[2.5rem] bg-gray-400 flex items-center justify-center border border-[#F4D03F]/20 shadow-2xl shadow-honey/5 opacity-40 group hover:scale-110 transition-transform duration-700">
-                            <SearchCode className="w-14 h-14 text-[#F4D03F]" />
+                        <div className="w-16 h-16 rounded-xl bg-[#FFF9F0] flex items-center justify-center border border-[#F4D03F]/20 shadow-xl shadow-honey/5 opacity-40">
+                            <SearchCode className="w-8 h-8 text-[#F4D03F]" />
                         </div>
-                        <div className="space-y-4">
-                            <h3 className={cn(glass.sectionTitle, "text-4xl normal-case italic opacity-40")}>Identify <span className="text-[#F4D03F]">Neural Asset</span></h3>
-                            <p className={cn(glass.microLabel, "opacity-30 max-w-xl mx-auto leading-relaxed font-bold")}>Establish an industrial telemetry bridge by identifying target hex-sectors via the registry interface.</p>
+                        <div className="space-y-2">
+                            <h3 className={cn(glass.sectionTitle, "text-lg normal-case italic opacity-40")}>Identify <span className="text-[#F4D03F]">Asset</span></h3>
+                            <p className={cn(glass.microLabel, "opacity-30 max-w-sm mx-auto leading-relaxed font-bold tracking-tight text-[9px]")}>Establish an industrial telemetry bridge by identifying target hex-sectors via the registry interface.</p>
                         </div>
                     </motion.div>
                 )}
@@ -464,24 +464,24 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             {/* Diagnostic Footer */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {[
-                    { label: 'DEVICE_INTEGRITY', icon: Zap, status: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'NOMINAL' : 'AWAITING_LINK', desc: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'High-fidelity temporal bridge established.' : 'Establish node registry connection for deep ingest.', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/' },
-                    { label: 'REGISTRY_BRIDGE', icon: Info, status: 'ENCRYPTED', desc: 'Enterprise-grade end-to-end data security active for all egress ports.', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' }
+                    { label: 'DEVICE_INTEGRITY', icon: Zap, status: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'NOMINAL' : 'AWAITING', desc: 'Temporal bridge status.', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5' },
+                    { label: 'REGISTRY_BRIDGE', icon: Info, status: 'ENCRYPTED', desc: 'Security active.', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5' }
                 ].map((panel, i) => (
                     <motion.div
                         key={i}
-                        whileHover={{ y: -8, scale: 1.02 }}
-                        className={cn(glass.card, "p-10 border-[#F4D03F]/10 flex items-center gap-10 group cursor-default shadow-2xl transition-all duration-500 relative overflow-hidden")}
+                        whileHover={{ y: -4, scale: 1.01 }}
+                        className={cn(glass.card, "p-5 border-[#F4D03F]/10 flex items-center gap-6 group cursor-default shadow-sm transition-all duration-300 relative overflow-hidden")}
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#F4D03F]/10 transition-all pointer-events-none" />
-                        <div className={cn("w-22 h-22 rounded-[1.8rem] flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-110", panel.bg, `border-${panel.color.split('-')[1]}-500/20`)}>
-                            <panel.icon className={cn("w-11 h-11", panel.color)} />
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-[#F4D03F]/5 rounded-full -mr-8 -mt-8 blur-xl pointer-events-none" />
+                        <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-sm", panel.bg, `border-${panel.color.split('-')[1]}-500/10`)}>
+                            <panel.icon className={cn("w-5 h-5", panel.color)} />
                         </div>
-                        <div className="flex-1 space-y-3">
+                        <div className="flex-1 space-y-1">
                             <div className="flex items-center justify-between">
-                                <p className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>{panel.label}</p>
-                                <span className={cn(glass.microLabel, "font-black italic tracking-widest", panel.color)}>{panel.status}</span>
+                                <p className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em] text-[8px]")}>{panel.label}</p>
+                                <span className={cn(glass.microLabel, "font-black italic tracking-widest text-[8px]", panel.color)}>{panel.status}</span>
                             </div>
-                            <p className="text-sm font-black opacity-70 leading-relaxed italic uppercase tracking-tighter text-foreground/80">{panel.desc}</p>
+                            <p className="text-[10px] font-black opacity-70 leading-relaxed italic uppercase tracking-tighter text-foreground/80">{panel.desc}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -559,17 +559,17 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                     <button
                         onClick={handlePairing}
                         disabled={isScanning}
-                        className={cn(glass.btnPrimary, "h-16 px-12 min-w-[280px]")}
+                        className={cn(glass.btnPrimary, "h-9 px-6 min-w-[200px]")}
                     >
                         {isScanning ? (
-                            <div className="flex items-center gap-4">
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                <span>SYNCHRONIZING_PORT...</span>
+                            <div className="flex items-center gap-3">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span className="text-[10px]">SYNCING...</span>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-4">
-                                <Search className="w-5 h-5" />
-                                <span>INVERT_SEARCH_BEACON</span>
+                            <div className="flex items-center gap-3">
+                                <Search className="w-3.5 h-3.5" />
+                                <span className="text-[10px]">SCAN BEACON</span>
                             </div>
                         )}
                     </button>
@@ -622,15 +622,15 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "p-32 text-center flex flex-col items-center justify-center space-y-12 bg-[#F4D03F]/[0.02] border-[#F4D03F]/10 border-dashed rounded-[4rem]")}
+                        className={cn(glass.card, "p-12 text-center flex flex-col items-center justify-center space-y-6 bg-[#F4D03F]/[0.02] border-[#F4D03F]/10 border-dashed rounded-2xl")}
                     >
-                        <div className="w-32 h-32 rounded-[3.5rem] bg-gray-400 flex items-center justify-center border border-[#F4D03F]/20 shadow-2xl shadow-honey/5 opacity-20 group hover:scale-110 transition-transform duration-700">
-                            <BluetoothIcon className="w-16 h-16 text-[#F4D03F]" />
+                        <div className="w-16 h-16 rounded-xl bg-[#FFF9F0] flex items-center justify-center border border-[#F4D03F]/20 shadow-xl shadow-honey/5 opacity-20">
+                            <BluetoothIcon className="w-8 h-8 text-[#F4D03F]" />
                         </div>
-                        <div className="space-y-6">
-                            <h3 className={cn(glass.sectionTitle, "text-5xl normal-case italic opacity-40")}>No Wireless <span className="text-[#F4D03F]">Handshake</span></h3>
-                            <p className={cn(glass.microLabel, "opacity-30 max-w-2xl mx-auto leading-relaxed font-bold tracking-widest")}>
-                                Ensure industrial BeeYield Hub hardware is in broadcast discovery mode. BLE terminal requires recursive provisioning permissions for provisioning.
+                        <div className="space-y-2">
+                            <h3 className={cn(glass.sectionTitle, "text-lg normal-case italic opacity-40")}>No <span className="text-[#F4D03F]">Handshake</span></h3>
+                            <p className={cn(glass.microLabel, "opacity-30 max-w-sm mx-auto leading-relaxed font-bold tracking-tight text-[9px]")}>
+                                Ensure BeeYield Hub is in discovery mode.
                             </p>
                         </div>
                     </motion.div>
