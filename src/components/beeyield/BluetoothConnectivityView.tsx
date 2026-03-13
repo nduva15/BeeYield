@@ -254,20 +254,20 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     exit={{ opacity: 0, scale: 0.98 }}
                                     onClick={handleSearch}
                                     disabled={status === 'SCANNING' || status === 'CONNECTING'}
-                                    className={cn(glass.btnPrimary, "h-8 px-6 font-black uppercase text-[9px] tracking-[0.2em] shadow-lg shadow-[#F4D03F]/10 rounded-xl min-w-[150px] flex items-center justify-center gap-2")}
+                                    className={glass.btnPrimary}
                                 >
-                                    {status === 'SCANNING' ? (
-                                        <>
-                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                            Scanning...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Search className="w-3.5 h-3.5" />
-                                            Detect_Sensors
-                                        </>
-                                    )}
-                                </motion.button>
+                                     {status === 'SCANNING' ? (
+                                         <>
+                                             <Loader2 className="w-4 h-4 animate-spin" />
+                                             Scanning...
+                                         </>
+                                     ) : (
+                                         <>
+                                             <Search className="w-4 h-4" />
+                                             Detect Devices
+                                         </>
+                                     )}
+                                 </motion.button>
                             )}
                         </AnimatePresence>
                     </div>
@@ -277,26 +277,26 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             {/* Status Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {[
-                    { label: 'Network_Status', value: status === 'IDLE' ? 'READY' : status.toUpperCase(), icon: Smartphone, color: status === 'CONNECTED' ? 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 shadow-sm' : 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/10', sub: connectedDevice ? connectedDevice.id : 'BUFFER_WAIT' },
-                    { label: 'Energy_Level', value: liveData.battery ? `${liveData.battery}%` : '00%', icon: Battery, color: liveData.battery && liveData.battery < 20 ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/10', progress: liveData.battery || 0 },
-                    { label: 'Hive_Sync', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'ACTIVE' : 'ORPHANED', icon: Activity, color: 'bg-white/40 border-white/20', action: () => status === 'CONNECTED' && setShowSetupModal(true) }
+                    { label: 'Network status', value: status === 'IDLE' ? 'READY' : status.toUpperCase(), icon: Smartphone, color: status === 'CONNECTED' ? 'bg-[#1B9157]/10 text-[#1B9157]' : 'bg-[#F4D03F]/10 text-[#F4D03F]', sub: connectedDevice ? connectedDevice.id : 'Waiting...' },
+                    { label: 'Battery Level', value: liveData.battery ? `${liveData.battery}%` : '0%', icon: Battery, color: liveData.battery && liveData.battery < 20 ? 'bg-red-500/10 text-red-500' : 'bg-[#1B9157]/10 text-[#1B9157]', progress: liveData.battery || 0 },
+                    { label: 'Hive Sync', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'Active' : 'Not Linked', icon: Activity, color: 'bg-[#F4D03F]/10 text-[#F4D03F]', action: () => status === 'CONNECTED' && setShowSetupModal(true) }
                 ].map((stat, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className={cn(glass.card, "p-5 hover:border-[#F4D03F]/40 group bg-white/40 border-white/20 shadow-xl relative overflow-hidden transition-all duration-300")}
+                        className={glass.card + " p-5 transition-all duration-300"}
                     >
                         <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none transition-transform group-hover:scale-110 duration-700"><stat.icon className="w-12 h-12" /></div>
                         <div className="flex items-center gap-3 mb-3">
                             <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center border transition-all shadow-sm", stat.color)}>
-                                <stat.icon className="w-3.5 h-3.5" />
+                                <stat.icon className="w-4 h-4" />
                             </div>
-                            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">{stat.label}</p>
+                            <p className={glass.microLabel}>{stat.label}</p>
                         </div>
-                        <h3 className="text-lg font-bold tracking-tight uppercase leading-none mb-1 text-[#1A1A1A]">{stat.value}</h3>
-                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest leading-none">{stat.sub || 'STANDBY_PROTOCOL'}</p>
+                        <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{stat.value}</h3>
+                        <p className="text-[10px] font-medium text-gray-400 truncate">{stat.sub || 'Standby'}</p>
                         
                         {stat.progress !== undefined && (
                             <div className="mt-5 w-full h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 shadow-inner p-0.5">
@@ -322,21 +322,16 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             {/* Live Data & Sync Section */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div className="lg:col-span-12 space-y-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}
-                    >
-                        <div className="absolute top-4 right-8 z-20">
-                            <div className="flex items-center gap-2.5 bg-[#1B9157]/5 border border-[#1B9157]/20 rounded-full px-3 py-1 shadow-sm">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse shadow-sm shadow-[#1B9157]/50" />
-                                <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-widest">Live_Service</span>
+                    <div className={glass.section + " p-6"}>
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h3 className="text-lg font-bold text-[#1A1A1A]">Real-Time Telemetry</h3>
+                                <p className="text-sm text-gray-500">Live stream of environmental metrics from the sensor.</p>
                             </div>
-                        </div>
-
-                        <div className="mb-8">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Real_Time_Telemetry</h3>
-                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">FIELD_HANDSHAKE_CONCURRENT_STREAM</p>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#1B9157] rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                                Live
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
@@ -364,38 +359,33 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                             <span className="text-[9px] font-bold opacity-40 uppercase">{gauge.unit}</span>
                                         </div>
                                     </div>
-                                    <div className={cn("flex items-center gap-2 px-3 py-1 rounded-lg border border-white/40 shadow-sm", gauge.bg)}>
-                                        <gauge.icon className={cn("w-3 h-3", gauge.color)} />
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-[#1A1A1A]/60">{gauge.label}</span>
+                                    <div className={glass.badge}>
+                                        {gauge.label}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </motion.div>
+                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}
-                        >
-                            <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+                        <div className={glass.section + " p-5"}>
+                            <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                         <RefreshCw className={cn("w-5 h-5 text-[#F4D03F]", isSyncing && "animate-spin")} />
                                     </div>
                                     <div>
-                                        <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Sync_Protocol</h3>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">MANUAL_DATA_INGEST</p>
+                                        <h3 className="text-lg font-bold text-[#1A1A1A]">Cloud Synchronization</h3>
+                                        <p className="text-sm text-gray-500">Manual data ingest to BeeYield Cloud.</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={handleSync}
                                     disabled={!gattServer || isSyncing}
-                                    className={cn(glass.btnPrimary, "h-8 px-5 font-black uppercase text-[9px] tracking-[0.2em] shadow-lg shadow-[#F4D03F]/10 rounded-xl flex items-center gap-2 disabled:opacity-20")}
+                                    className={glass.btnPrimary}
                                 >
-                                    <Save className="w-3.5 h-3.5" />
-                                    Initiate_Now
+                                    <Save className="w-4 h-4" />
+                                    Sync Data
                                 </button>
                             </div>
 
@@ -439,25 +429,21 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     )}
                                 </AnimatePresence>
                             </div>
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden group/console flex flex-col")}
-                        >
-                            <div className="flex items-center justify-between mb-5 border-b border-[#F4D03F]/10 pb-4">
+                        <div className={glass.section + " p-5 flex flex-col"}>
+                            <div className="flex items-center justify-between mb-5">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
+                                    <div className="w-9 h-9 bg-[#F9F7F2] rounded-lg flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                         <Terminal className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                    <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-[0.3em]">Serial_Log</span>
+                                    <span className="text-sm font-bold text-[#1A1A1A]">Event Log</span>
                                 </div>
                                 <button
                                     onClick={() => setLogs([])}
-                                    className="text-gray-400 hover:text-red-500 transition-colors uppercase text-[8px] font-black tracking-widest px-3 py-1 rounded-lg border border-gray-100"
+                                    className={glass.btnSecondary + " h-8 px-3 text-[10px]"}
                                 >
-                                    FLUSH
+                                    Clear
                                 </button>
                             </div>
 
@@ -478,7 +464,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     ))
                                 )}
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </div>

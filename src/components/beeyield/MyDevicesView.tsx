@@ -117,13 +117,9 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             </div>
 
             {/* Device Registry */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-md rounded-[2rem] border-[#F4D03F]/10 relative")}
-            >
+            <div className={glass.section}>
                 {/* Search and Filters */}
-                <div className="p-6 border-b border-[#F4D03F]/10 bg-white/20 backdrop-blur-md flex flex-col md:flex-row gap-4 items-end relative z-10">
+                <div className={glass.sectionHeader}>
                     <div className="flex-1 w-full space-y-2">
                         <Label className="text-[9px] font-black tracking-[0.2em] text-[#1A1A1A]/40 uppercase ml-2">Node Identifier</Label>
                         <div className="relative">
@@ -131,24 +127,24 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                             <Input
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="SEARCH_CODE_OR_LOC..."
-                                className={cn(glass.input, "h-10 pl-10 text-[10px] font-black uppercase tracking-widest")}
+                                placeholder="Search..."
+                                className={glass.input + " pl-10 h-10 w-full"}
                             />
                         </div>
                     </div>
-                    <div className="w-full md:w-[240px] space-y-2">
-                        <Label className="text-[9px] font-black tracking-[0.2em] text-[#1A1A1A]/40 uppercase ml-2">Location Node</Label>
+                    <div className="w-[200px] flex flex-col gap-1">
+                        <Label className={glass.microLabel + " ml-1"}>Location</Label>
                         <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                            <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                            <SelectTrigger className={glass.select}>
                                 <div className="flex items-center gap-2">
-                                    <Layers className="w-3.5 h-3.5 text-[#F4D03F]/40" />
-                                    <SelectValue placeholder="All Units" />
+                                    <Layers className="w-4 h-4 text-[#F4D03F]" />
+                                    <SelectValue placeholder="All Nodes" />
                                 </div>
                             </SelectTrigger>
-                            <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
-                                <SelectItem value="all" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10">ALL_NODES</SelectItem>
+                            <SelectContent className={glass.selectContent}>
+                                <SelectItem value="all" className="text-sm">All Nodes</SelectItem>
                                 {apiaries.map(apiary => (
-                                    <SelectItem key={apiary.id} value={apiary.id} className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10">{apiary.name}</SelectItem>
+                                    <SelectItem key={apiary.id} value={apiary.id} className="text-sm">{apiary.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -159,14 +155,14 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <div className="overflow-x-auto thin-scrollbar relative z-10">
                     <table className="w-full text-left border-separate border-spacing-0">
                         <thead>
-                            <tr className="bg-[#F4D03F]/[0.02]">
-                                <th className="px-6 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40">Status</th>
-                                <th className="px-4 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40">Node_ID</th>
-                                <th className="px-4 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40">Location</th>
-                                <th className="px-4 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40">Registry_Target</th>
-                                <th className="px-4 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40">Energy</th>
-                                <th className="px-4 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40">Last_Sync</th>
-                                <th className="px-6 py-4 border-b border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/40 text-right">Protocol</th>
+                            <tr>
+                                <th className={glass.tableHead}>Status</th>
+                                <th className={glass.tableHead}>Node ID</th>
+                                <th className={glass.tableHead}>Location</th>
+                                <th className={glass.tableHead}>Target</th>
+                                <th className={glass.tableHead}>Energy</th>
+                                <th className={glass.tableHead}>Last Sync</th>
+                                <th className={glass.tableHead + " text-right"}>Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#F4D03F]/10">
@@ -257,22 +253,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         </tbody>
                     </table>
                 </div>
-
-                {/* Footer */}
-                <div className="p-6 border-t border-[#F4D03F]/10 bg-white/20 backdrop-blur-md flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
-                    <div className="flex items-center gap-3">
-                        <Database className="w-4 h-4 text-[#F4D03F] opacity-40" />
-                        <div className="flex flex-col">
-                            <p className="text-[9px] font-black text-[#1A1A1A] uppercase tracking-widest leading-none">System Registry Protocol</p>
-                            <span className="text-[7px] font-black text-gray-400 uppercase tracking-widest mt-1">v5.2.0 · SECURED_O_LAYER</span>
-                        </div>
-                    </div>
-                    <button className={cn(glass.btnSecondary, "h-10 px-6 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 rounded-xl")}>
-                        <Download className="w-4 h-4" />
-                        Export_Node_Log
-                    </button>
-                </div>
-            </motion.div>
+            </div>
 
             <AddDeviceModal
                 open={isAddModalOpen}
