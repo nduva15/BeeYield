@@ -2446,39 +2446,6 @@ export const beeyieldService = {
             console.error('planRoute:', error);
             return { path: [] };
         }
-    },
-
-    async getWeatherHistory(): Promise<any[]> {
-        try {
-            const { data, error } = await sb.from('weather_history').select('*').order('created_at', { ascending: false });
-            if (error) throw error;
-            return data || [];
-        } catch (err) {
-            console.error('getWeatherHistory:', err);
-            return [];
-        }
-    },
-
-    async getSatelliteIndices(): Promise<any[]> {
-        try {
-            const { data, error } = await sb.from('satellite_indices').select('*').order('created_at', { ascending: false });
-            if (error) throw error;
-            return data || [];
-        } catch (err) {
-            console.error('getSatelliteIndices:', err);
-            return [];
-        }
-    },
-
-    async getIotDevices(): Promise<any[]> {
-        try {
-            const { data, error } = await sb.from('iot_devices').select('*').order('created_at', { ascending: false });
-            if (error) throw error;
-            return data || [];
-        } catch (err) {
-            console.error('getIotDevices:', err);
-            return [];
-        }
     }
 };
 

@@ -274,8 +274,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
+            className={cn(glass.page, "relative overflow-hidden")}
         >
+            {/* Background Accents */}
+            <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#1B9157]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute -left-20 top-1/2 w-64 h-64 bg-[#F4D03F]/5 blur-[100px] rounded-full pointer-events-none" />
+
             <PageHeader
                 icon={Target}
                 label="Tactical Kernel"

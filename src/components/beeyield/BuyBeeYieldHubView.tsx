@@ -11,7 +11,9 @@ import {
     Droplets, Scale, Volume2, Sun, CloudRain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
 import heroImage from '@/assets/beeyield_hub_sensor.jpg';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 
 import beeyieldService from '@/services/beeyieldService';
@@ -22,6 +24,7 @@ interface BuyBeeYieldHubViewProps {
 }
 
 const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) => {
+    const { t } = useLanguage();
     const [inventory, setInventory] = React.useState<any[]>([]);
     const [loadingInventory, setLoadingInventory] = React.useState(true);
 
@@ -298,26 +301,26 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             </div>
 
             {/* Bottom Banner */}
-            <Card className={cn(glass.card, "bg-[#0F172A] border-none p-8 shadow-2xl overflow-hidden relative group")}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-                <div className="relative flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="space-y-2">
-                        <h3 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">User-friendly Interface</h3>
-                        <p className="text-blue-200/60 font-medium">Advanced power management for IoT platforms</p>
+            <Card className={cn(glass.card, "bg-[#0F172A] border-none p-8 lg:p-12 shadow-2xl overflow-hidden relative group")}>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-[120px] pointer-events-none group-hover:bg-blue-500/20 transition-all duration-1000" />
+                <div className="relative flex flex-col md:flex-row justify-between items-center gap-10">
+                    <div className="space-y-3">
+                        <h3 className="text-4xl font-black text-white tracking-tighter uppercase">Industrial <span className="text-[#F4D03F]">Efficiency</span></h3>
+                        <p className="text-blue-200/60 font-black text-[10px] uppercase tracking-[0.2em]">Recursive power management for hyper-scale IoT</p>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap justify-center gap-4">
                         <Button
                             onClick={() => toast.info("Device configuration panel will be available in next update.")}
-                            className="bg-[#1B9157] hover:bg-[#146c43] text-[#1A1A1A] rounded-2xl px-8 h-14 font-bold border-none"
+                            className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-8 h-14 font-bold border-none shadow-lg shadow-green-500/20"
                         >
-                            Configuration & Maintenance
+                            Maintainance_Matrix
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => onTabChange('support')}
-                            className="bg-[#FFF9F0] hover:bg-[#F4D03F]/10 text-[#0F172A] border-none rounded-2xl px-10 h-14 font-bold"
+                            className="bg-white/10 hover:bg-white/20 text-white border-white/20 rounded-2xl px-10 h-14 font-bold backdrop-blur-md"
                         >
-                            Consultants
+                            {t('nav_support')}
                         </Button>
                     </div>
                 </div>

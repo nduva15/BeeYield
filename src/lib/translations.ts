@@ -1,4 +1,4 @@
-﻿
+
 export type LanguageCode = 'EN' | 'FR' | 'DE' | 'ES' | 'SW' | 'ZH' | 'PL';
 
 export const translations: Record<LanguageCode, Record<string, string>> = {
@@ -97,6 +97,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_requests": "My Requests",
         "nav_my_task": "My Task",
         "nav_buy": "Buy BeeYield Hub",
+        "nav_support": "Support Page View",
         "nav_meters": "Meters",
         "nav_dashboard": "Dashboard",
         "nav_meter_list": "Meters List",
