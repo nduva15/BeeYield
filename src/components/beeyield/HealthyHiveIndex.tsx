@@ -1,6 +1,8 @@
 import React from 'react';
-import { ShieldCheck, Activity, Thermometer, UserCheck, Download, AlertCircle, CheckCircle2, Award } from 'lucide-react';
+import { ShieldCheck, Activity, AlertCircle, CheckCircle2, Award, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass, PageHeader } from './GlassTheme';
+import { motion } from 'framer-motion';
 
 interface HealthyHiveIndexProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -10,30 +12,9 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
     const [generatingCert, setGeneratingCert] = React.useState(false);
 
     const auditMetrics = [
-        {
-            label: 'Colony Size (FOB)',
-            value: '8.4 Frames',
-            status: 'Optimal',
-            method: 'Acoustic Density',
-            detail: 'Ensures 8-frame contract compliance.',
-            score: 92
-        },
-        {
-            label: 'Brood Stability',
-            value: '35.2°C',
-            status: 'Stable',
-            method: 'Internal Thermal',
-            detail: 'Confirms active queen and growth.',
-            score: 98
-        },
-        {
-            label: 'Queen Presence',
-            value: 'Confirmed',
-            status: 'Nominal',
-            method: 'Acoustic Frequency',
-            detail: 'Prevents collapse from queenlessness.',
-            score: 100
-        },
+        { label: 'Colony Size (FOB)', value: '8.4', unit: 'Frames', status: 'Optimal', method: 'Acoustic Density', detail: 'Ensures 8-frame contract compliance.', score: 92 },
+        { label: 'Brood Stability', value: '35.2', unit: '°C', status: 'Stable', method: 'Internal Thermal', detail: 'Confirms active queen and growth.', score: 98 },
+        { label: 'Queen Presence', value: '100', unit: '%', status: 'Nominal', method: 'Acoustic Frequency', detail: 'Prevents collapse from queenlessness.', score: 100 },
     ];
 
     const handleDownloadCert = () => {
@@ -42,81 +23,103 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
     };
 
     return (
-        <div className="p-8 space-y-12 bg-[#FFF9F0] min-h-screen text-[#064e3b] antialiased">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-[#064e3b] pb-8">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_#facc15]">
-                            <ShieldCheck className="w-6 h-6 text-[#facc15]" />
-                        </div>
-                        <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Hive <span className="text-[#10b981]">Audit</span>
-                        </h1>
-                    </div>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Healthy Hive Index (HHI) · Transparency Certification · Welfare Audit
-                    </p>
-                </div>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            <PageHeader
+                icon={ShieldCheck}
+                label="Certification"
+                title={<>Hive <span className="text-[#F4D03F]">Audit</span></>}
+                subtitle="Healthy Hive Index (HHI) transparency certification and welfare audit."
+                actions={
+                    <button
+                        onClick={handleDownloadCert}
+                        disabled={generatingCert}
+                        className={cn(glass.btnPrimary, "h-10 min-w-[200px] shadow-sm")}
+                    >
+                        {generatingCert ? (
+                            <>
+                                <Activity className="w-4 h-4 mr-2 animate-spin" />
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <Download className="w-4 h-4 mr-2" />
+                                Download Certificate
+                            </>
+                        )}
+                    </button>
+                }
+            />
 
-                <button
-                    onClick={handleDownloadCert}
-                    className="flex items-center gap-4 px-8 py-4 bg-[#064e3b] border-4 border-[#064e3b] text-[#1A1A1A] font-black text-xs uppercase tracking-widest shadow-[8px_8px_0px_0px_#10b981] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-                >
-                    {generatingCert ? (
-                        <Activity className="w-5 h-5 animate-spin" />
-                    ) : (
-                        <Award className="w-5 h-5 text-[#facc15]" />
-                    )}
-                    {generatingCert ? 'Generating HHI Certificate...' : 'Download Welfare Certificate'}
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            {/* Audit Metrics */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
                 {auditMetrics.map((metric, i) => (
-                    <div key={i} className="border-4 border-[#064e3b] p-8 bg-[#FFF9F0] shadow-[10px_10px_0px_0px_#064e3b] flex flex-col h-full">
-                        <div className="flex items-center justify-between mb-8">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">{metric.label}</p>
-                            <CheckCircle2 className="w-5 h-5 text-[#10b981]" />
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className={cn(glass.section, "p-6 flex flex-col group")}
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{metric.label}</span>
+                            <CheckCircle2 className="w-4 h-4 text-[#1B9157]" />
                         </div>
-                        <div className="flex-1">
-                            <p className="text-5xl font-black text-[#064e3b] tracking-tighter">{metric.value}</p>
-                            <div className="mt-4 flex items-center gap-2">
-                                <Activity className="w-3 h-3 text-[#10b981]" />
-                                <span className="text-[10px] font-black uppercase text-[#10b981]">{metric.method}</span>
+
+                        <div className="flex items-baseline gap-1 mb-2">
+                            <span className="text-4xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">{metric.value}</span>
+                            <span className="text-sm font-bold text-gray-400">{metric.unit}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 mb-4">
+                            <Activity className="w-3 h-3 text-[#1B9157]" />
+                            <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-widest">{metric.method}</span>
+                        </div>
+
+                        <p className="text-[11px] text-gray-500 leading-relaxed flex-1 border-l-2 border-[#F4D03F]/30 pl-3">
+                            {metric.detail}
+                        </p>
+
+                        <div className="mt-6 pt-4 border-t border-[#F4D03F]/10 flex items-center justify-between">
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Score</span>
+                            <div className="flex items-center gap-3">
+                                <div className="h-1.5 w-16 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
+                                    <div className="h-full bg-[#1B9157] rounded-full transition-all" style={{ width: `${metric.score}%` }} />
+                                </div>
+                                <span className="text-sm font-black text-[#1A1A1A] tabular-nums">{metric.score}</span>
                             </div>
-                            <p className="mt-6 text-[11px] font-bold text-[#064e3b]/60 leading-relaxed uppercase">
-                                {metric.detail}
-                            </p>
                         </div>
-                        <div className="mt-10 border-t-2 border-[#064e3b]/5 pt-6 flex items-center justify-between">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/30">Health Score</span>
-                            <span className="text-xl font-black text-[#064e3b] tabular-nums">{metric.score}</span>
-                        </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
 
-            {/* Management by Exception (Alerts) */}
-            <div className="space-y-6">
-                <div className="flex items-center gap-4 border-b-4 border-[#064e3b] pb-4">
-                    <AlertCircle className="w-6 h-6 text-red-500" />
-                    <h3 className="text-3xl font-black uppercase tracking-tighter">Critical Exceptions (Audit Level)</h3>
+            {/* Critical Exceptions */}
+            <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                <div className="px-5 py-4 border-b border-red-100 flex items-center gap-3 bg-red-50/50">
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-red-200 shadow-sm">
+                        <AlertCircle className="w-4 h-4 text-red-500" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-[#1A1A1A]">Critical Exceptions</h3>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Audit Level Alerts</p>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                        { title: 'Queenless Alert: Sec-14', detail: 'Acoustic frequency shift detected. 4 colonies in Sector 14 are missing standard queen signatures.', action: 'Deploy Replacement' },
-                        { title: 'Thermal Inconsistency: Pallet-B', detail: 'Brood temperature dropped below 34°C in 3 hives. Cold snap risk or colony shrinking.', action: 'Physical Inspection' },
+                        { title: 'Queenless Alert: Sec-14', detail: 'Acoustic frequency shift detected. 4 colonies missing standard queen signatures.', action: 'Deploy Replacement' },
+                        { title: 'Thermal Drop: Pallet-B', detail: 'Brood temperature dropped below 34°C in 3 hives. Cold snap or colony shrinking risk.', action: 'Physical Inspection' },
                     ].map((alert, i) => (
-                        <div key={i} className="border-4 border-red-500 p-8 bg-red-50 relative overflow-hidden group">
-                            <ShieldCheck className="absolute -right-6 -bottom-6 w-24 h-24 text-red-500/10 group-hover:rotate-12 transition-all" />
-                            <h4 className="text-xl font-black text-red-600 uppercase tracking-tight mb-2">{alert.title}</h4>
-                            <p className="text-[10px] font-bold text-red-600/70 uppercase leading-relaxed max-w-md">
+                        <div key={i} className="p-5 rounded-xl border border-red-100 bg-red-50/30 group relative overflow-hidden">
+                            <h4 className="text-sm font-bold text-red-600 mb-2">{alert.title}</h4>
+                            <p className="text-[11px] text-gray-500 leading-relaxed mb-4">
                                 {alert.detail}
                             </p>
-                            <button className="mt-6 px-6 py-3 bg-red-600 text-[#1A1A1A] font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-none">
-                                Issue Exception Order: {alert.action}
+                            <button className="h-8 px-4 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2">
+                                {alert.action}
                             </button>
                         </div>
                     ))}
@@ -124,28 +127,33 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
             </div>
 
             {/* Certification Footer */}
-            <div className="mt-20 border-8 border-[#064e3b] p-12 bg-[#064e3b]/5 shadow-[15px_15px_0px_0px_#064e3b]">
-                <div className="flex flex-col md:flex-row items-center gap-10">
-                    <Award className="w-24 h-24 text-[#facc15]" />
+            <div className={cn(glass.card, "p-8 bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] text-white border-transparent relative overflow-hidden group")}>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/10 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
+
+                <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
+                    <div className="w-20 h-20 rounded-2xl bg-[#F4D03F] flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(244,208,63,0.3)]">
+                        <Award className="w-10 h-10 text-[#1A1A1A]" />
+                    </div>
                     <div className="flex-1 space-y-4">
-                        <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Welfare & Yield Transparency</h3>
-                        <p className="text-[11px] font-bold text-[#064e3b]/60 uppercase leading-relaxed">
-                            BeeYield certification proves that your orchard provides a safe, pesticide-managed, and nutrient-rich environment for pollinators. This data is verifiable via the 2026 apicultural blockchain standard for ESG reporting.
+                        <div className="space-y-1">
+                            <h3 className="text-xl font-bold tracking-tight">Welfare & Yield <span className="text-[#F4D03F]">Transparency</span></h3>
+                            <p className="text-[10px] font-bold text-[#F4D03F]/60 uppercase tracking-widest">BeeYield Certified · ESG Compliant</p>
+                        </div>
+                        <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-[#F4D03F]/40">
+                            BeeYield certification proves your orchard provides a safe, pesticide-managed, and nutrient-rich environment for pollinators.
                         </p>
-                        <div className="flex gap-6 pt-4">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-[#10b981]" />
-                                <span className="text-[10px] font-black uppercase border-b-2 border-[#10b981]">Contract Compliance OK</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-[#10b981]" />
-                                <span className="text-[10px] font-black uppercase border-b-2 border-[#10b981]">Bio-Security Verified</span>
-                            </div>
+                        <div className="flex flex-wrap gap-4 pt-2">
+                            {['Contract Compliance', 'Bio-Security Verified'].map(tag => (
+                                <div key={tag} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/20 rounded-full">
+                                    <CheckCircle2 className="w-3 h-3 text-[#F4D03F]" />
+                                    <span className="text-[10px] font-bold tracking-widest uppercase">{tag}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

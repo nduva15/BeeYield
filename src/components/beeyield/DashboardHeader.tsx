@@ -44,7 +44,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     onQuickAction
 }) => {
     const { user, beeyieldUser } = useAuth();
-    const { language, setLanguage } = useLanguage();
+    const { language, setLanguage, t } = useLanguage();
     const { theme, setTheme } = useTheme();
     const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
     const [scrolled, setScrolled] = React.useState(false);
@@ -201,7 +201,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             className="px-3 py-2.5 text-sm text-gray-700 hover:text-[#1A1A1A] hover:bg-[#F9F7F2] cursor-pointer flex items-center gap-3 rounded-lg transition-colors"
                         >
                             <Hexagon className="w-4 h-4 text-gray-600" />
-                            Help & Support
+                            {t('nav_support')}
                         </DropdownMenuItem>
                         <Separator className="my-2 bg-[#F9F7F2]" />
                         <DropdownMenuItem

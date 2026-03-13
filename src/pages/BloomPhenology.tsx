@@ -38,117 +38,131 @@ const BloomPhenology: React.FC = () => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "space-y-8 pb-32")}
+            className={glass.page}
         >
-            {/* Header */}
             <PageHeader
                 icon={Flower2}
-                label="Floral Phenology Engine"
+                label="Phenology"
                 title={<>Bloom <span className="text-[#F4D03F]">Synchronization</span></>}
                 subtitle="BBCH Growth Stages · Pollination Window Tracking · Forage Opportunity Math"
                 actions={
-                    <button className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-bold uppercase tracking-widest transition-all")}>
+                    <button className={cn(glass.btnSecondary, "h-9 px-4")}>
                         <History className="w-3.5 h-3.5 mr-2" />
-                        Historic Index
+                        Historical Data
                     </button>
                 }
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* stage selection */}
-                <div className={cn(glass.card, "lg:col-span-1 p-6 space-y-6")}>
-                    <div className="flex items-center justify-between border-b border-[#F4D03F]/20 pb-3">
-                        <h3 className={cn(glass.sectionTitle)}>Growth <span className="text-[#F4D03F]">Stage</span></h3>
-                        <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#F4D03F]/20">
-                            <Sprout className="w-4 h-4 text-[#F4D03F]" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Stage Selection */}
+                <div className="lg:col-span-4 space-y-6">
+                    <div className={cn(glass.section, "p-6 space-y-6")}>
+                        <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
+                            <h3 className="text-sm font-bold text-[#1A1A1A]">Growth Stage</h3>
+                            <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
+                                <Sprout className="w-4 h-4 text-[#F4D03F]" />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="text-center py-5 border border-[#F4D03F]/20 bg-[#F4D03F]/5 rounded-xl">
-                        <span className="text-3xl font-bold text-[#1A1A1A] tabular-nums">65</span>
-                        <p className={cn(glass.microLabel, "mt-1")}>BBCH: Full Bloom</p>
-                    </div>
+                        <div className="text-center py-8 bg-[#F9F7F2]/50 rounded-2xl border border-[#F4D03F]/10">
+                            <span className="text-5xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">65</span>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">BBCH: Full Bloom</p>
+                        </div>
 
-                    <div className="space-y-3">
-                        <label className={glass.microLabel}>Stage Progression Slider</label>
-                        <div className="h-1.5 w-full bg-[#F4D03F]/10 rounded-full relative overflow-hidden">
-                            <div className="absolute top-0 left-0 bottom-0 bg-[#1B9157] rounded-full w-[65%]" />
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Stage Progression</label>
+                                <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-widest">65% Optimal</span>
+                            </div>
+                            <div className="h-2 w-full bg-[#F9F7F2] rounded-full relative overflow-hidden border border-[#F4D03F]/10">
+                                <div className="absolute top-0 left-0 bottom-0 bg-[#1B9157] rounded-full transition-all duration-1000" style={{ width: '65%' }} />
+                            </div>
+                            <div className="flex justify-between text-[9px] font-bold uppercase text-gray-400 tracking-widest">
+                                <span>Bud (50)</span>
+                                <span className="text-[#F4D03F]">Peak (65)</span>
+                                <span>Fall (69)</span>
+                            </div>
                         </div>
-                        <div className="flex justify-between text-[9px] font-bold uppercase text-[#1A1A1A]/40 tracking-wider">
-                            <span>Bud (50)</span>
-                            <span className="text-[#F4D03F]">Peak (65)</span>
-                            <span>Fall (69)</span>
-                        </div>
-                    </div>
 
-                    <div className={cn(glass.card, "p-5 bg-[#1A1A1A] text-white border-[#1A1A1A] relative overflow-hidden group")}>
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-                        <div className="flex items-center gap-2 mb-2 relative z-10">
-                            <Flower2 className="w-3.5 h-3.5 text-[#F4D03F]" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Optimization Notice</span>
+                        <div className={cn(glass.card, "p-5 bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] text-white border-transparent relative overflow-hidden")}>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                            <div className="flex items-center gap-2 mb-3 relative z-10">
+                                <Flower2 className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Protocol Alert</span>
+                            </div>
+                            <p className="text-[11px] font-medium leading-relaxed opacity-80 relative z-10 pl-3 border-l-2 border-[#F4D03F]/40">
+                                Current stage indicates peak nectar secretion. Deploy <span className="text-[#F4D03F] font-bold">Grade A</span> pallets immediately for maximum yield.
+                            </p>
                         </div>
-                        <p className="text-[10px] font-medium leading-relaxed opacity-70 relative z-10 pl-3 border-l-2 border-[#F4D03F]/40">
-                            Current stage indicates peak nectar secretion. Deploy Grade A pallets immediately.
-                        </p>
                     </div>
                 </div>
 
                 {/* Intensity Chart */}
-                <div className={cn(glass.card, "lg:col-span-2 p-0 flex flex-col overflow-hidden")}>
-                    <div className={cn(glass.sectionHeader, "flex-col md:flex-row gap-3")}>
-                        <div className="space-y-1">
-                            <h3 className={glass.sectionTitle}>Intensity <span className="text-[#F4D03F]">Curve</span></h3>
-                            <p className={glass.microLabel}>Real-time flowering density over time</p>
+                <div className="lg:col-span-8 flex flex-col gap-6">
+                    <div className={cn(glass.section, "overflow-hidden flex flex-col")}>
+                        <div className="px-5 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#1B9157]/5 flex items-center justify-center border border-[#1B9157]/10">
+                                    <ChartIcon className="w-4 h-4 text-[#1B9157]" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <h3 className="text-sm font-bold text-[#1A1A1A]">Intensity Curve</h3>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">Flowering Density Analysis</p>
+                                </div>
+                            </div>
+                            <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#1A1A1A] border-[#F4D03F]/20")}>
+                                Peak Window: 4 Days Left
+                            </div>
                         </div>
-                        <div className={cn(glass.badge, "bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F]")}>
-                            PEAK WINDOW: 4 DAYS REMAINING
-                        </div>
-                    </div>
 
-                    <div className="h-[380px] w-full p-6 relative flex-1 bg-[#FFF9F0]">
-                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={bloomData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <defs>
-                                    <linearGradient id="bloomGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#1B9157" stopOpacity={0.4} />
-                                        <stop offset="95%" stopColor="#1B9157" stopOpacity={0.05} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.05} />
-                                <XAxis
-                                    dataKey="date"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: 'currentColor', opacity: 0.3, fontWeight: 'black', fontSize: 10 }}
-                                    dy={10}
-                                />
-                                <YAxis hide domain={[0, 110]} />
-                                <Tooltip
-                                    contentStyle={{ 
-                                        backgroundColor: 'rgba(0, 0, 0, 0.9)', 
-                                        backdropFilter: 'blur(12px)', 
-                                        border: 'none', 
-                                        borderRadius: '1rem', 
-                                        color: '#fff', 
-                                        padding: '1rem',
-                                        fontSize: '10px',
-                                        fontWeight: 'black',
-                                        textTransform: 'uppercase'
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="intensity"
-                                    stroke="#1B9157"
-                                    strokeWidth={4}
-                                    fill="url(#bloomGradient)"
-                                    animationDuration={2000}
-                                />
-                                <ReferenceLine x="Mar 15" stroke="#F4D03F" strokeWidth={3} strokeDasharray="6 6" label={{ position: 'top', value: 'CURRENT', fill: '#064e3b', fontSize: 8, fontWeight: 900 }} />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        <div className="h-[380px] w-full p-6 relative flex-1 bg-[#FFF9F0]">
+                            <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                            
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={bloomData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="bloomGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#00000008" />
+                                    <XAxis
+                                        dataKey="date"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#9CA3AF', fontWeight: 700, fontSize: 10 }}
+                                        dy={10}
+                                    />
+                                    <YAxis hide domain={[0, 110]} />
+                                    <Tooltip
+                                        contentStyle={{ 
+                                            backgroundColor: '#fff', 
+                                            border: '1px solid #F4D03F20', 
+                                            borderRadius: '12px', 
+                                            padding: '12px',
+                                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)'
+                                        }}
+                                        itemStyle={{
+                                            fontSize: '11px',
+                                            fontWeight: 700,
+                                            color: '#1A1A1A',
+                                            textTransform: 'uppercase'
+                                        }}
+                                        labelStyle={{ display: 'none' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="intensity"
+                                        stroke="#1B9157"
+                                        strokeWidth={3}
+                                        fill="url(#bloomGradient)"
+                                        animationDuration={2000}
+                                    />
+                                    <ReferenceLine x="Mar 15" stroke="#F4D03F" strokeWidth={2} strokeDasharray="5 5" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
             </div>

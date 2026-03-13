@@ -28,7 +28,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoAsset from '@/assets/Logo.png';
 import { useAuth } from '@/contexts/AuthContext';
-import { glass, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard, PageHeader } from './GlassTheme';
 import { cn } from '@/lib/utils';
 
 export function UsbHubDashboard() {

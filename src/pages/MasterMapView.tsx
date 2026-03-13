@@ -28,7 +28,15 @@ const MasterMapView: React.FC = () => {
     const [showGeofences, setShowGeofences] = React.useState(true);
 
     return (
-        <div className={cn(glass.page, "flex flex-col h-[calc(100vh-140px)] space-y-6")}>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={cn(glass.page, "flex flex-col h-[calc(100vh-140px)] relative overflow-hidden")}
+        >
+            {/* Background Accents */}
+            <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#F4D03F]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute -left-20 top-1/2 w-64 h-64 bg-[#1B9157]/5 blur-[100px] rounded-full pointer-events-none" />
+
             <PageHeader
                 icon={MapIcon}
                 label="Master GIS Kernel"
@@ -204,7 +212,7 @@ const MasterMapView: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

@@ -21,7 +21,8 @@ import {
     Cpu,
     ShieldCheck,
     Terminal,
-    Loader2
+    Loader2,
+    Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent } from "@/components/ui/dialog";

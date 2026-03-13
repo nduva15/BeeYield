@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { beeyieldService } from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 // Define the shape of the context state
 interface ModuleFlags {
@@ -32,6 +34,10 @@ interface SettingsContextType {
 
     // Reset Everything
     resetWorkspace: (active: boolean) => void;
+    
+    // Sync status
+    isSyncing: boolean;
+    syncToBackend: () => Promise<void>;
 }
 
 const STORAGE_KEY_PREFIX = 'beeyield_settings_v1_';
@@ -59,36 +65,70 @@ const DEFAULT_ALERTS: AlertSettings = {
 
 // Provider component
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // 1. Guides State
-    const [showGuides, setShowGuides] = useState<boolean>(() => {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}guides`);
-        return stored !== 'false';
-    });
+    const [showGuides, setShowGuides] = useState<boolean>(true);
+    const [moduleFlags, setModuleFlags] = useState<ModuleFlags>(DEFAULT_MODULES);
+    const [alerts, setAlerts] = useState<AlertSettings>(DEFAULT_ALERTS);
+    const [isSyncing, setIsSyncing] = useState<boolean>(true);
+    const [initialized, setInitialized] = useState(false);
 
-    // 2. Module Flags
-    const [moduleFlags, setModuleFlags] = useState<ModuleFlags>(() => {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}modules`);
-        return stored ? JSON.parse(stored) : DEFAULT_MODULES;
-    });
-
-    // 3. Alert Settings
-    const [alerts, setAlerts] = useState<AlertSettings>(() => {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}alerts`);
-        return stored ? JSON.parse(stored) : DEFAULT_ALERTS;
-    });
-
-    // Persistence
+    // Initialize from backend
     useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                // Try from local storage first for instant feedback
+                const localGuides = localStorage.getItem(`${STORAGE_KEY_PREFIX}guides`);
+                const localModules = localStorage.getItem(`${STORAGE_KEY_PREFIX}modules`);
+                const localAlerts = localStorage.getItem(`${STORAGE_KEY_PREFIX}alerts`);
+                
+                if (localGuides) setShowGuides(localGuides !== 'false');
+                if (localModules) setModuleFlags(JSON.parse(localModules));
+                if (localAlerts) setAlerts(JSON.parse(localAlerts));
+
+                // Fetch real settings from backend
+                const { supabaseBeeYield } = await import('@/lib/supabase');
+                if (!supabaseBeeYield) return;
+                
+                const { data: { user } } = await supabaseBeeYield.auth.getUser();
+                if (user && user.user_metadata) {
+                    const meta = user.user_metadata;
+                    if (meta.moduleFlags) setModuleFlags(meta.moduleFlags);
+                    if (meta.alerts) setAlerts(meta.alerts);
+                    if (meta.showGuides !== undefined) setShowGuides(meta.showGuides);
+                }
+            } catch (err) {
+                console.error("Failed to load global settings", err);
+            } finally {
+                setIsSyncing(false);
+                setInitialized(true);
+            }
+        };
+        loadSettings();
+    }, []);
+
+    // Local Persistence wrapper for immediate state apply
+    useEffect(() => {
+        if (!initialized) return;
         localStorage.setItem(`${STORAGE_KEY_PREFIX}guides`, String(showGuides));
-    }, [showGuides]);
-
-    useEffect(() => {
         localStorage.setItem(`${STORAGE_KEY_PREFIX}modules`, JSON.stringify(moduleFlags));
-    }, [moduleFlags]);
-
-    useEffect(() => {
         localStorage.setItem(`${STORAGE_KEY_PREFIX}alerts`, JSON.stringify(alerts));
-    }, [alerts]);
+    }, [showGuides, moduleFlags, alerts, initialized]);
+
+    const syncToBackend = useCallback(async () => {
+        setIsSyncing(true);
+        try {
+            const { error } = await beeyieldService.updateUserMetadata({
+                moduleFlags,
+                alerts,
+                showGuides
+            });
+            if (error) throw error;
+        } catch (err) {
+            console.error("Failed to sync settings:", err);
+            toast.error("Failed to sync settings to the global registry.");
+        } finally {
+            setIsSyncing(false);
+        }
+    }, [moduleFlags, alerts, showGuides]);
 
     const updateModuleFlags = (flags: Partial<ModuleFlags>) => {
         setModuleFlags(prev => ({ ...prev, ...flags }));
@@ -102,7 +142,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         const allTrue = { beehives: active, agro: active, trackers: active, patients: active };
         setModuleFlags(allTrue);
         const alertUpdate = { onboardingHints: active };
-        setAlerts(prev => ({ ...prev, ...alertUpdate }));
+        setAlerts(prev => ({ ...prev, ...alertUpdate } as any));
     };
 
     return (
@@ -110,7 +150,8 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
             showGuides, setShowGuides,
             moduleFlags, updateModuleFlags,
             alerts, updateAlerts,
-            resetWorkspace
+            resetWorkspace,
+            isSyncing, syncToBackend
         }}>
             {children}
         </SettingsContext.Provider>

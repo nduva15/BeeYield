@@ -135,12 +135,41 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
                 subtitle="Real-time multi-node environment and vibration metrics monitoring."
                 actions={
-                    <Button
-                        onClick={() => onTabChange('meters-list')}
-                        className={cn(glass.btnPrimary, "h-8 px-4 text-[9px] font-black uppercase tracking-[0.2em]")}
-                    >
-                        Node_Inventory <ChevronRight className="w-3" />
-                    </Button>
+                    <div className="flex items-center gap-3">
+                         <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">SYSTEM_PULSE</span>
+                        </div>
+
+                        <div className="relative group/nav">
+                            <Button
+                                className={cn(glass.btnPrimary, "h-9 px-4 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}
+                            >
+                                <LayoutList className="w-3.5 h-3.5" />
+                                Navigation <ChevronDown className="w-3 h-3 transition-transform group-hover/nav:rotate-180" />
+                            </Button>
+                            
+                            <div className="absolute right-0 top-full mt-2 w-56 bg-white/90 backdrop-blur-xl border border-[#F4D03F]/20 rounded-2xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all z-50 overflow-hidden">
+                                {[
+                                    { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
+                                    { id: 'meters-list', label: 'Node List', icon: List },
+                                    { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
+                                    { id: 'meters-payments', label: 'Payments', icon: Banknote },
+                                    { id: 'meters-reports', label: 'Reports', icon: FileText },
+                                    { id: 'meters-settings', label: 'Settings', icon: Settings }
+                                ].map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => onTabChange(item.id)}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#F4D03F]/10 transition-colors border-b border-[#F4D03F]/5 last:border-none group/item"
+                                    >
+                                        <item.icon className="w-4 h-4 text-gray-400 group-hover/item:text-[#F4D03F] transition-colors" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">{item.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 }
             />
 
