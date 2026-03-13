@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { meterService, Building, Apartment, Meter } from '@/services/meterService';
 import FirstStepsBanner from './FirstStepsBanner';
+import { glass, PageHeader } from './GlassTheme';
 
 interface MetersListBaseProps {
     meterType: 'Water' | 'Heat' | 'Energy' | 'Other';
@@ -173,123 +174,126 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+        <div className="space-y-6 animate-in fade-in duration-500 pb-20">
             <FirstStepsBanner onTabChange={onTabChange} />
 
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
-                        <Activity className="w-3.5 h-3.5 text-[#facc15]" />
-                        <span className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Operational Registry</span>
-                    </div>
-                    <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Sensor <span className="text-[#10b981]">Registry</span> <span className="text-[#064e3b]/20">·</span> {title}</h1>
-                </div>
-            </div>
+            <PageHeader
+                icon={Activity}
+                label="OPERATIONAL_REGISTRY"
+                title={<>Sensor <span className="text-[#F4D03F]">Registry</span> <span className="text-gray-300">·</span> {title}</>}
+                subtitle="INVENTORY_AND_TELEMETRY_LOAD"
+            />
 
-            <div className="bg-[#FFF9F0] border-4 border-[#064e3b] rounded-none p-8 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+            <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                 {!isAddingMeter ? (
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div>
-                            <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Add {meterType} Sensor</h3>
-                            <p className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mt-1">Configure serial identifier and deployment coordinates</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">ADD_{meterType.toUpperCase()}_SENSOR</h3>
+                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">CONFIGURE_SERIAL_IDENTIFIER_AND_DEPLOYMENT_COORDINATES</p>
                         </div>
-                        <Button
+                        <button
                             onClick={() => setIsAddingMeter(true)}
-                            className="rounded-none px-8 bg-[#064e3b] text-[#1A1A1A] hover:bg-[#10b981] border-2 border-[#064e3b] font-black uppercase text-xs h-12 transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                            className={cn(glass.btnPrimary, "h-9 px-6 font-black uppercase text-[9px] tracking-[0.2em]")}
                         >
-                            ENROLL DEVICE
-                        </Button>
+                            ENROLL_DEVICE
+                        </button>
                     </div>
                 ) : (
-                    <div className="animate-in slide-in-from-top duration-300 space-y-6">
+                    <div className="animate-in slide-in-from-top duration-300 space-y-4">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Device Parameterization</h3>
-                            <Button variant="ghost" size="sm" onClick={() => setIsAddingMeter(false)} className="text-[#064e3b] hover:bg-[#facc15]/10 rounded-none h-8 w-8 p-0 transition-none border-2 border-[#064e3b]/10"><X className="w-4 h-4" /></Button>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">DEVICE_PARAMETERIZATION</h3>
+                            <button onClick={() => setIsAddingMeter(false)} className="text-gray-400 hover:bg-white/50 hover:text-[#1A1A1A] rounded-xl h-8 w-8 p-0 flex justify-center items-center transition-colors">
+                                <X className="w-4 h-4" />
+                            </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <Input placeholder="SERIAL IDENTIFIER" className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none" />
-                            <Select><SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase focus:ring-0 transition-none"><SelectValue placeholder="APIARY" /></SelectTrigger></Select>
-                            <Input placeholder="HIVE / STATION" className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none" />
-                            <Button className="h-12 rounded-none font-black uppercase text-xs bg-[#064e3b] hover:bg-[#10b981] text-[#1A1A1A] border-2 border-[#064e3b] transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">COMMIT ENROLLMENT</Button>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <Input placeholder="SERIAL_IDENTIFIER" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white" />
+                            <Select><SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="APIARY" /></SelectTrigger></Select>
+                            <Input placeholder="HIVE_STATION" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white" />
+                            <button className={cn(glass.btnPrimary, "h-9 font-black uppercase text-[9px] tracking-[0.2em]")}>COMMIT_ENROLLMENT</button>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Buildings Grid */}
-            <div className="space-y-6">
+            <div className="space-y-4">
                 <div className="flex items-center justify-between px-2">
                     <div className="flex items-center gap-3">
-                        <Building2 className="w-5 h-5 text-[#10b981]" />
-                        <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tighter leading-none">Infrastructure <span className="text-[#10b981]">Status</span></h3>
+                        <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+                            <Building2 className="w-4 h-4 text-[#1B9157]" />
+                        </div>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] leading-none">INFRASTRUCTURE_<span className="text-[#1B9157]">STATUS</span></h3>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => setBuildingsOpen(!buildingsOpen)} className="text-[#064e3b]/30 font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-[#facc15]/10">
-                        {buildingsOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        {buildingsOpen ? 'FOLD VIEW' : 'EXPAND VIEW'}
-                    </Button>
+                    <button onClick={() => setBuildingsOpen(!buildingsOpen)} className="text-gray-400 font-black uppercase text-[8px] tracking-[0.2em] gap-1.5 hover:bg-white/40 flex items-center px-2 py-1 rounded-lg">
+                        {buildingsOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        {buildingsOpen ? 'FOLD_VIEW' : 'EXPAND_VIEW'}
+                    </button>
                 </div>
                 {buildingsOpen && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {buildings.map(b => (
-                            <Card key={b.id} className="p-6 rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group overflow-hidden border-l-[12px] border-l-[#10b981]">
-                                <h4 className="text-lg font-black text-[#064e3b] uppercase tracking-tighter truncate">{b.name}</h4>
-                                <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.1em] mt-1 line-clamp-1">{b.address}</p>
-                                <div className="mt-6 flex items-center justify-between">
-                                    <div className="bg-[#064e3b] text-[#1A1A1A] px-2 py-0.5 border-2 border-[#10b981] text-[8px] font-black uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(16,185,129,1)]">
+                            <div key={b.id} className={cn(glass.card, "p-4 bg-white/40 backdrop-blur-xl border-white/20 shadow-xl hover:shadow-2xl transition-all group overflow-hidden border-l-[6px] border-l-[#1B9157] rounded-2xl flex flex-col justify-between")}>
+                                <div>
+                                    <h4 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] truncate">{b.name}</h4>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1 line-clamp-1">{b.address}</p>
+                                </div>
+                                <div className="mt-4 flex items-center justify-between">
+                                    <div className="bg-[#1B9157]/10 text-[#1B9157] px-2 py-0.5 border border-[#1B9157]/20 rounded-md text-[8px] font-black uppercase tracking-[0.2em]">
                                         {meters.filter(m => m.building_id === b.id).length} DEVICES
                                     </div>
-                                    <div className="w-8 h-8 rounded-none bg-neutral-50 flex items-center justify-center border-2 border-[#064e3b]/10">
-                                        <Activity className="w-4 h-4 text-[#10b981]" />
+                                    <div className="w-6 h-6 rounded-lg bg-white/50 flex items-center justify-center border border-white/40">
+                                        <Activity className="w-3 h-3 text-[#1B9157]" />
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
                         ))}
                     </div>
                 )}
             </div>
 
             {/* Filters */}
-            <div className="bg-[#FFF9F0] border-4 border-[#064e3b] rounded-none p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
+                <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div className="space-y-2">
-                        <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Apiary Area</label>
+                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">APIARY_AREA</label>
                         <Select value={buildingFilter} onValueChange={setBuildingFilter}>
-                            <SelectTrigger className="h-10 rounded-none border-4 border-[#064e3b] font-black text-[10px] uppercase focus:ring-0 transition-none"><SelectValue placeholder="All" /></SelectTrigger>
-                            <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                <SelectItem value="all" className="uppercase font-black text-[10px]">All apiaries</SelectItem>
-                                {buildings.map(b => <SelectItem key={b.id} value={b.id} className="uppercase font-black text-[10px]">{b.name}</SelectItem>)}
+                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="ALL" /></SelectTrigger>
+                            <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
+                                <SelectItem value="all" className="uppercase font-black text-[8px] tracking-[0.2em]">ALL_APIARIES</SelectItem>
+                                {buildings.map(b => <SelectItem key={b.id} value={b.id} className="uppercase font-black text-[8px] tracking-[0.2em]">{b.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Hive / Station</label>
+                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">HIVE_STATION</label>
                         <Select value={apartmentFilter} onValueChange={setApartmentFilter}>
-                            <SelectTrigger className="h-10 rounded-none border-4 border-[#064e3b] font-black text-[10px] uppercase focus:ring-0 transition-none"><SelectValue placeholder="All" /></SelectTrigger>
-                            <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                <SelectItem value="all" className="uppercase font-black text-[10px]">All hives</SelectItem>
-                                {filteredUnits.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-black text-[10px]">{a.unit_number}</SelectItem>)}
+                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="ALL" /></SelectTrigger>
+                            <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
+                                <SelectItem value="all" className="uppercase font-black text-[8px] tracking-[0.2em]">ALL_HIVES</SelectItem>
+                                {filteredUnits.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-black text-[8px] tracking-[0.2em]">{a.unit_number}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Status</label>
+                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">STATUS</label>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="h-10 rounded-none border-4 border-[#064e3b] font-black text-[10px] uppercase focus:ring-0 transition-none"><SelectValue placeholder="All" /></SelectTrigger>
-                            <SelectContent className="rounded-none border-2 border-[#064e3b]">
-                                <SelectItem value="all" className="uppercase font-black text-[10px]">All</SelectItem>
-                                <SelectItem value="ok" className="uppercase font-black text-[10px]">OK</SelectItem>
-                                <SelectItem value="warning" className="uppercase font-black text-[10px]">Warning</SelectItem>
-                                <SelectItem value="alert" className="uppercase font-black text-[10px]">Alert</SelectItem>
+                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="ALL" /></SelectTrigger>
+                            <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
+                                <SelectItem value="all" className="uppercase font-black text-[8px] tracking-[0.2em]">ALL</SelectItem>
+                                <SelectItem value="ok" className="uppercase font-black text-[8px] tracking-[0.2em]">OK</SelectItem>
+                                <SelectItem value="warning" className="uppercase font-black text-[8px] tracking-[0.2em]">WARNING</SelectItem>
+                                <SelectItem value="alert" className="uppercase font-black text-[8px] tracking-[0.2em]">ALERT</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="lg:col-span-3 space-y-2">
-                        <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Search Identifier</label>
+                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">SEARCH_IDENTIFIER</label>
                         <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <Input
-                                placeholder="Search by sensor ID or deployment coordinates..."
-                                className="h-10 rounded-none pl-12 border-4 border-[#064e3b] bg-[#FFF9F0] font-black text-[10px] uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
+                                placeholder="SEARCH BY SENSOR ID OR COORDINATES..."
+                                className="h-9 rounded-xl pl-9 bg-white/50 border-white/40 font-black text-[9px] uppercase focus-visible:bg-white tracking-[0.2em]"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -299,57 +303,57 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             </div>
 
             {/* List */}
-            <Card className="rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+            <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b-4 border-[#064e3b] bg-neutral-50/50">
-                                {['Sensor Identifier', 'Deployment Location', 'Telemetry Load', 'Protocol Status', 'Actions'].map(h => (
-                                    <th key={h} className="text-left py-6 px-8 text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">{h}</th>
+                            <tr className="border-b border-white/20 bg-white/30">
+                                {['SENSOR_IDENTIFIER', 'DEPLOYMENT_LOCATION', 'TELEMETRY_LOAD', 'PROTOCOL_STATUS', 'ACTIONS'].map(h => (
+                                    <th key={h} className="text-left py-4 px-5 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">{h}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y-2 divide-neutral-50">
+                        <tbody className="divide-y divide-white/10">
                             {filteredMeters.length === 0 ? (
-                                <tr><td colSpan={5} className="py-20 text-center text-gray-400">No matching meters found</td></tr>
+                                <tr><td colSpan={5} className="py-20 text-center text-[10px] font-black text-gray-500 uppercase tracking-widest">NO_MATCHING_METERS_FOUND</td></tr>
                             ) : (
                                 filteredMeters.map(meter => (
-                                    <tr key={meter.id} className="group hover:bg-[#facc15]/5 transition-none">
-                                        <td className="py-6 px-8">
-                                            <div className="flex items-center gap-4">
-                                                <div className={cn("w-10 h-10 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] text-[#1A1A1A]")}>
-                                                    {meterType === 'Water' && <Droplet className="w-5 h-5" />}
-                                                    {meterType === 'Heat' && <Flame className="w-5 h-5" />}
-                                                    {meterType === 'Energy' && <Zap className="w-5 h-5" />}
-                                                    {meterType === 'Other' && <Box className="w-5 h-5" />}
+                                    <tr key={meter.id} className="group hover:bg-white/50 transition-colors">
+                                        <td className="py-4 px-5">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center border border-white/40 shadow-sm bg-white/60 text-[#1A1A1A]")}>
+                                                    {meterType === 'Water' && <Droplet className="w-4 h-4 text-blue-500" />}
+                                                    {meterType === 'Heat' && <Flame className="w-4 h-4 text-[#F4D03F]" />}
+                                                    {meterType === 'Energy' && <Zap className="w-4 h-4 text-[#1B9157]" />}
+                                                    {meterType === 'Other' && <Box className="w-4 h-4 text-gray-500" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-black text-[#064e3b] uppercase tracking-tighter">{meter.meter_number}</p>
-                                                    <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-widest mt-0.5">{meter.meter_code}</p>
+                                                    <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">{meter.meter_number}</p>
+                                                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{meter.meter_code}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="py-6 px-8">
-                                            <p className="text-[11px] font-black text-[#064e3b] uppercase tracking-tight">{getBuildingName(meter.building_id)}</p>
-                                            <p className="text-[9px] font-black text-[#10b981] uppercase tracking-widest mt-0.5">Unit: {getApartmentNumber(meter.apartment_id)}</p>
+                                        <td className="py-4 px-5">
+                                            <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest">{getBuildingName(meter.building_id)}</p>
+                                            <p className="text-[8px] font-bold text-[#1B9157] uppercase tracking-widest mt-0.5">UNIT: {getApartmentNumber(meter.apartment_id)}</p>
                                         </td>
-                                        <td className="py-6 px-8">
-                                            <p className="text-[11px] font-black text-[#064e3b] uppercase">{meter.last_reading_value} {meter.last_reading_unit}</p>
-                                            <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-widest mt-0.5">{meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleDateString() : 'ARCHIVE_N/A'}</p>
+                                        <td className="py-4 px-5">
+                                            <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest">{meter.last_reading_value} {meter.last_reading_unit}</p>
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleDateString() : 'ARCHIVE_N/A'}</p>
                                         </td>
-                                        <td className="py-6 px-8">
-                                            <Badge className={cn(
-                                                "rounded-none border-2 text-[8px] font-black px-3 py-1 uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(6,78,59,1)]",
-                                                meter.status === 'OK' ? "bg-[#10b981] text-[#1A1A1A] border-[#064e3b]" :
-                                                    meter.status === 'WARNING' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-red-500 text-[#1A1A1A] border-[#064e3b]"
+                                        <td className="py-4 px-5">
+                                            <span className={cn(
+                                                "rounded-md border px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.2em] shadow-sm",
+                                                meter.status === 'OK' ? "bg-green-500/10 text-[#1B9157] border-green-500/20" :
+                                                    meter.status === 'WARNING' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : "bg-red-500/10 text-red-500 border-red-500/20"
                                             )}>
                                                 {meter.status === 'OK' ? 'NOMINAL' : meter.status}
-                                            </Badge>
+                                            </span>
                                         </td>
-                                        <td className="py-6 px-8">
+                                        <td className="py-4 px-5">
                                             <div className="flex gap-2">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border-2 border-[#064e3b]/10 bg-[#FFF9F0] text-[#064e3b] hover:bg-[#facc15]/10 transition-none"><Info className="w-4 h-4" /></Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border-2 border-[#064e3b]/10 bg-[#FFF9F0] text-[#064e3b] hover:bg-[#10b981] hover:text-[#1A1A1A] transition-none" onClick={() => generatePDF()}><Download className="w-4 h-4" /></Button>
+                                                <button className="h-8 w-8 rounded-xl bg-white/50 border border-white/40 flex items-center justify-center text-gray-500 hover:bg-white hover:text-[#1A1A1A] transition-colors"><Info className="w-3.5 h-3.5" /></button>
+                                                <button className="h-8 w-8 rounded-xl bg-[#1B9157]/10 border border-[#1B9157]/20 flex items-center justify-center text-[#1B9157] hover:bg-[#1B9157] hover:text-white transition-colors" onClick={() => generatePDF()}><Download className="w-3.5 h-3.5" /></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -358,29 +362,29 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
             {/* Export Section */}
-            <Card className="p-10 rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className={cn(glass.card, "p-6 shadow-xl bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">Telemetry Export</h3>
-                        <p className="text-xl font-black text-[#064e3b] uppercase tracking-tighter mt-1">Archive System Records</p>
+                        <h3 className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">TELEMETRY_EXPORT</h3>
+                        <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] mt-1">ARCHIVE_SYSTEM_RECORDS</p>
                     </div>
-                    <div className="flex flex-wrap items-center gap-4">
-                        <Button variant="outline" size="sm" onClick={() => handleExport('CSV')} className="h-12 px-6 rounded-none border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest text-[#064e3b] hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none gap-3">
-                            <FileText className="w-4 h-4" /> CSV BATCH
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleExport('XLS')} className="h-12 px-6 rounded-none border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest text-[#064e3b] hover:bg-[#10b981] hover:text-[#1A1A1A] transition-none gap-3">
-                            <FileSpreadsheet className="w-4 h-4" /> EXCEL MATRIX
-                        </Button>
-                        <Button size="sm" onClick={() => handleExport('PDF')} className="h-12 px-8 rounded-none bg-[#064e3b] text-[#1A1A1A] hover:bg-[#10b981] border-2 border-[#064e3b] text-[10px] font-black uppercase tracking-widest transition-none gap-3 shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
-                            {downloading === 'PDF' ? <Loader2 className="w-4 h-4 animate-spin text-[#facc15]" /> : <Download className="w-5 h-5 text-[#facc15]" />}
-                            PDF OPERATIONAL REPORT
-                        </Button>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <button onClick={() => handleExport('CSV')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}>
+                            <FileText className="w-3.5 h-3.5" /> CSV_BATCH
+                        </button>
+                        <button onClick={() => handleExport('XLS')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}>
+                            <FileSpreadsheet className="w-3.5 h-3.5" /> EXCEL_MATRIX
+                        </button>
+                        <button onClick={() => handleExport('PDF')} className={cn(glass.btnPrimary, "h-9 px-6 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}>
+                            {downloading === 'PDF' ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
+                            PDF_OPERATIONAL_REPORT
+                        </button>
                     </div>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 };

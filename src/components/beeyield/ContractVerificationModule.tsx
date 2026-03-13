@@ -53,44 +53,44 @@ const ContractVerificationModule: React.FC = () => {
             className={cn(glass.page, "p-8 -m-8 space-y-12 pb-20 min-h-screen")}
         >
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-10">
-                <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
-                        <FileCheck className="w-4 h-4 mr-2" />
-                        Contract Verification Engine v3.1
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-100 pb-6">
+                <div className="space-y-2">
+                    <div className={cn(glass.badge, 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20')}>
+                        <FileCheck className="w-3.5 h-3.5 mr-2" />
+                        Contract Verification Node v3.1
                     </div>
-                    <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
+                    <h1 className="text-xl font-bold text-[#1A1A1A] tracking-tight">
                         Grade <span className="text-[#F4D03F]">Certification</span>
                     </h1>
-                    <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
+                    <p className={cn(glass.microLabel, "normal-case opacity-70")}>
                         Acoustic Brood Density · Morning Weight Matrix · Proven Pollination ROI
                     </p>
                 </div>
 
                 <div className="flex gap-4">
-                    <button className={cn(glass.btnPrimary, "h-14 px-10 font-bold shadow-lg shadow-honey/20")}>
-                        <Printer className="w-4 h-4 mr-3" />
+                    <button className={cn(glass.btnPrimary, "h-9 px-6 font-bold shadow-sm")}>
+                        <Printer className="w-3.5 h-3.5 mr-2" />
                         Export Master Report
                     </button>
                 </div>
             </div>
 
             {/* Matrix Definitions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className={cn(glass.card, "p-8 space-y-4 shadow-xl hover:shadow-2xl transition-all border-border/50")}
+                    className={cn(glass.card, "p-5 space-y-4 border-gray-100 bg-white shadow-sm")}
                 >
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm">
-                            <Activity className="w-6 h-6 text-[#F4D03F]" />
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#F4D03F]/20 shadow-sm text-[#F4D03F]">
+                            <Activity className="w-4 h-4" />
                         </div>
-                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Acoustic Brood Index</h3>
+                        <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Acoustic Brood Index</h3>
                     </div>
-                    <p className="text-sm italic font-medium opacity-80 leading-relaxed text-foreground border-t border-border/50 pt-4">
-                        Our system analyzes frequency response to determine frames of bees and brood presence. Grade A requires {'>'}85% density.
+                    <p className="text-xs font-medium text-gray-500 leading-relaxed border-t border-gray-100 pt-4">
+                        System frequency analysis to determine frames of bees and brood presence. Grade A requires {'>'}85% density.
                     </p>
                 </motion.div>
 
@@ -98,15 +98,15 @@ const ContractVerificationModule: React.FC = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className={cn(glass.card, "p-8 space-y-4 shadow-xl hover:shadow-2xl transition-all border-border/50")}
+                    className={cn(glass.card, "p-5 space-y-4 border-gray-100 bg-white shadow-sm")}
                 >
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm">
-                            <Scale className="w-6 h-6 text-[#1B9157]" />
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-sm text-[#1B9157]">
+                            <Scale className="w-4 h-4" />
                         </div>
-                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>Weight Threshold</h3>
+                        <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Weight Threshold</h3>
                     </div>
-                    <p className="text-sm italic font-medium opacity-80 leading-relaxed text-foreground border-t border-border/50 pt-4">
+                    <p className="text-xs font-medium text-gray-500 leading-relaxed border-t border-gray-100 pt-4">
                         Morning baseline mass validates cluster strength. Grade A requires {'>'}42kg per hive on the pallet gateway.
                     </p>
                 </motion.div>
@@ -115,16 +115,15 @@ const ContractVerificationModule: React.FC = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className={cn(glass.card, "p-8 space-y-4 shadow-xl bg-[#F4D03F]/10 border-[#F4D03F]/20 relative overflow-hidden group")}
+                    className={cn(glass.card, "p-5 space-y-4 bg-[#F4D03F]/5 border-[#F4D03F]/10 relative overflow-hidden group shadow-sm")}
                 >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#F4D03F]/10 transition-colors" />
-                    <div className="flex items-center gap-4 relative z-10">
-                        <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-[#F4D03F] shadow-sm">
-                            <Award className="w-6 h-6 text-[#F4D03F]" />
+                    <div className="flex items-center gap-3 relative z-10">
+                        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#F4D03F]/20 shadow-sm text-[#F4D03F]">
+                            <Award className="w-4 h-4" />
                         </div>
-                        <h3 className={cn(glass.sectionTitle, "text-xl normal-case text-[#F4D03F]")}>Pricing Lift</h3>
+                        <h3 className="text-sm font-bold text-[#F4D03F] tracking-tight">Pricing Lift</h3>
                     </div>
-                    <p className="text-sm italic font-bold opacity-80 leading-relaxed text-[#F4D03F]/80 border-t border-[#F4D03F]/20 pt-4 relative z-10">
+                    <p className="text-xs font-bold text-[#F4D03F]/80 leading-relaxed border-t border-[#F4D03F]/10 pt-4 relative z-10">
                         Certified Grade A pallets justify a 25% premium on per-hive payments due to proven pollination capacity.
                     </p>
                 </motion.div>
@@ -139,16 +138,16 @@ const ContractVerificationModule: React.FC = () => {
             >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 border-b border-border bg-gray-400 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 relative z-10">
+                <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 relative z-10">
                     <div>
-                        <h3 className={cn(glass.sectionTitle, "text-3xl normal-case italic")}>Verified Asset Ledger</h3>
-                        <p className={cn(glass.microLabel, "opacity-60 font-bold mt-2")}>Mathematically certified pollination infrastructure</p>
+                        <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">Verified Asset Ledger</h3>
+                        <p className={cn(glass.microLabel, "opacity-60 font-bold")}>Mathematically certified pollination infrastructure</p>
                     </div>
-                    <div className="relative w-full max-w-md">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#F4D03F]" />
+                    <div className="relative w-full max-w-sm">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
-                            placeholder="Filter by Pallet ID or Location..."
-                            className={cn(glass.input, "h-14 pl-12 shadow-sm font-semibold")}
+                            placeholder="Filter nodes..."
+                            className={cn(glass.input, "h-9 pl-11 shadow-sm font-bold text-xs")}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
@@ -170,12 +169,12 @@ const ContractVerificationModule: React.FC = () => {
                         <tbody className="divide-y divide-border/20">
                             {pallets.filter(p => p.id.includes(search) || p.location.includes(search)).map((p, idx) => (
                                 <tr key={p.id} className="group hover:bg-gray-400:bg-[#F4D03F]/10 transition-all">
-                                    <td className="p-8">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-[#FFF9F0] border border-border flex items-center justify-center font-bold text-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform">
+                                    <td className="p-4 px-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center font-bold text-[#F4D03F] shadow-sm group-hover:bg-white transition-colors">
                                                 #
                                             </div>
-                                            <span className="text-base font-bold text-foreground opacity-80 group-hover:opacity-100 transition-opacity">{p.id}</span>
+                                            <span className="text-xs font-bold text-[#1A1A1A]">{p.id}</span>
                                         </div>
                                     </td>
                                     <td className="p-8">
@@ -208,10 +207,10 @@ const ContractVerificationModule: React.FC = () => {
                                             Grade {p.grade}
                                         </div>
                                     </td>
-                                    <td className="p-8 text-right">
-                                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className={cn(glass.btnSecondary, "h-12 w-12 p-0 flex items-center justify-center shadow-md")}><Share2 className="w-4 h-4" /></button>
-                                            <button className={cn(glass.btnPrimary, "h-12 px-6 font-bold shadow-md")}>Verify Audit</button>
+                                    <td className="p-4 px-6 text-right">
+                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button className={cn(glass.btnSecondary, "h-8 w-8 p-0 flex items-center justify-center")}><Share2 className="w-3.5 h-3.5" /></button>
+                                            <button className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] font-bold uppercase tracking-widest")}>Verify</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -257,7 +256,7 @@ const ContractVerificationModule: React.FC = () => {
                     <Card className={cn(glass.card, "p-0 h-full shadow-xl bg-[#F4D03F]/10 border-[#F4D03F]/20 relative overflow-hidden group")}>
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-[#F4D03F]/20 transition-colors" />
                         <div className="p-10 flex items-center gap-10 h-full relative z-10">
-                            <div className="w-28 h-28 rounded-[2.5rem] bg-[#FFF9F0]/60 flex items-center justify-center p-6 border border-[#F4D03F] shadow-xl group-hover:scale-110 transition-transform duration-500">
+                            <div className="w-28 h-28 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center p-6 border border-[#F4D03F] shadow-xl group-hover:scale-110 transition-transform duration-500">
                                 <Award className="w-full h-full text-[#F4D03F]" />
                             </div>
                             <div>

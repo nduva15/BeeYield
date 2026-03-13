@@ -63,11 +63,11 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                 icon={Brain}
                 label="Pollination Intelligence"
                 title={<>Farm <span className="text-[#F4D03F]">Intelligence</span></>}
-                subtitle="Farm analytics and bee activity intelligence."
+                subtitle="Farm analytics and bee activity intelligence system."
                 actions={
-                    <div className="flex items-center gap-2 bg-[#F9F7F2] px-3 py-1.5 rounded-lg border border-[#F4D03F]/10">
+                    <div className="flex items-center gap-2 bg-[#F9F7F2]/80 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-[#F4D03F]/10">
                         <Sparkles className="w-3.5 h-3.5 text-[#1B9157]" />
-                        <span className="text-[10px] font-bold text-gray-500">Confidence: <span className="text-[#1B9157]">94%</span></span>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Confidence: <span className="text-[#1B9157]">94%</span></span>
                     </div>
                 }
             />
@@ -78,53 +78,56 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                     <motion.div
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={glass.card}
+                        className={cn(glass.card)}
                     >
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-4 px-1">
                             <div className="flex items-center gap-2">
                                 <Building2 className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Active Hubs</h3>
+                                <h3 className={glass.sectionTitle}>Active Hubs</h3>
                             </div>
-                            <span className="text-xs font-medium text-gray-400">{apiaries.length} Connected</span>
+                            <span className={glass.microLabel}>{apiaries.length} Connected</span>
                         </div>
                         
-                        <div className="space-y-2 max-h-[400px] overflow-y-auto thin-scrollbar">
+                        <div className="space-y-1.5 max-h-[380px] overflow-y-auto thin-scrollbar pr-1">
                             {loading ? (
-                                <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-gray-300" /></div>
+                                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                                    <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]/40" />
+                                    <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Scanning Nodes...</span>
+                                </div>
                             ) : apiaries.length === 0 ? (
-                                <div className="py-8 text-center border border-dashed border-gray-200 rounded-xl bg-gray-50/50">
-                                    <Building2 className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-                                    <p className="text-xs font-medium text-gray-400">No hubs registered</p>
+                                <div className="py-12 text-center border border-dashed border-gray-100 rounded-xl bg-gray-50/50">
+                                    <Building2 className="w-6 h-6 text-gray-200 mx-auto mb-2" />
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No hubs registered</p>
                                 </div>
                             ) : apiaries.map((apiary) => (
                                 <button
                                     key={apiary.id}
                                     onClick={() => setActiveHub(apiary.id)}
                                     className={cn(
-                                        "w-full flex items-center justify-between p-3 rounded-xl transition-all border group",
+                                        "w-full flex items-center justify-between p-2.5 rounded-xl transition-all border group",
                                         activeHub === apiary.id
-                                            ? "bg-[#F9F7F2] border-[#F4D03F]/30"
-                                            : "bg-white border-transparent hover:border-gray-200"
+                                            ? "bg-[#F9F7F2] border-[#F4D03F]/20 shadow-sm"
+                                            : "bg-white border-transparent hover:border-gray-100 hover:bg-gray-50/50"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center border", activeHub === apiary.id ? "bg-white border-[#F4D03F]/20" : "bg-[#F9F7F2] border-transparent")}>
-                                            <Activity className={cn("w-4 h-4", activeHub === apiary.id ? "text-[#1A1A1A]" : "text-gray-400")} />
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="text-xs font-bold text-[#1A1A1A] truncate max-w-[120px]">{apiary.name}</p>
-                                            <p className="text-[10px] font-medium text-gray-500 mt-0.5">ID: {apiary.id.split('-')[0]}</p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className={cn("w-3.5 h-3.5 transition-transform", activeHub === apiary.id ? "translate-x-0 text-[#1A1A1A]" : "translate-x-0 text-gray-300 group-hover:text-gray-400")} />
+                                         <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center border transition-colors", activeHub === apiary.id ? "bg-[#F9F7F2] border-[#F4D03F]/30" : "bg-[#F9F7F2]/50 border-[#F4D03F]/10 group-hover:border-[#F4D03F]/20")}>
+                                             <Activity className={cn("w-3.5 h-3.5 transition-colors", activeHub === apiary.id ? "text-[#F4D03F]" : "text-[#1A1A1A]/30 group-hover:text-[#1A1A1A]/50")} />
+                                         </div>
+                                         <div className="text-left">
+                                             <p className="text-xs font-bold text-[#1A1A1A] truncate max-w-[140px] leading-none mb-1">{apiary.name}</p>
+                                              <p className={glass.microLabel}>Node ID: {apiary.id.split('-')[0]}</p>
+                                         </div>
+                                     </div>
+                                     <ChevronRight className={cn("w-3.5 h-3.5 transition-transform", activeHub === apiary.id ? "translate-x-0 text-[#1A1A1A]" : "translate-x-0 text-gray-300 group-hover:text-gray-400")} />
                                 </button>
                             ))}
                         </div>
 
-                        <div className="pt-4 border-t border-gray-100 mt-4">
-                            <button className="w-full h-10 border border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-gray-500 hover:text-[#1A1A1A] hover:bg-gray-50 transition-all">
+                        <div className="pt-4 border-t border-gray-100 mt-4 px-1">
+                            <button className="w-full h-9 border border-dashed border-[#F4D03F]/30 rounded-lg flex items-center justify-center gap-2 text-[10px] font-bold text-[#1A1A1A]/50 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/5 hover:border-[#F4D03F]/50 transition-all uppercase tracking-widest">
                                 <Plus className="w-3.5 h-3.5" />
-                                Add Hub
+                                Add Active Hub
                             </button>
                         </div>
                     </motion.div>
@@ -132,15 +135,15 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={cn(glass.card, "bg-[#F9F7F2] border-[#F4D03F]/10 relative overflow-hidden group")}
+                        className={cn(glass.card, "bg-[#F9F7F2]/50 border-[#F4D03F]/10 relative overflow-hidden group")}
                     >
-                        <div className="flex items-center gap-3 mb-3 relative z-10">
-                            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                        <div className="flex items-center gap-3 mb-2.5 relative z-10">
+                             <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#F4D03F]/20">
                                 <Cpu className="w-4 h-4 text-[#F4D03F]" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Protocol Audit</h3>
+                            <h3 className="text-xs font-bold text-[#1A1A1A] tracking-tight uppercase">Protocol Audit</h3>
                         </div>
-                        <p className="text-[11px] font-medium text-gray-500 leading-relaxed pl-3 border-l-2 border-[#F4D03F] relative z-10">
+                        <p className="text-[10px] font-medium text-gray-500 leading-relaxed pl-3 border-l-2 border-[#F4D03F] relative z-10 uppercase tracking-tighter">
                             Farms are synchronized for real-time <span className="text-[#1A1A1A] font-bold">pollination telemetry</span>.
                         </p>
                     </motion.div>
@@ -153,58 +156,60 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                         animate={{ opacity: 1, y: 0 }}
                         className={cn(glass.card, "p-0 overflow-hidden")}
                     >
-                        <div className="p-5 border-b border-[#F4D03F]/10 flex items-center justify-between bg-[#F9F7F2]">
+                        <div className={glass.sectionHeader}>
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#1B9157]/20 shadow-sm">
+                                <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#1B9157]/20">
                                     <TrendingUp className="w-4 h-4 text-[#1B9157]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Growth <span className="text-[#F4D03F]">Dynamics</span></h3>
-                                    <p className="text-[10px] font-medium text-gray-500">Seasonal Pulse v4.2</p>
+                                    <h3 className={glass.sectionTitle}>Growth <span className="text-[#F4D03F]">Dynamics</span></h3>
+                                    <p className={glass.microLabel}>Seasonal Pulse v4.2</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm">
+                            <div className="hidden sm:flex items-center gap-3 bg-[#F9F7F2] px-2.5 py-1.5 rounded-lg border border-[#F4D03F]/20">
                                 <div className="flex items-center gap-1.5">
-                                    <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
-                                    <span className="text-[10px] font-bold text-gray-500">Projected</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] shadow-[0_0_6px_rgba(27,145,87,0.3)]" />
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Projected</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
-                                    <span className="text-[10px] font-bold text-gray-500">Current</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Current</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="h-[300px] w-full p-6 relative bg-white">
+                        <div className="h-[280px] w-full p-4 relative bg-[#FFF9F0]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <ComposedChart data={PREDICTION_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="yieldGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.2} />
+                                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.15} />
                                             <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid vertical={false} stroke="#E5E7EB" strokeDasharray="3 3" />
+                                    <CartesianGrid vertical={false} stroke="#F3F4F6" strokeDasharray="3 3" />
                                     <XAxis 
                                         dataKey="stage" 
                                         axisLine={false} 
                                         tickLine={false} 
-                                        tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }} 
+                                        tick={{ fill: '#9CA3AF', fontSize: 9, fontWeight: 700 }} 
                                         dy={10} 
                                     />
                                     <YAxis hide />
                                     <Tooltip
                                         contentStyle={{ 
-                                            backgroundColor: '#fff', 
-                                            border: '1px solid #E5E7EB', 
-                                            borderRadius: '12px', 
-                                            padding: '12px',
-                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                                            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                                            backdropFilter: 'blur(4px)',
+                                            border: '1px solid #F3F4F6', 
+                                            borderRadius: '14px', 
+                                            padding: '10px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)'
                                         }}
                                         itemStyle={{ 
-                                            fontSize: '11px', 
-                                            fontWeight: 700, 
-                                            color: '#1A1A1A' 
+                                            fontSize: '10px', 
+                                            fontWeight: 800, 
+                                            color: '#1A1A1A',
+                                            textTransform: 'uppercase'
                                         }}
                                         labelStyle={{ display: 'none' }}
                                     />
@@ -213,7 +218,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                         dataKey="yield" 
                                         fill="url(#yieldGrad)" 
                                         stroke="#1B9157" 
-                                        strokeWidth={2} 
+                                        strokeWidth={1.5} 
                                         animationDuration={1500} 
                                     />
                                     <Line 
@@ -221,8 +226,8 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                         dataKey="bfh" 
                                         stroke="#F4D03F" 
                                         strokeWidth={2} 
-                                        dot={{ fill: '#fff', stroke: '#F4D03F', strokeWidth: 2, r: 4 }} 
-                                        activeDot={{ r: 5, strokeWidth: 0, fill: '#F4D03F' }} 
+                                        dot={{ fill: '#fff', stroke: '#F4D03F', strokeWidth: 2, r: 3 }} 
+                                        activeDot={{ r: 4, strokeWidth: 0, fill: '#F4D03F' }} 
                                         animationDuration={1500} 
                                     />
                                 </ComposedChart>
@@ -234,36 +239,36 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                         {/* Gap Alert */}
                         <motion.div
                             whileHover={{ y: -2 }}
-                            className={cn(glass.card, "bg-white border-l-4 border-l-red-500 shadow-sm")}
+                            className={cn(glass.card, "border-l-4 border-l-red-500/50 py-4")}
                         >
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center border border-red-100">
+                            <div className="flex items-center gap-3 mb-2 px-1">
+                                <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-red-200">
                                     <AlertCircle className="w-4 h-4 text-red-500" />
                                 </div>
-                                <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Anomalies Detected</h4>
+                                <h4 className="text-[11px] font-bold text-[#1A1A1A] tracking-tight uppercase">Anomalies Detected</h4>
                             </div>
-                            <p className="text-[11px] font-medium text-gray-500 leading-relaxed">
-                                Density deficiency at <span className="text-red-600 font-bold">Sector B-12</span>. Incremental deployment recommended.
+                            <p className="text-[10px] font-medium text-gray-500 leading-relaxed px-1">
+                                Density deficiency at <span className="text-red-600 font-bold">Sector B-12</span>. Incremental deployment recommended for node stability.
                             </p>
                         </motion.div>
 
                         {/* Audit Summary */}
                         <motion.div
                             whileHover={{ y: -2 }}
-                            className={cn(glass.card, "bg-white border-[#F4D03F]/10 shadow-sm relative overflow-hidden group")}
+                            className={cn(glass.card, "relative overflow-hidden group py-4")}
                         >
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-3 mb-2 px-1">
                                 <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#F4D03F]/20">
                                     <CheckCircle2 className="w-4 h-4 text-[#1B9157]" />
                                 </div>
-                                <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Intelligence Sync</h4>
+                                <h4 className="text-[11px] font-bold text-[#1A1A1A] tracking-tight uppercase">Intelligence Sync</h4>
                             </div>
-                            <p className="text-[11px] font-medium text-gray-500 leading-relaxed mb-4">
+                            <p className="text-[10px] font-medium text-gray-500 leading-relaxed mb-3 px-1 uppercase tracking-tighter">
                                 Validation completed against <span className="text-[#1A1A1A] font-bold">telemetry data</span>.
                             </p>
                             <button
                                 onClick={handleGetReport}
-                                className={cn(glass.btnSecondary, "h-8 w-full text-[10px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2 relative z-10")}
+                                className={cn(glass.btnSecondary, "h-9 w-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center justify-center gap-2 relative z-10")}
                             >
                                 <FileDown className="w-3.5 h-3.5" />
                                 Export Node Map
@@ -272,6 +277,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                     </div>
                 </div>
             </div>
+
             <style>{`
                 .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }

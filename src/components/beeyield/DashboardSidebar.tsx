@@ -85,32 +85,32 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 <button
                     onClick={() => hasChildren ? toggleGroup(item.id) : onTabChange(item.id)}
                     className={cn(
-                        "w-full flex items-center justify-between h-14 px-6 transition-none border-b-2 border-[#064e3b]/10 group relative overflow-hidden",
-                        isActive ? "bg-[#10b981] text-[#1A1A1A]" : "text-[#064e3b] hover:bg-[#facc15]/5",
-                        depth > 0 && "pl-10 h-12 bg-neutral-50/30"
+                        "w-full flex items-center justify-between h-11 px-6 transition-all border-b border-gray-100 group relative overflow-hidden",
+                        isActive ? "bg-[#F4D03F]/10 text-[#1A1A1A]" : "text-gray-500 hover:bg-gray-50",
+                        depth > 0 && "pl-10 h-10 bg-gray-50/30"
                     )}
                 >
                     {isActive && (
-                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#064e3b]" />
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#F4D03F]" />
                     )}
-                    <div className="flex items-center gap-4">
-                        <item.icon className={cn("w-4 h-4", isActive ? "text-[#1A1A1A]" : "text-[#064e3b]/40 group-hover:text-[#064e3b]")} />
+                    <div className="flex items-center gap-3">
+                        <item.icon className={cn("w-4 h-4", isActive ? "text-[#F4D03F]" : "text-gray-400 group-hover:text-gray-600")} />
                         <span className={cn(
-                            "text-[10px] uppercase font-black tracking-[0.2em]",
-                            isActive ? "text-[#1A1A1A]" : "text-[#064e3b]/60 group-hover:text-[#064e3b]"
+                            "text-[10px] uppercase font-bold tracking-widest",
+                            isActive ? "text-[#1A1A1A]" : "text-gray-500 group-hover:text-gray-700"
                         )}>
                             {item.label}
                         </span>
                     </div>
                     {hasChildren && (
                         <div className={cn("transition-transform duration-200", isExpanded ? "rotate-180" : "rotate-0")}>
-                            <ChevronDown className={cn("w-3 h-3", isActive ? "text-[#1A1A1A]" : "text-[#064e3b]/20")} />
+                            <ChevronDown className={cn("w-3 h-3", isActive ? "text-[#F4D03F]" : "text-gray-300")} />
                         </div>
                     )}
                 </button>
 
                 {hasChildren && isExpanded && (
-                    <div className="bg-[#FFF9F0]">
+                    <div className="bg-gray-50/50">
                         {(item.submenuItems || item.subItems)?.map((sub: any) => renderNavItem(sub, depth + 1))}
                     </div>
                 )
@@ -130,28 +130,28 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             </button>
 
             <aside className={cn(
-                "fixed inset-y-0 left-0 z-40 w-80 bg-[#FFF9F0] border-r-4 border-[#064e3b] flex flex-col transition-transform lg:translate-x-0 shadow-[10px_0px_60px_rgba(6,78,59,0.05)]",
+                "fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-gray-100 flex flex-col transition-transform lg:translate-x-0 shadow-sm",
                 mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 {/* Branding */}
-                <div className="h-32 flex items-center px-8 border-b-4 border-[#064e3b] bg-[#FFF9F0] group cursor-pointer" onClick={() => onTabChange('home')}>
+                <div className="h-24 flex items-center px-8 border-b border-gray-100 bg-white group cursor-pointer" onClick={() => onTabChange('home')}>
                     <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 border-4 border-[#064e3b] bg-[#FFF9F0] flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] transition-colors">
-                            <img src="/logo.png" alt="BeeYield" className="w-10 h-10 object-contain" />
+                        <div className="w-12 h-12 rounded-xl border border-gray-100 bg-[#F9F7F2] flex items-center justify-center shadow-sm group-hover:border-[#F4D03F]/40 transition-all">
+                            <img src="/logo.png" alt="BeeYield" className="w-8 h-8 object-contain" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-3xl font-black text-[#064e3b] uppercase tracking-tighter leading-none">BeeYield</span>
-                            <span className="text-[10px] font-black text-[#10b981] uppercase tracking-[0.3em] mt-1 italic">Registry_v4.2</span>
+                            <span className="text-2xl font-bold text-[#1A1A1A] tracking-tighter leading-none">BeeYield</span>
+                            <span className="text-[9px] font-bold text-[#F4D03F] uppercase tracking-[0.2em] mt-1">Operational OS</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-hidden flex flex-col">
-                    <div className="h-14 flex items-center justify-between border-b-2 border-[#064e3b] bg-neutral-50 px-8">
-                        <span className="text-[9px] font-black uppercase text-[#064e3b]/30 tracking-[0.3em]">Operational_Nodes</span>
+                    <div className="h-10 flex items-center justify-between border-b border-gray-100 bg-gray-50/30 px-8">
+                        <span className="text-[8px] font-bold uppercase text-gray-400 tracking-widest">Workspace</span>
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#10b981] animate-pulse" />
-                            <span className="text-[8px] font-black tracking-widest text-[#10b981]">SYNC_OK</span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                            <span className="text-[8px] font-bold tracking-widest text-[#1B9157]">SYNCHRONIZED</span>
                         </div>
                     </div>
                     <ScrollArea className="flex-1">
@@ -161,24 +161,23 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                     </ScrollArea>
                 </div>
 
-                {/* Footer Actions */}
-                <div className="p-8 border-t-4 border-[#064e3b] bg-[#FFF9F0] space-y-4">
+                <div className="p-6 border-t border-gray-100 bg-white space-y-3">
                     <button
                         onClick={() => onTabChange('settings')}
-                        className="w-full h-14 border-4 border-[#064e3b] bg-[#FFF9F0] flex items-center gap-4 px-6 hover:bg-[#facc15]/10 transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,0.1)]"
+                        className="w-full h-11 rounded-xl border border-gray-100 bg-white flex items-center gap-3 px-6 hover:bg-gray-50 transition-all shadow-sm"
                     >
-                        <Settings className="w-5 h-5 text-[#064e3b]" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">System Config</span>
+                        <Settings className="w-4 h-4 text-gray-400" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Preferences</span>
                     </button>
                     <button
                         onClick={onLogout}
-                        className="w-full h-14 border-4 border-[#064e3b] bg-[#064e3b] flex items-center gap-4 px-6 hover:bg-red-600 text-[#1A1A1A] transition-all shadow-[6px_6px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                        className="w-full h-11 rounded-xl bg-[#1A1A1A] text-white flex items-center gap-3 px-6 hover:bg-red-600 transition-all shadow-md group"
                     >
-                        <LogOut className="w-5 h-5 text-[#1A1A1A]" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Terminate_Session</span>
+                        <LogOut className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Sign Out</span>
                     </button>
-                    <div className="pt-4 flex justify-center">
-                        <span className="text-[8px] font-black text-[#064e3b]/20 uppercase tracking-[0.4em]">© 2026 Registry_Core</span>
+                    <div className="pt-2 flex justify-center">
+                        <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">© 2026 BeeYield Platform</span>
                     </div>
                 </div>
             </aside>

@@ -371,7 +371,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
 
                                             <div className="flex flex-col items-end gap-1 flex-shrink-0">
                                                 {item.value && (
-                                                    <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-md", cfg.bg, cfg.color)}>{item.value}</span>
+                                                    <span className={cn("text-lg font-black tracking-tight tabular-nums relative z-10", cfg.color)}>{item.value}</span>
                                                 )}
                                                 <span className="text-[10px] text-gray-400">{item.time}</span>
                                             </div>
@@ -464,8 +464,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                             <h3 className="text-lg font-bold text-[#1A1A1A]">Harvest Projection</h3>
                         </div>
                         <div className="text-right">
-                            <div className="text-3xl font-bold text-[#1A1A1A] tabular-nums">742.4 <span className="text-sm text-gray-400">kg</span></div>
-                            <span className="text-[11px] text-[#F4D03F]">Predicted 2026</span>
+                            <div className="text-xl font-black text-[#1A1A1A] tabular-nums tracking-tighter leading-none">742.4 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">kg</span></div>
+                            <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-widest mt-1 block">Predicted 2026</span>
                         </div>
                     </div>
                     <div className="space-y-4">

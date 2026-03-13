@@ -14,13 +14,13 @@ import {
     ArrowUpRight,
     Zap,
     Scale,
-    Activity
+    Activity,
+    Hash
 } from 'lucide-react';
-import { PageHeader } from '@/components/beeyield/GlassTheme';
+import { PageHeader, glass } from '@/components/beeyield/GlassTheme';
 import VarroaWashInterpreter from '@/components/calculators/VarroaWashInterpreter';
-
-// We'll import individual calculator components here as we build them
-// For now, we'll implement the shell and the list of logs
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BeeCalculatorSuite: React.FC = () => {
     return (
@@ -28,97 +28,115 @@ const BeeCalculatorSuite: React.FC = () => {
             <PageHeader
                 icon={Calculator}
                 label="Universal Calculator Suite"
-                title={<>Precision <span className="text-[#10b981]">Forecasting</span></>}
+                title={<>Precision <span className="text-[#F4D03F]">Forecasting</span></>}
                 subtitle="Feeding Math · Treatment Cycles · Pollination Economics"
                 actions={
-                    <Button variant="outline" className="h-10 px-4 border-[#064e3b] text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981]/10 transition-all">
-                        <History className="w-3.5 h-3.5 mr-2" />
+                    <button className={cn(glass.btnSecondary, "h-9 text-[10px]")}>
+                        <History className="w-3.5 h-3.5" />
                         Audit History
-                    </Button>
+                    </button>
                 }
             />
 
             <Tabs defaultValue="economic" className="w-full">
-                <TabsList className="w-full h-auto p-0 bg-transparent border-b-4 border-[#064e3b]/5 flex flex-wrap gap-2 mb-8">
+                <TabsList className="w-full h-11 p-1 bg-[#F4D03F]/5 border border-[#F4D03F]/10 rounded-xl flex gap-1 mb-8 overflow-x-auto">
                     {[
-                        { id: 'feeding', label: 'Nutritional Math', icon: Droplet },
-                        { id: 'health', label: 'Treatment Cycles', icon: Flame },
+                        { id: 'feeding', label: 'Nutritional', icon: Droplet },
+                        { id: 'health', label: 'Treatment', icon: Flame },
                         { id: 'economic', label: 'Economic ROI', icon: Wallet },
-                        { id: 'logistics', label: 'Deployment Math', icon: Zap },
+                        { id: 'logistics', label: 'Deployment', icon: Zap },
                     ].map((tab) => (
                         <TabsTrigger
                             key={tab.id}
                             value={tab.id}
-                            className="flex-1 py-6 rounded-none border-t-4 border-l-4 border-r-4 border-transparent data-[state=active]:border-[#064e3b] data-[state=active]:bg-[#FFF9F0] text-xs font-black uppercase tracking-widest text-[#064e3b]/40 data-[state=active]:text-[#064e3b] transition-all"
+                            className="flex-1 h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-[#F4D03F] data-[state=active]:shadow-sm text-[10px] font-black uppercase tracking-widest text-gray-400 transition-all flex items-center gap-2"
                         >
-                            <tab.icon className="w-4 h-4 mr-2" />
-                            {tab.label}
+                            <tab.icon className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">{tab.label}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
 
-                <TabsContent value="economic" className="mt-0 space-y-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <TabsContent value="economic" className="mt-0 space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Featured Economic Calculator */}
-                        <Card className="rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                            <CardHeader className="p-8 border-b-4 border-[#064e3b]/5">
-                                <CardTitle className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Pollination Contract Optimizer</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-8 space-y-6">
-                                <div className="p-6 bg-neutral-50/50 border-2 border-[#064e3b]/5">
-                                    <p className="text-[10px] font-bold text-[#064e3b]/60 uppercase leading-relaxed mb-6">
-                                        Determine the ideal price lift for certified Grade A pallets based on current spot prices and yield projections.
-                                    </p>
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center bg-[#FFF9F0] p-4 border-2 border-[#064e3b]">
-                                            <span className="text-xs font-black uppercase">Current Spot Price / Hive</span>
-                                            <span className="text-xl font-black text-[#10b981]">$185.00</span>
-                                        </div>
-                                        <div className="flex justify-between items-center bg-[#FFF9F0] p-4 border-2 border-[#064e3b]">
-                                            <span className="text-xs font-black uppercase">Grade A Premium Cap</span>
-                                            <span className="text-xl font-black text-[#064e3b]">+25.8%</span>
-                                        </div>
+                        <Card className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                            <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                                        <Wallet className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                    <Button className="w-full h-14 mt-8 rounded-none bg-[#064e3b] text-[#1A1A1A] font-black uppercase tracking-[0.2em] text-[10px]">
-                                        Calculate ROI Lift
-                                        <ArrowUpRight className="w-4 h-4 ml-2" />
-                                    </Button>
+                                    <div className="space-y-0.5">
+                                        <CardTitle className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Pollination Contract Optimizer</CardTitle>
+                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Pricing Strategy Engine</p>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-5 space-y-6">
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-white/50 rounded-xl border border-[#F4D03F]/10">
+                                        <p className="text-[9px] font-bold text-gray-500 uppercase leading-relaxed mb-4 tracking-wider">
+                                            Determine ideal price lift for certified Grade A pallets based on spot prices.
+                                        </p>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center p-3 bg-white/80 rounded-lg border border-[#F4D03F]/20">
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Spot Price / Hive</span>
+                                                <span className="text-lg font-black text-[#1B9157] tabular-nums">$185.00</span>
+                                            </div>
+                                            <div className="flex justify-between items-center p-3 bg-white/80 rounded-lg border border-[#F4D03F]/20">
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Grade A Premium</span>
+                                                <span className="text-lg font-black text-[#F4D03F] tabular-nums">+25.8%</span>
+                                            </div>
+                                        </div>
+                                        <button className={cn(glass.btnPrimary, "w-full h-11 mt-6 text-[10px] tracking-[0.2em]")}>
+                                            Calculate ROI Lift
+                                            <ArrowUpRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
 
                         {/* Recent PERSISTED Logs */}
-                        <Card className="rounded-none border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[12px_12px_0px_0px_rgba(16,185,129,1)]">
-                            <CardHeader className="p-8 border-b-4 border-[#064e3b]/5 bg-[#064e3b] text-[#1A1A1A]">
-                                <CardTitle className="text-2xl font-black uppercase tracking-tighter italic">Cloud Sync Audit</CardTitle>
+                        <Card className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                            <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#1A1A1A]">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                                        <History className="w-4 h-4 text-[#F4D03F]" />
+                                    </div>
+                                    <div className="space-y-0.5">
+                                        <CardTitle className="text-[10px] font-black tracking-widest uppercase text-white/90 italic">Cloud Sync Audit</CardTitle>
+                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Persisted Log Registry</p>
+                                    </div>
+                                </div>
                             </CardHeader>
                             <CardContent className="p-0">
-                                <div className="divide-y-2 divide-[#064e3b]/5">
+                                <div className="divide-y divide-gray-100">
                                     {[
-                                        { type: 'Feeding', name: 'Winter Syrup Prep', date: '2026-02-19', status: 'SYNCED' },
-                                        { type: 'Economic', name: 'Almond Delta Calc', date: '2026-02-18', status: 'SYNCED' },
-                                        { type: 'Logistics', name: 'Pallet Saturation', date: '2026-02-15', status: 'ARCHIVED' },
+                                        { type: 'Feeding', name: 'Winter Syrup Prep', date: '2026-02-19', status: 'SYNCED', icon: Droplet },
+                                        { type: 'Economic', name: 'Almond Delta Calc', date: '2026-02-18', status: 'SYNCED', icon: Wallet },
+                                        { type: 'Logistics', name: 'Pallet Saturation', date: '2026-02-15', status: 'ARCHIVED', icon: Zap },
                                     ].map((log, idx) => (
-                                        <div key={idx} className="p-6 flex items-center justify-between hover:bg-[#10b981]/5 transition-colors group cursor-pointer">
+                                        <div key={idx} className="px-5 py-3.5 flex items-center justify-between hover:bg-[#F4D03F]/5 transition-colors group cursor-pointer">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-none border-2 border-[#064e3b] flex items-center justify-center font-black text-[10px]">
-                                                    {log.type[0]}
+                                                <div className="w-9 h-9 rounded-lg border border-[#F4D03F]/20 bg-white flex items-center justify-center">
+                                                    <log.icon className="w-4 h-4 text-[#F4D03F]" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-sm font-black text-[#064e3b] uppercase tracking-tighter">{log.name}</h4>
-                                                    <p className="text-[8px] font-black uppercase text-[#064e3b]/40">{log.date} · {log.type}</p>
+                                                    <h4 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-tighter">{log.name}</h4>
+                                                    <p className="text-[8px] font-bold uppercase text-gray-400">{log.date} · {log.type}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-4">
-                                                <Badge className="bg-transparent border-2 border-[#064e3b] text-[#064e3b] rounded-none text-[8px] font-black">{log.status}</Badge>
-                                                <ChevronRight className="w-4 h-4 text-[#064e3b]/20 group-hover:text-[#064e3b] transition-colors" />
+                                            <div className="flex items-center gap-3">
+                                                <span className={cn(glass.badge, "h-5 flex items-center")}>{log.status}</span>
+                                                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <Button variant="ghost" className="w-full h-12 rounded-none font-black uppercase text-[10px] tracking-widest text-[#064e3b]/40 hover:text-[#064e3b]">
+                                <button className="w-full h-11 border-t border-gray-100 font-black uppercase text-[9px] tracking-[0.2em] text-gray-400 hover:text-[#1A1A1A] transition-colors bg-[#F9F7F2]/30">
                                     Load Full Audit Ledger
-                                </Button>
+                                </button>
                             </CardContent>
                         </Card>
                     </div>
@@ -128,12 +146,23 @@ const BeeCalculatorSuite: React.FC = () => {
                     <VarroaWashInterpreter />
                 </TabsContent>
 
-                {/* Other tabs will be implemented as sections or components */}
                 <TabsContent value="feeding" className="mt-0">
-                    <div className="border-4 border-[#064e3b] border-dashed p-12 text-center bg-neutral-50">
-                        <Droplet className="w-12 h-12 text-[#064e3b]/20 mx-auto mb-4" />
-                        <h3 className="text-xl font-black uppercase text-[#064e3b]">Feeding Engine Initializing...</h3>
-                        <p className="text-[10px] font-black uppercase text-[#064e3b]/40 mt-2">Loading Syrup Concentration & Protein Supplement Matrices</p>
+                    <div className={cn(glass.emptyState, "py-20 bg-white/40 border-[#F4D03F]/20 backdrop-blur-md")}>
+                        <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 mb-4">
+                            <Droplet className="w-8 h-8 text-[#F4D03F] opacity-40" />
+                        </div>
+                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Feeding Engine Initializing...</h3>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Syncing Supplement Matrices</p>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="logistics" className="mt-0">
+                    <div className={cn(glass.emptyState, "py-20 bg-white/40 border-[#F4D03F]/20 backdrop-blur-md")}>
+                        <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 mb-4">
+                            <Zap className="w-8 h-8 text-[#F4D03F] opacity-40" />
+                        </div>
+                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Logistics Engine Syncing...</h3>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Calculating Optimal Saturation Curves</p>
                     </div>
                 </TabsContent>
             </Tabs>
@@ -142,3 +171,4 @@ const BeeCalculatorSuite: React.FC = () => {
 };
 
 export default BeeCalculatorSuite;
+

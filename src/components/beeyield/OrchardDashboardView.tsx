@@ -120,8 +120,8 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm">
-                        <MapPin className="w-5 h-5 text-[#1B9157]" />
+                    <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm">
+                        <MapPin className="w-4 h-4 text-[#1B9157]" />
                     </div>
                     <div className="space-y-0.5">
                         <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">{apiary.location_name || 'Orchard Sector'}</h2>
@@ -153,7 +153,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                             )}
                         </div>
                         <div className="space-y-0.5 mt-1">
-                            <p className="text-2xl font-bold tracking-tight text-[#1A1A1A]">{s.value}</p>
+                            <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">{s.value}</p>
                             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{s.label}</p>
                         </div>
                     </div>
@@ -219,7 +219,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                 <circle strokeWidth="8" strokeDasharray={327} strokeDashoffset={327 - (327 * 0.75)} strokeLinecap="round" stroke="#1B9157" fill="transparent" r="52" cx="64" cy="64" />
                             </svg>
                             <div className="absolute flex flex-col items-center">
-                                <span className="text-3xl font-bold tracking-tight text-[#1A1A1A]">
+                                <span className="text-2xl font-bold tracking-tight text-[#1A1A1A]">
                                     {isWeatherLoading ? '...' : (weather?.temperature ? `${Math.round(weather.temperature)}°` : '24°')}
                                 </span>
                                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
@@ -254,26 +254,26 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                     onClick={() => onTabChange && onTabChange('inspections', 'Filtering by apiary...', 'filter')}
-                    className={cn(glass.card, "p-4 flex items-center gap-4 text-left group hover:bg-gray-50 hover:border-gray-300 transition-all")}
+                    className={cn(glass.card, "p-3.5 flex items-center gap-4 text-left group hover:bg-gray-50 hover:border-gray-300 transition-all")}
                 >
-                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center group-hover:bg-[#1B9157]/10 group-hover:border-[#1B9157]/20 transition-all shadow-sm">
-                        <Activity className="w-5 h-5 text-[#1B9157]" />
+                    <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center group-hover:bg-[#1B9157]/10 group-hover:border-[#1B9157]/20 transition-all shadow-sm">
+                        <Activity className="w-4 h-4 text-[#1B9157]" />
                     </div>
                     <div className="space-y-0.5">
                         <h4 className="text-sm font-bold text-[#1A1A1A]">Schedule Inspection</h4>
-                        <p className="text-[11px] font-medium text-gray-500">Check colony health for this apiary</p>
+                        <p className="text-[10px] font-medium text-gray-500">Check colony health node</p>
                     </div>
                 </button>
                 <button
                     onClick={() => onTabChange && onTabChange('harvests')}
-                    className={cn(glass.card, "p-4 flex items-center gap-4 text-left group hover:bg-gray-50 hover:border-gray-300 transition-all")}
+                    className={cn(glass.card, "p-3.5 flex items-center gap-4 text-left group hover:bg-gray-50 hover:border-gray-300 transition-all")}
                 >
-                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center group-hover:bg-[#F4D03F]/10 group-hover:border-[#F4D03F]/20 transition-all shadow-sm">
-                        <Hexagon className="w-5 h-5 text-[#F4D03F]" />
+                    <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center group-hover:bg-[#F4D03F]/10 group-hover:border-[#F4D03F]/20 transition-all shadow-sm">
+                        <Hexagon className="w-4 h-4 text-[#F4D03F]" />
                     </div>
                     <div className="space-y-0.5">
                         <h4 className="text-sm font-bold text-[#1A1A1A]">Log Harvest</h4>
-                        <p className="text-[11px] font-medium text-gray-500">Record honey production for this location</p>
+                        <p className="text-[10px] font-medium text-gray-500">Record production metrics</p>
                     </div>
                 </button>
             </div>

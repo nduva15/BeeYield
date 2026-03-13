@@ -55,29 +55,29 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={cn(glass.card, "p-5 border-[#1A1A1A]/5 bg-[#FFF9F0]/80 rounded-2xl relative overflow-hidden")}
+            className={cn(glass.card, "p-5 border-white/20 bg-white/40 backdrop-blur-xl rounded-[2.5rem] shadow-xl relative overflow-hidden")}
         >
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-[#1A1A1A]/5 pb-4 relative z-10">
                 <div className="space-y-0.5">
-                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter uppercase italic">Financial <span className="text-[#F4D03F]">Intelligence</span></h3>
-                    <p className="text-[8px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">Profitability audit across global distribution nodes.</p>
+                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Financial_Intelligence</h3>
+                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">PROFITABILITY_AUDIT_GLOBAL_DISTRIBUTION</p>
                 </div>
                 <button
                     onClick={() => toast.info("Exporting...")}
-                    className="h-8 px-4 bg-[#1A1A1A]/5 hover:bg-[#1A1A1A]/10 text-[#1A1A1A]/60 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2 italic"
+                    className="h-7 px-3 bg-white/40 hover:bg-white/60 text-[#1A1A1A]/60 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border border-white/40"
                 >
                     <Download className="w-3 h-3 text-[#F4D03F]" />
-                    Export Ledger
+                    Export_Ledger
                 </button>
             </div>
 
-            <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#1A1A1A]/5 gap-1 w-fit mb-6 relative z-10">
+            <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-fit mb-6 relative z-10">
                 {analyticsTabs.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveAnalyticsTab(tab)}
                         className={cn(
-                            "h-7 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all italic",
+                            "h-7 px-4 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all",
                             activeAnalyticsTab === tab
                                 ? "bg-white text-[#1A1A1A] shadow-sm"
                                 : "text-[#1A1A1A]/30 hover:text-[#1A1A1A]/60"
@@ -274,29 +274,29 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         >
             <PageHeader
                 icon={CreditCard}
-                label="Fiscal Audit Kernel v5.2"
+                label="Fiscal_Audit_Kernel_V5.2"
                 title={<>Industrial <span className="text-[#F4D03F]">Ledger</span></>}
                 subtitle="Managed financial telemetry for high-capacity apiculture ops."
                 actions={
                     <Button
                         onClick={() => setIsNewDocFormOpen(true)}
-                        className="h-10 bg-[#1B9157] text-white hover:bg-[#1B9157]/90 rounded-xl px-6 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#1B9157]/20"
+                        className={cn(glass.btnPrimary, "h-8 px-4 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2")}
                     >
-                        <Plus className="w-4 h-4" /> New Entry
+                        <Plus className="w-3.5 h-3.5" /> New_Entry
                     </Button>
                 }
             />
 
-            <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#1A1A1A]/5 gap-1 w-fit relative z-10">
+            <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-fit relative z-10">
                 {['Overview', 'Ledger', 'Subscription', 'Sync'].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveSubTab(tab)}
                         className={cn(
-                            "h-8 px-5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all italic",
+                            "h-7 px-4 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all",
                             activeSubTab === tab
-                                ? "bg-white text-[#1A1A1A] shadow-sm"
-                                : "text-[#1A1A1A]/30 hover:text-[#1A1A1A]/60"
+                                ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40"
+                                : "text-gray-400 hover:text-gray-600"
                         )}
                     >
                         {tab}
@@ -305,27 +305,27 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             </div>
 
             {loading ? (
-                <div className="py-20 flex flex-col items-center justify-center opacity-20 italic">
+                <div className="py-20 flex flex-col items-center justify-center opacity-40">
                     <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F] mb-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Hydrating_Fiscal_Core...</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Loading Fiscal Data...</span>
                 </div>
             ) : (
                 <div className="space-y-6">
                     {activeSubTab === 'Overview' && (
                         <div className="space-y-6 animate-in fade-in duration-500">
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                 {[
-                                    { label: 'Inflow Gross', value: `${overview?.total_revenue?.toLocaleString()}`, icon: TrendingUp, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]' },
-                                    { label: 'Industrial OpEx', value: `${overview?.total_costs?.toLocaleString()}`, icon: Banknote, color: 'text-red-500', bg: 'bg-red-500' },
-                                    { label: 'Net Operations', value: `${overview?.net_result?.toLocaleString()}`, icon: Target, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]' },
-                                    { label: 'Pending Audit', value: `${overview?.outstanding_invoices}`, icon: FileText, color: 'text-[#1A1A1A]', bg: 'bg-[#1A1A1A]' },
+                                    { label: 'Total Revenue', value: `${overview?.total_revenue?.toLocaleString()}`, icon: TrendingUp, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]' },
+                                    { label: 'Total Costs', value: `${overview?.total_costs?.toLocaleString()}`, icon: Banknote, color: 'text-red-500', bg: 'bg-red-500' },
+                                    { label: 'Net Result', value: `${overview?.net_result?.toLocaleString()}`, icon: Target, color: 'text-[#1A1A1A]', bg: 'bg-[#1A1A1A]' },
+                                    { label: 'Outstanding', value: `${overview?.outstanding_invoices}`, icon: FileText, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]' },
                                 ].map((stat, i) => (
-                                    <div key={i} className={cn(glass.card, "p-4 space-y-2 border-[#1A1A1A]/5 bg-[#FFF9F0]/80 rounded-2xl relative overflow-hidden group")}>
-                                        <div className={cn("absolute top-0 left-0 w-full h-[2px] opacity-10", stat.bg)} />
-                                        <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">{stat.label}</p>
-                                        <div className="flex items-center justify-between gap-2">
-                                            <p className={cn("text-2xl font-black tracking-tighter truncate", stat.color)}>{stat.value}</p>
-                                            <stat.icon className={cn("w-4 h-4 opacity-10 group-hover:opacity-30 transition-opacity", stat.color)} />
+                                    <div key={i} className={cn(glass.card, "p-4 space-y-1.5 bg-white/40 backdrop-blur-xl shadow-xl border-white/20 rounded-[2rem] relative overflow-hidden group")}>
+                                        <div className={cn("absolute top-0 left-0 w-full h-[3px] opacity-20", stat.bg)} />
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                                        <div className="flex items-baseline justify-between gap-2">
+                                            <p className={cn("text-xl font-black tracking-tighter truncate", stat.color)}>{stat.value}</p>
+                                            <span className="text-[8px] font-black text-gray-400 uppercase">{currency}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -342,14 +342,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     <button
                                         key={idx}
                                         onClick={() => setActiveSubTab(card.action)}
-                                        className={cn(glass.card, "p-5 flex items-center gap-5 border-[#1A1A1A]/5 bg-[#FFF9F0]/80 rounded-2xl group text-left transition-all hover:border-[#1A1A1A]/10 hover:shadow-xl hover:shadow-[#1A1A1A]/5")}
+                                        className={cn(glass.card, "p-5 flex items-center gap-4 border-white/20 bg-white/40 backdrop-blur-xl rounded-[2rem] group text-left transition-all hover:border-[#F4D03F]/40 hover:shadow-xl")}
                                     >
-                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-[#1A1A1A]/5 group-hover:scale-110 transition-transform">
+                                        <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/40 bg-white shadow-sm group-hover:scale-105 transition-transform">
                                             <card.icon className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-opacity" style={{ color: card.theme }} />
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="text-xs font-black uppercase tracking-tight italic group-hover:text-[#F4D03F] transition-colors">{card.title}</h4>
-                                            <p className="text-[9px] font-bold text-[#1A1A1A]/30 uppercase italic">{card.sub}</p>
+                                            <h4 className="text-[10px] font-black uppercase tracking-tight group-hover:text-[#F4D03F] transition-colors">{card.title}</h4>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{card.sub}</p>
                                         </div>
                                         <ChevronRight className="w-4 h-4 text-[#1A1A1A]/20" />
                                     </button>
@@ -362,58 +362,58 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-500">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="space-y-0.5">
-                                    <h3 className="text-lg font-black text-[#1A1A1A] tracking-tighter uppercase italic">Audit <span className="text-[#F4D03F]">Vault</span></h3>
-                                    <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">Immutable record of fiscal synchronization.</p>
+                                    <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight uppercase">Audit <span className="text-[#1B9157]">History</span></h3>
+                                    <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Complete record of financial transactions.</p>
                                 </div>
-                                <div className="relative group w-full md:w-80">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1A1A1A]/20 group-focus-within:text-[#F4D03F] transition-all" />
+                                <div className="relative group w-full md:w-72">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-[#1B9157] transition-all" />
                                     <input
-                                        placeholder="Search archives..."
-                                        className="w-full h-10 bg-[#FFF9F0]/80 border border-[#1A1A1A]/5 rounded-xl pl-10 pr-4 text-[11px] font-black italic text-[#1A1A1A] outline-none focus:ring-1 focus:ring-[#F4D03F]/30 transition-all"
+                                        placeholder="Search records..."
+                                        className="w-full h-9 bg-white border border-gray-200 rounded-xl pl-9 pr-4 text-[11px] font-medium text-[#1A1A1A] outline-none focus:ring-1 focus:ring-[#1B9157]/30 transition-all"
                                     />
                                 </div>
                             </div>
 
-                            <div className={cn(glass.card, "p-0 overflow-hidden bg-[#FFF9F0]/80 rounded-3xl min-h-[400px]")}>
+                            <div className={cn(glass.card, "p-0 overflow-hidden bg-white/50 backdrop-blur-md rounded-2xl min-h-[400px] shadow-sm")}>
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
-                                        <thead className="bg-[#1A1A1A]/5">
+                                        <thead className="bg-gray-50/50">
                                             <tr>
-                                                <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Sequence_Hash</th>
-                                                <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Audit_Event</th>
-                                                <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Temporal</th>
-                                                <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic">Quantum</th>
-                                                <th className="px-8 py-4 text-left text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-[0.2em] italic text-right">Ops</th>
+                                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">ID</th>
+                                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Description</th>
+                                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</th>
+                                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Amount</th>
+                                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-[#1A1A1A]/5">
+                                        <tbody className="divide-y divide-gray-100">
                                             {transactions.map((tx, i) => (
-                                                <tr key={i} className="hover:bg-[#1A1A1A]/[0.02] transition-colors group italic">
-                                                    <td className="px-8 py-4 text-[10px] font-black text-[#1A1A1A]/40 tabular-nums">#{(tx.id || i).toString().slice(0, 8)}</td>
-                                                    <td className="px-8 py-4">
+                                                <tr key={i} className="hover:bg-gray-50/30 transition-colors group">
+                                                    <td className="px-6 py-4 text-[10px] font-medium text-gray-400 tabular-nums">#{(tx.id || i).toString().slice(0, 8)}</td>
+                                                    <td className="px-6 py-4">
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm font-black text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors">{tx.description || 'Industrial Transfer'}</span>
-                                                            <span className="text-[8px] font-black text-[#1A1A1A]/20 uppercase tracking-widest mt-1">Ref: {tx.reference || 'Auto_Dispatch'}</span>
+                                                            <span className="text-xs font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors">{tx.description || 'Service Payment'}</span>
+                                                            <span className="text-[9px] font-medium text-gray-400 uppercase tracking-tight mt-0.5">Ref: {tx.reference || 'Auto'}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-8 py-4 text-[10px] font-black text-[#1A1A1A]/40 tabular-nums">
+                                                    <td className="px-6 py-4 text-[10px] font-medium text-gray-500">
                                                         {new Date(tx.date || tx.created_at).toLocaleDateString()}
                                                     </td>
-                                                    <td className="px-8 py-4">
-                                                        <span className={cn("text-lg font-black tabular-nums", tx.type === 'expense' ? 'text-red-500/60' : 'text-[#1B9157]')}>
-                                                            {tx.type === 'expense' ? '-' : '+'}{tx.amount?.toLocaleString()} <span className="text-[8px] opacity-30">{currency}</span>
+                                                    <td className="px-6 py-4">
+                                                        <span className={cn("text-sm font-bold tabular-nums", tx.type === 'expense' ? 'text-red-500' : 'text-[#1B9157]')}>
+                                                            {tx.type === 'expense' ? '-' : '+'}{tx.amount?.toLocaleString()} <span className="text-[10px] opacity-40">{currency}</span>
                                                         </span>
                                                     </td>
-                                                    <td className="px-8 py-4 text-right">
+                                                    <td className="px-6 py-4 text-right">
                                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button
                                                                 onClick={() => setSyncingId(tx.id || i)}
-                                                                className="h-8 w-8 rounded-lg bg-white border border-[#1A1A1A]/5 flex items-center justify-center text-[#1A1A1A]/40 hover:text-[#F4D03F] transition-colors"
+                                                                className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] transition-colors shadow-sm"
                                                             >
-                                                                {syncingId === (tx.id || i) ? <Loader2 className="w-4 h-4 animate-spin text-[#F4D03F]" /> : <RefreshCw className="w-4 h-4" />}
+                                                                {syncingId === (tx.id || i) ? <Loader2 className="w-4 h-4 animate-spin text-[#F4D03F]" /> : <RefreshCw className="w-3.5 h-3.5" />}
                                                             </button>
-                                                            <button className="h-8 w-8 rounded-lg bg-white border border-[#1A1A1A]/5 flex items-center justify-center text-[#1A1A1A]/40 hover:text-[#1A1A1A]/80 transition-colors">
-                                                                <FileText className="w-4 h-4" />
+                                                            <button className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] transition-colors shadow-sm">
+                                                                <FileText className="w-3.5 h-3.5" />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -428,26 +428,26 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
                     {activeSubTab === 'Subscription' && (
                         <div className="space-y-6 animate-in fade-in duration-500">
-                            <div className={cn(glass.card, "p-8 relative overflow-hidden group border-[#F4D03F]/10 bg-[#FFF9F0]/80 rounded-[2.5rem] shadow-sm")}>
-                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl" />
-                                <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F] flex items-center justify-center text-[#1A1A1A] shadow-lg shadow-[#F4D03F]/20">
-                                        <Zap className="w-8 h-8" />
+                            <div className={cn(glass.card, "p-6 relative overflow-hidden group border-gray-100 bg-white/80 backdrop-blur-md rounded-2xl shadow-sm")}>
+                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#1B9157]/5 rounded-full blur-3xl" />
+                                <div className="relative z-10 flex flex-col md:flex-row gap-6 items-center">
+                                    <div className="w-12 h-12 rounded-xl bg-[#1B9157] flex items-center justify-center text-white shadow-lg shadow-[#1B9157]/20">
+                                        <Zap className="w-6 h-6" />
                                     </div>
-                                    <div className="flex-1 space-y-1 text-center md:text-left italic">
-                                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-3 py-0.5 rounded-full font-black text-[8px] tracking-[0.2em] uppercase">ACTIVE_NODE_TIER</Badge>
-                                        <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">Industrial <span className="text-[#F4D03F]">Pro</span></h2>
-                                        <p className="text-[11px] font-medium text-[#1A1A1A]/40 uppercase tracking-widest">Managed global scale · Unlimited audits</p>
+                                    <div className="flex-1 space-y-0.5 text-center md:text-left">
+                                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-2 py-0.5 rounded-md font-bold text-[9px] tracking-widest uppercase">CURRENT TIER</Badge>
+                                        <h2 className="text-xl font-bold text-[#1A1A1A] tracking-tight uppercase">BeeYield <span className="text-[#F4D03F]">Pro</span></h2>
+                                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Enterprise scale · Unlimited Analytics</p>
                                     </div>
-                                    <div className="flex flex-col items-center md:items-end gap-2">
-                                        <div className="text-3xl font-black text-[#F4D03F] tracking-tighter italic">1,200 <span className="text-[10px] font-black uppercase opacity-20">{currency}/mo</span></div>
-                                        <div className="flex items-center gap-2 bg-white/50 px-3 py-1 rounded-xl border border-[#1A1A1A]/5 text-[9px] font-black text-[#1A1A1A]/40 uppercase tracking-widest italic">
-                                            <Clock className="w-3.5 h-3.5 opacity-20" /> Renewal: 12 OCT
+                                    <div className="flex flex-col items-center md:items-end gap-1.5">
+                                        <div className="text-2xl font-bold text-[#1A1A1A] tracking-tight">1,200 <span className="text-[10px] font-bold uppercase opacity-30">{currency}/mo</span></div>
+                                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-lg border border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            <Clock className="w-3.5 h-3.5 opacity-40" /> Renewal: 12 OCT
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <SubscriptionPlans currentTier="pro" onUpgrade={(p) => toast.info(`Initializing migration to ${p} node tier...`)} />
+                            <SubscriptionPlans currentTier="pro" onUpgrade={(p) => toast.info(`Upgrading to ${p} tier...`)} />
                         </div>
                     )}
 
@@ -462,61 +462,61 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             {/* Audit Entry Modal */}
             <AnimatePresence>
                 {isNewDocFormOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-8">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#FFF9F0]/80 backdrop-blur-xl" onClick={() => setIsNewDocFormOpen(false)} />
-                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 30 }} className={cn(glass.card, "w-full max-w-2xl p-0 overflow-hidden shadow-2xl bg-[#FFF9F0] border-[#1A1A1A]/5 relative z-10 rounded-[2.5rem]")}>
-                            <div className="p-8 border-b border-[#1A1A1A]/5 flex justify-between items-center bg-[#1A1A1A]/5 italic">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/10 backdrop-blur-sm" onClick={() => setIsNewDocFormOpen(false)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 30 }} className={cn(glass.card, "w-full max-w-xl p-0 overflow-hidden shadow-2xl bg-white border-gray-100 relative z-10 rounded-3xl")}>
+                            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                 <div>
-                                    <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">Execute <span className="text-[#F4D03F]">Audit</span> Entry</h3>
-                                    <p className="text-[9px] font-black tracking-widest uppercase opacity-30 mt-1">Immutable Financial Committment Protocol v4.1</p>
+                                    <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight uppercase leading-none">New <span className="text-[#1B9157]">Entry</span></h3>
+                                    <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mt-1">Add financial record to ledger</p>
                                 </div>
-                                <button onClick={() => setIsNewDocFormOpen(false)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-[#1A1A1A]/5 text-[#1A1A1A]/20 hover:text-red-500 transition-colors"><X className="w-5 h-5" /></button>
+                                <button onClick={() => setIsNewDocFormOpen(false)} className="h-9 w-9 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-400 hover:text-red-500 transition-colors shadow-sm"><X className="w-4 h-4" /></button>
                             </div>
 
-                            <div className="p-10 space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div className="space-y-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-[#1A1A1A]/30 italic ml-4 tracking-widest">Classification</Label>
-                                            <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#1A1A1A]/5 gap-1">
+                            <div className="p-8 space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Classification</Label>
+                                            <div className="flex bg-gray-100/50 p-1 rounded-xl border border-gray-100 gap-1">
                                                 {['invoice', 'receipt', 'expense'].map(t => (
-                                                    <button key={t} onClick={() => setNewDocType(t)} className={cn("h-10 flex-1 rounded-lg font-black text-[9px] uppercase tracking-widest transition-all italic", newDocType === t ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#1A1A1A]/20")}>{t}</button>
+                                                    <button key={t} onClick={() => setNewDocType(t)} className={cn("h-8 flex-1 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all", newDocType === t ? "bg-white text-[#1A1A1A] shadow-sm border border-gray-100" : "text-gray-400")}>{t}</button>
                                                 ))}
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-[#1A1A1A]/30 italic ml-4 tracking-widest">Audit Value ({currency})</Label>
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Value ({currency})</Label>
                                             <div className="relative">
-                                                <DollarSign className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#F4D03F]/40" />
-                                                <Input type="number" value={newDocAmount || ''} onChange={(e) => setNewDocAmount(parseFloat(e.target.value) || 0)} className="h-14 font-black italic text-3xl pl-14 bg-[#1A1A1A]/5 border-none rounded-2xl" placeholder="0.00" />
+                                                <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <Input type="number" value={newDocAmount || ''} onChange={(e) => setNewDocAmount(parseFloat(e.target.value) || 0)} className="h-10 font-bold text-xl pl-10 bg-gray-50 border-gray-100 rounded-xl" placeholder="0.00" />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="space-y-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-[#1A1A1A]/30 italic ml-4 tracking-widest">Issuing Authority</Label>
-                                            <Input value={sellerName} onChange={(e) => setSellerName(e.target.value)} className="h-12 px-6 font-black italic bg-[#1A1A1A]/5 border-none rounded-xl" />
+                                    <div className="space-y-4">
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Issuing Entity</Label>
+                                            <Input value={sellerName} onChange={(e) => setSellerName(e.target.value)} className="h-10 px-4 font-bold bg-gray-50 border-gray-100 rounded-xl text-sm" />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-[#1A1A1A]/30 italic ml-4 tracking-widest">Recipient Node</Label>
-                                            <Input value={buyerName} onChange={(e) => setBuyerName(e.target.value)} placeholder="Full legal name..." className="h-12 px-6 font-black italic bg-[#1A1A1A]/5 border-none rounded-xl" />
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Recipient</Label>
+                                            <Input value={buyerName} onChange={(e) => setBuyerName(e.target.value)} placeholder="Legal name..." className="h-10 px-4 font-bold bg-gray-50 border-gray-100 rounded-xl text-sm" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label className="text-[9px] font-black uppercase text-[#1A1A1A]/30 italic ml-4 tracking-widest">Mission Narrative</Label>
-                                    <Input value={newDocDescription} onChange={(e) => setNewDocDescription(e.target.value)} placeholder="Detailed audit context..." className="h-14 px-6 font-black italic bg-[#1A1A1A]/5 border-none rounded-2xl" />
+                                <div className="space-y-1.5">
+                                    <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Description</Label>
+                                    <Input value={newDocDescription} onChange={(e) => setNewDocDescription(e.target.value)} placeholder="Record details..." className="h-10 px-4 font-bold bg-gray-50 border-gray-100 rounded-xl text-sm" />
                                 </div>
 
-                                <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 border-t border-[#1A1A1A]/5">
-                                    <div className="flex items-center gap-3 opacity-20 italic">
-                                        <Lock className="w-5 h-5 text-[#F4D03F]" />
-                                        <p className="text-[9px] font-black uppercase tracking-[0.3em]">Payload_Encrypted</p>
+                                <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-100">
+                                    <div className="flex items-center gap-2.5 opacity-40">
+                                        <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
+                                        <p className="text-[9px] font-bold uppercase tracking-widest">Secure Entry Verified</p>
                                     </div>
-                                    <div className="flex gap-4 w-full md:w-auto">
-                                        <Button variant="ghost" type="button" onClick={() => setIsNewDocFormOpen(false)} className="h-14 flex-1 md:px-8 rounded-2xl font-black uppercase tracking-widest text-[9px] text-[#1A1A1A]/40 hover:text-[#1A1A1A] italic">Abort</Button>
-                                        <Button onClick={handleGenerateInvoice} className="h-14 flex-1 md:px-12 rounded-2xl bg-[#1B9157] hover:bg-[#1B9157]/90 text-white font-black uppercase tracking-widest text-[10px] italic shadow-xl shadow-green-500/10"><ShieldCheck className="w-5 h-5 mr-3" /> Commit Audit</Button>
+                                    <div className="flex gap-3 w-full md:w-auto">
+                                        <Button variant="ghost" type="button" onClick={() => setIsNewDocFormOpen(false)} className="h-10 flex-1 md:px-6 rounded-xl font-bold uppercase tracking-widest text-[10px] text-gray-400 hover:text-[#1A1A1A]">Cancel</Button>
+                                        <Button onClick={handleGenerateInvoice} className={cn(glass.btnPrimary, "h-10 flex-1 md:px-10 rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-[#1B9157]/10")}><ShieldCheck className="w-4 h-4 mr-2" /> Save Entry</Button>
                                     </div>
                                 </div>
                             </div>

@@ -184,13 +184,13 @@ const MetersReports: React.FC = () => {
 
     return (
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
-            <div className="space-y-4">
-                <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
-                    <Database className="w-4 h-4 mr-2" />
+            <div className="space-y-2">
+                <div className={cn(glass.badge, 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 mb-1')}>
+                    <Database className="w-3.5 h-3.5" />
                     Operational Archive Hub
                 </div>
-                <h1 className={cn(glass.sectionTitle, 'text-6xl')}>Export <span className="text-[#F4D03F]">Desk</span></h1>
-                <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70 mt-2")}>
+                <h1 className={cn(glass.sectionTitle, 'text-xl font-black uppercase tracking-tight leading-none')}>Export <span className="text-[#F4D03F]">Desk</span></h1>
+                <p className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 tracking-widest uppercase")}>
                     Encapsulated registry download and audit station.
                 </p>
             </div>
@@ -198,33 +198,33 @@ const MetersReports: React.FC = () => {
             {/* Selector Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                    { id: 'Usage Audit', icon: FileText, desc: 'Signal & usage metrics.', color: 'text-blue-500' },
-                    { id: 'Fault Log', icon: BarChart, desc: 'Deviations and signals.', color: 'text-[#1B9157]' },
-                    { id: 'Cost Analysis', icon: DollarSign, desc: 'Operational margin.', color: 'text-[#F4D03F]' }
+                    { id: 'USAGE_AUDIT', icon: FileText, desc: 'SIGNAL_USAGE_METRICS', color: 'text-blue-500' },
+                    { id: 'FAULT_LOG', icon: BarChart, desc: 'DEVIATIONS_AND_SIGNALS', color: 'text-[#1B9157]' },
+                    { id: 'COST_ANALYSIS', icon: DollarSign, desc: 'OPERATIONAL_MARGIN', color: 'text-[#F4D03F]' }
                 ].map((item, i) => (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         key={i}
-                        className={cn(glass.card, "p-8 flex flex-col group hover:shadow-xl hover:border-border")}
+                        className={cn(glass.card, "p-6 flex flex-col group shadow-sm bg-white/40 border-white/20")}
                     >
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-gray-400 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                <item.icon className={cn("w-6 h-6", item.color)} />
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                                <item.icon className={cn("w-4 h-4", item.color)} />
                             </div>
-                            <h3 className={cn(glass.sectionTitle, "text-xl normal-case")}>{item.id}</h3>
+                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]">{item.id}</h3>
                         </div>
-                        <p className={cn(glass.microLabel, "normal-case opacity-60 mb-8 flex-1 italic")}>{item.desc}</p>
+                        <p className="text-[9px] font-black tracking-widest uppercase text-gray-500 mb-6 flex-1">{item.desc}</p>
                         <button
                             onClick={() => handleGenerate(item.id)}
                             disabled={!!loading}
-                            className={cn(glass.btnSecondary, "w-full justify-center group-hover:bg-foreground group-hover:text-background transition-all duration-300")}
+                            className={cn(glass.btnSecondary, "w-full justify-center hover:bg-white h-8 text-[9px] uppercase font-black tracking-[0.2em] text-[#1A1A1A]")}
                         >
                             {loading === item.id ? (
-                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Compiling PDF...</>
+                                <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> COMPILING_PDF...</>
                             ) : (
-                                "Export PDF Archive"
+                                "EXPORT_PDF_ARCHIVE"
                             )}
                         </button>
                     </motion.div>
@@ -232,48 +232,48 @@ const MetersReports: React.FC = () => {
             </div>
 
             {/* History Registry */}
-            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden")}>
-                <div className="p-8 border-b border-border bg-gray-400 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/">
-                        <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
+            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-white/40 border-white/20")}>
+                <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+                        <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
                     </div>
-                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Audit History <span className="text-[#F4D03F]">Registry</span></h3>
+                    <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">AUDIT_HISTORY_REGISTRY</h3>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-border/50 bg-muted/20">
-                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60")}>Report Identifier</th>
-                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60")}>Archive Timestamp</th>
-                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60")}>Format Protocol</th>
-                                <th className={cn(glass.microLabel, "p-6 font-bold opacity-60 text-right")}>Retrieval Action</th>
+                            <tr className="border-b border-white/20 bg-white/30">
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">REPORT_IDENTIFIER</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">ARCHIVE_TIMESTAMP</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">FORMAT_PROTOCOL</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">RETRIEVAL_ACTION</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border/30">
+                        <tbody className="divide-y divide-white/10">
                             {generatedReports.map((report) => (
-                                <tr key={report.id} className="hover:bg-muted/10 transition-colors group">
-                                    <td className="p-6">
-                                        <span className={cn(glass.microLabel, "normal-case font-bold tracking-wider")}>{report.name}</span>
+                                <tr key={report.id} className="hover:bg-white/50 transition-colors group">
+                                    <td className="px-5 py-3">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-[#1A1A1A]">{report.name}</span>
                                     </td>
-                                    <td className="p-6">
-                                        <span className={cn(glass.microLabel, "opacity-60")}>{report.date}</span>
+                                    <td className="px-5 py-3">
+                                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest tabular-nums">{report.date}</span>
                                     </td>
-                                    <td className="p-6">
-                                        <span className={cn(glass.badge, "bg-[#F9F7F2]0 border-border group-hover:border-foreground/30")}>
+                                    <td className="px-5 py-3">
+                                        <span className="text-[8px] font-black px-2 py-0.5 rounded-md bg-white/50 text-gray-500 uppercase tracking-widest border border-white/40 shadow-sm">
                                             {report.type}
                                         </span>
                                     </td>
-                                    <td className="p-6 text-right">
+                                    <td className="px-5 py-3 text-right">
                                         <button
                                             onClick={() => handleDownload(report.name, report.data)}
                                             disabled={downloading === report.name}
-                                            className={cn(glass.btnPrimary, "h-10 px-6 text-xs whitespace-nowrap inline-flex items-center gap-2")}
+                                            className={cn(glass.btnPrimary, "h-8 px-4 text-[8px] font-black uppercase tracking-widest inline-flex items-center justify-center gap-2")}
                                         >
                                             {downloading === report.name ? (
-                                                <><Loader2 className="w-3 h-3 animate-spin" /> Extracting...</>
+                                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> EXTRACTING...</>
                                             ) : (
-                                                <><Download className="w-3 h-3" /> Pull Archive</>
+                                                <><Download className="w-3.5 h-3.5" /> PULL_ARCHIVE</>
                                             )}
                                         </button>
                                     </td>

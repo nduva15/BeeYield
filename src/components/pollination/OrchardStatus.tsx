@@ -8,39 +8,39 @@ const OrchardStatus: React.FC = () => {
         <div className={cn(glass.card, "p-5 relative overflow-hidden group space-y-6")}>
             <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#1B9157]/10 mb-2">
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#1B9157]/10 mb-1">
                         <Leaf className="w-3 h-3 text-[#1B9157]" />
-                        <span className="text-[7px] font-black text-[#1B9157] uppercase italic tracking-widest">Primary Variety Audit</span>
+                        <span className="text-[8px] font-bold text-[#1B9157] uppercase tracking-widest">Primary Variety Audit</span>
                     </div>
-                    <h2 className="text-[20px] font-black italic tracking-tighter uppercase leading-none">
+                    <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">
                         Lead <span className="text-[#1B9157]">Variety</span>
                     </h2>
-                    <p className="font-black mt-1 text-[11px] uppercase italic tracking-widest opacity-40">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                         Nonpareil Almond // Sector 4B
                     </p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F]">
-                    <Target className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F]">
+                    <Target className="w-4 h-4" />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1 p-3 rounded-xl bg-[#1A1A1A]/5 border border-[#1A1A1A]/5">
-                    <p className="text-[8px] font-black uppercase italic tracking-widest opacity-30">Bloom Stage</p>
-                    <div className="flex items-end gap-2">
-                        <h3 className="text-[26px] font-black italic tracking-tighter leading-none">72<span className="text-[12px]">%</span></h3>
-                        <div className="px-1.5 py-0.5 rounded-full bg-[#1B9157] text-white text-[7px] font-black uppercase italic tracking-widest mb-0.5">BBCH 67</div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Bloom Stage</p>
+                    <div className="flex items-end gap-1.5">
+                        <h3 className="text-xl font-bold tracking-tight leading-none text-[#1A1A1A]">72<span className="text-[10px]">%</span></h3>
+                        <div className="px-1.5 py-0.5 rounded-full bg-[#1B9157] text-white text-[8px] font-bold uppercase tracking-wider mb-0.5">BBCH 67</div>
                     </div>
                 </div>
 
                 <div className="space-y-1 p-3 rounded-xl bg-[#1A1A1A]/5 border border-[#1A1A1A]/5">
-                    <p className="text-[8px] font-black uppercase italic tracking-widest opacity-30">Pollination Window</p>
-                    <h3 className="text-[26px] font-black italic tracking-tighter leading-none text-[#F4D03F]">4.2<span className="text-[12px] text-[#1A1A1A]"> DAYS</span></h3>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Pollination Window</p>
+                    <h3 className="text-xl font-bold tracking-tight leading-none text-[#F4D03F]">4.2<span className="text-[10px] font-bold text-[#1A1A1A]"> DAYS</span></h3>
                 </div>
 
                 <div className="space-y-1 p-3 rounded-xl bg-[#1A1A1A]/5 border border-[#1A1A1A]/5">
-                    <p className="text-[8px] font-black uppercase italic tracking-widest opacity-30">GDD Accumulation</p>
-                    <h3 className="text-[26px] font-black italic tracking-tighter leading-none">342</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">GDD Accumulation</p>
+                    <h3 className="text-xl font-bold tracking-tight leading-none text-[#1A1A1A]">342</h3>
                 </div>
             </div>
 

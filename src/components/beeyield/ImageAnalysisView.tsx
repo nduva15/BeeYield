@@ -17,6 +17,8 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import beeyieldService from '@/services/beeyieldService';
+import { glass, PageHeader } from './GlassTheme';
+import { RefreshCw } from 'lucide-react';
 
 interface ImageAnalysisViewProps {
     onTabChange: (tab: string) => void;
@@ -129,57 +131,54 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
     };
 
     const instructions = [
-        { label: 'Upload an image', description: 'Add a hive or bee photo. Sharp focus and good light improve accuracy.' },
-        { label: 'Bee detection', description: 'The model draws boxes around bees and counts them.' },
-        { label: 'Confidence Threshold', description: 'Higher values reduce false detections but may miss some bees.' },
-        { label: 'Overlap Threshold', description: 'Lower values merge overlapping boxes more aggressively, reducing duplicates.' },
-        { label: 'Label Display Mode', description: 'Choose what to show on boxes: label, confidence, both, or none.' },
-        { label: 'Disease results', description: 'Summary of health status calculated from individual bees.' },
-        { label: 'Per-bee health analysis', description: 'Each detected bee is cropped and classified.' },
-        { label: 'Detections table', description: 'List of boxes with confidence, health result, and coordinates.' },
-        { label: 'Clear image', description: 'Removes the image and resets the results.' },
+        { label: 'Asset Input', description: 'Upload hive visual data. High-fidelity focus optimizes detection.' },
+        { label: 'Neural Mapping', description: 'Model-driven bounding box isolation and specimen tabulation.' },
+        { label: 'Confidence Lock', description: 'Threshold filtering for signal-to-noise optimization.' },
+        { label: 'Overlap Logic', description: 'NMS (Non-Maximum Suppression) protocol for duplicate culling.' },
+        { label: 'Telemetry Display', description: 'Dynamic UI selection for viewport labeling protocols.' },
+        { label: 'Pathogen Sweep', description: 'Deep-learning diagnostics for health status verification.' },
+        { label: 'Specimen Audit', description: 'Granular classification of individual biological entities.' },
+        { label: 'Detection Log', description: 'Indexed telemetry data with spatial-temporal coordinates.' },
+        { label: 'Cache Flush', description: 'Resetting analytical cache and purging session media.' },
     ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-700 pb-20">
+        <div className={glass.page}>
             {/* Page Header */}
-            <div className="flex items-center gap-4 border-b-4 border-black pb-6">
-                <div className="w-12 h-12 bg-[#FFF9F0] flex items-center justify-center border-2 border-black">
-                    <Camera className="w-6 h-6 text-[#1A1A1A]" />
-                </div>
-                <h1 className="text-5xl font-black text-[#1A1A1A] uppercase tracking-tighter">
-                    Analysis
-                </h1>
-            </div>
-
-            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
-                Upload photos to check for disease or pests.
-            </p>
+            <PageHeader
+                title="Optical Audit"
+                subtitle="High-fidelity visual diagnostics and neural specimen mapping."
+                icon={Camera}
+                color="text-[#F4D03F]"
+                bg="bg-[#F4D03F]/10"
+                borderColor="border-[#F4D03F]/20"
+                action={
+                    <div className={cn(glass.badge, "px-3 py-1.5 border-[#F4D03F]/10 bg-[#F4D03F]/5 text-[#F4D03F]")}>
+                        CORE: CV_MODEL_V4
+                    </div>
+                }
+            />
 
             {/* Instruction Card */}
-            <div className="border-4 border-black bg-[#FFF9F0] p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-10">
-                <div className="flex items-center gap-3 mb-8 border-b-2 border-black pb-4">
-                    <div className="w-8 h-8 bg-[#FFF9F0] flex items-center justify-center border-2 border-black">
-                        <Info className="w-4 h-4 text-[#1A1A1A]" />
+            <div className={cn(glass.card, "mb-8")}>
+                <div className="flex items-center gap-3 mb-6 border-b border-[#F4D03F]/10 pb-4">
+                    <div className="w-8 h-8 bg-[#F4D03F]/10 rounded-lg flex items-center justify-center border border-[#F4D03F]/20">
+                        <Info className="w-4 h-4 text-[#F4D03F]" />
                     </div>
-                    <h2 className="text-2xl font-black text-[#1A1A1A] uppercase tracking-tight">Instructions</h2>
+                    <h2 className={glass.sectionTitle}>Session Protocols</h2>
                 </div>
 
                 <div className="space-y-6">
-                    <div className="space-y-1 text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
-                        <p>Results are indicators and not a medical diagnosis.</p>
-                        <p>Confidence levels indicate certainty.</p>
+                    <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400">
+                        <Activity className="w-3 h-3 text-[#F4D03F]/40" />
+                        <span>INDICATIVE_ONLY_NOT_MEDICAL_DIAGNOSIS</span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-6 pt-2">
                         {instructions.map((item, idx) => (
-                            <div key={idx} className="flex gap-4 border-l-2 border-black pl-4">
-                                <div className="min-w-[140px]">
-                                    <h4 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-widest">{item.label}</h4>
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-tight">{item.description}</p>
-                                </div>
+                            <div key={idx} className="flex flex-col gap-1.5 border-l-2 border-[#F4D03F]/20 pl-4 py-1">
+                                <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-wider">{item.label}</h4>
+                                <p className={cn(glass.microLabel, "text-gray-400")}>{item.description}</p>
                             </div>
                         ))}
                     </div>
@@ -190,7 +189,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             {!previewUrl && (
                 <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full min-h-[200px] border-4 border-dashed border-black flex flex-col items-center justify-center gap-3 transition-none cursor-pointer bg-[#FFF9F0] hover:bg-neutral-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                    className={cn(glass.card, "w-full min-h-[260px] border-dashed border-2 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-[#F4D03F]/40 transition-all bg-white/5 shadow-inner")}
                 >
                     <input
                         id="bee-image-upload"
@@ -202,10 +201,12 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         aria-label="Upload bee image"
                         onChange={(e) => e.target.files && handleFile(e.target.files[0])}
                     />
-                    <Camera className="w-8 h-8 text-[#1A1A1A]" />
+                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10 group-hover:scale-110 transition-transform">
+                        <Camera className="w-8 h-8 text-[#F4D03F]/60" />
+                    </div>
                     <div className="text-center space-y-2">
-                        <h3 className="text-xl font-black text-[#1A1A1A] uppercase tracking-widest">Select Image</h3>
-                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-[0.2em]">Click to browse or drop file</p>
+                        <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest">Select Asset</h3>
+                        <p className={cn(glass.microLabel, "tracking-[0.2em]")}>DROP_FILE_OR_SYNC_DEVICE</p>
                     </div>
                 </div>
             )}
@@ -214,18 +215,18 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             {previewUrl && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-500">
                     <div className="lg:col-span-6 space-y-6">
-                        <div className="border-4 border-black bg-[#FFF9F0] p-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative">
-                            <div className="min-h-[300px] flex items-center justify-center bg-neutral-100 border-2 border-black">
+                        <div className={cn(glass.card, "p-4 relative")}>
+                            <div className="min-h-[300px] flex items-center justify-center bg-white/40 rounded-xl overflow-hidden border border-[#F4D03F]/10">
                                 <img src={previewUrl} alt="Analyzed" className="w-full h-full object-contain max-h-[500px]" />
                                 {isAnalyzing && (
-                                    <div className="absolute inset-0 bg-[#F9F7F2]0 flex flex-col items-center justify-center z-10">
+                                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
                                         {realtimeCount > 0 ? (
                                             <>
-                                                <div className="text-8xl font-black text-[#FF4F00] drop-shadow-lg">{realtimeCount}</div>
-                                                <div className="text-[#1A1A1A] font-black uppercase tracking-widest text-[10px] mt-2 bg-[#FFF9F0] px-4 py-2 border-2 border-white">Detected</div>
+                                                <div className="text-6xl font-black text-[#F4D03F] drop-shadow-sm">{realtimeCount}</div>
+                                                <div className={cn(glass.badge, "mt-2")}>Detected</div>
                                             </>
                                         ) : (
-                                            <div className="w-16 h-16 border-4 border-t-[#FF4F00] border-white rounded-none animate-spin" />
+                                            <RefreshCw className="w-8 h-8 text-[#F4D03F] animate-spin" />
                                         )}
                                     </div>
                                 )}
@@ -233,24 +234,24 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         </div>
 
                         <div className="flex justify-start">
-                            <button onClick={clearImage} className="h-10 px-8 border-2 border-black bg-[#FFF9F0] font-bold text-[10px] uppercase tracking-widest hover:bg-neutral-100 transition-none">
-                                Clear
+                            <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-widest text-[10px] rounded-xl")}>
+                                Flush Buffer
                             </button>
                         </div>
 
                         {results && (
-                            <div className="border-4 border-black bg-[#FFF9F0] p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                            <div className={glass.card}>
                                 <div className="space-y-6">
-                                    <div className="flex items-center gap-3 pb-4 border-b-2 border-black">
-                                        <div className="w-8 h-8 bg-[#FFF9F0] flex items-center justify-center"><Search className="w-4 h-4 text-[#1A1A1A]" /></div>
-                                        <h3 className="text-3xl font-black text-[#1A1A1A] uppercase tracking-tighter">Results</h3>
+                                    <div className="flex items-center gap-3 pb-4 border-b border-[#F4D03F]/10">
+                                        <div className="w-8 h-8 bg-[#F4D03F]/10 rounded-lg flex items-center justify-center border border-[#F4D03F]/20"><Activity className="w-4 h-4 text-[#F4D03F]" /></div>
+                                        <h3 className={glass.sectionTitle}>Signal Confidence</h3>
                                     </div>
                                     <div className="flex items-center justify-between gap-6">
-                                        <span className="text-xs font-black uppercase tracking-widest">Health Score</span>
-                                        <div className="flex-1 h-4 border-2 border-black bg-neutral-100 overflow-hidden">
-                                            <div className="h-full bg-[#FF4F00]" style={{ width: `${results.overallConfidence}%` }} />
+                                        <Label className={glass.microLabel}>Spectral Health Index</Label>
+                                        <div className="flex-1 h-2 rounded-full bg-white/40 overflow-hidden border border-white/20">
+                                            <div className="h-full bg-gradient-to-r from-[#F4D03F] to-[#1B9157]" style={{ width: `${results.overallConfidence}%` }} />
                                         </div>
-                                        <span className="text-xs font-black uppercase tracking-widest">{results.overallConfidence}%</span>
+                                        <span className="text-[10px] font-black text-[#1A1A1A]">{results.overallConfidence}%</span>
                                     </div>
                                 </div>
                             </div>
@@ -259,94 +260,103 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
 
                     <div className="lg:col-span-6 space-y-6">
                         {isAnalyzing ? (
-                            <div className="border-4 border-black bg-[#FFF9F0] p-12 h-full flex flex-col justify-center items-center text-center space-y-10 min-h-[400px] shadow-[8px_8px_0px_0px_rgba(255,79,0,1)]">
-                                <div className="w-20 h-20 bg-[#FFF9F0] flex items-center justify-center border-4 border-black shadow-[6px_6px_0px_0px_rgba(255,79,0,1)]">
-                                    <Bot className="w-10 h-10 text-[#1A1A1A]" />
+                            <div className={cn(glass.card, "h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]")}>
+                                <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                    <Bot className="w-8 h-8 text-[#F4D03F]" />
                                 </div>
-                                <div className="space-y-4">
-                                    <h3 className="text-4xl font-black text-[#1A1A1A] uppercase tracking-tighter leading-tight">Processing...</h3>
-                                    <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest leading-relaxed max-w-[280px]">
+                                <div className="space-y-2">
+                                    <h3 className={glass.sectionTitle}>Processing...</h3>
+                                    <p className={glass.microLabel}>
                                         Identifying patterns and detecting health anomalies.
                                     </p>
                                 </div>
-                                <div className="w-full max-w-[240px] h-3 border-2 border-black bg-neutral-100 overflow-hidden">
-                                    <div className="h-full bg-[#FFF9F0] w-1/3 animate-ping" />
+                                <div className="w-full max-w-[240px] h-1.5 rounded-full bg-white/40 overflow-hidden">
+                                    <div className="h-full bg-[#F4D03F] w-1/3 animate-ping" />
                                 </div>
                             </div>
                         ) : error ? (
-                            <div className="border-4 border-black bg-[#FFF9F0] p-12 h-full flex flex-col justify-center items-center text-center space-y-10 min-h-[400px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                                <Bot className="w-12 h-12 text-[#1A1A1A]" />
-                                <div className="space-y-4">
-                                    <h3 className="text-4xl font-black text-[#1A1A1A] uppercase tracking-tighter">Failed</h3>
-                                    <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest leading-relaxed max-w-[320px]">
-                                        Could not identify hive structures or bees. Please try a clearer photo.
+                            <div className={cn(glass.card, "h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]")}>
+                                <div className="w-16 h-16 rounded-2xl bg-red-500/5 flex items-center justify-center border border-red-500/10">
+                                    <Bot className="w-8 h-8 text-red-500/50" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className={cn(glass.sectionTitle, "text-red-500/60")}>Audit Reflected</h3>
+                                    <p className={cn(glass.microLabel, "max-w-[200px]")}>
+                                        Inconclusive visual data. Obfuscation detected or low-fidelity asset.
                                     </p>
                                 </div>
-                                <button onClick={clearImage} className="h-14 px-10 border-4 border-black bg-[#FFF9F0] text-[#1A1A1A] font-black uppercase tracking-widest text-[10px] hover:bg-[#FF4F00] transition-none">
-                                    Try Again
+                                <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-8 font-black uppercase text-[10px] rounded-xl border-red-500/20")}>
+                                    Retry Sweep
                                 </button>
                             </div>
                         ) : results ? (
-                            <div className="border-4 border-black bg-[#FFF9F0] p-10 space-y-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                                <div className="flex items-center justify-between border-b-2 border-black pb-4">
-                                    <h3 className="text-2xl font-black uppercase tracking-tight">Detection</h3>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Total Count</span>
-                                        <div className="w-10 h-10 bg-[#FFF9F0] text-[#1A1A1A] flex items-center justify-center border-2 border-black font-black">
+                            <div className={cn(glass.card, "space-y-6")}>
+                                <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
+                                    <h3 className={glass.sectionTitle}>Detection</h3>
+                                    <div className="flex items-center gap-3">
+                                        <span className={glass.microLabel}>Total Count</span>
+                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 text-[#F4D03F] flex items-center justify-center font-bold text-xs border border-[#F4D03F]/20">
                                             {results.beesCounted}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-8">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-                                            <span>Confidence</span>
-                                            <span className="text-[#1A1A1A]">{confidenceThreshold}%</span>
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <Label className={glass.microLabel}>Confidence Threshold</Label>
+                                                <span className="text-[10px] font-black text-[#1A1A1A] tabular-nums">{confidenceThreshold}%</span>
+                                            </div>
+                                            <Slider value={confidenceThreshold} onValueChange={setConfidenceThreshold} max={100} step={1} className="py-2" />
                                         </div>
-                                        <Slider value={confidenceThreshold} onValueChange={setConfidenceThreshold} max={100} step={1} />
-                                    </div>
 
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-                                            <span>Overlap</span>
-                                            <span className="text-[#1A1A1A]">{overlapThreshold}%</span>
+                                        <div className="space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <Label className={glass.microLabel}>Overlap Suppression</Label>
+                                                <span className="text-[10px] font-black text-[#1A1A1A] tabular-nums">{overlapThreshold}%</span>
+                                            </div>
+                                            <Slider value={overlapThreshold} onValueChange={setOverlapThreshold} max={100} step={1} className="py-2" />
                                         </div>
-                                        <Slider value={overlapThreshold} onValueChange={setOverlapThreshold} max={100} step={1} />
+
+                                        <div className="space-y-2">
+                                            <Label className={glass.microLabel}>Telemetry Labels</Label>
+                                            <Select value={displayMode} onValueChange={setDisplayMode}>
+                                                <SelectTrigger className={cn(glass.select, "h-9 border-white/40 bg-white/50 text-[10px] font-black")}>
+                                                    <SelectValue placeholder="Select Protocol" />
+                                                </SelectTrigger>
+                                                <SelectContent className={glass.selectContent}>
+                                                    <SelectItem value="Label + confidence" className="text-[10px] font-black uppercase">Full Telemetry</SelectItem>
+                                                    <SelectItem value="Label only" className="text-[10px] font-black uppercase">Class ID Only</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Label Mode</span>
-                                        <Select value={displayMode} onValueChange={setDisplayMode}>
-                                            <SelectTrigger className="w-full h-12 rounded-none bg-[#FFF9F0] border-2 border-black text-[11px] font-bold uppercase transition-none focus:ring-0">
-                                                <SelectValue placeholder="Select Mode" />
-                                            </SelectTrigger>
-                                            <SelectContent className="rounded-none border-2 border-black">
-                                                <SelectItem value="Label + confidence" className="text-[11px] font-bold uppercase">All</SelectItem>
-                                                <SelectItem value="Label only" className="text-[11px] font-bold uppercase">Labels</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-
-                                <div className="pt-6 border-t-2 border-black">
-                                    <div className="border-4 border-black overflow-hidden">
-                                        <table className="w-full text-[10px] font-bold border-collapse">
+                                <div className="pt-4 border-t border-[#F4D03F]/10">
+                                    <div className="rounded-xl border border-white/40 overflow-hidden bg-white/20 backdrop-blur-sm shadow-sm">
+                                        <table className="w-full text-[9px] font-black border-collapse">
                                             <thead>
-                                                <tr className="bg-[#FFF9F0] border-b-4 border-black text-[#1A1A1A] uppercase tracking-widest text-[9px]">
-                                                    <th className="px-3 py-3 text-left font-black">#</th>
-                                                    <th className="px-3 py-3 text-left font-black">Conf.</th>
-                                                    <th className="px-3 py-3 text-left font-black">Health</th>
-                                                    <th className="px-3 py-3 text-left font-black">Coords</th>
+                                                <tr className="bg-white/40 border-b border-white/40 text-gray-400 uppercase tracking-widest">
+                                                    <th className="px-3 py-2.5 text-left font-black">#</th>
+                                                    <th className="px-3 py-2.5 text-left font-black">CONF</th>
+                                                    <th className="px-3 py-2.5 text-left font-black">CLASS</th>
+                                                    <th className="px-3 py-2.5 text-left font-black">XY_MAP</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y-2 divide-black">
+                                            <tbody className="divide-y divide-white/20">
                                                 {results.detections.slice(0, 6).map((det: DetectionRecord, idx: number) => (
-                                                    <tr key={det.id} className="hover:bg-neutral-50 transition-none text-[#1A1A1A]">
-                                                        <td className="px-3 py-3">{idx + 1}</td>
-                                                        <td className="px-3 py-3">{det.confidence}%</td>
-                                                        <td className="px-3 py-3 font-black text-[#FF4F00]">{det.health}</td>
-                                                        <td className="px-3 py-3 text-neutral-400">[{det.x},{det.y}]</td>
+                                                    <tr key={det.id} className="hover:bg-white/60 transition-colors text-[#1A1A1A] uppercase tracking-tighter">
+                                                        <td className="px-3 py-2.5 text-gray-300">{(idx + 1).toString().padStart(2, '0')}</td>
+                                                        <td className="px-3 py-2.5 tabular-nums">{det.confidence}%</td>
+                                                        <td className="px-3 py-2.5">
+                                                            <span className={cn(
+                                                                "px-1.5 py-0.5 rounded bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/10",
+                                                                det.health !== 'healthy' && "bg-red-500/10 text-red-500 border-red-500/10"
+                                                            )}>
+                                                                {det.health}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-3 py-2.5 text-gray-400 font-mono">[{det.x},{det.y}]</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -355,43 +365,42 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 </div>
                             </div>
                         ) : !isAnalyzing && (
-                            <div className="space-y-10">
-                                <div className="border-4 border-black border-dashed bg-[#FFF9F0] p-12 h-auto flex flex-col justify-center items-center text-center space-y-10 min-h-[300px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                                    <div className="w-16 h-16 bg-[#FFF9F0] flex items-center justify-center border-4 border-black shadow-[6px_6px_0px_0px_rgba(255,79,0,1)]">
-                                        <Activity className="w-8 h-8 text-[#1A1A1A]" />
+                            <div className="space-y-6">
+                                <div className={cn(glass.card, "p-8 flex flex-col justify-center items-center text-center space-y-6 md:min-h-[250px]")}>
+                                    <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                        <Activity className="w-5 h-5 text-[#F4D03F]" />
                                     </div>
-                                    <h3 className="text-3xl font-black uppercase tracking-tighter">Ready</h3>
-                                    <button onClick={() => handleStartAnalysis()} className="w-full h-20 border-4 border-black bg-[#FFF9F0] text-[#1A1A1A] font-black text-xl uppercase tracking-widest hover:bg-[#FF4F00] transition-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                                    <h3 className={glass.sectionTitle}>Scanner Standby</h3>
+                                    <button onClick={() => handleStartAnalysis()} className={cn(glass.btnPrimary, "h-10 px-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl w-full max-w-xs")}>
                                         Identify Specimen
                                     </button>
                                 </div>
 
                                 {recentDetections.length > 0 && (
-                                    <div className="border-4 border-black bg-[#FFF9F0] p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                                        <div className="flex items-center justify-between mb-6 border-b-2 border-black pb-4">
-                                            <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-[#1A1A1A]" />
+                                    <div className={glass.card}>
+                                        <div className="flex items-center justify-between mb-4 border-b border-[#F4D03F]/10 pb-3">
+                                            <h3 className={glass.sectionTitle}>
                                                 History
                                             </h3>
                                         </div>
-                                        <div className="space-y-4">
+                                        <div className="space-y-3">
                                             {recentDetections.slice(0, 3).map((item, i) => (
-                                                <div key={i} className="flex items-center justify-between p-4 border-2 border-black bg-neutral-50 hover:bg-neutral-100 transition-none">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 border-2 border-black bg-neutral-200 overflow-hidden">
+                                                <div key={i} className="flex items-center justify-between p-3 rounded-xl border border-white/20 bg-white/40 hover:bg-white/60 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-lg border border-white/40 bg-white/60 overflow-hidden">
                                                             {item.thumbnail_url ? (
                                                                 <img src={item.thumbnail_url} alt="Thumbnail" className="w-full h-full object-cover" />
                                                             ) : (
-                                                                <div className="w-full h-full bg-neutral-300" />
+                                                                <div className="w-full h-full bg-black/5" />
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-[11px] font-black uppercase tracking-widest">Entry {i + 1}</p>
-                                                            <p className="text-[9px] font-bold text-neutral-400 uppercase">{new Date(item.created_at).toLocaleDateString()}</p>
+                                                            <p className="text-[10px] font-bold uppercase text-[#1A1A1A]">Entry {i + 1}</p>
+                                                            <p className={glass.microLabel}>{new Date(item.created_at).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-[11px] font-black uppercase text-[#FF4F00]">{item.health_score}% SCORE</p>
+                                                        <p className="text-[10px] font-bold uppercase text-[#F4D03F]">{item.health_score}% SCORE</p>
                                                     </div>
                                                 </div>
                                             ))}

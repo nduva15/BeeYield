@@ -107,6 +107,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         'meters-charts',
         'meters-consumption',
         'meters-comparisons',
+        'meters-heatmap',
         'meters-import',
         'meters-measurements'
     ].includes(activeSubTab)) {
@@ -130,15 +131,15 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         >
             <PageHeader
                 icon={Activity}
-                label="Environmental Telemetry v5.2"
+                label="Environmental Telemetry"
                 title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
                 subtitle="Real-time multi-node environment and vibration metrics monitoring."
                 actions={
                     <Button
                         onClick={() => onTabChange('meters-list')}
-                        className="h-10 bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#F4D03F]/90 rounded-xl px-6 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#F4D03F]/20"
+                        className={cn(glass.btnPrimary, "h-8 px-4 text-[9px] font-black uppercase tracking-[0.2em]")}
                     >
-                        Node Inventory <ChevronRight className="w-4 h-4" />
+                        Node_Inventory <ChevronRight className="w-3" />
                     </Button>
                 }
             />
@@ -157,55 +158,55 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     };
 
                     return (
-                        <div key={medium} className={cn(glass.card, "p-5 space-y-4 border-[#F4D03F]/10 bg-[#FFF9F0]/80 rounded-2xl group transition-all")}>
+                        <div key={medium} className={cn(glass.card, "p-4 space-y-3 bg-white/40 border-white/20 shadow-xl group hover:shadow-2xl transition-all")}>
                             <div className="flex justify-between items-start">
-                                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shadow-sm border border-[#F4D03F]/5 bg-white/50", colors[medium])}>
-                                    <Icon className="w-5 h-5" />
+                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border border-white/40 bg-white shadow-sm group-hover:scale-105 transition-transform", colors[medium])}>
+                                    <Icon className="w-4 h-4" />
                                 </div>
-                                <Badge className={cn("text-[8px] px-2 py-0.5 rounded-full border-none font-black italic", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-[#1B9157]/10 text-[#1B9157]")}>
+                                <Badge className={cn("text-[8px] px-1.5 py-0.5 rounded-md border-none font-bold", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-[#1B9157]/10 text-[#1B9157]")}>
                                     {alertCount > 0 ? `${alertCount} ALARMS` : 'OPTIMIZED'}
                                 </Badge>
                             </div>
                             <div>
-                                <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">{medium} LOAD</p>
-                                <p className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                    {total} <span className="text-[10px] font-medium opacity-30 italic">{unit}</span>
+                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{medium}_LOAD</p>
+                                <p className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">
+                                     {total} <span className="text-[9px] font-medium opacity-30 tracking-normal font-sans uppercase">{unit}</span>
                                 </p>
                             </div>
                         </div>
                     );
                 })}
 
-                <div className={cn(glass.card, "p-5 space-y-4 border-red-500/10 bg-red-500/[0.02] rounded-2xl group transition-all")}>
+                <div className={cn(glass.card, "p-4 space-y-3 border-red-500/20 bg-red-500/[0.05] shadow-xl group hover:shadow-2xl transition-all")}>
                     <div className="flex justify-between items-start">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm border border-red-500/10 bg-white/50 text-red-500">
-                            <AlertTriangle className="w-5 h-5 animate-pulse" />
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-red-500/20 bg-white shadow-sm text-red-500 group-hover:scale-105 transition-transform">
+                            <AlertTriangle className="w-4 h-4 animate-pulse" />
                         </div>
-                        <Badge className="bg-red-500 text-white border-none px-2 py-0.5 rounded-full font-black italic text-[8px] animate-pulse">ACTION REQUIRED</Badge>
+                        <Badge className="bg-red-500 text-white border-none px-1.5 py-0.5 rounded-md font-bold text-[8px] animate-pulse">ACTION</Badge>
                     </div>
                     <div>
-                        <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">PROTOCOL ALERTS</p>
-                        <p className="text-2xl font-black text-red-600 tracking-tighter tabular-nums">{activeAlarmsCount}</p>
+                        <p className="text-[8px] font-black text-red-500/60 uppercase tracking-widest">PROTOCOL_ALERTS</p>
+                        <p className="text-lg font-black text-red-600 tracking-tighter tabular-nums">{activeAlarmsCount}</p>
                     </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Trend Chart */}
-                <div className={cn(glass.card, "lg:col-span-2 p-6 space-y-6 bg-[#FFF9F0]/80 rounded-3xl")}>
-                    <div className="flex justify-between items-center border-b border-[#F4D03F]/10 pb-4">
+                <div className={cn(glass.card, "lg:col-span-2 p-5 space-y-4 bg-white/40 border-white/20 shadow-xl")}>
+                    <div className="flex justify-between items-center border-b border-white/20 pb-4">
                         <div className="space-y-0.5">
-                            <h3 className="text-lg font-black text-[#1A1A1A] tracking-tighter uppercase italic">Resource <span className="text-[#F4D03F]">Flow</span></h3>
-                            <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">Biomass accumulation delta matrix</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Resource_Flow</h3>
+                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">BIOMASS_ACCUMULATION_DELTA</p>
                         </div>
-                        <div className="flex bg-[#1A1A1A]/5 p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
+                        <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 backdrop-blur-sm">
                             {(['Water', 'Heat', 'Energy'] as const).map(m => (
                                 <button
                                     key={m}
                                     onClick={() => setUsageFilter(m)}
                                     className={cn(
-                                        "h-7 px-3 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
-                                        usageFilter === m ? "bg-white text-[#F4D03F] shadow-sm" : "text-[#1A1A1A]/30"
+                                        "h-7 px-4 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all",
+                                        usageFilter === m ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40" : "text-gray-400 hover:text-[#1A1A1A]/60"
                                     )}
                                 >
                                     {m}
@@ -235,14 +236,14 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 </div>
 
                 {/* AI Assistant */}
-                <div className={cn(glass.card, "p-6 flex flex-col bg-[#FFF9F0]/80 shadow-sm rounded-3xl")}>
-                    <div className="flex items-center gap-4 mb-6 border-b border-[#F4D03F]/10 pb-4">
-                        <div className="w-10 h-10 bg-[#F4D03F]/10 rounded-xl flex items-center justify-center border border-[#F4D03F]/10">
-                            <Bot className="w-5 h-5 text-[#F4D03F]" />
+                <div className={cn(glass.card, "p-5 flex flex-col bg-white/40 border-white/20 shadow-xl")}>
+                    <div className="flex items-center gap-3 mb-4 border-b border-white/20 pb-4">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-[#1A1A1A]/10 shadow-sm">
+                            <Bot className="w-5 h-5 text-[#1A1A1A]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-lg font-black text-[#1A1A1A] tracking-tighter uppercase italic">Co-Pilot</h3>
-                            <p className="text-[9px] font-black text-[#1A1A1A]/30 uppercase tracking-widest italic">Acoustic resonance expert</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Co_Pilot</h3>
+                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">ACOUSTIC_RESONANCE_EXPERT</p>
                         </div>
                     </div>
 
@@ -250,8 +251,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         {chatMessages.map((msg, idx) => (
                             <div key={idx} className={cn("flex", msg.role === 'user' ? "justify-end" : "justify-start")}>
                                 <div className={cn(
-                                    "px-4 py-2 rounded-2xl max-w-[90%] text-[11px] font-medium leading-relaxed",
-                                    msg.role === 'user' ? "bg-[#F4D03F] text-white rounded-tr-none" : "bg-white border border-[#F4D03F]/10 text-[#1A1A1A]/70 rounded-tl-none"
+                                    "px-4 py-2.5 rounded-2xl max-w-[90%] text-[10px] font-black uppercase tracking-wider leading-relaxed shadow-sm",
+                                    msg.role === 'user' ? "bg-[#1A1A1A] text-white rounded-tr-none" : "bg-white border border-white/40 text-gray-500 rounded-tl-none"
                                 )}>
                                     {msg.content}
                                 </div>
@@ -261,15 +262,15 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
                     <div className="relative">
                         <input
-                            placeholder="Query the telemetry..."
+                            placeholder="QUERY_TELEMETRY..."
                             value={aiMessage}
                             onChange={e => setAiMessage(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                            className="w-full h-11 bg-white border border-[#F4D03F]/10 rounded-xl pl-4 pr-12 text-[11px] font-medium italic outline-none focus:ring-1 focus:ring-[#F4D03F]/30"
+                            className="w-full h-10 bg-white border border-white/40 rounded-xl pl-4 pr-12 text-[9px] font-black tracking-widest uppercase outline-none focus:ring-1 focus:ring-[#1A1A1A]/10 shadow-sm"
                         />
                         <button
                             onClick={handleSendMessage}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-[#F4D03F] text-[#1A1A1A] rounded-lg flex items-center justify-center shadow-md shadow-honey/20"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-[#1A1A1A] text-white rounded-lg flex items-center justify-center shadow-md transition-transform hover:scale-105 active:scale-95"
                         >
                             <Send className="w-3.5 h-3.5" />
                         </button>
@@ -278,19 +279,19 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             </div>
 
             {/* Recent Events List */}
-            <div className={cn(glass.card, "p-0 overflow-hidden bg-[#FFF9F0]/80 rounded-3xl")}>
-                <div className="p-6 border-b border-[#F4D03F]/10 bg-[#1A1A1A]/5 flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        <TrendingUp className="w-5 h-5 text-[#1B9157]" />
-                        <h3 className="text-xl font-black text-[#1A1A1A] tracking-tighter uppercase italic">Audit <span className="text-[#F4D03F]">Records</span></h3>
+            <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
+                <div className="p-4 border-b border-white/20 bg-white/20 flex justify-between items-center backdrop-blur-sm">
+                    <div className="flex items-center gap-3">
+                        <TrendingUp className="w-4 h-4 text-[#1B9157]" />
+                        <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Audit_Records</h3>
                     </div>
-                    <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-[#F4D03F] hover:bg-transparent p-0">
-                        Historical Log →
+                    <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-[#1A1A1A] hover:bg-white/40 rounded-xl px-3 h-7">
+                        Historical_Log <ChevronRight className="w-3" />
                     </Button>
                 </div>
-                <div className="divide-y divide-[#F4D03F]/5">
+                <div className="divide-y divide-white/20">
                     {events.slice(0, 5).map((event, i) => (
-                        <div key={event.id || i} className="p-5 flex items-center justify-between hover:bg-[#F4D03F]/[0.02] transition-colors group">
+                        <div key={event.id || i} className="p-5 flex items-center justify-between hover:bg-white/40 transition-colors group">
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "w-2 h-2 rounded-full",
@@ -301,7 +302,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                         {event.event_type}
                                     </p>
                                     <p className="text-[10px] text-[#1A1A1A]/40 font-medium italic mt-0.5 truncate max-w-[400px]">
-                                        {event.reason} · Node: {event.sender_node_id || 'System'}
+                                        {event.reason} · Node: {event.meter_id || 'System'}
                                     </p>
                                 </div>
                             </div>

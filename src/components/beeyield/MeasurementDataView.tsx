@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Thermometer, Droplets, Weight, Download, Activity, FileText, Zap, ChevronDown, Calendar, Database } from 'lucide-react';
+import { Thermometer, Droplets, Weight, Download, FileText, Zap, Calendar, Database } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
+import { glass, PageHeader } from './GlassTheme';
 
 interface MeasurementDataViewProps {
     onTabChange: (tab: string) => void;
@@ -20,14 +21,15 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
     const { data: metrics } = useQuery({
         queryKey: ['measurement_data', timeRange],
         queryFn: async () => {
-            const { data: { user } } = await supabase!.auth.getUser();
+            if (!supabase) return [];
+            const { data: { user } } = await supabase.auth.getUser();
             if (!user) return [];
 
             const days = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : 30;
             const startTime = new Date();
             startTime.setDate(startTime.getDate() - days);
 
-            const { data, error } = await supabase!
+            const { data, error } = await supabase
                 .from('sensor_readings')
                 .select('*')
                 .gte('recorded_at', startTime.toISOString())
@@ -52,87 +54,83 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
     const latest = displayData[displayData.length - 1] || { temp: 0, hum: 0, weight: 0, acoustics: 0 };
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 pb-20 honeycomb-bg min-h-screen p-8 -m-8">
+        <div className="space-y-8 animate-in fade-in duration-500 pb-20 p-8 -m-8">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row justify-between items-end gap-8 pb-4">
-                <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2.5 px-5 py-2 bg-[#F4D03F]/10 text-[#F4D03F] rounded-full text-[10px] font-black uppercase tracking-widest border border-[#F4D03F]/20 backdrop-blur-sm">
-                        <Database className="w-3.5 h-3.5" />
-                        AI-Enhanced Telemetry
+            <PageHeader
+                icon={Database}
+                label="Orbital Intelligence Kernel"
+                title="Telemetry Analytics"
+                subtitle="High-fidelity sensor telemetry and environmental biome analytics."
+                actions={
+                    <div className="flex flex-wrap gap-3">
+                        <button className={cn(glass.btnSecondary, "h-9 px-6 rounded-xl flex items-center gap-2")}>
+                            <FileText className="w-3.5 h-3.5 text-[#F4D03F]" />
+                            <span>EXPORT_REPORT</span>
+                        </button>
+                        <button className={cn(glass.btnSecondary, "h-9 px-6 rounded-xl flex items-center gap-2")}>
+                            <Download className="w-3.5 h-3.5 text-[#F4D03F]" />
+                            <span>RAW_DATASET</span>
+                        </button>
+                        <Select value={timeRange} onValueChange={setTimeRange}>
+                            <SelectTrigger className={cn(glass.select, "w-[160px] h-9 rounded-xl")}>
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                    <SelectValue placeholder="Range" />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent className={cn(glass.selectContent, "rounded-xl")}>
+                                <SelectItem value="24h" className="font-black uppercase text-[9px] tracking-[0.2em]">24H_CYCLE</SelectItem>
+                                <SelectItem value="7d" className="font-black uppercase text-[9px] tracking-[0.2em]">7D_CYCLE</SelectItem>
+                                <SelectItem value="30d" className="font-black uppercase text-[9px] tracking-[0.2em]">30D_CYCLE</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <h1 className="text-6xl font-serif font-black text-[#F4D03F] tracking-tight leading-none">Telemetry <span className="text-foreground">Analytics</span></h1>
-                    <p className="text-sm font-medium text-muted-foreground max-w-lg leading-relaxed uppercase tracking-wider opacity-70">
-                        Historical and real-time sensor analytics powered by BeeYield&apos;s Global Intelligence Framework.
-                    </p>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-[#F9F7F2]0 backdrop-blur-md border border-border text-muted-foreground hover:text-[#F4D03F] font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-[#F4D03F]/50 transition-all">
-                        <FileText className="w-4 h-4 mr-2" /> Export Audit
-                    </Button>
-                    <Button variant="ghost" className="h-14 px-8 rounded-2xl bg-[#F9F7F2]0 backdrop-blur-md border border-border text-muted-foreground hover:text-[#F4D03F] font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-[#F4D03F]/50 transition-all">
-                        <Download className="w-4 h-4 mr-2" /> Dataset
-                    </Button>
-                    <Select value={timeRange} onValueChange={setTimeRange}>
-                        <SelectTrigger className="w-[200px] h-14 rounded-2xl border-border bg-[#F9F7F2]0 backdrop-blur-md font-black text-[10px] uppercase tracking-widest shadow-sm focus:ring-[#F4D03F]/20">
-                            <Calendar className="w-4 h-4 mr-2 text-[#F4D03F]" />
-                            <SelectValue placeholder="Time Range" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-border shadow-2xl p-0 backdrop-blur-xl bg-[#FFF9F0]/90">
-                            <SelectItem value="24h" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 24h</SelectItem>
-                            <SelectItem value="7d" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 7d</SelectItem>
-                            <SelectItem value="30d" className="p-4 font-black uppercase text-[10px] tracking-widest">Cycle: 30d</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
+                }
+            />
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Thermal Internal', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
-                    { label: 'Ambient Saturation', value: `${latest.hum}%`, icon: Droplets, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
-                    { label: 'Colony Biomass', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
-                    { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
+                    { label: 'THERMAL_INTERNAL', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-amber-500' },
+                    { label: 'AMBIENT_SATURATION', value: `${latest.hum}%`, icon: Droplets, color: 'text-blue-500' },
+                    { label: 'COLONY_BIOMASS', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#1B9157]' },
+                    { label: 'ACOUSTIC_SIGNATURE', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]' },
                 ].map((stat, i) => (
                     <motion.div
                         key={stat.label}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.05 }}
+                        className={cn(glass.card, "p-4 flex flex-col gap-1.5 border-white/40 shadow-sm group hover:border-[#F4D03F]/30 transition-all")}
                     >
-                        <Card className="rounded-[2.5rem] border border-border bg-[#FFF9F0]/80 backdrop-blur-md shadow-xl shadow-black/5 hover:border-[#F4D03F]/30 transition-all group overflow-hidden">
-                            <CardContent className="p-8">
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", stat.bg)}>
-                                        <stat.icon className={cn("w-7 h-7", stat.color)} />
-                                    </div>
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-tight opacity-70">{stat.label}</p>
-                                </div>
-                                <p className="text-4xl font-serif font-black text-foreground tabular-nums tracking-tight">{stat.value}</p>
-                            </CardContent>
-                        </Card>
+                        <div className="flex items-center justify-between relative z-10">
+                            <span className={glass.microLabel}>{stat.label}</span>
+                            <stat.icon className={cn("w-3.5 h-3.5", stat.color)} />
+                        </div>
+                        <span className={cn("text-xl font-black tracking-tighter tabular-nums relative z-10", stat.color)}>{stat.value}</span>
+                        <div className="absolute inset-x-0 bottom-0 h-0.5 bg-[#F4D03F]/10 group-hover:bg-[#F4D03F]/30 transition-all" />
                     </motion.div>
                 ))}
             </div>
 
             {/* Main Chart Area */}
-            <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 overflow-hidden">
-                <CardContent className="p-10">
-                    <div className="flex justify-between items-center mb-12">
+            <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden mt-6")}>
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="relative z-10">
+                    <div className="flex justify-between items-center mb-8">
                         <div className="space-y-1">
-                            <h3 className="text-2xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Thermal Stability Registry</h3>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Internal environmental control audit</p>
+                            <h3 className="text-[14px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">Thermal_Stability_Registry</h3>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">INTERNAL_ENVIRONMENTAL_CONTROL_AUDIT</p>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 border border-amber-100">
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#F4D03F] animate-pulse" />
-                                <span className="text-[10px] font-black text-[#F4D03F] uppercase tracking-widest">Internal Node 01</span>
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/50 border border-[#F4D03F]/20 shadow-sm">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] animate-pulse shadow-sm shadow-[#F4D03F]/50" />
+                                <span className="text-[9px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Active_Probe_01</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="h-[450px] w-full">
+                    <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={displayData}>
                                 <defs>
@@ -141,63 +139,66 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                                         <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" opacity={0.1} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
                                 <XAxis
                                     dataKey="time"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 900 }}
-                                    dy={15}
+                                    tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }}
+                                    dy={10}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 900 }}
-                                    dx={-15}
+                                    tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }}
+                                    dx={-10}
                                 />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', padding: '20px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)' }}
-                                    itemStyle={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' }}
+                                    contentStyle={{ borderRadius: '16px', border: '1px solid rgba(244, 208, 63, 0.2)', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', padding: '12px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(4px)' }}
+                                    itemStyle={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '9px', color: '#F4D03F' }}
+                                    labelStyle={{ fontWeight: 900, marginBottom: '4px', fontSize: '9px', color: '#1A1A1A' }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="temp"
                                     stroke="#f59e0b"
-                                    strokeWidth={4}
+                                    strokeWidth={3}
                                     fillOpacity={1}
                                     fill="url(#colorTemp)"
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 p-10">
-                    <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Mass Variation (kg)</h3>
-                        <Badge className="bg-emerald-50 text-[#1B9157] border-none font-black text-[10px] uppercase tracking-widest">Active Scale</Badge>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
+                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1B9157 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                    <div className="flex justify-between items-center mb-8 relative z-10">
+                        <h3 className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">Mass_Variation_KG</h3>
+                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 font-black text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-xl shadow-sm">Active_Scale</Badge>
                     </div>
-                    <div className="h-[300px] w-full">
+                    <div className="h-[220px] w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={displayData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" opacity={0.1} />
-                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dx={-10} />
-                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 15px 30px -5px rgba(0,0,0,0.1)' }} />
-                                <Line type="monotone" dataKey="weight" stroke="#10b981" strokeWidth={4} dot={{ r: 0 }} activeDot={{ r: 6, fill: '#10b981', strokeWidth: 0 }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
+                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} dy={5} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} dx={-5} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid rgba(244, 208, 63, 0.1)' }} />
+                                <Line type="monotone" dataKey="weight" stroke="#10b981" strokeWidth={3} dot={{ r: 0 }} activeDot={{ r: 4, fill: '#10b981', strokeWidth: 0 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
-                </Card>
+                </div>
 
-                <Card className="rounded-[3rem] border border-slate-200/60 bg-[#FFF9F0] shadow-2xl shadow-black/5 p-10">
-                    <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Saturation Profile (%)</h3>
-                        <Badge className="bg-amber-50 text-[#F4D03F] border-none font-black text-[10px] uppercase tracking-widest">Balanced</Badge>
+                <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
+                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1B9157 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                    <div className="flex justify-between items-center mb-8 relative z-10">
+                        <h3 className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">Saturation_Profile_PCT</h3>
+                        <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 font-black text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-xl shadow-sm">Humidity_Sensor</Badge>
                     </div>
-                    <div className="h-[300px] w-full">
+                    <div className="h-[220px] w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={displayData}>
                                 <defs>
@@ -206,15 +207,15 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                                         <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" opacity={0.1} />
-                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8', fontWeight: 900 }} dx={-10} />
-                                <Tooltip contentStyle={{ borderRadius: '20px', border: 'none' }} />
-                                <Area type="monotone" dataKey="hum" stroke="#10b981" strokeWidth={4} fill="url(#colorHum)" fillOpacity={1} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
+                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} dy={5} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} dx={-5} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid rgba(244, 208, 63, 0.1)' }} />
+                                <Area type="monotone" dataKey="hum" stroke="#10b981" strokeWidth={3} fill="url(#colorHum)" fillOpacity={1} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
-                </Card>
+                </div>
             </div>
         </div>
     );

@@ -6,16 +6,10 @@ declare global {
 
 import React from 'react';
 import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
-import { Card, CardContent } from '@/components/ui/card';
 import {
     Bluetooth as BluetoothIcon,
-    Wifi,
-    Zap,
-    Check,
     X,
-    AlertTriangle,
     Search,
-    Activity,
     Battery,
     Thermometer,
     Scale,
@@ -23,12 +17,10 @@ import {
     Save,
     RefreshCw,
     Smartphone,
-    Info,
     ChevronRight,
     Cpu,
     ShieldCheck,
     Terminal,
-    ArrowRight,
     Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -38,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 
 // Service UUID from PRD
 const BEEYIELD_SERVICE_UUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
@@ -76,12 +68,16 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
     }, []);
 
     const loadData = async () => {
-        const [apiariesData, hivesData] = await Promise.all([
-            beeyieldService.getApiaries(),
-            beeyieldService.getHives()
-        ]);
-        setApiaries(apiariesData);
-        setHives(hivesData);
+        try {
+            const [apiariesData, hivesData] = await Promise.all([
+                beeyieldService.getApiaries(),
+                beeyieldService.getHives()
+            ]);
+            setApiaries(apiariesData || []);
+            setHives(hivesData || []);
+        } catch (err) {
+            console.error("Failed to load data", err);
+        }
     };
 
     const addLog = (msg: string) => {
@@ -226,107 +222,96 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-8 -m-8 space-y-20 pb-24")}
+            className={glass.page}
         >
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 pb-12 border-b border-[#F4D03F]/10">
-                <div className="space-y-6">
-                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg]')}>
-                        <div className="flex items-center gap-4 skew-x-[12deg]">
-                            <BluetoothIcon className="w-5 h-5" />
-                            <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Wireless Connection</span>
-                        </div>
+            <PageHeader
+                icon={BluetoothIcon}
+                label="Wireless_Interface_Protocol"
+                title={<>Device <span className="text-[#F4D03F]">Link</span></>}
+                subtitle="Establish industrial Bluetooth bridge for real-time telemetry."
+                actions={
+                    <div className="flex gap-3">
+                        <AnimatePresence mode="wait">
+                            {status === 'CONNECTED' ? (
+                                <motion.button
+                                    key="disconnect"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    onClick={() => gattServer?.device.gatt.disconnect()}
+                                    className={cn(glass.btnSecondary, "h-8 px-4 text-red-500 border-red-500/10 hover:bg-red-500/10 font-black uppercase text-[9px] tracking-[0.2em] rounded-xl shadow-sm flex items-center gap-2")}
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                    Disconnect_Link
+                                </motion.button>
+                            ) : (
+                                <motion.button
+                                    key="search"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    onClick={handleSearch}
+                                    disabled={status === 'SCANNING' || status === 'CONNECTING'}
+                                    className={cn(glass.btnPrimary, "h-8 px-6 font-black uppercase text-[9px] tracking-[0.2em] shadow-lg shadow-[#F4D03F]/10 rounded-xl min-w-[150px] flex items-center justify-center gap-2")}
+                                >
+                                    {status === 'SCANNING' ? (
+                                        <>
+                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                            Scanning...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Search className="w-3.5 h-3.5" />
+                                            Detect_Sensors
+                                        </>
+                                    )}
+                                </motion.button>
+                            )}
+                        </AnimatePresence>
                     </div>
-                    <h1 className="text-8xl font-black text-foreground tracking-tighter uppercase italic leading-none">
-                        Device <span className="text-[#F4D03F]">Link</span>
-                    </h1>
-                    <p className={cn(glass.microLabel, "opacity-40 italic font-black uppercase tracking-[0.4em] ml-2")}>
-                        Connect and sync your sensors directly to your phone.
-                    </p>
-                </div>
-
-                <div className="flex gap-6">
-                    <AnimatePresence mode="wait">
-                        {status === 'CONNECTED' ? (
-                            <motion.button
-                                key="disconnect"
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                onClick={() => gattServer?.device.gatt.disconnect()}
-                                className={cn(glass.btnSecondary, "h-20 px-12 text-destructive border-destructive/20 hover:bg-destructive/10 hover:border-destructive font-black italic uppercase rounded-full shadow-4xl flex items-center gap-6")}
-                            >
-                                <X className="w-8 h-8" />
-                                Disconnect
-                            </motion.button>
-                        ) : (
-                            <motion.button
-                                key="search"
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                onClick={handleSearch}
-                                disabled={status === 'SCANNING' || status === 'CONNECTING'}
-                                className={cn(glass.btnPrimary, "h-20 px-16 font-black italic uppercase text-2xl shadow-4xl shadow-honey/20 rounded-full min-w-[300px] flex items-center justify-center gap-6")}
-                            >
-                                {status === 'SCANNING' ? (
-                                    <>
-                                        <Loader2 className="w-8 h-8 animate-spin" />
-                                        Scanning...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Search className="w-8 h-8" />
-                                        Search Sensors
-                                    </>
-                                )}
-                            </motion.button>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
+                }
+            />
 
             {/* Status Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {[
-                    { label: 'STATUS', value: status === 'IDLE' ? 'Ready' : status.charAt(0) + status.slice(1).toLowerCase(), icon: Smartphone, color: status === 'CONNECTED' ? 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/' : 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20', sub: connectedDevice ? connectedDevice.id : 'No Link' },
-                    { label: 'BATTERY', value: liveData.battery ? `${liveData.battery}%` : '--%', icon: Battery, color: liveData.battery && liveData.battery < 20 ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20', progress: liveData.battery || 0 },
-                    { label: 'HIVE LINK', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'LINKED' : 'NOT LINKED', icon: Activity, color: 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20', action: () => status === 'CONNECTED' && setShowSetupModal(true) }
+                    { label: 'Network_Status', value: status === 'IDLE' ? 'READY' : status.toUpperCase(), icon: Smartphone, color: status === 'CONNECTED' ? 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 shadow-sm' : 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/10', sub: connectedDevice ? connectedDevice.id : 'BUFFER_WAIT' },
+                    { label: 'Energy_Level', value: liveData.battery ? `${liveData.battery}%` : '00%', icon: Battery, color: liveData.battery && liveData.battery < 20 ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/10', progress: liveData.battery || 0 },
+                    { label: 'Hive_Sync', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'ACTIVE' : 'ORPHANED', icon: Activity, color: 'bg-white/40 border-white/20', action: () => status === 'CONNECTED' && setShowSetupModal(true) }
                 ].map((stat, i) => (
                     <motion.div
                         key={i}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className={cn(glass.card, "p-10 shadow-4xl relative overflow-hidden group border-[#F4D03F]/10 rounded-[4rem]")}
+                        transition={{ delay: i * 0.05 }}
+                        className={cn(glass.card, "p-5 hover:border-[#F4D03F]/40 group bg-white/40 border-white/20 shadow-xl relative overflow-hidden transition-all duration-300")}
                     >
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-[#F4D03F]/10 rounded-full -mr-24 -mt-24 blur-3xl group-hover:bg-[#F4D03F]/20 transition-all pointer-events-none" />
-                        <div className="flex items-center gap-6 mb-10">
-                            <div className={cn("w-20 h-20 rounded-[2.5rem] flex items-center justify-center border-2 transition-all shadow-4xl", stat.color)}>
-                                <stat.icon className="w-10 h-10" />
+                        <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none transition-transform group-hover:scale-110 duration-700"><stat.icon className="w-12 h-12" /></div>
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center border transition-all shadow-sm", stat.color)}>
+                                <stat.icon className="w-3.5 h-3.5" />
                             </div>
-                            <p className="text-[14px] font-black uppercase tracking-[0.4em] opacity-40 italic">{stat.label}</p>
+                            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">{stat.label}</p>
                         </div>
-                        <h3 className="text-5xl font-black italic tracking-tighter uppercase leading-none mb-4">{stat.value}</h3>
-                        {stat.sub && <p className="text-[12px] font-black opacity-20 uppercase tracking-widest leading-none">{stat.sub}</p>}
+                        <h3 className="text-lg font-bold tracking-tight uppercase leading-none mb-1 text-[#1A1A1A]">{stat.value}</h3>
+                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest leading-none">{stat.sub || 'STANDBY_PROTOCOL'}</p>
+                        
                         {stat.progress !== undefined && (
-                            <div className="mt-8 w-full h-3 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10 shadow-inner p-[2px]">
+                            <div className="mt-5 w-full h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 shadow-inner p-0.5">
                                 <motion.div
-                                    className={cn("h-full rounded-full shadow-2xl relative", stat.progress < 20 ? 'bg-red-500' : 'bg-[#F4D03F]')}
+                                    className={cn("h-full rounded-full relative", stat.progress < 20 ? 'bg-red-500' : 'bg-[#1B9157]')}
                                     initial={{ width: 0 }}
                                     animate={{ width: `${stat.progress}%` }}
-                                    transition={{ duration: 1.5, ease: "easeOut" }}
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                                </motion.div>
+                                />
                             </div>
                         )}
                         {stat.action && (
                             <button
                                 onClick={stat.action}
-                                className="mt-8 h-12 px-6 rounded-full border border-[#F4D03F]/20 text-[12px] font-black text-[#F4D03F] uppercase tracking-widest hover:bg-[#F4D03F]/10 transition-all flex items-center gap-4 group/btn"
+                                className="mt-5 h-7 px-3 rounded-lg border border-[#F4D03F]/20 text-[8px] font-black text-[#F4D03F] uppercase tracking-widest hover:bg-[#F4D03F]/10 transition-all flex items-center gap-2 group/btn"
                             >
-                                Change Link <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
+                                Reconfigure_Link <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
                             </button>
                         )}
                     </motion.div>
@@ -334,239 +319,206 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             </div>
 
             {/* Live Data & Sync Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 pt-8">
-                {/* Live Data Gauges */}
-                <div className="lg:col-span-8 space-y-16">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="lg:col-span-12 space-y-6">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-16 shadow-4xl bg-[#FFF9F0]/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-[#F4D03F]/10")}
+                        className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}
                     >
-                        <div className="absolute top-0 right-0 p-16 relative z-20">
-                            <div className="flex items-center gap-6 bg-[#1B9157]/ border-2 border-[#1B9157]/ rounded-full px-8 py-3 backdrop-blur-3xl shadow-4xl">
-                                <div className="w-4 h-4 rounded-full bg-[#1B9157] animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-                                <span className="text-xl font-black italic text-[#1B9157] uppercase tracking-widest">LIVE DATA SERVICE</span>
+                        <div className="absolute top-4 right-8 z-20">
+                            <div className="flex items-center gap-2.5 bg-[#1B9157]/5 border border-[#1B9157]/20 rounded-full px-3 py-1 shadow-sm">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse shadow-sm shadow-[#1B9157]/50" />
+                                <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-widest">Live_Service</span>
                             </div>
                         </div>
 
-                        <div className="mb-20 relative z-10">
-                            <h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none mb-6">Real-Time <span className="text-[#F4D03F]">Sensors</span></h2>
-                            <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-[#F4D03F]/10 max-w-2xl">Get data directly from your sensors in the field.</p>
+                        <div className="mb-8">
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Real_Time_Telemetry</h3>
+                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">FIELD_HANDSHAKE_CONCURRENT_STREAM</p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-20 relative z-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                             {[
-                                { label: 'Temperature', val: liveData.temp?.toFixed(1) || '0.0', unit: '°C', icon: Thermometer, color: 'text-red-500', max: 60, stroke: 'rgb(239, 68, 68)' },
-                                { label: 'Hive Weight', val: liveData.weight?.toFixed(1) || '0.0', unit: 'KG', icon: Scale, color: 'text-[#F4D03F]', max: 100, stroke: 'rgb(251, 191, 36)' },
-                                { label: 'Humidity', val: liveData.humidity || '0', unit: '%', icon: Droplet, color: 'text-blue-500', max: 100, stroke: 'rgb(59, 130, 246)' }
+                                { label: 'Internal_Temp', val: liveData.temp?.toFixed(1) || '0.0', unit: '°C', icon: Thermometer, color: 'text-red-500', bg: 'bg-red-500/5', max: 60, stroke: '#EF4444' },
+                                { label: 'Biomass_Weight', val: liveData.weight?.toFixed(1) || '0.0', unit: 'KG', icon: Scale, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', max: 100, stroke: '#F4D03F' },
+                                { label: 'Relative_Humidity', val: liveData.humidity || '0', unit: '%', icon: Droplet, color: 'text-blue-500', bg: 'bg-blue-500/5', max: 100, stroke: '#3B82F6' }
                             ].map((gauge, i) => (
-                                <div key={i} className="flex flex-col items-center gap-10 group/gauge">
-                                    <div className="relative w-56 h-56 flex items-center justify-center">
-                                        <svg className="w-full h-full -rotate-90 absolute group-hover/gauge:scale-110 transition-transform duration-1000">
-                                            <circle cx="112" cy="112" r="100" fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="12" />
+                                <div key={i} className="flex flex-col items-center gap-5 group/gauge">
+                                    <div className="relative w-28 h-28 flex items-center justify-center">
+                                        <svg className="w-full h-full -rotate-90 absolute">
+                                            <circle cx="56" cy="56" r="50" fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="5" />
                                             <motion.circle
-                                                cx="112" cy="112" r="100" fill="none"
-                                                stroke={gauge.stroke} strokeWidth="12"
-                                                strokeDasharray="628"
-                                                initial={{ strokeDashoffset: 628 }}
-                                                animate={{ strokeDashoffset: 628 - (628 * (Number(gauge.val) || 0) / gauge.max) }}
+                                                cx="56" cy="56" r="50" fill="none"
+                                                stroke={gauge.stroke} strokeWidth="5"
+                                                strokeDasharray="314"
+                                                initial={{ strokeDashoffset: 314 }}
+                                                animate={{ strokeDashoffset: 314 - (314 * (Math.min(Number(gauge.val), gauge.max) / gauge.max)) }}
                                                 strokeLinecap="round"
-                                                className="transition-all duration-1000 drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]"
+                                                className="transition-all duration-1000"
                                             />
                                         </svg>
                                         <div className="flex flex-col items-center relative z-10">
-                                            <span className="text-6xl font-black italic tabular-nums leading-none tracking-tighter mb-2">{gauge.val}</span>
-                                            <span className="text-2xl font-black italic opacity-30 uppercase">{gauge.unit}</span>
+                                            <span className="text-lg font-bold tabular-nums leading-none tracking-tight mb-0.5 text-[#1A1A1A]">{gauge.val}</span>
+                                            <span className="text-[9px] font-bold opacity-40 uppercase">{gauge.unit}</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4 bg-[#F9F7F2] px-8 py-3 rounded-full border border-[#F4D03F]/20 shadow-4xl group-hover/gauge:border-[#F4D03F]/40 transition-all">
-                                        <gauge.icon className={cn("w-6 h-6", gauge.color)} />
-                                        <span className="text-[14px] font-black italic uppercase tracking-widest opacity-60">{gauge.label}</span>
+                                    <div className={cn("flex items-center gap-2 px-3 py-1 rounded-lg border border-white/40 shadow-sm", gauge.bg)}>
+                                        <gauge.icon className={cn("w-3 h-3", gauge.color)} />
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-[#1A1A1A]/60">{gauge.label}</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className={cn(glass.card, "p-16 shadow-4xl bg-[#FFF9F0]/80 backdrop-blur-3xl rounded-[6rem] relative overflow-hidden group border-[#F4D03F]/10")}
-                    >
-                        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#1B9157]/ rounded-full blur-[150px] pointer-events-none group-hover:bg-[#1B9157]/ transition-all" />
-
-                        <div className="flex flex-col xl:flex-row items-center justify-between mb-20 relative z-10 gap-16">
-                            <div className="flex items-center gap-10">
-                                <div className="w-24 h-24 rounded-[3rem] bg-[#F4D03F]/10 flex items-center justify-center border-2 border-[#F4D03F]/20 shadow-4xl">
-                                    <RefreshCw className={cn("w-12 h-12 text-[#F4D03F]", isSyncing && "animate-spin")} />
-                                </div>
-                                <div className="space-y-4">
-                                    <h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">Sync <span className="text-[#F4D03F]">Data</span></h2>
-                                    <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-[#F4D03F]/10">Download saved info from your sensor memory.</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={handleSync}
-                                disabled={!gattServer || isSyncing}
-                                className={cn(glass.btnPrimary, "h-24 px-16 font-black italic uppercase text-3xl shadow-4xl shadow-honey/20 rounded-full flex items-center gap-8 disabled:opacity-20")}
-                            >
-                                <Save className="w-10 h-10" />
-                                Sync Now
-                            </button>
-                        </div>
-
-                        <div className="space-y-12 relative z-10">
-                            <div className="bg-[#F9F7F2] rounded-[4rem] p-16 flex flex-col md:flex-row items-center justify-between border border-[#F4D03F]/10 shadow-4xl gap-16">
-                                <div className="flex gap-10 items-center">
-                                    <div className="w-20 h-20 bg-[#F4D03F]/10 rounded-[2.5rem] flex items-center justify-center border-2 border-[#F4D03F]/40 shadow-inner">
-                                        <ShieldCheck className="w-10 h-10 text-[#F4D03F]" />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}
+                        >
+                            <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                        <RefreshCw className={cn("w-5 h-5 text-[#F4D03F]", isSyncing && "animate-spin")} />
                                     </div>
-                                    <div className="space-y-2">
-                                        <p className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">LAST SYNC</p>
-                                        <p className="text-3xl font-black italic text-foreground/80 uppercase tracking-tighter">{knownDevice?.last_sync_at || 'Never'}</p>
+                                    <div>
+                                        <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Sync_Protocol</h3>
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">MANUAL_DATA_INGEST</p>
                                     </div>
                                 </div>
-                                <div className="text-right space-y-2">
-                                    <p className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40">DATA STATUS</p>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-4xl font-black text-[#F4D03F] italic tracking-tighter uppercase">Ready to Download</span>
-                                        <div className="w-4 h-4 rounded-full bg-[#F4D03F] animate-ping shadow-4xl" />
-                                    </div>
-                                </div>
+                                <button
+                                    onClick={handleSync}
+                                    disabled={!gattServer || isSyncing}
+                                    className={cn(glass.btnPrimary, "h-8 px-5 font-black uppercase text-[9px] tracking-[0.2em] shadow-lg shadow-[#F4D03F]/10 rounded-xl flex items-center gap-2 disabled:opacity-20")}
+                                >
+                                    <Save className="w-3.5 h-3.5" />
+                                    Initiate_Now
+                                </button>
                             </div>
 
-                            <AnimatePresence>
-                                {isSyncing && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="space-y-8 pt-6"
-                                    >
-                                        <div className="flex justify-between items-end px-8">
-                                            <div className="flex items-center gap-6">
-                                                <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                                                <span className="text-2xl font-black italic text-[#F4D03F] uppercase tracking-tighter">Processing sensor data...</span>
+                            <div className="space-y-5">
+                                <div className="bg-white/40 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between border border-white/60 shadow-inner gap-4">
+                                    <div className="flex gap-3 items-center">
+                                        <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
+                                            <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[7px] font-black uppercase tracking-[0.2em] text-gray-400">LAST_SYNCHRONIZATION</p>
+                                            <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tighter">{knownDevice?.last_sync_at || 'NO_RECORD'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-center sm:text-right">
+                                        <p className="text-[7px] font-black uppercase tracking-[0.3em] text-gray-400">INGEST_STATE</p>
+                                        <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-widest">READY_FOR_EGRESS</span>
+                                    </div>
+                                </div>
+
+                                <AnimatePresence>
+                                    {isSyncing && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="space-y-3"
+                                        >
+                                            <div className="flex justify-between items-end px-1">
+                                                <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-widest animate-pulse">Sync_In_Progress...</span>
+                                                <span className="text-lg font-black tabular-nums tracking-tighter text-[#1A1A1A]">{syncProgress}%</span>
                                             </div>
-                                            <span className="text-5xl font-black italic tabular-nums tracking-tighter">{syncProgress}%</span>
-                                        </div>
-                                        <div className="h-6 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10 shadow-inner p-1.5">
-                                            <motion.div
-                                                className="h-full bg-[#F4D03F] rounded-full shadow-4xl relative"
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${syncProgress}%` }}
-                                                transition={{ duration: 0.5 }}
-                                            >
-                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
-                                            </motion.div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Message Log */}
-                <div className="lg:col-span-4 h-full relative group">
-                    <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className={cn(glass.card, "p-12 bg-[#FFF9F0] pb-16 flex flex-col h-full border-[#F4D03F]/10 shadow-4xl rounded-[5rem] relative overflow-hidden group/console")}
-                    >
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-[#F4D03F]/10 rounded-full blur-[150px] pointer-events-none group-hover/console:bg-[#F4D03F]/20 transition-all" />
-
-                        <div className="flex items-center justify-between mb-12 relative z-10 border-b border-[#F4D03F]/20 pb-10">
-                            <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 bg-[#F9F7F2] rounded-[2rem] flex items-center justify-center border border-[#F4D03F]/20 shadow-inner">
-                                    <Terminal className="w-8 h-8 text-[#F4D03F]" />
-                                </div>
-                                <span className="text-2xl font-black italic text-[#F4D03F] uppercase tracking-[0.3em]">System Log</span>
+                                            <div className="h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 p-0.5">
+                                                <motion.div
+                                                    className="h-full bg-[#F4D03F] rounded-full shadow-sm"
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${syncProgress}%` }}
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
-                            <button
-                                onClick={() => setLogs([])}
-                                className="text-gray-400 hover:text-[#F4D03F] transition-all uppercase text-[12px] font-black tracking-widest px-8 py-3 rounded-full border border-[#F4D03F]/20 hover:border-[#F4D03F]/40 hover:bg-[#F4D03F]/5"
-                            >
-                                CLEAR
-                            </button>
-                        </div>
+                        </motion.div>
 
-                        <div className="flex-1 overflow-y-auto font-mono text-[14px] leading-relaxed space-y-6 thin-scrollbar pr-6 relative z-10 min-h-[600px] selection:bg-[#F4D03F]/30 selection:text-white">
-                            {logs.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-full opacity-20 space-y-8">
-                                    <Search className="w-24 h-24 animate-pulse" />
-                                    <p className="text-xl font-black tracking-[0.4em] italic uppercase">Searching sensors...</p>
-                                </div>
-                            ) : (
-                                logs.map((log, i) => (
-                                    <div key={i} className="flex gap-6 group/logitem border-b border-[#F4D03F]/10 pb-4 last:border-0 hover:bg-[#F9F7F2] p-4 rounded-3xl transition-all duration-500">
-                                        <span className="text-[#F4D03F]/20 shrink-0 font-black italic opacity-40 group-hover/logitem:opacity-100 transition-opacity">#{logs.length - i}</span>
-                                        <span className={cn("font-medium italic leading-snug", log.includes('Error') ? 'text-red-500 font-black text-lg' : 'text-[#F4D03F]/60 group-hover/logitem:text-[#F4D03F] transition-colors')}>
-                                            {log}
-                                        </span>
+                        <motion.div
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden group/console flex flex-col")}
+                        >
+                            <div className="flex items-center justify-between mb-5 border-b border-[#F4D03F]/10 pb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
+                                        <Terminal className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                ))
-                            )}
-                        </div>
-
-                        <div className="mt-12 pt-10 border-t border-[#F4D03F]/20 relative z-10">
-                            <div className="bg-[#F9F7F2] rounded-[3rem] p-10 flex gap-8 border border-[#F4D03F]/20 shadow-4xl group/bridge hover:border-[#F4D03F]/40 transition-all">
-                                <div className="w-20 h-20 rounded-[2.5rem] bg-[#F9F7F2] flex items-center justify-center border-2 border-[#F4D03F]/20 group-hover/bridge:border-[#F4D03F]/40 group-hover/bridge:rotate-6 transition-all shadow-4xl">
-                                    <ShieldCheck className="w-10 h-10 text-[#F4D03F]" />
+                                    <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-[0.3em]">Serial_Log</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <p className="text-[12px] font-black italic uppercase tracking-[0.4em] text-gray-600">Secure Connection</p>
-                                    <p className="text-xl text-[#1A1A1A] font-black italic uppercase tracking-tighter">Bluetooth 4.2 · Encrypted</p>
-                                </div>
+                                <button
+                                    onClick={() => setLogs([])}
+                                    className="text-gray-400 hover:text-red-500 transition-colors uppercase text-[8px] font-black tracking-widest px-3 py-1 rounded-lg border border-gray-100"
+                                >
+                                    FLUSH
+                                </button>
                             </div>
-                        </div>
-                    </motion.div>
+
+                            <div className="h-40 overflow-y-auto font-mono text-[9px] leading-relaxed space-y-2 thin-scrollbar pr-2 flex-1">
+                                {logs.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center h-full opacity-20 gap-2">
+                                        <Loader2 className="w-4 h-4 animate-spin-slow" />
+                                        <p className="text-[8px] font-black tracking-[0.3em] uppercase">LINK_IDLE_AWAIT_FRAME</p>
+                                    </div>
+                                ) : (
+                                    logs.map((log, i) => (
+                                        <div key={i} className="flex gap-3 pb-1 border-b border-white/10 last:border-0 hover:bg-white/40 px-2 rounded-lg transition-colors">
+                                            <span className="text-[#F4D03F]/40 shrink-0 font-black text-[8px]">0{logs.length - i}</span>
+                                            <span className={cn("font-bold tracking-tight lowercase", log.includes('Error') ? 'text-red-500' : 'text-gray-500')}>
+                                                {log.split('] ')[1]}
+                                            </span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
             </div>
 
-            {/* Setup Device Modal */}
             <Dialog open={showSetupModal} onOpenChange={setShowSetupModal}>
-                <DialogContent className="max-w-[700px] bg-transparent border-none p-0 shadow-none overflow-visible">
+                <DialogContent className="max-w-[400px] bg-transparent border-none p-0 shadow-none overflow-visible">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                        initial={{ opacity: 0, scale: 0.98, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] relative bg-[#FFF9F0]/95 backdrop-blur-3xl rounded-[6rem] border-[#F4D03F]/20")}
+                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative bg-white/90 border-white/20")}
                     >
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/10 rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40" />
-
-                        <div className="bg-gray-400 px-16 py-16 border-b border-[#F4D03F]/10 relative z-10">
-                            <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 px-8 py-2.5 shadow-3xl skew-x-[-12deg] mb-8')}>
-                                <div className="flex items-center gap-4 skew-x-[12deg]">
-                                    <Cpu className="w-5 h-5" />
-                                    <span className="uppercase tracking-[0.4em] font-black italic text-[12px]">Add New Sensor</span>
-                                </div>
+                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                        
+                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 relative z-10">
+                            <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3 inline-block')}>
+                                INITIALIZE_HARDWARE
                             </div>
-                            <h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none mb-6">Initialize <span className="text-[#F4D03F]">Sensor</span></h2>
-                            <p className="text-2xl font-black italic opacity-40 uppercase tracking-widest pl-2 border-l-8 border-[#F4D03F]/10">Link this new sensor to one of your hives.</p>
+                            <h2 className={cn(glass.sectionTitle, "uppercase leading-none mb-1")}>Initialize <span className="text-[#F4D03F]">Sensor</span></h2>
+                            <p className={glass.microLabel}>Link new sensor hardware to apiary node.</p>
                         </div>
 
-                        <div className="p-16 space-y-16 relative z-10">
-                            <div className="space-y-6">
-                                <Label className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40 ml-4">Sensor Name</Label>
+                        <div className="p-6 space-y-5 relative z-10">
+                            <div className="space-y-2">
+                                <Label className={glass.microLabel}>Sensor_Alias</Label>
                                 <Input
                                     id="name"
                                     value={setupName}
                                     onChange={(e) => setSetupName(e.target.value)}
-                                    className={cn(glass.input, "h-20 px-10 text-2xl font-black italic tracking-tighter shadow-4xl")}
-                                    placeholder="e.g. Hive Alpha Scale"
+                                    className={cn(glass.input, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}
+                                    placeholder="e.g. ALPHA_SCALE_01"
                                 />
                             </div>
-                            <div className="space-y-6">
-                                <Label className="text-[12px] font-black italic uppercase tracking-[0.4em] opacity-40 ml-4">Assign to Hive</Label>
+                            <div className="space-y-2">
+                                <Label className={glass.microLabel}>Assigned_Node</Label>
                                 <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                                    <SelectTrigger className={cn(glass.input, "h-20 px-10 shadow-4xl text-2xl font-black italic")}>
-                                        <SelectValue placeholder="Choose a hive..." />
+                                    <SelectTrigger className={cn(glass.select, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
+                                        <SelectValue placeholder="Select target node..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#FFF9F0]/90 backdrop-blur-3xl border-[#F4D03F]/20 rounded-[3rem] p-6">
+                                    <SelectContent className={glass.selectContent}>
                                         {hives.map(hive => (
-                                            <SelectItem key={hive.id} value={hive.id} className="p-6 font-black italic text-2xl uppercase tracking-tighter text-[#1A1A1A] hover:bg-[#F4D03F] hover:text-[#1A1A1A] transition-colors rounded-3xl">
+                                            <SelectItem key={hive.id} value={hive.id} className="uppercase font-black text-[10px] tracking-[0.1em]">
                                                 {hive.hive_code}
                                             </SelectItem>
                                         ))}
@@ -574,20 +526,19 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                 </Select>
                             </div>
 
-                            <div className="flex flex-col gap-6 pt-16 border-t border-[#F4D03F]/10">
+                            <div className="flex flex-col gap-2 pt-4 border-t border-[#F4D03F]/10">
                                 <button
-                                    className={cn(glass.btnPrimary, "h-24 px-16 font-black italic uppercase text-3xl shadow-4xl shadow-honey/20 rounded-full flex items-center justify-center gap-10 group/save relative overflow-hidden")}
+                                    className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.3em] rounded-xl")}
                                     onClick={handleSetupSubmit}
                                 >
-                                    <div className="absolute inset-0 bg-[#FFF9F0]/0 group-hover/save:bg-[#F4D03F]/10 transition-all" />
-                                    <ShieldCheck className="w-10 h-10 relative z-10" />
-                                    <span className="relative z-10">Save Sensor</span>
+                                    <ShieldCheck className="w-4 h-4" />
+                                    <span>COMMIT_LINK</span>
                                 </button>
                                 <button
-                                    className={cn(glass.btnSecondary, "h-20 w-full font-black italic uppercase text-xl rounded-full border-[#F4D03F]/10 hover:bg-[#F9F7F2]")}
+                                    className={cn(glass.btnSecondary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.3em] rounded-xl")}
                                     onClick={() => setShowSetupModal(false)}
                                 >
-                                    Cancel
+                                    ABORT
                                 </button>
                             </div>
                         </div>
@@ -596,11 +547,11 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             </Dialog>
 
             <style>{`
-                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-                .animate-shimmer { animation: shimmer 2.5s infinite linear; }
-                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+                .thin-scrollbar::-webkit-scrollbar { width: 3px; }
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
+                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.2); border-radius: 10px; }
+                @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .animate-spin-slow { animation: spin-slow 8s linear infinite; }
             `}</style>
         </motion.div>
     );

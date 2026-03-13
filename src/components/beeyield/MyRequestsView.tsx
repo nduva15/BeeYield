@@ -1,9 +1,9 @@
 import React from 'react';
 import {
     LayoutGrid, Box, ChevronDown, Check, Loader2, Plus,
-    History, HardDrive, Cpu, ShieldCheck, HelpCircle,
+    HardDrive, Cpu, ShieldCheck, HelpCircle,
     Send, ArrowRight, ArrowLeft, Clock, AlertCircle,
-    CheckCircle2, XCircle, Search, Filter, MessageSquare
+    CheckCircle2, XCircle, Search, MessageSquare, MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -18,36 +18,28 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'sonner';
-
-interface MyRequestsViewProps {
-    onTabChange: (tab: string) => void;
-}
+import { glass, PageHeader } from './GlassTheme';
 
 const CATEGORIES = [
     { id: 'Hardware', label: 'Hardware', icon: HardDrive, description: 'Sensor issues, battery, physical hive damage', color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { id: 'Software', label: 'Software', icon: Cpu, description: 'Dashboard bugs, sync issues, smart analytics', color: 'text-purple-500', bg: 'bg-purple-500/10' },
-    { id: 'Traceability', label: 'Traceability', icon: ShieldCheck, description: 'HoneyChain™ verification, batch sealing errors', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/' },
+    { id: 'Traceability', label: 'Traceability', icon: ShieldCheck, description: 'HoneyChain™ verification, batch sealing errors', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10' },
     { id: 'General', label: 'General', icon: HelpCircle, description: 'Billing, account, or other general questions', color: 'text-orange-500', bg: 'bg-orange-500/10' },
 ];
 
-const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
+const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
     // Data Fetching
-    const { data: apiariesData, isLoading: isLoadingApiaries } = useApiaries();
-    const { data: hivesData, isLoading: isLoadingHives } = useHives();
+    const { data: apiariesData } = useApiaries();
+    const { data: hivesData } = useHives();
     const { data: requests, isLoading: isLoadingRequests } = useRequests();
     const createRequest = useCreateRequest();
 
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>("");
     const [selectedHive, setSelectedHive] = React.useState<string>("");
-    const [isPlacesOpen, setIsPlacesOpen] = React.useState(false);
-    const [isHivesOpen, setIsHivesOpen] = React.useState(false);
 
     // Wizard State
-    const [wizardStep, setWizardStep] = React.useState(0); // 0: Category, 1: Details, 2: Review
+    const [wizardStep, setWizardStep] = React.useState(0);
     const [category, setCategory] = React.useState('');
     const [subject, setSubject] = React.useState('');
     const [description, setDescription] = React.useState('');
@@ -58,21 +50,12 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState("All");
 
-    // Get apiary name from ID for display
-    const selectedPlace = React.useMemo(() => {
-        if (!selectedPlaceId) return "";
-        return apiariesData?.find(a => a.id === selectedPlaceId)?.name || "";
-    }, [selectedPlaceId, apiariesData]);
-
-    const places = apiariesData || [];
-
     const filteredHives = React.useMemo(() => {
         if (!hivesData) return [];
         if (!selectedPlaceId) return hivesData;
         return hivesData.filter(hive => hive.apiary_id === selectedPlaceId);
     }, [hivesData, selectedPlaceId]);
 
-    // Filter Requests for Table
     const filteredRequests = React.useMemo(() => {
         if (!requests) return [];
         return requests.filter(req => {
@@ -83,14 +66,12 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
         });
     }, [requests, searchQuery, statusFilter]);
 
-    // Auto-select first apiary if only one exists
-    React.useEffect(() => {
-        if (apiariesData?.length === 1 && !selectedPlaceId) {
-            setSelectedPlaceId(apiariesData[0].id);
-        }
-    }, [apiariesData, selectedPlaceId]);
-
     const handleFormSubmit = async () => {
+        if (!subject.trim() || !description.trim() || !category) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+
         try {
             await createRequest.mutateAsync({
                 subject,
@@ -100,24 +81,24 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                 priority,
                 hive_id: selectedHive || undefined,
             });
-            // Reset wizard
             setShowWizard(false);
             setWizardStep(0);
             setCategory('');
             setSubject('');
             setDescription('');
+            toast.success("Request submitted successfully");
         } catch (error) {
-            // Error managed by mutation/toast
+            toast.error("Failed to submit request");
         }
     };
 
     const getStatusStyles = (status: string) => {
         switch (status) {
-            case 'Resolved': return "bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/";
+            case 'Resolved': return "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20";
             case 'In Progress': return "bg-blue-500/10 text-blue-600 border-blue-500/20";
             case 'Open': return "bg-orange-500/10 text-orange-600 border-orange-500/20";
-            case 'Closed': return "bg-[#F9F7F2]0/10 text-slate-600 border-slate-500/20";
-            default: return "bg-[#F9F7F2]0/10 text-slate-600 border-slate-500/20";
+            case 'Closed': return "bg-gray-100 text-gray-600 border-gray-200";
+            default: return "bg-gray-100 text-gray-600 border-gray-200";
         }
     };
 
@@ -132,171 +113,27 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
     };
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 pb-20 px-2 relative min-h-[800px]">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#F4D03F]/[0.03] rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
 
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-3 h-12 bg-[#F4D03F] rounded-full" />
-                    <div>
-                        <h1 className="text-[3rem] font-black text-[#F4D03F] tracking-tighter uppercase leading-none">MY REQUESTS</h1>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">{filteredRequests.length} Requests Filed</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4 pr-4">
-                    <Button
+            <PageHeader
+                icon={MessageSquare}
+                label="Support Intelligence"
+                title={<>My <span className="text-[#F4D03F]">Requests</span></>}
+                subtitle="Track and manage your technical support tickets."
+                actions={
+                    <button
                         onClick={() => setShowWizard(!showWizard)}
-                        className={cn(
-                            "rounded-full px-6 transition-all duration-300 shadow-lg hover:shadow-xl h-11",
-                            showWizard ? "bg-slate-200 text-slate-700 hover:bg-slate-300" : "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#E5C135]"
-                        )}
+                        className={cn(glass.btnPrimary, "px-4 h-9 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2")}
                     >
-                        {showWizard ? "Close Form" : (
-                            <span className="flex items-center gap-2">
-                                <Plus className="w-4 h-4" /> New Request
-                            </span>
-                        )}
-                    </Button>
-                </div>
-            </div>
-
-            {/* Filters Row */}
-            <div className="flex flex-wrap items-center gap-4">
-                {/* My Places Dropdown */}
-                <div className="relative group/dropdown min-w-[230px]">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setIsPlacesOpen(!isPlacesOpen);
-                            setIsHivesOpen(false);
-                        }}
-                        className={cn(
-                            "flex items-center gap-4 px-5 py-3.5 bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
-                            isPlacesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10"
-                        )}
-                    >
-                        <div className="w-5 h-5 flex items-center justify-center">
-                            <LayoutGrid className="w-5 h-5 text-[#F4D03F]" strokeWidth={2.5} />
-                        </div>
-                        <div className="flex flex-col items-start flex-1 min-w-0">
-                            <span className="text-[11px] font-[800] text-[#64748B] uppercase tracking-[0.1em] text-left">
-                                MY PLACES {apiariesData?.length ? `(${apiariesData.length})` : ''}
-                            </span>
-                            <span className="text-sm font-bold text-slate-800 truncate w-full text-left -mt-0.5 uppercase">
-                                {selectedPlace || "Select Territory"}
-                            </span>
-                        </div>
-                        <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-300", isPlacesOpen && "rotate-180 text-[#F4D03F]")} />
+                        {showWizard ? "Close Form" : (<><Plus className="w-4 h-4" /> New Request</>)}
                     </button>
-
-                    <AnimatePresence>
-                        {isPlacesOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-xl shadow-xl z-50 overflow-hidden"
-                            >
-                                <div className="p-2 max-h-[300px] overflow-y-auto">
-
-                                    {isLoadingApiaries ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <Loader2 className="w-5 h-5 text-[#F4D03F] animate-spin" />
-                                        </div>
-                                    ) : places.length === 0 ? (
-                                        <div className="px-4 py-8 text-center text-slate-400 text-xs font-bold uppercase tracking-wider">
-                                            No places found
-                                        </div>
-                                    ) : places.map((place) => (
-                                        <button
-                                            key={place.id}
-                                            onClick={() => {
-                                                setSelectedPlaceId(place.id);
-                                                setIsPlacesOpen(false);
-                                            }}
-                                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/5:bg-orange-900/10 rounded-lg transition-colors group"
-                                        >
-                                            <LayoutGrid className="w-4 h-4 text-slate-400 group-hover:text-[#F4D03F]" />
-                                            <span className="text-sm font-semibold text-slate-700">{place.name}</span>
-                                            {selectedPlaceId === place.id && <Check className="w-4 h-4 ml-auto text-[#F4D03F]" />}
-                                        </button>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-
-                {/* Hive Dropdown */}
-                <div className="relative group/dropdown min-w-[230px]">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setIsHivesOpen(!isHivesOpen);
-                            setIsPlacesOpen(false);
-                        }}
-                        className={cn(
-                            "flex items-center gap-4 px-5 py-3.5 bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-[12px] shadow-sm hover:shadow-md hover:border-[#F4D03F]/30 transition-all w-full cursor-pointer h-auto outline-none",
-                            isHivesOpen && "border-orange-200 ring-2 ring-[#F4D03F]/10"
-                        )}
-                    >
-                        <div className="w-5 h-5 flex items-center justify-center">
-                            {isLoadingHives ? (
-                                <Loader2 className="w-5 h-5 text-[#F4D03F] animate-spin" />
-                            ) : (
-                                <Box className="w-5 h-5 text-[#F4D03F]" strokeWidth={2.5} />
-                            )}
-                        </div>
-                        <div className="flex flex-col items-start flex-1 min-w-0">
-                            <span className="text-[11px] font-[800] text-[#64748B] uppercase tracking-[0.1em] text-left">
-                                HIVE {filteredHives.length ? `(${filteredHives.length})` : ''}
-                            </span>
-                            <span className="text-sm font-bold text-slate-800 truncate w-full text-left -mt-0.5 uppercase">
-                                {selectedHive || "Select Hive"}
-                            </span>
-                        </div>
-                        <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-300", isHivesOpen && "rotate-180 text-[#F4D03F]")} />
-                    </button>
-
-                    <AnimatePresence>
-                        {isHivesOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-xl shadow-xl z-50 overflow-hidden"
-                            >
-                                <div className="p-2 max-h-[300px] overflow-y-auto">
-
-                                    {isLoadingHives ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <Loader2 className="w-5 h-5 text-[#F4D03F] animate-spin" />
-                                        </div>
-                                    ) : filteredHives.length === 0 ? (
-                                        <div className="px-4 py-8 text-center text-slate-400 text-xs font-bold uppercase tracking-wider">
-                                            No hives found
-                                        </div>
-                                    ) : (
-                                        filteredHives.map((hive) => (
-                                            <button
-                                                key={hive.id}
-                                                onClick={() => {
-                                                    setSelectedHive(hive.hive_code);
-                                                    setIsHivesOpen(false);
-                                                }}
-                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F4D03F]/5:bg-orange-900/10 rounded-lg transition-colors group"
-                                            >
-                                                <Box className="w-4 h-4 text-slate-400 group-hover:text-[#F4D03F]" />
-                                                <span className="text-sm font-semibold text-slate-700">{hive.hive_code}</span>
-                                                {selectedHive === hive.hive_code && <Check className="w-4 h-4 ml-auto text-[#F4D03F]" />}
-                                            </button>
-                                        ))
-                                    )}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
+                }
+            />
 
             {/* Request Wizard */}
             <AnimatePresence>
@@ -305,32 +142,31 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
+                        className="overflow-hidden relative z-10"
                     >
-                        <div className="bg-[#FFF9F0] border border-slate-100 rounded-[24px] shadow-xl p-8 mb-12">
+                        <div className={cn(glass.card, "p-6 mb-8 bg-white/80 backdrop-blur-md")}>
                             <div className="max-w-3xl mx-auto">
-                                {/* Wizard Header */}
-                                <div className="flex items-center justify-between mb-10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F] font-bold">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F] font-bold text-sm">
                                             {wizardStep + 1}
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-bold text-slate-800">
+                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">
                                                 {wizardStep === 0 && "Select Request Category"}
                                                 {wizardStep === 1 && "Request Details"}
                                                 {wizardStep === 2 && "Review and Submit"}
                                             </h3>
-                                            <p className="text-sm text-slate-500">Step {wizardStep + 1} of 3</p>
+                                            <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em]">Step {wizardStep + 1} of 3</p>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-1.5">
                                         {[0, 1, 2].map((i) => (
                                             <div
                                                 key={i}
                                                 className={cn(
-                                                    "h-1.5 w-12 rounded-full transition-all duration-500",
-                                                    i <= wizardStep ? "bg-[#F4D03F]" : "bg-slate-200"
+                                                    "h-1 w-8 rounded-full transition-all duration-500",
+                                                    i <= wizardStep ? "bg-[#F4D03F]" : "bg-foreground/5"
                                                 )}
                                             />
                                         ))}
@@ -341,10 +177,10 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                     {wizardStep === 0 && (
                                         <motion.div
                                             key="step0"
-                                            initial={{ opacity: 0, x: 20 }}
+                                            initial={{ opacity: 0, x: 10 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
-                                            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                            exit={{ opacity: 0, x: -10 }}
+                                            className="grid grid-cols-1 md:grid-cols-2 gap-3"
                                         >
                                             {CATEGORIES.map((cat) => (
                                                 <button
@@ -354,16 +190,16 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                         setWizardStep(1);
                                                     }}
                                                     className={cn(
-                                                        "flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all group hover:border-[#F4D03F]/50",
-                                                        category === cat.id ? "border-[#F4D03F] bg-[#F4D03F]/5 shadow-sm" : "border-slate-100 bg-[#F9F7F2]0"
+                                                        "flex items-start gap-3 p-4 rounded-xl border transition-all text-left",
+                                                        category === cat.id ? "border-[#F4D03F] bg-[#F4D03F]/5" : "border-foreground/5 bg-gray-50/50 hover:border-[#F4D03F]/20"
                                                     )}
                                                 >
-                                                    <div className={cn("mt-1 p-3 rounded-xl transition-colors", cat.bg, cat.color)}>
-                                                        <cat.icon className="w-6 h-6" />
+                                                    <div className={cn("p-2 rounded-lg", cat.bg, cat.color)}>
+                                                        <cat.icon className="w-5 h-5" />
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-slate-800 mb-1">{cat.label}</h4>
-                                                        <p className="text-xs text-slate-500 leading-relaxed">{cat.description}</p>
+                                                        <h4 className="text-xs font-bold text-foreground uppercase tracking-tight">{cat.label}</h4>
+                                                        <p className="text-[10px] text-foreground/40 leading-relaxed mt-0.5">{cat.description}</p>
                                                     </div>
                                                 </button>
                                             ))}
@@ -373,57 +209,78 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                     {wizardStep === 1 && (
                                         <motion.div
                                             key="step1"
-                                            initial={{ opacity: 0, x: 20 }}
+                                            initial={{ opacity: 0, x: 10 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
-                                            className="space-y-6"
+                                            exit={{ opacity: 0, x: -10 }}
+                                            className="space-y-4"
                                         >
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Subject</label>
-                                                <Input
-                                                    id="wizard-subject"
-                                                    name="subject"
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <label className={glass.microLabel}>Related Entity (Apiary)</label>
+                                                    <select
+                                                        value={selectedPlaceId}
+                                                        onChange={(e) => setSelectedPlaceId(e.target.value)}
+                                                        className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
+                                                    >
+                                                        <option value="">Select Apiary (Optional)</option>
+                                                        {apiariesData?.map(a => <option key={a.id} value={a.id}>{a.name.toUpperCase()}</option>)}
+                                                    </select>
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className={glass.microLabel}>Related Hive</label>
+                                                    <select
+                                                        value={selectedHive}
+                                                        onChange={(e) => setSelectedHive(e.target.value)}
+                                                        className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
+                                                    >
+                                                        <option value="">Select Hive (Optional)</option>
+                                                        {filteredHives.map(h => <option key={h.id} value={h.hive_code}>{h.hive_code.toUpperCase()}</option>)}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                                <label className={glass.microLabel}>Subject</label>
+                                                <input
                                                     value={subject}
                                                     onChange={(e) => setSubject(e.target.value)}
-                                                    placeholder="What can we help you with?"
-                                                    className="bg-[#FFF9F0] border-slate-200 rounded-xl h-12 focus:ring-[#F4D03F]"
+                                                    placeholder="Brief summary of the issue..."
+                                                    className={cn(glass.input, "h-10 px-4")}
                                                 />
                                             </div>
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Message Detail</label>
-                                                <Textarea
-                                                    id="wizard-description"
-                                                    name="description"
+                                            <div className="space-y-1.5">
+                                                <label className={glass.microLabel}>Description</label>
+                                                <textarea
                                                     value={description}
                                                     onChange={(e) => setDescription(e.target.value)}
-                                                    placeholder="Describe your issue or request in detail..."
-                                                    className="bg-[#FFF9F0] border-slate-200 rounded-xl min-h-[150px] focus:ring-[#F4D03F]"
+                                                    placeholder="Detailed technical overview..."
+                                                    className={cn(glass.input, "min-h-[120px] p-4 py-3")}
                                                 />
                                             </div>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex gap-4">
+                                            <div className="flex items-center justify-between pt-2">
+                                                <div className="flex gap-2">
                                                     {['Low', 'Medium', 'High'].map((p) => (
                                                         <button
                                                             key={p}
                                                             onClick={() => setPriority(p)}
                                                             className={cn(
-                                                                "px-4 py-2 rounded-lg text-xs font-bold border transition-all",
+                                                                "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border transition-all",
                                                                 priority === p
                                                                     ? "bg-[#F4D03F] border-[#F4D03F] text-[#1A1A1A]"
-                                                                    : "bg-[#FFF9F0] border-slate-200 text-slate-500"
+                                                                    : "bg-white border-foreground/5 text-foreground/30 hover:text-foreground/60"
                                                             )}
                                                         >
                                                             {p}
                                                         </button>
                                                     ))}
                                                 </div>
-                                                <Button
+                                                <button
                                                     onClick={() => setWizardStep(2)}
                                                     disabled={!subject || !description}
-                                                    className="bg-slate-800 text-[#1A1A1A] hover:opacity-90 rounded-full px-8"
+                                                    className={cn(glass.btnPrimary, "px-6 h-9 text-[10px] uppercase font-bold tracking-widest")}
                                                 >
                                                     Review <ArrowRight className="w-4 h-4 ml-2" />
-                                                </Button>
+                                                </button>
                                             </div>
                                         </motion.div>
                                     )}
@@ -431,63 +288,62 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                     {wizardStep === 2 && (
                                         <motion.div
                                             key="step2"
-                                            initial={{ opacity: 0, x: 20 }}
+                                            initial={{ opacity: 0, x: 10 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
-                                            className="space-y-8"
+                                            exit={{ opacity: 0, x: -10 }}
+                                            className="space-y-6"
                                         >
-                                            <div className="bg-[#F9F7F2] rounded-2xl p-6 border border-slate-100 space-y-4">
-                                                <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+                                            <div className="bg-gray-50/50 rounded-2xl p-5 border border-gray-100 space-y-4">
+                                                <div className="flex justify-between items-start border-b border-gray-100 pb-4">
                                                     <div>
-                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Category</p>
-                                                        <div className="flex items-center gap-2">
-                                                            <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-none">{category}</Badge>
+                                                        <p className={glass.microLabel}>Category / Priority</p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 text-[9px] font-bold uppercase tracking-widest">{category}</Badge>
                                                             <Badge className={cn(
-                                                                "border-none",
+                                                                "border-none text-[9px] font-bold uppercase tracking-widest",
                                                                 priority === 'High' ? "bg-red-500/10 text-red-500" :
                                                                     priority === 'Medium' ? "bg-orange-500/10 text-orange-500" :
                                                                         "bg-blue-500/10 text-blue-500"
                                                             )}>
-                                                                {priority} Priority
+                                                                {priority} PRIORITY
                                                             </Badge>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Related Hive</p>
-                                                        <p className="font-bold text-slate-700">{selectedHive || "General Fleet"}</p>
+                                                        <p className={glass.microLabel}>Entity Mapping</p>
+                                                        <p className="text-xs font-bold text-foreground uppercase mt-1">{selectedHive || "General System"}</p>
                                                     </div>
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Subject</p>
-                                                    <p className="text-lg font-bold text-slate-800 leading-tight">{subject}</p>
+                                                <div className="space-y-1">
+                                                    <p className={glass.microLabel}>Subject</p>
+                                                    <p className="text-sm font-bold text-foreground">{subject}</p>
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</p>
-                                                    <p className="text-sm text-slate-600 leading-relaxed line-clamp-4">"{description}"</p>
+                                                <div className="space-y-1">
+                                                    <p className={glass.microLabel}>Description</p>
+                                                    <p className="text-xs text-foreground/60 leading-relaxed line-clamp-3">"{description}"</p>
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center justify-between">
-                                                <Button
-                                                    variant="ghost"
+                                                <button
                                                     onClick={() => setWizardStep(1)}
-                                                    className="rounded-full hover:bg-[#F4D03F]/10:bg-slate-800"
+                                                    className={cn(glass.btnSecondary, "px-4 h-9 text-[10px] font-bold uppercase tracking-widest")}
                                                 >
                                                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                                                </Button>
-                                                <Button
+                                                </button>
+                                                <button
                                                     onClick={handleFormSubmit}
                                                     disabled={createRequest.isPending}
-                                                    className="bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#E5C135] rounded-full px-10 h-12 shadow-lg"
+                                                    className={cn(glass.btnPrimary, "px-8 h-9 text-[10px] font-bold uppercase tracking-widest")}
                                                 >
                                                     {createRequest.isPending ? (
-                                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
                                                     ) : (
                                                         <span className="flex items-center gap-2">
                                                             Submit Request <Send className="w-4 h-4" />
                                                         </span>
                                                     )}
-                                                </Button>
+                                                </button>
                                             </div>
                                         </motion.div>
                                     )}
@@ -499,72 +355,69 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
             </AnimatePresence>
 
             {/* Request History Section */}
-            <div className="space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#F4D03F]/10 rounded-xl">
-                            <History className="w-5 h-5 text-slate-500" />
+            <div className="space-y-4 pt-4">
+                <div className={cn(glass.filterBar, "p-3")}>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]/40">Request History</h2>
+                            <div className="px-2 py-0.5 bg-[#F4D03F]/10 border border-[#F4D03F]/20 rounded-lg text-[9px] font-bold text-[#F4D03F]">{filteredRequests.length}</div>
                         </div>
-                        <h2 className="text-2xl font-bold">Request History</h2>
-                        <Badge variant="outline" className="text-slate-400 border-slate-200">{filteredRequests.length}</Badge>
-                    </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <Input
-                                id="history-search"
-                                name="search"
-                                placeholder="Search by ID or Subject..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 bg-[#FFF9F0] border-slate-200 rounded-xl w-64 focus:ring-[#F4D03F]"
-                            />
-                        </div>
-                        <div className="flex p-1 bg-[#F4D03F]/10 rounded-xl">
-                            {['All', 'Open', 'In Progress', 'Resolved'].map((s) => (
-                                <button
-                                    key={s}
-                                    onClick={() => setStatusFilter(s)}
-                                    className={cn(
-                                        "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
-                                        statusFilter === s
-                                            ? "bg-[#FFF9F0] text-[#F4D03F] shadow-sm"
-                                            : "text-slate-500 hover:text-slate-700:text-slate-300"
-                                    )}
-                                >
-                                    {s}
-                                </button>
-                            ))}
+                        <div className="flex flex-wrap items-center gap-3">
+                            <div className="relative group/search">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-foreground/20 group-focus-within/search:text-[#F4D03F] transition-colors" />
+                                <input
+                                    placeholder="Search tickets..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className={cn(glass.input, "pl-9 h-9 w-48 text-[11px]")}
+                                />
+                            </div>
+                            <div className="flex p-0.5 bg-foreground/5 rounded-xl border border-foreground/5">
+                                {['All', 'Open', 'In Progress', 'Resolved'].map((s) => (
+                                    <button
+                                        key={s}
+                                        onClick={() => setStatusFilter(s)}
+                                        className={cn(
+                                            "px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all",
+                                            statusFilter === s
+                                                ? "bg-white text-[#F4D03F] shadow-sm"
+                                                : "text-gray-400 hover:text-gray-600"
+                                        )}
+                                    >
+                                        {s}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[#FFF9F0] border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/60")}>
                     {isLoadingRequests ? (
-                        <div className="flex flex-col items-center justify-center py-24 gap-4">
-                            <Loader2 className="w-10 h-10 text-[#F4D03F] animate-spin" />
-                            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Fetching ticket archives...</p>
+                        <div className="flex flex-col items-center justify-center py-20 gap-3">
+                            <Loader2 className="w-8 h-8 text-[#F4D03F] animate-spin" />
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fetching archives...</p>
                         </div>
                     ) : filteredRequests.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-24 text-center px-10">
-                            <div className="w-16 h-16 rounded-full bg-[#F9F7F2] flex items-center justify-center mb-4">
-                                <MessageSquare className="w-8 h-8 text-slate-300" />
+                        <div className="flex flex-col items-center justify-center py-20 text-center px-10">
+                            <div className="w-12 h-12 rounded-2xl bg-[#F9F7F2] flex items-center justify-center mb-4 border border-[#F4D03F]/10">
+                                <MessageSquare className="w-6 h-6 text-foreground/10" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">No Requests Found</h3>
-                            <p className="text-slate-500 max-w-sm">No support requests match your current filters. Start a new request using the button above.</p>
+                            <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight uppercase opacity-40">No Requests Found</h3>
+                            <button onClick={() => setShowWizard(true)} className={cn(glass.btnSecondary, "mt-4 px-4 h-8 text-[9px]")}>Initialize first request</button>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className="bg-[#F9F7F2]/50">
-                                    <TableRow className="border-slate-100 hover:bg-transparent">
-                                        <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Reference ID</TableHead>
-                                        <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Request Subject</TableHead>
-                                        <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Category</TableHead>
-                                        <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Priority</TableHead>
-                                        <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Status</TableHead>
-                                        <TableHead className="py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px] text-right pr-6">Date Submitted</TableHead>
+                                <TableHeader className="bg-gray-50/50">
+                                    <TableRow className="border-gray-100 hover:bg-transparent">
+                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Reference</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Subject</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Entity</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Category</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Status</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400 text-right pr-6">Timestamp</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -573,48 +426,34 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                         return (
                                             <TableRow
                                                 key={req.id}
-                                                className="group border-slate-50 hover:bg-[#F9F7F2]/50:bg-slate-800/20 transition-colors cursor-pointer"
-                                                onClick={() => {
-                                                    // This would open the request detail/chat view
-                                                    // For now just toast it
-                                                    toast.info(`Opening details for ${req.id}`);
-                                                }}
+                                                className="group border-gray-100 hover:bg-gray-50/50 transition-colors cursor-pointer"
+                                                onClick={() => toast.info(`Accessing detail for ${req.id}`)}
                                             >
-                                                <TableCell className="py-5 font-mono text-[11px] text-[#F4D03F] font-bold">
+                                                <TableCell className="py-3.5 font-mono text-[10px] text-[#F4D03F] font-bold">
                                                     #{req.id.substring(0, 8).toUpperCase()}
                                                 </TableCell>
-                                                <TableCell className="py-5">
+                                                <TableCell className="py-3.5">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-700">{req.subject}</span>
-                                                        <span className="text-[10px] text-slate-400 line-clamp-1">{req.description}</span>
+                                                        <span className="text-[11px] font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors uppercase leading-none">{req.subject}</span>
+                                                        <span className="text-[9px] text-gray-400 line-clamp-1 mt-1">{req.description}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="py-5">
-                                                    <div className="flex items-center gap-2">
-                                                        {req.category === 'Hardware' && <HardDrive className="w-3.5 h-3.5 text-blue-500" />}
-                                                        {req.category === 'Software' && <Cpu className="w-3.5 h-3.5 text-purple-500" />}
-                                                        {req.category === 'Traceability' && <ShieldCheck className="w-3.5 h-3.5 text-[#1B9157]" />}
-                                                        {req.category === 'General' && <HelpCircle className="w-3.5 h-3.5 text-orange-500" />}
-                                                        <span className="text-xs font-semibold text-slate-600">{req.category}</span>
+                                                <TableCell className="py-3.5">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Box className="w-3 h-3 text-gray-300" />
+                                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">UNIT_{req.id.slice(-4).toUpperCase()}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="py-5">
-                                                    <Badge variant="outline" className={cn(
-                                                        "text-[10px] font-bold px-2 py-0 border-none",
-                                                        req.priority === 'High' ? "bg-red-500/10 text-red-500" :
-                                                            req.priority === 'Medium' ? "bg-orange-500/10 text-orange-500" :
-                                                                "bg-blue-500/10 text-blue-500"
-                                                    )}>
-                                                        {req.priority}
-                                                    </Badge>
+                                                <TableCell className="py-3.5">
+                                                    <Badge className="bg-gray-100 text-gray-400 border-none text-[8px] font-bold uppercase tracking-widest h-5 leading-none">{req.category}</Badge>
                                                 </TableCell>
-                                                <TableCell className="py-5">
-                                                    <Badge className={cn("flex items-center gap-1.5 w-fit border shadow-none font-bold uppercase text-[9px]", getStatusStyles(req.status))}>
-                                                        <StatusIcon className="w-3 h-3" />
+                                                <TableCell className="py-3.5">
+                                                    <div className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-[8px] font-bold uppercase tracking-widest shadow-sm", getStatusStyles(req.status))}>
+                                                        <StatusIcon className="w-2.5 h-2.5" />
                                                         {req.status}
-                                                    </Badge>
+                                                    </div>
                                                 </TableCell>
-                                                <TableCell className="py-5 text-right text-xs font-medium text-slate-500 pr-6">
+                                                <TableCell className="py-3.5 text-right text-[9px] font-bold text-gray-400 pr-6 uppercase">
                                                     {new Date(req.created_at).toLocaleDateString(undefined, {
                                                         year: 'numeric',
                                                         month: 'short',
@@ -630,18 +469,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                     )}
                 </div>
             </div>
-
-            {/* Backdrop for click-away */}
-            {(isPlacesOpen || isHivesOpen) && (
-                <div
-                    className="fixed inset-0 z-40 bg-transparent"
-                    onClick={() => {
-                        setIsPlacesOpen(false);
-                        setIsHivesOpen(false);
-                    }}
-                />
-            )}
-        </div>
+        </motion.div>
     );
 };
 

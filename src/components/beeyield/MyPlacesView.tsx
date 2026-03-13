@@ -31,7 +31,8 @@ import {
     Settings,
     Binary,
     Shield,
-    Database
+    Database,
+    TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -115,35 +116,35 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
             {/* Header */}
             <PageHeader
                 icon={MapPin}
-                label="Site Intelligence Kernel"
+                label="Site Intelligence"
                 title={<>{apiary.name.split(' ')[0]} <span className="text-[#F4D03F]">{apiary.name.split(' ').slice(1).join(' ') || 'Site'}</span></>}
-                subtitle="High-fidelity operational telemetry for this location."
+                subtitle="Operational telemetry for this location."
                 actions={
-                    <div className="flex items-center gap-3 relative z-10">
+                    <div className="flex items-center gap-2 relative z-10">
                         <button
                             onClick={() => setViewingApiary(null)}
-                            className={cn(glass.btnSecondary, "h-10 w-10 p-0 rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-sm bg-white border-[#F4D03F]/10")}
+                            className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
                         >
-                            <ChevronLeft className="w-6 h-6" />
+                            <ChevronLeft className="w-5 h-5" />
                         </button>
 
-                        <div className="flex bg-[#1A1A1A]/5 p-1 rounded-xl border border-[#F4D03F]/10 gap-1 shadow-sm">
+                        <div className="flex bg-[#F9F7F2] p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
                             <button
                                 onClick={() => setActiveView('dashboard')}
-                                className={cn('h-8 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2',
-                                    activeView === 'dashboard' ? 'bg-white text-[#F4D03F] shadow-sm border border-[#F4D03F]/10' : 'text-[#1A1A1A]/30 hover:text-[#F4D03F]'
+                                className={cn('h-7 px-3 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-1.5',
+                                    activeView === 'dashboard' ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F]'
                                 )}
                             >
-                                <Target className="w-4 h-4" />
+                                <Target className="w-3.5 h-3.5" />
                                 Interactive
                             </button>
                             <button
                                 onClick={() => setActiveView('details')}
-                                className={cn('h-8 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2',
-                                    activeView === 'details' ? 'bg-white text-[#F4D03F] shadow-sm border border-[#F4D03F]/10' : 'text-[#1A1A1A]/30 hover:text-[#F4D03F]'
+                                className={cn('h-7 px-3 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-1.5',
+                                    activeView === 'details' ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F]'
                                 )}
                             >
-                                <Activity className="w-4 h-4" />
+                                <Activity className="w-3.5 h-3.5" />
                                 Analytics
                             </button>
                         </div>
@@ -158,50 +159,145 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
             ) : (
                 <div className="space-y-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 relative z-10">
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {[
-                            { label: 'TOTAL HIVES', value: stats.total, icon: Hexagon, color: 'text-[#1A1A1A]' },
+                            { label: 'TOTAL UNITS', value: stats.total, icon: Hexagon, color: 'text-[#1A1A1A]' },
                             { label: 'HEALTHY', value: stats.healthy, icon: ShieldCheck, color: 'text-[#1B9157]' },
                             { label: 'ALERTS', value: stats.warnings, icon: Activity, color: 'text-[#FBBE24]' },
                             { label: 'CRITICAL', value: stats.critical, icon: Box, color: 'text-red-500' },
-                            { label: 'TOTAL AREA', value: `${apiary.size_acres || 0} AC`, icon: Sprout, color: 'text-[#1A1A1A]' }
+                            { label: 'AREA (AC)', value: apiary.size_acres || 0, icon: Sprout, color: 'text-[#1A1A1A]' }
                         ].map((s, i) => (
-                            <div key={i} className="bg-white border border-[#F4D03F]/10 p-5 rounded-3xl flex flex-col gap-2 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all shadow-sm">
+                            <div key={i} className="bg-white/40 border border-[#F4D03F]/10 p-3 rounded-xl flex flex-col gap-1 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all backdrop-blur-sm shadow-sm">
                                 <div className="flex items-center justify-between relative z-10">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]/30">{s.label}</span>
-                                    <s.icon className={cn("w-4 h-4", s.color)} />
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">{s.label}</span>
+                                    <s.icon className={cn("w-3.5 h-3.5", s.color)} />
                                 </div>
-                                <span className={cn("text-2xl font-black tracking-tighter tabular-nums relative z-10", s.color)}>{s.value}</span>
+                                <span className={cn("text-xl font-black tracking-tight tabular-nums relative z-10", s.color)}>{s.value}</span>
                             </div>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                    {/* Analytics Core */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        {/* Production Trend */}
+                        <div className="lg:col-span-8">
+                            <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md overflow-hidden")}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                            <TrendingUp className="w-4 h-4 text-[#F4D03F]" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Production Vector</h3>
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em]">Estimated Dynamics (30D)</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
+                                        {['7D', '30D', '90D'].map(t => (
+                                            <button key={t} className={cn("px-2.5 py-1 text-[8px] font-black uppercase tracking-wider rounded-md transition-all", t === '30D' ? "bg-white text-[#F4D03F] shadow-sm" : "text-gray-400 hover:text-[#1A1A1A]")}>{t}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div className="h-32 w-full bg-[#1A1A1A]/[0.02] rounded-xl border border-[#F4D03F]/5 flex items-end p-3 gap-1">
+                                    {Array.from({ length: 30 }).map((_, i) => {
+                                        const val = Math.random() * 80 + 20;
+                                        return (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ height: 0 }}
+                                                animate={{ height: `${val}%` }}
+                                                transition={{ delay: i * 0.01, duration: 0.8 }}
+                                                className={cn("flex-1 rounded-t-sm bg-[#F4D03F]/10 hover:bg-[#F4D03F] transition-all cursor-pointer relative group", i > 25 ? "bg-[#1B9157]/20 hover:bg-[#1B9157]" : "")}
+                                            >
+                                                <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-[#1A1A1A] text-[7px] font-black text-white px-1.5 py-0.5 rounded-sm pointer-events-none z-50">
+                                                    +{Math.round(val/5)}kg
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </div>
+                                <div className="flex justify-between mt-3 px-1 text-[8px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                                    <span>T-30 DAYS</span>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-1 h-1 rounded-full bg-[#1B9157] animate-pulse" />
+                                        <span>LIVE_PERFORMANCE</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Health Distribution */}
+                        <div className="lg:col-span-4">
+                            <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md h-full flex flex-col justify-between")}>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-9 h-9 rounded-xl bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10">
+                                        <Activity className="w-4 h-4 text-[#1B9157]" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Health Density</h3>
+                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em]">Biometric Vitality Protocol</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {[
+                                        { label: 'OPTIMAL_SATURATION', count: stats.healthy, total: stats.total, color: 'bg-[#1B9157]', glow: 'shadow-[0_0_8px_rgba(27,145,87,0.3)]' },
+                                        { label: 'OBSERVATIVE_FLUX', count: stats.warnings, total: stats.total, color: 'bg-[#F4D03F]', glow: 'shadow-[0_0_8px_rgba(244,208,63,0.3)]' },
+                                        { label: 'CRITICAL_INTERVENTION', count: stats.critical, total: stats.total, color: 'bg-red-500', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.3)]' }
+                                    ].map((h, i) => (
+                                        <div key={i} className="space-y-1.5">
+                                            <div className="flex justify-between text-[8px] font-black uppercase tracking-widest items-center">
+                                                <span className="text-gray-400">{h.label}</span>
+                                                <span className="text-[#1A1A1A] tabular-nums bg-white border border-gray-100 rounded-md px-1.5 py-0.5">{h.count} UNITS</span>
+                                            </div>
+                                            <div className="h-1.5 bg-[#1A1A1A]/5 rounded-full overflow-hidden">
+                                                <motion.div 
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${(h.count / (h.total || 1)) * 100}%` }}
+                                                    className={cn("h-full rounded-full transition-all duration-1000", h.color, h.glow)}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <div className="mt-6 p-3 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/10 relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                    <p className="text-[9px] font-bold text-[#1A1A1A] leading-tight italic relative z-10 text-center uppercase tracking-tighter">
+                                        "Colony strength tracking above logic. Phase II monitoring enabled."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         {/* Left Panel - Grid View */}
                         <div className="lg:col-span-4 space-y-12">
                             <motion.div
                                 initial={{ opacity: 0, x: -50 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 1 }}
-                                className={cn(glass.section, "min-h-[500px] flex flex-col")}
+                                className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md min-h-[500px] flex flex-col p-0 overflow-hidden")}
                             >
-                                <div className={cn(glass.sectionHeader, "flex items-center justify-between")}>
-                                    <div className="space-y-1">
-                                        <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight">Asset <span className="text-[#F4D03F]">Grid</span></h3>
-                                        <p className={cn(glass.microLabel, "opacity-40")}>Live Status Matrix</p>
+                                <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
+                                    <div className="space-y-0.5">
+                                        <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Asset Matrix</h3>
+                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">High-Density Grid</p>
                                     </div>
-                                    <div className="flex bg-[#F9F7F2] p-1 rounded-lg gap-1 border border-[#F4D03F]/20 shadow-sm">
+                                    <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg gap-1 border border-[#F4D03F]/10 shadow-inner">
                                         <button
-                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'grid' ? "bg-[#FFF9F0] shadow-sm text-[#F4D03F] border border-[#F4D03F]/20" : "text-[#1A1A1A]/20 hover:text-[#1A1A1A]/40")}
+                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'grid' ? "bg-white shadow-md text-[#F4D03F] border border-[#F4D03F]/10" : "text-gray-300 hover:text-[#1A1A1A]")}
                                             onClick={() => setViewMode('grid')}
                                         >
-                                            <LayoutGrid className="w-4 h-4" />
+                                            <LayoutGrid className="w-3.5 h-3.5" />
                                         </button>
                                         <button
-                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'list' ? "bg-[#FFF9F0] shadow-sm text-[#F4D03F] border border-[#F4D03F]/20" : "text-[#1A1A1A]/20 hover:text-[#1A1A1A]/40")}
+                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'list' ? "bg-white shadow-md text-[#F4D03F] border border-[#F4D03F]/10" : "text-gray-300 hover:text-[#1A1A1A]")}
                                             onClick={() => setViewMode('list')}
                                         >
-                                            <ListIcon className="w-4 h-4" />
+                                            <ListIcon className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
                                 </div>
@@ -223,13 +319,13 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                     onClick={() => handleEditHive(hive)}
                                                 >
                                                     <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                    <span className="relative z-10 italic drop-shadow-sm">{hive.hive_code.split('-').pop() || hive.hive_code.slice(-2)}</span>
+                                                    <span className="relative z-10 drop-shadow-sm">{hive.hive_code.split('-').pop() || hive.hive_code.slice(-2)}</span>
                                                 </motion.div>
                                             ))}
                                             {hives.length === 0 && (
                                                 <div className="col-span-full h-96 flex flex-col items-center justify-center text-center opacity-20">
                                                     <Box className="w-24 h-24 mb-6 animate-pulse" />
-                                                    <p className="font-black tracking-[0.4em] uppercase italic text-xl">System Empty</p>
+                                                    <p className="font-bold tracking-[0.4em] uppercase text-xl">System Empty</p>
                                                 </div>
                                             )}
                                         </div>
@@ -280,21 +376,21 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                 className={cn(glass.section, "min-h-[500px] flex flex-col")}
                             >
                                 <div className={cn(glass.sectionHeader, "flex items-center justify-between")}>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-9 h-9 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                            <Database className="w-5 h-5 text-[#F4D03F]" />
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                            <Database className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
-                                        <div className="space-y-1">
-                                            <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight">Asset <span className="text-[#F4D03F]">Registry</span></h3>
-                                            <p className={cn(glass.microLabel, "opacity-40 uppercase tracking-widest")}>Centralized Intelligence</p>
+                                        <div className="space-y-0.5">
+                                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Asset Registry</h3>
+                                            <p className={cn(glass.microLabel, "opacity-40 uppercase tracking-widest")}>Node Management</p>
                                         </div>
                                     </div>
                                     <button
                                         onClick={handleOpenAddHive}
-                                        className={cn(glass.btnPrimary, "px-4")}
+                                        className={cn(glass.btnPrimary, "px-3 h-8")}
                                     >
-                                        <Plus className="w-4 h-4" />
-                                        New Unit
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Initialize Unit
                                     </button>
                                 </div>
 
@@ -441,145 +537,145 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 <span className="uppercase tracking-widest font-black text-[9px] text-[#F4D03F]">{editingApiary ? 'Edit Location' : 'Add New Location'}</span>
                             </div>
                         </div>
-                        <h1 className="text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase">
+                        <h1 className="text-lg font-bold text-[#1A1A1A] tracking-tight uppercase">
                             Site <span className="text-[#F4D03F]">Deployment</span>
                         </h1>
                     </div>
                 </div>
 
                 {/* Form Card */}
-                <div className={cn(glass.card, 'max-w-4xl shadow-sm p-0 overflow-hidden bg-white border-[#F4D03F]/10 rounded-3xl mx-auto')}>
-                    <div className="p-6 border-b border-[#F4D03F]/10 bg-[#1A1A1A]/5 relative z-10 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                <Layers className="w-5 h-5 text-[#F4D03F]" />
+                <div className={cn(glass.card, 'max-w-4xl shadow-2xl p-0 overflow-hidden bg-white/70 border-[#F4D03F]/10 rounded-3xl mx-auto backdrop-blur-xl')}>
+                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] relative z-10 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                <Layers className="w-4 h-4 text-[#F4D03F]" />
                             </div>
                             <div className="space-y-0.5">
-                                <h3 className="text-xs font-black tracking-widest uppercase text-[#1A1A1A]">Unit Parameters</h3>
-                                <p className="text-[8px] font-bold text-[#F4D03F]/60 uppercase italic">Industrial site initialization protocol.</p>
+                                <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-[#1A1A1A]">Unit Parameters</h3>
+                                <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Site initialization protocol active.</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="p-6 space-y-6 relative z-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
+                            <div className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Identifier*</Label>
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Site Identifier*</Label>
                                     <Input
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="e.g. Acacia Valley Node"
-                                        className="h-10 px-4 font-black text-xs bg-[#1A1A1A]/5 border-[#F4D03F]/10 rounded-xl"
+                                        placeholder="ACACIA_VALLEY_NODE_01"
+                                        className={cn(glass.input, "px-4 h-10 text-[11px] font-black uppercase tracking-wider")}
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Deployment Vector</Label>
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Deployment Vector</Label>
                                     <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-[#1A1A1A]/5 px-4 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-3">
-                                                <Target className="w-4 h-4 text-[#F4D03F]/40" />
+                                                <Target className="w-3.5 h-3.5 text-[#F4D03F]" />
                                                 <SelectValue placeholder="Select type" />
                                             </div>
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white border-[#F4D03F]/10">
-                                            <SelectItem value="permanent" className="text-[9px] font-black uppercase tracking-widest">Permanent Site</SelectItem>
-                                            <SelectItem value="migratory" className="text-[9px] font-black uppercase tracking-widest">Migratory Site</SelectItem>
-                                            <SelectItem value="breeding" className="text-[9px] font-black uppercase tracking-widest">Breeding Site</SelectItem>
-                                            <SelectItem value="quarantine" className="text-[9px] font-black uppercase tracking-widest">Isolation Site</SelectItem>
+                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                            <SelectItem value="permanent" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Permanent Site</SelectItem>
+                                            <SelectItem value="migratory" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Migratory Site</SelectItem>
+                                            <SelectItem value="breeding" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Breeding Site</SelectItem>
+                                            <SelectItem value="quarantine" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Isolation Site</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Node Capacity</Label>
+                                        <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Unit Capacity</Label>
                                         <div className="relative">
-                                            <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
+                                            <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                             <Input
                                                 type="number"
                                                 value={formData.expected_hives || ''}
                                                 onChange={(e) => setFormData({ ...formData, expected_hives: parseInt(e.target.value) || 0 })}
                                                 placeholder="0"
-                                                className="h-10 pl-10 font-black text-xs bg-[#1A1A1A]/5 border-[#F4D03F]/10 rounded-xl"
+                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums tracking-widest"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Area Coverage</Label>
+                                        <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Area (AC)</Label>
                                         <div className="relative">
-                                            <Sprout className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1B9157]/40" />
+                                            <Sprout className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                                             <Input
                                                 type="number"
                                                 step="0.01"
                                                 value={formData.size_acres || ''}
                                                 onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 0 })}
                                                 placeholder="0.0"
-                                                className="h-10 pl-10 font-black text-xs bg-[#1A1A1A]/5 border-[#F4D03F]/10 rounded-xl"
+                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums tracking-widest"
                                             />
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Geospatial Point</Label>
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Geospatial Point</Label>
                                     <div className="relative">
-                                        <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
+                                        <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                         <Input
                                             value={formData.location_name}
                                             onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                                            placeholder="GPS or Address"
-                                            className="h-10 pl-10 font-black text-xs bg-[#1A1A1A]/5 border-[#F4D03F]/10 rounded-xl"
+                                            placeholder="GPS / ADDRESS"
+                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl uppercase tracking-wider"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Floral Vector</Label>
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Flora Vector</Label>
                                     <div className="relative">
-                                        <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1B9157]/40" />
+                                        <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                                         <Input
                                             value={formData.forage_type}
                                             onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
-                                            placeholder="e.g. Lavender Cluster"
-                                            className="h-10 pl-10 font-black text-xs bg-[#1A1A1A]/5 border-[#F4D03F]/10 rounded-xl"
+                                            placeholder="LAVENDER_CLUSTER_PRO"
+                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl uppercase tracking-wider"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-widest text-[#1A1A1A]/40 uppercase ml-4">Operational Narrative</Label>
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Operational Log</Label>
                                     <Textarea
                                         value={formData.notes}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                        className="h-20 p-4 text-xs font-black bg-[#1A1A1A]/5 border-[#F4D03F]/10 rounded-xl resize-none italic"
-                                        placeholder="Add mission-critical notes..."
+                                        className="h-20 p-4 text-[10px] font-bold bg-white/50 border-[#F4D03F]/10 rounded-xl resize-none italic leading-relaxed"
+                                        placeholder="MISSION_CRITICAL_NOTES..."
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-4 pt-6 border-t border-[#F4D03F]/10">
+                        <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10">
                             <button
                                 onClick={resetForm}
-                                className="h-10 px-6 rounded-xl font-black text-[10px] uppercase tracking-widest bg-white border border-[#F4D03F]/10 hover:text-red-500 transition-all"
+                                className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black uppercase tracking-[0.3em]")}
                             >
-                                Discard
+                                Discard_Draft
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={createApiary.isPending || updateApiary.isPending}
-                                className="h-12 px-10 bg-[#F4D03F] text-[#1A1A1A] shadow-lg shadow-[#F4D03F]/20 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-3 active:scale-95 transition-all"
+                                className={cn(glass.btnPrimary, "h-11 px-10 text-[9px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#F4D03F]/10")}
                             >
                                 {createApiary.isPending || updateApiary.isPending ? (
-                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                    <RefreshCw className="w-4 h-4 animate-spin mr-2" />
                                 ) : (
-                                    <ShieldCheck className="w-5 h-5" />
+                                    <ShieldCheck className="w-4 h-4 mr-2" />
                                 )}
-                                {editingApiary ? 'Commit Changes' : 'Initialize Site'}
+                                {editingApiary ? 'Commit_Protocol' : 'Initialize_Site'}
                             </button>
                         </div>
                     </div>
@@ -597,19 +693,69 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             {/* Header */}
             <PageHeader
                 icon={MapPin}
-                label="Infrastructure Registry Kernel"
+                label="Site Intelligence Registry"
                 title={<>Apiary <span className="text-[#F4D03F]">Network</span></>}
-                subtitle="High-fidelity management of global distribution nodes."
+                subtitle="Global management of distributed apiary infrastructure."
                 actions={
                     <button
                         onClick={() => setIsAddingPlace(true)}
-                        className="h-10 bg-[#1A1A1A] text-white hover:bg-[#F4D03F] hover:text-[#1A1A1A] rounded-xl px-6 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg active:scale-95"
+                        className={glass.btnPrimary}
                     >
                         <Plus className="w-4 h-4" />
                         Initialize Site
                     </button>
                 }
             />
+            {/* Network Analytics Overview */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 relative overflow-hidden group backdrop-blur-md")}>
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Network Growth</span>
+                        <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                            <TrendingUp className="w-3.5 h-3.5 text-[#F4D03F]" />
+                        </div>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums">{apiaries.length}</span>
+                        <span className="text-[9px] font-black text-[#1B9157] tracking-tight tabular-nums">+2.4%</span>
+                    </div>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Active Site Nodes</p>
+                    <div className="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
+                        <MapPin className="w-16 h-16" />
+                    </div>
+                </div>
+
+                <div className={cn(glass.card, "p-4 bg-white/40 border-[#1B9157]/10 relative overflow-hidden group backdrop-blur-md")}>
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Operational Units</span>
+                        <div className="h-6 w-6 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10 shadow-sm">
+                            <Hexagon className="w-3.5 h-3.5 text-[#1B9157]" />
+                        </div>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums">{apiaries.reduce((acc, a) => acc + (a.hive_count || 0), 0)}</span>
+                        <span className="text-[9px] font-black text-gray-300 uppercase italic tracking-widest ml-1">GLOBAL</span>
+                    </div>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Telemetry Enabled</p>
+                </div>
+
+                <div className={cn(glass.card, "p-4 lg:col-span-2 bg-[#1A1A1A]/[0.02] border-[#F4D03F]/10 relative overflow-hidden backdrop-blur-md")}>
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Flora Diversity Density</span>
+                        <div className="flex gap-1.5">
+                            {['AC', 'LV', 'MX'].map(l => (
+                                <span key={l} className="w-5 h-5 rounded-md border border-[#F4D03F]/10 bg-white/80 flex items-center justify-center text-[7px] font-black text-gray-500 shadow-sm">{l}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="h-8 w-full flex gap-1 items-end mt-4">
+                        {Array.from({ length: 48 }).map((_, i) => (
+                            <div key={i} className={cn("flex-1 rounded-full transition-all duration-1000", i % 3 === 0 ? "bg-[#F4D03F]/40" : i % 5 === 0 ? "bg-[#1B9157]/40" : "bg-gray-200/20")} style={{ height: `${Math.random() * 60 + 40}%` }} />
+                        ))}
+                    </div>
+                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.4em] mt-3 text-center opacity-40">Spectral_Signature_Distribution_Alpha</p>
+                </div>
+            </div>
 
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -619,17 +765,17 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                 </div>
             ) : apiaries.length === 0 ? (
                 <motion.div
-                    initial={{ scale: 0.95, opacity: 0 }}
+                    initial={{ scale: 0.98, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className={glass.emptyState}
                 >
-                    <div className="w-20 h-20 rounded-2xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6 shadow-sm">
-                        <SearchX className="w-8 h-8 text-[#F4D03F] opacity-40" />
+                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6 shadow-sm">
+                        <SearchX className="w-6 h-6 text-[#F4D03F] opacity-40" />
                     </div>
-                    <h3 className="text-3xl font-bold text-[#1A1A1A] tracking-tight opacity-40">No Locations Found</h3>
-                    <p className="text-sm font-semibold opacity-30 italic max-w-sm mx-auto text-center uppercase tracking-widest mt-4">Initialize your first distribution node to start tracking.</p>
-                    <button onClick={() => setIsAddingPlace(true)} className={cn(glass.btnPrimary, "mt-8 px-8")}>
-                        <Plus className="w-5 h-5 mr-3" /> Initialize_Site_Alpha
+                    <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight opacity-40">No Locations Found</h3>
+                    <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center uppercase tracking-widest mt-2">Initialize your first distribution node to start tracking.</p>
+                    <button onClick={() => setIsAddingPlace(true)} className={cn(glass.btnPrimary, "mt-6 px-6")}>
+                        <Plus className="w-4 h-4 mr-2" /> Initialize_Site_Alpha
                     </button>
                 </motion.div>
             ) : (
@@ -646,69 +792,60 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 <div
                                     className={cn(
                                         glass.card,
-                                        "p-0 cursor-pointer shadow-sm hover:border-[#F4D03F]/40 transition-all duration-300 relative flex flex-col h-full group bg-white rounded-3xl overflow-hidden"
+                                        "p-0 cursor-pointer shadow-sm hover:border-[#F4D03F]/40 transition-all duration-300 relative flex flex-col h-full group bg-white/70 backdrop-blur-md rounded-xl overflow-hidden"
                                     )}
                                     onClick={() => setViewingApiary(apiary)}
                                 >
-                                    <div className="p-6 flex flex-col gap-4 relative z-10">
-                                        <div className="flex justify-between items-start">
-                                            <div className="px-3 py-1 bg-[#1A1A1A]/5 rounded-full border border-[#F4D03F]/10 text-[8px] font-black uppercase tracking-widest text-[#1A1A1A]/40 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] transition-all">
-                                                {apiary.type || 'Permanent'}
+                                    <div className="p-4 flex flex-col h-full relative z-10">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="px-2.5 py-1 bg-[#1A1A1A]/5 rounded-lg border border-[#F4D03F]/10 text-[8px] font-black uppercase tracking-widest text-gray-400 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] group-hover:border-[#F4D03F] transition-all">
+                                                {apiary.type || 'PERMANENT'}
                                             </div>
-                                            <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-[#1A1A1A]/5 border border-[#F4D03F]/10 group-hover:bg-[#F4D03F]/10 transition-all shadow-sm">
-                                                <span className="text-lg font-black text-[#1A1A1A] group-hover:text-[#F4D03F]">{apiary.hive_count || 0}</span>
-                                                <p className="text-[6px] font-black uppercase tracking-widest opacity-30 italic leading-none">UNITS</p>
+                                            <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
+                                                    className="w-7 h-7 rounded-lg bg-white/50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] hover:border-gray-200 transition-all"
+                                                >
+                                                    <Edit className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDelete(apiary.id, e); }}
+                                                    className="w-7 h-7 rounded-lg bg-red-50/50 border border-red-100 flex items-center justify-center text-red-300 hover:text-red-500 hover:border-red-200 transition-all"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className="space-y-1">
-                                            <h3 className="text-xl font-black text-[#1A1A1A] tracking-tighter uppercase group-hover:text-[#F4D03F] transition-all">
-                                                {apiary.name}
-                                            </h3>
-                                            <div className="flex items-center gap-2 font-bold text-[#1A1A1A]/30 text-[9px] uppercase tracking-widest italic">
-                                                <MapPin className="w-3 h-3 text-[#F4D03F]/40" />
-                                                <span className="truncate">{apiary.location_name || 'NETWORK NODE'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="px-6 py-4 grid grid-cols-2 gap-4 border-t border-[#F4D03F]/5 bg-[#1A1A1A]/[0.02]">
-                                        <div className="space-y-1">
-                                            <p className="text-[7px] font-black uppercase tracking-widest text-[#1A1A1A]/20">Flora Vector</p>
-                                            <div className="flex items-center gap-2">
-                                                <Sprout className="w-3 h-3 text-[#1B9157]/40" />
-                                                <p className="text-[9px] font-black text-[#1A1A1A]/80 tracking-widest uppercase truncate italic">{apiary.forage_type || 'Mixed Crops'}</p>
+                                        <div className="space-y-1 mb-6">
+                                            <h3 className="text-sm font-black text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors uppercase tracking-tight truncate">{apiary.name}</h3>
+                                            <div className="flex items-center gap-1.5 text-gray-400">
+                                                <MapPin className="w-3 h-3" />
+                                                <span className="text-[9px] font-bold uppercase tracking-widest truncate">{apiary.location_name || 'UNDEFINED_GEO'}</span>
                                             </div>
                                         </div>
-                                        <div className="space-y-1">
-                                            <p className="text-[7px] font-black uppercase tracking-widest text-[#1A1A1A]/20">Area Coverage</p>
-                                            <div className="flex items-center gap-2">
-                                                <Target className="w-3 h-3 text-[#F4D03F]/40" />
-                                                <p className="text-[9px] font-black text-[#1A1A1A]/80 tracking-widest uppercase tabular-nums italic">{apiary.size_acres || 0} AC</p>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="absolute top-4 right-14 opacity-0 group-hover:opacity-100 transition-all flex gap-2 z-20">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
-                                            className="h-8 w-8 rounded-lg bg-white border border-[#F4D03F]/10 shadow-sm flex items-center justify-center hover:text-[#F4D03F] transition-all"
-                                        >
-                                            <Edit className="w-3.5 h-3.5" />
+                                        <div className="grid grid-cols-2 gap-2 mt-auto">
+                                            <div className="p-2 rounded-xl bg-gray-50/50 border border-gray-100 space-y-0.5">
+                                                <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Cap_Nodes</p>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-sm font-black text-[#1A1A1A] tabular-nums">{apiary.expected_hives || 0}</span>
+                                                    <span className="text-[8px] font-bold text-gray-300">FR</span>
+                                                </div>
+                                            </div>
+                                            <div className={cn("p-2 rounded-xl border space-y-0.5", (apiary.hive_count || 0) > 0 ? "bg-[#1B9157]/5 border-[#1B9157]/10" : "bg-gray-50/50 border-gray-100")}>
+                                                <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Active_Units</p>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className={cn("text-sm font-black tabular-nums", (apiary.hive_count || 0) > 0 ? "text-[#1B9157]" : "text-gray-300")}>{apiary.hive_count || 0}</span>
+                                                    <span className="text-[8px] font-bold text-gray-300">HUB</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button className="mt-4 w-full h-9 rounded-xl border border-dashed border-gray-200 text-[8px] font-black uppercase tracking-[0.2em] text-gray-300 group-hover:border-[#F4D03F]/30 group-hover:text-[#F4D03F] group-hover:bg-[#F4D03F]/5 transition-all flex items-center justify-center gap-2">
+                                            Open_Network_Interface
+                                            <ArrowRight className="w-3 h-3" />
                                         </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(apiary.id, e); }}
-                                            className="h-8 w-8 rounded-lg bg-white border border-[#F4D03F]/10 shadow-sm flex items-center justify-center hover:text-red-500 transition-all"
-                                        >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-
-                                    <div className="px-6 py-3 bg-[#1A1A1A]/[0.03] border-t border-[#F4D03F]/5 flex items-center justify-between mt-auto group-hover:bg-[#F4D03F]/5 transition-colors">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                                            <span className="text-[8px] font-black text-[#1B9157] uppercase tracking-widest">Linked</span>
-                                        </div>
-                                        <ArrowRight className="w-4 h-4 text-[#F4D03F] transform group-hover:translate-x-1 transition-transform" />
                                     </div>
                                 </div>
                             </motion.div>

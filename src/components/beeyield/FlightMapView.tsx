@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import beeyieldService from '@/services/beeyieldService';
+import { glass, PageHeader } from './GlassTheme';
+import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 
 // Fix Leaflet default icon issue
@@ -214,73 +215,70 @@ const FlightMapView: React.FC = () => {
     const mapCenter: [number, number] = selectedPlace ? [selectedPlace.latitude, selectedPlace.longitude] : [0, 0];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
             {/* Header Controls */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#FFF9F0] p-6 rounded-[2rem] shadow-sm border border-slate-50">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <MapIcon className="w-6 h-6 text-[#1B9157]" />
-                        <h1 className="text-3xl font-black text-[#0F172A] tracking-tight uppercase">Flight Deployment</h1>
+            <PageHeader
+                icon={MapIcon}
+                label="Tactical Kernel"
+                title={<>Flight <span className="text-[#F4D03F]">Deployment</span></>}
+                subtitle="High-fidelity telemetry of hive dispersion and environmental flight potential."
+                actions={
+                    <div className="flex flex-wrap gap-3 items-center">
+                        <div className="w-56">
+                            <Select value={selectedPlaceId} onValueChange={handlePlaceChange}>
+                                <SelectTrigger className="bg-white/80 border-gray-100 rounded-xl font-bold h-9 text-xs">
+                                    <SelectValue placeholder="Select Location" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-none shadow-xl">
+                                    {places.map(p => (
+                                        <SelectItem key={p.id} value={p.id} className="text-xs font-bold">
+                                            {p.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Button
+                            onClick={handlePlanRoute}
+                            disabled={planningRoute}
+                            className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-[#1B9157]/10")}
+                        >
+                            {planningRoute ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Route className="w-3.5 h-3.5 mr-2" />}
+                            Plan Route
+                        </Button>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Locate className="w-4 h-4 text-slate-400" />
-                        <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-                            Syncing: {selectedPlace?.name || 'Searching...'}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap gap-4 items-center">
-                    <div className="w-64">
-                        <Select value={selectedPlaceId} onValueChange={handlePlaceChange}>
-                            <SelectTrigger className="bg-[#F9F7F2] border-none rounded-xl font-bold h-12">
-                                <SelectValue placeholder="Select Location" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-none shadow-xl">
-                                {places.map(p => (
-                                    <SelectItem key={p.id} value={p.id} className="font-bold">
-                                        {p.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button
-                        onClick={handlePlanRoute}
-                        disabled={planningRoute}
-                        className="bg-[#1B9157] hover:bg-[#157a48] text-[#1A1A1A] rounded-xl font-black h-12 px-6 shadow-lg shadow-green-200 transition-all hover:scale-105 active:scale-95"
-                    >
-                        {planningRoute ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Route className="w-4 h-4 mr-2" />}
-                        PLAN OPTIMAL ROUTE
-                    </Button>
-                </div>
-            </div>
+                }
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Tactical Sidebar */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Live Weather Metrics */}
-                    <Card className="rounded-[2.5rem] border-none bg-[#FFF9F0] shadow-xl overflow-hidden">
-                        <div className="bg-[#0F172A] p-6 text-[#1A1A1A]">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 mb-4">Bee-Specific Meteo</h3>
+                    <div className={cn(glass.card, "p-0 overflow-hidden")}>
+                        <div className="bg-[#1A1A1A] p-5 text-white">
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F] mb-4">Bee-Specific Meteo</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-sky-400">
                                         <Wind className="w-4 h-4" />
                                         <span className="text-[10px] font-black uppercase">Density</span>
                                     </div>
-                                    <p className="text-2xl font-black">{weather?.humidity}%</p>
+                                    <p className="text-xl font-bold tabular-nums text-white">{weather?.humidity}%</p>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-yellow-500">
                                         <Sun className="w-4 h-4" />
                                         <span className="text-[10px] font-black uppercase">Solar PSI</span>
                                     </div>
-                                    <p className="text-2xl font-black">{weather?.solar_pressure || 840} <span className="text-[10px] opacity-40">W/m²</span></p>
+                                    <p className="text-xl font-bold tabular-nums text-white">{weather?.solar_pressure || 840} <span className="text-[10px] opacity-40">W/m²</span></p>
                                 </div>
                             </div>
                         </div>
-                        <CardContent className="p-6 space-y-4">
+                        <div className="p-5 space-y-4">
                             {weather && weather.temperature < 10 && (
                                 <Alert className="bg-red-50 border-red-100 text-red-700 rounded-2xl">
                                     <AlertTriangle className="h-4 w-4" />
@@ -293,36 +291,36 @@ const FlightMapView: React.FC = () => {
 
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-slate-400">Flight Status</span>
-                                    <Badge className={cn(
-                                        "rounded-full font-black text-[10px] px-3",
-                                        weather?.bee_flight_status === 'Enabled' ? "bg-green-100 text-[#1B9157]" : "bg-amber-100 text-[#F4D03F]"
+                                <span className={glass.microLabel}>Flight Status</span>
+                                    <span className={cn(
+                                        "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider",
+                                        weather?.bee_flight_status === 'Enabled' ? "bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20" : "bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/20"
                                     )}>
                                         {weather?.bee_flight_status?.toUpperCase() || 'OPTIMAL'}
-                                    </Badge>
+                                    </span>
                                 </div>
-                                <div className="h-1 lg:h-1.5 w-full bg-[#F9F7F2] rounded-full overflow-hidden">
-                                    <div className="h-full bg-[#1B9157]" style={{ width: `${foragePotential?.score || 70}%` }} />
+                                <div className="h-1.5 w-full bg-[#F4D03F]/10 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#1B9157] rounded-full" style={{ width: `${foragePotential?.score || 70}%` }} />
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     {/* Radius Controls */}
-                    <Card className="rounded-[2.5rem] border-none bg-[#FFF9F0] shadow-xl p-8 space-y-8">
+                    <div className={cn(glass.card, "p-5 space-y-5")}>
                         <div>
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Foraging Range</h3>
-                                <Badge variant="outline" className="rounded-full border-[#1B9157] text-[#1B9157] font-black px-4 h-6">
+                                <h3 className={glass.microLabel}>Foraging Range</h3>
+                                <span className={cn(glass.badge)}>
                                     {effectiveRadius}KM - {maxRadius}KM
-                                </Badge>
+                                </span>
                             </div>
 
                             <div className="space-y-8">
                                 <div className="space-y-4">
                                     <div className="flex justify-between">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-[#1B9157]">Effective Radius</label>
-                                        <span className="text-[10px] font-black">{effectiveRadius} KM</span>
+                                        <label className={cn(glass.microLabel, "text-[#1B9157]")}>Effective Radius</label>
+                                        <span className="text-[10px] font-bold tabular-nums">{effectiveRadius} KM</span>
                                     </div>
                                     <Slider
                                         value={[effectiveRadius]}
@@ -336,8 +334,8 @@ const FlightMapView: React.FC = () => {
 
                                 <div className="space-y-4">
                                     <div className="flex justify-between">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Max Survival Radius</label>
-                                        <span className="text-[10px] font-black text-slate-400">{maxRadius} KM</span>
+                                        <label className={glass.microLabel}>Max Survival Radius</label>
+                                        <span className="text-[10px] font-bold text-[#1A1A1A]/40 tabular-nums">{maxRadius} KM</span>
                                     </div>
                                     <Slider
                                         value={[maxRadius]}
@@ -352,13 +350,13 @@ const FlightMapView: React.FC = () => {
                         </div>
 
                         <div className="pt-6 border-t border-slate-50 space-y-4">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Display Layers</h4>
+                            <h4 className={glass.microLabel}>Display Layers</h4>
                             <div className="flex flex-wrap gap-2">
                                 <Button
                                     variant={showHeatmap ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setShowHeatmap(!showHeatmap)}
-                                    className={cn("rounded-full font-black text-[10px] px-6 h-10", showHeatmap && "bg-[#0F172A]")}
+                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9 uppercase tracking-widest", showHeatmap && "bg-[#1A1A1A] text-white")}
                                 >
                                     FLIGHT HEATMAP
                                 </Button>
@@ -366,43 +364,43 @@ const FlightMapView: React.FC = () => {
                                     variant={showUtility ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setShowUtility(!showUtility)}
-                                    className={cn("rounded-full font-black text-[10px] px-6 h-10", showUtility && "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#ebd04c]")}
+                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9 uppercase tracking-widest", showUtility && "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#ebd04c]")}
                                 >
                                     UTILITY POTENTIAL
                                 </Button>
                             </div>
                         </div>
-                    </Card>
+                    </div>
 
                     {/* Active Sources */}
                     {foragePotential?.active_sources?.length > 0 && (
-                        <Card className="rounded-[2.5rem] border-none bg-[#FFF9F0] shadow-xl p-8">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">Nectar Engines</h3>
+                        <div className={cn(glass.card, "p-5")}>
+                            <h3 className={cn(glass.microLabel, "mb-4")}>Nectar Engines</h3>
                             <div className="space-y-4">
                                 {foragePotential.active_sources.map((source: any, i: number) => (
-                                    <div key={i} className="flex items-center gap-4 bg-[#F9F7F2] p-4 rounded-2xl border border-slate-100 transition-all hover:bg-[#F4D03F]/10">
-                                        <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center border-2 border-white shadow-sm font-black text-xs">
+                                    <div key={i} className="flex items-center gap-4 bg-[#F9F7F2] p-3 rounded-lg border border-[#F4D03F]/20 transition-all hover:bg-[#F4D03F]/10">
+                                        <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/20 flex items-center justify-center border border-[#F4D03F]/30 font-bold text-[10px] text-[#1A1A1A]">
                                             {source.name[0]}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="font-black text-xs uppercase">{source.name}</p>
+                                            <p className="font-bold text-xs uppercase tracking-tight text-[#1A1A1A]">{source.name}</p>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <div className="h-1 flex-1 bg-[#FFF9F0] rounded-full">
-                                                    <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${source.potential * 100}%` }} />
+                                                <div className="h-1 flex-1 bg-[#F4D03F]/10 rounded-full">
+                                                    <div className="h-full bg-[#F4D03F] rounded-full" style={{ width: `${source.potential * 100}%` }} />
                                                 </div>
-                                                <span className="text-[8px] font-black">{(source.potential * 100).toFixed(0)}%</span>
+                                                <span className="text-[9px] font-bold tabular-nums text-[#1A1A1A]/60">{(source.potential * 100).toFixed(0)}%</span>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </Card>
+                        </div>
                     )}
                 </div>
 
                 {/* Primary Tactical Map (Leaflet) */}
                 <div className="lg:col-span-8 space-y-6">
-                    <Card className="rounded-[3rem] border-8 border-white bg-[#F9F7F2] shadow-2xl overflow-hidden relative h-[700px]">
+                    <div className={cn(glass.card, "rounded-xl border-4 border-[#FFF9F0] overflow-hidden relative h-[700px]")}>
                         <MapContainer
                             center={mapCenter}
                             zoom={14}
@@ -484,8 +482,8 @@ const FlightMapView: React.FC = () => {
                                 center={mapCenter}
                                 radius={maxRadius * 1000}
                                 pathOptions={{
-                                    color: '#slate-300',
-                                    fillColor: '#slate-300',
+                                    color: '#D1D5DB',
+                                    fillColor: '#D1D5DB',
                                     fillOpacity: 0.02,
                                     dashArray: '10, 20',
                                     weight: 1
@@ -511,23 +509,23 @@ const FlightMapView: React.FC = () => {
 
                         {/* Tactical HUD Overlay on Map */}
                         <div className="absolute top-8 left-8 z-[1000] pointer-events-none">
-                            <div className="bg-[#FFF9F0]/80 backdrop-blur-md border-4 border-white p-4 rounded-3xl shadow-xl flex items-center gap-6">
+                            <div className="bg-[#FFF9F0]/90 backdrop-blur-md border border-[#F4D03F]/20 p-3 rounded-xl shadow-lg flex items-center gap-5">
                                 <div className="flex items-center gap-3 pr-6 border-r border-slate-200">
-                                    <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-[#1B9157]">
-                                        <Crosshair className="w-5 h-5" />
+                                    <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center text-[#1B9157]">
+                                        <Crosshair className="w-4 h-4" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase">Tracked Hives</p>
-                                        <p className="text-xl font-black">{hives.length}</p>
+                                        <p className={glass.microLabel}>Tracked Hives</p>
+                                        <p className="text-lg font-bold tabular-nums text-[#1A1A1A]">{hives.length}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <Activity className="w-5 h-5" />
+                                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                        <Activity className="w-4 h-4" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase">Flight Power</p>
-                                        <p className="text-xl font-black text-blue-500">{foragePotential?.score}%</p>
+                                        <p className={glass.microLabel}>Flight Power</p>
+                                        <p className="text-lg font-bold tabular-nums text-blue-500">{foragePotential?.score}%</p>
                                     </div>
                                 </div>
                             </div>
@@ -536,15 +534,15 @@ const FlightMapView: React.FC = () => {
                         {/* Route Legend */}
                         {route.length > 0 && (
                             <div className="absolute bottom-8 left-8 z-[1000] animate-in slide-in-from-left-4">
-                                <Card className="rounded-3xl border-none shadow-2xl p-6 bg-[#0F172A] text-[#1A1A1A]">
+                                <div className="rounded-xl shadow-xl p-5 bg-[#1A1A1A] text-white border border-white/10">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Route className="w-5 h-5 text-blue-400" />
-                                        <span className="text-sm font-black uppercase tracking-widest">Active Route Protocol</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Active Route Protocol</span>
                                     </div>
                                     <div className="space-y-3">
                                         {route.slice(0, 3).map((stop, i) => (
                                             <div key={i} className="flex items-center gap-3">
-                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-black text-[#1A1A1A]">
+                                                <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-bold text-white">
                                                     {i + 1}
                                                 </div>
                                                 <span className="text-[10px] font-bold uppercase opacity-80">{stop.name}</span>
@@ -552,30 +550,30 @@ const FlightMapView: React.FC = () => {
                                         ))}
                                         {route.length > 3 && <p className="text-[9px] font-bold opacity-40">+{route.length - 3} MORE STOPS</p>}
                                     </div>
-                                </Card>
+                                </div>
                             </div>
                         )}
-                    </Card>
+                    </div>
 
                     {/* Educational Logic Section */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="rounded-[2.5rem] p-6 bg-[#FFF9F0] shadow-sm border-l-8 border-l-[#1B9157]">
-                            <h4 className="text-xs font-black uppercase mb-2">Environmental Influence</h4>
-                            <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                        <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1B9157]")}>
+                            <h4 className="text-xs font-bold uppercase tracking-tight text-[#1A1A1A] mb-2">Environmental Influence</h4>
+                            <p className="text-[10px] text-[#1A1A1A]/50 font-medium leading-relaxed">
                                 Current conditions suggests forage efficiency is {foragePotential?.score > 60 ? 'optimal' : 'restricted'}.
                                 Solar pressure and humidity impacts nectar thinning. Monitor hives for potential washout.
                             </p>
-                        </Card>
-                        <Card className="rounded-[2.5rem] p-6 bg-[#FFF9F0] shadow-sm border-l-8 border-l-[#F4D03F]">
-                            <h4 className="text-xs font-black uppercase mb-2">Protocol Recommendation</h4>
-                            <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                        </div>
+                        <div className={cn(glass.card, "p-5 border-l-4 border-l-[#F4D03F]")}>
+                            <h4 className="text-xs font-bold uppercase tracking-tight text-[#1A1A1A] mb-2">Protocol Recommendation</h4>
+                            <p className="text-[10px] text-[#1A1A1A]/50 font-medium leading-relaxed">
                                 {foragePotential?.recommendation || 'Standard monitoring protocol. Check alert sectors if activity drops.'}
                             </p>
-                        </Card>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

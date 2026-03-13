@@ -135,7 +135,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
 
             {/* Hero Section */}
-            <Card className="rounded-[3rem] border-none bg-[#FFF9F0] shadow-xl overflow-hidden">
+            <Card className={cn(glass.card, "bg-[#FFF9F0] border-none shadow-xl overflow-hidden")}>
                 <CardContent className="p-0">
                     <div className="grid grid-cols-1 lg:grid-cols-2">
                         <div className="p-12 lg:p-20 space-y-8 flex flex-col justify-center">
@@ -195,7 +195,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, i) => (
-                        <Card key={i} className="rounded-[2.5rem] border-none bg-[#FAFAFA] p-8 hover:transform hover:-translate-y-2 transition-all duration-300">
+                        <Card key={i} className={cn(glass.card, "bg-[#FAFAFA] border-none p-8 hover:transform hover:-translate-y-2 transition-all duration-300")}>
                             <div className="w-14 h-14 bg-[#FFF9F0] rounded-2xl flex items-center justify-center shadow-sm mb-6">
                                 <feature.icon className="w-7 h-7 text-[#F4D03F]" />
                             </div>
@@ -229,7 +229,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {family.map((item, i) => (
-                        <Card key={i} className={cn("rounded-[2.5rem] border-none p-0 overflow-hidden flex flex-col h-[450px] shadow-sm hover:shadow-md transition-shadow", item.color)}>
+                        <Card key={i} className={cn(glass.card, "p-0 border-none overflow-hidden flex flex-col h-[450px] shadow-sm hover:shadow-md transition-shadow", item.color)}>
                             <div className="h-48 bg-[#F4F8FB] flex items-center justify-center p-12 border-b border-primary/5">
                                 <img src={item.image} alt={item.name} className="max-h-full max-w-full object-contain transition-transform duration-700 group-hover:scale-110" />
                             </div>
@@ -260,7 +260,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PRODUCT CODE</p>
                 </div>
 
-                <div className="bg-[#FFF9F0] rounded-[2.5rem] border border-[#F4D03F]/10 overflow-hidden shadow-sm">
+                <div className={cn(glass.card, "p-0 overflow-hidden shadow-sm")}>
                     <Table>
                         <TableHeader className="bg-[#F9F7F2]">
                             <TableRow className="border-none hover:bg-transparent">
@@ -298,7 +298,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             </div>
 
             {/* Bottom Banner */}
-            <Card className="rounded-[2.5rem] border-none bg-[#0F172A] p-10 shadow-2xl overflow-hidden relative group">
+            <Card className={cn(glass.card, "bg-[#0F172A] border-none p-8 shadow-2xl overflow-hidden relative group")}>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                 <div className="relative flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="space-y-2">
@@ -332,7 +332,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">SMART SENSORS</p>
                 </div>
 
-                <div className="bg-[#FFF9F0] rounded-[2.5rem] border border-[#F4D03F]/10 overflow-hidden shadow-sm">
+                <div className={cn(glass.card, "p-0 overflow-hidden shadow-sm")}>
                     <Table>
                         <TableHeader className="bg-[#F9F7F2]">
                             <TableRow className="border-none hover:bg-transparent">
