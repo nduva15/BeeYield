@@ -31,9 +31,9 @@ import {
     ShieldCheck,
     Dna,
     Network,
-    Lock,
+    Lock as LockIcon,
     Fingerprint
-} from 'lucide-react';
+} from "lucide-react";
 import beeyieldService, { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

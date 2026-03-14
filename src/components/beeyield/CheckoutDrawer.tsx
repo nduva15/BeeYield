@@ -5,13 +5,13 @@ import {
     CreditCard,
     Smartphone,
     Shield,
-    Lock,
+    Lock as LockIcon,
     ChevronRight,
     MapPin,
     AlertCircle,
     CheckCircle2,
     Loader2
-} from 'lucide-react';
+} from "lucide-react";
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -227,7 +227,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                             className="w-full h-14 bg-[#F59E0B] text-[#1A1A1A] font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-wait"
                                         >
                                             {isProcessing ? "Handshaking..." : `Pay ${item?.currency} ${item?.price.toLocaleString()}`}
-                                            <Lock size={16} className={cn("transition-transform", isProcessing ? "animate-pulse" : "group-hover:translate-y-[-1px]")} />
+                                            <LockIcon size={16} className={cn("transition-transform", isProcessing ? "animate-pulse" : "group-hover:translate-y-[-1px]")} />
                                         </button>
                                         <button
                                             onClick={() => setStep('review')}
@@ -304,7 +304,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                         {/* Footer Info */}
                         <div className="p-6 bg-[#050505] border-t border-[#1A1A1A] flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Lock size={12} className="text-gray-400" />
+                                <LockIcon size={12} className="text-gray-400" />
                                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">256-BIT RSA</span>
                             </div>
                             <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.1em]">PCI-DSS v4.0</span>

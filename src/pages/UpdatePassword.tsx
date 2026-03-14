@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Lock, CheckCircle, Shield, ArrowLeft } from 'lucide-react';
+import { Loader2, Lock as LockIcon, CheckCircle, Shield, ArrowLeft } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
 const UpdatePasswordForm: React.FC = () => {
@@ -111,7 +111,7 @@ const UpdatePasswordForm: React.FC = () => {
                             <div className="space-y-2">
                                 <Label htmlFor="new-password" title="Enter at least 6 characters" className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/60 pl-1">New Access Key</Label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
+                                    <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
                                     <Input
                                         id="new-password"
                                         type="password"
@@ -128,7 +128,7 @@ const UpdatePasswordForm: React.FC = () => {
                             <div className="space-y-2">
                                 <Label htmlFor="confirm-password" className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/60 pl-1">Verify Access Key</Label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
+                                    <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
                                     <Input
                                         id="confirm-password"
                                         type="password"

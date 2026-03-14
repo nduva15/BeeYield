@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, Sparkles, UserPlus } from 'lucide-react';
+import { Loader2, Mail, Lock as LockIcon, User, Sparkles, UserPlus } from "lucide-react";
 
 interface ShopRegisterFormProps {
     onSuccess?: () => void;
@@ -161,7 +161,7 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
                 <div className="space-y-2">
                     <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             type="password"
                             placeholder="••••••••"
@@ -175,7 +175,7 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
                 <div className="space-y-2">
                     <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             type="password"
                             placeholder="••••••••"

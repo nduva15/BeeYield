@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, ArrowRight, LogIn } from 'lucide-react';
+import { Loader2, Mail, Lock as LockIcon, ArrowRight, LogIn } from "lucide-react";
 
 interface ShopLoginFormProps {
     onSuccess?: () => void;
@@ -90,7 +90,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
             <form onSubmit={handleMFAVerify} className="space-y-6">
                 <div className="text-center space-y-2">
                     <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
-                        <Lock className="h-6 w-6 text-honey" />
+                        <LockIcon className="h-6 w-6 text-honey" />
                     </div>
                     <h3 className="text-lg font-bold text-gray-900">Verification Code</h3>
                     <p className="text-sm text-gray-500 font-medium">
@@ -209,7 +209,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                         )}
                     </div>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="shop-password"
                             type="password"

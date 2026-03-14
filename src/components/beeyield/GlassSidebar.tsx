@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, LogOut, Settings, Sun, Moon, Lock } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, Sun, Moon, Lock as LockIcon } from "lucide-react";
 import { NavItem } from './DashboardSidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';

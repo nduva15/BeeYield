@@ -28,8 +28,8 @@ import {
     SearchCode,
     Activity,
     CloudSync,
-    Lock
-} from 'lucide-react';
+    Lock as LockIcon
+} from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,7 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {[
-                                { checked: makePublic, set: setMakePublic, label: 'Public Registry', icon: Lock, desc: 'Share telemetry with decentralized Hub.' },
+                                { checked: makePublic, set: setMakePublic, label: 'Public Registry', icon: LockIcon, desc: 'Share telemetry with decentralized Hub.' },
                                 { checked: keepUpdate, set: setKeepUpdate, label: 'Live Ingest', icon: Activity, desc: 'Establish real-time temporal polling.' },
                                 { checked: consent, set: setConsent, label: 'Global Egress', icon: CloudSync, desc: 'Contribute to algorithmic biodiversity.' },
                                 { checked: searchWireless, set: setSearchWireless, label: 'Node Discovery', icon: Wifi, desc: 'Recursive Bluetooth beacon scanning.' }

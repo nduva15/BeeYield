@@ -9,8 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import {
     Plus, Search, Loader2, ShieldCheck, AlertCircle, CheckCircle2, Calendar, ClipboardList, Trash2,
     Bot, ArrowRight, MapPin, Thermometer, Zap, Sun, HeartPulse, ChevronLeft, SearchX, Hexagon,
-    Terminal, Target, Box, FileText, Lock, Activity, Waves, Hash, Shield, Microscope, RefreshCw, Bug
-} from 'lucide-react';
+    Terminal, Target, Box, FileText, Lock as LockIcon, Activity, Waves, Hash, Shield, Microscope, RefreshCw, Bug
+} from "lucide-react";
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import beeyieldService, { Apiary, Hive, Inspection } from '@/services/beeyieldService';

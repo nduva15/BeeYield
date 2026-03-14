@@ -1,10 +1,10 @@
 import React from 'react';
 import {
     ShoppingBag, Calculator, Zap, ShieldCheck, ArrowRight, CheckCircle2,
-    RefreshCw, History as HistoryIcon, Database, ExternalLink, Lock, Globe, ArrowUpRight, Search, BookOpen,
+    RefreshCw, History as HistoryIcon, Database, ExternalLink, Lock as LockIcon, Globe, ArrowUpRight, Search, BookOpen,
     Activity, Key, Terminal, AlertCircle, Clock, ChevronRight, Layers, Box, Code,
     Shield, Share2, Binary, Cpu as Chip, Network, PlusCircle, LayoutGrid
-} from 'lucide-react';
+} from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -238,7 +238,7 @@ const IntegrationsView: React.FC = () => {
 
                         <div className={cn(glass.card, "p-4 space-y-3 bg-[#F9F7F2] border-[#F4D03F]/20")}>
                             <div className="flex items-center gap-2 text-[#1A1A1A]">
-                                <Lock className="w-4 h-4 text-[#F4D03F]" />
+                                <LockIcon className="w-4 h-4 text-[#F4D03F]" />
                                 <span className="text-xs font-bold tracking-tight">Handshake_Secure</span>
                             </div>
                             <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">

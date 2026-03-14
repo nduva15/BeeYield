@@ -27,7 +27,7 @@ const OurStory = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div className="text-center lg:text-left">
               <Badge variant="secondary" className="mb-6 px-4 py-1 text-sm">
-                About Us
+                Our Genesis
               </Badge>
               <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-tight">
                 The Story of <span className="text-primary">BeeYield</span>

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award,
-  CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock, FileDown, Wheat, TreePine, Scale, Cpu,
+  CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock as LockIcon, FileDown, Wheat, TreePine, Scale, Cpu,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from "html5-qrcode";
@@ -801,7 +801,7 @@ const Traceability = () => {
 
                                       <div className="mt-4 pt-4 border-t border-[#F4D03F]/10 flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
-                                          <Lock className="h-3 w-3 text-[#1B9157]" />
+                                          <LockIcon className="h-3 w-3 text-[#1B9157]" />
                                           <span className="text-[9px] font-bold text-[#1B9157] uppercase">Secure Record</span>
                                         </div>
                                         <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-widest">Tamper-Proof</span>
@@ -899,7 +899,7 @@ const Traceability = () => {
                     <div className="flex items-center justify-between mb-8">
                       <h3 className="text-3xl font-black text-neutral-900 tracking-tighter uppercase">The Honey Journey</h3>
                       <Badge variant="outline" className="bg-[#F9F7F2] text-slate-500 border-slate-200 font-bold gap-1.5 py-1.5 pl-2 pr-3 hidden sm:flex">
-                        <Lock className="h-3 w-3" /> Permanently Recorded
+                        <LockIcon className="h-3 w-3" /> Permanently Recorded
                       </Badge>
                     </div>
 

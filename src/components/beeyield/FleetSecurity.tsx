@@ -7,7 +7,7 @@ import {
     AlertTriangle,
     Box,
     CheckCircle2,
-    Lock,
+    Lock as LockIcon,
     Unlock,
     Activity,
     Smartphone,
@@ -30,7 +30,7 @@ import {
     X,
     Radio,
     Loader2
-} from 'lucide-react';
+} from "lucide-react";
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { glass, PageHeader } from './GlassTheme';
@@ -112,7 +112,7 @@ const FleetSecurity: React.FC = () => {
                 actions={
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2.5 bg-white/60 px-3 h-8 rounded-xl border border-white/40 shadow-sm backdrop-blur-sm">
-                            <Lock className="w-3 h-3 text-[#1B9157]" />
+                            <LockIcon className="w-3 h-3 text-[#1B9157]" />
                             <button className={glass.btnPrimary}>Secure UI</button>
                         </div>
                     </div>

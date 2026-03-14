@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, Hexagon, Zap, Activity, LogIn, ShieldCheck } from 'lucide-react';
+import { Loader2, Mail, Lock as LockIcon, Hexagon, Zap, Activity, LogIn, ShieldCheck } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 
@@ -92,7 +92,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
             <form onSubmit={handleMFAVerify} className="space-y-5">
                 <div className="text-center space-y-2">
                     <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto mb-3 border border-[#F4D03F]/20">
-                        <Lock className="h-5 w-5 text-[#F4D03F]" />
+                        <LockIcon className="h-5 w-5 text-[#F4D03F]" />
                     </div>
                     <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Identity Verification</h3>
                     <p className="text-[11px] font-medium text-gray-500 max-w-[200px] mx-auto">
@@ -166,7 +166,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         )}
                     </div>
                     <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
                         <Input
                             id="by-password"
                             type="password"
