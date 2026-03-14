@@ -13,9 +13,9 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock as LockIcon, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
     Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug, Calendar
-} from 'lucide-react';
+} from "lucide-react";
 import { Award } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -558,7 +558,7 @@ const BeeYieldDashboard: React.FC = () => {
                                 onClick={() => navigate('/login')}
                                 className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-[#1A1A1A] font-black uppercase text-xs tracking-widest hover:bg-[#FFF9F0] transition-all flex items-center justify-center gap-3"
                             >
-                                <Lock className="w-4 h-4" />
+                                <LockIcon className="w-4 h-4" />
                                 Login
                             </button>
                         </div>

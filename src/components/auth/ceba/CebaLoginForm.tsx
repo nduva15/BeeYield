@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, Shield, Terminal, Activity, Server, Globe, LogIn } from 'lucide-react';
+import { Loader2, Mail, Lock as LockIcon, Shield, Terminal, Activity, Server, Globe, LogIn } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 interface CebaLoginFormProps {
@@ -243,7 +243,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         )}
                     </div>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="ceba-password"
                             type="password"

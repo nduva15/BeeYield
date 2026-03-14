@@ -8,7 +8,7 @@ import {
     ExternalLink,
     ArrowRight,
     CheckCircle2,
-    Lock,
+    Lock as LockIcon,
     Sparkles,
     Sprout,
     Leaf,

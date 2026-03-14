@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import {
     ArrowLeft,
-    Lock,
+    Lock as LockIcon,
     User,
     UserPlus,
     LogIn,
@@ -17,7 +17,7 @@ import {
     ShoppingBag,
     ArrowRight,
     Hexagon
-} from 'lucide-react';
+} from "lucide-react";
 import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
 import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import ShopForgotPasswordForm from '@/components/auth/shop/ShopForgotPasswordForm';
@@ -153,7 +153,7 @@ const ShopAuth: React.FC = () => {
                         <div className="mt-12 text-center space-y-8">
                             <div className="flex items-center justify-center gap-10 opacity-20 grayscale hover:grayscale-0 transition-all duration-700">
                                 <Shield className="h-6 w-6" />
-                                <Lock className="h-6 w-6" />
+                                <LockIcon className="h-6 w-6" />
                                 <CheckCircle2 className="h-6 w-6" />
                             </div>
                             

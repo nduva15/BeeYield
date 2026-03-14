@@ -6,8 +6,8 @@ import { Label } from '@/components/ui/label';
 import { 
     Loader2, Activity, Server, Database, ShieldCheck, 
     RefreshCw, Globe, Zap, AlertTriangle, Cpu, Terminal,
-    Clock, BarChart3, Binary, Lock
-} from 'lucide-react';
+    Clock, BarChart3, Binary, Lock as LockIcon
+} from "lucide-react";
 import beeyieldService from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -160,7 +160,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
 
                     <div className="p-16 border-t border-[#F4D03F]/20 bg-gray-400 backdrop-blur-3xl flex items-center justify-between rounded-b-[5rem]">
                         <div className="flex items-center gap-10 opacity-10 px-10">
-                            <Lock className="w-10 h-10" />
+                            <LockIcon className="w-10 h-10" />
                             <p className="text-[14px] font-black uppercase tracking-[0.5em] italic">Encryption Layer Active</p>
                         </div>
                         <div className="flex items-center gap-8 pr-8">

@@ -2,8 +2,8 @@ import React from 'react';
 import {
     Package, Plus, Calendar, MapPin, Hexagon, TrendingUp, Download, Search, RefreshCw,
     ShieldCheck, Zap, ArrowRight, ChevronLeft, SearchX, Layers, Cpu, Database, Binary,
-    FlaskConical, Droplets, Wind, Scale, History, Activity, Lock, FlaskRound, HeartPulse, Shield, Hash, Thermometer
-} from 'lucide-react';
+    FlaskConical, Droplets, Wind, Scale, History, Activity, Lock as LockIcon, FlaskRound, HeartPulse, Shield, Hash, Thermometer
+} from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';

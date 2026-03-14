@@ -6,8 +6,8 @@ import {
     Plus, FileText, ChevronRight, Download, Loader2,
     Shield, Zap, Banknote, Target, TrendingUp,
     Search, Calendar, History, ArrowUpRight, ArrowDownRight, Printer, Share2, DollarSign,
-    RefreshCw, X, ShieldCheck, Clock, Lock, CreditCard
-} from 'lucide-react';
+    RefreshCw, X, ShieldCheck, Clock, Lock as LockIcon, CreditCard
+} from "lucide-react";
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';

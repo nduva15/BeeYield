@@ -410,8 +410,8 @@ const TestimonialSection = () => {
   );
 };
 
-// About Section - "The Buzzz about our Honey!"
-const AboutSection = () => {
+// Heritage Section - "The Buzzz about our Honey!"
+const HeritageSection = () => {
   return (
     <section className="py-24 bg-neutral-50 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
@@ -1097,7 +1097,7 @@ const HoneyLanding = () => {
       />
 
       <TestimonialSection />
-      <AboutSection />
+      <HeritageSection />
       <FeaturesSection />
 
       <AllProductsSection

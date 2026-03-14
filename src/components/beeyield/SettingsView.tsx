@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-    User, Shield, Bell, Globe, Lock, MapPin, Activity, Save, Trash2, Key, Smartphone, Layers, Hexagon, Cpu, ShieldCheck, Check,
+    User, Shield, Bell, Globe, Lock as LockIcon, MapPin, Activity, Save, Trash2, Key, Smartphone, Layers, Hexagon, Cpu, ShieldCheck, Check,
     Settings, LogOut, ChevronRight, Palette, Fingerprint
-} from 'lucide-react';
+} from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -172,7 +172,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <Label className="text-[11px] font-bold text-[#1A1A1A] uppercase tracking-widest ml-1">Verified Email</Label>
                                             <div className="relative">
                                                 <Input className={cn(glass.input, "pl-4 pr-10 w-full font-bold text-gray-500 bg-gray-100 cursor-not-allowed")} defaultValue={user?.email || ""} disabled />
-                                                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                <LockIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                             </div>
                                         </div>
                                         <div className="space-y-2 group">

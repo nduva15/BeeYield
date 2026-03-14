@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { 
     Shield, 
-    Lock, 
+    Lock as LockIcon, 
     Database, 
     ArrowLeft 
-} from 'lucide-react';
+} from "lucide-react";
 
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
@@ -140,7 +140,7 @@ const AdminAuth = () => {
                         <div className="mt-12 text-center space-y-8">
                             <div className="flex items-center justify-center gap-10 opacity-20 grayscale hover:grayscale-0 transition-all duration-700">
                                 <Shield className="h-6 w-6" />
-                                <Lock className="h-6 w-6" />
+                                <LockIcon className="h-6 w-6" />
                                 <Database className="h-6 w-6" />
                             </div>
                             

@@ -13,9 +13,9 @@ import {
     Clock, Sparkles, X, Trash2, Shield, Loader2, FileBarChart,
     ChevronRight, Search, Zap, Cpu, Database, FileSpreadsheet,
     FileJson, PieChart, BarChart3, ArrowRight, ShieldCheck,
-    Layers, MapPin, Network, Terminal, Fingerprint, Lock,
+    Layers, MapPin, Network, Terminal, Fingerprint, Lock as LockIcon,
     SearchCode, Activity, Radio, Info, RefreshCw, ChevronDown, Box
-} from 'lucide-react';
+} from "lucide-react";
 import beeyieldService, { Apiary, Hive, GeneratedReport, ScheduledReport } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -461,7 +461,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                         <div className="p-5 bg-emerald-50/50 border-t border-gray-50 space-y-2">
                              <div className="flex items-center gap-2 text-emerald-700">
-                                <Lock className="w-4 h-4" />
+                                <LockIcon className="w-4 h-4" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
                              </div>
                              <p className="text-[10px] font-medium text-emerald-600/60 leading-relaxed uppercase tracking-tighter">Deep-encrypted SMTP tunnel dissemination active for kernel node_ST.</p>

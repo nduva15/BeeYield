@@ -6,10 +6,10 @@ import {
     ShieldCheck,
     Database,
     Activity,
-    Lock,
+    Lock as LockIcon,
     RefreshCw,
     Network
-} from 'lucide-react';
+} from "lucide-react";
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { glass, PageHeader } from './GlassTheme';
@@ -90,7 +90,7 @@ const SettingsIntegrationsView: React.FC = () => {
                         <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
-                                    <Lock className="w-5 h-5 text-[#1B9157]" />
+                                    <LockIcon className="w-5 h-5 text-[#1B9157]" />
                                 </div>
                                 <div className="space-y-0.5">
                                     <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">eTIMS VSDC Terminal</h3>

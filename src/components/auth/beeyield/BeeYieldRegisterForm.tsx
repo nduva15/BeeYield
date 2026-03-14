@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, ShieldCheck, Database, ArrowRight, Zap, UserPlus } from 'lucide-react';
+import { Loader2, Mail, Lock as LockIcon, User, ShieldCheck, Database, ArrowRight, Zap, UserPlus } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 
@@ -118,7 +118,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Passphrase</Label>
                     <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
                             type="password"
                             placeholder="••••••••"
@@ -132,7 +132,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Verify</Label>
                     <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
                             type="password"
                             placeholder="••••••••"

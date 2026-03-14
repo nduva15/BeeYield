@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import {
     Shield,
-    Lock,
+    Lock as LockIcon,
     Cpu,
     Hexagon,
     ChevronRight,
@@ -19,7 +19,7 @@ import {
     Sprout,
     LineChart,
     Layers
-} from 'lucide-react';
+} from "lucide-react";
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
 import BeeYieldForgotPasswordForm from '@/components/auth/beeyield/BeeYieldForgotPasswordForm';
