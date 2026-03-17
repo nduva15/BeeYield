@@ -352,7 +352,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                     setNewRate((p) => ({ ...p, meter_type: next }));
                                 }}
                             >
-                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                <SelectTrigger id="meters-payments-meter-type" aria-label="Meter type" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
@@ -364,8 +364,11 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">UNIT_RATE</label>
+                            <label htmlFor="meters-payments-rate-per-unit" className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">UNIT_RATE</label>
                             <Input
+                                id="meters-payments-rate-per-unit"
+                                name="rate_per_unit"
+                                autoComplete="off"
                                 type="number"
                                 inputMode="decimal"
                                 placeholder="0.00"
@@ -375,8 +378,11 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">ANNOTATION</label>
+                            <label htmlFor="meters-payments-description" className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">ANNOTATION</label>
                             <Input
+                                id="meters-payments-description"
+                                name="description"
+                                autoComplete="off"
                                 placeholder="COMMENT..."
                                 value={newRate.description}
                                 onChange={(e) => setNewRate((p) => ({ ...p, description: e.target.value }))}

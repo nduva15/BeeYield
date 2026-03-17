@@ -23,14 +23,7 @@ interface HiveTask {
     resolved: boolean;
 }
 
-const initialTasks: HiveTask[] = [
-    { id: 'T-001', hive: 'HV-003', location: 'Block 4B', urgency: 'critical', reason: 'Queenless Acoustic Signature Detected', fob: 3, fobr: 1, lastInspected: '2026-02-14', resolved: false },
-    { id: 'T-002', hive: 'HV-002', location: 'Block 4B', urgency: 'high', reason: 'Pre-Swarm Pattern — Inspect for Swarm Cells', fob: 9, fobr: 7, lastInspected: '2026-02-15', resolved: false },
-    { id: 'T-003', hive: 'HV-006', location: 'Block 3A', urgency: 'medium', reason: 'Low Activity — Wind Exposure Concerns', fob: 6, fobr: 4, lastInspected: '2026-02-17', resolved: false },
-    { id: 'T-004', hive: 'HV-001', location: 'Block 1C', urgency: 'low', reason: 'Routine Mite Treatment Due', fob: 8, fobr: 6, lastInspected: '2026-02-18', resolved: false },
-    { id: 'T-005', hive: 'HV-004', location: 'Block 1C', urgency: 'low', reason: 'Syrup top-up required', fob: 7, fobr: 5, lastInspected: '2026-02-18', resolved: true },
-    { id: 'T-006', hive: 'HV-005', location: 'Block 2D', urgency: 'medium', reason: 'Humidity Above Threshold', fob: 8, fobr: 6, lastInspected: '2026-02-16', resolved: false },
-];
+const initialTasks: HiveTask[] = [];
 
 const urgencyConfig: Record<Urgency, { label: string; color: string; bg: string; border: string; dot: string }> = {
     critical: { label: 'Critical', color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20', dot: 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]' },
@@ -57,6 +50,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
 
     // FPA = total FOB across all hives / total acres
     const fpa = React.useMemo(() => {
+        if (tasks.length === 0) return '—';
         const totalFob = tasks.reduce((sum, t) => sum + t.fob, 0);
         return (totalFob / TOTAL_ACRES).toFixed(2);
     }, [tasks]);

@@ -20,14 +20,7 @@ interface HiveMarker {
     saturation: number; // 0-100
 }
 
-const hiveMarkers: HiveMarker[] = [
-    { id: 'HV-001', name: 'Hive Alpha', x: 20, y: 25, status: 'nominal', block: 'Block 1C', saturation: 85 },
-    { id: 'HV-002', name: 'Hive Bravo', x: 45, y: 20, status: 'nominal', block: 'Block 2D', saturation: 72 },
-    { id: 'HV-003', name: 'Hive Charlie', x: 68, y: 35, status: 'moved', block: 'Block 3A', saturation: 30 },
-    { id: 'HV-004', name: 'Hive Delta', x: 25, y: 62, status: 'nominal', block: 'Block 4B', saturation: 78 },
-    { id: 'HV-005', name: 'Hive Echo', x: 55, y: 70, status: 'nominal', block: 'Block 4B', saturation: 91 },
-    { id: 'HV-006', name: 'Hive Foxtrot', x: 78, y: 65, status: 'alert', block: 'Block 3A', saturation: 18 },
-];
+const hiveMarkers: HiveMarker[] = [];
 
 // Heatmap logic: 8x6 grid
 // Blocks mapping:
@@ -158,8 +151,19 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                 {/* The Orchard Map */}
                 <div className="lg:col-span-8 space-y-4">
                     <div className={cn(glass.card, "bg-neutral-900 shadow-xl relative overflow-hidden group border-white/10")} style={{ aspectRatio: '16/10' }}>
+                        {hives.length === 0 && (
+                            <div className="absolute inset-0 flex items-center justify-center p-10">
+                                <div className="text-center space-y-2">
+                                    <MapPin className="w-8 h-8 text-white/30 mx-auto" />
+                                    <p className="text-sm font-bold text-white/80">No hive location data yet</p>
+                                    <p className="text-xs font-medium text-white/40 max-w-md">
+                                        This map requires GPS/location telemetry from gateways or trackers. Connect devices to enable live security mapping.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                         {/* Heatmap layer */}
-                        {showHeatmap && (
+                        {showHeatmap && hives.length > 0 && (
                             <div className="absolute inset-0 grid" style={{ gridTemplateColumns: 'repeat(8, 1fr)', gridTemplateRows: 'repeat(6, 1fr)' }}>
                                 {Array.from({ length: 48 }).map((_, i) => {
                                     const r = Math.floor(i / 8);
