@@ -82,13 +82,13 @@ const VarroaView: React.FC = () => {
         >
             <PageHeader
                 icon={Microscope}
-                label="Pathology Kernel"
+                label="Hive health"
                 title="Varroa Analysis"
-                subtitle="High-fidelity mite infestation monitoring and spectral diagnostic protocols."
+                subtitle="Review infestation risk and next steps."
                 actions={
                     <button className={cn(glass.btnPrimary, "h-10 px-6 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}>
                         <Microscope className="w-4 h-4" />
-                        <span>RUN_DIAGNOSIS</span>
+                        <span>Run check</span>
                     </button>
                 }
             />
@@ -109,13 +109,13 @@ const VarroaView: React.FC = () => {
                         <AlertTriangle className="w-5 h-5 text-red-500" />
                     </div>
                     <div className="flex-1 relative z-10">
-                        <h3 className="text-[10px] font-black text-red-700 uppercase tracking-[0.2em] mb-0.5">HIGH_INFESTATION_ALERT</h3>
+                        <h3 className="text-[10px] font-black text-red-700 uppercase tracking-[0.2em] mb-0.5">High infestation</h3>
                         <p className="text-[11px] font-black text-red-600/60 uppercase tracking-tighter">
                             Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.
                         </p>
                     </div>
                     <button className={cn(glass.btnPrimary, "h-9 px-4 bg-red-500 border-red-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl relative z-10")}>
-                        TREATMENT_PROTOCOL
+                        Treatment steps
                     </button>
                 </div>
             )}

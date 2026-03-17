@@ -99,7 +99,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
             {/* Header */}
             <PageHeader
                 icon={Shield}
-                label="Security_Kernel_Protocol"
+                label="Security"
                 title={<>Hive <span className="text-[#F4D03F]">Security</span></>}
                 subtitle="Live Hive Map · Asset Tracking · Environmental Density"
                 actions={
@@ -117,7 +117,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                 showHeatmap ? "bg-[#1A1A1A] text-white border-transparent" : "bg-white/60 border-white/40"
                             )}
                         >
-                            {showHeatmap ? 'Hide_Heatmap' : 'Show_Heatmap'}
+                            {showHeatmap ? 'Hide heatmap' : 'Show heatmap'}
                         </button>
                     </div>
                 }
@@ -194,6 +194,8 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                     onClick={() => setSelected(h)}
                                     className="absolute transform -translate-x-1/2 -translate-y-1/2 focus:outline-none group z-10"
                                     style={{ left: `${h.x}%`, top: `${h.y}%` }}
+                                    aria-label={`Select hive ${h.id}`}
+                                    title={`Select hive ${h.id}`}
                                 >
                                     <div className={cn(
                                         "w-4 h-4 rounded-full border-2 border-white/80 transition-all", s.dot,

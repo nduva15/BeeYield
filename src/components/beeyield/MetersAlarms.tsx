@@ -75,9 +75,9 @@ const MetersAlarms: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-500 pb-12 p-4 md:p-6">
             <BeeYieldPageHeader
                 icon={Bell}
-                label="PRIORITY_PROTOCOL_FEED"
+                label="Alerts"
                 title={<>System <span className="text-[#F4D03F]">Updates</span></>}
-                subtitle="ACTIVE_INCIDENT_LOG_AND_RESOLUTION_MATRIX"
+                subtitle="Active alerts and recent events."
             />
 
             {/* Top Notifications Section */}
