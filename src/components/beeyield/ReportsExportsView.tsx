@@ -149,15 +149,10 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         const toastId = toast.loading('Preparing report…');
 
         try {
-            const interval = setInterval(() => {
-                setGenProgress(prev => {
-                    if (prev >= 95) {
-                        clearInterval(interval);
-                        return 95;
-                    }
-                    return prev + Math.random() * 15;
-                });
-            }, 500);
+            // Animate progress while the backend job runs; completion is based on real job status.
+            const interval = window.setInterval(() => {
+                setGenProgress(prev => (prev >= 90 ? 90 : prev + 4));
+            }, 700);
 
             const { data, error } = await beeyieldService.generateReport({
                 report_type: 'full_summary',
@@ -172,25 +167,15 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 file_format: selectedFormat
             } as any);
 
-            clearInterval(interval);
-            setGenProgress(100);
-
             if (error) throw error;
             toast.success('Report queued', { id: toastId });
 
             const jobId = data?.id;
             if (jobId) {
-                const started = Date.now();
-                let last: GeneratedReport | null = null;
-                while (Date.now() - started < 60_000) {
-                    last = await beeyieldService.getReportStatus(jobId);
-                    if (last?.status === 'completed' || last?.status === 'failed') break;
-                    await new Promise(r => setTimeout(r, 2000));
-                }
-
+                const last = await beeyieldService.waitForReport(jobId, { timeoutMs: 180_000, pollMs: 1500 });
                 if (last?.status === 'completed') {
                     toast.success('Report ready', { id: toastId });
-                    if (last.file_url) window.open(last.file_url, '_blank');
+                    await beeyieldService.downloadReport({ file_url: last.file_url, file_name: (last as any).file_name });
                 } else if (last?.status === 'failed') {
                     toast.error('Report failed', { id: toastId });
                 } else {
@@ -198,15 +183,15 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 }
             }
 
+            window.clearInterval(interval);
+            setGenProgress(100);
             loadData();
         } catch (error) {
             console.error('Extraction failed', error);
             toast.error('Report failed', { id: toastId });
         } finally {
-            setTimeout(() => {
-                setIsGenerating(false);
-                setGenProgress(0);
-            }, 1000);
+            setIsGenerating(false);
+            setGenProgress(0);
         }
     };
 
@@ -234,17 +219,10 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
             const jobId = data?.id;
             if (jobId) {
-                const started = Date.now();
-                let last: GeneratedReport | null = null;
-                while (Date.now() - started < 60_000) {
-                    last = await beeyieldService.getReportStatus(jobId);
-                    if (last?.status === 'completed' || last?.status === 'failed') break;
-                    await new Promise(r => setTimeout(r, 2000));
-                }
-
+                const last = await beeyieldService.waitForReport(jobId, { timeoutMs: 240_000, pollMs: 2000 });
                 if (last?.status === 'completed') {
                     toast.success('Insights ready', { id: toastId });
-                    if (last.file_url) window.open(last.file_url, '_blank');
+                    await beeyieldService.downloadReport({ file_url: last.file_url, file_name: (last as any).file_name });
                 } else if (last?.status === 'failed') {
                     toast.error('Insights failed', { id: toastId });
                 } else {

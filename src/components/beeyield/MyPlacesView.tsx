@@ -245,7 +245,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                             {hives.length === 0 && (
                                                 <div className="col-span-full h-96 flex flex-col items-center justify-center text-center opacity-20">
                                                     <Box className="w-24 h-24 mb-6 animate-pulse" />
-                                                    <p className="font-bold tracking-[0.4em] uppercase text-xl">System Empty</p>
+                                                    <p className="text-lg font-semibold text-gray-600">No hives yet</p>
                                                 </div>
                                             )}
                                         </div>
@@ -265,7 +265,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                         <div className={cn("w-2 h-2 rounded-full border border-[#F4D03F]/20 shadow-sm animate-pulse", getStatusColor(hive.status))} />
                                                         <div className="flex flex-col">
                                                             <span className="text-sm font-bold text-[#1A1A1A] tracking-tight group-hover:text-[#F4D03F] transition-colors">#{hive.hive_code}</span>
-                                                            <span className="text-[9px] font-bold text-[#1A1A1A]/30 uppercase tracking-widest">Biometric Unit</span>
+                                                            <span className="text-xs text-gray-500">Hive</span>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-4">

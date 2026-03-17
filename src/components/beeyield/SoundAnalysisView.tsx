@@ -61,28 +61,22 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
             const tid = toast.loading('Analyzing audio…');
             try {
-                const resp = await beeyieldService.analyzeHiveAudio({
-                    file,
-                    hiveId: selectedHiveId || undefined,
-                });
-
-                const prediction = String(resp?.prediction || resp?.label || '').toLowerCase();
-                const probability = typeof resp?.probability === 'number' ? resp.probability : undefined;
+                const resp = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
+                const verdict = String(resp?.verdict || '').toLowerCase();
+                const confidence = typeof resp?.confidence === 'number' ? resp.confidence : undefined;
                 const label: 'Healthy' | 'Warning' =
-                    prediction.includes('healthy') || prediction.includes('normal') ? 'Healthy' : 'Warning';
+                    verdict.includes('healthy') || verdict.includes('normal') ? 'Healthy' : 'Warning';
 
-                setResult({ label, confidence: probability });
-                toast.success('Analysis complete', { id: tid });
+                setResult({ label, confidence });
+                toast.success(resp?.message || 'Analysis complete', { id: tid });
             } catch (e: any) {
                 console.error(e);
                 toast.error(e?.message || 'Analysis failed', { id: tid });
             } finally {
                 globalThis.clearInterval(tick);
                 setProgress(100);
-                setTimeout(() => {
-                    setAnalyzing(false);
-                    setProgress(0);
-                }, 400);
+                setAnalyzing(false);
+                setProgress(0);
             }
         },
         [analyzing, selectedHiveId]
@@ -116,7 +110,8 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
             setRecording(true);
             recorder.start();
-            setTimeout(() => {
+            // Auto-stop after a short sample so one click produces an analyzable file.
+            globalThis.setTimeout(() => {
                 try {
                     recorder.stop();
                 } catch {
