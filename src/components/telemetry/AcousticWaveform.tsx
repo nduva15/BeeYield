@@ -30,7 +30,7 @@ const AcousticWaveform: React.FC = () => {
             try {
                 const result = await beeyieldService.analyzeHiveAudio({
                     file,
-                    hiveId: 'HV-001'
+                    hiveId: undefined
                 });
                 setAnalysisResult(result);
                 toast.success("Acoustic analysis complete!");
@@ -52,37 +52,30 @@ const AcousticWaveform: React.FC = () => {
                 <Badge className="bg-[#10b981] text-white rounded-none px-3 py-1 text-[9px] font-black italic">SIGNATURE: OPTIMAL</Badge>
             </CardHeader>
             <CardContent className="p-6">
-                {/* Waveform Visualization Mock */}
+                {/* Waveform Visualization (requires real audio stream) */}
                 <div className="h-32 w-full bg-[#064e3b] relative flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px]" />
 
-                    <div className="flex items-end gap-[2px] h-16">
-                        {Array.from({ length: 40 }).map((_, i) => (
-                            <motion.div
-                                key={i}
-                                animate={{
-                                    height: isPlaying ? [10, 40, 20, 60, 30][i % 5] : 10
-                                }}
-                                transition={{
-                                    repeat: Infinity,
-                                    duration: 0.5,
-                                    ease: "easeInOut",
-                                    delay: i * 0.05
-                                }}
-                                className="w-1 bg-[#10b981]"
-                            />
-                        ))}
+                    <div className="text-center px-6">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white/80">
+                            Upload audio to view analysis
+                        </p>
+                        <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40 mt-1">
+                            No simulated waveform
+                        </p>
                     </div>
 
                     <button
                         onClick={() => setIsPlaying(!isPlaying)}
                         className="absolute bottom-4 right-4 w-10 h-10 bg-[#facc15] border-2 border-[#064e3b] flex items-center justify-center hover:bg-white transition-colors"
+                        aria-label={isPlaying ? "Stop playback" : "Start playback"}
+                        title={isPlaying ? "Stop playback" : "Start playback"}
                     >
                         {isPlaying ? <Square className="w-4 h-4 text-[#064e3b]" /> : <Play className="w-4 h-4 text-[#064e3b] fill-[#064e3b]" />}
                     </button>
 
                     <div className="absolute top-2 left-4 text-[7px] font-mono text-[#10b981]/60 uppercase">
-                        {analysisResult ? `Result: ${analysisResult.classification} (${Math.round(analysisResult.confidence * 100)}%)` : "Real-time Frequency Analysis: 240Hz - 480Hz Band"}
+                        {analysisResult ? `Result: ${analysisResult.classification} (${Math.round((analysisResult.confidence || 0) * 100)}%)` : "No audio uploaded"}
                     </div>
 
                     <div className="absolute top-2 right-4 flex gap-2">
@@ -110,7 +103,7 @@ const AcousticWaveform: React.FC = () => {
                             <Activity className="w-4 h-4 text-[#064e3b]" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">Brood Cluster Density</span>
                         </div>
-                        <span className="text-xs font-black text-[#064e3b]">92.4%</span>
+                        <span className="text-xs font-black text-[#064e3b]">—</span>
                     </div>
 
                     <div className="p-4 bg-neutral-50/50 border-2 border-[#064e3b]/5">
@@ -120,8 +113,8 @@ const AcousticWaveform: React.FC = () => {
                         </h4>
                         <p className="text-[9px] font-bold text-[#064e3b]/60 uppercase leading-relaxed">
                             {analysisResult
-                                ? `State: ${analysisResult.classification}. Spectral energy: ${analysisResult.mel_energy}. ${analysisResult.alert_triggered ? '⚠ ALERT TRIGGERED' : 'Acoustic footprint within nominal range.'}`
-                                : 'Acoustic footprint matches "Active Queen Present" state. High-frequency \'shimmer\' detected, indicating healthy forager return rate.'}
+                                ? `State: ${analysisResult.classification}. ${analysisResult.alert_triggered ? 'ALERT TRIGGERED' : 'No alert triggered.'}`
+                                : 'Upload audio to generate an acoustic assessment.'}
                         </p>
                     </div>
                 </div>

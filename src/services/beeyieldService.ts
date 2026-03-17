@@ -1579,37 +1579,6 @@ export const beeyieldService = {
         }
     },
 
-    async getReportStatus(jobId: string): Promise<{
-        job_id: string;
-        status: string;
-        file_url?: string | null;
-        file_name?: string | null;
-        report_type?: string | null;
-        created_at?: string | null;
-    } | null> {
-        try {
-            return await apiGet(`/reports/status/${encodeURIComponent(jobId)}`);
-        } catch (error) {
-            console.error("getReportStatus:", error);
-            return null;
-        }
-    },
-
-    async waitForReport(jobId: string, opts?: { timeoutMs?: number; pollEveryMs?: number }) {
-        const timeoutMs = opts?.timeoutMs ?? 60_000;
-        const pollEveryMs = opts?.pollEveryMs ?? 1_250;
-        const start = Date.now();
-
-        while (Date.now() - start < timeoutMs) {
-            const status = await this.getReportStatus(jobId);
-            const state = String(status?.status || "").toLowerCase();
-            if (state === "completed" && status?.file_url) return status;
-            if (state === "failed") throw new Error("Report generation failed");
-            await new Promise((r) => setTimeout(r, pollEveryMs));
-        }
-        throw new Error("Report generation timed out");
-    },
-
     // ========== ACTIVITY LOGS ==========
     async getActivityLogs(limit = 50): Promise<ActivityLog[]> {
         if (!sb) return [];
@@ -2919,28 +2888,6 @@ export const beeyieldService = {
             if (error) return [];
             return Array.isArray(data) ? data : [];
         } catch {
-            return [];
-        }
-    },
-
-    async getIntegrationAuditLogs(platform: string, limit = 25): Promise<any[]> {
-        if (!sb) return [];
-        try {
-            // Preferred: read from a table/view that the `log_integration_event` RPC writes into.
-            // If your schema uses a different name, we fall back gracefully to an empty list.
-            const { data, error } = await sb
-                .from('integration_audit_logs')
-                .select('*')
-                .eq('platform', platform)
-                .order('created_at', { ascending: false })
-                .limit(limit);
-            if (error) {
-                console.warn('getIntegrationAuditLogs:', error);
-                return [];
-            }
-            return data || [];
-        } catch (e) {
-            console.warn('getIntegrationAuditLogs:', e);
             return [];
         }
     },

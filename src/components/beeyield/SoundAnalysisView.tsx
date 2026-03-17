@@ -62,10 +62,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
             const tid = toast.loading('Analyzing audio…');
             try {
-                const resp = await beeyieldService.analyzeHiveAudio({
-                    file,
-                    hiveId: selectedHiveId || undefined,
-                });
+                const resp = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
                 const verdict = String(resp?.prediction || resp?.verdict || resp?.label || '').toLowerCase();
                 const confidence = typeof resp?.probability === 'number' ? resp.probability : typeof resp?.confidence === 'number' ? resp.confidence : undefined;
                 const label: 'Healthy' | 'Warning' =
@@ -208,6 +205,8 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 type="file"
                                 accept="audio/*"
                                 className="hidden"
+                                aria-label="Upload hive audio for analysis"
+                                title="Upload hive audio for analysis"
                                 onChange={(e) => {
                                     const f = e.target.files?.[0];
                                     if (f) analyzeFile(f);
