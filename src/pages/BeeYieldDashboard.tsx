@@ -23,6 +23,7 @@ import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import { NavItem } from '@/components/beeyield/DashboardSidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { useSettings } from '@/contexts/SettingsContext';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
@@ -521,9 +522,9 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#FFF9F0]">
+            <BeeYieldPageShell className="bg-[#FFF9F0] flex flex-col items-center justify-center gap-4 p-0 md:p-0 -m-4 md:-m-6">
                 <img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" />
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
@@ -534,44 +535,38 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (!user || !isBeeYieldActive) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#FFF9F0] font-sans text-[#064e3b] antialiased">
-                <div className="max-w-2xl w-full text-center space-y-12">
-                    <div className="w-24 h-24 border-4 border-[#064e3b] bg-[#facc15] flex items-center justify-center mx-auto shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <Hexagon className="h-12 w-12 text-[#064e3b] fill-current" />
+            <BeeYieldPageShell className="bg-[#FFF9F0] flex flex-col items-center justify-center p-8 font-sans text-[#064e3b] antialiased">
+                <div className="max-w-lg w-full text-center space-y-8">
+                    <div className="w-20 h-20 rounded-3xl bg-white border border-[#064e3b]/10 flex items-center justify-center mx-auto shadow-sm">
+                        <Hexagon className="h-10 w-10 text-[#064e3b]" />
                     </div>
 
-                    <div className="space-y-6">
-                        <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">
-                            No <span className="text-[#10b981]">Access</span>
+                    <div className="space-y-3">
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+                            Sign in to continue
                         </h1>
-                        <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-[0.4em]">
-                            Account Check
+                        <p className="text-sm text-[#064e3b]/70 font-medium leading-relaxed">
+                            You need an account to access the BeeYield dashboard.
                         </p>
                     </div>
 
-                    <div className="border-4 border-[#064e3b] p-10 bg-[#FFF9F0] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                        <p className="text-sm font-black uppercase leading-relaxed mb-10">
-                            You need to log in to see this page.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                            <button
-                                onClick={() => navigate('/login')}
-                                className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-[#1A1A1A] font-black uppercase text-xs tracking-widest hover:bg-[#FFF9F0] transition-all flex items-center justify-center gap-3"
-                            >
-                                <LockIcon className="w-4 h-4" />
-                                Login
-                            </button>
-                        </div>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button
+                            onClick={() => navigate('/login')}
+                            className="h-12 px-8 rounded-xl bg-[#10b981] text-[#1A1A1A] font-black text-sm tracking-tight hover:bg-[#0ea371] transition-colors flex items-center justify-center gap-2"
+                        >
+                            <LockIcon className="w-4 h-4" />
+                            Sign in
+                        </button>
+                        <button
+                            onClick={() => navigate('/')}
+                            className="h-12 px-8 rounded-xl bg-white border border-[#064e3b]/10 text-[#064e3b] font-bold text-sm hover:bg-[#064e3b]/5 transition-colors"
+                        >
+                            Back home
+                        </button>
                     </div>
-
-                    <button
-                        onClick={() => navigate('/')}
-                        className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30 hover:text-[#10b981] transition-colors"
-                    >
-                        Back home
-                    </button>
-                </div >
-            </div >
+                </div>
+            </BeeYieldPageShell>
         );
     }
 

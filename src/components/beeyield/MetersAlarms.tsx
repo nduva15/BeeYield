@@ -8,7 +8,8 @@ import {
 import { meterService, MeterEvent, Meter, Building } from '@/services/meterService';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const MetersAlarms: React.FC = () => {
     const [events, setEvents] = React.useState<MeterEvent[]>([]);
@@ -70,8 +71,9 @@ const MetersAlarms: React.FC = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <PageHeader
+        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+        <div className="space-y-6 animate-in fade-in duration-500 pb-12 p-4 md:p-6">
+            <BeeYieldPageHeader
                 icon={Bell}
                 label="PRIORITY_PROTOCOL_FEED"
                 title={<>System <span className="text-[#F4D03F]">Updates</span></>}
@@ -196,6 +198,7 @@ const MetersAlarms: React.FC = () => {
                 </div>
             </div>
         </div>
+        </BeeYieldPageShell>
     );
 };
 

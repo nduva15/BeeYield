@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, ArrowRight, Sprout, Globe, ShieldCheck, Heart, History, TrendingUp, Leaf, Hexagon, Terminal, Activity, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-[#FFF9F0] text-[#064e3b] font-sans antialiased selection:bg-[#facc15] selection:text-[#064e3b]">
+    <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased selection:bg-[#facc15] selection:text-[#064e3b]">
       {/* Hero Section - Swiss Brutalist */}
       <section className="relative flex items-center border-b-4 border-[#064e3b] py-32 bg-[#FFF9F0]">
         <div className="container mx-auto px-8 relative z-10">
@@ -119,7 +120,7 @@ const About = () => {
           <p className="text-xs font-black uppercase text-[#10b981] tracking-[0.4em]">Active since 2020</p>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Calendar, MapPin, Sprout } from "lucide-react";
 
 import { submitPollinationRequest, PollinationRequest as IPollinationRequest } from "@/services/contactService";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const PollinationRequest = () => {
   const { toast } = useToast();
@@ -78,7 +79,7 @@ const PollinationRequest = () => {
   };
 
   return (
-    <div className="min-h-screen py-20">
+    <BeeYieldPageShell className="min-h-screen py-20 p-0">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl">
           <div className="mb-12 text-center">
@@ -247,7 +248,7 @@ const PollinationRequest = () => {
           </Card>
         </div>
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

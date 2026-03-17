@@ -140,7 +140,7 @@ const SettingsIntegrationsView: React.FC = () => {
                                             <span className="text-xs font-bold text-[#1B9157]">BeeYield-VSDC-v4</span>
                                         </div>
                                         <div className="flex justify-between items-center bg-white px-4 py-2.5 rounded-lg border border-gray-100">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Last Handshake</span>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Last sync</span>
                                             <span className="text-xs font-bold text-gray-700">{getSyncDate('etims')}</span>
                                         </div>
                                         <div className="pt-3">
@@ -168,7 +168,7 @@ const SettingsIntegrationsView: React.FC = () => {
                     <div className="space-y-0.5">
                         <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Encryption & Data Residency</h4>
                         <p className="max-w-2xl text-[11px] text-gray-500 font-medium leading-relaxed">
-                            BeeYield Enterprise enforces technical separation between tax compliance events and financial ledgers. All KRA transmission logs are AES-256 encrypted at rest.
+                            We store data securely. Tax and finance records are kept separate, and transmission logs are encrypted at rest.
                         </p>
                     </div>
                 </div>

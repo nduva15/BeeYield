@@ -6,8 +6,9 @@ import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { meterService, BillingRate } from '@/services/meterService';
 import { toast } from 'sonner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface MetersPaymentsProps {
     onTabChange?: (tab: string) => void;
@@ -50,9 +51,9 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
     }, []);
 
     return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, "p-8 -m-8 space-y-12 pb-12 min-h-screen")}>
-            {/* Header */}
-            <PageHeader
+        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn("p-8 -m-0 space-y-12 pb-12 min-h-screen")}>
+            <BeeYieldPageHeader
                 icon={CreditCard}
                 label="USAGE_SETTLEMENT_REGISTRY"
                 title={<>Financial <span className="text-[#F4D03F]">Logistics</span></>}
@@ -229,7 +230,8 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     </div>
                 </div>
             </div>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

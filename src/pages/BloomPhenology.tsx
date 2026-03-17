@@ -22,7 +22,9 @@ import {
     ReferenceLine
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
+import { glass } from '@/components/beeyield/GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { fadeInUp } from '@/lib/motion';
 
 const bloomData = [
     { stage: 'BBCH 51', intensity: 10, date: 'Mar 1' },
@@ -36,24 +38,24 @@ const bloomData = [
 const BloomPhenology: React.FC = () => {
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
+            {...fadeInUp}
+            className="h-full"
         >
-            <PageHeader
-                icon={Flower2}
-                label="Phenology"
-                title={<>Bloom <span className="text-[#F4D03F]">Synchronization</span></>}
-                subtitle="BBCH Growth Stages · Pollination Window Tracking · Forage Opportunity Math"
-                actions={
-                    <button className={cn(glass.btnSecondary, "h-9 px-4")}>
-                        <History className="w-3.5 h-3.5 mr-2" />
-                        Historical Data
-                    </button>
-                }
-            />
+            <BeeYieldPageShell>
+                <BeeYieldPageHeader
+                    icon={Flower2}
+                    label="Phenology"
+                    title={<>Bloom <span className="text-[#F4D03F]">Synchronization</span></>}
+                    subtitle="BBCH Growth Stages · Pollination Window Tracking · Forage Opportunity Math"
+                    actions={
+                        <button className={cn(glass.btnSecondary, "h-9 px-4")}>
+                            <History className="w-3.5 h-3.5 mr-2" />
+                            Historical Data
+                        </button>
+                    }
+                />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Stage Selection */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className={cn(glass.section, "p-6 space-y-6")}>
@@ -88,10 +90,10 @@ const BloomPhenology: React.FC = () => {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                             <div className="flex items-center gap-2 mb-3 relative z-10">
                                 <Flower2 className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Protocol Alert</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Heads up</span>
                             </div>
                             <p className="text-[11px] font-medium leading-relaxed opacity-80 relative z-10 pl-3 border-l-2 border-[#F4D03F]/40">
-                                Current stage indicates peak nectar secretion. Deploy <span className="text-[#F4D03F] font-bold">Grade A</span> pallets immediately for maximum yield.
+                                Current stage suggests a peak nectar window. If you’re moving hives or adding boxes, aim to do it in the next few days.
                             </p>
                         </div>
                     </div>
@@ -166,6 +168,7 @@ const BloomPhenology: React.FC = () => {
                     </div>
                 </div>
             </div>
+            </BeeYieldPageShell>
         </motion.div>
     );
 };

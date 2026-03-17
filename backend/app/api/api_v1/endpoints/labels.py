@@ -15,6 +15,12 @@ router = APIRouter()
 
 class LabelDesignSchema(BaseModel):
     id: Optional[str] = None
+    # Linkages (traceability context)
+    harvestId: Optional[str] = None
+    hiveId: Optional[str] = None
+    apiaryId: Optional[str] = None
+    traceUrl: Optional[str] = None
+
     name: str
     productName: str
     honeyType: str
@@ -114,7 +120,8 @@ async def save_label_design(
         "user_id": user_id,
         "name": design_data.get("name") or design_data.get("productName") or "Untitled Label",
         "design_json": design_data,
-        "harvest_batch_id": design_data.get("batchNumber"),
+        # Store trace batch code (what ends up on jars / QR)
+        "harvest_batch_id": design_data.get("batchNumber") or design_data.get("harvestId"),
         "include_qr": design_data.get("showQRCode", False)
     }
     

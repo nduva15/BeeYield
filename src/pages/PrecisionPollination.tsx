@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const PrecisionPollination = () => {
   const [isProfessionalOpen, setIsProfessionalOpen] = useState(false);
@@ -27,7 +28,7 @@ const PrecisionPollination = () => {
   ];
 
   return (
-    <div className="pt-24 min-h-screen bg-[#FFF9F0]">
+    <BeeYieldPageShell className="pt-24 min-h-screen bg-[#FFF9F0] p-0">
       {/* Dynamic Nav Bar / Sticky Sub-header */}
       <div className="sticky top-20 z-50 bg-[#FFF9F0]/80 backdrop-blur-md border-b-4 border-[#064e3b] py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
@@ -347,7 +348,7 @@ const PrecisionPollination = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Monitored Hives</span>
               </div>
             </div>
           </div>
@@ -366,7 +367,7 @@ const PrecisionPollination = () => {
           </Button>
         </div>
       </section>
-    </div >
+    </BeeYieldPageShell>
   );
 };
 

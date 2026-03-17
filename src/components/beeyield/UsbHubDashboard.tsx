@@ -28,8 +28,9 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoAsset from '@/assets/Logo.png';
 import { useAuth } from '@/contexts/AuthContext';
-import { glass, GlassStatCard, PageHeader } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
 import { cn } from '@/lib/utils';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 export function UsbHubDashboard() {
     const [device, setDevice] = React.useState<USBDevice | null>(null);
@@ -151,8 +152,8 @@ export function UsbHubDashboard() {
     }
 
     return (
-        <div className={glass.page}>
-            <PageHeader
+        <BeeYieldPageShell>
+            <BeeYieldPageHeader
                 icon={Cpu}
                 label="Hardware_Version_Alpha_Comm_Port"
                 title={<>Architecture <span className="text-[#F4D03F]">Manager</span></>}
@@ -344,6 +345,6 @@ export function UsbHubDashboard() {
                 .custom-scrollbar-terminal::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar-terminal::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.2); border-radius: 10px; }
             `}</style>
-        </div>
+        </BeeYieldPageShell>
     );
 }

@@ -19,7 +19,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import SettingsIntegrationsView from './SettingsIntegrationsView';
 import QRCode from 'qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldCard, BeeYieldPageHeader, BeeYieldPageShell, BeeYieldTabBar, BeeYieldFormField, BeeYieldTextInput } from '@/components/beeyield/BeeYieldUI';
 
 // Analytics Section Component
 const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
@@ -55,49 +56,42 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={cn(glass.card, "p-5 border-white/20 bg-white/40 backdrop-blur-xl rounded-[2.5rem] shadow-xl relative overflow-hidden")}
         >
+            <BeeYieldCard
+                padded={false}
+                className={cn("p-5 border-white/20 bg-white/40 backdrop-blur-xl rounded-[2.5rem] shadow-xl relative overflow-hidden")}
+            >
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-[#1A1A1A]/5 pb-4 relative z-10">
                 <div className="space-y-0.5">
-                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Financial_Intelligence</h3>
-                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">PROFITABILITY_AUDIT_GLOBAL_DISTRIBUTION</p>
+                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Financial overview</h3>
+                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Revenue, costs, and invoices</p>
                 </div>
                 <button
                     onClick={() => toast.info("Exporting...")}
                     className="h-7 px-3 bg-white/40 hover:bg-white/60 text-[#1A1A1A]/60 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border border-white/40"
                 >
                     <Download className="w-3 h-3 text-[#F4D03F]" />
-                    Export_Ledger
+                    Export
                 </button>
             </div>
 
-            <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-fit mb-6 relative z-10">
-                {analyticsTabs.map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveAnalyticsTab(tab)}
-                        className={cn(
-                            "h-7 px-4 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all",
-                            activeAnalyticsTab === tab
-                                ? "bg-white text-[#1A1A1A] shadow-sm"
-                                : "text-[#1A1A1A]/30 hover:text-[#1A1A1A]/60"
-                        )}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
+            <BeeYieldTabBar
+                className="mb-6 relative z-10"
+                tabs={analyticsTabs.map((t) => ({ id: t, label: t }))}
+                activeTab={activeAnalyticsTab}
+                onChange={setActiveAnalyticsTab}
+            />
 
             <div className="h-[240px] w-full relative z-10">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-full space-y-2 opacity-20 italic">
                         <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]" />
-                        <span className="text-[8px] font-black tracking-widest uppercase">SYnthesizing_Vectors...</span>
+                        <span className="text-[8px] font-black tracking-widest uppercase">Loading…</span>
                     </div>
                 ) : data.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full opacity-20 italic">
                         <Banknote className="w-10 h-10 mb-2" />
-                        <p className="text-[10px] tracking-widest font-black uppercase">Null_Records_Detected</p>
+                        <p className="text-[10px] tracking-widest font-black uppercase">No records yet</p>
                     </div>
                 ) : activeAnalyticsTab === 'Overview' ? (
                     <ResponsiveContainer width="100%" height="100%">
@@ -145,8 +139,8 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                                         dataKey="total"
                                         stroke="none"
                                     >
-                                        {data.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#F4D03F' : '#F4D03F/40'} />
+                                        {data.map((_, index) => (
+                                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#F4D03F' : 'rgba(244,208,63,0.4)'} />
                                         ))}
                                     </Pie>
                                     <Tooltip />
@@ -189,6 +183,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                     </div>
                 )}
             </div>
+            </BeeYieldCard>
         </motion.div>
     );
 };
@@ -267,12 +262,8 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20 max-w-7xl mx-auto")}
-        >
-            <PageHeader
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20 max-w-7xl mx-auto">
+            <BeeYieldPageHeader
                 icon={CreditCard}
                 label="Fiscal_Audit_Kernel_V5.2"
                 title={<>Industrial <span className="text-[#F4D03F]">Ledger</span></>}
@@ -287,22 +278,12 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 }
             />
 
-            <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-fit relative z-10">
-                {['Overview', 'Ledger', 'Subscription', 'Sync'].map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveSubTab(tab)}
-                        className={cn(
-                            "h-7 px-4 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all",
-                            activeSubTab === tab
-                                ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40"
-                                : "text-gray-400 hover:text-gray-600"
-                        )}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
+            <BeeYieldTabBar
+                tabs={['Overview', 'Ledger', 'Subscription', 'Sync'].map((t) => ({ id: t, label: t }))}
+                activeTab={activeSubTab}
+                onChange={setActiveSubTab}
+                className="relative z-10"
+            />
 
             {loading ? (
                 <div className="py-20 flex flex-col items-center justify-center opacity-40">
@@ -336,7 +317,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {[
                                     { title: 'Ledger Hash', sub: 'Review sync history', icon: History, action: 'Ledger', theme: '#F4D03F' },
-                                    { title: 'Nexus Tier', sub: 'Manage industrial tier', icon: Shield, action: 'Subscription', theme: '#1B9157' },
+                                    { title: 'Plan & limits', sub: 'Manage your plan', icon: Shield, action: 'Subscription', theme: '#1B9157' },
                                     { title: 'Registry Sync', sub: 'Regulatory handshakes', icon: RefreshCw, action: 'Sync', theme: '#3B82F6' },
                                 ].map((card, idx) => (
                                     <button
@@ -409,10 +390,16 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                             <button
                                                                 onClick={() => setSyncingId(tx.id || i)}
                                                                 className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] transition-colors shadow-sm"
+                                                                aria-label="Sync transaction"
+                                                                title="Sync transaction"
                                                             >
                                                                 {syncingId === (tx.id || i) ? <Loader2 className="w-4 h-4 animate-spin text-[#F4D03F]" /> : <RefreshCw className="w-3.5 h-3.5" />}
                                                             </button>
-                                                            <button className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] transition-colors shadow-sm">
+                                                            <button
+                                                                className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] transition-colors shadow-sm"
+                                                                aria-label="View transaction details"
+                                                                title="View transaction details"
+                                                            >
                                                                 <FileText className="w-3.5 h-3.5" />
                                                             </button>
                                                         </div>
@@ -470,7 +457,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight uppercase leading-none">New <span className="text-[#1B9157]">Entry</span></h3>
                                     <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mt-1">Add financial record to ledger</p>
                                 </div>
-                                <button onClick={() => setIsNewDocFormOpen(false)} className="h-9 w-9 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-400 hover:text-red-500 transition-colors shadow-sm"><X className="w-4 h-4" /></button>
+                                <button
+                                    onClick={() => setIsNewDocFormOpen(false)}
+                                    className="h-9 w-9 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-400 hover:text-red-500 transition-colors shadow-sm"
+                                    aria-label="Close new entry dialog"
+                                    title="Close"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
 
                             <div className="p-8 space-y-6">
@@ -493,21 +487,18 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <div className="space-y-1.5">
-                                            <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Issuing Entity</Label>
-                                            <Input value={sellerName} onChange={(e) => setSellerName(e.target.value)} className="h-10 px-4 font-bold bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Recipient</Label>
-                                            <Input value={buyerName} onChange={(e) => setBuyerName(e.target.value)} placeholder="Legal name..." className="h-10 px-4 font-bold bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                                        </div>
+                                        <BeeYieldFormField id="sellerName" label="Issuing Entity">
+                                            <BeeYieldTextInput id="sellerName" value={sellerName} onChange={(e) => setSellerName(e.target.value)} />
+                                        </BeeYieldFormField>
+                                        <BeeYieldFormField id="buyerName" label="Recipient">
+                                            <BeeYieldTextInput id="buyerName" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} placeholder="Legal name..." />
+                                        </BeeYieldFormField>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">Description</Label>
-                                    <Input value={newDocDescription} onChange={(e) => setNewDocDescription(e.target.value)} placeholder="Record details..." className="h-10 px-4 font-bold bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                                </div>
+                                <BeeYieldFormField id="newDocDescription" label="Description">
+                                    <BeeYieldTextInput id="newDocDescription" value={newDocDescription} onChange={(e) => setNewDocDescription(e.target.value)} placeholder="Record details..." />
+                                </BeeYieldFormField>
 
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-100">
                                     <div className="flex items-center gap-2.5 opacity-40">
@@ -524,7 +515,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                     </div>
                 )}
             </AnimatePresence>
-        </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

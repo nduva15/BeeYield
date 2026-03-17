@@ -9,7 +9,8 @@ import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterFor
 import { User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn, Hexagon, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
+import { glass } from '@/components/beeyield/GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { motion } from 'framer-motion';
 
 type AuthMode = 'login' | 'register';
@@ -26,30 +27,31 @@ const AccountSettings = () => {
 
     if (loading) {
         return (
-            <div className={cn(glass.page, "flex items-center justify-center min-h-screen")}>
+            <BeeYieldPageShell className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-8 w-8 animate-spin text-[#1B9157]" />
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Initializing Secure Kernel...</span>
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Loading…</span>
                 </div>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     if (!user) {
         return (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.page, "min-h-screen py-16 lg:py-24")}>
-                <div className="container max-w-sm mx-auto px-4 space-y-8 relative z-10">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
+                <BeeYieldPageShell className="min-h-screen py-16 lg:py-24">
+                    <div className="container max-w-sm mx-auto px-4 space-y-8 relative z-10">
                     <div className="space-y-4 text-center">
                         <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto border border-gray-100">
                             <Hexagon className="h-8 w-8 text-[#F4D03F]" />
                         </div>
                         <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
-                            Identity <span className="text-[#F4D03F]">Relay</span>
+                            Account <span className="text-[#F4D03F]">Access</span>
                         </h1>
                         <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
                             {authMode === 'login'
-                                ? 'Authorize access to BeeYield Kernel'
-                                : 'Initialize new industrial node'}
+                                ? 'Sign in to your account'
+                                : 'Create a new account'}
                         </p>
                     </div>
 
@@ -64,7 +66,7 @@ const AccountSettings = () => {
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
-                                    Authorize
+                                    Sign in
                                 </button>
                                 <button
                                     type="button"
@@ -74,7 +76,7 @@ const AccountSettings = () => {
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
                                 >
-                                    Initialize
+                                    Create account
                                 </button>
                             </div>
 
@@ -108,7 +110,8 @@ const AccountSettings = () => {
                             <p className="text-[9px] font-bold mt-1.5 text-gray-500 uppercase tracking-widest">Exclusive Deals</p>
                         </div>
                     </div>
-                </div>
+                    </div>
+                </BeeYieldPageShell>
             </motion.div>
         );
     }
@@ -119,15 +122,16 @@ const AccountSettings = () => {
     const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName || 'User';
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.page, "max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6")}>
-            <PageHeader
-                icon={User}
-                label="Identity & Kernel Access"
-                title={<>Account <span className="text-[#F4D03F]">Portal</span></>}
-                subtitle="Manage your personal settings, security, and authentication methods."
-            />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
+            <BeeYieldPageShell className="max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6">
+                <BeeYieldPageHeader
+                    icon={User}
+                    label="Account"
+                    title={<>Account <span className="text-[#F4D03F]">Portal</span></>}
+                    subtitle="Manage your personal settings, security, and authentication methods."
+                />
 
-            <div className="container max-w-4xl mx-auto space-y-8">
+                <div className="container max-w-4xl mx-auto space-y-8">
                 <Card className={cn(glass.card, "p-0 overflow-hidden bg-white shadow-sm")}>
                     <CardHeader className="p-6 md:p-8 border-b border-gray-100 bg-gray-50/50">
                         <div className="flex items-center gap-4">
@@ -223,7 +227,8 @@ const AccountSettings = () => {
                         </Card>
                     </div>
                 </div>
-            </div>
+                </div>
+            </BeeYieldPageShell>
         </motion.div>
     );
 };

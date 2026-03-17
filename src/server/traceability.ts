@@ -12,7 +12,6 @@ export const traceBatchFn = createServerFn({ method: "GET" })
         const API_V1_URL = getApiBaseUrl()
 
         try {
-            console.log(`Server Function: Tracing batch ${code} at ${API_V1_URL}`)
             const response = await fetch(`${API_V1_URL}/traceability/code/${code}`)
 
             if (!response.ok) {

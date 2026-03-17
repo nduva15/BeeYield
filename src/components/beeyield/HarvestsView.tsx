@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useHarvests, useCreateHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
+import { useApiaries } from '@/hooks/useApiaries';
+import { useHives } from '@/hooks/useHives';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,6 +28,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [filterYear, setFilterYear] = React.useState<string>('all');
     const [isAddingHarvest, setIsAddingHarvest] = React.useState(false);
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
 
     React.useEffect(() => {
         if (initialParams?.action === 'open_add_new') {
@@ -46,6 +50,13 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
     const { data: harvests = [], isLoading } = useHarvests();
     const { mutate: createHarvest, isPending: isCreating } = useCreateHarvest();
+    const { data: apiaries = [] } = useApiaries();
+    const { data: hives = [] } = useHives(selectedApiaryId || undefined);
+
+    const filteredHives = React.useMemo(() => {
+        if (!selectedApiaryId) return hives;
+        return hives.filter((h: any) => (h.apiary_id || h.apiary?.id) === selectedApiaryId);
+    }, [hives, selectedApiaryId]);
 
     // Calculate statistics
     const stats = React.useMemo(() => {
@@ -93,15 +104,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!selectedApiaryId) {
+            toast.error('Please select an apiary.');
+            return;
+        }
+        if (!selectedHiveId) {
+            toast.error('Please select a hive.');
+            return;
+        }
         if (!formData.quantity_kg || formData.quantity_kg <= 0) {
             toast.error('Please enter the amount of honey harvested.');
             return;
         }
 
         const toastId = toast.loading('Saving harvest information...');
-        createHarvest(formData as any, {
+        createHarvest({ ...(formData as any), apiary_id: selectedApiaryId, hive_id: selectedHiveId } as any, {
             onSuccess: () => {
                 setIsAddingHarvest(false);
+                setSelectedApiaryId('');
+                setSelectedHiveId('');
                 setFormData({
                     harvest_date: format(new Date(), 'yyyy-MM-dd'),
                     quantity_kg: 0,
@@ -136,8 +157,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                     actions={
                         <button
                             onClick={() => setIsAddingHarvest(false)}
+                            aria-label="Back to harvest list"
+                            title="Back"
                             className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
                         >
+                            <span className="sr-only">Back</span>
                             <ChevronLeft className="w-4 h-4" />
                         </button>
                     }
@@ -199,6 +223,51 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
                             <form onSubmit={handleSubmit} className="p-6 space-y-6 relative z-10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Apiary *</Label>
+                                        <Select value={selectedApiaryId} onValueChange={(val) => {
+                                            setSelectedApiaryId(val);
+                                            setSelectedHiveId('');
+                                        }}>
+                                            <SelectTrigger className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
+                                                <div className="flex items-center gap-2">
+                                                    <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                                    <SelectValue placeholder="Select apiary" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent className={glass.selectContent}>
+                                                {apiaries.length > 0 ? apiaries.map((a: any) => (
+                                                    <SelectItem key={a.id} value={a.id} className="text-xs font-semibold">
+                                                        {a.name}{a.location_name ? ` — ${a.location_name}` : ''}
+                                                    </SelectItem>
+                                                )) : (
+                                                    <div className="p-2 text-center text-[10px] text-gray-400 font-black">NO_APIARIES</div>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Hive *</Label>
+                                        <Select value={selectedHiveId} onValueChange={setSelectedHiveId} disabled={!selectedApiaryId}>
+                                            <SelectTrigger className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
+                                                <div className="flex items-center gap-2">
+                                                    <Hexagon className="w-3.5 h-3.5 text-[#1B9157]/40" />
+                                                    <SelectValue placeholder={selectedApiaryId ? "Select hive" : "Select apiary first"} />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent className={glass.selectContent}>
+                                                {filteredHives.length > 0 ? filteredHives.map((h: any) => (
+                                                    <SelectItem key={h.id} value={h.id} className="text-xs font-semibold">
+                                                        {h.hive_code || h.hive_name || h.id.slice(0, 6)}
+                                                    </SelectItem>
+                                                )) : (
+                                                    <div className="p-2 text-center text-[10px] text-gray-400 font-black">
+                                                        {selectedApiaryId ? 'NO_HIVES_IN_APIARY' : 'SELECT_APIARY_FIRST'}
+                                                    </div>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                     <div className="space-y-2">
                                         <Label className={glass.microLabel}>Temporal Point</Label>
                                         <div className="relative group/input">
@@ -305,7 +374,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         className={cn(glass.btnPrimary, "flex-1 h-9 font-black uppercase tracking-[0.2em] text-[10px]")}
                                     >
                                         {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        Commit_Log
+                                        Save Harvest
                                     </button>
                                 </div>
                             </form>
@@ -333,8 +402,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => window.location.reload()}
+                            aria-label="Refresh harvests"
+                            title="Refresh"
                             className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
                         >
+                            <span className="sr-only">Refresh</span>
                             <RefreshCw className="w-4 h-4" />
                         </button>
                         <button

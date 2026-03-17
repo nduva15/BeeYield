@@ -42,14 +42,14 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
         const { error, mfaRequired: needsMFA } = await signIn(email, password, 'shop');
 
         if (error) {
-            toast.error('Login Failed', { description: error.message });
+            toast.error('Sign-in failed', { description: error.message });
         } else if (needsMFA) {
             setShowMFAInput(true);
-            toast.info('Verification Required', { description: 'Please enter your secondary auth code.' });
+            toast.info('Two-step verification', { description: 'Enter the 6-digit code from your authenticator app.' });
             if (rememberMe) localStorage.setItem('savedEmail_shop', email);
             else localStorage.removeItem('savedEmail_shop');
         } else {
-            toast.success('Successfully logged in');
+            toast.success('Signed in');
             if (rememberMe) localStorage.setItem('savedEmail_shop', email);
             else localStorage.removeItem('savedEmail_shop');
             onSuccess?.();
@@ -64,9 +64,9 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
         const { error } = await verifyMFAChallenge(mfaCode, 'shop');
 
         if (error) {
-            toast.error('Invalid Code', { description: error.message });
+            toast.error('Invalid code', { description: error.message });
         } else {
-            toast.success('Identity verified');
+            toast.success('Verified');
             setShowMFAInput(false);
             onSuccess?.();
         }
@@ -80,7 +80,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
 
         const { error } = await signInWithGoogle(undefined, 'shop');
         if (error) {
-            toast.error('Google Login Failed', { description: error.message });
+            toast.error('Google sign-in failed', { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -92,9 +92,9 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                     <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
                         <LockIcon className="h-6 w-6 text-honey" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Verification Code</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Two-step verification</h3>
                     <p className="text-sm text-gray-500 font-medium">
-                        Please enter the 6-digit code from your authenticator app
+                        Enter the 6-digit code from your authenticator app
                     </p>
                 </div>
 
@@ -116,7 +116,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                     {loading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                        'Verify and Continue'
+                        'Verify'
                     )}
                 </Button>
 

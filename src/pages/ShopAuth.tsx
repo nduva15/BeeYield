@@ -22,6 +22,7 @@ import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
 import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import ShopForgotPasswordForm from '@/components/auth/shop/ShopForgotPasswordForm';
 import Logo from '@/assets/Logo.png';
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -30,15 +31,12 @@ const ShopAuth: React.FC = () => {
     const location = useLocation();
     const { user, loading: authLoading } = useAuth();
     const { items } = useCart();
-    const [authMode, setAuthMode] = useState<AuthMode>('login');
-
-    useEffect(() => {
+    const authMode = React.useMemo<AuthMode>(() => {
         const params = new URLSearchParams(location.search);
-        const mode = params.get('mode') as AuthMode;
-        if (mode && ['login', 'register', 'forgot-password'].includes(mode)) {
-            setAuthMode(mode);
-        }
-    }, [location]);
+        const mode = params.get('mode') as AuthMode | null;
+        if (mode && (mode === 'login' || mode === 'register' || mode === 'forgot-password')) return mode;
+        return 'login';
+    }, [location.search]);
 
     useEffect(() => {
         if (user && !authLoading) {
@@ -57,19 +55,19 @@ const ShopAuth: React.FC = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <BeeYieldPageShell className="bg-white flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <div className="relative">
                         <div className="w-12 h-12 rounded-full border-4 border-honey/10 border-t-honey animate-spin" />
                     </div>
                     <span className="text-honey font-bold text-sm tracking-widest uppercase">Opening Shop...</span>
                 </div>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden">
+        <BeeYieldPageShell className="bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden p-0 md:p-0 -m-4 md:-m-6">
             {/* Ambient Background */}
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-honey/5 rounded-full blur-[120px] -mr-96 -mt-96 opacity-60" />
             <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-beeyield-green/5 rounded-full blur-[120px] -ml-96 -mb-96 opacity-60" />
@@ -106,7 +104,7 @@ const ShopAuth: React.FC = () => {
                     >
                         <div className="text-center mb-12 space-y-4">
                             <h2 className="text-4xl font-black tracking-tight text-gray-900 leading-tight">
-                                {authMode === 'login' ? 'Welcome Back' : authMode === 'register' ? 'Join the Hive' : 'Reset Password'}
+                                {authMode === 'login' ? 'Sign in' : authMode === 'register' ? 'Create an account' : 'Reset password'}
                             </h2>
                             <p className="text-gray-500 font-medium text-lg max-w-[85%] mx-auto leading-relaxed">
                                 {authMode === 'login' 
@@ -158,9 +156,9 @@ const ShopAuth: React.FC = () => {
                             </div>
                             
                             <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl">
-                                <div className="w-2 h-2 rounded-full bg-beeyield-green animate-pulse" />
+                                <div className="w-2 h-2 rounded-full bg-beeyield-green" />
                                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-                                    256-bit Secure Shopping
+                                    Secure checkout
                                 </span>
                             </div>
                         </div>
@@ -170,7 +168,7 @@ const ShopAuth: React.FC = () => {
                 <footer className="py-12 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black uppercase tracking-widest text-gray-400">
                         <p>© 2026 BeeYield Honey Shop. All rights reserved.</p>
-                        <p className="opacity-60">Pure Honey, Securely Delivered</p>
+                        <p className="opacity-60">Pure honey, delivered</p>
                     </div>
                     <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
                         <a href="#" className="text-gray-400 hover:text-honey transition-colors">Privacy</a>
@@ -179,7 +177,7 @@ const ShopAuth: React.FC = () => {
                     </div>
                 </footer>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

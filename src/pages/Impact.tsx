@@ -10,6 +10,7 @@ import beeyieldService from "@/services/beeyieldService";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const Impact = () => {
   const [downloading, setDownloading] = useState(false);
@@ -51,7 +52,7 @@ const Impact = () => {
       // Title
       doc.setFontSize(22);
       doc.setTextColor(15, 23, 42); // slate-900
-      doc.text('Ecological Integrity Record', 14, 55);
+      doc.text('Impact summary', 14, 55);
 
       doc.setDrawColor(217, 119, 6); // beeyield-gold
       doc.setLineWidth(1);
@@ -61,12 +62,12 @@ const Impact = () => {
       let yPos = 75;
       doc.setFontSize(14);
       doc.setTextColor(15, 23, 42);
-      doc.text('The Hive-to-Table Mandate', 14, yPos);
+      doc.text('Summary', 14, yPos);
       yPos += 10;
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      const summaryText = 'BeeYield represents the confluence of high-fidelity engineering and tangible planetary restoration. By deploying acoustic monitoring and cryptographic traceability, we are ensuring that apiculture serves its primary purpose: the stabilization of our global food systems through pollinator protection.';
+      const summaryText = 'BeeYield supports healthier hives, stronger pollination, and traceable harvests. We work with local beekeepers and farmers and track impact over time.';
       const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 28);
       doc.text(summaryLines, 14, yPos);
       yPos += summaryLines.length * 7 + 10;
@@ -82,22 +83,22 @@ const Impact = () => {
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      doc.text(`• Smart Hives Protected: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
+      doc.text(`• Monitored hives: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
       doc.text('• Indigenous Flora Restored: 2,500+ Trees', 20, yPos + 15);
-      doc.text('• Pollinator Bio-Mass Saved: 2.4M+ Bees', 20, yPos + 25);
+      doc.text('• Estimated bees supported: 2.4M+', 20, yPos + 25);
       doc.text('• Carbon Sequestration: 2.1 Tons (Projected)', 20, yPos + 35);
       yPos += 55;
 
       // Conservation Progress
       doc.setFontSize(14);
       doc.setTextColor(15, 23, 42);
-      doc.text('System Integrity Scores', 14, yPos);
+      doc.text('Progress indicators', 14, yPos);
       yPos += 12;
 
       doc.setFontSize(10);
       doc.setTextColor(75, 85, 99);
       doc.text('Habitat Fidelity: 95%', 14, yPos); yPos += 8;
-      doc.text('Biosphere Purity (Chemical-Free): 100%', 14, yPos); yPos += 8;
+      doc.text('Chemical-free baseline: 100%', 14, yPos); yPos += 8;
       doc.text('Acoustic Health Baseline: 88%', 14, yPos); yPos += 15;
 
       // 50/50 Promise
@@ -115,14 +116,14 @@ const Impact = () => {
       // Footer
       doc.setFontSize(9);
       doc.setTextColor(148, 163, 184); // slate-400
-      doc.text('BeeYield Internal Registry Report | Authorized for Public Disclosure', pageWidth / 2, 280, { align: 'center' });
-      doc.text('Verification ID: BY-IMP-2026-X7', pageWidth / 2, 286, { align: 'center' });
+      doc.text('BeeYield impact report', pageWidth / 2, 280, { align: 'center' });
+      doc.text('Report ID: BY-IMP-2026-X7', pageWidth / 2, 286, { align: 'center' });
 
       doc.save('BeeYield-Impact-Report-2026.pdf');
-      toast.success('Impact Report Authenticated and Downloaded');
+      toast.success('Impact report downloaded');
     } catch (error) {
       console.error('PDF generation error:', error);
-      toast.error('Verification failed: Could not generate report');
+      toast.error('Download failed. Please try again.');
     } finally {
       setDownloading(false);
     }
@@ -136,7 +137,7 @@ const Impact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fdfbf6]">
+    <BeeYieldPageShell className="min-h-screen bg-[#fdfbf6] p-0">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
@@ -302,8 +303,8 @@ const Impact = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { title: "Neuro-Scale", desc: "Protect 10,000 additional beehives via AI-edge nodes.", icon: Bug },
-              { title: "Green-Ledger", desc: "100k native trees tracked via satellite and on-ground sensors.", icon: TreePine },
+              { title: "Scale up", desc: "Support 10,000 additional beehives with better monitoring and training.", icon: Bug },
+              { title: "Tree tracking", desc: "Track 100k native trees with on-the-ground updates and satellite data.", icon: TreePine },
               { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar micro-grids.", icon: Zap },
               { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe },
             ].map((item, i) => (
@@ -348,7 +349,7 @@ const Impact = () => {
           </div>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

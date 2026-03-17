@@ -36,22 +36,17 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = 'beeyield_cart';
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [items, setItems] = useState<CartItem[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
-
-    // Load cart from localStorage on mount
-    useEffect(() => {
+    const [items, setItems] = useState<CartItem[]>(() => {
         try {
             const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-            if (savedCart) {
-                setItems(JSON.parse(savedCart));
-            }
+            return savedCart ? (JSON.parse(savedCart) as CartItem[]) : [];
         } catch (error) {
             console.error('Error loading cart from storage:', error);
+            return [];
         }
-        setIsInitialized(true);
-    }, []);
+    });
+    const [isOpen, setIsOpen] = useState(false);
+    const [isInitialized] = useState(true);
 
     // Save cart to localStorage whenever items change
     useEffect(() => {

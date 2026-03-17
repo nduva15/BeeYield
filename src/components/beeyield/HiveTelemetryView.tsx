@@ -115,14 +115,12 @@ const HiveTelemetryView: React.FC = () => {
     React.useEffect(() => {
         // Subscribe to real-time weight alerts
         const weightSub = beeyieldService.subscribeToWeightAlerts("*", (payload) => {
-            console.log('Weight Alert Received:', payload);
             setRecentAlert(`Massive drop detected on Hive ${payload.new.hive_id}`);
             toast.error('CRITICAL: Weight anomaly detected!');
         });
 
         // Subscribe to gateway status
         const gatewaySub = beeyieldService.subscribeToGatewayStatus("*", (payload) => {
-            console.log('Gateway Status Change:', payload);
             setGatewayStatus(payload.new.status);
             if (payload.new.status === 'Offline') {
                 toast.warning('Gateway connectivity lost');
@@ -226,7 +224,7 @@ const HiveTelemetryView: React.FC = () => {
                     </CardHeader>
                     <CardContent className="p-6 pb-8 flex flex-col justify-between min-h-[220px]">
                         <p className="text-[10px] font-bold text-slate-400 leading-relaxed uppercase italic">
-                            Biometric rate of change protocol. Positive values indicate active forager influx and enzymatic dehydration.
+                            Rate of change. Positive values often mean foragers are bringing in nectar and moisture is dropping.
                         </p>
                         <div className="space-y-4 mt-8">
                             <div className="h-4 w-full bg-[#F4D03F]/10 rounded-full relative overflow-hidden ring-4 ring-slate-50">

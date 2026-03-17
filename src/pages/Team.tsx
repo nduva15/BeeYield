@@ -43,6 +43,7 @@ import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 import { submitContactForm } from "@/services/contactService";
 import { useToast } from "@/hooks/use-toast";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import LOGO from "@/assets/Logo.png";
@@ -90,7 +91,7 @@ const Team = () => {
                 city: "Nairobi",
                 state: "Nairobi",
                 country: "Kenya",
-                inquiry_type: "team",
+                inquiry_type: "general",
                 topic: "Team Inquiry",
                 message: formData.message
             });
@@ -123,7 +124,7 @@ const Team = () => {
             name: "Timothy Nduva",
             role: "CEO & Founder",
             department: "Directorate",
-            description: "The primary architect of BeeYield's vision. Timothy founded the mission during the 2020 pandemic at the family farm in Kibwezi, harmonizing technology with traditional apiculture. Under his lead, BeeYield has established the premier HoneyChain™ traceability protocol.",
+            description: "Timothy founded BeeYield at the family farm in Kibwezi during the 2020 pandemic. He leads the team building practical tools for beekeepers and a clear traceability record for every harvest.",
             image: TIMOTHY_PHOTO,
             linkedin: "https://linkedin.com/in/timothynduva",
             email: "info@beeyield.com",
@@ -143,11 +144,11 @@ const Team = () => {
             name: "Agatha Nduva",
             role: "Technical Director",
             department: "Engineering",
-            description: "The technical powerhouse behind our AI routing engine. Agatha ensures the integrity of our secure data ingestion pipelines and zero-knowledge proofs for verifiable data security.",
+            description: "Agatha leads our engineering work—building reliable systems for data collection, reporting, and traceability.",
             image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
             linkedin: "#",
             email: "info@beeyield.com",
-            achievements: ["Neural Hive Architect", "Security Protocols", "Data Pipelines"]
+            achievements: ["Product engineering", "Data reliability", "Security & privacy"]
         },
     ];
 
@@ -198,7 +199,7 @@ const Team = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <BeeYieldPageShell className="bg-background text-foreground">
             {/* Hero Section - Cleaner flow with Big Logo */}
             <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-br from-beeyield-green/5 via-background to-background overflow-hidden border-b border-neutral-100">
                 <div className="container mx-auto px-4 relative z-10">
@@ -305,8 +306,8 @@ const Team = () => {
                                       <ShieldCheck className="w-6 h-6 text-beeyield-gold group-hover:text-white transition-colors" />
                                    </div>
                                    <div>
-                                      <h4 className="text-xl font-black uppercase text-neutral-900 tracking-tight mb-2">HoneyChain™ Protocol</h4>
-                                      <p className="text-neutral-400 font-medium leading-relaxed">Every drop is verified through our proprietary traceability engine for absolute biometric and geographic truth.</p>
+                                      <h4 className="text-xl font-black uppercase text-neutral-900 tracking-tight mb-2">Traceability</h4>
+                                      <p className="text-neutral-400 font-medium leading-relaxed">Each batch can be checked so customers can see where their honey came from.</p>
                                    </div>
                                 </div>
                             </div>
@@ -440,7 +441,7 @@ const Team = () => {
                 </div>
             </section>
 
-            {/* Technical Directorate Protocol Section */}
+            {/* Leadership section */}
             <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
@@ -449,19 +450,19 @@ const Team = () => {
                             <div className="space-y-6 max-w-xl">
                                 <div className="flex items-center gap-3">
                                    <div className="h-2 w-2 bg-beeyield-green rounded-full animate-pulse" />
-                                   <span className="text-[10px] font-black uppercase tracking-[0.4em] text-beeyield-green">Operational Status: Optimal</span>
+                                   <span className="text-[10px] font-black uppercase tracking-[0.4em] text-beeyield-green">Status: Active</span>
                                 </div>
-                                <h2 className="text-4xl lg:text-5xl font-black uppercase italic tracking-tighter leading-none">The <span className="text-beeyield-green">Directorate</span> Protocol</h2>
+                                <h2 className="text-4xl lg:text-5xl font-black uppercase italic tracking-tighter leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
                                 <p className="text-neutral-400 font-medium leading-relaxed">
-                                    Our leadership is not just a management layer; it is a technical command unit. Every strategic decision is hard-coded into our HoneyChain™ logic, ensuring the 50/50 promise is immutable and verifiable.
+                                    Our leadership team focuses on practical work: healthier hives, reliable data, and clear traceability from hive to jar.
                                 </p>
                             </div>
                             <div className="grid grid-cols-2 gap-6 w-full md:w-auto">
                                 {[
-                                    { label: "Uptime", val: "99.99%", icon: Activity },
-                                    { label: "Veracity", val: "100%", icon: ShieldCheck },
-                                    { label: "Nodes", val: "842+", icon: Globe },
-                                    { label: "Trust", val: "Level 5", icon: LockIcon }
+                                    { label: "Operations", val: "Active", icon: Activity },
+                                    { label: "Records", val: "Verified", icon: ShieldCheck },
+                                    { label: "Network", val: "Growing", icon: Globe },
+                                    { label: "Support", val: "On", icon: LockIcon }
                                 ].map((stat, i) => (
                                     <div key={i} className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center text-center">
                                        <stat.icon className="w-5 h-5 text-beeyield-green mb-3 opacity-50" />
@@ -472,39 +473,7 @@ const Team = () => {
                             </div>
                         </div>
 
-                        {/* Technical Verification Log */}
-                        <div className="rounded-[3rem] border border-white/5 bg-black/40 backdrop-blur-xl overflow-hidden p-1">
-                           <div className="bg-neutral-900/50 p-8 flex items-center justify-between border-b border-white/5">
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500">Strategic Command Registry</span>
-                              <div className="flex gap-2">
-                                 <div className="w-2 h-2 rounded-full bg-red-500/20" />
-                                 <div className="w-2 h-2 rounded-full bg-yellow-500/20" />
-                                 <div className="w-2 h-2 rounded-full bg-green-500/20" />
-                              </div>
-                           </div>
-                           <div className="p-10 space-y-6 font-mono text-[11px] leading-relaxed">
-                              <div className="flex gap-6 text-beeyield-green/60">
-                                 <span className="shrink-0">[08:44:12]</span>
-                                 <span>SYS_INIT: DIRECTORATE_VOICE_ENCRYPT_LOADED</span>
-                              </div>
-                              <div className="flex gap-6 text-neutral-500">
-                                 <span className="shrink-0">[09:12:05]</span>
-                                 <span>AUTH_VERIFY: TIMOTHY_NDUVA (CEO) - BIO_METRIC_PASS</span>
-                              </div>
-                              <div className="flex gap-6 text-neutral-500">
-                                 <span className="shrink-0">[09:12:08]</span>
-                                 <span>AUTH_VERIFY: CAROLE_NDUVA (TD) - BIO_METRIC_PASS</span>
-                              </div>
-                              <div className="flex gap-6 text-neutral-500">
-                                 <span className="shrink-0">[09:12:11]</span>
-                                 <span>AUTH_VERIFY: AGATHA_NDUVA (TD) - BIO_METRIC_PASS</span>
-                              </div>
-                              <div className="flex gap-6 text-beeyield-gold/60">
-                                 <span className="shrink-0">[10:00:00]</span>
-                                 <span>MISSION_STATUS: HONEYCHAIN_PROTOCOL_EXECUTING_CRITICAL_PATH</span>
-                              </div>
-                           </div>
-                        </div>
+                        {/* (removed faux system logs) */}
                     </div>
                 </div>
             </section>
@@ -552,16 +521,16 @@ const Team = () => {
                                             <Input id="name" name="name" placeholder="Director..." value={formData.name} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                         </div>
                                         <div className="space-y-3">
-                                            <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 ml-1">Email Authority</Label>
+                                            <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 ml-1">Email</Label>
                                             <Input id="email" name="email" type="email" placeholder="authority@domain.com" value={formData.email} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 ml-1">Communication Channel</Label>
+                                        <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 ml-1">Phone (optional)</Label>
                                         <Input id="phone" name="phone" type="tel" placeholder="+254" value={formData.phone} onChange={handleInputChange} className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                     </div>
                                     <div className="space-y-3">
-                                        <Label htmlFor="message" className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 ml-1">Protocol Brief</Label>
+                                        <Label htmlFor="message" className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 ml-1">Message</Label>
                                         <Textarea id="message" name="message" placeholder="Describe the mission brief..." className="min-h-[160px] rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all p-6" value={formData.message} onChange={handleInputChange} required />
                                     </div>
                                     <Button type="submit" className="w-full h-20 rounded-3xl bg-neutral-900 text-beeyield-green font-black uppercase text-xs tracking-[0.3em] shadow-2xl shadow-neutral-900/30 hover:scale-[1.02] active:scale-95 transition-all" disabled={loading}>
@@ -591,6 +560,8 @@ const Team = () => {
                                     <button 
                                         onClick={() => setSelectedMember(null)}
                                         className="w-12 h-12 bg-neutral-50 hover:bg-neutral-900 hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-95"
+                                        aria-label="Close member details"
+                                        title="Close"
                                     >
                                         <X className="w-6 h-6" />
                                     </button>
@@ -657,7 +628,7 @@ const Team = () => {
                     </AnimatePresence>
                 </DialogContent>
             </Dialog>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

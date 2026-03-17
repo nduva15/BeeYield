@@ -6,7 +6,8 @@ import ConsumptionView from './ConsumptionView';
 import ComparisonsView from './ComparisonsView';
 import { TrendingUp, Activity, BarChart3, Droplets, ArrowLeftRight, FileText, Calendar } from 'lucide-react';
 import MetricCalendarView from './MetricCalendarView';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface MetersMeasurementsProps {
     onTabChange: (tab: string) => void;
@@ -66,9 +67,9 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
     };
 
     return (
-        <div className={cn(glass.page, "p-8 -m-8 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}>
-            {/* Header */}
-            <PageHeader
+        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+        <div className={cn("p-8 -m-0 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}>
+            <BeeYieldPageHeader
                 icon={TrendingUp}
                 label="SIGNAL_LOAD_ANALYTICS"
                 title={<>Diagnostic <span className="text-[#F4D03F]">Engine</span></>}
@@ -126,6 +127,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                 {renderContent()}
             </div>
         </div>
+        </BeeYieldPageShell>
     );
 };
 

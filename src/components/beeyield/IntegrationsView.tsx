@@ -68,10 +68,10 @@ const IntegrationsView: React.FC = () => {
                 toast.success(`${platform} Sync Finalized`, { id: tid });
                 fetchConfigs();
             } else {
-                toast.error(`Sync failure in ${platform} node`, { id: tid });
+                toast.error(`Sync failed for ${platform}`, { id: tid });
             }
         } catch (e) {
-            toast.error("Sync Protocol Aborted", { id: tid });
+            toast.error("Sync cancelled", { id: tid });
         }
     };
 
@@ -84,17 +84,17 @@ const IntegrationsView: React.FC = () => {
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     <div className="space-y-4">
                         <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-3 py-1 rounded-lg font-bold text-[10px] tracking-wider uppercase">
-                            Ecological_Bridge_v4.4_Live
+                            Connected services
                         </Badge>
                         <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight leading-none">
-                            Federated <span className="text-[#F4D03F]">Ecosystem</span>
+                            Integrations
                         </h1>
                         <p className="text-gray-500 font-medium max-w-xl leading-relaxed text-sm">
-                            BeeYield bridges industrial apiary telemetry with global financial and retail infrastructure via secure relays.
+                            Connect BeeYield with the tools you already use for bookkeeping and selling.
                         </p>
                         <div className="flex gap-3">
-                            <button onClick={() => setActiveTab('quickbooks')} className={cn(glass.btnPrimary, "h-10 px-6 font-bold text-xs")}>Config QBO</button>
-                            <button onClick={() => setActiveTab('shopify')} className={cn(glass.btnSecondary, "h-10 px-6 font-bold text-xs")}>Config Shopify</button>
+                            <button onClick={() => setActiveTab('quickbooks')} className={cn(glass.btnPrimary, "h-10 px-6 font-bold text-xs")}>QuickBooks settings</button>
+                            <button onClick={() => setActiveTab('shopify')} className={cn(glass.btnSecondary, "h-10 px-6 font-bold text-xs")}>Shopify settings</button>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -108,7 +108,7 @@ const IntegrationsView: React.FC = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-[#1A1A1A]">{s.name}</h3>
-                                    <p className="text-[10px] font-medium text-gray-400 mt-0.5">Autonomous Sync</p>
+                                    <p className="text-[10px] font-medium text-gray-400 mt-0.5">Automatic sync</p>
                                 </div>
                             </div>
                         ))}
@@ -118,9 +118,9 @@ const IntegrationsView: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                    { title: "Real-time Sync", desc: "Transactions flow instantly across the secure neural backbone.", icon: Zap, theme: '#F4D03F' },
-                    { title: "Secure Tunnel", desc: "Military-grade encryption for all API handshakes.", icon: ShieldCheck, theme: '#1B9157' },
-                    { title: "Stateless Auth", desc: "Comprehensive logging of every record movement.", icon: Network, theme: '#3B82F6' }
+                    { title: "Fast sync", desc: "Updates move quickly across connected services.", icon: Zap, theme: '#F4D03F' },
+                    { title: "Secure connection", desc: "Encrypted connections for API requests.", icon: ShieldCheck, theme: '#1B9157' },
+                    { title: "Sign-in support", desc: "Authentication and logs for key actions.", icon: Network, theme: '#3B82F6' }
                 ].map((f, i) => (
                     <div key={i} className={cn(glass.card, "p-5 space-y-3 bg-white border-gray-100 group hover:border-gray-200 transition-all")}>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 border border-gray-100 group-hover:scale-105 transition-transform">
@@ -152,18 +152,18 @@ const IntegrationsView: React.FC = () => {
                             <div className="flex items-center gap-3">
                                 <h2 className="text-2xl font-bold text-[#1A1A1A] tracking-tight leading-none capitalize">{p} <span style={{ color }}>Industrial</span></h2>
                                 <Badge className={cn("px-2 py-0.5 rounded-md font-bold text-[10px] tracking-wider uppercase border-none", isConnectedNode ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>
-                                    {isConnectedNode ? "Active_Sync_OK" : "Registry_Offline"}
+                                    {isConnectedNode ? "Connected" : "Not connected"}
                                 </Badge>
                             </div>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">High-Fidelity Federation Protocol_v4.4</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Sync and settings</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button onClick={() => handleSyncNow(p)} disabled={!isConnectedNode} className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs flex items-center gap-2", !isConnectedNode && "opacity-50 cursor-not-allowed")}>
-                            Force Sync <RefreshCw className="w-3.5 h-3.5" />
+                            Sync now <RefreshCw className="w-3.5 h-3.5" />
                         </button>
-                        <button className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-[#1A1A1A]")} onClick={() => toast.info("Initializing Link...")}>
-                            {isConnectedNode ? 'Renew Link' : 'Initialize Link'}
+                        <button className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-[#1A1A1A]")} onClick={() => toast.info("Starting…")}>
+                            {isConnectedNode ? 'Reconnect' : 'Connect'}
                         </button>
                     </div>
                 </div>
@@ -173,8 +173,8 @@ const IntegrationsView: React.FC = () => {
                         <div className={cn(glass.card, "p-0 overflow-hidden bg-white min-h-[300px]")}>
                             <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                                 <div>
-                                    <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recent <span style={{ color }}>Audit_Logs</span></h4>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Temporal activity archive</p>
+                                    <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recent activity</h4>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Sync history</p>
                                 </div>
                                 <Terminal className="w-4 h-4 text-gray-400" />
                             </div>
@@ -239,10 +239,10 @@ const IntegrationsView: React.FC = () => {
                         <div className={cn(glass.card, "p-4 space-y-3 bg-[#F9F7F2] border-[#F4D03F]/20")}>
                             <div className="flex items-center gap-2 text-[#1A1A1A]">
                                 <LockIcon className="w-4 h-4 text-[#F4D03F]" />
-                                <span className="text-xs font-bold tracking-tight">Handshake_Secure</span>
+                                <span className="text-xs font-bold tracking-tight">Secure</span>
                             </div>
                             <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">
-                                Federated credentials are encrypted at the kernel level and never persist in unmasked local caches.
+                                Credentials are encrypted and stored securely.
                             </p>
                         </div>
                     </div>
@@ -259,9 +259,9 @@ const IntegrationsView: React.FC = () => {
         >
             <PageHeader
                 icon={Network}
-                label="Federated Relay Kernel v4.4"
-                title={<>Ecosystem <span className="text-[#F4D03F]">Nexus</span></>}
-                subtitle="Bridging apiary telemetry with global financial and e-commerce infrastructure protocols."
+                label="Integrations"
+                title={<>Connect your <span className="text-[#F4D03F]">tools</span></>}
+                subtitle="Connect BeeYield with bookkeeping and e‑commerce tools."
                 actions={
                     <div className="flex bg-gray-50 p-1 rounded-lg border border-gray-100 gap-1 shrink-0 shadow-sm">
                         {[
@@ -291,7 +291,7 @@ const IntegrationsView: React.FC = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center min-h-[300px] space-y-3 opacity-50">
                         <RefreshCw className="w-6 h-6 text-[#1B9157] animate-spin" />
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Hydrating Relay Fabric...</span>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Loading…</span>
                     </div>
                 ) : (
                     <AnimatePresence mode="wait">
@@ -300,7 +300,7 @@ const IntegrationsView: React.FC = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{ duration: 0.25 }}
                         >
                             {activeTab === 'ecosystem' && renderEcosystem()}
                             {activeTab === 'quickbooks' && renderPlatform('quickbooks')}
@@ -314,9 +314,9 @@ const IntegrationsView: React.FC = () => {
                 <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 mx-auto mb-2">
                     <HistoryIcon className="w-4 h-4 text-gray-400" />
                 </div>
-                <h3 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Global Infrastructure Compliance</h3>
+                <h3 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Data & activity logs</h3>
                 <p className="text-[11px] font-medium text-gray-500 max-w-xl mx-auto leading-relaxed">
-                    Every synchronization pulse is etched into the organization's immutable cryptographic audit log for high-fidelity compliance. Federation is managed via the BeeYield Kernel.
+                    We keep a record of sync activity so you can troubleshoot and audit changes.
                 </p>
             </div>
         </motion.div>

@@ -107,7 +107,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         if (isGenerating) return;
         setIsGenerating(true);
         setGenProgress(10);
-        const toastId = toast.loading('Initializing data extraction...');
+        const toastId = toast.loading('Preparing report…');
 
         try {
             const interval = setInterval(() => {
@@ -137,11 +137,11 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             setGenProgress(100);
 
             if (error) throw error;
-            toast.success('Extraction successful', { id: toastId });
+            toast.success('Report ready', { id: toastId });
             loadData();
         } catch (error) {
             console.error('Extraction failed', error);
-            toast.error('Extraction failure', { id: toastId });
+            toast.error('Report failed', { id: toastId });
         } finally {
             setTimeout(() => {
                 setIsGenerating(false);
@@ -153,7 +153,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     const handleGenerateAIInsights = async () => {
         if (isAISynthesizing) return;
         setIsAISynthesizing(true);
-        const toastId = toast.loading("Synthesizing neural insights...");
+        const toastId = toast.loading("Creating insights…");
 
         try {
             const { error } = await beeyieldService.generateReport({
@@ -170,11 +170,11 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             } as any);
 
             if (error) throw error;
-            toast.success('Insights archived', { id: toastId });
+            toast.success('Insights ready', { id: toastId });
             loadData();
         } catch (error) {
             console.error('Synthesis failed', error);
-            toast.error('Neural engine failure', { id: toastId });
+            toast.error('Insights failed', { id: toastId });
         } finally {
             setIsAISynthesizing(false);
         }
@@ -188,7 +188,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         }
 
         setIsSavingSchedule(true);
-        const toastId = toast.loading('Syncing node...');
+        const toastId = toast.loading('Saving schedule…');
         try {
             const { error } = await beeyieldService.createScheduledReport({
                 ...newSchedule,
@@ -201,7 +201,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             } as any);
 
             if (error) throw error;
-            toast.success('Sync node online', { id: toastId });
+            toast.success('Schedule saved', { id: toastId });
             setIsScheduleModalOpen(false);
             setNewSchedule({
                 name: "",
@@ -212,34 +212,34 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             });
             loadData();
         } catch (error) {
-            console.error('Node failure', error);
-            toast.error('Sync node failure', { id: toastId });
+            console.error('Schedule save failed', error);
+            toast.error('Couldn’t save schedule', { id: toastId });
         } finally {
             setIsSavingSchedule(false);
         }
     };
 
     const handleDeleteSchedule = async (id: string) => {
-        const toastId = toast.loading('Purging sync node...');
+        const toastId = toast.loading('Deleting schedule…');
         try {
             const { error } = await beeyieldService.deleteScheduledReport(id);
             if (error) throw error;
-            toast.success('Node purged', { id: toastId });
+            toast.success('Schedule deleted', { id: toastId });
             loadData();
         } catch (error) {
-            toast.error('Purge failure', { id: toastId });
+            toast.error('Couldn’t delete schedule', { id: toastId });
         }
     };
 
     const sectionOptions = [
-        { id: 'apiaries', label: 'Sector_Log', icon: MapPin },
-        { id: 'hives', label: 'Fleet_Audit', icon: Box },
-        { id: 'overview', label: 'Topology', icon: LayoutGrid },
-        { id: 'notes', label: 'Journal', icon: FileText },
-        { id: 'inspections', label: 'Bio_Audit', icon: ShieldCheck },
-        { id: 'harvests', label: 'Yield_DB', icon: BarChart3 },
-        { id: 'my_requests', label: 'Assets', icon: ExternalLink },
-        { id: 'tasks', label: 'Ops_Flow', icon: Check },
+        { id: 'apiaries', label: 'Apiaries', icon: MapPin },
+        { id: 'hives', label: 'Hives', icon: Box },
+        { id: 'overview', label: 'Overview', icon: LayoutGrid },
+        { id: 'notes', label: 'Notes', icon: FileText },
+        { id: 'inspections', label: 'Inspections', icon: ShieldCheck },
+        { id: 'harvests', label: 'Harvests', icon: BarChart3 },
+        { id: 'my_requests', label: 'Requests', icon: ExternalLink },
+        { id: 'tasks', label: 'Tasks', icon: Check },
     ];
 
     return (
@@ -250,16 +250,16 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         >
             <PageHeader
                 icon={FileBarChart}
-                label="Registry Node"
-                title={<>Audit <span className="text-[#1B9157]">Archive</span></>}
-                subtitle="Synthesize historical yield vectors and industrial audit trails."
+                label="Reports"
+                title={<>Reports <span className="text-[#1B9157]">Archive</span></>}
+                subtitle="Create reports from your hive and apiary data."
                 actions={
                     <button
                         onClick={() => setIsScheduleModalOpen(true)}
                         className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold flex items-center gap-2")}
                     >
                         <Plus className="w-4 h-4" />
-                        Sync Node
+                        New schedule
                     </button>
                 }
             />
@@ -267,7 +267,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                     { label: 'Total Audits', value: reports.length, color: 'text-[#1A1A1A]' },
-                    { label: 'Active Nodes', value: schedules.length, color: 'text-emerald-600' },
+                    { label: 'Active schedules', value: schedules.length, color: 'text-emerald-600' },
                     { label: 'Queue Size', value: reports.filter(r => r.status === 'processing').length, color: 'text-amber-500' },
                     { label: 'AI Modules', value: '04', color: 'text-gray-400' }
                 ].map((stat, i) => (
@@ -278,16 +278,16 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 ))}
             </div>
 
-            {/* Neural Insights Intelligence Banner */}
+            {/* Insights banner */}
             <div className={cn(glass.card, "p-5 bg-emerald-600 border-none flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden group shadow-lg")}>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32" />
                 <div className="space-y-1.5 flex-1 relative z-10 text-center sm:text-left">
                     <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
                         <Zap className="w-3 h-3 text-amber-300" />
-                        Neural Engine Active
+                        Insights
                     </div>
-                    <h2 className="text-base font-bold text-white tracking-tight">Synthesize Intelligence</h2>
-                    <p className="text-[11px] font-medium text-emerald-100/70 max-w-md">Predictive yield analysis and geospatial bloom trajectories via Neural MoE.</p>
+                    <h2 className="text-base font-bold text-white tracking-tight">Create insights</h2>
+                    <p className="text-[11px] font-medium text-emerald-100/70 max-w-md">Summaries and patterns based on your recent data.</p>
                 </div>
                 <button
                     onClick={handleGenerateAIInsights}
@@ -295,7 +295,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     className={cn(glass.btnSecondary, "h-9 px-6 bg-white text-emerald-700 border-none font-bold text-xs shadow-xl relative z-10 shrink-0")}
                 >
                     {isAISynthesizing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                    Deep Analysis
+                    Create insights
                 </button>
             </div>
 
@@ -408,6 +408,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                      </div>
                                      <button 
                                         onClick={() => r.file_url && window.open(r.file_url, '_blank')}
+                                        aria-label="Download report"
+                                        title="Download report"
                                         className="w-9 h-9 rounded-xl bg-gray-50 border border-transparent hover:border-emerald-200 flex items-center justify-center text-gray-400 hover:text-emerald-500 transition-all shadow-sm"
                                      >
                                         <Download className="w-4 h-4" />
@@ -418,13 +420,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     </div>
                 </div>
 
-                {/* Registry Nodes */}
+                {/* Schedules */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm flex flex-col h-full min-h-[460px]")}>
                         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Registry Nodes</h3>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Automated Sync Flow</p>
+                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Schedules</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Automatic reports</p>
                             </div>
                             <Network className="w-4 h-4 text-gray-300" />
                         </div>
@@ -438,11 +440,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         </div>
                                         <div className="space-y-0.5">
                                             <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-tight">{s.name}</p>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase">{s.frequency} Cycle</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase">{s.frequency}</p>
                                         </div>
                                     </div>
                                     <button 
                                         onClick={() => handleDeleteSchedule(s.id)}
+                                        aria-label="Delete schedule"
+                                        title="Delete schedule"
                                         className="w-8 h-8 rounded-lg bg-red-50 text-red-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -455,16 +459,16 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                 className={cn(glass.btnSecondary, "w-full border-dashed group")}
                             >
                                 <Plus className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 group-hover:rotate-90 transition-all" />
-                                <span className={cn(glass.microLabel, "group-hover:text-emerald-600")}>Establish Sync</span>
+                                <span className={cn(glass.microLabel, "group-hover:text-emerald-600")}>Add schedule</span>
                             </button>
                         </div>
 
                         <div className="p-5 bg-emerald-50/50 border-t border-gray-50 space-y-2">
                              <div className="flex items-center gap-2 text-emerald-700">
                                 <LockIcon className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest">Secure</span>
                              </div>
-                             <p className="text-[10px] font-medium text-emerald-600/60 leading-relaxed uppercase tracking-tighter">Deep-encrypted SMTP tunnel dissemination active for kernel node_ST.</p>
+                             <p className="text-[10px] font-medium text-emerald-600/60 leading-relaxed uppercase tracking-tighter">Reports are delivered over encrypted connections.</p>
                         </div>
                     </div>
                 </div>
@@ -484,45 +488,51 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shadow-sm">
                                         <Network className="w-4 h-4 text-emerald-600" />
                                     </div>
-                                    <h3 className={glass.sectionTitle}>Sync Kernel Configuration</h3>
+                                    <h3 className={glass.sectionTitle}>Schedule settings</h3>
                                 </div>
-                                <button onClick={() => setIsScheduleModalOpen(false)} className="w-8 h-8 rounded-md hover:bg-white text-gray-400 hover:text-red-500 transition-all flex items-center justify-center">
+                                <button
+                                    onClick={() => setIsScheduleModalOpen(false)}
+                                    aria-label="Close"
+                                    title="Close"
+                                    className="w-8 h-8 rounded-md hover:bg-white text-gray-400 hover:text-red-500 transition-all flex items-center justify-center"
+                                >
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
                             <form onSubmit={handleCreateSchedule} className="p-5 space-y-4">
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Sync Identifier</Label>
+                                    <Label className={glass.microLabel}>Schedule name</Label>
                                     <div className="relative">
                                         <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
                                         <input 
                                             value={newSchedule.name}
                                             onChange={(e) => setNewSchedule({ ...newSchedule, name: e.target.value })}
                                             className={cn(glass.input, "w-full pl-9")}
-                                            placeholder="IDENTIFIER_NODE_V5..."
+                                            placeholder="Weekly report"
                                         />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                      <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Pulse Cycle</Label>
+                                        <Label className={glass.microLabel}>Frequency</Label>
                                         <div className="relative">
-                                            <select 
+                                            <select
                                                 value={newSchedule.frequency}
                                                 onChange={(e) => setNewSchedule({ ...newSchedule, frequency: e.target.value as any })}
+                                                aria-label="Schedule frequency"
                                                 className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
                                             >
-                                                <option value="daily">Daily Burst</option>
-                                                <option value="weekly">Weekly Audit</option>
-                                                <option value="monthly">Monthly Cycle</option>
+                                                <option value="daily">Daily</option>
+                                                <option value="weekly">Weekly</option>
+                                                <option value="monthly">Monthly</option>
                                             </select>
                                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40 pointer-events-none" />
                                         </div>
                                      </div>
                                      <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Kernel Status</Label>
+                                        <Label className={glass.microLabel}>Status</Label>
                                         <div className={cn(glass.input, "w-full flex items-center justify-between")}>
-                                            <span className="text-[10px] font-bold uppercase text-[#1A1A1A]/60">Active Node</span>
+                                            <span className="text-[10px] font-bold uppercase text-[#1A1A1A]/60">Active</span>
                                             <Switch 
                                                 checked={newSchedule.is_active}
                                                 onCheckedChange={(c) => setNewSchedule({ ...newSchedule, is_active: !!c })}
@@ -533,7 +543,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                 </div>
                                 <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "w-full mt-4")}>
                                     {isSavingSchedule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                    Establish Data Sync Flow
+                                    Save schedule
                                 </button>
                             </form>
                         </motion.div>

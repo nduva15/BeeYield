@@ -44,6 +44,7 @@ import { RecruitmentTab } from '@/components/admin/tabs/RecruitmentTab';
 import { Container, Grid, Col, Section } from '@/components/ui/layout';
 import ContentDashboard from '@/components/beeyield/ContentDashboard';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
@@ -882,21 +883,21 @@ const AdminDashboard: React.FC = () => {
 
     if (authLoading || isLoading) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
+            <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
                 <p className="text-sm font-medium animate-pulse text-muted-foreground">Authenticating Terminal...</p>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     if (!isAdmin) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
+            <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
                 <Shield className="h-16 w-16 text-destructive animate-pulse" />
                 <h2 className="text-2xl font-black">Restricted Access</h2>
                 <p className="text-muted-foreground">This terminal is for authorized administrators only.</p>
                 <Button onClick={() => navigate('/')} className="rounded-xl px-8 shadow-lg">Return Home</Button>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
@@ -971,12 +972,13 @@ const AdminDashboard: React.FC = () => {
     ];
 
     return (
-        <AdminLayout
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            onLogout={signOut}
-            navItems={navItems}
-        >
+        <BeeYieldPageShell className="p-0">
+            <AdminLayout
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                onLogout={signOut}
+                navItems={navItems}
+            >
             <div className="space-y-8 animate-in fade-in duration-700">
                 {/* Header Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -1008,7 +1010,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange rounded-[20px] px-6 py-3.5 flex items-center justify-between text-beeyield-green text-sm mb-4 shadow-lg shadow-beeyield-gold/20">
                         <div className="flex items-center gap-3">
                             <span className="text-xl">🐝</span>
-                            <span className="font-bold tracking-tight">Accessing the new BeeYield dashboard. Updates live at <a href="#" className="underline font-black text-beeyield-green">BeeYield.io/nexus</a></span>
+                            <span className="font-bold tracking-tight">Welcome to the new BeeYield dashboard. Updates are rolling out now.</span>
                         </div>
                         <button className="text-beeyield-green/60 hover:text-beeyield-green transition-colors">✕</button>
                     </div>
@@ -1019,7 +1021,7 @@ const AdminDashboard: React.FC = () => {
                             {/* General Report Section */}
                             <Col span={4} className="space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Protocol Stream</h3>
+                                    <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Overview</h3>
                                     <select aria-label="Report period" className="text-[10px] font-black uppercase tracking-widest bg-beeyield-green/5 border-none rounded-full px-4 py-2 text-beeyield-green outline-none focus:ring-2 focus:ring-beeyield-gold/20">
                                         <option>Daily</option>
                                         <option>Weekly</option>
@@ -1032,7 +1034,7 @@ const AdminDashboard: React.FC = () => {
                                     title="Total Orders"
                                     value={(dashboardStats as any).total_orders || orders.length}
                                     icon={CreditCard}
-                                    description={`${dashboardStats.pendingOrders} Processing Tokens`}
+                                    description={`${dashboardStats.pendingOrders} processing`}
                                     className="h-auto"
                                 />
 
@@ -1293,9 +1295,9 @@ const AdminDashboard: React.FC = () => {
                                 <Card className="bg-indigo-600 rounded-2xl p-6 text-[#1A1A1A] relative overflow-hidden flex flex-col justify-center h-48">
                                     <div className="relative z-10 max-w-xs">
                                         <h3 className="text-lg font-bold mb-1 leading-tight">Log</h3>
-                                        <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
+                                        <p className="text-indigo-100 text-xs mb-4">View honey batch records.</p>
                                         <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-[#FFF9F0] text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
-                                            View Ledger
+                                            View batches
                                         </Button>
                                     </div>
                                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -1818,7 +1820,7 @@ const AdminDashboard: React.FC = () => {
                                 </div>
                                 <DialogFooter className="gap-2 sm:gap-0">
                                     <Button variant="ghost" onClick={() => setIsProductModalOpen(false)} className="rounded-xl font-bold">Cancel</Button>
-                                    <Button onClick={handleCreateProduct} className="rounded-xl font-black uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Commit Changes' : 'Initialize Asset'}</Button>
+                                    <Button onClick={handleCreateProduct} className="rounded-xl font-black uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Save changes' : 'Add product'}</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -1927,7 +1929,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Protocol Reasoning</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Reason</Label>
                                         <Input
                                             id="stock-reason"
                                             name="stock-reason"
@@ -1952,12 +1954,12 @@ const AdminDashboard: React.FC = () => {
                         <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-bold">Honey Chain Blocks</CardTitle>
-                                    <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
+                                    <CardTitle className="text-xl font-bold">Honey batches</CardTitle>
+                                    <CardDescription>Verifiable records for each batch.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
                                     <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-[10px] py-5 bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none px-6 shadow-glow transition-all active:scale-95">
-                                        <Plus className="mr-2 h-4 w-4" /> Mint Block
+                                        <Plus className="mr-2 h-4 w-4" /> Add batch
                                     </Button>
                                 </div>
                             </CardHeader>
@@ -1972,13 +1974,13 @@ const AdminDashboard: React.FC = () => {
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Block Hash</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Record ID</TableHead>
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {batches.length === 0 ? (
-                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium">No honey batches in the blockchain yet.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium">No honey batches yet.</TableCell></TableRow>
                                             ) : (
                                                 batches.map((batch, i) => (
                                                     <TableRow
@@ -2061,7 +2063,7 @@ const AdminDashboard: React.FC = () => {
                                                                             e.stopPropagation();
                                                                             window.open(`/trace?code=${batch.batch_code}`, '_blank');
                                                                         }}
-                                                                        title="View Public Blockchain Record"
+                                                                        title="View public record"
                                                                     >
                                                                         <Globe className="h-4 w-4" />
                                                                     </Button>
@@ -2325,7 +2327,7 @@ const AdminDashboard: React.FC = () => {
                                         Batch Verification
                                     </DialogTitle>
                                     <DialogDescription className="font-mono text-xs">
-                                        BLOCKCHAIN ID: {selectedBatch?.block_hash}
+                                        Record ID: {selectedBatch?.block_hash}
                                     </DialogDescription>
                                 </DialogHeader>
 
@@ -2802,7 +2804,7 @@ const AdminDashboard: React.FC = () => {
                         <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-bold">Intelligent Hive Ledger</CardTitle>
+                                    <CardTitle className="text-xl font-bold">Hives</CardTitle>
                                     <CardDescription>Inventory and health status of individual colony units.</CardDescription>
                                 </div>
                                 <Button
@@ -2810,7 +2812,7 @@ const AdminDashboard: React.FC = () => {
                                     variant="outline"
                                     className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
-                                    <Plus className="mr-2 h-4 w-4" /> Deploy Hive
+                                    <Plus className="mr-2 h-4 w-4" /> Add hive
                                 </Button>
                             </CardHeader>
                             <CardContent className="p-0">
@@ -2962,9 +2964,9 @@ const AdminDashboard: React.FC = () => {
                                 <div className="flex justify-between items-center">
                                     <div>
                                         <h2 className="text-xl font-bold flex gap-2 items-center">
-                                            <Shield className="w-6 h-6 text-primary" /> Admin Command Circle
+                                            <Shield className="w-6 h-6 text-primary" /> Team management
                                         </h2>
-                                        <p className="text-muted-foreground font-medium">Elevate user privileges or terminate access protocols.</p>
+                                        <p className="text-muted-foreground font-medium">Manage users and permissions.</p>
                                     </div>
                                     <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
                                         {systemUsers.length} MEMBERS
@@ -3037,8 +3039,8 @@ const AdminDashboard: React.FC = () => {
                                         className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
                                     >
                                         <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
-                                        <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
-                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
+                                        <h3 className="font-black uppercase tracking-widest text-xs">Add a team member</h3>
+                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Create an account and set permissions</p>
                                     </Card>
                                 </div>
 
@@ -3046,8 +3048,8 @@ const AdminDashboard: React.FC = () => {
                                 <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
                                     <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
                                         <DialogHeader>
-                                            <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
-                                            <DialogDescription>Configure system access and identity parameters.</DialogDescription>
+                                            <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Edit user' : 'Add user'}</DialogTitle>
+                                            <DialogDescription>Set access and permissions.</DialogDescription>
                                         </DialogHeader>
                                         <div className="grid gap-5 py-4">
                                             <div className="grid grid-cols-2 gap-4">
@@ -3507,7 +3509,8 @@ const AdminDashboard: React.FC = () => {
                     </TabsContent>
                 </Tabs>
             </div>
-        </AdminLayout>
+            </AdminLayout>
+        </BeeYieldPageShell>
     );
 };
 

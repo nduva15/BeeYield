@@ -48,7 +48,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
             {/* Header */}
             <PageHeader
                 title="Acoustic Audit"
-                subtitle="Spectral monitoring protocols and frequency anomaly detection."
+                subtitle="Record a short sample and check for unusual sound patterns."
                 icon={Zap}
                 color="text-[#F4D03F]"
                 bg="bg-[#F4D03F]/10"
@@ -73,11 +73,11 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
                         <div className="flex flex-col gap-2">
                             <p className={glass.microLabel}>
-                                Capture asset acoustics for frequency analysis. Minimum 3.0s sample duration required.
+                                Record hive audio for analysis. Aim for at least 3 seconds.
                             </p>
                             <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400">
                                 <Activity className="w-3 h-3 text-[#F4D03F]/40" />
-                                <span>SIGNAL_LOCK_ACTIVE</span>
+                                <span>Signal locked</span>
                             </div>
                         </div>
 
@@ -92,11 +92,11 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 )}
                             >
                                 {recording ? <Square className="fill-current w-3 h-3" /> : <Mic2 className="w-3 h-3 shrink-0" />}
-                                {recording ? "RECORDING..." : "REC START"}
+                                {recording ? "Recording..." : "Start recording"}
                             </button>
                             <button className={cn(glass.btnSecondary, "h-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}>
                                 <Upload className="w-3.5 h-3.5" /> 
-                                <span>UPLOAD_STREAM</span>
+                                <span>Upload audio</span>
                             </button>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 <div className="flex justify-between items-end mb-3">
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(glass.microLabel, "animate-pulse")}>Processing Signal...</span>
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">PROTOCOL_X4_ACTIVE</span>
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">In progress</span>
                                     </div>
                                     <span className="text-xl tabular-nums font-black leading-none text-[#F4D03F]">{progress}%</span>
                                 </div>
@@ -187,12 +187,16 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                         "w-2 rounded-full transition-colors duration-500 border border-black/5 shadow-sm",
                                         recording ? "bg-red-500" : (analyzing ? "bg-[#F4D03F]" : "bg-gray-200/40")
                                     )}
-                                    animate={{
-                                        height: `${Math.max(8, (recording || analyzing) ? Math.random() * 200 : 20 + Math.sin(i * 0.5) * 40)}px`
-                                    }}
-                                    transition={{
-                                        type: "spring", stiffness: 300, damping: 20, mass: 0.5
-                                    }}
+                                    animate={
+                                        (recording || analyzing)
+                                            ? { height: [14, 180 - (i % 7) * 12, 22 + (i % 5) * 8] }
+                                            : { height: 20 + Math.sin(i * 0.5) * 40 }
+                                    }
+                                    transition={
+                                        (recording || analyzing)
+                                            ? { duration: 1.2, repeat: Infinity, repeatType: 'mirror', delay: (i % 10) * 0.04, ease: 'easeInOut' }
+                                            : { type: "spring", stiffness: 300, damping: 20, mass: 0.5 }
+                                    }
                                 />
                             ))}
                         </div>

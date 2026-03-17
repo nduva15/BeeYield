@@ -57,7 +57,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 });
             }
 
-            toast.success("Account created successfully");
+            toast.success("Account created");
             onSuccess?.();
         }
         setLoading(false);
@@ -69,7 +69,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         localStorage.setItem('authBackend', 'beeyield');
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
         if (error) {
-            toast.error("Google registration failed", { description: error.message });
+            toast.error("Google sign-up failed", { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -78,7 +78,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Given Name</Label>
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">First name</Label>
                     <Input
                         placeholder="John"
                         value={firstName}
@@ -88,7 +88,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Surname</Label>
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Last name</Label>
                     <Input
                         placeholder="Doe"
                         value={lastName}
@@ -100,7 +100,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Kernel Designation</Label>
+                <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Email</Label>
                 <div className="relative group">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                     <Input
@@ -116,7 +116,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Passphrase</Label>
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
                     <div className="relative group">
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
@@ -130,7 +130,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     </div>
                 </div>
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Verify</Label>
+                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
                     <div className="relative group">
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
@@ -151,7 +151,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 disabled={loading}
             >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-                Initialize Identity
+                Create account
             </Button>
 
             <div className="relative py-1">
@@ -159,7 +159,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     <span className="w-full border-t border-gray-100" />
                 </div>
                 <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.3em]">
-                    <span className="bg-white px-3 text-gray-300">Relay</span>
+                    <span className="bg-white px-3 text-gray-300">or</span>
                 </div>
             </div>
 
@@ -192,7 +192,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                         />
                     </svg>
                 )}
-                Federated Google Link
+                Continue with Google
             </Button>
             
             {onSwitchToLogin && (
@@ -202,7 +202,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                         onClick={onSwitchToLogin}
                         className="text-[10px] font-bold text-gray-400 hover:text-[#F4D03F] transition-colors uppercase tracking-tight"
                     >
-                        Already registered? <span className="text-[#F4D03F] ml-1">Secure Sign In</span>
+                        Already have an account? <span className="text-[#F4D03F] ml-1">Sign in</span>
                     </button>
                </div>
             )}

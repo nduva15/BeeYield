@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import {
     Shield,
     Lock as LockIcon,
@@ -23,6 +24,7 @@ import {
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
 import BeeYieldForgotPasswordForm from '@/components/auth/beeyield/BeeYieldForgotPasswordForm';
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -51,7 +53,7 @@ const ProfessionalAuth: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden">
+        <BeeYieldPageShell className="bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden p-0 md:p-0 -m-4 md:-m-6">
             {/* Ambient Background */}
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-honey/5 rounded-full blur-[120px] -mr-96 -mt-96 opacity-60" />
             <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-beeyield-green/5 rounded-full blur-[120px] -ml-96 -mb-96 opacity-60" />
@@ -66,7 +68,7 @@ const ProfessionalAuth: React.FC = () => {
                             <span className="text-2xl font-black tracking-tight text-gray-900 leading-none">
                                 Bee<span className="text-honey">Yield</span>
                             </span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">Professional Portal</span>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">BeeYield dashboard</span>
                         </div>
                     </Link>
 
@@ -88,14 +90,14 @@ const ProfessionalAuth: React.FC = () => {
                     >
                         <div className="text-center mb-12 space-y-4">
                             <h2 className="text-4xl font-black tracking-tight text-gray-900 leading-tight">
-                                {authMode === 'login' ? 'Welcome back' : authMode === 'register' ? 'Join our Hive' : 'Reset Password'}
+                                {authMode === 'login' ? 'Sign in' : authMode === 'register' ? 'Create an account' : 'Reset password'}
                             </h2>
                             <p className="text-gray-500 font-medium text-lg max-w-[85%] mx-auto leading-relaxed">
                                 {authMode === 'login' 
-                                    ? 'Log in to manage your apiaries and view harvest analytics.' 
+                                    ? 'Sign in to manage your apiaries and view reports.' 
                                     : authMode === 'register' 
-                                    ? 'Become a part of our professional beekeeping community.' 
-                                    : 'Enter your email address to recover your account access.'}
+                                    ? 'Create an account to access the BeeYield dashboard.' 
+                                    : 'Enter your email and we’ll send a reset link.'}
                             </p>
                         </div>
 
@@ -143,9 +145,9 @@ const ProfessionalAuth: React.FC = () => {
                             </div>
                             
                             <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl">
-                                <div className="w-2 h-2 rounded-full bg-honey animate-pulse" />
+                                <div className="w-2 h-2 rounded-full bg-honey" />
                                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                    Secure Beekeeping Analytics
+                                    Secure sign-in
                                 </span>
                             </div>
                         </div>
@@ -155,7 +157,7 @@ const ProfessionalAuth: React.FC = () => {
                 <footer className="py-12 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black uppercase tracking-widest text-gray-400">
                         <p>© 2026 BeeYield. All rights reserved.</p>
-                        <p className="opacity-60">Empowering Modern Beekeepers</p>
+                        <p className="opacity-60">For beekeepers and growers</p>
                     </div>
                     <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
                         <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Privacy</a>
@@ -164,7 +166,7 @@ const ProfessionalAuth: React.FC = () => {
                     </div>
                 </footer>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

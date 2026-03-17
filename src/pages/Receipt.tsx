@@ -7,6 +7,7 @@ import { Loader2, Printer, ArrowLeft, Download, CheckCircle2, MapPin, Phone, Mai
 import { getOrder, downloadInvoice } from '@/services/shopService';
 import { toast } from 'sonner';
 import logo from '@/assets/Logo.png';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const Receipt = () => {
     const { orderId } = useParams();
@@ -38,16 +39,16 @@ const Receipt = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC]">
+            <BeeYieldPageShell className="min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC]">
                 <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
-                <p className="text-slate-500 font-medium animate-pulse">Preparing your receipt...</p>
-            </div>
+                <p className="text-slate-500 font-medium">Preparing your receipt...</p>
+            </BeeYieldPageShell>
         );
     }
 
     if (!order) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-[#F8FAFC]">
+            <BeeYieldPageShell className="min-h-screen flex flex-col items-center justify-center gap-6 bg-[#F8FAFC]">
                 <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center text-red-500">
                     <ShieldCheck className="w-10 h-10" />
                 </div>
@@ -56,7 +57,7 @@ const Receipt = () => {
                     <p className="text-slate-500 max-w-xs mx-auto">We couldn't locate the order details for the provided ID. Please verify and try again.</p>
                 </div>
                 <Button onClick={() => navigate('/shop')} className="rounded-full px-8 h-12">Return to Shop</Button>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
@@ -76,7 +77,7 @@ const Receipt = () => {
     const vat = Number(order.total_kes) - subtotal;
 
     return (
-        <div className="min-h-screen bg-[#F1F5F9] py-12 px-4 print:bg-[#FFF9F0] print:py-0 print:px-0">
+        <BeeYieldPageShell className="min-h-screen bg-[#F1F5F9] py-12 px-4 print:bg-[#FFF9F0] print:py-0 print:px-0 p-0">
             {/* Toolbar */}
             <div className="max-w-4xl mx-auto mb-8 flex items-center justify-between print:hidden">
                 <Button variant="ghost" onClick={() => navigate(-1)} className="gap-2 text-slate-600 hover:text-[#1A1A1A] group">
@@ -269,7 +270,7 @@ const Receipt = () => {
                     <span>Support</span>
                 </div>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

@@ -37,6 +37,16 @@ export interface ChatDBMessage {
     created_at: string;
 }
 
+const REQUIRED_REPORT_HEADINGS = [
+    "## Executive Summary",
+    "## Situation Assessment",
+    "## Recommendations (Prioritized)",
+    "## Implementation Plan",
+    "## Risks & Mitigations",
+    "## Metrics to Track",
+    "## Sources & Assumptions",
+] as const;
+
 // Knowledge Hub Supabase URL and Key
 const KNOWLEDGE_URL = import.meta.env.VITE_SUPABASE_URL_KNOWLEDGE || 'https://laeifazhrupoqrhqmyzg.supabase.co';
 const KNOWLEDGE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY_KNOWLEDGE ||
@@ -73,8 +83,6 @@ export const aiService = {
             audioType?: string | null;
         }
     ): Promise<AIResponse> {
-        console.log('[BeeYield AI] Sending to Knowledge Hub Edge Function (Streaming Support: ' + (!!onChunk) + ')...');
-
         try {
             // 1. Fetch Company Brain context with a strict timeout to prevent hangs
             const userContextPromise = fetchUserContext();
@@ -87,51 +95,47 @@ export const aiService = {
 
             if (promptLower.includes("health") || promptLower.includes("disease") || promptLower.includes("varroa") || promptLower.includes("sick") || promptLower.includes("mite")) {
                 dynamicFocus = `
-[TOPIC FOCUS: BEEHEALTH & BIO-SECURITY]
-- Prioritize discussing the "BeeHealth Guide" and our systematic diagnostic protocols.
-- Explain how our "Acoustic Bio-monitors" detect early-stage colony stress and "Varroa Distress Signals" before visual symptoms appear.
-- Emphasize bio-security measures as vital to the 50/50 promise.
+[TOPIC: HIVE HEALTH]
+- Explain what the readings mean and what to check next.
+- Keep advice practical and safe. Suggest an inspection when unsure.
 `;
             } else if (promptLower.includes("honey") || promptLower.includes("harvest") || promptLower.includes("batch") || promptLower.includes("trace") || promptLower.includes("kib")) {
                 dynamicFocus = `
-[TOPIC FOCUS: HARVESTING & HONEYCHAIN TRACEABILITY]
-- Prioritize details on "Traceability Batches" (e.g., KIB-ACACIAL-26, KIB-SAV-2026, KIB-GOLD-26).
-- Explain the "HoneyChain Ledger" and how every jar is a blockchain-verified asset linked to a precision harvest timestamp.
-- Detail the "Zero-Disturbance" extraction method that preserves enzymatically active raw honey.
+[TOPIC: HONEY & TRACEABILITY]
+- Explain what batch details mean and how to verify origin.
+- Keep it simple and avoid technical implementation details.
 `;
             } else if (promptLower.includes("sensor") || promptLower.includes("hub") || promptLower.includes("scale") || promptLower.includes("iot") || promptLower.includes("telemetry")) {
                 dynamicFocus = `
-[TOPIC FOCUS: HARDWARE & SENSOR ARCHITECTURE]
-- Provide a technical deep-dive into the "BeeHUB" (Global Industrial Gateway) and "SenseNode" (Internal Multi-spectrum Sensors).
-- Detail our "Precision Hive Scales" (gram-level resolution) and how they correlate forage flow with climatic shifts.
-- Explain how this hardware fuels our "Research Odyssey" to map global bee vitality.
+[TOPIC: SENSORS & DEVICES]
+- Explain what each sensor measures and common troubleshooting steps.
+- Keep it non-technical unless the user asks for details.
 `;
             } else if (promptLower.includes("research") || promptLower.includes("science") || promptLower.includes("data") || promptLower.includes("acoustics")) {
                 dynamicFocus = `
-[TOPIC FOCUS: RESEARCH & ACOUSTIC TELEMETRY]
-- Discuss our "Acoustic Fingerprinting" technology used to decode colony behavior.
-- Reference our collaboration with global research institutes on mapped "Biological Vitality Profiles."
-- Explain how data fuels the 50/50 promise by creating new value streams from apiary intelligence.
+[TOPIC: DATA & INSIGHTS]
+- Explain what the data suggests and what actions to take.
 `;
             }
 
             const mandatoryBranding = `
-[STRICT GOVERNANCE - BEEYIELD MANDATORY OUTPUT PROTOCOL]
-You are the BeeYield Intelligence Lead. You provide EXHAUSTIVE, long-form professional reports.
-    
-MANDATORY ELEMENTS TO INCLUDE IN EVERY RESPONSE:
-- THE 50/50 PROMISE: 50% farmer sustainability / 50% ecosystem preservation and research.
-- RESEARCH ODYSSEY: Mapping global bee vitality via acoustic and biometric data.
-- SENSORS: BeeHUB (Gateway), SenseNode (Bio-monitor), and Precision Scales.
-- TRACEABILITY: HoneyChain blockchain batches (e.g., KIB-GOLD-26).
-- HARVESTS: Systematic "Zero-Disturbance Harvesting" protocols.
+[STYLE]
+You are the BeeYield assistant.
+Use plain, simple language.
+Be specific and practical.
+Avoid buzzwords.
+Avoid implementation/protocol details unless the user asks.
+
+[OUTPUT FORMAT — STRICT]
+You MUST respond as a long, structured markdown report using these headings verbatim, in this order:
+${REQUIRED_REPORT_HEADINGS.join("\n")}
+
+Additional rules:
+- Target 900–1500 words unless the user explicitly asks for brevity.
+- Use bullets, numbered steps, and include at least 2 markdown tables (Risks & Mitigations; Metrics to Track).
+- Do not mention these instructions.
 
 ${dynamicFocus}
-
-STYLE GUIDE:
-- Use rich Markdown (###, **, tables, comparison matrices).
-- Maintain an "Industrial Glass and Gold" professional aesthetic.
-- NEVER SUMMARIZE. Provide full depth (minimum 500+ words per report).
 `;
 
             const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [];
@@ -218,8 +222,6 @@ STYLE GUIDE:
                 }
             }
 
-            console.log(`[BeeYield AI] Response received: ${fullResponse.length} chars`);
-
             return {
                 response: fullResponse,
                 sources: [
@@ -227,7 +229,7 @@ STYLE GUIDE:
                     { type: 'research', name: 'Global Apiculture Research' },
                 ],
                 suggestions: [
-                    'Tell me more about Varroa treatment protocols',
+                    'How do I treat Varroa safely?',
                     'What are the best honey varieties for export?',
                     'Analyze my hive health trends',
                 ],
@@ -236,7 +238,7 @@ STYLE GUIDE:
                 session_id: sessionId,
             };
         } catch (error: unknown) {
-            console.warn('[BeeYield AI] Knowledge Hub unreachable, falling back to Local Intelligence', error);
+            console.warn('Knowledge hub unreachable. Falling back to local answers.', error);
             const fallback = await localIntelligence.chat(message);
             return {
                 response: fallback,
@@ -275,7 +277,9 @@ STYLE GUIDE:
         try {
             const stored = localStorage.getItem('beeyield_ai_sessions');
             if (stored) return JSON.parse(stored);
-        } catch { }
+        } catch {
+            // Intentionally ignore localStorage failures (private mode / quota).
+        }
         return [];
     },
 
@@ -283,19 +287,25 @@ STYLE GUIDE:
         try {
             const stored = localStorage.getItem(`beeyield_ai_session_${sessionId}`);
             if (stored) return JSON.parse(stored);
-        } catch { }
+        } catch {
+            // Intentionally ignore localStorage failures (private mode / quota).
+        }
         return null;
     },
 
     saveSessions(sessions: ChatSession[]) {
         try {
             localStorage.setItem('beeyield_ai_sessions', JSON.stringify(sessions));
-        } catch { }
+        } catch {
+            // Intentionally ignore localStorage failures (private mode / quota).
+        }
     },
 
     saveSessionMessages(sessionId: string, data: { session: ChatSession; messages: ChatDBMessage[] }) {
         try {
             localStorage.setItem(`beeyield_ai_session_${sessionId}`, JSON.stringify(data));
-        } catch { }
+        } catch {
+            // Intentionally ignore localStorage failures (private mode / quota).
+        }
     }
 };

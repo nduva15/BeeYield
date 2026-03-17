@@ -21,7 +21,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
+import { glass } from '@/components/beeyield/GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { fadeInUp } from '@/lib/motion';
 
 const MasterMapView: React.FC = () => {
     const [activeTool, setActiveTool] = React.useState<'select' | 'draw' | 'pallet'>('select');
@@ -29,19 +31,19 @@ const MasterMapView: React.FC = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "flex flex-col h-[calc(100vh-140px)] relative overflow-hidden")}
+            {...fadeInUp}
+            className="h-[calc(100vh-140px)]"
         >
+            <BeeYieldPageShell className={cn("flex flex-col h-full relative overflow-hidden")}>
             {/* Background Accents */}
             <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#F4D03F]/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute -left-20 top-1/2 w-64 h-64 bg-[#1B9157]/5 blur-[100px] rounded-full pointer-events-none" />
 
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={MapIcon}
-                label="Master GIS Kernel"
+                label="Map"
                 title={<>Master <span className="text-[#F4D03F]">GIS Map</span></>}
-                subtitle="Precision Asset Positioning · Orchard Geofencing · Spatial Intelligence"
+                subtitle="View locations, boundaries, and placements."
                 actions={
                     <div className="flex gap-3">
                         <Button variant="outline" className="rounded-xl border border-gray-100 bg-white/50 text-gray-600 font-bold uppercase text-[10px] tracking-widest h-9 px-4 hover:bg-gray-50">
@@ -80,7 +82,11 @@ const MasterMapView: React.FC = () => {
                         </button>
                     ))}
                     <div className="mt-auto space-y-3">
-                        <button className="w-full aspect-square bg-[#F4D03F] rounded-xl border border-[#F4D03F]/20 flex items-center justify-center text-[#1A1A1A] hover:opacity-90 transition-opacity">
+                        <button
+                            className="w-full aspect-square bg-[#F4D03F] rounded-xl border border-[#F4D03F]/20 flex items-center justify-center text-[#1A1A1A] hover:opacity-90 transition-opacity"
+                            aria-label="Add new map asset"
+                            title="Add new map asset"
+                        >
                             <Plus className="w-5 h-5" />
                         </button>
                     </div>
@@ -136,7 +142,12 @@ const MasterMapView: React.FC = () => {
                                         <Shield className="w-3.5 h-3.5 text-[#F4D03F]" />
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Fence Active</span>
                                     </div>
-                                    <button onClick={() => setShowGeofences(false)} className="text-white/40 hover:text-white">
+                                    <button
+                                        onClick={() => setShowGeofences(false)}
+                                        className="text-white/40 hover:text-white"
+                                        aria-label="Hide geofences"
+                                        title="Hide geofences"
+                                    >
                                         <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
@@ -212,6 +223,7 @@ const MasterMapView: React.FC = () => {
                     </div>
                 </div>
             </div>
+            </BeeYieldPageShell>
         </motion.div>
     );
 };

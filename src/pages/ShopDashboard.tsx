@@ -54,6 +54,7 @@ import { adminService } from '@/services/adminService';
 
 // Toast utility import (adjust if needed)
 import { toast } from '@/hooks/use-toast';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const ShopDashboard = () => {
     const { user, signOut, loading: authLoading, session } = useAuth();
@@ -1308,7 +1309,7 @@ const ShopDashboard = () => {
                                     </Card>
                                     <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
                                         <Shield className="w-5 h-5 text-primary" />
-                                        <p className="text-xs font-medium text-muted-foreground leading-tight">Your data is secured with banking-grade encryption protocol.</p>
+                                        <p className="text-xs font-medium text-muted-foreground leading-tight">Your data is protected with encrypted connections.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1336,7 +1337,7 @@ const ShopDashboard = () => {
     if (!user) {
         // Show login/signup modal for Shop dashboard
         return (
-            <div className="min-h-screen flex items-center justify-center bg-beeyield-cream/50 relative overflow-hidden">
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-beeyield-cream/50 relative overflow-hidden p-0">
                 {/* Background Decoration */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-gold/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-96 h-96 bg-beeyield-orange/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -1392,17 +1393,18 @@ const ShopDashboard = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     return (
-        <ShopDashboardLayout
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            onLogout={handleLogout}
-            navItems={navItems}
-        >
+        <BeeYieldPageShell className="p-0">
+            <ShopDashboardLayout
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                onLogout={handleLogout}
+                navItems={navItems}
+            >
             <div className="pb-12">
                 {renderContent()}
             </div>
@@ -1455,7 +1457,8 @@ const ShopDashboard = () => {
                 </DialogContent>
             </Dialog>
 
-        </ShopDashboardLayout>
+            </ShopDashboardLayout>
+        </BeeYieldPageShell>
     );
 };
 

@@ -9,7 +9,6 @@ export const getProductsFn = createServerFn({ method: "GET" })
     .handler(async () => {
         try {
             const gatewayUrl = getGatewayUrl()
-            console.log("Server Function: Fetching products via DB Gateway")
 
             // Use the Rust/Go gateway instead of direct Supabase SDK
             const response = await fetch(`${gatewayUrl}/db/select`, {

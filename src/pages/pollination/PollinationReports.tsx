@@ -6,10 +6,11 @@ import {
     ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const PollinationReports: React.FC = () => {
     return (
-        <div className="min-h-screen bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12">
+        <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12 -m-0 md:-m-0">
             <div className="max-w-7xl mx-auto space-y-12">
                 {/* Back Link */}
                 <Link to="/precision-pollination" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#10b981] hover:text-[#064e3b] transition-colors">
@@ -103,7 +104,7 @@ const PollinationReports: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

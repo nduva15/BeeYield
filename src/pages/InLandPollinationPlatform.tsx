@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { Card, CardContent } from "@/components/ui/card";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const InLandPollination = () => {
   const testimonials = [
@@ -33,7 +34,7 @@ const InLandPollination = () => {
   ];
 
   return (
-    <div className="pt-8">
+    <BeeYieldPageShell className="pt-8 p-0">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
@@ -285,7 +286,7 @@ const InLandPollination = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Monitored Hives</span>
               </div>
             </div>
           </div>
@@ -328,7 +329,7 @@ const InLandPollination = () => {
           </div>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 
