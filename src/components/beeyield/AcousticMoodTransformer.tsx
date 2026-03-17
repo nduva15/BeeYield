@@ -12,26 +12,57 @@ import {
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
-
-// Mock MFCC Data
-const generateMFCC = () => {
-    return Array.from({ length: 40 }, (_, i) => ({
-        freq: i * 200,
-        db: 20 + Math.random() * 40 + (i > 10 && i < 20 ? 15 : 0) // Peak for activity
-    }));
-};
+import beeyieldService from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
-    const [mfccData, setMfccData] = React.useState(generateMFCC());
+    const [mfccData, setMfccData] = React.useState<{ freq: number; db: number }[]>([]);
     const [status, setStatus] = React.useState<'queen-right' | 'queenless-roar' | 'swarm-intent'>('queen-right');
-    const [confidence, setConfidence] = React.useState(98.4);
+    const [confidence, setConfidence] = React.useState<number | null>(null);
+    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        const interval = setInterval(() => {
-            setMfccData(generateMFCC());
-            setConfidence(prev => Math.max(95, Math.min(99.9, prev + (Math.random() - 0.5))));
-        }, 1500);
-        return () => clearInterval(interval);
+        let mounted = true;
+        const load = async () => {
+            setLoading(true);
+            try {
+                const rows = await beeyieldService.getAcousticReadings(undefined, 14);
+                if (!mounted) return;
+
+                // Convert latest readings into a simple spectral “shape”.
+                // If frequency is present, chart it; otherwise create evenly spaced bins.
+                const points = (rows || [])
+                    .slice(0, 80)
+                    .map((r: any, idx: number) => ({
+                        freq: typeof r?.frequency_hz === 'number' ? r.frequency_hz : idx * 200,
+                        db: typeof r?.amplitude_db === 'number' ? r.amplitude_db : 0,
+                        health: typeof r?.health_index === 'number' ? r.health_index : null,
+                        tags: r?.tags,
+                    }))
+                    .filter((p) => Number.isFinite(p.freq));
+
+                if (points.length > 0) {
+                    setMfccData(points.map(({ freq, db }) => ({ freq, db: Number(db || 0) })));
+                    const health = points.find((p) => typeof p.health === 'number')?.health as number | undefined;
+                    if (typeof health === 'number') setConfidence(Math.max(0, Math.min(100, health)));
+                } else {
+                    setMfccData([]);
+                    setConfidence(null);
+                }
+            } catch (e: any) {
+                console.error(e);
+                if (mounted) toast.error(e?.message || 'Failed to load acoustic readings');
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        };
+
+        load();
+        const interval = setInterval(load, 30_000);
+        return () => {
+            mounted = false;
+            clearInterval(interval);
+        };
     }, []);
 
     const STATUS_MAP = {
@@ -79,8 +110,13 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                 subtitle="A quick sound check to spot unusual patterns."
                 actions={
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
-                        <Activity className="w-3 h-3 text-[#1B9157] animate-pulse" />
-                        <span className="text-xs font-bold text-gray-500 tracking-tight">Sync: <span className="text-[#1A1A1A]">{confidence.toFixed(1)}%</span></span>
+                        <Activity className={cn("w-3 h-3", loading ? "text-[#F4D03F] animate-spin" : "text-[#1B9157] animate-pulse")} />
+                        <span className="text-xs font-bold text-gray-500 tracking-tight">
+                            Sync:{' '}
+                            <span className="text-[#1A1A1A]">
+                                {typeof confidence === 'number' ? `${confidence.toFixed(1)}%` : (loading ? 'Loading…' : '—')}
+                            </span>
+                        </span>
                     </div>
                 }
             />
