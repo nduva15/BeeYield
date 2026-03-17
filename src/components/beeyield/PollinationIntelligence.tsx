@@ -150,7 +150,11 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                         </div>
 
                         <div className="p-4 border-t border-[#F4D03F]/10">
-                            <button className={cn(glass.btnSecondary, "w-full border-dashed")}>
+                            <button
+                                type="button"
+                                onClick={() => onTabChange?.('places')}
+                                className={cn(glass.btnSecondary, "w-full border-dashed")}
+                            >
                                 <Plus className="w-4 h-4" />
                                 Register Hub
                             </button>

@@ -81,7 +81,12 @@ const PageLoader = () => (
     </div>
 )
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const container = document.getElementById('root')!
+const anyGlobal = globalThis as any
+const root = anyGlobal.__honey_root ?? ReactDOM.createRoot(container)
+anyGlobal.__honey_root = root
+
+root.render(
     <React.StrictMode>
         <BeeYieldQueryProvider>
             <TooltipProvider>

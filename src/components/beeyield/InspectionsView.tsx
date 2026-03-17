@@ -316,7 +316,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             if (firstHive) setFormData({ ...formData, hive_id: firstHive.id });
                                         }}
                                     >
-                                        <SelectTrigger className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
+                                        <SelectTrigger id="inspection-apiary" aria-label="Deployment site" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
                                             <div className="flex items-center gap-3">
                                                 <MapPin className="w-4 h-4 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Deployment Site" />
@@ -334,7 +334,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         value={formData.hive_id}
                                         onValueChange={(val) => setFormData({ ...formData, hive_id: val })}
                                     >
-                                        <SelectTrigger className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
+                                        <SelectTrigger id="inspection-hive" aria-label="Active unit" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
                                             <div className="flex items-center gap-3">
                                                 <Hexagon className="w-4 h-4 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Unit Logic Core" />
@@ -347,10 +347,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Diagnostic Date</Label>
+                                    <Label htmlFor="inspection-date" className={glass.microLabel}>Diagnostic Date</Label>
                                     <div className="relative group/input">
                                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F] opacity-40" />
                                         <Input
+                                            id="inspection-date"
+                                            name="inspection_date"
+                                            autoComplete="off"
                                             type="date"
                                             value={formData.inspection_date}
                                             onChange={(e) => setFormData({ ...formData, inspection_date: e.target.value })}
@@ -360,10 +363,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Inspector Signature</Label>
+                                    <Label htmlFor="inspection-inspector-name" className={glass.microLabel}>Inspector Signature</Label>
                                     <div className="relative group/input">
                                         <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F] opacity-40" />
                                         <Input
+                                            id="inspection-inspector-name"
+                                            name="inspector_name"
+                                            autoComplete="name"
                                             placeholder="OFFICER_SIGNATURE"
                                             value={formData.inspector_name}
                                             onChange={(e) => setFormData({ ...formData, inspector_name: e.target.value })}
@@ -446,6 +452,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                      </div>
                                                  </div>
                                                  <Switch
+                                                    id={`inspection-${item.id}`}
                                                      checked={(formData as any)[item.id]}
                                                      onCheckedChange={(val) => setFormData({ ...formData, [item.id]: val })}
                                                      className="data-[state=checked]:bg-[#F4D03F]"
@@ -477,10 +484,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className={glass.microLabel}>Thermal Index (°C)</Label>
+                                                <Label htmlFor="inspection-temperature-c" className={glass.microLabel}>Thermal Index (°C)</Label>
                                                 <div className="relative group/input">
                                                     <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500 opacity-40" />
                                                 <Input
+                                                        id="inspection-temperature-c"
+                                                        name="temperature_celsius"
+                                                        autoComplete="off"
                                                         type="number"
                                                         value={formData.temperature_celsius}
                                                         onChange={(e) => setFormData({ ...formData, temperature_celsius: parseFloat(e.target.value) })}
@@ -491,7 +501,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             <div className="space-y-2">
                                                 <Label className={glass.microLabel}>Atmospheric State</Label>
                                                 <Select value={formData.weather_condition} onValueChange={(v) => setFormData({ ...formData, weather_condition: v })}>
-                                                    <SelectTrigger className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
+                                                    <SelectTrigger id="inspection-weather" aria-label="Atmospheric state" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
                                                         <div className="flex items-center gap-3">
                                                             <Sun className="w-4 h-4 text-[#F4D03F]/40" />
                                                             <SelectValue />
@@ -508,10 +518,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className={glass.microLabel}>Honey Stores (kg)</Label>
+                                                <Label htmlFor="inspection-honey-stores" className={glass.microLabel}>Honey Stores (kg)</Label>
                                                 <div className="relative group/input">
                                                     <Zap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F] opacity-40" />
                                                     <Input
+                                                        id="inspection-honey-stores"
+                                                        name="honey_stores"
+                                                        autoComplete="off"
                                                         type="number"
                                                         value={formData.honey_stores}
                                                         onChange={(e) => setFormData({ ...formData, honey_stores: parseFloat(e.target.value) })}
@@ -520,10 +533,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className={glass.microLabel}>Pollen Reserves</Label>
+                                                <Label htmlFor="inspection-pollen-stores" className={glass.microLabel}>Pollen Reserves</Label>
                                                 <div className="relative group/input">
                                                     <Box className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-400 opacity-40" />
                                                     <Input
+                                                        id="inspection-pollen-stores"
+                                                        name="pollen_stores"
+                                                        autoComplete="off"
                                                         type="number"
                                                         value={formData.pollen_stores}
                                                         onChange={(e) => setFormData({ ...formData, pollen_stores: parseFloat(e.target.value) })}
@@ -539,6 +555,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 <div className="relative group/input">
                                                     <Microscope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500 opacity-40" />
                                                     <Input
+                                                        id="inspection-varroa-count"
+                                                        name="varroa_mite_count"
+                                                        autoComplete="off"
                                                         type="number"
                                                         value={formData.varroa_mite_count}
                                                         onChange={(e) => setFormData({ ...formData, varroa_mite_count: parseInt(e.target.value) })}
@@ -547,10 +566,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className={glass.microLabel}>Beetle Threshold</Label>
+                                                <Label htmlFor="inspection-beetle-count" className={glass.microLabel}>Beetle Threshold</Label>
                                                 <div className="relative group/input">
                                                     <Bug className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground opacity-10" />
                                                     <Input
+                                                        id="inspection-beetle-count"
+                                                        name="small_hive_beetles_seen"
+                                                        autoComplete="off"
                                                         type="number"
                                                         value={formData.small_hive_beetles_seen}
                                                         onChange={(e) => setFormData({ ...formData, small_hive_beetles_seen: parseInt(e.target.value) })}
@@ -564,8 +586,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
                                 <div className="space-y-6 pt-6 border-t border-[#F4D03F]/10">
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Findings</Label>
+                                        <Label htmlFor="inspection-findings" className={glass.microLabel}>Findings</Label>
                                         <Textarea
+                                            id="inspection-findings"
+                                            name="findings"
+                                            autoComplete="off"
                                             placeholder="RECORD_OBSERVATIONS"
                                             value={formData.findings}
                                             onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
@@ -573,8 +598,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Actions Taken</Label>
+                                        <Label htmlFor="inspection-actions-taken" className={glass.microLabel}>Actions Taken</Label>
                                         <Textarea
+                                            id="inspection-actions-taken"
+                                            name="actions_taken"
+                                            autoComplete="off"
                                             placeholder="RECORD_ACTIONS_PROTOCOLS"
                                             value={formData.actions_taken}
                                             onChange={(e) => setFormData({ ...formData, actions_taken: e.target.value })}

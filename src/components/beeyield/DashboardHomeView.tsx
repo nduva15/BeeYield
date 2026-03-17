@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar } from 'lucide-react';
+import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart3, Cpu, Puzzle } from 'lucide-react';
 import { glass, PageHeader } from './GlassTheme';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -104,6 +104,48 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 <Mail className="w-4 h-4 text-[#F4D03F]" />
                                 Support
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Important views */}
+                <div className="lg:col-span-8">
+                    <div className={cn(glass.section, "p-5")}>
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-sm font-semibold text-[#1A1A1A]">Important views</h3>
+                                <p className="text-[11px] text-gray-500">Quick access to core workflows</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {[
+                                { id: 'devices', label: 'Devices', icon: Cpu, sub: 'Sensors & telemetry' },
+                                { id: 'meters', label: 'Meters', icon: Activity, sub: 'Usage & alarms' },
+                                { id: 'precision-pollination-folder', label: 'Pollination', icon: FileBarChart3, sub: 'Plans & exports' },
+                                { id: 'task', label: 'My Task', icon: ClipboardList, sub: 'To-dos & deployments' },
+                                { id: 'requests', label: 'Requests', icon: HelpCircle, sub: 'Support tickets' },
+                                { id: 'integrations', label: 'Integrations', icon: Puzzle, sub: 'QuickBooks / Shopify' },
+                            ].map((v) => (
+                                <button
+                                    key={v.id}
+                                    type="button"
+                                    onClick={() => onTabChange(v.id)}
+                                    className={cn(
+                                        "text-left bg-white/50 border border-[#F4D03F]/10 rounded-2xl p-4 hover:bg-white/70 hover:border-[#F4D03F]/20 transition-all",
+                                    )}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/10 flex items-center justify-center">
+                                            <v.icon className="w-5 h-5 text-[#F4D03F]" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{v.label}</div>
+                                            <div className="text-[10px] text-gray-500 truncate">{v.sub}</div>
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>

@@ -34,7 +34,8 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
         try {
             const results = await beeyieldService.analyzeHiveImage({
                 image: selectedFile,
-                hiveId: 'HV-001' // Mock ID for now
+                // Bind to hive once user selection exists; for now keep optional.
+                hiveId: undefined
             });
             setScanResults(results);
             toast.success("Scanning complete!");
@@ -261,28 +262,11 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                             </div>
                         </div>
 
-                        <div className="p-2 space-y-1">
-                            {[
-                                { date: '2026.02.15', orchard: 'Apple Block B', status: 'PASS', score: '8.4' },
-                                { date: '2026.02.12', orchard: 'Cherry Field', status: 'PASS', score: '8.1' },
-                                { date: '2026.02.08', orchard: 'Almond Edge', status: 'ALERT', score: '6.2' },
-                            ].map((audit, i) => (
-                                <div key={i} className="flex justify-between items-center p-3 rounded-xl border border-transparent hover:bg-[#F9F7F2] hover:border-[#F4D03F]/10 transition-all group cursor-pointer">
-                                    <div className="space-y-0.5">
-                                        <p className="text-[9px] font-bold text-gray-400 tabular-nums uppercase tracking-widest leading-none">{audit.date}</p>
-                                        <p className="text-xs font-bold text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors">{audit.orchard}</p>
-                                    </div>
-                                    <div className="flex flex-col items-end gap-1.5">
-                                        <div className={cn(
-                                            "px-2 py-0.5 rounded-full text-[8px] font-black tracking-[0.1em]",
-                                            audit.status === 'PASS' ? "bg-emerald-50 text-[#1B9157] border border-emerald-100" : "bg-red-50 text-red-500 border border-red-100"
-                                        )}>
-                                            {audit.status}
-                                        </div>
-                                        <span className="text-[10px] font-bold text-gray-300">SCORE: {audit.score}</span>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="p-6 text-center">
+                            <p className="text-xs font-semibold text-gray-500">No audits yet.</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                Run an audit to generate history.
+                            </p>
                         </div>
 
                         <div className="p-4 border-t border-[#F4D03F]/10">

@@ -231,21 +231,84 @@ const BeeYieldDashboard: React.FC = () => {
 
     const lowBattery = devices.filter(d => d.battery_level < 20).length;
 
-    // Clean navigation: show only real-record tabs (no mock telemetry modules).
+    // Full navigation restored (all BeeYield pages). Individual pages must show real data or clean empty states.
     const navItems: NavItem[] = React.useMemo(() => {
-        return [
-            { id: 'notes', label: t('nav_my_notes'), icon: BookOpen },
-            { id: 'task', label: t('nav_my_task'), icon: ClipboardList },
-            { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileBarChart },
-            { id: 'requests', label: t('nav_my_requests'), icon: FileInput },
+        const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
+            { id: 'assistant', label: 'BeeYield AI', icon: MessageSquare },
+            { id: 'devices', label: 'Devices', icon: Cpu },
+            {
+                id: 'precision-pollination-folder',
+                label: 'Precision Pollination',
+                icon: Crosshair,
+                submenuItems: [
+                    { title: 'Core', items: [
+                        { id: 'precision-pollination-home', label: 'Overview', icon: LayoutGrid },
+                        { id: 'precision-pollination-grid', label: 'Grid', icon: LayoutList },
+                        { id: 'flight-mapping-tactical', label: 'Flight Map', icon: Map },
+                        { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+                    ]},
+                    { title: 'Forecasts', items: [
+                        { id: 'yield-predict', label: 'Harvest Predictor', icon: Target },
+                        { id: 'bfh-forecast', label: 'Flight Hours', icon: Calendar },
+                        { id: 'vpm-counter', label: 'VPM Counter', icon: Camera },
+                    ]},
+                    { title: 'Ops', items: [
+                        { id: 'pollination-engine', label: 'Pollination Engine', icon: Zap },
+                        { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
+                        { id: 'fleet-security-active', label: 'Fleet Security', icon: ShieldCheck },
+                    ]},
+                ],
+            },
             { id: 'places', label: 'Apiaries', icon: MapPin },
-            { id: 'beeyield', label: 'Hives', icon: Hexagon },
-            { id: 'harvests', label: 'Harvests', icon: Hand },
-            { id: 'settings', label: 'Settings', icon: Settings },
+            {
+                id: 'beeyield',
+                label: 'Hives',
+                icon: Hexagon,
+                submenuItems: [
+                    { id: 'inspections', label: 'Inspections', icon: Search },
+                    { id: 'harvests', label: 'Harvests', icon: Hand },
+                    { id: 'hive-telemetry', label: 'Hive Telemetry', icon: Gauge },
+                    { id: 'sensor-vitals', label: 'Sensor Health', icon: Activity },
+                    { id: 'sound', label: 'Sound Analysis', icon: Volume2 },
+                    { id: 'image-analysis', label: 'Image Analysis', icon: Camera },
+                    { id: 'digital-audit', label: 'Health Audit', icon: FileCheck },
+                    { id: 'label-generator', label: 'Label Generator', icon: Tag },
+                ],
+            },
+            {
+                id: 'data',
+                label: 'Measurement Data',
+                icon: Activity,
+                submenuItems: [
+                    { id: 'online', label: 'Online', icon: Signal },
+                    { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
+                    { id: 'usb', label: 'USB', icon: Usb },
+                ],
+            },
+            {
+                id: 'meters',
+                label: 'Meters',
+                icon: LayoutList,
+                submenuItems: [
+                    { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
+                    { id: 'meters-list', label: 'List', icon: List },
+                    { id: 'meters-payments', label: 'Payments', icon: Banknote },
+                    { id: 'meters-reports', label: 'Reports', icon: FileText },
+                    { id: 'meters-settings', label: 'Settings', icon: Settings },
+                ],
+            },
+            { id: 'notes', label: 'Notes', icon: FileText },
+            { id: 'task', label: 'Tasks', icon: ClipboardList },
+            { id: 'reports-exports', label: 'Reports & Exports', icon: FileBarChart },
+            { id: 'requests', label: 'Requests', icon: HelpCircle },
+            { id: 'billing', label: 'Billing', icon: Receipt },
+            { id: 'integrations', label: 'Integrations', icon: Puzzle },
             { id: 'support', label: 'Support', icon: LifeBuoy },
+            { id: 'settings', label: 'Settings', icon: Settings },
         ];
-    }, [t]);
+        return items;
+    }, []);
 
     // Function to render content based on active tab
     const renderContent = () => {

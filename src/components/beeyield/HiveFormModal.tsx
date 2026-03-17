@@ -137,10 +137,13 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                         <div className="p-6 space-y-6 relative z-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Hive Identifier*</Label>
+                                    <Label htmlFor="hive-form-hive-code" className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Hive Identifier*</Label>
                                     <div className="relative">
                                         <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                         <Input
+                                            id="hive-form-hive-code"
+                                            name="hive_code"
+                                            autoComplete="off"
                                             value={formData.hive_code}
                                             onChange={(e) => setFormData({ ...formData, hive_code: e.target.value })}
                                             placeholder="HIVE_ACACIA_01"
@@ -152,7 +155,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 <div className="space-y-2">
                                     <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Location</Label>
                                     <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger id="hive-form-apiary" aria-label="Location" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
                                                 <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Select Location" />
@@ -169,7 +172,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 <div className="space-y-2">
                                     <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Hardware Blueprint</Label>
                                     <Select value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger id="hive-form-hive-type" aria-label="Hive type" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
                                                 <Layers className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Select Type" />
@@ -184,10 +187,13 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Frame Saturation</Label>
+                                    <Label htmlFor="hive-form-frame-count" className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Frame Saturation</Label>
                                     <div className="relative">
                                         <Settings className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                         <Input
+                                            id="hive-form-frame-count"
+                                            name="frame_count"
+                                            autoComplete="off"
                                             type="number"
                                             value={formData.frame_count || ''}
                                             onChange={(e) => setFormData({ ...formData, frame_count: parseInt(e.target.value) || 0 })}
@@ -200,7 +206,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 <div className="space-y-2">
                                     <Label className="text-xs font-semibold text-gray-500 ml-2">Bee type</Label>
                                     <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl text-sm font-semibold transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger id="hive-form-bee-type" aria-label="Bee type" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl text-sm font-semibold transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
                                                 <Binary className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Select bee type" />
@@ -217,7 +223,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 <div className="space-y-2">
                                     <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Operational State</Label>
                                     <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger id="hive-form-status" aria-label="Operational state" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
                                                 <ShieldCheck className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Select Status" />
@@ -235,7 +241,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 <div className="space-y-2">
                                     <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Material Specification</Label>
                                     <Select value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger id="hive-form-material" aria-label="Material" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
                                                 <Cpu className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                 <SelectValue placeholder="Select Material" />
@@ -250,8 +256,11 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Deployment_Date</Label>
+                                    <Label htmlFor="hive-form-installation-date" className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Deployment_Date</Label>
                                     <Input
+                                        id="hive-form-installation-date"
+                                        name="installation_date"
+                                        autoComplete="off"
                                         type="date"
                                         value={formData.installation_date || ''}
                                         onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}
