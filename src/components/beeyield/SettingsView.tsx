@@ -133,8 +133,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
         setPageError(null);
         try {
             await syncToBackend();
-            toast.success(`${section} Registry Synchronized`, {
-                description: "Settings committed to BeeYield Global Registry",
+            toast.success(`${section} synced`, {
+                description: "Your settings are saved and up to date.",
                 icon: <Check className="w-4 h-4 text-[#1B9157]" />
             });
         } catch (error: any) {
@@ -159,7 +159,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 actions={
                     <div className="flex items-center gap-2 bg-white/60 border border-[#F4D03F]/20 px-4 h-10 rounded-xl shadow-sm">
                         <Activity className="w-4 h-4 text-[#1B9157] animate-pulse" />
-                        <span className="text-xs font-bold uppercase tracking-widest text-[#1A1A1A]">Sync: <span className="text-[#1B9157]">{isSyncing ? 'Syncing…' : 'On'}</span></span>
+                        <span className="text-xs font-semibold text-[#1A1A1A]">
+                            Sync: <span className="text-[#1B9157]">{isSyncing ? 'Syncing…' : 'On'}</span>
+                        </span>
                     </div>
                 }
             />
@@ -168,12 +170,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-5 py-4">
                     <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">Settings error</p>
+                            <p className="text-xs font-semibold text-destructive">Settings error</p>
                             <p className="text-sm font-semibold text-[#1A1A1A] break-words">{pageError}</p>
                         </div>
                         <button
                             type="button"
-                            className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                            className={cn(glass.btnSecondary, "h-9 px-4 text-xs font-semibold")}
                             onClick={() => setPageError(null)}
                         >
                             Dismiss
@@ -198,7 +200,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <TabsTrigger
                             key={tab.value}
                             value={tab.value}
-                            className="h-full rounded-lg font-black uppercase text-[9px] tracking-[0.15em] text-gray-400 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-white/40 transition-all flex items-center justify-center gap-1.5"
+                            className="h-full rounded-lg text-xs font-semibold text-gray-500 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-white/40 transition-all flex items-center justify-center gap-1.5"
                         >
                             <tab.icon className="w-3.5 h-3.5" /> {tab.label}
                         </TabsTrigger>
@@ -227,8 +229,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <ShieldCheck className="w-3.5 h-3.5" />
                                     </div>
                                 </div>
-                                <h3 className="text-sm font-bold text-[#1A1A1A] uppercase tracking-widest mt-6">Account</h3>
-                                <p className="text-xs font-bold text-[#1B9157] uppercase tracking-widest mt-1">Verified</p>
+                                <h3 className="text-sm font-bold text-[#1A1A1A] mt-6">Account</h3>
+                                <p className="text-xs font-semibold text-[#1B9157] mt-1">Verified</p>
                                 <button className={cn(glass.btnPrimary, "mt-6 w-full")}>
                                     Update profile
                                 </button>
@@ -240,9 +242,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-0.5">
                                         <div className="flex items-center gap-2">
                                             <Palette className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                            <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Theme</h4>
+                                            <h4 className="text-xs font-semibold text-[#1A1A1A]">Theme</h4>
                                         </div>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Light / dark</p>
+                                        <p className="text-xs text-gray-500">Light / dark</p>
                                     </div>
                                     <Switch
                                         checked={theme === 'dark'}
@@ -275,11 +277,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 <Globe className="w-4 h-4 text-[#F4D03F]" />
                                             </div>
                                             <div className="space-y-0.5">
-                                                <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Profile_Audit</h2>
-                                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">GLOBAL_REGISTRY_METADATA</p>
+                                                <h2 className="text-sm font-bold text-[#1A1A1A] leading-none">Profile review</h2>
+                                                <p className="text-xs text-gray-500">Account details</p>
                                             </div>
                                         </div>
-                                        <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] uppercase tracking-widest px-2 py-0.5">ARCHIVED_V5</Badge>
+                                        <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-semibold text-xs px-2 py-0.5">Archived</Badge>
                                     </div>
 
                                     <div className="p-6 space-y-6">
@@ -334,14 +336,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <div className="pt-6 border-t border-[#F4D03F]/10 flex flex-col sm:flex-row justify-between items-center sm:items-start md:items-center gap-4">
                                             <div className="flex items-center gap-2 text-[#1B9157]">
                                                 <Activity className="w-5 h-5 animate-pulse" />
-                                                <p className="text-xs font-bold uppercase tracking-widest">STATUS: NOMINAL</p>
+                                                <p className="text-xs font-semibold text-[#1B9157]">Status: OK</p>
                                             </div>
                                             <button
                                                 onClick={() => handleAtomicSave("Profile")}
                                                 disabled={loading["Profile"]}
                                                 className={cn(glass.btnPrimary, "w-full sm:w-auto", loading["Profile"] && "opacity-70 cursor-not-allowed")}
                                             >
-                                                {loading["Profile"] ? 'SYNCING...' : 'COMMIT CHANGES'}
+                                                {loading["Profile"] ? 'Syncing…' : 'Sync changes'}
                                             </button>
                                         </div>
                                     </div>
@@ -363,8 +365,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <Layers className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Module_Topography</h3>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">CUSTOM_HARDWARE_SOFTWARE_ROUTING</p>
+                                    <h3 className="text-sm font-bold text-[#1A1A1A] leading-none">Modules</h3>
+                                    <p className="text-xs text-gray-500">Choose what you want to use in BeeYield.</p>
                                 </div>
                             </div>
                             <div className="flex gap-3">
@@ -382,7 +384,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 {[
                                     { id: 'beehives', label: 'Commercial Apiaries', desc: 'Main telemetry flow for hive health.', icon: Hexagon, color: 'text-[#F4D03F]' },
                                     { id: 'agro', label: 'Meteo & Bloom', desc: 'Satellite weather analytics.', icon: Globe, color: 'text-[#1B9157]' },
-                                    { id: 'trackers', label: 'Auxiliary Hardware', desc: 'Solar node vitals & telemetry.', icon: Cpu, color: 'text-blue-500' },
+                                    { id: 'trackers', label: 'Auxiliary Hardware', desc: 'Solar device status & telemetry.', icon: Cpu, color: 'text-blue-500' },
                                     { id: 'patients', label: 'Biometric Lab', desc: 'Advanced veterinary disease analysis.', icon: Activity, color: 'text-red-500' }
                                 ].map((mod, idx) => (
                                     <motion.div
@@ -396,8 +398,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 <mod.icon className="w-4 h-4" />
                                             </div>
                                             <div className="space-y-0.5">
-                                                <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-tight uppercase">{mod.label}</h4>
-                                                <p className="text-[9px] font-black text-gray-400 max-w-[200px] leading-relaxed uppercase">{mod.desc}</p>
+                                                <h4 className="text-xs font-semibold text-[#1A1A1A]">{mod.label}</h4>
+                                                <p className="text-xs text-gray-500 max-w-[240px] leading-relaxed">{mod.desc}</p>
                                             </div>
                                         </div>
                                         <Switch
@@ -414,7 +416,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     onClick={() => handleAtomicSave("Modules")}
                                     className={glass.btnPrimary}
                                 >
-                                    Save Feature Map
+                                    Save modules
                                 </button>
                             </div>
                         </div>
@@ -423,27 +425,27 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                 <TabsContent value="alerts" className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Internal Telemetry */}
+                        {/* Internal alerts */}
                         <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                             <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex flex-wrap items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Bell className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Internal_Telemetry</h4>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">ANOMALIES_GUIDANCE</p>
+                                    <h4 className="text-sm font-bold text-[#1A1A1A] leading-none">BeeYield alerts</h4>
+                                    <p className="text-xs text-gray-500">Choose what you want to be notified about.</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-3">
                                 {[
-                                    { id: 'aiAnomalies', title: 'Neural Data Drift', desc: 'Predictive sensor spikes.', color: 'emerald-500' },
-                                    { id: 'swarmRisk', title: 'Swarm Frequency', desc: 'Acoustic pattern matching.', color: 'amber-500' },
-                                    { id: 'onboardingHints', title: 'Contextual AI Hints', desc: 'Real-time guidance pulses.', color: 'blue-500' },
+                                    { id: 'aiAnomalies', title: 'Unusual readings', desc: 'Spikes or drops in sensor readings.', color: 'emerald-500' },
+                                    { id: 'swarmRisk', title: 'Swarm risk', desc: 'Signs your hive may swarm soon.', color: 'amber-500' },
+                                    { id: 'onboardingHints', title: 'Tips and reminders', desc: 'Helpful prompts while you work.', color: 'blue-500' },
                                 ].map((alert) => (
                                     <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-white/40 hover:border-[#F4D03F]/30 bg-white/30 hover:bg-white/60 transition-colors group">
                                         <div className="space-y-0.5">
-                                            <h5 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tight">{alert.title}</h5>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{alert.desc}</p>
+                                            <h5 className="text-xs font-semibold text-[#1A1A1A]">{alert.title}</h5>
+                                            <p className="text-xs text-gray-500">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
@@ -455,27 +457,27 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             </div>
                         </div>
 
-                        {/* External Routing */}
+                        {/* Delivery */}
                         <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                             <div className="p-4 border-b border-blue-500/10 bg-blue-500/[0.02] flex flex-wrap items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Smartphone className="w-4 h-4 text-blue-500" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">External_Routing</h4>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">DIRECT_PUSH_PROTOCOLS</p>
+                                    <h4 className="text-sm font-bold text-[#1A1A1A] leading-none">Where to send alerts</h4>
+                                    <p className="text-xs text-gray-500">Choose your alert channels.</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-3">
                                 {[
-                                    { id: 'malfunction', title: 'Hardware Panic', desc: 'Critical sensor failure alerts.', color: 'red-500' },
-                                    { id: 'lowBattery', title: 'Energy Hub Vitals', desc: 'Low power threshold pulses.', color: 'blue-500' },
-                                    { id: 'marketing', title: 'Boutique Intelligence', desc: 'Retail pricing updates.', color: 'amber-500' },
+                                    { id: 'malfunction', title: 'Device issues', desc: 'Critical sensor or device failures.', color: 'red-500' },
+                                    { id: 'lowBattery', title: 'Low battery', desc: 'When a device battery gets low.', color: 'blue-500' },
+                                    { id: 'marketing', title: 'Product updates', desc: 'News and pricing updates.', color: 'amber-500' },
                                 ].map((alert) => (
                                     <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-white/40 hover:border-blue-500/30 bg-white/30 hover:bg-white/60 transition-colors group">
                                         <div className="space-y-0.5">
-                                            <h5 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tight">{alert.title}</h5>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{alert.desc}</p>
+                                            <h5 className="text-xs font-semibold text-[#1A1A1A]">{alert.title}</h5>
+                                            <p className="text-xs text-gray-500">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
@@ -492,7 +494,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             onClick={() => handleAtomicSave("Alerts")}
                             className={glass.btnPrimary}
                         >
-                            Save Alert Topology
+                            Save alerts
                         </button>
                     </div>
                 </TabsContent>
@@ -507,8 +509,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-100 mb-5 shadow-sm group-hover:bg-white transition-colors">
                                 <Key className="w-5 h-5 text-[#F4D03F]" />
                             </div>
-                            <h3 className="text-[11px] font-black tracking-[0.3em] text-[#1A1A1A] uppercase leading-none mb-3">Access</h3>
-                            <p className="text-[9px] font-black text-gray-400 leading-relaxed mb-6 max-w-sm border-l-2 border-[#F4D03F]/40 pl-3 uppercase">
+                            <h3 className="text-sm font-bold text-[#1A1A1A] leading-none mb-3">Access</h3>
+                            <p className="text-xs text-gray-500 leading-relaxed mb-6 max-w-sm border-l-2 border-[#F4D03F]/40 pl-3">
                                 Manage access settings for this account.
                             </p>
                             <button className={glass.btnSecondary}>
@@ -524,8 +526,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 mb-5 shadow-sm group-hover:bg-white transition-colors">
                                 <Trash2 className="w-5 h-5 text-red-500" />
                             </div>
-                            <h3 className="text-[11px] font-black tracking-[0.3em] text-red-500 uppercase leading-none mb-3">Delete account</h3>
-                            <p className="text-[9px] font-black text-red-500/60 leading-relaxed mb-6 max-w-sm border-l-2 border-red-500/40 pl-3 uppercase">
+                            <h3 className="text-sm font-bold tracking-tight text-red-500 leading-none mb-3">Delete account</h3>
+                            <p className="text-xs text-red-500/70 leading-relaxed mb-6 max-w-sm border-l-2 border-red-500/40 pl-3">
                                 This permanently deletes your account and removes your data.
                             </p>
                             <button className={cn(glass.btnPrimary, "bg-red-500 text-white hover:bg-red-600 border-red-600 w-full")}>
@@ -548,8 +550,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <CreditCard className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Billing_Registry</h3>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">CARDS_HISTORY_TRANSACTIONS_INVOICES</p>
+                                    <h3 className="text-sm font-bold text-[#1A1A1A] leading-none">Billing</h3>
+                                    <p className="text-xs text-gray-500">Cards, payments, and invoices.</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -560,8 +562,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 >
                                     {billingLoading ? 'SYNCING…' : 'Refresh'}
                                 </button>
-                                <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] uppercase tracking-widest px-2 py-0.5">
-                                    STRIPE_SECURED
+                                <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-semibold text-xs px-2 py-0.5">
+                                    Secured by Stripe
                                 </Badge>
                             </div>
                         </div>
@@ -577,7 +579,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <div key={k.label} className="p-4 rounded-2xl border border-white/40 bg-white/30 hover:bg-white/60 transition-colors">
                                         <div className="flex items-center justify-between">
                                             <div className="space-y-1">
-                                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{k.label}</p>
+                                                <p className="text-xs text-gray-500">{k.label}</p>
                                                 <p className="text-lg font-black text-[#1A1A1A] tabular-nums">
                                                     KES {Number(k.value || 0).toLocaleString()}
                                                 </p>
@@ -595,8 +597,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <div className="lg:col-span-5 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Payment_Cards</h4>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">SAVED_METHODS</p>
+                                            <h4 className="text-sm font-bold text-[#1A1A1A]">Payment cards</h4>
+                                            <p className="text-xs text-gray-500">Saved methods</p>
                                         </div>
 
                                         <Dialog
@@ -644,6 +646,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                             }}
                                                             onError={(error: any) => {
                                                                 console.error('Stripe error:', error);
+                                                                const msg = error?.message || 'Stripe error';
+                                                                setPageError(msg);
+                                                                toast.error(msg);
                                                             }}
                                                             buttonText="Save Card Securely"
                                                         />
@@ -660,8 +665,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-3">
                                         {paymentMethods.length === 0 ? (
                                             <div className="p-5 rounded-2xl border border-dashed border-white/50 bg-white/20 text-center">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">NO_CARDS_ON_FILE</p>
-                                                <p className="text-[9px] font-bold text-gray-500 mt-2">
+                                                <p className="text-sm font-semibold text-gray-600">No saved cards</p>
+                                                <p className="text-xs text-gray-500 mt-2">
                                                     Add a card to speed up upgrades and invoice payments.
                                                 </p>
                                             </div>
@@ -673,7 +678,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 >
                                                     <div className="absolute top-5 left-5 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                                     {(pm.is_default || pm.isDefault) && (
-                                                        <Badge className="absolute top-4 left-20 bg-[#F4D03F] text-[#1A1A1A] rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest">
+                                                        <Badge className="absolute top-4 left-20 bg-[#F4D03F] text-[#1A1A1A] rounded-full px-3 py-1 text-xs font-semibold">
                                                             Default
                                                         </Badge>
                                                     )}
@@ -699,17 +704,17 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                         </p>
                                                         <div className="flex items-end justify-between gap-4">
                                                             <div className="min-w-0">
-                                                                <p className="text-[10px] uppercase text-white/50 mb-1">Card Holder</p>
+                                                                <p className="text-xs text-white/60 mb-1">Card holder</p>
                                                                 <p className="text-sm font-bold truncate max-w-[160px]">{pm.card_holder_name || user?.email || 'Customer'}</p>
                                                             </div>
                                                             <div className="text-right">
-                                                                <p className="text-[10px] uppercase text-white/50 mb-1">Valid Thru</p>
+                                                                <p className="text-xs text-white/60 mb-1">Valid thru</p>
                                                                 <p className="text-sm font-bold tabular-nums">
                                                                     {String(pm.expiry_month ?? '').padStart(2, '0')}/{pm.expiry_year ?? '—'}
                                                                 </p>
                                                             </div>
                                                             <div className="text-right">
-                                                                <p className="text-lg font-black uppercase tracking-wider">{pm.provider || 'Card'}</p>
+                                                                <p className="text-lg font-black tracking-tight">{pm.provider || 'Card'}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -723,8 +728,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <div className="lg:col-span-7 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Payment_History</h4>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">LEDGER_TRANSACTIONS</p>
+                                            <h4 className="text-sm font-bold text-[#1A1A1A]">Payment history</h4>
+                                            <p className="text-xs text-gray-500">Recent transactions</p>
                                         </div>
                                         <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] uppercase tracking-widest px-2 py-0.5">
                                             Last 50
@@ -735,11 +740,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <Table>
                                             <TableHeader>
                                                 <TableRow className="bg-white/40">
-                                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-gray-500">Date</TableHead>
-                                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-gray-500">Type</TableHead>
-                                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-gray-500">Amount</TableHead>
-                                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-gray-500">Status</TableHead>
-                                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-right">Details</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-gray-500">Date</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-gray-500">Type</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-gray-500">Amount</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-gray-500">Status</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-gray-500 text-right">Details</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
@@ -748,7 +753,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                         <TableCell colSpan={5} className="text-center py-10">
                                                             <div className="opacity-40 space-y-2">
                                                                 <Clock className="w-6 h-6 mx-auto text-gray-500" />
-                                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">NO_TRANSACTIONS</p>
+                                                                <p className="text-sm font-semibold text-gray-600">No transactions yet</p>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -762,9 +767,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                             <TableCell className="text-[10px] font-bold text-gray-600">
                                                                 {tx.date ? new Date(tx.date).toLocaleDateString() : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-[10px] font-black uppercase tracking-widest">
+                                                            <TableCell className="text-xs font-semibold">
                                                                 <span className={cn(
-                                                                    "px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest",
+                                                                    "px-2 py-1 rounded-lg border text-xs font-semibold",
                                                                     tx.type === 'income'
                                                                         ? "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20"
                                                                         : "bg-red-500/10 text-red-500 border-red-500/20"
@@ -775,11 +780,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                             <TableCell className="text-[10px] font-black tabular-nums text-[#1A1A1A]">
                                                                 {(tx.currency || 'KES').toUpperCase()} {Number(tx.amount || 0).toLocaleString()}
                                                             </TableCell>
-                                                            <TableCell className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                                            <TableCell className="text-xs font-semibold text-gray-500">
                                                                 {tx.status || tx.etims_status || '—'}
                                                             </TableCell>
                                                             <TableCell className="text-right">
-                                                                <button className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#F4D03F] hover:text-[#1A1A1A]">
+                                                                <button className="inline-flex items-center gap-2 text-xs font-semibold text-[#F4D03F] hover:text-[#1A1A1A]">
                                                                     View <ExternalLink className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </TableCell>
@@ -805,25 +810,25 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-4">
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Amount</p>
+                                                        <p className="text-xs font-semibold text-gray-500">Amount</p>
                                                         <p className="text-sm font-black tabular-nums text-[#1A1A1A]">
                                                             {(selectedTx?.currency || 'KES').toUpperCase()} {Number(selectedTx?.amount || 0).toLocaleString()}
                                                         </p>
                                                     </div>
                                                     <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Type</p>
-                                                        <p className="text-sm font-black uppercase tracking-widest text-[#1A1A1A]">
+                                                        <p className="text-xs font-semibold text-gray-500">Type</p>
+                                                        <p className="text-sm font-semibold text-[#1A1A1A]">
                                                             {selectedTx?.type || '—'}
                                                         </p>
                                                     </div>
                                                     <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Status</p>
-                                                        <p className="text-sm font-black uppercase tracking-widest text-[#1A1A1A]">
+                                                        <p className="text-xs font-semibold text-gray-500">Status</p>
+                                                        <p className="text-sm font-semibold text-[#1A1A1A]">
                                                             {selectedTx?.status || selectedTx?.etims_status || '—'}
                                                         </p>
                                                     </div>
                                                     <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Date</p>
+                                                        <p className="text-xs font-semibold text-gray-500">Date</p>
                                                         <p className="text-sm font-black text-[#1A1A1A]">
                                                             {selectedTx?.date ? new Date(selectedTx.date).toLocaleString() : '—'}
                                                         </p>
@@ -831,12 +836,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 </div>
 
                                                 <div className="p-4 rounded-2xl border border-white/40 bg-white/30 space-y-2">
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Description</p>
+                                                    <p className="text-xs font-semibold text-gray-500">Description</p>
                                                     <p className="text-[10px] font-bold text-[#1A1A1A]">
                                                         {selectedTx?.description || '—'}
                                                     </p>
                                                     {selectedTx?.category && (
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">
+                                                        <p className="text-xs font-semibold text-gray-500">
                                                             Category: <span className="text-[#1A1A1A]">{selectedTx.category}</span>
                                                         </p>
                                                     )}

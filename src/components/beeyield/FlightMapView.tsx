@@ -206,7 +206,7 @@ const FlightMapView: React.FC = () => {
             <div className="h-[600px] w-full flex items-center justify-center bg-[#F9F7F2] rounded-[2.5rem] border border-slate-100">
                 <div className="text-center space-y-4">
                     <Loader2 className="w-12 h-12 text-[#1B9157] animate-spin mx-auto" />
-                    <p className="font-bold text-slate-400 uppercase tracking-widest">Enabling Tactical Map...</p>
+                    <p className="text-sm font-semibold text-slate-500">Loading map…</p>
                 </div>
             </div>
         );
@@ -223,9 +223,9 @@ const FlightMapView: React.FC = () => {
             {/* Header Controls */}
             <PageHeader
                 icon={MapIcon}
-                label="Tactical Kernel"
+                label="Flight map"
                 title={<>Flight <span className="text-[#F4D03F]">Deployment</span></>}
-                subtitle="High-fidelity telemetry of hive dispersion and environmental flight potential."
+                subtitle="View your hives and plan a route."
                 actions={
                     <div className="flex flex-wrap gap-3 items-center">
                         <div className="w-56">
@@ -245,7 +245,7 @@ const FlightMapView: React.FC = () => {
                         <Button
                             onClick={handlePlanRoute}
                             disabled={planningRoute}
-                            className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-[#1B9157]/10")}
+                            className={cn(glass.btnPrimary, "h-9 px-4 text-sm font-semibold shadow-lg shadow-[#1B9157]/10")}
                         >
                             {planningRoute ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Route className="w-3.5 h-3.5 mr-2" />}
                             Plan Route
@@ -537,7 +537,7 @@ const FlightMapView: React.FC = () => {
                                 <div className="rounded-xl shadow-xl p-5 bg-[#1A1A1A] text-white border border-white/10">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Route className="w-5 h-5 text-blue-400" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Active Route Protocol</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Active route</span>
                                     </div>
                                     <div className="space-y-3">
                                         {route.slice(0, 3).map((stop, i) => (
@@ -565,9 +565,9 @@ const FlightMapView: React.FC = () => {
                             </p>
                         </div>
                         <div className={cn(glass.card, "p-5 border-l-4 border-l-[#F4D03F]")}>
-                            <h4 className="text-xs font-bold uppercase tracking-tight text-[#1A1A1A] mb-2">Protocol Recommendation</h4>
+                            <h4 className="text-xs font-bold uppercase tracking-tight text-[#1A1A1A] mb-2">Recommendation</h4>
                             <p className="text-[10px] text-[#1A1A1A]/50 font-medium leading-relaxed">
-                                {foragePotential?.recommendation || 'Standard monitoring protocol. Check alert sectors if activity drops.'}
+                                {foragePotential?.recommendation || 'Keep an eye on activity. If it drops, check the alert areas first.'}
                             </p>
                         </div>
                     </div>

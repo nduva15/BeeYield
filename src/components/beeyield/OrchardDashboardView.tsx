@@ -261,7 +261,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                     </div>
                     <div className="space-y-0.5">
                         <h4 className="text-sm font-bold text-[#1A1A1A]">Schedule Inspection</h4>
-                        <p className="text-[10px] font-medium text-gray-500">Check colony health node</p>
+                        <p className="text-[10px] font-medium text-gray-500">Check colony health</p>
                     </div>
                 </button>
                 <button

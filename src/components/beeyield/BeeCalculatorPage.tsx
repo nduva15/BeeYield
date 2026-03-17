@@ -293,6 +293,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="syrup_target_volume_l" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Volume (L)</label>
                                                 <input
                                                     id="syrup_target_volume_l"
+                                                    name="syrup_target_volume_l"
                                                     type="number"
                                                     value={syrupVol}
                                                     onChange={(e) => setSyrupVol(Number(e.target.value))}
@@ -352,6 +353,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <label htmlFor="winter_current_weight_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Current (kg)</label>
                                                     <input
                                                         id="winter_current_weight_kg"
+                                                        name="winter_current_weight_kg"
                                                         type="number"
                                                         value={currentWeight}
                                                         onChange={(e) => setCurrentWeight(Number(e.target.value))}
@@ -365,6 +367,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <label htmlFor="winter_target_weight_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target (kg)</label>
                                                     <input
                                                         id="winter_target_weight_kg"
+                                                        name="winter_target_weight_kg"
                                                         type="number"
                                                         value={targetWeight}
                                                         onChange={(e) => setTargetWeight(Number(e.target.value))}
@@ -435,6 +438,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="varroa_mites_found" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Total Mites Found (300 Bees)</label>
                                                 <input
                                                     id="varroa_mites_found"
+                                                    name="varroa_mites_found"
                                                     type="number"
                                                     value={miteCount}
                                                     onChange={(e) => setMiteCount(Number(e.target.value))}
@@ -484,6 +488,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <div className="flex items-center gap-4">
                                                     <input
                                                         id="treatment_ambient_temp_c"
+                                                        name="treatment_ambient_temp_c"
                                                         type="range"
                                                         min="0"
                                                         max="40"
@@ -548,6 +553,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="equipment_target_colony_count" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Colony Count</label>
                                                 <input
                                                     id="equipment_target_colony_count"
+                                                    name="equipment_target_colony_count"
                                                     type="number"
                                                     value={colonyCount}
                                                     onChange={(e) => setColonyCount(Number(e.target.value))}
@@ -590,6 +596,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <label htmlFor="supply_honey_yield_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Honey Yield (kg)</label>
                                                     <input
                                                         id="supply_honey_yield_kg"
+                                                        name="supply_honey_yield_kg"
                                                         type="number"
                                                         value={honeyKg}
                                                         onChange={(e) => setHoneyKg(Number(e.target.value))}
@@ -603,6 +610,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <label htmlFor="supply_jar_size_ml" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Jar Size (ml)</label>
                                                     <select
                                                         id="supply_jar_size_ml"
+                                                        name="supply_jar_size_ml"
                                                         value={jarSize}
                                                         onChange={(e) => setJarSize(Number(e.target.value))}
                                                         title="Jar size (ml)"
@@ -656,6 +664,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="queen_apiary_size" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Apiary Size</label>
                                                 <input
                                                     id="queen_apiary_size"
+                                                    name="queen_apiary_size"
                                                     type="number"
                                                     value={totalColonies}
                                                     onChange={(e) => setTotalColonies(Number(e.target.value))}
@@ -670,6 +679,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <div className="flex items-center gap-4 px-4 py-3 rounded-xl bg-muted/30 border border-black/5">
                                                     <input
                                                         id="queen_turnover_rate"
+                                                        name="queen_turnover_rate"
                                                         type="range"
                                                         min="5"
                                                         max="50"
@@ -727,6 +737,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="economy_labor_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Labor ($)</label>
                                                 <input
                                                     id="economy_labor_cost"
+                                                    name="economy_labor_cost"
                                                     type="number"
                                                     value={laborCost}
                                                     onChange={(e) => setLaborCost(Number(e.target.value))}
@@ -740,6 +751,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="economy_fuel_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Fuel ($)</label>
                                                 <input
                                                     id="economy_fuel_cost"
+                                                    name="economy_fuel_cost"
                                                     type="number"
                                                     value={fuelCost}
                                                     onChange={(e) => setFuelCost(Number(e.target.value))}
@@ -753,6 +765,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="economy_med_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Medical ($)</label>
                                                 <input
                                                     id="economy_med_cost"
+                                                    name="economy_med_cost"
                                                     type="number"
                                                     value={medCost}
                                                     onChange={(e) => setMedCost(Number(e.target.value))}
@@ -766,6 +779,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <label htmlFor="economy_equip_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Equip ($)</label>
                                                 <input
                                                     id="economy_equip_cost"
+                                                    name="economy_equip_cost"
                                                     type="number"
                                                     value={equipCost}
                                                     onChange={(e) => setEquipCost(Number(e.target.value))}
@@ -807,6 +821,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <label htmlFor="roi_hives" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Hives</label>
                                                     <input
                                                         id="roi_hives"
+                                                        name="roi_hives"
                                                         type="number"
                                                         value={hikingHives}
                                                         onChange={(e) => setHikingHives(Number(e.target.value))}
@@ -820,6 +835,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <label htmlFor="roi_transport_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Transport ($)</label>
                                                     <input
                                                         id="roi_transport_cost"
+                                                        name="roi_transport_cost"
                                                         type="number"
                                                         value={hikingTransport}
                                                         onChange={(e) => setHikingTransport(Number(e.target.value))}

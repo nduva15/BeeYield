@@ -123,12 +123,12 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 </div>
                                 <div className="space-y-0.5">
                                     <h2 className="text-[10px] font-black tracking-[0.2em] uppercase text-[#1A1A1A]">
-                                        {editingHive ? 'Update_Protocol' : 'Initialize_Unit'}
+                                        {editingHive ? 'Edit hive' : 'Add hive'}
                                     </h2>
-                                    <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Hive registration node active.</p>
+                                    <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Hive registration in progress.</p>
                                 </div>
                             </div>
-                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all">
+                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all" aria-label="Close" title="Close">
                                 <X className="w-4 h-4 text-gray-400" />
                             </button>
                         </div>
@@ -150,7 +150,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Location Node</Label>
+                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Location</Label>
                                     <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
                                         <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
@@ -279,7 +279,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     ) : (
                                         <ShieldCheck className="w-4 h-4 mr-2" />
                                     )}
-                                    {editingHive ? 'Commit_Protocol' : 'Initialize_Unit'}
+                                    {editingHive ? 'Save changes' : 'Add hive'}
                                 </button>
                             </div>
                         </div>

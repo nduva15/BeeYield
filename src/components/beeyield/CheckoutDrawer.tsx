@@ -103,7 +103,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
             }
         } catch (error: any) {
             setStep('payment');
-            toast.error("Transaction Error", { description: error.message || "Gateway handshake failed." });
+            toast.error("Transaction Error", { description: error.message || "We couldn’t confirm the payment. Please try again." });
         } finally {
             setIsProcessing(false);
         }

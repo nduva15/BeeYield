@@ -353,9 +353,9 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
             <div className="flex-shrink-0 px-4 pt-4">
                 <BeeYieldPageHeader
                     icon={Bot}
-                    label="Neural Hive Engine"
+                    label="Assistant"
                     title={<>BeeYield <span className="text-[#F4D03F]">AI</span></>}
-                    subtitle="Synchronized Global Intelligence Hive for specialized research."
+                    subtitle="Ask about hive health, inspections, pollination, or traceability."
                     actions={
                         <div className="flex items-center gap-2">
                             <button
@@ -527,7 +527,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     type="button"
                                     onClick={() => audioInputRef.current?.click()}
                                     className="w-9 h-9 rounded-lg hover:bg-[#F4D03F]/10 flex items-center justify-center transition-all text-[#1A1A1A]/40 hover:text-[#F4D03F]"
-                                    title="Attach acoustic telemetry"
+                                    title="Attach audio"
                                 >
                                     <Mic className="w-4 h-4" />
                                 </button>
@@ -538,7 +538,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder="Consult BeeYield AI Hive Intelligence..."
+                                placeholder="Ask a question…"
                                 className="flex-1 bg-transparent border-none px-2 py-2 text-sm text-[#1A1A1A] placeholder:text-[#1A1A1A]/30 outline-none focus:ring-0 transition-all resize-none min-h-[40px] max-h-[160px] font-semibold"
                                 rows={1}
                                 disabled={isLoading}

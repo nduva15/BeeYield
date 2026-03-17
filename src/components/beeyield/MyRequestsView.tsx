@@ -221,6 +221,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                         value={selectedPlaceId}
                                                         onChange={(e) => setSelectedPlaceId(e.target.value)}
                                                         className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
+                                                        aria-label="Related location"
+                                                        title="Related location"
                                                     >
                                                         <option value="">Select Apiary (Optional)</option>
                                                         {apiariesData?.map(a => <option key={a.id} value={a.id}>{a.name.toUpperCase()}</option>)}
@@ -232,6 +234,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                         value={selectedHive}
                                                         onChange={(e) => setSelectedHive(e.target.value)}
                                                         className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
+                                                        aria-label="Related hive"
+                                                        title="Related hive"
                                                     >
                                                         <option value="">Select Hive (Optional)</option>
                                                         {filteredHives.map(h => <option key={h.id} value={h.hive_code}>{h.hive_code.toUpperCase()}</option>)}
@@ -405,7 +409,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                 <MessageSquare className="w-6 h-6 text-foreground/10" />
                             </div>
                             <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight uppercase opacity-40">No Requests Found</h3>
-                            <button onClick={() => setShowWizard(true)} className={cn(glass.btnSecondary, "mt-4 px-4 h-8 text-[9px]")}>Initialize first request</button>
+                            <button onClick={() => setShowWizard(true)} className={cn(glass.btnSecondary, "mt-4 px-4 h-8 text-[9px]")}>Create a request</button>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">

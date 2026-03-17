@@ -120,7 +120,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             <BeeYieldPageShell className="space-y-0">
                 <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Activity className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                <span className="text-[10px] font-black tracking-widest uppercase italic">SYNCHRONIZING HUBS...</span>
+                <span className="text-sm font-semibold text-gray-600 italic">Syncing devices…</span>
                 </div>
             </BeeYieldPageShell>
         );
@@ -135,19 +135,19 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             >
             <BeeYieldPageHeader
                 icon={Activity}
-                label="Environmental Telemetry"
+                label="Apiary readings"
                 title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
-                subtitle="Live environment and vibration readings from your meters."
+                subtitle="Live readings from your devices."
                 actions={
                     <div className="flex items-center gap-3">
                          <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">SYSTEM_PULSE</span>
+                            <span className="text-xs font-semibold text-gray-500">Live</span>
                         </div>
 
                         <div className="relative group/nav">
                             <Button
-                                className={cn(glass.btnPrimary, "h-9 px-4 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}
+                                className={cn(glass.btnPrimary, "h-9 px-4 text-sm font-semibold gap-2")}
                             >
                                 <LayoutList className="w-3.5 h-3.5" />
                                 Navigation <ChevronDown className="w-3 h-3 transition-transform group-hover/nav:rotate-180" />
@@ -218,7 +218,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         <Badge className="bg-red-500 text-white border-none px-1.5 py-0.5 rounded-md font-bold text-[8px] animate-pulse">ACTION</Badge>
                     </div>
                     <div>
-                        <p className="text-[8px] font-black text-red-500/60 uppercase tracking-widest">PROTOCOL_ALERTS</p>
+                        <p className="text-[8px] font-black text-red-500/60 uppercase tracking-widest">Alerts</p>
                         <p className="text-lg font-black text-red-600 tracking-tighter tabular-nums">{activeAlarmsCount}</p>
                     </div>
                 </div>
@@ -337,7 +337,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                         {event.event_type}
                                     </p>
                                     <p className="text-[10px] text-[#1A1A1A]/40 font-medium italic mt-0.5 truncate max-w-[400px]">
-                                        {event.reason} · Node: {event.meter_id || 'System'}
+                                        {event.reason} · Meter: {event.meter_id || 'System'}
                                     </p>
                                 </div>
                             </div>

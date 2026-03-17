@@ -118,11 +118,21 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
 
                         {/* Zoom Controls */}
                         <div className="absolute top-6 right-6 flex flex-col gap-2">
-                            <button className="w-10 h-10 bg-[#FFF9F0] border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none">
-                                <Maximize2 className="w-4 h-4" />
+                            <button
+                                type="button"
+                                aria-label="Zoom in"
+                                title="Zoom in"
+                                className="w-10 h-10 bg-[#FFF9F0] border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none"
+                            >
+                                <Maximize2 className="w-4 h-4" aria-hidden="true" focusable="false" />
                             </button>
-                            <button className="w-10 h-10 bg-[#FFF9F0] border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none">
-                                <Minimize2 className="w-4 h-4" />
+                            <button
+                                type="button"
+                                aria-label="Zoom out"
+                                title="Zoom out"
+                                className="w-10 h-10 bg-[#FFF9F0] border-4 border-[#064e3b] flex items-center justify-center hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none"
+                            >
+                                <Minimize2 className="w-4 h-4" aria-hidden="true" focusable="false" />
                             </button>
                         </div>
                     </div>

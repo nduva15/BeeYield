@@ -16,7 +16,8 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { meterService, Building, Apartment, Meter } from '@/services/meterService';
 import FirstStepsBanner from './FirstStepsBanner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface MetersListBaseProps {
     meterType: 'Water' | 'Heat' | 'Energy' | 'Other';
@@ -166,23 +167,26 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
 
     if (loading && meters.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                <Loader2 className="w-10 h-10 animate-spin text-gray-300" />
-                <p className="text-gray-500 font-medium">Synchronizing sensor data...</p>
-            </div>
+            <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+                <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4 p-4 md:p-6">
+                    <Loader2 className="w-10 h-10 animate-spin text-gray-300" />
+                    <p className="text-gray-500 font-medium">Synchronizing sensor data...</p>
+                </div>
+            </BeeYieldPageShell>
         );
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-20">
-            <FirstStepsBanner onTabChange={onTabChange} />
+        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+            <div className="space-y-6 animate-in fade-in duration-500 pb-20 p-4 md:p-6">
+                <FirstStepsBanner onTabChange={onTabChange} />
 
-            <PageHeader
-                icon={Activity}
-                label="OPERATIONAL_REGISTRY"
-                title={<>Sensor <span className="text-[#F4D03F]">Registry</span> <span className="text-gray-300">·</span> {title}</>}
-                subtitle="INVENTORY_AND_TELEMETRY_LOAD"
-            />
+                <BeeYieldPageHeader
+                    icon={Activity}
+                    label="OPERATIONAL_REGISTRY"
+                    title={<>Sensor <span className="text-[#F4D03F]">Registry</span> <span className="text-gray-300">·</span> {title}</>}
+                    subtitle="INVENTORY_AND_TELEMETRY_LOAD"
+                />
 
             <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                 {!isAddingMeter ? (
@@ -385,7 +389,8 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+        </BeeYieldPageShell>
     );
 };
 

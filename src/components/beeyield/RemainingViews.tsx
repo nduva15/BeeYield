@@ -98,7 +98,7 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl bg-transparent border-none p-0 shadow-none overflow-visible">
+            <DialogContent className="max-w-2xl bg-transparent border-none p-0 shadow-none overflow-visible max-h-[85vh] overflow-y-auto">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -111,8 +111,8 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                             <Settings className="w-3 h-3 mr-2" />
                             Bridge Configuration v5.1
                         </div>
-                        <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Node <span className="text-[#F4D03F]">Architecture</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1 tracking-[0.1em]")}>Identify biosphere parameters and establish neural handshake protocol.</DialogDescription>
+                        <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Settings <span className="text-[#F4D03F]">options</span></DialogTitle>
+                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1 tracking-[0.1em]")}>Choose what data to share and how often to sync.</DialogDescription>
                     </div>
 
                     <div className="p-6 space-y-8 relative z-10">
@@ -123,10 +123,10 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {[
-                                { checked: makePublic, set: setMakePublic, label: 'Public Registry', icon: LockIcon, desc: 'Share telemetry with decentralized Hub.' },
-                                { checked: keepUpdate, set: setKeepUpdate, label: 'Live Ingest', icon: Activity, desc: 'Establish real-time temporal polling.' },
-                                { checked: consent, set: setConsent, label: 'Global Egress', icon: CloudSync, desc: 'Contribute to algorithmic biodiversity.' },
-                                { checked: searchWireless, set: setSearchWireless, label: 'Node Discovery', icon: Wifi, desc: 'Recursive Bluetooth beacon scanning.' }
+                                { checked: makePublic, set: setMakePublic, label: 'Public sharing', icon: LockIcon, desc: 'Share summary data publicly (optional).' },
+                                { checked: keepUpdate, set: setKeepUpdate, label: 'Live updates', icon: Activity, desc: 'Keep this page updated while it’s open.' },
+                                { checked: consent, set: setConsent, label: 'Research sharing', icon: CloudSync, desc: 'Help improve recommendations with anonymous stats.' },
+                                { checked: searchWireless, set: setSearchWireless, label: 'Bluetooth scan', icon: Wifi, desc: 'Look for nearby devices over Bluetooth.' }
                             ].map((item, i) => (
                                 <div key={i} className="space-y-3">
                                     <div className="flex items-center gap-3 mb-1">
@@ -176,7 +176,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl bg-transparent border-none p-0 shadow-none overflow-visible">
+            <DialogContent className="max-w-2xl bg-transparent border-none p-0 shadow-none overflow-visible max-h-[85vh] overflow-y-auto">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -309,6 +309,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             if (selectedHive && selectedHive !== 'none') {
                 setIsFetchingReading(true);
                 try {
+                    // Backend-gated fetch (Supabase + JWT via API)
                     const data = await beeyieldService.getReadings(selectedHive, 1);
                     if (data && data.length > 0) setLatestReading(data[0]);
                     else setLatestReading(null);

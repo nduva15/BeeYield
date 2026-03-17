@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface ForagingOptimizerProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -21,6 +22,28 @@ const FORAGING_MATH = [
 
 const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) => {
     const [viewMode, setViewMode] = React.useState<'MAP' | 'MATH'>('MAP');
+    const [shiftRecentlyCommitted, setShiftRecentlyCommitted] = React.useState(false);
+    const shiftTimeoutRef = React.useRef<number | null>(null);
+
+    const commitLocationShift = React.useCallback(() => {
+        setShiftRecentlyCommitted(true);
+        if (shiftTimeoutRef.current) window.clearTimeout(shiftTimeoutRef.current);
+        shiftTimeoutRef.current = window.setTimeout(() => setShiftRecentlyCommitted(false), 10_000);
+        try {
+            globalThis.localStorage?.setItem('beeyield_location_shift_committed_at', String(Date.now()));
+        } catch {
+            // ignore (storage disabled)
+        }
+        toast.success('Location shift committed (local)', {
+            description: 'Saved locally (no backend).',
+        });
+    }, []);
+    
+    React.useEffect(() => {
+        return () => {
+            if (shiftTimeoutRef.current) window.clearTimeout(shiftTimeoutRef.current);
+        };
+    }, []);
 
     return (
         <motion.div
@@ -84,8 +107,8 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                         <Crosshair className="w-5 h-5 text-gray-500" />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B9157] mb-1 leading-none">Telemetry Sync</p>
-                                        <p className="text-xs font-bold text-[#1A1A1A]">Vector Shift North-East</p>
+                                    <p className="text-sm font-semibold text-[#1B9157] mb-1 leading-none">Data sync</p>
+                                        <p className="text-sm font-semibold text-[#1A1A1A]">Shift to the north-east</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -196,9 +219,19 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                         <p className="text-xs font-medium text-gray-600 mb-4 leading-relaxed">
                             High-velocity winds in <span className="text-red-600 font-bold">Sector 4</span>. Sector evacuation recommended.
                         </p>
-                        <button className={cn(glass.btnSecondary, "w-full h-9 bg-white text-red-600 border-red-200 hover:bg-red-50 transition-all flex items-center justify-center gap-2 text-xs font-bold")}>
-                           <Move className="w-4 h-4" />
-                           Commit Location Shift
+                        <button
+                            type="button"
+                            onClick={commitLocationShift}
+                            className={cn(
+                                glass.btnSecondary,
+                                "w-full h-9 bg-white text-red-600 border-red-200 hover:bg-red-50 transition-all flex items-center justify-center gap-2 text-xs font-bold",
+                                shiftRecentlyCommitted && "opacity-80"
+                            )}
+                            aria-label="Commit location shift"
+                            title="Commit location shift"
+                        >
+                           <Move className="w-4 h-4" aria-hidden="true" focusable="false" />
+                           {shiftRecentlyCommitted ? 'Location Shift Committed' : 'Commit Location Shift'}
                         </button>
                     </div>
 

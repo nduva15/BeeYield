@@ -6,6 +6,11 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { humanizeKeyLabel } from '@/lib/plainEnglish';
+
+function humanizeLabel(input?: string) {
+    return humanizeKeyLabel(input);
+}
 
 /* ─── Modernized Shared Class Tokens ─── */
 export const glass = {
@@ -51,14 +56,14 @@ export const glass = {
 
     /** Table styles */
     table: 'rounded-xl border border-[#F4D03F]/30 bg-[#FFF9F0] shadow-sm overflow-hidden relative',
-    tableHead: 'bg-[#F9F7F2] text-[10px] font-bold text-[#1A1A1A]/60 uppercase tracking-widest h-9 px-4 border-b border-[#F4D03F]/20',
+    tableHead: 'bg-[#F9F7F2] text-[11px] font-semibold text-[#1A1A1A]/60 h-9 px-4 border-b border-[#F4D03F]/20',
     tableRow: 'hover:bg-[#F4D03F]/5 transition-colors duration-200 border-b border-[#F4D03F]/10 last:border-0 group/row text-[#1A1A1A] h-11',
 
     /** Compact status badge */
-    badge: 'px-2 py-0.5 rounded-md text-[10px] font-bold border border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#1A1A1A] uppercase tracking-wider',
+    badge: 'px-2 py-0.5 rounded-md text-[10px] font-semibold border border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#1A1A1A]',
 
     /** Micro label */
-    microLabel: 'text-[10px] font-bold text-[#1A1A1A]/60 uppercase tracking-widest',
+    microLabel: 'text-[11px] font-semibold text-[#1A1A1A]/60',
 
     /** Section Title — controlled size */
     sectionTitle: 'text-lg font-bold text-[#1A1A1A] tracking-tight',
@@ -96,13 +101,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     borderColor = "border-[#F4D03F]/20"
 }) => {
     const headerActions = actions || action;
+    const displayLabel = humanizeLabel(label || 'BeeYield');
 
     return (
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-[#F4D03F]/20 relative mb-6">
             <div className="space-y-1.5">
-                <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border", bg, color, borderColor)}>
+                <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border", bg, color, borderColor)}>
                     <Icon className="w-3 h-3" />
-                    {label || 'BEE_YIELD_MODULE'}
+                    {displayLabel}
                 </div>
                 <h1 className={cn(glass.sectionTitle, 'mt-1')}>
                     {typeof title === 'string' ? (
@@ -145,7 +151,7 @@ export const GlassStatCard: React.FC<GlassStatCardProps> = ({ label, value, icon
                     <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 border border-[#F4D03F]/10 bg-[#F9F7F2] group-hover:border-[#F4D03F]/20 group-hover:bg-[#F4D03F]/5")}>
                         <Icon className={cn("w-4 h-4", color)} />
                     </div>
-                    <p className={glass.microLabel}>{label}</p>
+                    <p className={glass.microLabel}>{humanizeLabel(label)}</p>
                 </div>
                 <h3 className="text-xl font-bold text-[#1A1A1A] tabular-nums tracking-tight leading-none truncate">
                     {value}
@@ -185,8 +191,11 @@ export const GlassModal: React.FC<GlassModalProps> = ({ isOpen, onClose, title, 
                         </div>
                         <button
                             onClick={onClose}
+                            aria-label="Close"
+                            title="Close"
                             className="w-8 h-8 rounded-md border border-[#F4D03F]/20 bg-[#FFF9F0] flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] hover:bg-[#F9F7F2] transition-all shadow-sm"
                         >
+                            <span className="sr-only">Close</span>
                             <X className="w-4 h-4" />
                         </button>
                     </div>

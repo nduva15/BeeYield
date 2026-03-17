@@ -39,7 +39,8 @@ export function useCreateHarvest() {
         },
         onError: (error: any) => {
             console.error('Create harvest error:', error);
-            toast.error('Failed to record harvest');
+            const msg = typeof error?.message === 'string' ? error.message : 'Failed to record harvest';
+            toast.error('Failed to record harvest', { description: msg });
         },
     });
 }

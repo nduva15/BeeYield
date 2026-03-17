@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { BeeYieldPageShell as BeeYieldShell } from "@/components/beeyield/BeeYieldUI";
 import {
     Shield,
     Lock as LockIcon,
@@ -52,7 +52,7 @@ const ProfessionalAuth: React.FC = () => {
     }
 
     return (
-        <BeeYieldPageShell className="bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden p-0 md:p-0 -m-4 md:-m-6">
+        <BeeYieldShell className="bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden p-0 md:p-0 -m-4 md:-m-6">
             {/* Ambient Background */}
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-honey/5 rounded-full blur-[120px] -mr-96 -mt-96 opacity-60" />
             <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-beeyield-green/5 rounded-full blur-[120px] -ml-96 -mb-96 opacity-60" />
@@ -165,7 +165,7 @@ const ProfessionalAuth: React.FC = () => {
                     </div>
                 </footer>
             </div>
-        </BeeYieldPageShell>
+        </BeeYieldShell>
     );
 };
 

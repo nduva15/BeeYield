@@ -151,12 +151,12 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             {/* Page Header */}
             <BeeYieldPageHeader
                 icon={Camera}
-                label="Optical Audit"
-                title="Optical Audit"
-                subtitle="High-fidelity visual diagnostics and neural specimen mapping."
+                label="Photo analysis"
+                title="Photo analysis"
+                subtitle="Upload a photo and we’ll help spot pests or stress signals."
                 actions={
                     <div className={cn(glass.badge, "px-3 py-1.5 border-[#F4D03F]/10 bg-[#F4D03F]/5 text-[#F4D03F]")}>
-                        CORE: CV_MODEL_V4
+                        Model: CV v4
                     </div>
                 }
             />
@@ -171,7 +171,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 </div>
 
                 <div className="space-y-6">
-                    <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
                         <Activity className="w-3 h-3 text-[#F4D03F]/40" />
                             <span>Guide only — not a medical diagnosis</span>
                     </div>
@@ -207,8 +207,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         <Camera className="w-8 h-8 text-[#F4D03F]/60" />
                     </div>
                     <div className="text-center space-y-2">
-                        <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest">Select Asset</h3>
-                        <p className={cn(glass.microLabel, "tracking-[0.2em]")}>DROP_FILE_OR_SYNC_DEVICE</p>
+                        <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest">Choose a photo</h3>
+                        <p className={cn(glass.microLabel, "tracking-[0.2em]")}>Click to upload, or drop a file here.</p>
                     </div>
                 </div>
             )}
@@ -237,7 +237,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
 
                         <div className="flex justify-start">
                             <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-widest text-[10px] rounded-xl")}>
-                                Flush Buffer
+                                Clear
                             </button>
                         </div>
 
@@ -282,19 +282,19 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <Bot className="w-8 h-8 text-red-500/50" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className={cn(glass.sectionTitle, "text-red-500/60")}>Audit Reflected</h3>
+                                    <h3 className={cn(glass.sectionTitle, "text-red-500/60")}>Couldn’t analyze that image</h3>
                                     <p className={cn(glass.microLabel, "max-w-[200px]")}>
-                                        Inconclusive visual data. Obfuscation detected or low-fidelity asset.
+                                        The image is unclear or partially blocked. Try a sharper photo with better light.
                                     </p>
                                 </div>
-                                <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-8 font-black uppercase text-[10px] rounded-xl border-red-500/20")}>
-                                    Retry Sweep
+                                <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-8 text-sm font-semibold rounded-xl border-red-500/20")}>
+                                    Try again
                                 </button>
                             </BeeYieldCard>
                         ) : results ? (
                             <BeeYieldCard className="space-y-6">
                                 <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
-                                    <h3 className={glass.sectionTitle}>Detection</h3>
+                                    <h3 className={glass.sectionTitle}>Results</h3>
                                     <div className="flex items-center gap-3">
                                         <span className={glass.microLabel}>Total Count</span>
                                         <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 text-[#F4D03F] flex items-center justify-center font-bold text-xs border border-[#F4D03F]/20">
@@ -321,14 +321,14 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className={glass.microLabel}>Telemetry Labels</Label>
+                                            <Label className={glass.microLabel}>Display</Label>
                                             <Select value={displayMode} onValueChange={setDisplayMode}>
                                                 <SelectTrigger className={cn(glass.select, "h-9 border-white/40 bg-white/50 text-[10px] font-black")}>
-                                                    <SelectValue placeholder="Select Protocol" />
+                                                    <SelectValue placeholder="Select display mode…" />
                                                 </SelectTrigger>
                                                 <SelectContent className={glass.selectContent}>
-                                                    <SelectItem value="Label + confidence" className="text-[10px] font-black uppercase">Full Telemetry</SelectItem>
-                                                    <SelectItem value="Label only" className="text-[10px] font-black uppercase">Class ID Only</SelectItem>
+                                                    <SelectItem value="Label + confidence" className="text-sm font-semibold">Label + confidence</SelectItem>
+                                                    <SelectItem value="Label only" className="text-sm font-semibold">Label only</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -338,16 +338,16 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <div className="rounded-xl border border-white/40 overflow-hidden bg-white/20 backdrop-blur-sm shadow-sm">
                                         <table className="w-full text-[9px] font-black border-collapse">
                                             <thead>
-                                                <tr className="bg-white/40 border-b border-white/40 text-gray-400 uppercase tracking-widest">
+                                                <tr className="bg-white/40 border-b border-white/40 text-gray-500">
                                                     <th className="px-3 py-2.5 text-left font-black">#</th>
-                                                    <th className="px-3 py-2.5 text-left font-black">CONF</th>
-                                                    <th className="px-3 py-2.5 text-left font-black">CLASS</th>
-                                                    <th className="px-3 py-2.5 text-left font-black">XY_MAP</th>
+                                                    <th className="px-3 py-2.5 text-left font-black">Confidence</th>
+                                                    <th className="px-3 py-2.5 text-left font-black">Label</th>
+                                                    <th className="px-3 py-2.5 text-left font-black">Position</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-white/20">
                                                 {results.detections.slice(0, 6).map((det: DetectionRecord, idx: number) => (
-                                                    <tr key={det.id} className="hover:bg-white/60 transition-colors text-[#1A1A1A] uppercase tracking-tighter">
+                                                    <tr key={det.id} className="hover:bg-white/60 transition-colors text-[#1A1A1A]">
                                                         <td className="px-3 py-2.5 text-gray-300">{(idx + 1).toString().padStart(2, '0')}</td>
                                                         <td className="px-3 py-2.5 tabular-nums">{Math.round((det.confidence || 0) * 100)}%</td>
                                                         <td className="px-3 py-2.5">
@@ -373,8 +373,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                         <Activity className="w-5 h-5 text-[#F4D03F]" />
                                     </div>
                                     <h3 className={glass.sectionTitle}>Scanner Standby</h3>
-                                    <button onClick={() => handleStartAnalysis()} className={cn(glass.btnPrimary, "h-10 px-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl w-full max-w-xs")}>
-                                        Identify Specimen
+                                    <button onClick={() => handleStartAnalysis()} className={cn(glass.btnPrimary, "h-10 px-10 text-sm font-semibold rounded-xl w-full max-w-xs")}>
+                                        Analyze photo
                                     </button>
                                 </BeeYieldCard>
 
@@ -397,12 +397,12 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-[10px] font-bold uppercase text-[#1A1A1A]">Entry {i + 1}</p>
+                                                            <p className="text-sm font-semibold text-[#1A1A1A]">Entry {i + 1}</p>
                                                             <p className={glass.microLabel}>{new Date(item.created_at).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-[10px] font-bold uppercase text-[#F4D03F]">{item.health_score}% SCORE</p>
+                                                        <p className="text-sm font-semibold text-[#F4D03F]">{item.health_score}% score</p>
                                                     </div>
                                                 </div>
                                             ))}

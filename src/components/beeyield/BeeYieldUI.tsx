@@ -86,7 +86,7 @@ export function BeeYieldPageHeader(props: {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-[#F4D03F]/20 relative mb-6">
         <div className="space-y-1.5">
           {label && (
-            <div className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
+            <div className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border bg-[#F4D03F]/10 text-[#1A1A1A]/70 border-[#F4D03F]/20')}>
               {label}
             </div>
           )}
@@ -131,7 +131,7 @@ export function BeeYieldTabBar({
             disabled={t.disabled}
             onClick={() => onChange(t.id)}
             className={cn(
-              'h-9 px-4 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all flex items-center justify-center',
+              'h-9 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center',
               isActive ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-600 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/10',
               t.disabled && 'opacity-50 cursor-not-allowed'
             )}
@@ -177,7 +177,7 @@ export function BeeYieldLoading({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="flex items-center justify-center gap-3 py-10 text-[#1A1A1A]/70">
       <Loader2 className="w-4 h-4 animate-spin" />
-      <span className={glass.microLabel}>{label}</span>
+      <span className="text-sm font-medium">{label}</span>
     </div>
   );
 }
@@ -199,14 +199,14 @@ export function BeeYieldFormField({
 }) {
   return (
     <div className={cn('space-y-1.5', className)}>
-      <Label htmlFor={id} className={cn(glass.microLabel, 'text-[#1A1A1A]/70')}>
+      <Label htmlFor={id} className="text-sm font-semibold text-[#1A1A1A]/70">
         {label}
       </Label>
       {children}
       {error ? (
         <p className="text-[11px] font-semibold text-red-600">{error}</p>
       ) : hint ? (
-        <p className="text-[11px] text-gray-500">{hint}</p>
+        <p className="text-xs text-gray-500">{hint}</p>
       ) : null}
     </div>
   );

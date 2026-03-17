@@ -4,8 +4,9 @@ import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis } from 'recharts';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import {
     Select,
     SelectContent,
@@ -148,12 +149,13 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
     const absDelta = Math.abs(deltaProbability).toFixed(1);
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
-            <PageHeader
+        <BeeYieldPageShell>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
+            <BeeYieldPageHeader
                 icon={Calculator}
                 label="Simulation"
                 title={<>Pollination <span className="text-[#1B9157]">Matrix</span></>}
@@ -343,7 +345,8 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     </div>
                 </div>
             </div>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

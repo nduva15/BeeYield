@@ -176,7 +176,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 toast.success('Harvest saved successfully.', { id: toastId });
             },
             onError: (err: any) => {
-                toast.error('Could not save the harvest. Please try again.', { id: toastId });
+                const msg =
+                    typeof err?.message === 'string'
+                        ? err.message
+                        : (typeof err?.detail === 'string' ? err.detail : 'Could not save the harvest. Please try again.');
+                toast.error('Could not save the harvest.', { id: toastId, description: msg, duration: 8000 });
             }
         });
     };
@@ -468,7 +472,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 <GlassStatCard label="Yield / Cycle" value={`${stats.avgPerHarvest}KG`} icon={Activity} index={3} color="text-[#1B9157]" />
             </div>
 
-            {/* Registry Filter Bar */}
+            {/* Filter bar */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -477,15 +481,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 <div className="flex-1 w-full relative group/search">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                     <Input
-                        placeholder="Filter batches..."
+                        placeholder="Search harvests…"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-10 pl-10 bg-white/50 border border-white/40 rounded-xl text-[11px] font-black tracking-widest text-[#1A1A1A] uppercase placeholder:text-gray-400 focus:bg-white transition-colors"
+                        className="h-10 pl-10 bg-white/50 border border-white/40 rounded-xl text-sm font-semibold text-[#1A1A1A] placeholder:text-gray-400 focus:bg-white transition-colors"
                     />
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto p-1 border-t md:border-t-0 md:border-l border-white/20">
                     <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger className="h-10 w-full md:w-32 bg-white/50 border border-white/40 rounded-xl focus:bg-white text-[11px] font-black uppercase tracking-widest text-gray-500 transition-colors">
+                        <SelectTrigger className="h-10 w-full md:w-32 bg-white/50 border border-white/40 rounded-xl focus:bg-white text-sm font-semibold text-gray-600 transition-colors">
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-3.5 h-3.5" />
                                 <SelectValue placeholder="Year" />
@@ -514,19 +518,19 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 </div>
             </motion.div>
 
-            {/* Main Registry Table */}
+            {/* Harvest table */}
             <div className="mt-4 relative z-10">
                 <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
-                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Batch_ID</th>
-                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Timestamp</th>
-                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Source_Node</th>
-                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Net_Yield</th>
-                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Grade</th>
-                                    <th className="px-6 py-4 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Status</th>
+                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500">Batch ID</th>
+                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500">Date</th>
+                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500">Hive</th>
+                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500 text-center">Net yield</th>
+                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500 text-center">Grade</th>
+                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500 text-right">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F4D03F]/5">
