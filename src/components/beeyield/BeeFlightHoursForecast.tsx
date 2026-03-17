@@ -24,16 +24,6 @@ interface BFHData {
     status: 'optimal' | 'moderate' | 'low';
 }
 
-const mockData: BFHData[] = [
-    { day: 'MON', hours: 8.5, temp: 24, wind: 12, uv: 7, status: 'optimal' },
-    { day: 'TUE', hours: 9.2, temp: 26, wind: 8, uv: 8, status: 'optimal' },
-    { day: 'WED', hours: 4.0, temp: 18, wind: 25, uv: 3, status: 'low' },
-    { day: 'THU', hours: 2.1, temp: 16, wind: 35, uv: 2, status: 'low' },
-    { day: 'FRI', hours: 6.5, temp: 21, wind: 15, uv: 5, status: 'moderate' },
-    { day: 'SAT', hours: 10.0, temp: 28, wind: 5, uv: 9, status: 'optimal' },
-    { day: 'SUN', hours: 11.5, temp: 29, wind: 4, uv: 9, status: 'optimal' },
-];
-
 const CUSTOM_COLORS = {
     optimal: 'hsl(var(--honey))',
     moderate: 'hsl(var(--honey) / 0.5)',
@@ -41,9 +31,6 @@ const CUSTOM_COLORS = {
 };
 
 const BeeFlightHoursForecast: React.FC = () => {
-    // Detection for making up time
-    const needsMakeUpTime = mockData.slice(2, 4).every(d => d.status === 'low');
-
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -54,24 +41,14 @@ const BeeFlightHoursForecast: React.FC = () => {
                 icon={Calendar}
                 label="Forecast"
                 title={<>Flight <span className="text-[#F4D03F]">Hours</span></>}
-                subtitle="Seasonal 7-day activity window prediction models."
-                actions={
-                    <AnimatePresence>
-                        {needsMakeUpTime && (
-                           <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#1A1A1A] border-[#F4D03F]/20 py-1.5")}>
-                                <AlertCircle className="w-3.5 h-3.5 mr-2 text-[#F4D03F]" />
-                                Activity Spike Predicted
-                            </div>
-                        )}
-                    </AnimatePresence>
-                }
+                subtitle="Requires real weather + flight telemetry."
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-                <GlassStatCard label="Min Flight Temp" value="15°C+" icon={Thermometer} index={0} />
-                <GlassStatCard label="Max Wind Speed" value="25km/h" icon={Wind} index={1} color="text-red-500" />
-                <GlassStatCard label="Light Index" value="High UV" icon={Sun} index={2} />
-                <GlassStatCard label="Total Week" value="62.5h" icon={Activity} index={3} color="text-[#1B9157]" />
+                <GlassStatCard label="Min Flight Temp" value="—" icon={Thermometer} index={0} />
+                <GlassStatCard label="Max Wind Speed" value="—" icon={Wind} index={1} color="text-red-500" />
+                <GlassStatCard label="Light Index" value="—" icon={Sun} index={2} />
+                <GlassStatCard label="Total Week" value="—" icon={Activity} index={3} color="text-[#1B9157]" />
             </div>
 
             <div className={cn(glass.section, "overflow-hidden flex flex-col mt-6")}>
@@ -90,53 +67,17 @@ const BeeFlightHoursForecast: React.FC = () => {
                 <div className="h-[380px] w-full p-6 relative bg-[#FFF9F0]">
                     <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                     
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={mockData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#00000008" />
-                            <XAxis
-                                dataKey="day"
-                                axisLine={false}
-                                tickLine={false}
-                                tick={{ fill: '#9CA3AF', fontWeight: 700, fontSize: 10 }}
-                                dy={10}
-                            />
-                            <YAxis hide />
-                            <Tooltip
-                                contentStyle={{ 
-                                    backgroundColor: '#fff', 
-                                    border: '1px solid #F4D03F30', 
-                                    borderRadius: '12px', 
-                                    padding: '12px',
-                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)'
-                                }}
-                                itemStyle={{
-                                    fontSize: '11px',
-                                    fontWeight: 700,
-                                    color: '#1A1A1A',
-                                    textTransform: 'uppercase'
-                                }}
-                                labelStyle={{ display: 'none' }}
-                            />
-                            <Bar
-                                dataKey="hours"
-                                radius={[6, 6, 0, 0]}
-                                barSize={40}
-                            >
-                                {mockData.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={CUSTOM_COLORS[entry.status]}
-                                    />
-                                ))}
-                            </Bar>
-                             <ReferenceLine
-                                y={8}
-                                stroke="#F4D03F"
-                                strokeDasharray="5 5"
-                                strokeWidth={2}
-                            />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <div className={cn(glass.card, "h-full w-full flex items-center justify-center bg-white/50 border border-[#F4D03F]/10")}>
+                        <div className="text-center space-y-2 p-6">
+                            <div className="inline-flex items-center gap-2 justify-center text-[#1A1A1A]">
+                                <AlertCircle className="w-4 h-4 text-[#F4D03F]" />
+                                <span className="text-sm font-bold">No forecast data yet</span>
+                            </div>
+                            <p className="text-xs font-medium text-gray-500 max-w-md">
+                                This view no longer uses mock weekly forecast data. Wire weather inputs + flight telemetry to enable charts.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 

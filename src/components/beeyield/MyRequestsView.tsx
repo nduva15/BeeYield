@@ -431,7 +431,10 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                             <TableRow
                                                 key={req.id}
                                                 className="group border-gray-100 hover:bg-gray-50/50 transition-colors cursor-pointer"
-                                                onClick={() => toast.info(`Accessing detail for ${req.id}`)}
+                                                onClick={() => {
+                                                    setSelectedRequest(req);
+                                                    setIsDetailsOpen(true);
+                                                }}
                                             >
                                                 <TableCell className="py-3.5 font-mono text-[10px] text-[#F4D03F] font-bold">
                                                     #{req.id.substring(0, 8).toUpperCase()}
@@ -473,6 +476,57 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                     )}
                 </div>
             </div>
+
+            <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+                <DialogContent className="max-w-2xl bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-black tracking-tight">Request details</DialogTitle>
+                        <DialogDescription className="text-[11px] font-bold text-gray-500">
+                            Reference: #{selectedRequest?.id?.substring(0, 8)?.toUpperCase()}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {selectedRequest && (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Status</p>
+                                    <p className="text-sm font-black text-[#1A1A1A] uppercase">{selectedRequest.status}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Category</p>
+                                    <p className="text-sm font-black text-[#1A1A1A] uppercase">{selectedRequest.category}</p>
+                                </div>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject</p>
+                                <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.subject}</p>
+                                <p className="text-[11px] text-gray-600 mt-2 whitespace-pre-wrap">{selectedRequest.description}</p>
+                            </div>
+
+                            <div className="flex gap-3 justify-end pt-2">
+                                <Button variant="outline" onClick={() => setIsDetailsOpen(false)} className="rounded-xl">
+                                    Close
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        try {
+                                            navigator.clipboard.writeText(selectedRequest.id);
+                                            toast.success('Reference copied');
+                                        } catch {
+                                            toast.error('Could not copy reference');
+                                        }
+                                    }}
+                                    className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold rounded-xl")}
+                                >
+                                    Copy reference
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </motion.div>
     );
 };

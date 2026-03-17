@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
-import { hashToRange } from '@/lib/deterministic';
+import beeyieldService, { SensorReading } from '@/services/beeyieldService';
 
 interface MetricCalendarViewProps {
     onTabChange?: (tab: string) => void;
@@ -47,25 +47,9 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
     const [currentDate, setCurrentDate] = React.useState(new Date());
     const [activeMetric, setActiveMetric] = React.useState<MetricType>('VPM');
     const [hoveredDay, setHoveredDay] = React.useState<Date | null>(null);
-
-    // Mock intensity generator based on date
-    const getMetricForDate = (date: Date, type: MetricType): DayMetric => {
-        const day = date.getDate();
-        const month = date.getMonth();
-        // Seeded random-ish value
-        const seed = (day * 13 + month * 7) % 100;
-        const intensity = seed / 100;
-        let value = 0;
-
-        switch (type) {
-            case 'VPM': value = Math.floor(intensity * 20) + 5; break;
-            case 'YIELD': value = Math.floor(intensity * 40) + 10; break;
-            case 'TEMP': value = (intensity * 10) + 28; break;
-            case 'VIBE': value = intensity * 100; break;
-        }
-
-        return { date, value, intensity };
-    };
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState<string | null>(null);
+    const [dayMetrics, setDayMetrics] = React.useState<Map<string, DayMetric>>(new Map());
 
     const generateCalendarDays = () => {
         const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
@@ -82,6 +66,149 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
 
     const days = generateCalendarDays();
     const config = metricConfig[activeMetric];
+
+    React.useEffect(() => {
+        let mounted = true;
+
+        const extractValue = (r: any, metric: MetricType) => {
+            if (!r) return null;
+            if (metric === 'VPM') {
+                const v =
+                    typeof r?.vpm === 'number'
+                        ? r.vpm
+                        : typeof r?.visits_per_minute === 'number'
+                            ? r.visits_per_minute
+                            : typeof r?.activity_vpm === 'number'
+                                ? r.activity_vpm
+                                : null;
+                return typeof v === 'number' ? v : null;
+            }
+            if (metric === 'TEMP') {
+                const t =
+                    typeof r?.temperature === 'number'
+                        ? r.temperature
+                        : typeof r?.temperature_celsius === 'number'
+                            ? r.temperature_celsius
+                            : typeof r?.temp_c === 'number'
+                                ? r.temp_c
+                                : null;
+                return typeof t === 'number' ? t : null;
+            }
+            if (metric === 'VIBE') {
+                const hz =
+                    typeof r?.vibration_hz === 'number'
+                        ? r.vibration_hz
+                        : typeof r?.vibe_hz === 'number'
+                            ? r.vibe_hz
+                            : typeof r?.frequency_hz === 'number'
+                                ? r.frequency_hz
+                                : null;
+                return typeof hz === 'number' ? hz : null;
+            }
+            // YIELD proxy: daily positive delta of weight_kg (when present)
+            const w =
+                typeof r?.weight_kg === 'number'
+                    ? r.weight_kg
+                    : typeof r?.weight === 'number'
+                        ? r.weight
+                        : typeof r?.hive_weight_kg === 'number'
+                            ? r.hive_weight_kg
+                            : null;
+            return typeof w === 'number' ? w : null;
+        };
+
+        const toDayKey = (d: Date) => format(d, 'yyyy-MM-dd');
+
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
+                const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
+                const hoursBack = Math.min(24 * 60, Math.max(24, Math.ceil((Date.now() - start.getTime()) / 3600000) + 12));
+
+                const rows: SensorReading[] = await beeyieldService.getSensorReadings(undefined, hoursBack);
+                if (!mounted) return;
+
+                // Bucket readings by day for the displayed range.
+                const buckets = new Map<string, SensorReading[]>();
+                (rows || []).forEach((r: any) => {
+                    const tsRaw = r?.recorded_at || r?.timestamp || r?.created_at;
+                    const d = tsRaw ? new Date(tsRaw) : null;
+                    if (!d || Number.isNaN(d.getTime())) return;
+                    if (d < start || d > end) return;
+                    const k = toDayKey(d);
+                    const arr = buckets.get(k) || [];
+                    arr.push(r);
+                    buckets.set(k, arr);
+                });
+
+                const next = new Map<string, DayMetric>();
+                const values: number[] = [];
+
+                days.forEach((date) => {
+                    const k = toDayKey(date);
+                    const list = buckets.get(k) || [];
+                    if (list.length === 0) return;
+
+                    if (activeMetric === 'YIELD') {
+                        // Sort by time then sum positive weight deltas.
+                        const points = list
+                            .map((r: any) => {
+                                const tsRaw = r?.recorded_at || r?.timestamp || r?.created_at;
+                                const ts = tsRaw ? new Date(tsRaw).getTime() : NaN;
+                                const w = extractValue(r, 'YIELD');
+                                return Number.isFinite(ts) && typeof w === 'number' ? { ts, w } : null;
+                            })
+                            .filter(Boolean) as { ts: number; w: number }[];
+                        points.sort((a, b) => a.ts - b.ts);
+                        let sum = 0;
+                        for (let i = 1; i < points.length; i++) {
+                            const dw = points[i].w - points[i - 1].w;
+                            if (dw > 0) sum += dw;
+                        }
+                        const v = Number(sum.toFixed(2));
+                        values.push(v);
+                        next.set(k, { date, value: v, intensity: 0 });
+                        return;
+                    }
+
+                    const vals = list
+                        .map((r: any) => extractValue(r, activeMetric))
+                        .filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+                    if (vals.length === 0) return;
+
+                    const v = activeMetric === 'VPM' ? vals.reduce((s, x) => s + x, 0) / vals.length : Math.max(...vals);
+                    const vRounded = Number(v.toFixed(2));
+                    values.push(vRounded);
+                    next.set(k, { date, value: vRounded, intensity: 0 });
+                });
+
+                // Normalize intensity across visible month (robust against outliers)
+                const sorted = values.slice().sort((a, b) => a - b);
+                const p95 = sorted.length ? sorted[Math.floor(sorted.length * 0.95)] : 1;
+                const denom = Math.max(1e-9, p95 || 1);
+                next.forEach((m, k) => {
+                    const intensity = Math.max(0, Math.min(1, m.value / denom));
+                    next.set(k, { ...m, intensity });
+                });
+
+                setDayMetrics(next);
+            } catch (e: any) {
+                if (!mounted) return;
+                setError(e?.message || 'Failed to load calendar metrics.');
+                setDayMetrics(new Map());
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        };
+
+        load();
+        return () => {
+            mounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentDate, activeMetric]);
 
     return (
         <motion.div
@@ -167,8 +294,12 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                             {days.map((date, i) => {
                                 const isCurrentMonth = isSameMonth(date, currentDate);
                                 const isTodayDate = isToday(date);
-                                const metric = getMetricForDate(date, activeMetric);
                                 const isHovered = hoveredDay && isSameDay(date, hoveredDay);
+                                const dayKey = format(date, 'yyyy-MM-dd');
+                                const metric = dayMetrics.get(dayKey);
+                                const bg = metric
+                                    ? `linear-gradient(180deg, rgba(255,255,255,0.0), ${config.color}${Math.round(metric.intensity * 35 + 5).toString(16).padStart(2, '0')})`
+                                    : undefined;
 
                                 return (
                                     <motion.div
@@ -180,9 +311,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                             isCurrentMonth ? "bg-white/20 border-white/40 hover:border-[#F4D03F]/60 shadow-sm" : "bg-transparent border-transparent opacity-[0.05] pointer-events-none",
                                             isTodayDate ? "ring-2 ring-[#F4D03F]/50 border-[#F4D03F]/60 bg-white/70 shadow-lg" : ""
                                         )}
-                                        style={{
-                                            backgroundColor: isCurrentMonth ? `${config.color}${Math.round(metric.intensity * 25).toString(16).padStart(2, '0')}` : undefined
-                                        }}
+                                        style={bg ? { backgroundImage: bg } : undefined}
                                     >
                                         <div className="flex justify-between items-start relative z-10">
                                             <span className={cn(
@@ -191,8 +320,8 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                             )}>
                                                 {format(date, 'd')}
                                             </span>
-                                            {isCurrentMonth && metric.intensity > 0.7 && (
-                                                <div className="w-1 h-1 rounded-full animate-pulse shadow-sm" style={{ backgroundColor: config.color }} />
+                                            {isCurrentMonth && (
+                                                <div className="w-1 h-1 rounded-full bg-black/10" />
                                             )}
                                         </div>
 
@@ -201,12 +330,12 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                                 "text-[8px] font-black tracking-tight tabular-nums transition-all text-black",
                                                 isHovered ? "opacity-100" : "opacity-0"
                                             )}>
-                                                {metric.value.toFixed(1)}
+                                                {metric ? metric.value : '—'}
                                                 <span className="text-[6px] font-bold uppercase tracking-widest ml-1 opacity-30">{config.unit}</span>
                                             </p>
                                         </div>
 
-                                        {/* Micro Sparkline Placeholder (just a bar) */}
+                                        {/* Micro Sparkline Placeholder */}
                                         <div className="h-1 w-full flex gap-0.5 mt-2 opacity-30 relative z-10">
                                             {Array.from({ length: 5 }).map((_, idx) => (
                                                 <div 
@@ -214,7 +343,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                                     className="flex-1 rounded-full" 
                                                     style={{ 
                                                         backgroundColor: config.color,
-                                                        opacity: metric.intensity > (idx/5) ? 1 : 0.2
+                                                        opacity: 0.15
                                                     }} 
                                                 />
                                             ))}
@@ -241,27 +370,50 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                             <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly peak</p>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">18.4</span>
+                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">—</span>
                                     <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">Max ({config.unit})</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[#1B9157]">
+                                <div className="flex items-center gap-1.5 text-gray-400">
                                     <ArrowUpRight className="w-3 h-3" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">+12.4% vs last month</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest">Needs real telemetry</span>
                                 </div>
                             </div>
 
                             <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly average</p>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">12.2</span>
+                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">—</span>
                                     <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">Avg ({config.unit})</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="pt-4">
-                            <button className={cn(glass.btnSecondary, "w-full h-12 rounded-2xl border-white/60 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-[#1A1A1A] transition-all")}>
-                                Download data
+                            <button
+                                disabled={loading || !!error || dayMetrics.size === 0}
+                                onClick={() => {
+                                    const header = 'date,metric,value\n';
+                                    const rows = Array.from(dayMetrics.values())
+                                        .sort((a, b) => a.date.getTime() - b.date.getTime())
+                                        .map((m) => `${format(m.date, 'yyyy-MM-dd')},${activeMetric},${m.value}`)
+                                        .join('\n');
+                                    const blob = new Blob([header + rows + '\n'], { type: 'text/csv;charset=utf-8' });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `beeyield-metric-calendar-${activeMetric}-${format(currentDate, 'yyyy-MM')}.csv`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    a.remove();
+                                    URL.revokeObjectURL(url);
+                                }}
+                                className={cn(
+                                    glass.btnSecondary,
+                                    "w-full h-12 rounded-2xl border-white/60 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-[#1A1A1A] transition-all",
+                                    (loading || !!error || dayMetrics.size === 0) && "opacity-60 cursor-not-allowed"
+                                )}
+                            >
+                                {loading ? 'Loading…' : error ? 'Unavailable' : 'Download data'}
                             </button>
                         </div>
                     </div>
@@ -274,7 +426,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 <motion.div
                                     key={i}
                                     initial={{ height: 0 }}
-                                    animate={{ height: `${hashToRange(`metric-cal-bar-${i}`, 20, 80)}%` }}
+                                    animate={{ height: `20%` }}
                                     transition={{ delay: i * 0.05, duration: 1 }}
                                     className="flex-1 rounded-full bg-[#1A1A1A]/5 border border-[#1A1A1A]/10 relative group"
                                 >
@@ -283,7 +435,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                             ))}
                         </div>
                         <p className="text-[9px] font-medium text-gray-400 italic leading-relaxed pt-4 border-t border-white/40">
-                            This chart shows how the selected metric changes across the month.
+                            Metrics will populate here once real telemetry is ingested.
                         </p>
                     </div>
                 </div>
@@ -299,7 +451,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                     <div className="space-y-2 text-center md:text-left">
                         <h4 className="text-2xl font-black tracking-tighter uppercase">No issues <span className="text-[#F4D03F]">found</span></h4>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed max-w-4xl">
-                            Check the calendar to spot peaks and drops, and compare weeks or months.
+                            {error ? error : "Check the calendar to spot peaks and drops, and compare weeks or months."}
                         </p>
                     </div>
                 </div>

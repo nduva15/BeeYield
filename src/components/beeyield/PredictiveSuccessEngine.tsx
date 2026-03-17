@@ -10,23 +10,19 @@ interface PredictiveSuccessEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-// Simulated data correlating Bloom %, True Flight Hours, and Predicted Yield
-const PREDICTION_DATA = [
-    { day: 'D1', bloom: 5, flight: 2.2, yield: 400 },
-    { day: 'D2', bloom: 15, flight: 4.8, yield: 650 },
-    { day: 'D3', bloom: 35, flight: 8.4, yield: 1100 },
-    { day: 'D4', bloom: 60, flight: 12.1, yield: 1750 },
-    { day: 'D5', bloom: 85, flight: 14.2, yield: 2200 },
-    { day: 'D6', bloom: 95, flight: 13.5, yield: 2180 },
-];
-
 const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTabChange }) => {
     const [liveVpm, setLiveVpm] = React.useState<number | null>(null);
+    const [vpmLoading, setVpmLoading] = React.useState(true);
+    const [vpmError, setVpmError] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         let mounted = true;
         const load = async () => {
             try {
+                if (mounted) {
+                    setVpmLoading(true);
+                    setVpmError(null);
+                }
                 const rows: any[] = await beeyieldService.getSensorReadings(undefined, 1);
                 const r: any = Array.isArray(rows) ? rows[0] : null;
                 const v =
@@ -39,8 +35,13 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                 : null;
                 if (!mounted) return;
                 if (typeof v === 'number') setLiveVpm(v);
-            } catch {
-                // ignore
+                else setLiveVpm(null);
+            } catch (e: any) {
+                if (!mounted) return;
+                setLiveVpm(null);
+                setVpmError(e?.message || 'Live activity unavailable');
+            } finally {
+                if (mounted) setVpmLoading(false);
             }
         };
         load();
@@ -63,9 +64,22 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                 title={<>Harvest <span className="text-[#F4D03F]">Predictor</span></>}
                 subtitle="High-fidelity yield forecasting based on activity telemetry."
                 actions={
-                    <div className={cn(glass.badge, "bg-[#1B9157]/5 text-[#1B9157] border-[#1B9157]/20 py-1.5")}>
-                        <Activity className="w-3.5 h-3.5 mr-2" />
-                        {typeof liveVpm === 'number' ? `${liveVpm.toFixed(1)} Visits/Min` : '— Visits/Min'}
+                    <div
+                        className={cn(
+                            glass.badge,
+                            "py-1.5",
+                            vpmError ? "bg-red-500/5 text-red-600 border-red-500/20" : "bg-[#1B9157]/5 text-[#1B9157] border-[#1B9157]/20"
+                        )}
+                        title={vpmError || undefined}
+                    >
+                        <Activity className={cn("w-3.5 h-3.5 mr-2", vpmLoading ? "animate-pulse" : "")} />
+                        {vpmLoading
+                            ? 'Loading…'
+                            : vpmError
+                                ? 'Live VPM unavailable'
+                                : typeof liveVpm === 'number'
+                                    ? `${liveVpm.toFixed(1)} Visits/Min`
+                                    : '— Visits/Min'}
                     </div>
                 }
             />
@@ -150,37 +164,18 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                         <div className="h-[340px] w-full p-6 relative bg-[#FFF9F0]">
                              <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                              
-                             <ResponsiveContainer width="100%" height="100%">
-                                <ComposedChart data={PREDICTION_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="yieldGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.15} />
-                                            <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#00000008" />
-                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontWeight: 700, fontSize: 10 }} dy={10} />
-                                    <YAxis hide />
-                                    <Tooltip
-                                        contentStyle={{ 
-                                            backgroundColor: '#fff', 
-                                            border: '1px solid #F4D03F30', 
-                                            borderRadius: '12px', 
-                                            padding: '12px',
-                                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)'
-                                        }}
-                                        itemStyle={{
-                                            fontSize: '11px',
-                                            fontWeight: 700,
-                                            color: '#1A1A1A',
-                                            textTransform: 'uppercase'
-                                        }}
-                                        labelStyle={{ display: 'none' }}
-                                    />
-                                    <Area type="monotone" dataKey="yield" fill="url(#yieldGrad)" stroke="#F4D03F" strokeWidth={3} animationDuration={2000} />
-                                    <Line type="monotone" dataKey="flight" stroke="#1B9157" strokeWidth={2} dot={{ fill: '#fff', stroke: '#1B9157', strokeWidth: 2, r: 3 }} />
-                                </ComposedChart>
-                            </ResponsiveContainer>
+                            <div className={cn(glass.card, "h-full w-full flex items-center justify-center bg-white/50 border border-[#F4D03F]/10")}>
+                                <div className="text-center space-y-2 p-6">
+                                    <div className="inline-flex items-center gap-2 justify-center text-[#1A1A1A]">
+                                        <Target className="w-4 h-4 text-[#F4D03F]" />
+                                        <span className="text-sm font-bold">No prediction model inputs</span>
+                                    </div>
+                                    <p className="text-xs font-medium text-gray-500 max-w-md">
+                                        This view previously used simulated bloom/flight/yield curves. It now requires real bloom inputs and
+                                        telemetry-derived flight/activity before predictions can be generated.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -203,9 +198,9 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                 </thead>
                                 <tbody className="divide-y divide-[#F4D03F]/5">
                                     {[
-                                        { name: 'Flower Visits', val: '14.2/min', weight: '45%', status: 'HIGH' },
-                                        { name: 'Bee Activity', val: '92% Aligned', weight: '28%', status: 'NORMAL' },
-                                        { name: 'Energy Levels', val: '1,280 J', weight: '15%', status: 'HIGH' },
+                                        { name: 'Flower Visits', val: typeof liveVpm === 'number' ? `${liveVpm.toFixed(1)}/min` : '—', weight: '—', status: '—' },
+                                        { name: 'Bee Activity', val: '—', weight: '—', status: '—' },
+                                        { name: 'Energy Levels', val: '—', weight: '—', status: '—' },
                                     ].map((row, i) => (
                                         <tr key={i} className="hover:bg-[#F9F7F2] transition-colors">
                                             <td className="px-5 py-3">
@@ -217,7 +212,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                             <td className="px-5 py-3">
                                                 <div className="flex items-center gap-3 justify-center">
                                                     <div className="h-1.5 w-16 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
-                                                        <div className="h-full bg-[#1B9157]" style={{ width: row.weight }} />
+                                                        <div className="h-full bg-[#1B9157]" style={{ width: row.weight === '—' ? '0%' : row.weight }} />
                                                     </div>
                                                     <span className="text-[10px] font-bold text-[#1A1A1A] tabular-nums">{row.weight}</span>
                                                 </div>
