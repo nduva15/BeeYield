@@ -170,9 +170,9 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         >
             <PageHeader
                 icon={Activity}
-                label="Monitoring Node"
+                label="Monitoring"
                 title={<>Hive <span className="text-[#1B9157]">Health</span></>}
-                subtitle="High-precision telemetry and real-time vital sign tracking of colony status."
+                subtitle="Live readings to help spot issues early."
                 actions={
                     <div className="flex items-center gap-3 bg-white px-4 py-1.5 rounded-lg border border-gray-200 shadow-sm">
                          <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" />
@@ -216,7 +216,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-gray-400" />
-                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Node Selection</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Hive selection</h3>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {realHives.map(hive => {
@@ -316,8 +316,22 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
                         <span className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Past {historyRange} Mo</span>
                         <div className="flex items-center gap-1">
-                            <button onClick={() => setHistoryRange(r => Math.max(1, r - 1))} className="h-8 w-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"><ChevronLeft className="w-4 h-4" /></button>
-                            <button onClick={() => setHistoryRange(r => Math.min(12, r + 1))} className="h-8 w-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"><ChevronRight className="w-4 h-4" /></button>
+                            <button
+                                onClick={() => setHistoryRange(r => Math.max(1, r - 1))}
+                                className="h-8 w-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+                                aria-label="Show fewer months"
+                                title="Show fewer months"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => setHistoryRange(r => Math.min(12, r + 1))}
+                                className="h-8 w-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+                                aria-label="Show more months"
+                                title="Show more months"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
                         </div>
                     </div>
                 </div>

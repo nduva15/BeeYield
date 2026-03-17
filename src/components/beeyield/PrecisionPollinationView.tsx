@@ -504,9 +504,23 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="space-y-3">
                                         <label className="text-[9px] font-black text-[#1A1A1A]/40 uppercase tracking-[0.3em] ml-1">Total_Deployment_Area (AC)</label>
                                         <div className="flex bg-white/40 p-1.5 rounded-xl border border-[#F4D03F]/10 shadow-sm">
-                                            <button onClick={() => setCalcInputs(p => ({ ...p, totalAcres: Math.max(1, p.totalAcres - 5) }))} className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] hover:bg-white rounded-lg transition-all"><Minus className="w-4 h-4"/></button>
+                                            <button
+                                                onClick={() => setCalcInputs(p => ({ ...p, totalAcres: Math.max(1, p.totalAcres - 5) }))}
+                                                className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] hover:bg-white rounded-lg transition-all"
+                                                aria-label="Decrease total deployment area"
+                                                title="Decrease total deployment area"
+                                            >
+                                                <Minus className="w-4 h-4" />
+                                            </button>
                                             <div className="flex-1 flex items-center justify-center text-sm font-black text-[#1A1A1A] tabular-nums tracking-tighter">{calcInputs.totalAcres}</div>
-                                            <button onClick={() => setCalcInputs(p => ({ ...p, totalAcres: p.totalAcres + 5 }))} className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] hover:bg-white rounded-lg transition-all"><Plus className="w-4 h-4"/></button>
+                                            <button
+                                                onClick={() => setCalcInputs(p => ({ ...p, totalAcres: p.totalAcres + 5 }))}
+                                                className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] hover:bg-white rounded-lg transition-all"
+                                                aria-label="Increase total deployment area"
+                                                title="Increase total deployment area"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
@@ -515,7 +529,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <span className="text-[#1B9157]">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#1B9157]/10">
-                                            <input type="range" min="0.1" max="1.0" step="0.1" value={calcInputs.bloomIntensity} onChange={e => setCalcInputs(p => ({ ...p, bloomIntensity: parseFloat(e.target.value) }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                            <input
+                                                type="range"
+                                                min="0.1"
+                                                max="1.0"
+                                                step="0.1"
+                                                value={calcInputs.bloomIntensity}
+                                                onChange={e => setCalcInputs(p => ({ ...p, bloomIntensity: parseFloat(e.target.value) }))}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                aria-label="Bloom saturation"
+                                                title="Bloom saturation"
+                                            />
                                             <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#1B9157]/40 to-[#1B9157] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${calcInputs.bloomIntensity * 100}%` }} />
                                         </div>
                                     </div>
@@ -525,7 +549,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <span className="text-[#F4D03F]">{Math.round(calcInputs.forageCondition * 100)}%</span>
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#F4D03F]/10">
-                                            <input type="range" min="0.1" max="1.0" step="0.1" value={calcInputs.forageCondition} onChange={e => setCalcInputs(p => ({ ...p, forageCondition: parseFloat(e.target.value) }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                            <input
+                                                type="range"
+                                                min="0.1"
+                                                max="1.0"
+                                                step="0.1"
+                                                value={calcInputs.forageCondition}
+                                                onChange={e => setCalcInputs(p => ({ ...p, forageCondition: parseFloat(e.target.value) }))}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                aria-label="Competitor density"
+                                                title="Competitor density"
+                                            />
                                             <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F4D03F]/40 to-[#F4D03F] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${calcInputs.forageCondition * 100}%` }} />
                                         </div>
                                     </div>
@@ -581,7 +615,14 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                 {calcInputs.hives.map((h, i) => (
                                     <div key={i} className={cn(glass.card, "p-4 space-y-4 bg-white/60 border-white/40 group relative rounded-2xl shadow-sm hover:shadow-md transition-all")}>
-                                        <button onClick={() => setCalcInputs(p => ({ ...p, hives: p.hives.filter((_, idx) => idx !== i) }))} className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-all p-1.5 bg-white rounded-lg shadow-lg border border-red-100 text-red-500 hover:bg-red-500 hover:text-white z-10"><Minus className="w-3 h-3"/></button>
+                                        <button
+                                            onClick={() => setCalcInputs(p => ({ ...p, hives: p.hives.filter((_, idx) => idx !== i) }))}
+                                            className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-all p-1.5 bg-white rounded-lg shadow-lg border border-red-100 text-red-500 hover:bg-red-500 hover:text-white z-10"
+                                            aria-label={`Remove unit ${i + 1}`}
+                                            title={`Remove unit ${i + 1}`}
+                                        >
+                                            <Minus className="w-3 h-3" />
+                                        </button>
                                         <p className="text-[8px] font-black text-[#1A1A1A]/20 uppercase tracking-[0.2em]">UNIT_TRONIX_#{i+1}</p>
                                         <div className="flex items-baseline gap-1">
                                             <p className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{h.frameCount}</p>

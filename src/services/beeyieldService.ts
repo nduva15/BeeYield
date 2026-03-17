@@ -1059,12 +1059,12 @@ export const beeyieldService = {
             event_type: 'harvest_logged',
             entity_type: 'hive',
             entity_id: input.hive_id,
-            title: 'Honey Harvest Logged',
-            subtitle: `Unit #${input.hive_id.slice(0, 4)} — ${input.quantity_kg}kg harvested`,
+            title: 'Harvest recorded',
+            subtitle: `${input.quantity_kg}kg harvested`,
             metadata: { value: `${input.quantity_kg}kg`, type: input.honey_type }
         });
 
-        toast.success('Batch logged & secured!');
+        toast.success('Harvest recorded');
         return { data, error: null };
     },
 
@@ -1159,7 +1159,7 @@ export const beeyieldService = {
             event_type: 'task_created',
             entity_type: 'task',
             entity_id: data.id,
-            title: 'New Mission Assigned',
+            title: 'Task created',
             subtitle: `Task: ${task.title}`,
             metadata: { priority: task.priority }
         });
@@ -1211,7 +1211,7 @@ export const beeyieldService = {
                 event_type: 'task_completed',
                 entity_type: 'task',
                 entity_id: task.id,
-                title: 'Objective Achieved',
+                title: 'Task completed',
                 subtitle: `Completed: ${task.title}`,
                 metadata: { total_tasks: 1 }
             });

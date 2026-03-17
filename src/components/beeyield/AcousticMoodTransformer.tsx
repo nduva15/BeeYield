@@ -74,13 +74,13 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
         >
             <PageHeader
                 icon={BrainCircuit}
-                label="Acoustic Node"
+                label="Acoustic sensor"
                 title={<>Hive <span className="text-[#1B9157]">Mood</span></>}
-                subtitle="Real-time spectral analysis for colony health and queen status verification."
+                subtitle="A quick sound check to spot unusual patterns."
                 actions={
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
                         <Activity className="w-3 h-3 text-[#1B9157] animate-pulse" />
-                        <span className="text-xs font-bold text-gray-500 tracking-tight">Node Sync: <span className="text-[#1A1A1A]">{confidence.toFixed(1)}%</span></span>
+                        <span className="text-xs font-bold text-gray-500 tracking-tight">Sync: <span className="text-[#1A1A1A]">{confidence.toFixed(1)}%</span></span>
                     </div>
                 }
             />

@@ -33,8 +33,8 @@ export function useCreateHarvest() {
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: harvestKeys.lists() });
             queryClient.invalidateQueries({ queryKey: harvestKeys.summary() });
-            toast.success('Harvest recorded!', {
-                description: `Batch ${data.batch_code} sealed on HoneyChain™`
+            toast.success('Harvest recorded', {
+                description: data.batch_code ? `Batch: ${data.batch_code}` : undefined
             });
         },
         onError: (error: any) => {

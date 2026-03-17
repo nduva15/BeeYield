@@ -24,7 +24,6 @@ import {
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
 import BeeYieldForgotPasswordForm from '@/components/auth/beeyield/BeeYieldForgotPasswordForm';
-import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 

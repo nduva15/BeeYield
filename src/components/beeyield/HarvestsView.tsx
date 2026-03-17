@@ -191,9 +191,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 {/* Header */}
                 <PageHeader
                     icon={Activity}
-                    label="Harvest_Log"
-                    title={<>Honey <span className="text-[#F4D03F]">Harvest</span></>}
-                    subtitle="Record production details."
+                    label="Harvest"
+                    title={<>Record <span className="text-[#F4D03F]">harvest</span></>}
+                    subtitle="Save your harvest details."
                     actions={
                         <button
                             onClick={() => setIsAddingHarvest(false)}
@@ -216,15 +216,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     <FlaskConical className="w-4 h-4 text-white" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Production_Intelligence</h3>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">TRACK_YIELD_DISTRIBUTION</p>
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Harvest details</h3>
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Record what you harvested</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className={cn(glass.card, "bg-white/40 border-white/20 p-5 shadow-xl")}>
                                 <div className="space-y-1 mb-4">
-                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Current_Batch</h4>
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Batch</h4>
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 border border-white/40 shadow-sm">
@@ -232,10 +232,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <span className="text-xs font-bold text-[#F4D03F] tabular-nums">BTCH_{new Date().getTime().toString().slice(-6)}</span>
                                     </div>
                                     <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 border border-white/40 shadow-sm">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sync</span>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</span>
                                         <div className="flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                                            <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider">Stable</span>
+                                            <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider">Saved</span>
                                         </div>
                                     </div>
                                 </div>
@@ -255,8 +255,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <Layers className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Extraction_<span className="text-[#F4D03F]">Log</span></h2>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">INPUT_PRODUCTION_ANALYTICS</p>
+                                    <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Harvest <span className="text-[#F4D03F]">form</span></h2>
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Enter harvest details</p>
                                     </div>
                                 </div>
                             </div>
@@ -414,7 +414,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         className={cn(glass.btnPrimary, "flex-1 h-9 font-black uppercase tracking-[0.2em] text-[10px]")}
                                     >
                                         {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        Save Harvest
+                                        Save harvest
                                     </button>
                                 </div>
                             </form>
@@ -435,9 +435,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             {/* Header */}
             <PageHeader
                 icon={Package}
-                label="Production_Intelligence"
-                title={<>Production <span className="text-[#F4D03F]">Registry</span></>}
-                subtitle="Track honey extraction and packaging cycles."
+                label="Harvests"
+                title={<>Harvest <span className="text-[#F4D03F]">list</span></>}
+                subtitle="View and record your harvests."
                 actions={
                     <div className="flex items-center gap-2">
                         <button
@@ -454,7 +454,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                             className={glass.btnPrimary}
                         >
                             <Plus className="w-3.5 h-3.5" />
-                            Log_Extraction
+                            Add harvest
                         </button>
                     </div>
                 }

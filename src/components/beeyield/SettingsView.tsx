@@ -25,7 +25,6 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { StripeCardForm } from '@/components/payments/StripeCardForm';
 import { deletePaymentMethod, getPaymentMethods, saveStripePaymentMethod } from '@/services/shopService';
 import beeyieldService from '@/services/beeyieldService';
 import {
@@ -75,6 +74,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const [mounted, setMounted] = React.useState(false);
     const [loading, setLoading] = React.useState<Record<string, boolean>>({});
     const [activeTab, setActiveTab] = React.useState('identity');
+    const [pageError, setPageError] = React.useState<string | null>(null);
 
     // Billing
     const [billingLoading, setBillingLoading] = React.useState(false);
@@ -82,6 +82,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const [billingOverview, setBillingOverview] = React.useState<any>(null);
     const [transactions, setTransactions] = React.useState<BillingTx[]>([]);
     const [selectedTx, setSelectedTx] = React.useState<BillingTx | null>(null);
+    const [isAddCardOpen, setIsAddCardOpen] = React.useState(false);
+    const [StripeCardFormComp, setStripeCardFormComp] = React.useState<React.ComponentType<any> | null>(null);
 
     React.useEffect(() => {
         setMounted(true);
@@ -89,6 +91,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     const loadBilling = React.useCallback(async () => {
         setBillingLoading(true);
+        setPageError(null);
         try {
             const [methods, overview, txs] = await Promise.all([
                 getPaymentMethods().catch(() => []),
@@ -98,10 +101,26 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             setPaymentMethods((methods || []) as SavedPaymentMethod[]);
             setBillingOverview(overview);
             setTransactions((txs || []) as BillingTx[]);
+        } catch (e: any) {
+            const msg = e?.message || 'Failed to load billing data';
+            console.error(e);
+            setPageError(msg);
+            toast.error(msg);
         } finally {
             setBillingLoading(false);
         }
     }, []);
+
+    const ensureStripeCardForm = React.useCallback(async () => {
+        if (StripeCardFormComp) return;
+        try {
+            const mod: any = await import('@/components/payments/StripeCardForm');
+            setStripeCardFormComp(() => mod.StripeCardForm || mod.default);
+        } catch (e) {
+            console.error(e);
+            toast.error('Stripe UI failed to load. Check CSP/keys.');
+        }
+    }, [StripeCardFormComp]);
 
     React.useEffect(() => {
         if (activeTab === 'billing') {
@@ -111,14 +130,18 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     const handleAtomicSave = async (section: string) => {
         setLoading(prev => ({ ...prev, [section]: true }));
+        setPageError(null);
         try {
             await syncToBackend();
             toast.success(`${section} Registry Synchronized`, {
                 description: "Settings committed to BeeYield Global Registry",
                 icon: <Check className="w-4 h-4 text-[#1B9157]" />
             });
-        } catch (error) {
+        } catch (error: any) {
+            const msg = error?.message || `Failed to sync ${section}`;
             console.error(error);
+            setPageError(msg);
+            toast.error(msg);
         } finally {
             setLoading(prev => ({ ...prev, [section]: false }));
         }
@@ -140,6 +163,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     </div>
                 }
             />
+
+            {pageError && (
+                <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-5 py-4">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">Settings error</p>
+                            <p className="text-sm font-semibold text-[#1A1A1A] break-words">{pageError}</p>
+                        </div>
+                        <button
+                            type="button"
+                            className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                            onClick={() => setPageError(null)}
+                        >
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <Tabs
                 value={activeTab}
@@ -558,7 +599,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">SAVED_METHODS</p>
                                         </div>
 
-                                        <Dialog>
+                                        <Dialog
+                                            open={isAddCardOpen}
+                                            onOpenChange={(open) => {
+                                                setIsAddCardOpen(open);
+                                                if (open) void ensureStripeCardForm();
+                                            }}
+                                        >
                                             <DialogTrigger asChild>
                                                 <button className={cn(glass.btnPrimary, "h-9 px-4")}>
                                                     <Plus className="w-4 h-4" />
@@ -576,28 +623,35 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     </DialogDescription>
                                                 </DialogHeader>
                                                 <div className="pt-2">
-                                                    <StripeCardForm
-                                                        mode="save"
-                                                        onSuccess={async (paymentMethod) => {
-                                                            try {
-                                                                await saveStripePaymentMethod(paymentMethod.id, {
-                                                                    last4: paymentMethod.last4,
-                                                                    brand: paymentMethod.brand,
-                                                                    exp_month: paymentMethod.exp_month,
-                                                                    exp_year: paymentMethod.exp_year,
-                                                                });
-                                                                toast.success('Card saved');
-                                                                await loadBilling();
-                                                            } catch (error) {
-                                                                console.error(error);
-                                                                toast.error('Failed to save card');
-                                                            }
-                                                        }}
-                                                        onError={(error) => {
-                                                            console.error('Stripe error:', error);
-                                                        }}
-                                                        buttonText="Save Card Securely"
-                                                    />
+                                                    {StripeCardFormComp ? (
+                                                        <StripeCardFormComp
+                                                            mode="save"
+                                                            onSuccess={async (paymentMethod: any) => {
+                                                                try {
+                                                                    await saveStripePaymentMethod(paymentMethod.id, {
+                                                                        last4: paymentMethod.last4,
+                                                                        brand: paymentMethod.brand,
+                                                                        exp_month: paymentMethod.exp_month,
+                                                                        exp_year: paymentMethod.exp_year,
+                                                                    });
+                                                                    toast.success('Card saved');
+                                                                    setIsAddCardOpen(false);
+                                                                    await loadBilling();
+                                                                } catch (error) {
+                                                                    console.error(error);
+                                                                    toast.error('Failed to save card');
+                                                                }
+                                                            }}
+                                                            onError={(error: any) => {
+                                                                console.error('Stripe error:', error);
+                                                            }}
+                                                            buttonText="Save Card Securely"
+                                                        />
+                                                    ) : (
+                                                        <div className="p-4 text-center text-sm text-muted-foreground">
+                                                            Loading secure card form…
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </DialogContent>
                                         </Dialog>
