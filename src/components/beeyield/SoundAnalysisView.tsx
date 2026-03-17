@@ -61,9 +61,12 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
             const tid = toast.loading('Analyzing audio…');
             try {
-                const resp = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
-                const verdict = String(resp?.verdict || '').toLowerCase();
-                const confidence = typeof resp?.confidence === 'number' ? resp.confidence : undefined;
+                const resp = await beeyieldService.analyzeHiveAudio({
+                    file,
+                    hiveId: selectedHiveId || undefined,
+                });
+                const verdict = String(resp?.prediction || resp?.verdict || resp?.label || '').toLowerCase();
+                const confidence = typeof resp?.probability === 'number' ? resp.probability : typeof resp?.confidence === 'number' ? resp.confidence : undefined;
                 const label: 'Healthy' | 'Warning' =
                     verdict.includes('healthy') || verdict.includes('normal') ? 'Healthy' : 'Warning';
 
