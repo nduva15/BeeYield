@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart3, Cpu, Puzzle } from 'lucide-react';
+import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart, Cpu, Puzzle } from 'lucide-react';
 import { glass, PageHeader } from './GlassTheme';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -122,7 +122,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             {[
                                 { id: 'devices', label: 'Devices', icon: Cpu, sub: 'Sensors & telemetry' },
                                 { id: 'meters', label: 'Meters', icon: Activity, sub: 'Usage & alarms' },
-                                { id: 'precision-pollination-folder', label: 'Pollination', icon: FileBarChart3, sub: 'Plans & exports' },
+                                { id: 'precision-pollination-folder', label: 'Pollination', icon: FileBarChart, sub: 'Plans & exports' },
                                 { id: 'task', label: 'My Task', icon: ClipboardList, sub: 'To-dos & deployments' },
                                 { id: 'requests', label: 'Requests', icon: HelpCircle, sub: 'Support tickets' },
                                 { id: 'integrations', label: 'Integrations', icon: Puzzle, sub: 'QuickBooks / Shopify' },

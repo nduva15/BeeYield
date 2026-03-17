@@ -94,21 +94,16 @@ const MasterMapView: React.FC = () => {
 
                 {/* Map Interface */}
                 <div className={cn(glass.card, "flex-1 rounded-3xl bg-neutral-900 border-gray-200 shadow-sm relative overflow-hidden group")}>
-                    {/* Map Mock Background */}
-                    <div
-                        className="absolute inset-0 opacity-40 grayscale"
-                        style={{
-                            backgroundImage: 'url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/-74.5,40,9/1200x800?access_token=mock")',
-                            backgroundSize: 'cover'
-                        }}
-                    />
-
-                    {/* SVG Layer for Drawings */}
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                        <polygon points="200,100 600,150 550,450 150,400" className="fill-[#1B9157]/10 stroke-[#1B9157] stroke-2 stroke-dasharray-4" />
-                        <circle cx="350" cy="280" r="8" className="fill-[#F4D03F] stroke-white stroke-2" />
-                        <circle cx="450" cy="220" r="8" className="fill-[#F4D03F] stroke-white stroke-2" />
-                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center p-12">
+                        <div className="text-center space-y-2">
+                            <MapIcon className="w-10 h-10 text-white/20 mx-auto" />
+                            <p className="text-sm font-bold text-white/80">No GIS layer connected</p>
+                            <p className="text-xs font-medium text-white/40 max-w-xl">
+                                This map previously used a mock satellite background and demo drawings. Connect a real map provider and backend GIS assets
+                                (boundaries, hive placements, geofences) to enable this view.
+                            </p>
+                        </div>
+                    </div>
 
                     {/* Digital Hud */}
                     <div className="absolute top-6 left-6 space-y-4 pointer-events-none">
@@ -118,11 +113,11 @@ const MasterMapView: React.FC = () => {
                                 <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Feed</span>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[9px] font-mono text-gray-400">LAT: -1.2921°</p>
-                                <p className="text-[9px] font-mono text-gray-400">LON: 36.8219°</p>
+                                <p className="text-[9px] font-mono text-gray-400">LAT: —</p>
+                                <p className="text-[9px] font-mono text-gray-400">LON: —</p>
                                 <div className="flex items-center gap-2 mt-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                                    <p className="text-[8px] font-bold text-[#1B9157] uppercase tracking-widest">Satellite Lock</p>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">No fix</p>
                                 </div>
                             </div>
                         </div>
