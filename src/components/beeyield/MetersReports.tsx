@@ -1,4 +1,15 @@
 import React from 'react';
+import ReportsExportsView from './ReportsExportsView';
+
+const MetersReports: React.FC = () => {
+    return <ReportsExportsView />;
+};
+
+export default MetersReports;
+
+/*
+
+import React from 'react';
 import { FileText, Download, Activity, DollarSign, BarChart, Loader2, Database, Terminal, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
@@ -16,9 +27,7 @@ interface GeneratedReport {
 }
 
 const MetersReports: React.FC = () => {
-    const [generatedReports, setGeneratedReports] = React.useState<GeneratedReport[]>([
-        { id: '1', name: 'Fault Log', date: '2026-01-17 07:50', type: 'PDF' }
-    ]);
+    const [generatedReports, setGeneratedReports] = React.useState<GeneratedReport[]>([]);
     const [loading, setLoading] = React.useState<string | null>(null);
     const [downloading, setDownloading] = React.useState<string | null>(null);
 
@@ -68,7 +77,7 @@ const MetersReports: React.FC = () => {
 
     const handleGenerate = (reportName: string) => {
         setLoading(reportName);
-        setTimeout(() => {
+        try {
             const data = generateReportData(reportName);
             const newReport: GeneratedReport = {
                 id: Date.now().toString(),
@@ -78,9 +87,10 @@ const MetersReports: React.FC = () => {
                 data
             };
             setGeneratedReports(prev => [newReport, ...prev]);
+            toast.success(`Export ready: ${reportName}`);
+        } finally {
             setLoading(null);
-            toast.success(`Export Generated: ${reportName}`);
-        }, 1200);
+        }
     };
 
     const handleDownload = async (reportName: string, reportData?: any) => {
@@ -288,3 +298,4 @@ const MetersReports: React.FC = () => {
 };
 
 export default MetersReports;
+*/

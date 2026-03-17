@@ -46,17 +46,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             }
         } catch (error) {
             console.error('Add error:', error);
-            // If create fails (offline / RLS / network), keep a temporary local row so the UI remains responsive.
-            const temp = {
-                id: newDeviceData?.id || `temp_${Math.random().toString(36).slice(2)}`,
-                status: 'active',
-                battery_level: 100,
-                firmware_version: newDeviceData?.firmware_version || '—',
-                last_ping: new Date().toISOString(),
-                ...newDeviceData,
-            };
-            setLocalDevices([temp, ...localDevices]);
-            toast.info(`Device ${newDeviceData.device_code} cached locally.`);
+            toast.error('Could not add device. Please try again.');
         }
     };
 
