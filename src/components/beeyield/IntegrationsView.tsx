@@ -297,7 +297,38 @@ const IntegrationsView: React.FC = () => {
                                 </div>
                             )}
 
-                            <button onClick={() => toast.success("Policy Updated")} className={cn(glass.btnPrimary, "w-full h-9 font-bold text-xs mt-2")}>Update Parameters</button>
+                            <button
+                                onClick={async () => {
+                                    const tid = toast.loading('Saving settings…');
+                                    try {
+                                        const platform = p;
+                                        const payload: any = {
+                                            platform,
+                                            is_active: true,
+                                            store_url: platform === 'shopify' ? shopUrl : undefined,
+                                            config_json: platform === 'quickbooks'
+                                                ? {
+                                                    account_mapping: {
+                                                        revenue: qboIncomeAccount,
+                                                        operating_costs: qboExpenseAccount
+                                                    }
+                                                }
+                                                : {
+                                                    store_url: shopUrl
+                                                }
+                                        };
+                                        await beeyieldService.upsertIntegrationConfig(payload);
+                                        toast.success('Saved', { id: tid });
+                                        fetchConfigs();
+                                    } catch (e) {
+                                        console.error(e);
+                                        toast.error('Save failed', { id: tid });
+                                    }
+                                }}
+                                className={cn(glass.btnPrimary, "w-full h-9 font-bold text-xs mt-2")}
+                            >
+                                Update Parameters
+                            </button>
                         </div>
 
                         <div className={cn(glass.card, "p-4 space-y-3 bg-[#F9F7F2] border-[#F4D03F]/20")}>

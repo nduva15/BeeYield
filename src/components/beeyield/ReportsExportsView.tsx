@@ -232,7 +232,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
             loadData();
         } catch (error) {
-            console.error('Synthesis failed', error);
+            console.error('Report generation failed', error);
             toast.error('Insights failed', { id: toastId });
         } finally {
             setIsAISynthesizing(false);
@@ -408,7 +408,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Synthesis Parameters */}
+            {/* Report options */}
                 <div className="lg:col-span-8 space-y-6">
                     <div className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm")}>
                         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
@@ -421,7 +421,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                         <div className="p-5 space-y-6">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Vector Selection</label>
+                                <label className="text-sm font-semibold text-gray-600 ml-1">Choose a section</label>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                     {sectionOptions.map((opt) => (
                                         <button
@@ -500,7 +500,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         <div className="flex items-center gap-3 border-l-4 border-emerald-500 pl-3">
                             <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Processed Archives</h3>
                             <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Historical Registry</p>
+                            <p className="text-sm font-semibold text-gray-600">Past reports</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {reports.slice(0, 6).map((r, i) => (
@@ -515,7 +515,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         </div>
                                      </div>
                                      <button 
-                                        onClick={() => r.file_url && window.open(r.file_url, '_blank')}
+                                        onClick={async () => {
+                                            const { ok } = await beeyieldService.downloadReport({
+                                                file_url: r.file_url,
+                                                file_name: (r as any).file_name
+                                            });
+                                            if (!ok) toast.error('Download unavailable yet');
+                                        }}
                                         aria-label="Download report"
                                         title="Download report"
                                         className="w-9 h-9 rounded-xl bg-gray-50 border border-transparent hover:border-emerald-200 flex items-center justify-center text-gray-400 hover:text-emerald-500 transition-all shadow-sm"
