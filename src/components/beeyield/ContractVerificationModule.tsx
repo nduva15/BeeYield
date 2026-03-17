@@ -57,7 +57,7 @@ const ContractVerificationModule: React.FC = () => {
                 <div className="space-y-2">
                     <div className={cn(glass.badge, 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20')}>
                         <FileCheck className="w-3.5 h-3.5 mr-2" />
-                        Contract Verification Node v3.1
+                        Contract check v3.1
                     </div>
                     <h1 className="text-xl font-bold text-[#1A1A1A] tracking-tight">
                         Grade <span className="text-[#F4D03F]">Certification</span>
@@ -209,7 +209,13 @@ const ContractVerificationModule: React.FC = () => {
                                     </td>
                                     <td className="p-4 px-6 text-right">
                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className={cn(glass.btnSecondary, "h-8 w-8 p-0 flex items-center justify-center")}><Share2 className="w-3.5 h-3.5" /></button>
+                                            <button
+                                                className={cn(glass.btnSecondary, "h-8 w-8 p-0 flex items-center justify-center")}
+                                                aria-label="Share"
+                                                title="Share"
+                                            >
+                                                <Share2 className="w-3.5 h-3.5" />
+                                            </button>
                                             <button className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] font-bold uppercase tracking-widest")}>Verify</button>
                                         </div>
                                     </td>

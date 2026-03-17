@@ -3,21 +3,45 @@ import { Camera, ArrowUp, ArrowDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
+import beeyieldService from '@/services/beeyieldService';
 
 const VpmTicker: React.FC = () => {
     const [vpm, setVpm] = React.useState(14.2);
     const [trend, setTrend] = React.useState<'up' | 'down'>('up');
 
     React.useEffect(() => {
-        const interval = setInterval(() => {
-            const delta = (Math.random() - 0.5) * 0.8;
-            setVpm(prev => {
-                const next = Math.max(8, Math.min(22, prev + delta));
-                setTrend(next > prev ? 'up' : 'down');
-                return next;
-            });
-        }, 3000);
-        return () => clearInterval(interval);
+        let mounted = true;
+
+        const readVpm = async () => {
+            try {
+                const rows = await beeyieldService.getSensorReadings(undefined, 1);
+                const r: any = Array.isArray(rows) ? rows[0] : null;
+                const raw =
+                    typeof r?.vpm === 'number'
+                        ? r.vpm
+                        : typeof r?.visits_per_minute === 'number'
+                            ? r.visits_per_minute
+                            : typeof r?.activity_vpm === 'number'
+                                ? r.activity_vpm
+                                : null;
+                if (!mounted || typeof raw !== 'number') return;
+
+                setVpm((prev) => {
+                    const next = Math.max(0, raw);
+                    setTrend(next > prev ? 'up' : 'down');
+                    return next;
+                });
+            } catch {
+                // ignore (ticker can run stale)
+            }
+        };
+
+        readVpm();
+        const interval = setInterval(readVpm, 15_000);
+        return () => {
+            mounted = false;
+            clearInterval(interval);
+        };
     }, []);
 
     return (

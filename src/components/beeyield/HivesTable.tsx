@@ -50,7 +50,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                         <span className="text-sm font-bold text-[#1A1A1A] tracking-tight uppercase">{row.getValue('hive_code')}</span>
                         <div className="flex items-center gap-1">
                             <Binary className="w-2.5 h-2.5 text-[#F4D03F]/40" />
-                            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Node v5.2</span>
+                            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Firmware v5.2</span>
                         </div>
                     </div>
                 </div>

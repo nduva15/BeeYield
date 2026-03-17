@@ -343,13 +343,13 @@ export function UsbHubDashboard() {
                 >
                     <div className={glass.card + " p-6 h-full"}>
                         <div className="mb-8 border-b border-[#F4D03F]/10 pb-4">
-                            <h2 className="text-lg font-bold text-[#1A1A1A]">Safety Protocol</h2>
+                            <h2 className="text-lg font-bold text-[#1A1A1A]">Safety checklist</h2>
                             <p className="text-sm text-gray-500">Critical checks before flashing hardware.</p>
                         </div>
 
                         <ul className="space-y-4">
                             {[
-                                { t: "Kill Serial Sessions", d: "Ensure single polling vector" },
+                                { t: "Close serial sessions", d: "Make sure only one tool is connected." },
                                 { t: "Stabilize 5V Voltage", d: "Prevent mid-flash brownout" },
                                 { t: "Device match", d: "Chip ID check" },
                                 { t: "Persistent Link", d: "Do not sever USB bridge" }

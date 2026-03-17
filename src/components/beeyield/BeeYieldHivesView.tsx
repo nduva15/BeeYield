@@ -223,8 +223,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             onClick={handleExportExcel}
                             disabled={isExporting}
                             className={cn(glass.btnSecondary, "w-9 h-9 p-0")}
+                            aria-label="Export hives to Excel"
                             title="Export to Excel"
                         >
+                            <span className="sr-only">Export</span>
                             {isExporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                         </button>
                         <button
@@ -232,7 +234,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             className={cn(glass.btnPrimary, "h-9 text-[10px]")}
                         >
                             <Plus className="w-4 h-4" />
-                            Initialize Hive
+                            Add hive
                         </button>
                     </div>
                 }
@@ -457,7 +459,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <div className="space-y-1">
                                         <h2 className="text-xl font-bold text-foreground tracking-tight">Schedule <span className="text-[#F4D03F]">Inspection</span></h2>
                                         <p className="text-xs text-gray-400 font-medium">Set a reminder to check on this colony.</p>
-                                    </div><button onClick={() => setIsRequestingInspection(false)} className="w-9 h-9 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all">
+                                    </div><button onClick={() => setIsRequestingInspection(false)} className="w-9 h-9 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all" aria-label="Close inspection dialog" title="Close">
+                                        <span className="sr-only">Close</span>
                                         <X className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -501,7 +504,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                         <h2 className="text-xl font-bold text-foreground tracking-tight">Hive <span className="text-[#F4D03F]">Notes</span></h2>
                                         <p className="text-xs text-gray-400 font-medium">Archive observations for hive #{activeHive.hive_code}.</p>
                                     </div>
-                                    <button onClick={() => setIsNotesModalOpen(false)} className="w-9 h-9 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all">
+                                    <button onClick={() => setIsNotesModalOpen(false)} className="w-9 h-9 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all" aria-label="Close notes dialog" title="Close">
+                                        <span className="sr-only">Close</span>
                                         <X className="w-4 h-4" />
                                     </button>
                                 </div>

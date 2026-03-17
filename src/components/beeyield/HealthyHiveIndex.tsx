@@ -3,6 +3,8 @@ import { ShieldCheck, Activity, AlertCircle, CheckCircle2, Award, Download } fro
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import beeyieldService from '@/services/beeyieldService';
 
 interface HealthyHiveIndexProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -17,9 +19,30 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
         { label: 'Queen Presence', value: '100', unit: '%', status: 'Nominal', method: 'Acoustic Frequency', detail: 'Prevents collapse from queenlessness.', score: 100 },
     ];
 
-    const handleDownloadCert = () => {
+    const handleDownloadCert = async () => {
+        if (generatingCert) return;
         setGeneratingCert(true);
-        setTimeout(() => setGeneratingCert(false), 2000);
+        const tid = toast.loading('Generating certificate…');
+        try {
+            const { data, error } = await beeyieldService.generateReport({
+                report_type: 'audit',
+                parameters: {
+                    scope_days: 90,
+                    sections: ['overview', 'apiaries', 'hives', 'inspections'],
+                },
+                file_format: 'PDF',
+            } as any);
+            if (error || !data?.id) throw error || new Error('Report job could not be created');
+
+            const status = await beeyieldService.waitForReport(String(data.id), { timeoutMs: 90_000 });
+            if (status?.file_url) window.open(status.file_url, '_blank');
+            toast.success('Certificate ready', { id: tid });
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e?.message || 'Certificate generation failed', { id: tid });
+        } finally {
+            setGeneratingCert(false);
+        }
     };
 
     return (

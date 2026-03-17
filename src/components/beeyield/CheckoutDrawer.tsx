@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import beeyieldService from '@/services/beeyieldService';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PaymentMethod {
     id: string;
@@ -39,6 +40,7 @@ interface CheckoutDrawerProps {
 }
 
 const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, onSuccess }) => {
+    const { user, beeyieldUser } = useAuth();
     const [step, setStep] = React.useState<'review' | 'payment' | 'processing' | 'success'>('review');
     const [selectedMethod, setSelectedMethod] = React.useState<string>('method_1');
     const [isProcessing, setIsProcessing] = React.useState(false);
@@ -52,6 +54,11 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
 
     const handlePayment = async () => {
         if (!item) return;
+        if (!beeyieldUser?.id && !user?.id) {
+            toast.error('Please sign in to complete checkout.');
+            setStep('payment');
+            return;
+        }
         setIsProcessing(true);
         setStep('processing');
 
@@ -60,7 +67,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
         try {
             // 1. Initiate Checkout via Oxidized Shop Engine
             const { data, error } = await beeyieldService.checkout({
-                user_id: 'current_user_id', // In reality, get from auth context
+                user_id: beeyieldUser?.id || user?.id || 'anonymous',
                 idempotency_key: idempotencyKey,
                 checkout_data: {
                     amount: item.price,
@@ -136,6 +143,8 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                             <button
                                 onClick={onClose}
                                 disabled={isProcessing}
+                                aria-label="Close checkout"
+                                title="Close"
                                 className="p-2 text-gray-400 hover:text-[#1A1A1A] transition-colors disabled:opacity-0"
                             >
                                 <X size={18} />

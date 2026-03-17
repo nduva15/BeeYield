@@ -40,9 +40,9 @@ const HpaOptimizer: React.FC = () => {
         >
             <PageHeader
                 icon={Calculator}
-                label="Site Setup Node"
+                label="Site setup"
                 title={<>Placement <span className="text-[#1B9157]">Planner</span></>}
-                subtitle="Calculate precision hive placement density for apiary operations system."
+                subtitle="Estimate hive placement density for a location."
                 actions={
                     <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-gray-100 shadow-sm">
                         <Activity className="w-4 h-4 text-[#1B9157]" />
@@ -64,9 +64,10 @@ const HpaOptimizer: React.FC = () => {
 
                         <div className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400 ml-1">Orchard Acreage</label>
+                                <label htmlFor="orchard-acreage" className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400 ml-1">Orchard Acreage</label>
                                 <div className="relative group">
                                     <input
+                                        id="orchard-acreage"
                                         type="number"
                                         value={acreage}
                                         onChange={(e) => setAcreage(Number(e.target.value))}

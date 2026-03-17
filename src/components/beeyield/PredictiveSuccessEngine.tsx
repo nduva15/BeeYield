@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
+import beeyieldService from '@/services/beeyieldService';
 
 interface PredictiveSuccessEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -20,6 +21,35 @@ const PREDICTION_DATA = [
 ];
 
 const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTabChange }) => {
+    const [liveVpm, setLiveVpm] = React.useState<number | null>(null);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            try {
+                const rows: any[] = await beeyieldService.getSensorReadings(undefined, 1);
+                const r: any = Array.isArray(rows) ? rows[0] : null;
+                const v =
+                    typeof r?.vpm === 'number'
+                        ? r.vpm
+                        : typeof r?.visits_per_minute === 'number'
+                            ? r.visits_per_minute
+                            : typeof r?.activity_vpm === 'number'
+                                ? r.activity_vpm
+                                : null;
+                if (!mounted) return;
+                if (typeof v === 'number') setLiveVpm(v);
+            } catch {
+                // ignore
+            }
+        };
+        load();
+        const t = setInterval(load, 30_000);
+        return () => {
+            mounted = false;
+            clearInterval(t);
+        };
+    }, []);
 
     return (
         <motion.div
@@ -35,7 +65,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                 actions={
                     <div className={cn(glass.badge, "bg-[#1B9157]/5 text-[#1B9157] border-[#1B9157]/20 py-1.5")}>
                         <Activity className="w-3.5 h-3.5 mr-2" />
-                        14.2 Visits/Min
+                        {typeof liveVpm === 'number' ? `${liveVpm.toFixed(1)} Visits/Min` : '— Visits/Min'}
                     </div>
                 }
             />
@@ -97,7 +127,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                             <h3 className="text-sm font-bold text-[#1A1A1A]">Performance Alpha</h3>
                         </div>
                         <p className="text-[11px] text-gray-500 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
-                            Bees worked <span className="text-[#1A1A1A] font-bold">4 hours longer</span> than predicted by weather node.
+                            Bees worked <span className="text-[#1A1A1A] font-bold">4 hours longer</span> than predicted by the weather forecast.
                         </p>
                     </div>
                 </div>
@@ -112,7 +142,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-[#1A1A1A]">Efficiency Curve</h3>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Sensors vs Logic Node</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Sensors vs forecast</p>
                                 </div>
                             </div>
                         </div>

@@ -129,7 +129,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             }
         } catch (error) {
             console.error('Data sync failed', error);
-            toast.error('Sync failure: Industrial vault unreachable');
+            toast.error('Couldn’t sync reports right now.');
             // In offline/no-backend scenarios, keep schedules functional from local store.
             const local = readLocalSchedules();
             if (local.length > 0) setSchedules(local.filter(s => s.is_active));
@@ -147,10 +147,11 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         setIsGenerating(true);
         setGenProgress(10);
         const toastId = toast.loading('Preparing report…');
+        let interval: number | null = null;
 
         try {
             // Animate progress while the backend job runs; completion is based on real job status.
-            const interval = window.setInterval(() => {
+            interval = window.setInterval(() => {
                 setGenProgress(prev => (prev >= 90 ? 90 : prev + 4));
             }, 700);
 
@@ -183,13 +184,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 }
             }
 
-            window.clearInterval(interval);
             setGenProgress(100);
             loadData();
         } catch (error) {
             console.error('Extraction failed', error);
             toast.error('Report failed', { id: toastId });
         } finally {
+            if (interval) window.clearInterval(interval);
             setIsGenerating(false);
             setGenProgress(0);
         }

@@ -94,7 +94,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
         },
         {
             name: 'BeeHUB Sense',
-            description: 'Internal hive monitoring node. Tracks temperature, humidity, and connects wirelessly to the BeeHUB Queen gateway.',
+            description: 'Internal hive sensor. Tracks temperature and humidity and connects wirelessly to the BeeHUB Queen gateway.',
             color: 'bg-green-50',
             image: '/images/products/beehub_temp_humidity.png'
         },

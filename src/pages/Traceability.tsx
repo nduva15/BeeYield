@@ -784,15 +784,15 @@ const Traceability = () => {
 
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <p className="text-[9px] font-black text-[#1B9157] uppercase mb-1 tracking-tighter">Verified By</p>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">Verified by</p>
                                             <div className="flex items-center gap-2">
                                               <div className="h-2 w-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
                                               <p className="text-xl font-black text-[#1A1A1A]">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
                                             </div>
                                           </div>
                                           <div className="text-right">
-                                            <p className="text-[9px] font-black text-[#1B9157] uppercase mb-1 tracking-tighter">System</p>
-                                            <Badge className="bg-[#1B9157]/ text-[#1B9157] border border-[#1B9157]/ text-[9px] font-black px-2 py-0.5 whitespace-nowrap">BeeYield Registry</Badge>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">System</p>
+                                            <Badge className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 text-xs font-semibold px-2 py-0.5 whitespace-nowrap">BeeYield</Badge>
                                           </div>
                                         </div>
                                       </div>
@@ -800,9 +800,9 @@ const Traceability = () => {
                                       <div className="mt-4 pt-4 border-t border-[#F4D03F]/10 flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
                                           <LockIcon className="h-3 w-3 text-[#1B9157]" />
-                                          <span className="text-[9px] font-bold text-[#1B9157] uppercase">Secure Record</span>
+                                          <span className="text-xs font-semibold text-[#1B9157]">Secure record</span>
                                         </div>
-                                        <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-widest">Tamper-Proof</span>
+                                        <span className="text-xs font-semibold text-[#D4AC0D]">Tamper-resistant</span>
                                       </div>
                                     </div>
                                   </div>
@@ -1005,7 +1005,7 @@ const Traceability = () => {
                                 className="absolute inset-0 bg-beeyield-gold/30 rounded-full"
                               />
                             </div>
-                            <span className="text-[10px] font-black text-beeyield-gold uppercase tracking-[0.2em]">Verified Registry Entry</span>
+                            <span className="text-sm font-semibold text-beeyield-gold">Verified record</span>
                           </div>
                         </div>
                       </div>

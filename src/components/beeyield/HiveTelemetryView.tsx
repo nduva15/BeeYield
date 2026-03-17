@@ -76,6 +76,55 @@ const HiveTelemetryView: React.FC = () => {
     const dwdt = latest.weight - prev.weight;
     const [isTaring, setIsTaring] = React.useState(false);
 
+    React.useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            try {
+                const rows: any[] = await beeyieldService.getSensorReadings(undefined, 48);
+                if (!mounted || !Array.isArray(rows) || rows.length === 0) return;
+
+                const pickWeight = (r: any) => {
+                    const candidates = [r?.weight, r?.weight_kg, r?.hive_weight_kg, r?.mass_kg];
+                    const w = candidates.find((v) => typeof v === 'number');
+                    return typeof w === 'number' ? w : null;
+                };
+
+                const points = rows
+                    .map((r) => {
+                        const tsRaw = r?.timestamp || r?.created_at || r?.recorded_at;
+                        const ts = tsRaw ? new Date(tsRaw).getTime() : NaN;
+                        const w = pickWeight(r);
+                        if (!Number.isFinite(ts) || typeof w !== 'number') return null;
+                        return { ts, w };
+                    })
+                    .filter(Boolean) as { ts: number; w: number }[];
+
+                if (points.length < 3) return;
+
+                points.sort((a, b) => a.ts - b.ts);
+                const mapped: WeightData[] = points.map((p, idx) => {
+                    const prev = idx > 0 ? points[idx - 1] : null;
+                    const dwdt = prev ? (p.w - prev.w) : 0;
+                    return {
+                        time: new Date(p.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        weight: parseFloat(p.w.toFixed(2)),
+                        dwdt: parseFloat(dwdt.toFixed(3)),
+                        timestamp: p.ts,
+                    };
+                });
+
+                setData(mapped);
+            } catch {
+                // ignore (view can remain usable with simulated series)
+            }
+        };
+
+        load();
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
     const handleTare = async () => {
         setIsTaring(true);
         toast.loading("Sending TARE command to hardware...");
@@ -149,13 +198,13 @@ const HiveTelemetryView: React.FC = () => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
                 <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 text-[#1B9157] rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 text-[#1B9157] rounded-full text-xs font-semibold border border-emerald-100">
                         <Cpu className="w-3.5 h-3.5" />
-                        Autonomous Telemetry Subsystem
+                        Live data
                     </div>
-                    <h1 className="text-5xl font-black text-[#1A1A1A] tracking-tighter leading-none italic uppercase italic">Real-Time <span className="text-[#F4D03F]">Registry</span></h1>
+                    <h1 className="text-5xl font-black text-[#1A1A1A] tracking-tighter leading-none italic">Live <span className="text-[#F4D03F]">readings</span></h1>
                     <p className="text-sm font-medium text-slate-500 max-w-md px-1">
-                        High-frequency dW/dt calculus and biometric bio-feedback stream processing.
+                        Recent weight and sensor readings from your hive.
                     </p>
                 </div>
 
@@ -164,10 +213,10 @@ const HiveTelemetryView: React.FC = () => {
                         "px-8 py-3 rounded-2xl border flex flex-col items-center transition-all bg-[#FFF9F0] shadow-sm",
                         gatewayStatus === 'Online' ? "border-emerald-100" : "border-red-100"
                     )}>
-                        <span className="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em] mb-1">Gateway Mesh</span>
+                        <span className="text-xs font-semibold text-slate-500 mb-1">Gateway</span>
                         <div className="flex items-center gap-2">
                             <div className={cn("w-2.5 h-2.5 rounded-full shadow-sm", gatewayStatus === 'Online' ? "bg-[#1B9157] animate-pulse" : "bg-red-500")} />
-                            <span className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums uppercase">
+                            <span className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">
                                 {gatewayStatus}
                             </span>
                         </div>
@@ -308,8 +357,8 @@ const HiveTelemetryView: React.FC = () => {
             <Card className={cn(glass.card, "shadow-xl overflow-hidden")}>
                 <CardHeader className="p-8 border-b border-[#F4D03F]/20 flex flex-row items-center justify-between bg-[#F9F7F2]">
                     <div className="space-y-1">
-                        <CardTitle className="text-3xl font-black text-[#1A1A1A] uppercase tracking-tighter italic">Audit Ledger</CardTitle>
-                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] px-1 italic">Industrial Telemetry Archive · Raw Mesh Frames</p>
+                        <CardTitle className="text-3xl font-black text-[#1A1A1A] tracking-tighter italic">Recent history</CardTitle>
+                        <p className="text-sm font-medium text-slate-500 px-1 italic">Recent readings from this session.</p>
                     </div>
                     <div className="w-14 h-14 rounded-2xl bg-[#FFF9F0] border border-slate-200 flex items-center justify-center text-slate-400">
                         <History className="w-6 h-6" />
@@ -321,15 +370,15 @@ const HiveTelemetryView: React.FC = () => {
                             <div key={idx} className="px-8 py-5 flex items-center justify-between hover:bg-[#F4D03F]/10 transition-colors group">
                                 <div className="flex gap-16">
                                     <div className="min-w-[120px]">
-                                        <span className="text-[9px] font-black text-slate-400 uppercase block mb-2 italic tracking-widest text-left">Sector Timestamp</span>
-                                        <span className="text-sm font-black text-slate-600 tabular-nums uppercase">{row.time}</span>
+                                        <span className="text-xs font-semibold text-slate-500 block mb-2 italic text-left">Timestamp</span>
+                                        <span className="text-sm font-semibold text-slate-600 tabular-nums">{row.time}</span>
                                     </div>
                                     <div className="min-w-[100px]">
-                                        <span className="text-[9px] font-black text-slate-400 uppercase block mb-2 italic tracking-widest text-left">Gross Mass</span>
+                                        <span className="text-xs font-semibold text-slate-500 block mb-2 italic text-left">Weight</span>
                                         <span className="text-lg font-black text-[#1A1A1A] tabular-nums italic">{row.weight} kg</span>
                                     </div>
                                     <div className="min-w-[100px]">
-                                        <span className="text-[9px] font-black text-slate-400 uppercase block mb-2 italic tracking-widest text-left">Velocity Vector</span>
+                                        <span className="text-xs font-semibold text-slate-500 block mb-2 italic text-left">Change rate</span>
                                         <span className={cn("text-lg font-black tabular-nums italic", row.dwdt > 0 ? "text-[#1B9157]" : "text-red-500")}>
                                             {row.dwdt > 0 ? '+' : ''}{row.dwdt.toFixed(3)}
                                         </span>
@@ -342,9 +391,9 @@ const HiveTelemetryView: React.FC = () => {
                         ))}
                     </div>
                     <div className="p-8 border-t border-slate-100 bg-[#F9F7F2]/30">
-                        <Button variant="ghost" className="h-12 px-8 rounded-xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-black uppercase text-[10px] tracking-widest gap-4 shadow-sm transition-all group/dl">
+                        <Button variant="ghost" className="h-12 px-8 rounded-xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-semibold text-sm gap-4 shadow-sm transition-all group/dl">
                             <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            Download Master Telemetry Bundle (.CSV)
+                            Download CSV
                         </Button>
                     </div>
                 </CardContent>

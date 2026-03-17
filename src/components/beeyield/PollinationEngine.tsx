@@ -203,11 +203,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="space-y-8">
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Hives / Acre</label>
+                                <label htmlFor="schemeA_hivesPerAcre" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Hives / Acre</label>
                                 <span className="text-lg font-bold text-[#1B9157] tabular-nums">{schemeA.hivesPerAcre}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
                                 <input
+                                    id="schemeA_hivesPerAcre"
                                     type="range" min="0.5" max="4" step="0.1"
                                     value={schemeA.hivesPerAcre}
                                     onChange={(e) => setSchemeA({ ...schemeA, hivesPerAcre: parseFloat(e.target.value) })}
@@ -219,11 +220,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Frames / Hive</label>
+                                <label htmlFor="schemeA_framesPerHive" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Frames / Hive</label>
                                 <span className="text-lg font-bold text-[#1B9157] tabular-nums">{schemeA.framesPerHive}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
                                 <input
+                                    id="schemeA_framesPerHive"
                                     type="range" min="4" max="14" step="1"
                                     value={schemeA.framesPerHive}
                                     onChange={(e) => setSchemeA({ ...schemeA, framesPerHive: parseInt(e.target.value) })}
@@ -255,11 +257,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="space-y-8">
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Hives / Acre</label>
+                                <label htmlFor="schemeB_hivesPerAcre" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Hives / Acre</label>
                                 <span className="text-lg font-bold text-[#F4D03F] tabular-nums">{schemeB.hivesPerAcre}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
                                 <input
+                                    id="schemeB_hivesPerAcre"
                                     type="range" min="0.5" max="4" step="0.1"
                                     value={schemeB.hivesPerAcre}
                                     onChange={(e) => setSchemeB({ ...schemeB, hivesPerAcre: parseFloat(e.target.value) })}
@@ -271,11 +274,12 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Frames / Hive</label>
+                                <label htmlFor="schemeB_framesPerHive" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Frames / Hive</label>
                                 <span className="text-lg font-bold text-[#F4D03F] tabular-nums">{schemeB.framesPerHive}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
                                 <input
+                                    id="schemeB_framesPerHive"
                                     type="range" min="4" max="14" step="1"
                                     value={schemeB.framesPerHive}
                                     onChange={(e) => setSchemeB({ ...schemeB, framesPerHive: parseInt(e.target.value) })}

@@ -15,23 +15,57 @@ interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-// --- Mock Data ---
-const generateHistoryData = (months: number) => {
-    const data: any[] = [];
+const readingTimestamp = (r: any): Date | null => {
+    const raw = r?.timestamp || r?.created_at || r?.recorded_at || r?.time;
+    if (!raw) return null;
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? null : d;
+};
+
+const buildMonthlyHistory = (readings: any[], months: number) => {
     const now = new Date();
+    const buckets = new Map<string, { month: string; tempSum: number; humidSum: number; nTemp: number; nHumid: number; activity: number }>();
+
     for (let i = months - 1; i >= 0; i--) {
         const d = new Date(now);
         d.setMonth(d.getMonth() - i);
-        const baseTemp = 34 + Math.sin(i * 0.8) * 3;
-        const baseHumid = 55 + Math.cos(i * 0.5) * 10;
-        data.push({
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        buckets.set(key, {
             month: d.toLocaleString('default', { month: 'short' }),
-            temp: parseFloat((baseTemp + (Math.random() - 0.5) * 2).toFixed(1)),
-            humidity: parseFloat((baseHumid + (Math.random() - 0.5) * 5).toFixed(1)),
-            activity: Math.floor(40 + Math.random() * 50),
+            tempSum: 0,
+            humidSum: 0,
+            nTemp: 0,
+            nHumid: 0,
+            activity: 0,
         });
     }
-    return data;
+
+    readings.forEach((r) => {
+        const d = readingTimestamp(r);
+        if (!d) return;
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const b = buckets.get(key);
+        if (!b) return;
+
+        const t = typeof r?.temperature === 'number' ? r.temperature : typeof r?.temp === 'number' ? r.temp : null;
+        const h = typeof r?.humidity === 'number' ? r.humidity : typeof r?.humid === 'number' ? r.humid : null;
+        if (typeof t === 'number') {
+            b.tempSum += t;
+            b.nTemp += 1;
+        }
+        if (typeof h === 'number') {
+            b.humidSum += h;
+            b.nHumid += 1;
+        }
+        b.activity += 1;
+    });
+
+    return Array.from(buckets.values()).map((b) => ({
+        month: b.month,
+        temp: b.nTemp ? parseFloat((b.tempSum / b.nTemp).toFixed(1)) : null,
+        humidity: b.nHumid ? parseFloat((b.humidSum / b.nHumid).toFixed(1)) : null,
+        activity: b.activity,
+    }));
 };
 
 const acousticConfig: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
@@ -95,10 +129,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     const [realHives, setRealHives] = React.useState<any[]>([]);
     const [selectedHive, setSelectedHive] = React.useState<any>(null);
     const [historyRange, setHistoryRange] = React.useState(6);
-    const [historyData, setHistoryData] = React.useState(() => generateHistoryData(12));
+    const [historyData, setHistoryData] = React.useState<any[]>([]);
     const [liveTime, setLiveTime] = React.useState(new Date());
     const [realAlerts, setRealAlerts] = React.useState<SensorAlert[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [allReadings, setAllReadings] = React.useState<any[]>([]);
 
     React.useEffect(() => {
         const loadInitialData = async () => {
@@ -110,6 +145,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 ]);
 
                 const readings = await beeyieldService.getSensorReadings(undefined, 100);
+                setAllReadings(readings || []);
 
                 const mappedHives = hives.map(h => {
                     const latest = readings.find(r => r.hive_id === h.id);
@@ -144,6 +180,12 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         return () => clearInterval(timer);
     }, []);
 
+    React.useEffect(() => {
+        if (!selectedHive?.id) return;
+        const hiveReadings = (allReadings || []).filter((r) => r?.hive_id === selectedHive.id);
+        setHistoryData(buildMonthlyHistory(hiveReadings, 12));
+    }, [selectedHive?.id, allReadings]);
+
     if (loading || !selectedHive) {
         return (
             <div className={cn(glass.page, "flex items-center justify-center min-h-[50vh]")}>
@@ -157,7 +199,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         );
     }
 
-    const visibleData = historyData.slice(12 - historyRange);
+    const visibleData = (historyData || []).slice(12 - historyRange);
     const tempStatus = selectedHive.temp < 32 ? 'critical' : selectedHive.temp > 36.5 ? 'warn' : 'ok';
     const humidStatus = selectedHive.humidity < 50 ? 'warn' : selectedHive.humidity > 70 ? 'warn' : 'ok';
     const acoustic = acousticConfig[selectedHive.acoustic] ?? acousticConfig['Healthy'];

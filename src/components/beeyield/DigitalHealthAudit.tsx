@@ -55,7 +55,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                 icon={Camera}
                 label="Analysis"
                 title={<>Health <span className="text-[#F4D03F]">Audit</span></>}
-                subtitle="High-fidelity neural optics for automated colony health assessment."
+                subtitle="Upload a photo to get a quick health check."
                 actions={
                     <div className="flex items-center gap-3">
                         <input
@@ -64,6 +64,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                             onChange={handleFileChange}
                             className="hidden"
                             accept="image/*"
+                            aria-label="Upload image"
                         />
                         <button
                             onClick={() => fileInputRef.current?.click()}
@@ -119,7 +120,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                             <div className="w-16 h-16 rounded-2xl bg-[#F9F7F2] border border-[#F4D03F]/20 flex items-center justify-center shadow-sm">
                                                 <Loader2 className="w-8 h-8 text-[#F4D03F] animate-spin" />
                                             </div>
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Processing Neural Node</span>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Processing…</span>
                                         </div>
                                     </div>
                                     <p className="text-sm font-bold text-gray-500 uppercase tracking-widest text-center max-w-xs leading-relaxed">
@@ -144,6 +145,8 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                         <button 
                                             onClick={() => setScanResults(null)}
                                             className={cn(glass.btnSecondary, "h-9 w-9 p-0 flex items-center justify-center")}
+                                            aria-label="Close results"
+                                            title="Close results"
                                         >
                                             <XCircle className="w-4 h-4 text-gray-400" />
                                         </button>
@@ -295,7 +298,7 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                 <Info className="w-4 h-4 text-[#F4D03F]" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Standards Protocol</h3>
+                            <h3 className="text-sm font-bold text-[#1A1A1A]">Notes</h3>
                         </div>
                         <p className="text-[11px] text-gray-500 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">
                             Audits are synchronized with <span className="text-[#1A1A1A] font-bold">Bee-Standards v4</span>. All certificates valid for 30 days.

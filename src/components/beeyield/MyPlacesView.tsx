@@ -301,7 +301,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                             <Database className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
                                         <div className="space-y-0.5">
-                                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Asset Registry</h3>
+                                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Devices</h3>
                                             <p className={cn(glass.microLabel, "opacity-40 uppercase tracking-widest")}>Device management</p>
                                         </div>
                                     </div>
@@ -310,7 +310,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         className={cn(glass.btnPrimary, "px-3 h-8")}
                                     >
                                         <Plus className="w-3.5 h-3.5" />
-                                        Initialize Unit
+                                        Add hive
                                     </button>
                                 </div>
 
@@ -474,7 +474,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                             </div>
                             <div className="space-y-0.5">
                                 <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-[#1A1A1A]">Unit Parameters</h3>
-                                <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Site initialization protocol active.</p>
+                                <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Fill in the basics for this location.</p>
                             </div>
                         </div>
                     </div>
@@ -487,13 +487,13 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     <Input
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="ACACIA_VALLEY_NODE_01"
+                                        placeholder="ACACIA_VALLEY_01"
                                         className={cn(glass.input, "px-4 h-10 text-[11px] font-black uppercase tracking-wider")}
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Deployment Vector</Label>
+                                    <Label className="text-xs font-semibold text-gray-500 ml-2">Placement</Label>
                                     <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
                                         <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-3">
@@ -556,7 +556,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Flora Vector</Label>
+                                    <Label className="text-xs font-semibold text-gray-500 ml-2">Flora</Label>
                                     <div className="relative">
                                         <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                                         <Input
@@ -597,7 +597,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 ) : (
                                     <ShieldCheck className="w-4 h-4 mr-2" />
                                 )}
-                                {editingApiary ? 'Commit_Protocol' : 'Initialize_Site'}
+                                {editingApiary ? 'Save changes' : 'Add location'}
                             </button>
                         </div>
                     </div>
@@ -615,7 +615,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             {/* Header */}
             <PageHeader
                 icon={MapPin}
-                label="Site Intelligence Registry"
+                label="Apiaries"
                 title={<>Apiary <span className="text-[#F4D03F]">Network</span></>}
                 subtitle="Manage your apiary records."
                 actions={
@@ -624,7 +624,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                         className={glass.btnPrimary}
                     >
                         <Plus className="w-4 h-4" />
-                        Initialize Site
+                        Add location
                     </button>
                 }
             />
@@ -680,8 +680,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 >
                                     <div className="p-4 flex flex-col h-full relative z-10">
                                         <div className="flex justify-between items-start mb-4">
-                                            <div className="px-2.5 py-1 bg-[#1A1A1A]/5 rounded-lg border border-[#F4D03F]/10 text-[8px] font-black uppercase tracking-widest text-gray-400 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] group-hover:border-[#F4D03F] transition-all">
-                                                {apiary.type || 'PERMANENT'}
+                                            <div className="px-2.5 py-1 bg-[#1A1A1A]/5 rounded-lg border border-[#F4D03F]/10 text-xs font-semibold text-gray-500 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] group-hover:border-[#F4D03F] transition-all">
+                                                {apiary.type || 'Permanent'}
                                             </div>
                                             <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
@@ -704,10 +704,10 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         </div>
 
                                         <div className="space-y-1 mb-6">
-                                            <h3 className="text-sm font-black text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors uppercase tracking-tight truncate">{apiary.name}</h3>
+                                            <h3 className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors tracking-tight truncate">{apiary.name}</h3>
                                             <div className="flex items-center gap-1.5 text-gray-400">
                                                 <MapPin className="w-3 h-3" />
-                                                <span className="text-[9px] font-bold uppercase tracking-widest truncate">{apiary.location_name || 'UNDEFINED_GEO'}</span>
+                                                <span className="text-xs font-semibold text-gray-500 truncate">{apiary.location_name || 'Location not set'}</span>
                                             </div>
                                         </div>
 
