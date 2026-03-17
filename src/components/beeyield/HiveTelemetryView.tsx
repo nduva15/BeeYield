@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
     Scale,
     TrendingUp,
@@ -16,6 +17,7 @@ import {
     FileBarChart,
     ChevronRight,
     Download,
+    RefreshCw,
     Cpu,
     Database,
     Binary,
@@ -45,77 +47,42 @@ interface WeightData {
     timestamp: number;
 }
 
-// Mock data generation for weight dynamics
-const generateWeightData = (): WeightData[] => {
-    const data: WeightData[] = [];
-    let weight = 42.5;
-    const now = Date.now();
-    for (let i = 24; i >= 0; i--) {
-        const hour = new Date(now - i * 3600000);
-        // Simulate nectar flow during day (9 AM - 4 PM)
-        const h = hour.getHours();
-        const delta = (h >= 9 && h <= 16) ? Math.random() * 0.4 : -Math.random() * 0.2;
-        weight += delta;
-        data.push({
-            time: hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            weight: parseFloat(weight.toFixed(2)),
-            dwdt: parseFloat(delta.toFixed(3)),
-            timestamp: hour.getTime()
-        });
-    }
-    return data;
-};
-
 const HiveTelemetryView: React.FC = () => {
-    const [data, setData] = React.useState<WeightData[]>(generateWeightData());
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
+    const [data, setData] = React.useState<WeightData[]>([]);
     const [gatewayStatus, setGatewayStatus] = React.useState<'Online' | 'Offline' | 'Connecting'>('Online');
     const [recentAlert, setRecentAlert] = React.useState<string | null>(null);
+    const [hives, setHives] = React.useState<any[]>([]);
+    const [devices, setDevices] = React.useState<any[]>([]);
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
+    const [selectedDeviceId, setSelectedDeviceId] = React.useState<string>('');
 
-    const latest = data[data.length - 1];
-    const prev = data[data.length - 2];
-    const dwdt = latest.weight - prev.weight;
+    const latest = data.length ? data[data.length - 1] : null;
+    const prev = data.length > 1 ? data[data.length - 2] : null;
+    const dwdt = latest && prev ? latest.weight - prev.weight : 0;
     const [isTaring, setIsTaring] = React.useState(false);
 
     React.useEffect(() => {
         let mounted = true;
         const load = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const rows: any[] = await beeyieldService.getSensorReadings(undefined, 48);
-                if (!mounted || !Array.isArray(rows) || rows.length === 0) return;
-
-                const pickWeight = (r: any) => {
-                    const candidates = [r?.weight, r?.weight_kg, r?.hive_weight_kg, r?.mass_kg];
-                    const w = candidates.find((v) => typeof v === 'number');
-                    return typeof w === 'number' ? w : null;
-                };
-
-                const points = rows
-                    .map((r) => {
-                        const tsRaw = r?.timestamp || r?.created_at || r?.recorded_at;
-                        const ts = tsRaw ? new Date(tsRaw).getTime() : NaN;
-                        const w = pickWeight(r);
-                        if (!Number.isFinite(ts) || typeof w !== 'number') return null;
-                        return { ts, w };
-                    })
-                    .filter(Boolean) as { ts: number; w: number }[];
-
-                if (points.length < 3) return;
-
-                points.sort((a, b) => a.ts - b.ts);
-                const mapped: WeightData[] = points.map((p, idx) => {
-                    const prev = idx > 0 ? points[idx - 1] : null;
-                    const dwdt = prev ? (p.w - prev.w) : 0;
-                    return {
-                        time: new Date(p.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        weight: parseFloat(p.w.toFixed(2)),
-                        dwdt: parseFloat(dwdt.toFixed(3)),
-                        timestamp: p.ts,
-                    };
-                });
-
-                setData(mapped);
-            } catch {
-                // ignore (view can remain usable with simulated series)
+                const [h, d] = await Promise.all([beeyieldService.getHives(), beeyieldService.getDevices()]);
+                if (!mounted) return;
+                setHives(h || []);
+                setDevices(d || []);
+                if (!selectedHiveId && (h || []).length > 0) setSelectedHiveId(h[0].id);
+            } catch (e) {
+                console.error(e);
+                if (!mounted) return;
+                setError((e as any)?.message || 'Failed to load hives/devices.');
+                setHives([]);
+                setDevices([]);
+            }
+            finally {
+                if (mounted) setLoading(false);
             }
         };
 
@@ -123,35 +90,110 @@ const HiveTelemetryView: React.FC = () => {
         return () => {
             mounted = false;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleTare = async () => {
-        setIsTaring(true);
-        toast.loading("Sending TARE command to hardware...");
+    const loadSeries = React.useCallback(async () => {
+        if (!selectedHiveId) {
+            setData([]);
+            return;
+        }
+        setLoading(true);
+        setError(null);
         try {
-            const result = await beeyieldService.tareSensor('DEV-001'); // Mock ID
+            // Prefer backend-filtered readings (hive_id param), then map weight field variants.
+            const rows: any[] = await beeyieldService.getReadings(selectedHiveId, 240);
+            const pickWeight = (r: any) => {
+                const candidates = [r?.weight, r?.weight_kg, r?.hive_weight_kg, r?.mass_kg];
+                const w = candidates.find((v) => typeof v === 'number');
+                return typeof w === 'number' ? w : null;
+            };
+
+            const points = (rows || [])
+                .map((r) => {
+                    const tsRaw = r?.recorded_at || r?.timestamp || r?.created_at;
+                    const ts = tsRaw ? new Date(tsRaw).getTime() : NaN;
+                    const w = pickWeight(r);
+                    if (!Number.isFinite(ts) || typeof w !== 'number') return null;
+                    return { ts, w };
+                })
+                .filter(Boolean) as { ts: number; w: number }[];
+
+            if (points.length < 2) {
+                setData([]);
+                return;
+            }
+
+            points.sort((a, b) => a.ts - b.ts);
+            const mapped: WeightData[] = points.map((p, idx) => {
+                const prev = idx > 0 ? points[idx - 1] : null;
+                const dwdt = prev ? (p.w - prev.w) : 0;
+                return {
+                    time: new Date(p.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    weight: parseFloat(p.w.toFixed(2)),
+                    dwdt: parseFloat(dwdt.toFixed(3)),
+                    timestamp: p.ts,
+                };
+            });
+            setData(mapped);
+
+            // Try to infer device from the latest row to enable calibration actions.
+            const latestRow: any = rows?.[0];
+            const devId = String(latestRow?.device_id || '');
+            if (devId) setSelectedDeviceId(devId);
+        } catch (e) {
+            console.error(e);
+            setError((e as any)?.message || 'Failed to load readings.');
+            setData([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [selectedHiveId]);
+
+    React.useEffect(() => {
+        loadSeries();
+        const t = setInterval(loadSeries, 30_000);
+        return () => clearInterval(t);
+    }, [loadSeries]);
+
+    const handleTare = async () => {
+        if (!selectedDeviceId) {
+            toast.error('No device linked to latest readings.');
+            return;
+        }
+        setIsTaring(true);
+        const tid = toast.loading("Taring sensor...");
+        try {
+            const result = await beeyieldService.tareSensor(selectedDeviceId);
             if (result.success) {
-                // In production, you'd refetch readings to see them drop to 0
-                toast.success("Sensor tared successfully");
+                toast.success("Sensor tared", { id: tid });
+                await loadSeries();
             } else {
-                toast.error("Tare failed: Check gateway connectivity");
+                toast.error("Tare failed", { id: tid });
             }
         } catch (err) {
-            toast.error("Calibration error");
+            toast.error("Calibration error", { id: tid });
         } finally {
             setIsTaring(false);
-            toast.dismiss();
         }
     };
 
     const handleManualOffset = async () => {
+        if (!selectedDeviceId) {
+            toast.error('No device linked to latest readings.');
+            return;
+        }
         const value = prompt("Enter manual offset correction (kg):", "0.0");
         if (value === null) return;
         const offset = parseFloat(value);
-        if (isNaN(offset)) return toast.error("Invalid numeric value");
+        if (Number.isNaN(offset)) return toast.error("Invalid numeric value");
 
         try {
-            await beeyieldService.setOffsetCorrection('DEV-001', offset);
+            const tid = toast.loading('Saving offset…');
+            const res = await beeyieldService.setOffsetCorrection(selectedDeviceId, offset);
+            if (res.success) toast.success('Offset saved', { id: tid });
+            else toast.error('Offset save failed', { id: tid });
+            await loadSeries();
         } catch (err) {
             toast.error("Failed to set manual offset");
         }
@@ -209,6 +251,45 @@ const HiveTelemetryView: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <div className="min-w-[240px]">
+                        <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
+                            <SelectTrigger className="h-12 rounded-2xl border border-slate-200 bg-[#FFF9F0] text-[11px] font-bold">
+                                <SelectValue placeholder="Select hive" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {hives.map((h) => (
+                                    <SelectItem key={h.id} value={h.id}>
+                                        {(h.hive_code || h.name || h.id).toString()}
+                                    </SelectItem>
+                                ))}
+                                {hives.length === 0 && (
+                                    <div className="px-3 py-2 text-xs font-semibold text-slate-500">No hives found.</div>
+                                )}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        onClick={async () => {
+                            // Reload meta + series for current selection
+                            const tid = toast.loading('Refreshing…');
+                            try {
+                                const [h] = await Promise.all([beeyieldService.getHives(), beeyieldService.getDevices()]);
+                                setHives(h || []);
+                                if (!selectedHiveId && (h || []).length > 0) setSelectedHiveId(h[0].id);
+                                await loadSeries();
+                                toast.success('Updated', { id: tid });
+                            } catch (e: any) {
+                                toast.error(e?.message || 'Refresh failed', { id: tid });
+                            }
+                        }}
+                        disabled={loading}
+                        className="h-12 px-4 rounded-2xl border border-slate-200 bg-white/70 text-slate-500 hover:text-[#F4D03F] shadow-sm transition-all"
+                        title="Refresh data"
+                        aria-label="Refresh data"
+                    >
+                        <RefreshCw className={cn("w-5 h-5", loading ? "animate-spin" : "")} />
+                    </Button>
                     <div className={cn(
                         "px-8 py-3 rounded-2xl border flex flex-col items-center transition-all bg-[#FFF9F0] shadow-sm",
                         gatewayStatus === 'Online' ? "border-emerald-100" : "border-red-100"
@@ -224,6 +305,34 @@ const HiveTelemetryView: React.FC = () => {
                 </div>
             </div>
 
+            {error && (
+                <Card className="border border-red-200 bg-red-50/60">
+                    <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Data load failed</div>
+                            <div className="text-sm font-semibold text-slate-700 break-words mt-1">{error}</div>
+                        </div>
+                        <Button
+                            onClick={loadSeries}
+                            className="h-11 rounded-2xl bg-neutral-900 text-white font-black uppercase text-[10px] tracking-widest"
+                        >
+                            Retry
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
+            {!loading && !error && hives.length === 0 && (
+                <Card className="border border-slate-200 bg-white/70">
+                    <CardContent className="p-10 text-center space-y-2">
+                        <div className="text-sm font-black text-[#1A1A1A]">No hives connected yet</div>
+                        <div className="text-xs font-semibold text-slate-500 max-w-xl mx-auto">
+                            Add a hive (or connect a device) to start streaming weight readings into this dashboard.
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Matrix Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Weight Card */}
@@ -231,16 +340,16 @@ const HiveTelemetryView: React.FC = () => {
                     <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 italic">Current Biomass Score</p>
                         <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
-                            {latest.weight}<span className="text-2xl ml-1 opacity-20 not-italic">kg</span>
+                            {latest ? latest.weight : '—'}<span className="text-2xl ml-1 opacity-20 not-italic">kg</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 flex flex-col justify-between min-h-[220px]">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between p-4 rounded-2xl bg-[#F9F7F2] border border-slate-100">
                                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none">24h Delta</span>
-                                <span className={cn("text-base font-black flex items-center gap-1 leading-none", (latest.weight - data[0].weight) > 0 ? "text-[#1B9157]" : "text-red-500")}>
-                                    {(latest.weight - data[0].weight) > 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                                    {Math.abs(latest.weight - data[0].weight).toFixed(2)}kg
+                                <span className={cn("text-base font-black flex items-center gap-1 leading-none", latest && data[0] && (latest.weight - data[0].weight) > 0 ? "text-[#1B9157]" : "text-red-500")}>
+                                    {latest && data[0] && (latest.weight - data[0].weight) > 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                                    {latest && data[0] ? `${Math.abs(latest.weight - data[0].weight).toFixed(2)}kg` : '—'}
                                 </span>
                             </div>
                         </div>
@@ -366,7 +475,17 @@ const HiveTelemetryView: React.FC = () => {
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="divide-y divide-slate-50">
-                        {data.slice(-5).reverse().map((row, idx) => (
+                        {loading ? (
+                            <div className="px-8 py-8 text-sm font-semibold text-slate-500 flex items-center gap-3">
+                                <Activity className="w-4 h-4 animate-spin" />
+                                Loading readings…
+                            </div>
+                        ) : data.length === 0 ? (
+                            <div className="px-8 py-10 text-sm font-semibold text-slate-500">
+                                No readings available for this hive yet.
+                            </div>
+                        ) : (
+                            data.slice(-5).reverse().map((row, idx) => (
                             <div key={idx} className="px-8 py-5 flex items-center justify-between hover:bg-[#F4D03F]/10 transition-colors group">
                                 <div className="flex gap-16">
                                     <div className="min-w-[120px]">
@@ -388,10 +507,30 @@ const HiveTelemetryView: React.FC = () => {
                                     <ChevronRight className="w-6 h-6" />
                                 </div>
                             </div>
-                        ))}
+                        ))
+                        )}
                     </div>
                     <div className="p-8 border-t border-slate-100 bg-[#F9F7F2]/30">
-                        <Button variant="ghost" className="h-12 px-8 rounded-xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-semibold text-sm gap-4 shadow-sm transition-all group/dl">
+                        <Button
+                            variant="ghost"
+                            disabled={loading || data.length === 0}
+                            onClick={() => {
+                                const header = 'timestamp,time,weight_kg,dwdt\n';
+                                const rows = data
+                                    .map((r) => `${new Date(r.timestamp).toISOString()},${r.time},${r.weight},${r.dwdt}`)
+                                    .join('\n');
+                                const blob = new Blob([header + rows + '\n'], { type: 'text/csv;charset=utf-8' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `beeyield-telemetry-${selectedHiveId || 'hive'}-${new Date().toISOString().slice(0, 10)}.csv`;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                URL.revokeObjectURL(url);
+                            }}
+                            className="h-12 px-8 rounded-xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-semibold text-sm gap-4 shadow-sm transition-all group/dl"
+                        >
                             <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
                             Download CSV
                         </Button>

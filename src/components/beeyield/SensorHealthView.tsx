@@ -134,51 +134,56 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     const [realAlerts, setRealAlerts] = React.useState<SensorAlert[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [allReadings, setAllReadings] = React.useState<any[]>([]);
+    const [error, setError] = React.useState<string | null>(null);
+
+    const loadInitialData = React.useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [hives, alerts] = await Promise.all([
+                beeyieldService.getHives(),
+                beeyieldService.getSensorAlerts(false, 10)
+            ]);
+
+            const readings = await beeyieldService.getSensorReadings(undefined, 100);
+            setAllReadings(readings || []);
+
+            const mappedHives = (hives || []).map(h => {
+                const latest = (readings || []).find(r => r.hive_id === h.id);
+                const hasAlert = (alerts || []).some(a => a.hive_id === h.id && !a.resolved);
+
+                return {
+                    id: h.id,
+                    name: h.name,
+                    code: h.hive_code || h.id.slice(0, 8),
+                    temp: latest?.temperature || 35.0,
+                    humidity: latest?.humidity || 60,
+                    acoustic: h.health_status || 'Healthy',
+                    alert: hasAlert,
+                    lastSeen: latest ? formatDistanceToNow(new Date(latest.created_at), { addSuffix: true }) : 'No signal'
+                };
+            });
+
+            setRealHives(mappedHives);
+            setRealAlerts(alerts || []);
+            setSelectedHive(mappedHives.length > 0 ? mappedHives[0] : null);
+        } catch (err: any) {
+            console.error("Health view load error", err);
+            setRealHives([]);
+            setRealAlerts([]);
+            setSelectedHive(null);
+            setAllReadings([]);
+            setError(err?.message || 'Failed to load sensor health data.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     React.useEffect(() => {
-        const loadInitialData = async () => {
-            setLoading(true);
-            try {
-                const [hives, alerts] = await Promise.all([
-                    beeyieldService.getHives(),
-                    beeyieldService.getSensorAlerts(false, 10)
-                ]);
-
-                const readings = await beeyieldService.getSensorReadings(undefined, 100);
-                setAllReadings(readings || []);
-
-                const mappedHives = hives.map(h => {
-                    const latest = readings.find(r => r.hive_id === h.id);
-                    const hasAlert = alerts.some(a => a.hive_id === h.id && !a.resolved);
-
-                    return {
-                        id: h.id,
-                        name: h.name,
-                        code: h.hive_code || h.id.slice(0, 8),
-                        temp: latest?.temperature || 35.0,
-                        humidity: latest?.humidity || 60,
-                        acoustic: h.health_status || 'Healthy',
-                        alert: hasAlert,
-                        lastSeen: latest ? formatDistanceToNow(new Date(latest.created_at), { addSuffix: true }) : 'No signal'
-                    };
-                });
-
-                setRealHives(mappedHives);
-                setRealAlerts(alerts);
-                if (mappedHives.length > 0) {
-                    setSelectedHive(mappedHives[0]);
-                }
-            } catch (err) {
-                console.error("Health view load error", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         loadInitialData();
         const timer = setInterval(() => setLiveTime(new Date()), 1000);
         return () => clearInterval(timer);
-    }, []);
+    }, [loadInitialData]);
 
     React.useEffect(() => {
         if (!selectedHive?.id) return;
@@ -186,7 +191,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         setHistoryData(buildMonthlyHistory(hiveReadings, 12));
     }, [selectedHive?.id, allReadings]);
 
-    if (loading || !selectedHive) {
+    if (loading) {
         return (
             <div className={cn(glass.page, "flex items-center justify-center min-h-[50vh]")}>
                 <div className="text-center space-y-4">
@@ -194,6 +199,50 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         <Zap className="w-8 h-8 text-[#F4D03F] animate-pulse" />
                     </div>
                     <h3 className="text-xl font-bold text-[#1A1A1A] animate-pulse">Loading Sensor Matrix...</h3>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={cn(glass.page, "p-6")}>
+                <div className={cn(glass.card, "p-6 border border-red-200 bg-red-50/60")}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Sensor health load failed</div>
+                            <div className="text-sm font-semibold text-slate-700 break-words mt-1">{error}</div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={loadInitialData}
+                            className={cn(glass.btnSecondary, "h-10 px-5 text-[10px] font-black uppercase tracking-widest")}
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!selectedHive || realHives.length === 0) {
+        return (
+            <div className={cn(glass.page, "p-6")}>
+                <div className={cn(glass.card, "p-10 text-center space-y-2")}>
+                    <div className="text-sm font-black text-[#1A1A1A]">No hives connected yet</div>
+                    <div className="text-xs font-semibold text-slate-500 max-w-xl mx-auto">
+                        Add a hive (or connect a device) to start streaming temperature/humidity readings into this dashboard.
+                    </div>
+                    <div className="pt-4">
+                        <button
+                            type="button"
+                            onClick={loadInitialData}
+                            className={cn(glass.btnSecondary, "h-11 px-6 text-[10px] font-black uppercase tracking-widest")}
+                        >
+                            Refresh
+                        </button>
+                    </div>
                 </div>
             </div>
         );

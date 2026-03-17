@@ -25,13 +25,13 @@ import {
     Terminal
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoAsset from '@/assets/Logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { glass, GlassStatCard } from './GlassTheme';
 import { cn } from '@/lib/utils';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { apiPost } from '@/services/api';
 
 export function UsbHubDashboard() {
     const [device, setDevice] = React.useState<USBDevice | null>(null);
@@ -53,6 +53,27 @@ export function UsbHubDashboard() {
     }
   ]
 }`);
+    const [manifestError, setManifestError] = React.useState<string | null>(null);
+
+    const firmwareError = React.useMemo(() => {
+        if (!firmwareFile) return null;
+        const name = firmwareFile.name?.toLowerCase() || '';
+        if (!name.endsWith('.bin')) return 'Firmware must be a .bin file.';
+        if (firmwareFile.size <= 0) return 'Firmware file is empty.';
+        // 50MB sanity limit (keeps the UI responsive)
+        if (firmwareFile.size > 50 * 1024 * 1024) return 'Firmware file is too large (max 50MB).';
+        return null;
+    }, [firmwareFile]);
+
+    const manifestIsValid = React.useMemo(() => {
+        try {
+            const parsed = JSON.parse(manifestJson);
+            if (!parsed || typeof parsed !== 'object') return false;
+            return true;
+        } catch {
+            return false;
+        }
+    }, [manifestJson]);
 
     const queryClient = useQueryClient();
     const { user, beeyieldUser } = useAuth();
@@ -99,12 +120,12 @@ export function UsbHubDashboard() {
                 config_json: { sample_rate: 300 },
                 user_id: userId
             };
-            await axios.post('/api/v1/hub/handshake', payload);
+            await apiPost('/hub/handshake', payload);
             queryClient.invalidateQueries({ queryKey: ['hub-devices'] });
             addLog("Device synced.");
         } catch (err: any) {
             console.error("Handshake failed", err);
-            const msg = err?.response?.data?.message || err?.message || 'Could not sync device';
+            const msg = err?.message || 'Could not sync device';
             setLastError(msg);
             addLog(`Sync Error: ${msg}`);
         }
@@ -123,28 +144,48 @@ export function UsbHubDashboard() {
             toast.warning("Upload industrial firmware (.bin)");
             return;
         }
+        if (firmwareError) {
+            toast.error(firmwareError);
+            return;
+        }
+        if (!manifestIsValid) {
+            toast.error('Manifest JSON is invalid.');
+            setManifestError('Manifest JSON is invalid.');
+            return;
+        }
 
         setIsFlashing(true);
         setSyncProgress(0);
         addLog("Initiating high-priority firmware write sequence...");
 
         try {
-            for (let i = 0; i <= 100; i += 4) {
-                setSyncProgress(i);
-                if (i % 20 === 0) addLog(`Writing block 0x${(1000 + i * 10).toString(16)}... ${i}%`);
-                await new Promise(r => setTimeout(r, 100));
-            }
-
-            const sessionRes = await axios.post('/api/v1/hub/sync/start', {
+            const startedAt = Date.now();
+            const sessionRes = await apiPost<{ id: string }>('/hub/sync/start', {
                 hub_sn: device.serialNumber || 'UNKNOWN-SN',
                 records_count: 0,
                 user_id: userId
             });
 
-            await axios.post('/api/v1/hub/sync/complete', {
-                session_id: sessionRes.data.id,
+            // We can't actually flash firmware via WebUSB here (varies by chip/driver),
+            // but we can validate the payload size + log a "flash attempt" session.
+            // Progress is tied to local file read to avoid fake timeouts.
+            const chunkSize = 256 * 1024; // 256KB
+            const total = Math.max(1, firmwareFile.size);
+            let processed = 0;
+            while (processed < total) {
+                const next = Math.min(total, processed + chunkSize);
+                // read slice to exercise browser file pipeline (keeps UI responsive)
+                await firmwareFile.slice(processed, next).arrayBuffer();
+                processed = next;
+                const pct = Math.round((processed / total) * 100);
+                setSyncProgress(pct);
+                if (pct % 20 === 0) addLog(`Staging firmware bytes... ${pct}%`);
+            }
+
+            await apiPost('/hub/sync/complete', {
+                session_id: (sessionRes as any)?.id || (sessionRes as any)?.data?.id,
                 status: 'success',
-                duration_sec: 5,
+                duration_sec: Math.max(1, Math.round((Date.now() - startedAt) / 1000)),
                 user_id: userId
             });
 
@@ -200,9 +241,10 @@ export function UsbHubDashboard() {
                     <button
                         onClick={connectDevice}
                         className={glass.btnPrimary}
+                        disabled={connectionStatus === 'connecting'}
                     >
-                        <Search className="w-4 h-4" />
-                        Connect Device
+                        {connectionStatus === 'connecting' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                        {connectionStatus === 'connecting' ? 'Connecting…' : 'Connect Device'}
                     </button>
                 </div>
 
@@ -273,13 +315,22 @@ export function UsbHubDashboard() {
                                     <p className="text-sm font-bold text-[#1A1A1A] text-center">
                                         {firmwareFile ? firmwareFile.name : 'Select .bin file'}
                                     </p>
-                                    <Input id="firmware-input-dash" type="file" className="hidden" onChange={(e) => setFirmwareFile(e.target.files?.[0] || null)} />
+                                    <Input
+                                        id="firmware-input-dash"
+                                        type="file"
+                                        accept=".bin"
+                                        className="hidden"
+                                        onChange={(e) => setFirmwareFile(e.target.files?.[0] || null)}
+                                    />
                                 </label>
+                                {firmwareError && (
+                                    <div className="text-[11px] font-semibold text-red-600">{firmwareError}</div>
+                                )}
 
                                 <button
                                     onClick={handleFlash}
                                     className={glass.btnPrimary + " w-full h-11"}
-                                    disabled={isFlashing}
+                                    disabled={isFlashing || connectionStatus !== 'connected' || !device || !firmwareFile || !!firmwareError || !manifestIsValid}
                                 >
                                     {isFlashing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Start Flash'}
                                 </button>
@@ -289,11 +340,27 @@ export function UsbHubDashboard() {
                                 <div className="bg-[#1A1A1A]/5 rounded-2xl p-4 flex-1 border border-[#F4D03F]/5">
                                     <Textarea
                                         value={manifestJson}
-                                        onChange={(e) => setManifestJson(e.target.value)}
+                                        onChange={(e) => {
+                                            const v = e.target.value;
+                                            setManifestJson(v);
+                                            if (!v.trim()) {
+                                                setManifestError('Manifest JSON is required.');
+                                                return;
+                                            }
+                                            try {
+                                                JSON.parse(v);
+                                                setManifestError(null);
+                                            } catch {
+                                                setManifestError('Manifest JSON is invalid.');
+                                            }
+                                        }}
                                         className="w-full h-full min-h-[180px] p-4 font-mono text-[9px] leading-relaxed resize-none bg-transparent border-none focus:ring-0 text-[#1A1A1A]/70 font-bold"
                                         spellCheck={false}
                                     />
                                 </div>
+                                {manifestError && (
+                                    <div className="mt-2 text-[11px] font-semibold text-red-600">{manifestError}</div>
+                                )}
                             </div>
                         </div>
 

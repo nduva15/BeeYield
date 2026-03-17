@@ -10,7 +10,7 @@ import httpx
 from fastapi import APIRouter, Header, HTTPException
 
 from app.core.config import settings
-from app.db.supabase_db import db_upsert
+from app.db.supabase_db import db_select, db_upsert
 
 router = APIRouter()
 
@@ -241,4 +241,62 @@ async def shopify_complete(
         raise HTTPException(status_code=500, detail=res.get("error") or "Failed to save integration")
 
     return {"success": True}
+
+
+@router.get("/configs")
+async def list_integration_configs(
+    authorization: Optional[str] = Header(default=None),
+):
+    """
+    Returns integration_settings rows for the authenticated user.
+    This is the single source of truth for integrations UI (avoid direct Supabase writes from browser).
+    """
+    bearer = (authorization or "").replace("Bearer", "").strip()
+    user_id = await _get_user_id_from_jwt(bearer)
+    rows = await db_select("integration_settings", filters={"user_id": user_id}, order_by="updated_at", ascending=False, token=bearer)
+    return rows or []
+
+
+@router.post("/config")
+async def upsert_integration_config(
+    payload: dict,
+    authorization: Optional[str] = Header(default=None),
+):
+    """
+    Upsert an integration_settings record for the authenticated user.
+    Supports toggling active state and saving per-platform settings (store_url, config_json, etc).
+    """
+    bearer = (authorization or "").replace("Bearer", "").strip()
+    user_id = await _get_user_id_from_jwt(bearer)
+
+    platform = str(payload.get("platform") or "").strip().lower()
+    if platform not in {"quickbooks", "shopify", "etims"}:
+        raise HTTPException(status_code=400, detail="Invalid platform")
+
+    is_active = bool(payload.get("is_active", True))
+    store_url = payload.get("store_url")
+    config_json = payload.get("config_json")
+
+    # Only allow specific columns to be set from client.
+    data = {
+        "user_id": user_id,
+        "platform": platform,
+        "is_active": is_active,
+    }
+    if store_url is not None:
+        data["store_url"] = store_url
+    if config_json is not None:
+        data["config_json"] = config_json
+
+    res = await db_upsert(
+        "integration_settings",
+        data,
+        on_conflict="user_id,platform",
+        token=bearer,
+    )
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error") or "Failed to save integration settings")
+    # Return the single row if available
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else {"success": True}
 
