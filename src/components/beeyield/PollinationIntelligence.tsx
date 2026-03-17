@@ -12,13 +12,6 @@ interface PollinationIntelligenceProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
 
-const PREDICTION_DATA = [
-    { stage: 'Bloom Start', yield: 400, bfh: 12 },
-    { stage: '10% Bloom', yield: 650, bfh: 28 },
-    { stage: 'Full Bloom', yield: 1800, bfh: 84 },
-    { stage: 'Fall', yield: 2200, bfh: 120 },
-];
-
 const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTabChange }) => {
     const [activeHub, setActiveHub] = React.useState<string | null>(null);
     const [apiaries, setApiaries] = React.useState<any[]>([]);
@@ -88,13 +81,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                 icon={Brain}
                 label="Intelligence"
                 title={<>Pollination <span className="text-[#F4D03F]">Intelligence</span></>}
-                subtitle="Advanced analytics and colony trajectory intelligence system."
-                actions={
-                    <div className={cn(glass.badge, "bg-[#1B9157]/5 text-[#1B9157] border-[#1B9157]/20 py-1.5")}>
-                        <Sparkles className="w-3.5 h-3.5 mr-2" />
-                        System Confidence: 94%
-                    </div>
-                }
+                subtitle="Reports and analytics from real apiary + telemetry data."
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 relative z-10">
@@ -201,58 +188,17 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
 
                         <div className="h-[340px] w-full p-6 relative bg-[#FFF9F0]">
                             <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-                            <ResponsiveContainer width="100%" height="100%">
-                                <ComposedChart data={PREDICTION_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="yieldGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.15} />
-                                            <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid vertical={false} stroke="#00000008" strokeDasharray="3 3" />
-                                    <XAxis 
-                                        dataKey="stage" 
-                                        axisLine={false} 
-                                        tickLine={false} 
-                                        tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 700 }} 
-                                        dy={10} 
-                                    />
-                                    <YAxis hide />
-                                    <Tooltip
-                                        contentStyle={{ 
-                                            backgroundColor: '#fff', 
-                                            border: '1px solid #F4D03F30', 
-                                            borderRadius: '12px', 
-                                            padding: '12px',
-                                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)'
-                                        }}
-                                        itemStyle={{ 
-                                            fontSize: '11px', 
-                                            fontWeight: 700, 
-                                            color: '#1A1A1A',
-                                            textTransform: 'uppercase'
-                                        }}
-                                        labelStyle={{ display: 'none' }}
-                                    />
-                                    <Area 
-                                        type="monotone" 
-                                        dataKey="yield" 
-                                        fill="url(#yieldGrad)" 
-                                        stroke="#1B9157" 
-                                        strokeWidth={2} 
-                                        animationDuration={1500} 
-                                    />
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="bfh" 
-                                        stroke="#F4D03F" 
-                                        strokeWidth={3} 
-                                        dot={{ fill: '#fff', stroke: '#F4D03F', strokeWidth: 3, r: 4 }} 
-                                        activeDot={{ r: 6, strokeWidth: 0, fill: '#F4D03F' }} 
-                                        animationDuration={1500} 
-                                    />
-                                </ComposedChart>
-                            </ResponsiveContainer>
+                            <div className={cn(glass.card, "h-full w-full flex items-center justify-center bg-white/50 border border-[#F4D03F]/10")}>
+                                <div className="text-center space-y-2 p-6">
+                                    <div className="inline-flex items-center gap-2 justify-center text-[#1A1A1A]">
+                                        <TrendingUp className="w-4 h-4 text-[#1B9157]" />
+                                        <span className="text-sm font-bold">No intelligence curves yet</span>
+                                    </div>
+                                    <p className="text-xs font-medium text-gray-500 max-w-md">
+                                        This chart requires real bloom stage inputs and telemetry-derived activity/flight hours. It no longer displays simulated curves.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -270,7 +216,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                 </div>
                             </div>
                             <p className="text-xs text-gray-500 leading-relaxed">
-                                Density deficiency detected at <span className="text-red-600 font-bold">Sector B-12</span>. Add hives in steps to keep coverage steady.
+                                Alerts will appear here when real coverage and activity data is available.
                             </p>
                         </div>
 
