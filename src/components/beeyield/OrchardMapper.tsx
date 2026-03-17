@@ -47,9 +47,9 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
         >
             <PageHeader
                 icon={Layers}
-                label="Geospatial Node"
+                label="Map"
                 title={<>Farm <span className="text-[#F4D03F]">Setup</span></>}
-                subtitle="Map area, calculate hive count, and generate hive drop protocols."
+                subtitle="Map area, estimate hive count, and plan drops."
                 actions={
                     <div className="flex gap-2">
                         <button

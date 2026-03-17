@@ -23,6 +23,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
     const [activeHub, setActiveHub] = React.useState<string | null>(null);
     const [apiaries, setApiaries] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [exporting, setExporting] = React.useState(false);
 
     const fetchData = async () => {
         setLoading(true);
@@ -37,21 +38,43 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
     }, []);
 
     const handleGetReport = async () => {
-        toast.promise(
-            new Promise(resolve => setTimeout(resolve, 1500)),
-            {
-                loading: 'Preparing Intelligence...',
-                success: 'Seasonal intel ready',
-                error: 'Intel sync failed'
-            }
-        );
+        if (exporting) return;
+        if (!activeHub) {
+            toast.error('Select a hub first');
+            return;
+        }
 
-        await beeyieldService.logExport({
-            export_type: 'PDF',
-            entity_scope: 'Intelligence',
-            file_name: `Intel_${activeHub}_${new Date().toISOString().slice(0, 10)}.pdf`,
-            record_count: 1
-        });
+        const tid = toast.loading('Preparing intelligence…');
+        setExporting(true);
+        try {
+            const { data, error } = await beeyieldService.generateReport({
+                report_type: 'season',
+                parameters: {
+                    scope_days: 365,
+                    place_id: activeHub,
+                    sections: ['overview', 'apiaries', 'hives', 'harvests', 'inspections'],
+                },
+                file_format: 'PDF',
+            } as any);
+            if (error || !data?.id) throw error || new Error('Report job could not be created');
+
+            const status = await beeyieldService.waitForReport(String(data.id), { timeoutMs: 90_000 });
+            if (status?.file_url) window.open(status.file_url, '_blank');
+
+            await beeyieldService.logExport({
+                export_type: 'PDF',
+                entity_scope: 'Intelligence',
+                file_name: status?.file_name || `Intel_${activeHub}_${new Date().toISOString().slice(0, 10)}.pdf`,
+                record_count: 1,
+            });
+
+            toast.success('Seasonal intel ready', { id: tid });
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e?.message || 'Intel sync failed', { id: tid });
+        } finally {
+            setExporting(false);
+        }
     };
 
     return (
@@ -118,7 +141,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                          </div>
                                          <div className="text-left">
                                              <p className="text-xs font-bold text-[#1A1A1A] truncate max-w-[140px] leading-tight mb-0.5">{apiary.name}</p>
-                                              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Node: {apiary.id.split('-')[0]}</p>
+                                              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Site: {apiary.id.split('-')[0]}</p>
                                          </div>
                                      </div>
                                      <ChevronRight className={cn("w-4 h-4 transition-transform", activeHub === apiary.id ? "translate-x-0.5 text-[#F4D03F]" : "text-gray-200")} />
@@ -139,10 +162,10 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                 <Cpu className="w-4 h-4 text-[#F4D03F]" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Protocol Audit</h3>
+                            <h3 className="text-sm font-bold text-[#1A1A1A]">Status</h3>
                         </div>
                         <p className="text-[11px] text-gray-500 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">
-                            Farms are synchronized for real-time <span className="text-[#1A1A1A] font-bold">pollination telemetry</span>. All nodes nominal.
+                            Farms are synced for live <span className="text-[#1A1A1A] font-bold">pollination data</span>. All sites look normal.
                         </p>
                     </div>
                 </div>
@@ -243,7 +266,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                 </div>
                             </div>
                             <p className="text-xs text-gray-500 leading-relaxed">
-                                Density deficiency detected at <span className="text-red-600 font-bold">Sector B-12</span>. Incremental deployment recommended for node stability.
+                                Density deficiency detected at <span className="text-red-600 font-bold">Sector B-12</span>. Add hives in steps to keep coverage steady.
                             </p>
                         </div>
 
@@ -261,10 +284,11 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                             </div>
                             <button
                                 onClick={handleGetReport}
-                                className={cn(glass.btnSecondary, "w-full")}
+                                disabled={exporting}
+                                className={cn(glass.btnSecondary, "w-full", exporting && "opacity-60 cursor-not-allowed")}
                             >
-                                <FileDown className="w-4 h-4" />
-                                Export Intelligence
+                                {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                                {exporting ? 'Exporting…' : 'Export Intelligence'}
                             </button>
                         </div>
                     </div>

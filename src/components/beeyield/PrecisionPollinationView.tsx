@@ -208,12 +208,16 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     };
 
     const handleOptimize = async () => {
+        if (!orchardGeoJSON) {
+            toast.error('Select an apiary with coordinates first.');
+            return;
+        }
         setIsOptimizing(true);
         try {
-            const results = await beeyieldService.optimizePollinationPlacement({
+            const results = await beeyieldService.optimizePollinationPlacement2({
                 orchard_geojson: orchardGeoJSON,
                 hive_count: calcInputs.hives.length,
-                target_crop: 'Almond',
+                target_crop: (selectedApiary?.forage_type || 'Almond') as any,
                 bee_flight_radius_km: 1.5,
                 ahp_weights: { bloom: 0.8, roads: 0.2, water: 0.1 }
             });
@@ -228,6 +232,25 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     React.useEffect(() => {
         fetchDeployments();
+    }, []);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const loadApiaries = async () => {
+            try {
+                const data = await beeyieldService.getApiaries();
+                if (!mounted) return;
+                setApiaries(data || []);
+                if (!selectedApiaryId && (data || []).length > 0) setSelectedApiaryId(data[0].id);
+            } catch {
+                // ignore
+            }
+        };
+        loadApiaries();
+        return () => {
+            mounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     React.useEffect(() => {
@@ -267,21 +290,60 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     };
 
     const handleExport = async (type: string) => {
-        toast.promise(
-            new Promise(resolve => setTimeout(resolve, 1500)),
-            {
-                loading: `Generating ${type} export...`,
-                success: `${type} ready for download.`,
-                error: 'Export failed'
-            }
-        );
+        const tid = toast.loading(`Generating ${type} export…`);
+        try {
+            const today = new Date().toISOString().slice(0, 10);
+            const safeType = String(type).replace(/\W+/g, '_');
 
-        await beeyieldService.logExport({
-            export_type: 'CSV',
-            entity_scope: 'Pollination',
-            file_name: `BeeYield_Pollination_${type}_${new Date().toISOString().slice(0, 10)}.csv`,
-            record_count: deployments.length || 10
-        });
+            const rows = (deployments || []).map((d) => ({
+                created_at: d.created_at || '',
+                field_name: d.field_name || '',
+                crop_type: d.crop_type || '',
+                total_acres: d.total_acres ?? '',
+                status: d.status || '',
+            }));
+
+            const escapeCsv = (v: unknown) => {
+                const s = String(v ?? '');
+                return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+            };
+            const header = rows.length ? Object.keys(rows[0]).join(',') : 'created_at,field_name,crop_type,total_acres,status';
+            const body = rows.length ? rows.map((r) => Object.values(r).map(escapeCsv).join(',')).join('\n') : '';
+            const csv = `${header}\n${body}\n`;
+
+            const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+            const a = document.createElement('a');
+            a.href = csvUrl;
+            const csvName = `BeeYield_Pollination_${safeType}_${today}.csv`;
+            a.download = csvName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(csvUrl);
+
+            const doc = new jsPDF();
+            doc.setFontSize(14);
+            doc.text(`BeeYield Pollination Export: ${type}`, 14, 18);
+            doc.setFontSize(10);
+            doc.text(`Date: ${today}`, 14, 26);
+            doc.text(`Apiary: ${selectedApiary?.name || '—'}`, 14, 32);
+            doc.text(`Acres: ${selectedApiary?.size_acres ?? calcInputs.totalAcres}`, 14, 38);
+            doc.text(`Deployments: ${rows.length}`, 14, 44);
+            doc.save(`BeeYield_Pollination_${safeType}_${today}.pdf`);
+
+            await beeyieldService.logExport({
+                export_type: 'CSV',
+                entity_scope: 'Pollination',
+                file_name: csvName,
+                record_count: rows.length
+            });
+
+            toast.success('Export ready', { id: tid });
+        } catch (e) {
+            console.error(e);
+            toast.error('Export failed', { id: tid });
+        }
     };
 
     const filteredDevices = React.useMemo(() => {
@@ -665,14 +727,14 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         >
                                             <Minus className="w-3 h-3" />
                                         </button>
-                                        <p className="text-[8px] font-black text-[#1A1A1A]/20 uppercase tracking-[0.2em]">UNIT_TRONIX_#{i+1}</p>
+                                        <p className="text-xs font-semibold text-[#1A1A1A]/40">Hive #{i + 1}</p>
                                         <div className="flex items-baseline gap-1">
                                             <p className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{h.frameCount}</p>
-                                            <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">FR_CAP</span>
+                                            <span className="text-xs font-semibold text-gray-500">frames</span>
                                         </div>
                                         <div className="flex gap-2">
                                             <button onClick={() => { const nh = [...calcInputs.hives]; nh[i].isStrong = !nh[i].isStrong; setCalcInputs(p => ({ ...p, hives: nh })); }} 
-                                                className={cn("flex-1 h-7 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all border outline-none", h.isStrong ? "bg-[#1B9157] border-[#1B9157] text-white shadow-sm" : "bg-white border-gray-100 text-gray-400 hover:bg-gray-50")}>Nominal</button>
+                                                className={cn("flex-1 h-8 rounded-lg text-sm font-semibold transition-all border outline-none", h.isStrong ? "bg-[#1B9157] border-[#1B9157] text-white shadow-sm" : "bg-white border-gray-100 text-gray-500 hover:bg-gray-50")}>Strong</button>
                                         </div>
                                     </div>
                                 ))}
@@ -708,7 +770,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         <div className={cn(glass.card, "h-[600px] p-0 overflow-hidden relative border-white/40 shadow-2xl rounded-[3rem] z-0 bg-gray-50")}>
                             <MapContainer center={[-1.285, 36.825] as any} zoom={15} style={{ height: '100%', width: '100%' }} zoomControl={false} className="z-0">
                                 <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="&copy; ESRI" />
-                                <Polygon positions={mockOrchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 4, fillOpacity: 0.1, dashArray: '10, 10' }} stroke={false} />
+                                <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 4, fillOpacity: 0.1, dashArray: '10, 10' }} stroke={false} />
                                 {optimalPlacements.map((pos, idx) => (
                                     <React.Fragment key={idx}>
                                         <Marker position={[pos.lat, pos.lng] as any}>
