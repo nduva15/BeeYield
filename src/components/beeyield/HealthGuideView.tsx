@@ -7,6 +7,7 @@ import {
     Bug, Stethoscope, Microscope, Search as SearchIcon, Dna, Globe, AlertCircle, ShieldCheck, Info, Activity, ChevronRight, Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BeeSpeciesGallery } from './BeeSpeciesGallery';
 
 // Expanding mock data to cover what the user requested
 const diseaseData = [
@@ -142,6 +143,7 @@ interface HealthGuideViewProps {
 const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
     const [activeTab, setActiveTab] = React.useState<'diseases' | 'species'>('diseases');
+    const [showSpeciesGallery, setShowSpeciesGallery] = React.useState(false);
 
     return (
         <div className="flex flex-col min-h-screen bg-[#FFF9F0] text-[#064e3b] overflow-y-auto">
@@ -190,6 +192,80 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
 
             <div className="flex-1 flex justify-center p-10 bg-[#FFF9F0]">
                 <div className="w-full max-w-5xl">
+                    {activeTab === 'species' && !selectedItem && (
+                        <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+                            <div className="flex items-center justify-between flex-wrap gap-4">
+                                <div className="space-y-1">
+                                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-[#064e3b]">
+                                        Bee <span className="text-[#10b981]">Species</span>
+                                    </h2>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">
+                                        Visual species reference gallery
+                                    </p>
+                                </div>
+                                <Button
+                                    onClick={() => setShowSpeciesGallery((v) => !v)}
+                                    className="h-12 px-6 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-[#1A1A1A] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest"
+                                >
+                                    {showSpeciesGallery ? 'Hide Gallery' : 'Open Gallery'}
+                                </Button>
+                            </div>
+
+                            {showSpeciesGallery ? (
+                                <div className="border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                                    <BeeSpeciesGallery />
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {speciesData.map((s) => (
+                                        <Card
+                                            key={s.id}
+                                            className="border-4 border-[#064e3b] rounded-none shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] bg-[#FFF9F0]"
+                                        >
+                                            <CardHeader className="border-b-4 border-[#064e3b] bg-[#facc15]/10">
+                                                <CardTitle className="text-xl font-black uppercase tracking-tight text-[#064e3b] flex items-center justify-between gap-4">
+                                                    <span>{s.commonName}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#10b981]">{s.code}</span>
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="p-6 space-y-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#10b981] flex items-center justify-center text-[#facc15]">
+                                                        <Dna className="w-5 h-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-black uppercase text-[#064e3b]">{s.name}</p>
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">{s.suitability}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">Traits</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {s.traits.slice(0, 6).map((t: string) => (
+                                                            <span key={t} className="px-3 py-1 border-2 border-[#064e3b] bg-white text-[10px] font-black uppercase tracking-widest text-[#064e3b]">
+                                                                {t}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-4 border-t-4 border-[#064e3b] flex justify-end">
+                                                    <Button
+                                                        onClick={() => { setActiveTab('species'); setSelectedItem(s); }}
+                                                        className="h-11 px-6 border-4 border-[#064e3b] bg-[#facc15] hover:bg-[#10b981] text-[#064e3b] hover:text-[#1A1A1A] transition-all shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 font-black uppercase tracking-widest"
+                                                    >
+                                                        View Details
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {selectedItem ? (
                         <div className="space-y-16 animate-in fade-in duration-500 pb-20">
                             {/* Detail Header */}

@@ -51,72 +51,6 @@ export interface SensorAlert {
     created_at: string;
 }
 
-// ========== IMAGE ANALYSIS TYPES ==========
-export interface ImageAnalysisRequest {
-    image: File;
-    hive_id?: string;
-    apiary_id?: string;
-    confidence_threshold?: number;
-    overlap_threshold?: number;
-    analysis_type?: 'full' | 'detection_only' | 'health_only';
-}
-
-export interface BeeDetection {
-    id: number;
-    label: string;
-    confidence: number;
-    health: string;
-    health_confidence: number;
-    bbox: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    };
-}
-
-export interface DiseaseIndicator {
-    disease: string;
-    probability: number;
-    affected_bees: number[];
-    severity: 'Low' | 'Medium' | 'High' | 'Critical';
-}
-
-export interface ImageAnalysisResult {
-    success: boolean;
-    analysis_id: string;
-    status: 'processing' | 'completed' | 'failed';
-    results: {
-        bee_count: number;
-        health_status: 'Healthy' | 'Warning' | 'Critical' | 'Unknown';
-        health_score: number;
-        confidence: number;
-        detections: BeeDetection[];
-        disease_indicators: DiseaseIndicator[];
-        recommendations: string[];
-    };
-    image_url: string;
-    annotated_image_url: string;
-    created_at: string;
-    processing_time_ms: number;
-}
-
-export interface AnalysisHistoryItem {
-    id: string;
-    thumbnail_url: string;
-    bee_count: number;
-    health_score: number;
-    health_status: string;
-    created_at: string;
-    hive_id?: string;
-    apiary_id?: string;
-}
-
-export interface AnalysisHistoryResponse {
-    total: number;
-    items: AnalysisHistoryItem[];
-}
-
 export interface IoTDevice {
     id: string;
     device_code: string;
@@ -424,6 +358,7 @@ export interface Harvest {
 
 export interface HarvestCreateInput {
     hive_id?: string;
+    apiary_id?: string;
     farmer_id?: string;
     harvest_date: string;
     quantity_kg: number;
@@ -711,7 +646,7 @@ export const beeyieldService = {
     async getSensorReadings(type?: 'infield' | 'inland' | 'disease', hours: number = 24): Promise<SensorReading[]> {
         if (!sb) return [];
         const since = new Date(Date.now() - hours * 3600000).toISOString();
-        let query = sb.from('sensor_readings').select('*').gte('recorded_at', since).order('recorded_at', { ascending: false });
+        const query = sb.from('sensor_readings').select('*').gte('recorded_at', since).order('recorded_at', { ascending: false });
         const { data, error } = await query;
         if (error) { console.error('getSensorReadings:', error); return []; }
         return (data || []) as any;
@@ -787,52 +722,87 @@ export const beeyieldService = {
         return { error };
     },
 
+    async updateUserProfile(input: {
+        first_name?: string | null;
+        last_name?: string | null;
+        phone?: string | null;
+        avatar_url?: string | null;
+        theme?: string | null;
+        language?: string | null;
+        unit_system?: string | null;
+    }): Promise<{ data: any; error: any }> {
+        if (!sb) return { data: null, error: 'No client' };
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return { data: null, error: 'Not authenticated' };
+
+        const payload: any = {
+            id: user.id,
+            updated_at: new Date().toISOString(),
+            ...input,
+        };
+
+        const { data, error } = await sb
+            .from('profiles')
+            .upsert(payload, { onConflict: 'id' })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('updateUserProfile:', error);
+            toast.error('Failed to update profile');
+            return { data: null, error };
+        }
+
+        toast.success('Profile updated');
+        return { data, error: null };
+    },
+
     // ========== APIARIES ==========
     async getApiaries(): Promise<Apiary[]> {
         if (!sb) return [];
         const { data, error } = await sb.from('apiaries').select('*, farmer:farmers(*)').order('created_at', { ascending: false });
         if (error) { console.error('getApiaries:', error); return []; }
         return (data || []).map((a: any) => ({
-            ...a,
+                ...a,
             type: a.apiary_type || a.type || 'Permanent',
-            forage_type: a.primary_forage || a.forage_type || ''
-        })) as Apiary[];
+                forage_type: a.primary_forage || a.forage_type || ''
+            })) as Apiary[];
     },
 
     async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
         if (!sb) return { data: null, error: 'No client' };
         const payload = {
-            ...input,
+                ...input,
             apiary_type: input.type || input.apiary_type || 'Permanent',
-            primary_forage: input.forage_type || input.primary_forage,
+                primary_forage: input.forage_type || input.primary_forage,
         };
         delete payload.type;
         delete payload.forage_type;
         const { data, error } = await sb.from('apiaries').insert(payload).select('*, farmer:farmers(*)').single();
         if (error) { console.error('createApiary:', error); toast.error('Failed to create apiary'); return { data: null, error }; }
         const remapped = { ...data, type: data.apiary_type || 'Permanent', forage_type: data.primary_forage || '' };
-        toast.success('Apiary deployed successfully!');
-        return { data: remapped as Apiary, error: null };
+            toast.success('Apiary deployed successfully!');
+            return { data: remapped as Apiary, error: null };
     },
 
     async updateApiary(id: string, input: Partial<ApiaryCreateInput>): Promise<{ data: Apiary | null; error: any }> {
         if (!sb) return { data: null, error: 'No client' };
-        const payload: any = { ...input };
+            const payload: any = { ...input };
         if (input.forage_type) { payload.primary_forage = input.forage_type; delete payload.forage_type; }
         if (input.type) { payload.apiary_type = input.type; delete payload.type; }
         const { data, error } = await sb.from('apiaries').update(payload).eq('id', id).select('*, farmer:farmers(*)').single();
         if (error) { console.error('updateApiary:', error); toast.error('Failed to update apiary'); return { data: null, error }; }
         const remapped = { ...data, type: data.apiary_type || 'Permanent', forage_type: data.primary_forage || '' };
-        toast.success('Apiary updated!');
-        return { data: remapped as Apiary, error: null };
+            toast.success('Apiary updated!');
+            return { data: remapped as Apiary, error: null };
     },
 
     async deleteApiary(id: string): Promise<{ error: any }> {
         if (!sb) return { error: 'No client' };
         const { error } = await sb.from('apiaries').delete().eq('id', id);
         if (error) { console.error('deleteApiary:', error); toast.error('Failed to delete apiary'); return { error }; }
-        toast.success('Apiary removed');
-        return { error: null };
+            toast.success('Apiary removed');
+            return { error: null };
     },
 
     // ========== HIVES ==========
@@ -850,7 +820,7 @@ export const beeyieldService = {
         const payload = { ...input, installation_date: input.installation_date || new Date().toISOString().split('T')[0] };
         const { data, error } = await sb.from('hives').insert(payload).select().single();
         if (error) { console.error('createHive:', error); toast.error('Failed to create hive'); return { data: null, error }; }
-        toast.success('Hive added successfully!');
+            toast.success('Hive added successfully!');
         return { data: data as Hive, error: null };
     },
 
@@ -858,7 +828,7 @@ export const beeyieldService = {
         if (!sb) return { data: null, error: 'No client' };
         const { data, error } = await sb.from('hives').update(input).eq('id', id).select().single();
         if (error) { console.error('updateHive:', error); toast.error('Failed to update hive'); return { data: null, error }; }
-        toast.success('Hive updated!');
+            toast.success('Hive updated!');
         return { data: data as Hive, error: null };
     },
 
@@ -866,8 +836,8 @@ export const beeyieldService = {
         if (!sb) return { error: 'No client' };
         const { error } = await sb.from('hives').delete().eq('id', id);
         if (error) { console.error('deleteHive:', error); toast.error('Failed to delete hive'); return { error }; }
-        toast.success('Hive removed');
-        return { error: null };
+            toast.success('Hive removed');
+            return { error: null };
     },
 
     // ========== HARVESTS ==========
@@ -960,37 +930,38 @@ export const beeyieldService = {
     },
 
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const payload = {
-            hive_id: input.hive_id,
-            farmer_id: input.farmer_id,
-            date: input.harvest_date,
-            quantity_kg: input.quantity_kg,
-            quantity_left_for_bees_kg: input.quantity_left_for_bees_kg,
-            extraction_method: input.extraction_method || 'Cold Extraction',
-            floral_source: input.nectar_source || 'Acacia',
-            weather_conditions: input.weather_conditions || 'Sunny',
-            moisture_content_percent: input.moisture_content_percent,
-            batch_code: input.batch_code,
-            honey_type: input.honey_type,
-            color_grade: input.color_grade,
-            is_verified: input.is_verified,
-        };
-        const { data, error } = await sb.from('harvests').insert(payload).select().single();
-        if (error) { console.error('createHarvest:', error); toast.error('Failed to record harvest'); return { data: null, error }; }
+        try {
+            const headers = await getAuthHeaders();
+            // Backend validates hive belongs to apiary and enriches response with hive/apiary/farmer.
+            const payload = {
+                hive_id: input.hive_id,
+                apiary_id: input.apiary_id,
+                farmer_id: input.farmer_id,
+                harvest_date: input.harvest_date,
+                quantity_kg: input.quantity_kg,
+                quantity_left_for_bees_kg: input.quantity_left_for_bees_kg,
+                extraction_method: input.extraction_method,
+                honey_type: input.honey_type,
+                color_grade: input.color_grade,
+                batch_code: input.batch_code,
+                weather_conditions: input.weather_conditions,
+                moisture_content_percent: input.moisture_content_percent,
+                // Accept either nectar_source/florage_type from legacy UIs
+                notes: undefined,
+                is_verified: input.is_verified,
+            };
+
+            const data = await apiPost<Harvest>('/beeyield/harvests', payload as any, { headers });
+            toast.success('Harvest saved!');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createHarvest:', error);
+            toast.error('Failed to record harvest');
+            return { data: null, error };
+        }
 
         // F5: Activity Log
-        await this.logActivity({
-            event_type: 'harvest_logged',
-            entity_type: 'hive',
-            entity_id: input.hive_id,
-            title: 'Harvest Verification Complete',
-            subtitle: `Hive unit extraction: ${input.quantity_kg}kg verified.`,
-            metadata: { value: `${input.quantity_kg}kg`, batch: input.batch_code }
-        });
-
-        toast.success('Harvest recorded!');
-        return { data: { ...data, harvest_date: data.date, quantity_kg: data.quantity_kg } as any, error: null };
+        // (kept in backend activity log / trigger; frontend no longer writes directly)
     },
 
     async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
@@ -1001,7 +972,7 @@ export const beeyieldService = {
         if (input.nectar_source) { payload.floral_source = input.nectar_source; delete payload.nectar_source; }
         const { data, error } = await sb.from('harvests').update(payload).eq('id', id).select().single();
         if (error) { console.error('updateHarvest:', error); toast.error('Failed to update harvest'); return { data: null, error }; }
-        toast.success('Harvest updated!');
+            toast.success('Harvest updated!');
         return { data: data as any, error: null };
     },
 
@@ -1009,8 +980,8 @@ export const beeyieldService = {
         if (!sb) return { error: 'No client' };
         const { error } = await sb.from('harvests').delete().eq('id', id);
         if (error) { console.error('deleteHarvest:', error); toast.error('Failed to delete harvest'); return { error }; }
-        toast.success('Harvest removed');
-        return { error: null };
+            toast.success('Harvest removed');
+            return { error: null };
     },
 
     // ========== TASKS ==========
@@ -1791,7 +1762,7 @@ export const beeyieldService = {
         }).select().single();
         if (error) { console.error('pairUsbDevice:', error); toast.error('Failed to pair device'); return { data: null, error }; }
         toast.success('Device paired successfully');
-        return { data, error: null };
+            return { data, error: null };
     },
 
     async unpairUsbDevice(id: string): Promise<{ error: any }> {
@@ -1799,7 +1770,7 @@ export const beeyieldService = {
         const { error } = await sb.from('devices').delete().eq('serial_number', id);
         if (error) { console.error('unpairUsbDevice:', error); toast.error('Failed to unpair device'); return { error }; }
         toast.success('Device unpaired');
-        return { error: null };
+            return { error: null };
     },
 
     // ========== SENSOR CALIBRATION ==========
@@ -1961,7 +1932,7 @@ export const beeyieldService = {
     async getWeatherHistory(apiaryId?: string, days: number = 30): Promise<any[]> {
         if (!sb) return [];
         const since = new Date(Date.now() - days * 86400000).toISOString();
-        let query = sb.from('sensor_readings').select('temp_external, humidity_external, recorded_at, hive_id').gte('recorded_at', since).order('recorded_at', { ascending: false });
+        const query = sb.from('sensor_readings').select('temp_external, humidity_external, recorded_at, hive_id').gte('recorded_at', since).order('recorded_at', { ascending: false });
         const { data, error } = await query;
         if (error) { console.error('getWeatherHistory:', error); return []; }
         return (data || []) as any[];
@@ -1996,7 +1967,7 @@ export const beeyieldService = {
         }).select().single();
         if (error) { console.error('createForageZone:', error); toast.error('Failed to add forage zone'); return { data: null, error }; }
         toast.success('Forage zone added');
-        return { data, error: null };
+            return { data, error: null };
     },
 
     // ========== HEALTH KNOWLEDGE BASE ==========
@@ -2032,89 +2003,54 @@ export const beeyieldService = {
                 headers: { ...headers, 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) throw new Error('Failed to generate blurb');
+            if (!response.ok) {
+                // If user is logged out or backend denies, fail-soft so UI stays empty/usable
+                return { blurb: '' };
+            }
             return response.json();
         } catch (error) {
             console.error('Error generating blurb:', error);
-            throw error;
+            return { blurb: '' };
         }
     },
 
-    async analyzeImage(
-        request: ImageAnalysisRequest
-    ): Promise<ImageAnalysisResult> {
-        const headers = await getAuthHeaders();
-        const formData = new FormData();
-        formData.append('image', request.image);
-        if (request.hive_id) formData.append('hive_id', request.hive_id);
-        if (request.apiary_id) formData.append('apiary_id', request.apiary_id);
-        if (request.confidence_threshold) formData.append('confidence_threshold', request.confidence_threshold.toString());
-        if (request.overlap_threshold) formData.append('overlap_threshold', request.overlap_threshold.toString());
-        if (request.analysis_type) formData.append('analysis_type', request.analysis_type);
-
+    async generateLabelPack(input: {
+        floral_type: string;
+        location: string;
+        harvest_year: string;
+        product_name?: string;
+        tone?: string;
+    }): Promise<{
+        product_name: string;
+        short_blurb: string;
+        long_story: string;
+        tasting_notes: string[];
+        origin: string;
+        harvest_date_range: string;
+        sustainability_claims: string[];
+        pairings: string[];
+        allergen_notes: string;
+        qr_landing_copy: string;
+        tone: string;
+    }> {
         const apiUrl = import.meta.env.VITE_API_URL || '';
-        const response = await fetch(`${apiUrl}/api/v1/image/analyze`, {
+        const headers = await getAuthHeaders();
+        const response = await fetch(`${apiUrl}/api/v1/ai/generate-label-pack`, {
             method: 'POST',
-            headers: { ...headers },
-            body: formData
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                floral_type: input.floral_type,
+                location: input.location,
+                harvest_year: input.harvest_year,
+                product_name: input.product_name,
+                tone: input.tone || 'luxury',
+            }),
         });
-
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ detail: 'Analysis failed' }));
-            throw new Error(error.detail || 'Analysis failed');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || errorData.error || 'Label pack generation failed');
         }
         return response.json();
-    },
-
-    async getAnalysisHistory(options?: {
-        hive_id?: string;
-        apiary_id?: string;
-        limit?: number;
-        offset?: number;
-    }): Promise<AnalysisHistoryResponse> {
-        // Image analysis history — requires Python backend
-        try {
-            const params: Record<string, string> = {};
-            if (options?.hive_id) params.hive_id = options.hive_id;
-            if (options?.apiary_id) params.apiary_id = options.apiary_id;
-            if (options?.limit) params.limit = options.limit.toString();
-            if (options?.offset) params.offset = options.offset.toString();
-            const query = new URLSearchParams(params).toString();
-            const apiUrl = import.meta.env.VITE_API_URL || '';
-            const headers = await getAuthHeaders();
-            const response = await fetch(`${apiUrl}/api/v1/image/analyses${query ? '?' + query : ''}`, { headers });
-            if (!response.ok) return { total: 0, items: [] };
-            return response.json();
-        } catch (error) {
-            console.error('Error fetching analysis history:', error);
-            return { total: 0, items: [] };
-        }
-    },
-
-    async getAnalysisById(id: string): Promise<ImageAnalysisResult | null> {
-        try {
-            const apiUrl = import.meta.env.VITE_API_URL || '';
-            const headers = await getAuthHeaders();
-            const response = await fetch(`${apiUrl}/api/v1/image/analysis/${id}`, { headers });
-            if (!response.ok) return null;
-            return response.json();
-        } catch (error) {
-            console.error('Error fetching analysis:', error);
-            return null;
-        }
-    },
-
-    async deleteAnalysis(id: string): Promise<{ success: boolean; message: string }> {
-        try {
-            const apiUrl = import.meta.env.VITE_API_URL || '';
-            const headers = await getAuthHeaders();
-            const response = await fetch(`${apiUrl}/api/v1/image/analysis/${id}`, { method: 'DELETE', headers });
-            if (!response.ok) throw new Error('Delete failed');
-            return response.json();
-        } catch (error) {
-            console.error('Error deleting analysis:', error);
-            throw error;
-        }
     },
 
     // ========== AI MODELS (Python backend) ==========
@@ -2182,7 +2118,7 @@ export const beeyieldService = {
         if (!sb) return { data: null, error: 'No client' };
         const { data, error } = await sb.from('notes').update(updates).eq('id', id).select().single();
         if (error) { console.error('updateNote:', error); toast.error('Failed to update note'); return { data: null, error }; }
-        toast.success('Note updated');
+            toast.success('Note updated');
         return { data: data as Note, error: null };
     },
 
@@ -2191,7 +2127,7 @@ export const beeyieldService = {
         const { error } = await sb.from('notes').delete().eq('id', id);
         if (error) { console.error('deleteNote:', error); toast.error('Failed to delete note'); return { error }; }
         toast.success('Note deleted');
-        return { error: null };
+            return { error: null };
     },
 
     // ========== STATS ==========
