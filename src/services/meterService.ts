@@ -1,4 +1,4 @@
-import { apiGet } from './api';
+import { apiGet, apiPost } from './api';
 
 export interface Building {
     id: string;
@@ -101,5 +101,15 @@ export const meterService = {
 
     async getEvents(severity?: string): Promise<MeterEvent[]> {
         return apiGet<MeterEvent[]>('/meters/events', severity ? { severity } : {});
-    }
+    },
+
+    async createMeter(input: {
+        building_id: string;
+        apartment_id?: string;
+        meter_type: string;
+        meter_number: string;
+        status?: string;
+    }): Promise<Meter> {
+        return apiPost<Meter>('/meters/devices', input);
+    },
 };

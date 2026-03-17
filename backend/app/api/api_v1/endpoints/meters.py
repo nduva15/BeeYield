@@ -24,6 +24,15 @@ async def list_meters(
     """List meter devices with optional filters."""
     return await MeterService.get_meters(building_id, apartment_id, meter_type)
 
+
+@router.post("/devices", response_model=schemas.Meter)
+async def create_meter(body: schemas.MeterCreate):
+    """Create/enroll a new meter device."""
+    try:
+        return await MeterService.create_meter(body.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.get("/readings/{meter_id}", response_model=List[schemas.Reading])
 async def get_meter_readings(meter_id: str, limit: int = 50):
     """Get historical readings for a specific meter."""
