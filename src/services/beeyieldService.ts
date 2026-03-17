@@ -2699,18 +2699,43 @@ export const beeyieldService = {
     // ========== ML MICROSERVICE INTEGRATION ==========
     async analyzeHiveImage(payload: { image: File; hiveId?: string; apiaryId?: string }): Promise<any> {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
             const formData = new FormData();
             formData.append('image', payload.image);
             if (payload.hiveId) formData.append('hive_id', payload.hiveId);
             if (payload.apiaryId) formData.append('apiary_id', payload.apiaryId);
 
-            const response = await fetch(`${apiUrl}/ml/analyze-frame`, {
+            const { getAuthHeaders, getBaseUrl } = await import('./api');
+            const headers = await getAuthHeaders();
+            // Do not set Content-Type for FormData
+            delete (headers as any)['Content-Type'];
+            const baseUrl = getBaseUrl('/image/analyze');
+
+            const response = await fetch(`${baseUrl}/image/analyze`, {
                 method: 'POST',
+                headers: headers as any,
                 body: formData,
             });
-            if (!response.ok) throw new Error('ML Analysis failed');
-            const result = await response.json();
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err?.detail || 'Image analysis failed');
+            }
+            const raw = await response.json();
+
+            // Normalize the backend response into legacy-friendly fields.
+            const result = {
+                analysis_id: raw?.analysis_id,
+                status: raw?.status,
+                image_url: raw?.image_url,
+                annotated_image_url: raw?.annotated_image_url,
+                bee_count: raw?.results?.bee_count ?? 0,
+                health_score: raw?.results?.health_score ?? 0,
+                health_status: raw?.results?.health_status ?? raw?.results?.health_status ?? 'Unknown',
+                confidence: raw?.results?.confidence ?? 0,
+                detections: raw?.results?.detections ?? [],
+                disease_indicators: raw?.results?.disease_indicators ?? [],
+                recommendations: raw?.results?.recommendations ?? [],
+                raw,
+            };
 
             // Persist to Health Audit Logs
             if (sb && payload.hiveId) {
@@ -2720,11 +2745,11 @@ export const beeyieldService = {
                         user_id: user.id,
                         hive_id: payload.hiveId,
                         analysis_type: 'vision',
-                        mite_count: result.bee_count, // mapping count as mite_count for now or extending schema
+                        mite_count: result.bee_count, // legacy mapping
                         brood_coverage_pct: result.health_score,
                         spectral_classification: result.health_status,
                         confidence_score: result.confidence,
-                        result_json: result
+                        result_json: result.raw
                     });
                 }
             }
@@ -2737,17 +2762,35 @@ export const beeyieldService = {
 
     async analyzeHiveAudio(payload: { file: File; hiveId?: string }): Promise<any> {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
             const formData = new FormData();
             formData.append('file', payload.file);
             if (payload.hiveId) formData.append('hive_id', payload.hiveId);
 
-            const response = await fetch(`${apiUrl}/ml/analyze-audio`, {
+            const { getAuthHeaders, getBaseUrl } = await import('./api');
+            const headers = await getAuthHeaders();
+            delete (headers as any)['Content-Type'];
+            const baseUrl = getBaseUrl('/acoustic/analyze');
+
+            const response = await fetch(`${baseUrl}/acoustic/analyze`, {
                 method: 'POST',
+                headers: headers as any,
                 body: formData,
             });
-            if (!response.ok) throw new Error('ML Audio Analysis failed');
-            const result = await response.json();
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err?.detail || 'Audio analysis failed');
+            }
+            const raw = await response.json();
+
+            // Normalize for existing UI expectations (prediction/probability).
+            const result = {
+                analysis_id: raw?.analysis_id,
+                prediction: raw?.verdict,
+                probability: raw?.confidence,
+                alert: raw?.alert,
+                message: raw?.message,
+                raw,
+            };
 
             // Persist to Health Audit Logs
             if (sb && payload.hiveId) {
@@ -2759,7 +2802,7 @@ export const beeyieldService = {
                         analysis_type: 'acoustic',
                         spectral_classification: result.prediction,
                         confidence_score: result.probability,
-                        result_json: result
+                        result_json: result.raw
                     });
                 }
             }
