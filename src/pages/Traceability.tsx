@@ -809,17 +809,17 @@ const Traceability = () => {
                                 </div>
 
                                 {/* Footer Stats */}
-                                <div className="flex items-center gap-6 pt-5 border-t border-[#F4D03F]/20">
+                                  <div className="flex items-center gap-6 pt-5 border-t border-[#F4D03F]/20">
                                   <div className="flex items-center gap-2 bg-[#F9F7F2] px-3 py-1.5 rounded-full border border-[#F4D03F]/10">
-                                    <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-tighter">Hive Quality:</span>
+                                    <span className="text-[11px] font-semibold text-[#1B9157]">Hive quality:</span>
                                     <span className="text-xs font-black text-[#1A1A1A]">{traceData.sensor_snapshot?.fob || "7"}/10</span>
                                   </div>
                                   <div className="flex items-center gap-2 bg-[#F9F7F2] px-3 py-1.5 rounded-full border border-[#F4D03F]/10">
-                                    <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-tighter">Tracking:</span>
+                                    <span className="text-[11px] font-semibold text-[#1B9157]">Tracking:</span>
                                     <span className="text-xs font-black text-[#1B9157]">Hive to Jar</span>
                                   </div>
                                   <div className="flex-1 text-right">
-                                    <p className="text-[9px] font-black text-[#F4D03F] uppercase tracking-[0.2em]">Hive: {traceData.batch_code.split('-')[2] || 'H000'}</p>
+                                    <p className="text-[11px] font-semibold text-[#D4AC0D]">Hive: {traceData.batch_code.split('-')[2] || 'H000'}</p>
                                   </div>
                                 </div>
                               </div>
@@ -831,7 +831,7 @@ const Traceability = () => {
 
                     {/* Master Beekeeper Card */}
                     <Card className="border-none shadow-xl rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-[#1A1A1A] p-8 relative overflow-hidden h-full">
-                      <h3 className="text-xs font-black uppercase tracking-widest opacity-60 mb-8 text-[#1B9157]">Your Beekeeper</h3>
+                      <h3 className="text-sm font-semibold opacity-70 mb-8 text-[#1B9157]">Your beekeeper</h3>
 
                       <div className="flex gap-6 items-start relative z-10 mb-8">
                         {/* Photo & Logo */}
@@ -1019,7 +1019,7 @@ const Traceability = () => {
                           >
                             <Box className="h-8 w-8 sm:h-10 sm:w-10" />
                           </motion.div>
-                          <div className="mt-3 text-center text-[10px] font-black text-[#F4D03F] uppercase tracking-[0.2em]">
+                          <div className="mt-3 text-center text-[11px] font-semibold text-[#D4AC0D]">
                             Your Jar
                           </div>
                         </div>

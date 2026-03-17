@@ -8,10 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BeeSpeciesGallery } from './BeeSpeciesGallery';
-
-// Knowledge base is backend-driven; do not ship large mock datasets in the UI.
-const diseaseData: any[] = [];
-const speciesData: any[] = [];
+import beeyieldService from '@/services/beeyieldService';
 
 interface HealthGuideViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -21,6 +18,35 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
     const [activeTab, setActiveTab] = React.useState<'diseases' | 'species'>('diseases');
     const [showSpeciesGallery, setShowSpeciesGallery] = React.useState(false);
+    const [diseaseData, setDiseaseData] = React.useState<any[]>([]);
+    const [speciesData, setSpeciesData] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [loadError, setLoadError] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        let mounted = true;
+        (async () => {
+            setLoading(true);
+            setLoadError(null);
+            try {
+                const [d, s] = await Promise.all([
+                    beeyieldService.getHealthGuide('diseases'),
+                    beeyieldService.getHealthGuide('species'),
+                ]);
+                if (!mounted) return;
+                setDiseaseData(d || []);
+                setSpeciesData(s || []);
+            } catch (e: any) {
+                if (!mounted) return;
+                setLoadError(e?.message || 'Could not load health guide content.');
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     return (
         <div className="flex flex-col min-h-screen bg-[#FFF9F0] text-[#064e3b] overflow-y-auto">
@@ -38,10 +64,18 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
 
                 <div className="flex flex-col md:flex-row items-center gap-6 w-full xl:w-auto">
                     <div className="flex flex-col gap-2 w-full md:w-80 relative z-50">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/60">Pathology DB (200+ Entries)</span>
-                        <Select onValueChange={(val) => { setActiveTab('diseases'); setSelectedItem(diseaseData.find(d => d.id === val)); }}>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/60">
+                            Pathology DB ({diseaseData.length} entries)
+                        </span>
+                        <Select
+                            onValueChange={(val) => {
+                                setActiveTab('diseases');
+                                setSelectedItem(diseaseData.find(d => d.id === val));
+                            }}
+                            disabled={loading || diseaseData.length === 0}
+                        >
                             <SelectTrigger className="w-full h-14 border-4 border-[#064e3b] bg-[#FFF9F0] rounded-none font-black text-xs uppercase text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
-                                <SelectValue placeholder="Select Disease..." />
+                                <SelectValue placeholder={loading ? "Loading…" : "Select Disease..."} />
                             </SelectTrigger>
                             <SelectContent className="border-4 border-[#064e3b] rounded-none shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
                                 {diseaseData.map(d => (
@@ -52,10 +86,18 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                     </div>
 
                     <div className="flex flex-col gap-2 w-full md:w-80 relative z-40">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/60">Species DB (Global Register)</span>
-                        <Select onValueChange={(val) => { setActiveTab('species'); setSelectedItem(speciesData.find(s => s.id === val)); }}>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/60">
+                            Species DB ({speciesData.length} entries)
+                        </span>
+                        <Select
+                            onValueChange={(val) => {
+                                setActiveTab('species');
+                                setSelectedItem(speciesData.find(s => s.id === val));
+                            }}
+                            disabled={loading || speciesData.length === 0}
+                        >
                             <SelectTrigger className="w-full h-14 border-4 border-[#064e3b] bg-[#FFF9F0] rounded-none font-black text-xs uppercase text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
-                                <SelectValue placeholder="Select Bee Type..." />
+                                <SelectValue placeholder={loading ? "Loading…" : "Select Bee Type..."} />
                             </SelectTrigger>
                             <SelectContent className="border-4 border-[#064e3b] rounded-none shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
                                 {speciesData.map(s => (
@@ -69,6 +111,32 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
 
             <div className="flex-1 flex justify-center p-10 bg-[#FFF9F0]">
                 <div className="w-full max-w-5xl">
+                    {loadError && (
+                        <div className="border-4 border-[#064e3b] bg-white p-6 shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] mb-10">
+                            <p className="text-sm font-black uppercase tracking-widest text-red-600">Load error</p>
+                            <p className="text-sm font-bold mt-2 text-[#064e3b]">{loadError}</p>
+                        </div>
+                    )}
+
+                    {loading && (
+                        <div className="border-4 border-[#064e3b] bg-white p-10 shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] mb-10 flex items-center gap-4">
+                            <Activity className="w-6 h-6 animate-spin text-[#10b981]" />
+                            <div>
+                                <p className="text-sm font-black uppercase tracking-widest">Loading health guide…</p>
+                                <p className="text-xs font-bold text-[#064e3b]/70 mt-1">Fetching curated content from the BeeYield backend.</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {!loading && !selectedItem && diseaseData.length === 0 && speciesData.length === 0 && (
+                        <div className="border-4 border-[#064e3b] bg-white p-10 shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] mb-10">
+                            <p className="text-sm font-black uppercase tracking-widest">No entries yet</p>
+                            <p className="text-xs font-bold text-[#064e3b]/70 mt-2">
+                                The Health Guide dataset is empty. Add entries to `backend/app/data/health_guide.json`.
+                            </p>
+                        </div>
+                    )}
+
                     {activeTab === 'species' && !selectedItem && (
                         <div className="space-y-8 animate-in fade-in duration-500 pb-20">
                             <div className="flex items-center justify-between flex-wrap gap-4">

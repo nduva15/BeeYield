@@ -281,8 +281,8 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Sugar <span className="text-blue-500">Syrup</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Synergy Optimization</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Sugar <span className="text-blue-500">syrup</span></h3>
+                                                <p className="text-sm font-medium text-foreground/60 leading-none">Mixing calculator</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
                                                 <Droplet className="w-4 h-4 text-blue-500" />
@@ -290,7 +290,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label htmlFor="syrup_target_volume_l" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Volume (L)</label>
+                                                <label htmlFor="syrup_target_volume_l" className="text-sm font-semibold text-foreground/70 pl-1">Target volume (L)</label>
                                                 <input
                                                     id="syrup_target_volume_l"
                                                     name="syrup_target_volume_l"
@@ -304,18 +304,18 @@ const BeeCalculatorPage: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Concentration Ratio</label>
+                                                <label className="text-sm font-semibold text-foreground/70 pl-1">Concentration ratio</label>
                                                 <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-muted/50 border border-black/5">
                                                     <button
                                                         onClick={() => setSyrupRatio('1:1')}
-                                                        className={cn("h-9 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                                        className={cn("h-9 rounded-lg text-sm font-semibold transition-all",
                                                             syrupRatio === '1:1' ? "bg-white text-foreground shadow-sm ring-1 ring-black/5" : "text-foreground/40 hover:bg-white/50")}
                                                     >
                                                         1:1 (Stim)
                                                     </button>
                                                     <button
                                                         onClick={() => setSyrupRatio('2:1')}
-                                                        className={cn("h-9 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                                        className={cn("h-9 rounded-lg text-sm font-semibold transition-all",
                                                             syrupRatio === '2:1' ? "bg-white text-foreground shadow-sm ring-1 ring-black/5" : "text-foreground/40 hover:bg-white/50")}
                                                     >
                                                         2:1 (Store)
@@ -327,12 +327,12 @@ const BeeCalculatorPage: React.FC = () => {
                                             <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 text-center flex flex-col items-center justify-center h-24 relative overflow-hidden group">
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 <p className="text-3xl font-black tabular-nums text-[#1B9157] leading-none mb-1">{syrupResult.sugarKg}</p>
-                                                <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mt-1">Sugar (kg)</p>
+                                                <p className="text-xs font-semibold text-foreground/60 mt-1">Sugar (kg)</p>
                                             </div>
                                             <div className="p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10 text-center flex flex-col items-center justify-center h-24 relative overflow-hidden group">
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 <p className="text-3xl font-black tabular-nums text-blue-600 leading-none mb-1">{syrupResult.waterL}</p>
-                                                <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mt-1">Water (L)</p>
+                                                <p className="text-xs font-semibold text-foreground/60 mt-1">Water (L)</p>
                                             </div>
                                         </div>
                                     </div>
@@ -342,15 +342,15 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="absolute -top-12 -right-12 w-32 h-32 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
                                         <div className="flex justify-between items-start relative z-10">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Winter <span className="text-red-500">Ready</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Critical Weight Guard</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Winter <span className="text-red-500">ready</span></h3>
+                                                <p className="text-sm font-medium text-foreground/60 leading-none">Feed estimate</p>
                                             </div>
-                                            <div className={cn(glass.badge, "bg-red-500 text-white border-none px-2 py-0.5 text-[8px] font-black tracking-widest")}>DEFICIT_ZONE</div>
+                                            <div className={cn(glass.badge, "bg-red-500 text-white border-none px-2 py-0.5 text-[10px] font-semibold")}>Deficit</div>
                                         </div>
                                         <div className="space-y-4 relative z-10">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label htmlFor="winter_current_weight_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Current (kg)</label>
+                                                    <label htmlFor="winter_current_weight_kg" className="text-sm font-semibold text-foreground/70 pl-1">Current (kg)</label>
                                                     <input
                                                         id="winter_current_weight_kg"
                                                         name="winter_current_weight_kg"
@@ -364,7 +364,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label htmlFor="winter_target_weight_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target (kg)</label>
+                                                    <label htmlFor="winter_target_weight_kg" className="text-sm font-semibold text-foreground/70 pl-1">Target (kg)</label>
                                                     <input
                                                         id="winter_target_weight_kg"
                                                         name="winter_target_weight_kg"
@@ -380,16 +380,16 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
                                             <div className="p-5 rounded-2xl bg-muted/30 border border-black/5 space-y-4">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-black uppercase opacity-40 tracking-widest">Deficit</span>
+                                                    <span className="text-sm font-semibold text-foreground/70">Deficit</span>
                                                     <span className="text-2xl font-black tabular-nums text-red-500 leading-none">{winterResult.deficitKg} <span className="text-[10px] opacity-40 ml-1">KG</span></span>
                                                 </div>
                                                 <div className="h-px bg-black/5" />
                                                 <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
                                                     <div>
-                                                        <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mb-1">Required 2:1 Syrup</p>
+                                                        <p className="text-xs font-semibold text-foreground/60 mb-1">Required 2:1 syrup</p>
                                                         <p className="text-3xl font-black tabular-nums text-[#1B9157] leading-none">{winterResult.syrupNeededL} <span className="text-[10px] opacity-40 ml-1">L</span></p>
                                                     </div>
-                                                    <button className={cn(glass.btnPrimary, "h-10 px-6 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm w-full sm:w-auto")}>Order Feed</button>
+                                                    <button className={cn(glass.btnPrimary, "h-10 px-6 text-sm font-semibold rounded-xl transition-all shadow-sm w-full sm:w-auto")}>Order feed</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -401,8 +401,8 @@ const BeeCalculatorPage: React.FC = () => {
                                         <Lightbulb className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h4 className="text-[10px] font-black uppercase tracking-tight leading-none text-foreground">Pro Tip: <span className="text-[#F4D03F]">Storage Ratios</span></h4>
-                                        <p className="text-[10px] font-bold opacity-50 leading-tight uppercase tracking-tight">
+                                        <h4 className="text-sm font-semibold tracking-tight leading-none text-foreground">Tip: <span className="text-[#F4D03F]">Storage ratios</span></h4>
+                                        <p className="text-sm font-medium opacity-70 leading-tight">
                                             For winter stores, use 2:1 syrup. Reduces energy expenditure for moisture evaporation, maximizing colony survival.
                                         </p>
                                     </div>

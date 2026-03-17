@@ -179,7 +179,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-6 pt-2">
                         {instructions.map((item, idx) => (
                             <div key={idx} className="flex flex-col gap-1.5 border-l-2 border-[#F4D03F]/20 pl-4 py-1">
-                                <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-wider">{item.label}</h4>
+                                <h4 className="text-sm font-semibold text-[#1A1A1A]">{item.label}</h4>
                                 <p className={cn(glass.microLabel, "text-gray-400")}>{item.description}</p>
                             </div>
                         ))}
@@ -207,8 +207,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         <Camera className="w-8 h-8 text-[#F4D03F]/60" />
                     </div>
                     <div className="text-center space-y-2">
-                        <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest">Choose a photo</h3>
-                        <p className={cn(glass.microLabel, "tracking-[0.2em]")}>Click to upload, or drop a file here.</p>
+                        <h3 className="text-sm font-semibold text-[#1A1A1A]">Choose a photo</h3>
+                        <p className={glass.microLabel}>Click to upload, or drop a file here.</p>
                     </div>
                 </div>
             )}
@@ -236,7 +236,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         </BeeYieldCard>
 
                         <div className="flex justify-start">
-                            <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-widest text-[10px] rounded-xl")}>
+                            <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-6 font-semibold text-sm rounded-xl")}>
                                 Clear
                             </button>
                         </div>
