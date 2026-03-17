@@ -26,14 +26,7 @@ const levelConfig: Record<EventLevel, { color: string; bg: string; icon: React.E
     critical: { color: 'text-red-500', bg: 'bg-red-500/5', icon: ShieldAlert, dot: 'bg-red-500 animate-pulse', glow: 'shadow-red-500/40' },
 };
 
-const heartbeatNodes = [
-    { id: 'HV-001', status: 'ok', temp: 35.1, pattern: [70, 80, 72, 85, 68, 90, 75, 88, 71, 82] },
-    { id: 'HV-002', status: 'warn', temp: 37.8, pattern: [60, 95, 45, 100, 55, 98, 50, 99, 62, 97] },
-    { id: 'HV-003', status: 'critical', temp: 28.4, pattern: [20, 25, 18, 30, 22, 15, 28, 12, 20, 18] },
-    { id: 'HV-004', status: 'ok', temp: 34.8, pattern: [65, 78, 70, 82, 60, 77, 73, 80, 66, 79] },
-    { id: 'HV-005', status: 'ok', temp: 35.0, pattern: [68, 75, 72, 80, 65, 78, 70, 82, 67, 76] },
-    { id: 'HV-006', status: 'ok', temp: 36.1, pattern: [72, 82, 74, 86, 70, 84, 76, 88, 73, 83] },
-];
+const heartbeatNodes: never[] = [];
 
 const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) => {
     const [events, setEvents] = React.useState<HiveEvent[]>([]);
@@ -125,7 +118,14 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
 
             {/* Heartbeat Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-                {heartbeatNodes.map((node, nodeIdx) => {
+                {heartbeatNodes.length === 0 ? (
+                    <div className={cn(glass.card, "p-8 text-center lg:col-span-3 bg-white/40 border-white/20")}>
+                        <p className="text-sm font-bold text-[#1A1A1A]">No heartbeat telemetry yet</p>
+                        <p className="text-xs font-medium text-gray-500 mt-1">
+                            This view requires live sensor streams (temperature, acoustic, etc.). Connect devices to enable the heartbeat grid.
+                        </p>
+                    </div>
+                ) : heartbeatNodes.map((node, nodeIdx) => {
                     const cfg = levelConfig[node.status as EventLevel];
                     const shifted = [...node.pattern.slice(tick % node.pattern.length), ...node.pattern.slice(0, tick % node.pattern.length)];
                     return (
@@ -237,7 +237,6 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
             {/* Summary Banner */}
             <div className={cn(glass.card, "p-8 bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] text-white border-transparent relative overflow-hidden group")}>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/10 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
-
                 <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                     <div className="w-16 h-16 rounded-2xl bg-[#F4D03F] flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(244,208,63,0.3)]">
                         <Info className="w-8 h-8 text-[#1A1A1A]" />
@@ -245,8 +244,7 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                     <div className="flex-1 space-y-2">
                         <h5 className="text-xl font-bold tracking-tight">Monitoring <span className="text-[#F4D03F]">Intelligence</span></h5>
                         <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-[#F4D03F]/40">
-                            Thermal anomalies in HV-003 and HV-002 require immediate inspection.
-                            Overall fleet stability remains at 94.2% nominal uptime.
+                            Alerts and status summaries will appear here once real heartbeat telemetry is connected.
                         </p>
                     </div>
                 </div>

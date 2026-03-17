@@ -227,12 +227,18 @@ const MetersSettings: React.FC = () => {
                     </DialogHeader>
                     <div className="p-5 space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="setting-value" className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/50 ml-1">
-                                {activeDialog?.type === 'notification' ? 'PROTOCOL_METHOD' : 'TARGET_THRESHOLD'}
-                            </Label>
+                            {activeDialog?.type === 'notification' ? (
+                                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/50 ml-1">
+                                    PROTOCOL_METHOD
+                                </Label>
+                            ) : (
+                                <Label htmlFor="setting-value" className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/50 ml-1">
+                                    TARGET_THRESHOLD
+                                </Label>
+                            )}
                             {activeDialog?.type === 'notification' ? (
                                 <Select value={tempValue} onValueChange={setTempValue}>
-                                    <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                    <SelectTrigger id="meters-settings-notification-method" aria-label="Protocol method" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
                                         <SelectValue placeholder="SELECT_METHOD" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90">
@@ -247,6 +253,8 @@ const MetersSettings: React.FC = () => {
                             ) : (
                                 <Input
                                     id="setting-value"
+                                    name="threshold_value"
+                                    autoComplete="off"
                                     value={tempValue}
                                     onChange={(e) => setTempValue(e.target.value)}
                                     placeholder="E.G. +25%"

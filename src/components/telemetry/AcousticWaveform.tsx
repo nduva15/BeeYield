@@ -85,6 +85,8 @@ const AcousticWaveform: React.FC = () => {
                             onChange={handleAudioUpload}
                             className="hidden"
                             accept="audio/*"
+                            aria-label="Upload audio for analysis"
+                            title="Upload audio for analysis"
                         />
                         <button
                             onClick={() => fileInputRef.current?.click()}
