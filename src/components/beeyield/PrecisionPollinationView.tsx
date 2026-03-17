@@ -253,45 +253,41 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    React.useEffect(() => {
-        let mounted = true;
-        const loadApiaries = async () => {
-            try {
-                const data = await beeyieldService.getApiaries();
-                if (!mounted) return;
-                setApiaries(data || []);
-                if (!selectedApiaryId && (data || []).length > 0) setSelectedApiaryId(data[0].id);
-            } catch {
-                // ignore
-            }
-        };
-        loadApiaries();
-        return () => {
-            mounted = false;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     const handleSaveDeployment = async () => {
-        setIsSaving(true);
-        const result = await beeyieldService.savePollinationDeployment({
-            field_name: `Tactical Deployment ${new Date().toLocaleDateString()}`,
-            crop_type: 'Almond',
-            total_acres: calcInputs.totalAcres,
-            bloom_intensity: calcInputs.bloomIntensity,
-            forage_condition: calcInputs.forageCondition,
-            status: 'active',
-            metrics_json: metrics
-        });
-        if (!result.error) {
-            fetchDeployments();
+        if (!Number.isFinite(calcInputs.totalAcres) || calcInputs.totalAcres <= 0) {
+            toast.error('Enter a valid acreage first.');
+            return;
         }
-        setIsSaving(false);
+        setIsSaving(true);
+        const tid = toast.loading('Saving deployment…');
+        try {
+            const result = await beeyieldService.savePollinationDeployment({
+                field_name: `Tactical Deployment ${new Date().toLocaleDateString()}`,
+                crop_type: 'Almond',
+                total_acres: calcInputs.totalAcres,
+                bloom_intensity: calcInputs.bloomIntensity,
+                forage_condition: calcInputs.forageCondition,
+                status: 'active',
+                metrics_json: metrics
+            });
+            if (result.error) throw result.error;
+            await fetchDeployments();
+            toast.success('Deployment saved', { id: tid });
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e?.message || 'Could not save deployment', { id: tid });
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleExport = async (type: string) => {
         const tid = toast.loading(`Generating ${type} export…`);
         try {
+            if (!selectedApiaryId) {
+                toast.error('Select an apiary first.', { id: tid });
+                return;
+            }
             const today = new Date().toISOString().slice(0, 10);
             const safeType = String(type).replace(/\W+/g, '_');
 

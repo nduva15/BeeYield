@@ -194,11 +194,14 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             {/* Date and Time Row */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
                                 <div className="space-y-3">
-                                    <label className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Date</label>
+                                    <label htmlFor="note_date" className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Date</label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <button
+                                                id="note_date"
+                                                name="note_date"
                                                 type="button"
+                                                aria-label="Select note date"
                                                 className={cn(glass.btnSecondary, "w-full justify-between h-10 px-4 rounded-xl border-white/40 bg-white/40 hover:bg-white/60 group shadow-sm transition-colors")}
                                             >
                                                 <span className="font-semibold text-[12px] text-[#1A1A1A]">{format(noteDate, "dd/MM/yyyy")}</span>
@@ -234,6 +237,8 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                 <label htmlFor="note_details" className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Details</label>
                                 <textarea
                                     id="note_details"
+                                    name="note_details"
+                                    autoComplete="off"
                                     value={description}
                                     onChange={handleDescriptionChange}
                                     className={cn(glass.input, "w-full min-h-[260px] p-4 leading-relaxed resize-none bg-white/40 border-white/40 hover:bg-white/60 focus:bg-white transition-colors text-[13px] font-medium shadow-sm")}
@@ -333,6 +338,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     <div className="relative group">
                                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F] opacity-30 group-focus-within:opacity-100 transition-opacity" />
                                         <select
+                                            id="note_apiary"
+                                            name="note_apiary"
+                                            autoComplete="off"
                                             aria-label="Select apiary"
                                             value={selectedPlaceId || ""}
                                             onChange={(e) => setSelectedPlaceId(e.target.value || null)}
@@ -345,6 +353,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     <div className="relative group">
                                         <Box className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F] opacity-30 group-focus-within:opacity-100 transition-opacity" />
                                         <select
+                                            id="note_hive"
+                                            name="note_hive"
+                                            autoComplete="off"
                                             aria-label="Select hive"
                                             value={selectedHiveId || ""}
                                             onChange={(e) => setSelectedHiveId(e.target.value || null)}
@@ -396,6 +407,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                     <div className="relative flex-1 group/sel w-full">
                         <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F] opacity-30 group-focus-within/sel:opacity-100 transition-opacity" />
                         <select
+                            id="notes-filter-apiary"
+                            name="filter_apiary"
+                            autoComplete="off"
                             value={selectedPlaceId || ""}
                             onChange={(e) => setSelectedPlaceId(e.target.value || null)}
                             className={cn(glass.select, "w-full pl-10 h-10 text-[12px] font-medium bg-white/20")}
@@ -409,6 +423,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                     <div className="relative flex-1 group/sel w-full">
                         <Box className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F] opacity-30 group-focus-within/sel:opacity-100 transition-opacity" />
                         <select
+                            id="notes-filter-hive"
+                            name="filter_hive"
+                            autoComplete="off"
                             value={selectedHiveId || ""}
                             onChange={(e) => setSelectedHiveId(e.target.value || null)}
                             className={cn(glass.select, "w-full pl-10 h-10 text-[12px] font-medium bg-white/20")}

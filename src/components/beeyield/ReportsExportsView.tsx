@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { Switch as UISwitch } from '@/components/ui/switch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -143,6 +143,84 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         loadData();
     }, [userId]);
 
+    const downloadBlob = React.useCallback((blob: Blob, filename: string) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }, []);
+
+    const localExportReport = React.useCallback(async () => {
+        const scopeDays = Math.max(1, parseInt(reportScope, 10) || 30);
+        const since = Date.now() - scopeDays * 86400000;
+        const within = (d?: string | null) => {
+            if (!d) return true;
+            const t = new Date(d).getTime();
+            return Number.isFinite(t) ? t >= since : true;
+        };
+
+        const safe = async <T,>(p: Promise<T>, fallback: T): Promise<T> => {
+            try { return await p; } catch { return fallback; }
+        };
+
+        const enabled = (id: keyof typeof sections) => !!sections[id];
+        const [apiariesData, hivesData] = await Promise.all([
+            enabled('apiaries') ? safe(beeyieldService.getApiaries(), [] as Apiary[]) : Promise.resolve([] as Apiary[]),
+            enabled('hives') ? safe(beeyieldService.getHives(), [] as Hive[]) : Promise.resolve([] as Hive[]),
+        ]);
+
+        const apiariesFiltered = selectedPlace ? (apiariesData || []).filter((a) => a.id === selectedPlace) : (apiariesData || []);
+        const hivesFiltered = (hivesData || []).filter((h) => {
+            if (selectedHive && String(h.id) !== String(selectedHive)) return false;
+            if (selectedPlace && String((h as any).apiary_id) !== String(selectedPlace)) return false;
+            return true;
+        });
+
+        const notes = enabled('notes')
+            ? (await safe(beeyieldService.getNotes(), [] as any[])).filter((n: any) => within(n?.created_at || n?.updated_at || n?.note_date))
+            : [];
+        const inspections = enabled('inspections')
+            ? (await safe(beeyieldService.getInspections(selectedHive || undefined), [] as any[])).filter((i: any) => within(i?.inspection_date || i?.created_at || i?.updated_at))
+            : [];
+        const harvests = enabled('harvests')
+            ? (await safe(beeyieldService.getHarvests({ hive_id: selectedHive || undefined, apiary_id: selectedPlace || undefined }), [] as any[])).filter((h: any) => within(h?.harvest_date || h?.created_at || h?.updated_at))
+            : [];
+        const myRequests = enabled('my_requests')
+            ? (await safe(beeyieldService.getRequests(), [] as any[])).filter((r: any) => within(r?.created_at || r?.updated_at))
+            : [];
+        const tasks = enabled('tasks')
+            ? (await safe(beeyieldService.getTasks(), [] as any[])).filter((t: any) => within(t?.created_at || t?.updated_at))
+            : [];
+
+        const payload = {
+            meta: {
+                generated_at: new Date().toISOString(),
+                scope_days: scopeDays,
+                format_requested: selectedFormat,
+                place_id: selectedPlace || null,
+                hive_id: selectedHive || null,
+                sections: Object.keys(sections).filter((k) => (sections as any)[k]),
+            },
+            apiaries: apiariesFiltered,
+            hives: hivesFiltered,
+            notes,
+            inspections,
+            harvests,
+            requests: myRequests,
+            tasks,
+        };
+
+        const json = JSON.stringify(payload, null, 2);
+        downloadBlob(
+            new Blob([json], { type: 'application/json;charset=utf-8' }),
+            `beeyield-report-${new Date().toISOString().slice(0, 10)}-${scopeDays}d.json`
+        );
+    }, [downloadBlob, reportScope, sections, selectedFormat, selectedHive, selectedPlace]);
+
     const handleGenerateReport = async () => {
         if (isGenerating) return;
         setIsGenerating(true);
@@ -169,7 +247,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 file_format: selectedFormat
             } as any);
 
-            if (error) throw error;
+            if (error) {
+                // No backend / reports worker available → local export fallback (JSON).
+                await localExportReport();
+                toast.success('Exported locally (JSON)', { id: toastId });
+                setGenProgress(100);
+                return;
+            }
             toast.success('Report queued', { id: toastId });
 
             const jobId = data?.id;
@@ -189,7 +273,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             loadData();
         } catch (error) {
             console.error('Extraction failed', error);
-            toast.error('Report failed', { id: toastId });
+            try {
+                await localExportReport();
+                toast.success('Backend unavailable — exported locally (JSON)', { id: toastId });
+                setGenProgress(100);
+            } catch (e) {
+                toast.error('Report failed', { id: toastId });
+            }
         } finally {
             if (interval) window.clearInterval(interval);
             setIsGenerating(false);
@@ -216,7 +306,10 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 file_format: 'PDF'
             } as any);
 
-            if (error) throw error;
+            if (error) {
+                toast.error('AI insights require the reports backend', { id: toastId });
+                return;
+            }
             toast.success('Insights queued', { id: toastId });
 
             const jobId = data?.id;
@@ -235,7 +328,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             loadData();
         } catch (error) {
             console.error('Report generation failed', error);
-            toast.error('Insights failed', { id: toastId });
+            toast.error('AI insights require the reports backend', { id: toastId });
         } finally {
             setIsAISynthesizing(false);
         }
@@ -788,7 +881,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         <Label className={glass.microLabel} htmlFor="beeyield-schedule-active">Status</Label>
                                         <div className={cn(glass.input, "w-full flex items-center justify-between")}>
                                             <span className="text-[10px] font-bold uppercase text-[#1A1A1A]/60">Active</span>
-                                            <Switch 
+                                            <UISwitch 
                                                 id="beeyield-schedule-active"
                                                 checked={newSchedule.is_active}
                                                 onCheckedChange={(c) => setNewSchedule({ ...newSchedule, is_active: !!c })}

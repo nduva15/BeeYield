@@ -121,10 +121,13 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                     <form onSubmit={handleSubmit} className="p-14 space-y-12 relative z-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="space-y-6 group">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Hardware Signature ID</Label>
+                                <Label htmlFor="add-device-code" className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Hardware Signature ID</Label>
                                 <div className="relative">
                                     <Network className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-[#F4D03F] transition-colors group-focus-within:text-foreground" />
                                     <Input
+                                        id="add-device-code"
+                                        name="device_code"
+                                        autoComplete="off"
                                         placeholder="e.g. HUB-KIB-001"
                                         value={deviceCode}
                                         onChange={(e) => setDeviceCode(e.target.value)}
@@ -136,7 +139,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             <div className="space-y-6">
                                 <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device type</Label>
                                 <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
-                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
+                                    <SelectTrigger id="add-device-type" aria-label="Device type" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Zap className="w-6 h-6 text-blue-400" />
                                             <SelectValue />
@@ -155,7 +158,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             <div className="space-y-6">
                                 <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Location</Label>
                                 <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
+                                    <SelectTrigger id="add-device-apiary" aria-label="Location" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Database className="w-6 h-6 text-[#F4D03F]" />
                                             <SelectValue placeholder="Select a location…" />
@@ -178,7 +181,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     onValueChange={setSelectedHiveId}
                                     disabled={!selectedApiaryId}
                                 >
-                                    <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner disabled:opacity-20')}>
+                                    <SelectTrigger id="add-device-hive" aria-label="Hive" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner disabled:opacity-20')}>
                                         <div className="flex items-center gap-6">
                                             <ShieldCheck className="w-6 h-6 text-[#1B9157]" />
                                             <SelectValue placeholder="Select a hive…" />
@@ -196,12 +199,13 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         </div>
 
                         <div className="space-y-6 group">
-                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device name (optional)</Label>
+                            <Label htmlFor="device-name" className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device name (optional)</Label>
                             <div className="relative">
                                 <Binary className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-[#F4D03F] opacity-20 group-hover:opacity-100 transition-opacity" />
                                 <Input
                                     id="device-name"
                                     name="device_name"
+                                    autoComplete="off"
                                     value={deviceName}
                                     onChange={(e) => setDeviceName(e.target.value)}
                                     placeholder="e.g. Orchard gateway"

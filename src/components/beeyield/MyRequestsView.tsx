@@ -39,6 +39,32 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
 
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>("");
     const [selectedHive, setSelectedHive] = React.useState<string>("");
+    const [localRequests, setLocalRequests] = React.useState<any[]>([]);
+
+    const LOCAL_REQUESTS_KEY = React.useMemo(() => 'beeyield_local_requests_v1', []);
+
+    const readLocalRequests = React.useCallback(() => {
+        try {
+            const raw = globalThis.localStorage?.getItem(LOCAL_REQUESTS_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }, [LOCAL_REQUESTS_KEY]);
+
+    const writeLocalRequests = React.useCallback((next: any[]) => {
+        try {
+            globalThis.localStorage?.setItem(LOCAL_REQUESTS_KEY, JSON.stringify(next));
+        } catch {
+            // ignore
+        }
+    }, [LOCAL_REQUESTS_KEY]);
+
+    React.useEffect(() => {
+        setLocalRequests(readLocalRequests());
+    }, [readLocalRequests]);
 
     // Wizard State
     const [wizardStep, setWizardStep] = React.useState(0);
@@ -62,15 +88,28 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
         return hivesData.filter(hive => hive.apiary_id === selectedPlaceId);
     }, [hivesData, selectedPlaceId]);
 
+    const combinedRequests = React.useMemo(() => {
+        const remote = Array.isArray(requests) ? requests : [];
+        const local = Array.isArray(localRequests) ? localRequests : [];
+        const merged = [...local, ...remote];
+        const seen = new Set<string>();
+        return merged.filter((r: any) => {
+            const id = String(r?.id || '');
+            if (!id) return false;
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+        });
+    }, [requests, localRequests]);
+
     const filteredRequests = React.useMemo(() => {
-        if (!requests) return [];
-        return requests.filter(req => {
+        return combinedRequests.filter((req: any) => {
             const matchesSearch = req.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 req.id.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesStatus = statusFilter === "All" || req.status === statusFilter;
             return matchesSearch && matchesStatus;
         });
-    }, [requests, searchQuery, statusFilter]);
+    }, [combinedRequests, searchQuery, statusFilter]);
 
     const handleFormSubmit = async () => {
         if (!subject.trim() || !description.trim() || !category) {
@@ -94,7 +133,32 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
             setDescription('');
             toast.success("Request submitted successfully");
         } catch (error) {
-            toast.error("Failed to submit request");
+            // Offline/no-backend fallback: persist locally so the UX remains functional.
+            const createdAt = new Date().toISOString();
+            const localRow: any = {
+                id: `local-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                subject: subject.trim(),
+                description: description.trim(),
+                status: 'Open',
+                category,
+                type: category,
+                priority,
+                hive_id: selectedHive || null,
+                apiary_id: selectedPlaceId || null,
+                created_at: createdAt,
+                updated_at: createdAt,
+                _local: true,
+            };
+            const next = [localRow, ...readLocalRequests()];
+            setLocalRequests(next);
+            writeLocalRequests(next);
+
+            setShowWizard(false);
+            setWizardStep(0);
+            setCategory('');
+            setSubject('');
+            setDescription('');
+            toast.success("Saved locally (offline)");
         }
     };
 
@@ -222,8 +286,11 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                         >
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <label className={glass.microLabel}>Related Entity (Apiary)</label>
+                                                    <label htmlFor="request-related-apiary" className={glass.microLabel}>Related Entity (Apiary)</label>
                                                     <select
+                                                        id="request-related-apiary"
+                                                        name="related_apiary"
+                                                        autoComplete="off"
                                                         value={selectedPlaceId}
                                                         onChange={(e) => setSelectedPlaceId(e.target.value)}
                                                         className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
@@ -235,8 +302,11 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                     </select>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className={glass.microLabel}>Related Hive</label>
+                                                    <label htmlFor="request-related-hive" className={glass.microLabel}>Related Hive</label>
                                                     <select
+                                                        id="request-related-hive"
+                                                        name="related_hive"
+                                                        autoComplete="off"
                                                         value={selectedHive}
                                                         onChange={(e) => setSelectedHive(e.target.value)}
                                                         className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
@@ -250,8 +320,11 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                             </div>
 
                                             <div className="space-y-1.5">
-                                                <label className={glass.microLabel}>Subject</label>
+                                                <label htmlFor="request-subject" className={glass.microLabel}>Subject</label>
                                                 <input
+                                                    id="request-subject"
+                                                    name="subject"
+                                                    autoComplete="off"
                                                     value={subject}
                                                     onChange={(e) => setSubject(e.target.value)}
                                                     placeholder="Brief summary of the issue..."
@@ -259,8 +332,11 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className={glass.microLabel}>Description</label>
+                                                <label htmlFor="request-description" className={glass.microLabel}>Description</label>
                                                 <textarea
+                                                    id="request-description"
+                                                    name="description"
+                                                    autoComplete="off"
                                                     value={description}
                                                     onChange={(e) => setDescription(e.target.value)}
                                                     placeholder="Detailed technical overview..."
@@ -377,6 +453,9 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                             <div className="relative group/search">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-foreground/20 group-focus-within/search:text-[#F4D03F] transition-colors" />
                                 <input
+                                    id="requests-search"
+                                    name="search_requests"
+                                    autoComplete="off"
                                     placeholder="Search tickets..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
