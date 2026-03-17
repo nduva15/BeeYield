@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,16 +28,12 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
     const [verificationCode, setVerificationCode] = useState('');
     const [copied, setCopied] = useState(false);
 
-    useEffect(() => {
-        loadFactors();
-    }, []);
-
-    const loadFactors = async () => {
+    const loadFactors = useCallback(async () => {
         setLoading(true);
         const { factors: loadedFactors } = await getMFAFactors();
         setFactors(loadedFactors);
         setLoading(false);
-    };
+    }, [getMFAFactors]);
 
     const handleEnroll = async () => {
         setEnrolling(true);

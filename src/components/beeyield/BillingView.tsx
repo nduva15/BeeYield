@@ -52,6 +52,52 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
         vatRate: 16,
     };
 
+    const exportLedgerCsv = async () => {
+        const tid = toast.loading('Synthesizing export…');
+        try {
+            const txs = await beeyieldService.getTransactions();
+            const rows = (txs || []).map((t: any) => ({
+                date: t.date || '',
+                type: t.transaction_type || t.type || '',
+                amount: t.amount ?? '',
+                currency: t.currency || '',
+                category: t.module_type || t.category || '',
+                description: t.description || '',
+                status: t.etims_status || t.status || '',
+            }));
+
+            if (rows.length === 0) {
+                toast.info('No ledger entries to export', { id: tid });
+                return;
+            }
+
+            const escapeCsv = (v: unknown) => {
+                const s = String(v ?? '');
+                if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+                return s;
+            };
+
+            const header = Object.keys(rows[0]).join(',');
+            const body = rows.map((r) => Object.values(r).map(escapeCsv).join(',')).join('\n');
+            const csv = `${header}\n${body}\n`;
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `beeyield-ledger-${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            toast.success('Ledger exported', { id: tid });
+        } catch (e) {
+            console.error(e);
+            toast.error('Export failed', { id: tid });
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -67,7 +113,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Revenue, costs, and invoices</p>
                 </div>
                 <button
-                    onClick={() => toast.info("Exporting...")}
+                    onClick={exportLedgerCsv}
                     className="h-7 px-3 bg-white/40 hover:bg-white/60 text-[#1A1A1A]/60 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border border-white/40"
                 >
                     <Download className="w-3 h-3 text-[#F4D03F]" />

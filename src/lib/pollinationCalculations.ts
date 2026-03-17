@@ -46,11 +46,11 @@ export const calculatePollinationMetrics = (inputs: CalculationInputs): Pollinat
 
         // Strength multipliers
         // Strong colonies have 30% more foraging force per frame than split colonies (as per bee math)
-        let strengthMultiplier = hive.isStrong ? 1.3 : 0.8;
+        const strengthMultiplier = hive.isStrong ? 1.3 : 0.8;
 
         // Size multipliers
         // Large colonies (multi-box) have better thermal regulation and more reserves
-        let sizeMultiplier = hive.isLarge ? 1.1 : 0.9;
+        const sizeMultiplier = hive.isLarge ? 1.1 : 0.9;
 
         effectiveFrames += hive.frameCount * strengthMultiplier * sizeMultiplier;
     });
@@ -67,10 +67,12 @@ export const calculatePollinationMetrics = (inputs: CalculationInputs): Pollinat
     // Standard target is often 8-10 FPA for almond pollination, etc.
     const pollEfficacy = Math.min(100, (effectiveFPA / 10) * 100);
 
-    let recommendation = "";
-    if (pollEfficacy < 60) recommendation = "CRITICAL: Insufficient frames for target area. Deploy 30% more colonies.";
-    else if (pollEfficacy < 85) recommendation = "WARNING: Optimal window narrow. Consider supplemental feeding to boost activity.";
-    else recommendation = "OPTIMAL: Colony density sufficient for full seed set.";
+    const recommendation =
+        pollEfficacy < 60
+            ? "CRITICAL: Insufficient frames for target area. Deploy 30% more colonies."
+            : pollEfficacy < 85
+                ? "WARNING: Optimal window narrow. Consider supplemental feeding to boost activity."
+                : "OPTIMAL: Colony density sufficient for full seed set.";
 
     return {
         totalFrames,

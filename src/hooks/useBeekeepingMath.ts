@@ -11,8 +11,8 @@ export const useBeekeepingMath = () => {
         // Basic ratio: 1:1 is 1kg sugar + 1L water = ~1.6L syrup
         // 2:1 is 2kg sugar + 1L water = ~2.2L syrup
 
-        let sugarKg = 0;
-        let waterL = 0;
+        let sugarKg: number;
+        let waterL: number;
 
         if (ratio === '1:1') {
             // 1kg sugar + 1L water ≈ 1.63L

@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import beeyieldService, { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
+import { hashToInt, hashToRange, hashToUnit } from '@/lib/deterministic';
 import { toast } from 'sonner';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -144,15 +145,17 @@ const HiveStatusMatrix: React.FC = () => {
     const days = 7;
     const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-    const matrix = React.useMemo(() =>
-        Array.from({ length: weeks }, () =>
-            Array.from({ length: days }, () => {
-                const r = Math.random();
-                if (r > 0.90) return 'high';
-                if (r > 0.70) return 'med';
-                return 'low';
-            })
-        ), []
+    const matrix = React.useMemo(
+        () =>
+            Array.from({ length: weeks }, (_, w) =>
+                Array.from({ length: days }, (_, d) => {
+                    const r = hashToUnit(`hive-status-${w}-${d}`);
+                    if (r > 0.9) return 'high';
+                    if (r > 0.7) return 'med';
+                    return 'low';
+                })
+            ),
+        []
     );
 
     const cellColors = {
@@ -527,8 +530,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
 
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         {apiaries.slice(0, 6).map((apiary, i) => {
-                            const health = Math.floor(Math.random() * 25) + 75;
-                            const spark = Array.from({ length: 12 }, () => Math.random() * 40 + 60);
+                            const health = hashToInt(`${apiary.id}-health`, 75, 99);
+                            const spark = Array.from({ length: 12 }, (_, j) => hashToRange(`${apiary.id}-spark-${j}`, 60, 100));
                             return (
                                 <motion.div
                                     key={apiary.id}
@@ -562,9 +565,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
 
                                     <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { l: 'Hives', v: Math.floor(Math.random() * 80 + 100) },
-                                            { l: 'Flow', v: `${Math.floor(Math.random() * 20 + 75)}%` },
-                                            { l: 'Temp', v: (Math.random() * 2 + 32).toFixed(1) },
+                                            { l: 'Hives', v: hashToInt(`${apiary.id}-hives`, 100, 180) },
+                                            { l: 'Flow', v: `${hashToInt(`${apiary.id}-flow`, 75, 95)}%` },
+                                            { l: 'Temp', v: hashToRange(`${apiary.id}-temp`, 32, 34).toFixed(1) },
                                         ].map((s, idx) => (
                                             <div key={idx} className="bg-[#FFF9F0] py-2 px-2.5 rounded-lg border border-[#F4D03F]/10 text-center">
                                                 <p className="text-sm font-semibold text-[#1A1A1A] tabular-nums leading-none mb-0.5">{s.v}</p>

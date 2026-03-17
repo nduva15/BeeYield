@@ -195,7 +195,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "pollen_flow": "Pollen Flow Peak",
         "hive_placement_title": "Hive placement",
         "foraging_coverage": "Foraging Coverage",
-        "click_node_details": "Click node for details",
+        "click_node_details": "Click for details",
         "gps_coordinates": "GPS Coordinates",
         "coverage_radius": "Coverage Radius",
         "bee_density": "Bee Density",

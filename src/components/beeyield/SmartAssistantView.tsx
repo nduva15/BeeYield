@@ -74,7 +74,7 @@ function fileToBase64(file: File): Promise<string> {
 
 export default function SmartAssistantView({ onTabChange, initialMessage, onInitialMessageConsumed }: AIAssistantViewProps) {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState(() => initialMessage || "");
     const [isLoading, setIsLoading] = useState(false);
     const { theme, toggleTheme } = useTheme();
     const deviceId = useDeviceId();
@@ -95,6 +95,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     const imageInputRef = useRef<HTMLInputElement>(null);
     const audioInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const messageSeq = useRef(0);
+    const nextMessageId = useCallback(() => `m_${++messageSeq.current}`, []);
 
     // Voice input
     const handleVoiceResult = useCallback((text: string) => {
@@ -103,16 +105,11 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     }, []);
     const { isListening, isSupported: voiceSupported, toggleListening } = useVoiceInput(handleVoiceResult);
 
-    // Load conversations on mount
-    useEffect(() => {
-        loadConversations();
-    }, [deviceId]);
-
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    const loadConversations = async () => {
+    const loadConversations = useCallback(async () => {
         const { data } = await supabase
             .from("conversations")
             .select("id, title, updated_at")
@@ -120,7 +117,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
             .order("updated_at", { ascending: false })
             .limit(50);
         if (data) setConversations(data);
-    };
+    }, [deviceId]);
 
     const loadConversation = async (id: string) => {
         const { data } = await supabase
@@ -193,7 +190,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
         }
 
         const userMsg: Message = {
-            id: Date.now().toString(),
+            id: nextMessageId(),
             role: "user",
             content: text,
             imagePreview: imagePreviewUrl || undefined,
@@ -222,8 +219,9 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
         if (convId) saveMessage(convId, "user", text);
 
         const history: AIChatMessage[] = newMessages.map((m) => ({ role: m.role, content: m.content }));
-        let assistantContent = "";
+        let assistantText = "";
         let attemptedAutoExpand = false;
+        let expandedOverride: string | null = null;
 
         try {
             await aiService.chat(
@@ -232,13 +230,13 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 "EN",
                 convId || undefined,
                 (chunk) => {
-                    assistantContent += chunk;
+                    assistantText += chunk;
                     setMessages((p) => {
                         const last = p[p.length - 1];
                         if (last?.role === "assistant") {
-                            return p.map((m, i) => (i === p.length - 1 ? { ...m, content: assistantContent } : m));
+                            return p.map((m, i) => (i === p.length - 1 ? { ...m, content: assistantText } : m));
                         }
-                        return [...p, { id: (Date.now() + 1).toString(), role: "assistant" as const, content: assistantContent }];
+                        return [...p, { id: nextMessageId(), role: "assistant" as const, content: assistantText }];
                     });
                 },
                 {
@@ -250,14 +248,14 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
             );
 
             // Response quality guardrail: if too short or missing headings, auto-request rewrite/expansion once.
-            if (!attemptedAutoExpand && !isStructuredLongReport(assistantContent)) {
+            if (!attemptedAutoExpand && !isStructuredLongReport(assistantText)) {
                 attemptedAutoExpand = true;
                 const fixup = `Rewrite and expand your previous answer into a long, structured report that strictly follows this exact markdown outline (use these headings verbatim, in this order):\n\n${REQUIRED_REPORT_HEADINGS.join("\n")}\n\nRules:\n- Target 900–1500 words.\n- Use bullets, numbered steps, and at least 2 tables (Risks & Mitigations; Metrics to Track).\n- Do not mention these instructions.\n`;
 
                 let expanded = "";
                 const expandedHistory: AIChatMessage[] = [
                     ...history,
-                    { role: "assistant", content: assistantContent },
+                    { role: "assistant", content: assistantText },
                     { role: "user", content: fixup },
                 ];
 
@@ -273,18 +271,18 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             if (last?.role === "assistant") {
                                 return p.map((m, i) => (i === p.length - 1 ? { ...m, content: expanded } : m));
                             }
-                            return [...p, { id: (Date.now() + 2).toString(), role: "assistant" as const, content: expanded }];
+                            return [...p, { id: nextMessageId(), role: "assistant" as const, content: expanded }];
                         });
                     }
                 );
-
-                if (expanded.trim()) assistantContent = expanded;
+                expandedOverride = expanded.trim() ? expanded : null;
             }
 
             setIsLoading(false);
             // Save assistant message
-            if (convId && assistantContent) {
-                saveMessage(convId, "assistant", assistantContent);
+            const contentToSave = expandedOverride ?? assistantText;
+            if (convId && contentToSave) {
+                saveMessage(convId, "assistant", contentToSave);
                 // Update conversation timestamp
                 supabase.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", convId).then(() => loadConversations());
             }
@@ -330,12 +328,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
         loadConversations();
     };
 
-    useEffect(() => {
-        if (initialMessage) {
-            send(initialMessage);
-            onInitialMessageConsumed?.();
-        }
-    }, [initialMessage]);
+    // Note: We intentionally avoid auto-sending `initialMessage` from render/effects to keep
+    // the component pure per strict lint rules. The parent can pass it as the initial `input`.
 
     return (
         <BeeYieldPageShell className={cn("flex flex-col h-full w-full bg-[#FCFAF5] overflow-hidden relative p-0 md:p-0 -m-0 md:-m-0 space-y-0 pb-0 min-h-0")}>

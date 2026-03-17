@@ -105,7 +105,7 @@ const BeeCalculatorPage: React.FC = () => {
     // --- Actions ---
     React.useEffect(() => {
         const syncCalculation = async () => {
-            let payload: any = {
+            const payload: any = {
                 calculation_type: activeSection as any,
                 sub_type: 'snapshot',
                 inputs: {},
@@ -290,11 +290,15 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Volume (L)</label>
+                                                <label htmlFor="syrup_target_volume_l" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Volume (L)</label>
                                                 <input
+                                                    id="syrup_target_volume_l"
                                                     type="number"
                                                     value={syrupVol}
                                                     onChange={(e) => setSyrupVol(Number(e.target.value))}
+                                                    placeholder="e.g. 10"
+                                                    title="Target syrup volume (liters)"
+                                                    aria-label="Target syrup volume (liters)"
                                                     className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
                                                 />
                                             </div>
@@ -345,20 +349,28 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="space-y-4 relative z-10">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Current (kg)</label>
+                                                    <label htmlFor="winter_current_weight_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Current (kg)</label>
                                                     <input
+                                                        id="winter_current_weight_kg"
                                                         type="number"
                                                         value={currentWeight}
                                                         onChange={(e) => setCurrentWeight(Number(e.target.value))}
+                                                        placeholder="e.g. 18"
+                                                        title="Current hive weight (kg)"
+                                                        aria-label="Current hive weight (kg)"
                                                         className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target (kg)</label>
+                                                    <label htmlFor="winter_target_weight_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target (kg)</label>
                                                     <input
+                                                        id="winter_target_weight_kg"
                                                         type="number"
                                                         value={targetWeight}
                                                         onChange={(e) => setTargetWeight(Number(e.target.value))}
+                                                        placeholder="e.g. 25"
+                                                        title="Target hive weight (kg)"
+                                                        aria-label="Target hive weight (kg)"
                                                         className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
                                                     />
                                                 </div>
@@ -420,11 +432,15 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4 relative z-10">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Total Mites Found (300 Bees)</label>
+                                                <label htmlFor="varroa_mites_found" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Total Mites Found (300 Bees)</label>
                                                 <input
+                                                    id="varroa_mites_found"
                                                     type="number"
                                                     value={miteCount}
                                                     onChange={(e) => setMiteCount(Number(e.target.value))}
+                                                    placeholder="e.g. 9"
+                                                    title="Total mites found (300 bees)"
+                                                    aria-label="Total mites found (300 bees)"
                                                     className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono text-center px-4")}
                                                 />
                                             </div>
@@ -464,14 +480,17 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4 relative z-10 flex-1 flex flex-col justify-end">
                                             <div className="space-y-3 p-4 rounded-2xl bg-muted/30 border border-black/5">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest block">Ambient Temp (℃)</label>
+                                                <label htmlFor="treatment_ambient_temp_c" className="text-[10px] font-black uppercase opacity-40 tracking-widest block">Ambient Temp (℃)</label>
                                                 <div className="flex items-center gap-4">
                                                     <input
+                                                        id="treatment_ambient_temp_c"
                                                         type="range"
                                                         min="0"
                                                         max="40"
                                                         value={temp}
                                                         onChange={(e) => setTemp(Number(e.target.value))}
+                                                        title="Ambient temperature (°C)"
+                                                        aria-label="Ambient temperature (°C)"
                                                         className="flex-1 h-1.5 bg-black/5 appearance-none rounded-full cursor-pointer accent-blue-500"
                                                     />
                                                     <span className="text-xl font-black tabular-nums min-w-[2.5rem] tracking-tighter">{temp}℃</span>
@@ -526,11 +545,15 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Colony Count</label>
+                                                <label htmlFor="equipment_target_colony_count" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Colony Count</label>
                                                 <input
+                                                    id="equipment_target_colony_count"
                                                     type="number"
                                                     value={colonyCount}
                                                     onChange={(e) => setColonyCount(Number(e.target.value))}
+                                                    placeholder="e.g. 25"
+                                                    title="Target colony count"
+                                                    aria-label="Target colony count"
                                                     className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
                                                 />
                                             </div>
@@ -564,19 +587,26 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Honey Yield (kg)</label>
+                                                    <label htmlFor="supply_honey_yield_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Honey Yield (kg)</label>
                                                     <input
+                                                        id="supply_honey_yield_kg"
                                                         type="number"
                                                         value={honeyKg}
                                                         onChange={(e) => setHoneyKg(Number(e.target.value))}
+                                                        placeholder="e.g. 120"
+                                                        title="Honey yield (kg)"
+                                                        aria-label="Honey yield (kg)"
                                                         className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Jar Size (ml)</label>
+                                                    <label htmlFor="supply_jar_size_ml" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Jar Size (ml)</label>
                                                     <select
+                                                        id="supply_jar_size_ml"
                                                         value={jarSize}
                                                         onChange={(e) => setJarSize(Number(e.target.value))}
+                                                        title="Jar size (ml)"
+                                                        aria-label="Jar size (ml)"
                                                         className={cn(glass.input, "w-full h-11 rounded-xl text-xs font-black uppercase tracking-widest px-4 py-0 appearance-none")}
                                                     >
                                                         <option value={250}>250 ML / 350G</option>
@@ -623,13 +653,33 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
                                         <div className="lg:col-span-4 space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Apiary Size</label>
-                                                <input type="number" value={totalColonies} onChange={(e) => setTotalColonies(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                <label htmlFor="queen_apiary_size" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Apiary Size</label>
+                                                <input
+                                                    id="queen_apiary_size"
+                                                    type="number"
+                                                    value={totalColonies}
+                                                    onChange={(e) => setTotalColonies(Number(e.target.value))}
+                                                    placeholder="e.g. 40"
+                                                    title="Apiary size (colonies)"
+                                                    aria-label="Apiary size (colonies)"
+                                                    className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Turnover ({replacementRate}%)</label>
+                                                <label htmlFor="queen_turnover_rate" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Turnover ({replacementRate}%)</label>
                                                 <div className="flex items-center gap-4 px-4 py-3 rounded-xl bg-muted/30 border border-black/5">
-                                                    <input type="range" min="5" max="50" step="5" value={replacementRate} onChange={(e) => setReplacementRate(Number(e.target.value))} className="flex-1 h-1.5 bg-black/5 appearance-none rounded-full cursor-pointer accent-[#F4D03F]" />
+                                                    <input
+                                                        id="queen_turnover_rate"
+                                                        type="range"
+                                                        min="5"
+                                                        max="50"
+                                                        step="5"
+                                                        value={replacementRate}
+                                                        onChange={(e) => setReplacementRate(Number(e.target.value))}
+                                                        title="Queen replacement turnover rate (%)"
+                                                        aria-label="Queen replacement turnover rate (%)"
+                                                        className="flex-1 h-1.5 bg-black/5 appearance-none rounded-full cursor-pointer accent-[#F4D03F]"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -674,20 +724,56 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-4 relative">
                                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[80%] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none -z-10" />
                                             <div className="space-y-2 relative z-10">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Labor ($)</label>
-                                                <input type="number" value={laborCost} onChange={(e) => setLaborCost(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                <label htmlFor="economy_labor_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Labor ($)</label>
+                                                <input
+                                                    id="economy_labor_cost"
+                                                    type="number"
+                                                    value={laborCost}
+                                                    onChange={(e) => setLaborCost(Number(e.target.value))}
+                                                    placeholder="e.g. 120"
+                                                    title="Labor cost ($)"
+                                                    aria-label="Labor cost ($)"
+                                                    className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                />
                                             </div>
                                             <div className="space-y-2 relative z-10">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Fuel ($)</label>
-                                                <input type="number" value={fuelCost} onChange={(e) => setFuelCost(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                <label htmlFor="economy_fuel_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Fuel ($)</label>
+                                                <input
+                                                    id="economy_fuel_cost"
+                                                    type="number"
+                                                    value={fuelCost}
+                                                    onChange={(e) => setFuelCost(Number(e.target.value))}
+                                                    placeholder="e.g. 45"
+                                                    title="Fuel cost ($)"
+                                                    aria-label="Fuel cost ($)"
+                                                    className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                />
                                             </div>
                                             <div className="space-y-2 relative z-10">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Medical ($)</label>
-                                                <input type="number" value={medCost} onChange={(e) => setMedCost(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                <label htmlFor="economy_med_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Medical ($)</label>
+                                                <input
+                                                    id="economy_med_cost"
+                                                    type="number"
+                                                    value={medCost}
+                                                    onChange={(e) => setMedCost(Number(e.target.value))}
+                                                    placeholder="e.g. 25"
+                                                    title="Medical cost ($)"
+                                                    aria-label="Medical cost ($)"
+                                                    className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                />
                                             </div>
                                             <div className="space-y-2 relative z-10">
-                                                <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Equip ($)</label>
-                                                <input type="number" value={equipCost} onChange={(e) => setEquipCost(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                <label htmlFor="economy_equip_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Equip ($)</label>
+                                                <input
+                                                    id="economy_equip_cost"
+                                                    type="number"
+                                                    value={equipCost}
+                                                    onChange={(e) => setEquipCost(Number(e.target.value))}
+                                                    placeholder="e.g. 60"
+                                                    title="Equipment cost ($)"
+                                                    aria-label="Equipment cost ($)"
+                                                    className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                />
                                             </div>
                                         </div>
                                         <div className="p-6 rounded-2xl bg-indigo-500 border border-indigo-400 text-white flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm group relative overflow-hidden">
@@ -718,12 +804,30 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="space-y-4 relative z-10">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Hives</label>
-                                                    <input type="number" value={hikingHives} onChange={(e) => setHikingHives(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                    <label htmlFor="roi_hives" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Hives</label>
+                                                    <input
+                                                        id="roi_hives"
+                                                        type="number"
+                                                        value={hikingHives}
+                                                        onChange={(e) => setHikingHives(Number(e.target.value))}
+                                                        placeholder="e.g. 24"
+                                                        title="Number of hives"
+                                                        aria-label="Number of hives"
+                                                        className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                    />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Transport ($)</label>
-                                                    <input type="number" value={hikingTransport} onChange={(e) => setHikingTransport(Number(e.target.value))} className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")} />
+                                                    <label htmlFor="roi_transport_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Transport ($)</label>
+                                                    <input
+                                                        id="roi_transport_cost"
+                                                        type="number"
+                                                        value={hikingTransport}
+                                                        onChange={(e) => setHikingTransport(Number(e.target.value))}
+                                                        placeholder="e.g. 120"
+                                                        title="Transport cost ($)"
+                                                        aria-label="Transport cost ($)"
+                                                        className={cn(glass.input, "w-full h-11 rounded-xl text-lg font-black font-mono px-4")}
+                                                    />
                                                 </div>
                                             </div>
                                             <div className={cn(

@@ -96,14 +96,14 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 icon={Cpu}
                 label="Sensor Management"
                 title={<>Device <span className="text-[#F4D03F]">Registry</span></>}
-                subtitle="IoT node orchestration and hardware telemetry monitoring."
+                subtitle="Manage devices and view recent readings."
                 actions={
                     <button
                         onClick={() => setIsAddModalOpen(true)}
                         className={cn(glass.btnPrimary, "h-11 px-8 text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2")}
                     >
                         <Plus className="w-4 h-4" />
-                        Initialize_Node
+                        Add device
                     </button>
                 }
             />
@@ -121,7 +121,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 {/* Search and Filters */}
                 <div className={glass.sectionHeader}>
                     <div className="flex-1 w-full space-y-2">
-                        <Label className="text-[9px] font-black tracking-[0.2em] text-[#1A1A1A]/40 uppercase ml-2">Node Identifier</Label>
+                        <Label className="text-[9px] font-black tracking-[0.2em] text-[#1A1A1A]/40 uppercase ml-2">Device ID</Label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                             <Input
@@ -138,11 +138,11 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                             <SelectTrigger className={glass.select}>
                                 <div className="flex items-center gap-2">
                                     <Layers className="w-4 h-4 text-[#F4D03F]" />
-                                    <SelectValue placeholder="All Nodes" />
+                                            <SelectValue placeholder="All devices" />
                                 </div>
                             </SelectTrigger>
                             <SelectContent className={glass.selectContent}>
-                                <SelectItem value="all" className="text-sm">All Nodes</SelectItem>
+                                        <SelectItem value="all" className="text-sm">All devices</SelectItem>
                                 {apiaries.map(apiary => (
                                     <SelectItem key={apiary.id} value={apiary.id} className="text-sm">{apiary.name}</SelectItem>
                                 ))}
@@ -157,7 +157,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         <thead>
                             <tr>
                                 <th className={glass.tableHead}>Status</th>
-                                <th className={glass.tableHead}>Node ID</th>
+                                <th className={glass.tableHead}>Device ID</th>
                                 <th className={glass.tableHead}>Location</th>
                                 <th className={glass.tableHead}>Target</th>
                                 <th className={glass.tableHead}>Energy</th>
@@ -172,9 +172,9 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                         <td colSpan={7} className="h-48 text-center">
                                             <div className="flex flex-col items-center justify-center space-y-3 opacity-30">
                                                 <SearchCode className="w-8 h-8" />
-                                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">No Nodes Detected</h3>
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">No devices found</h3>
                                                 <button onClick={() => setIsAddModalOpen(true)} className={cn(glass.btnSecondary, "h-9 px-6 text-[8px] font-black uppercase mt-4")}>
-                                                    Initialize First Node
+                                                    Add your first device
                                                 </button>
                                             </div>
                                         </td>
@@ -238,10 +238,18 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                                    <button className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm">
+                                                    <button
+                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
+                                                        aria-label="View device details"
+                                                        title="View device details"
+                                                    >
                                                         <FileSearch className="w-3.5 h-3.5" />
                                                     </button>
-                                                    <button className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#1A1A1A] hover:text-white transition-all shadow-sm">
+                                                    <button
+                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#1A1A1A] hover:text-white transition-all shadow-sm"
+                                                        aria-label="Device settings"
+                                                        title="Device settings"
+                                                    >
                                                         <Settings className="w-3.5 h-3.5" />
                                                     </button>
                                                 </div>

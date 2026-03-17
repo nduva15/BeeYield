@@ -49,6 +49,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { hashToRange } from '@/lib/deterministic';
 import {
     Apiary,
     ApiaryCreateInput,
@@ -124,6 +125,8 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                         <button
                             onClick={() => setViewingApiary(null)}
                             className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
+                            aria-label="Back to locations"
+                            title="Back to locations"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
@@ -201,7 +204,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                 
                                 <div className="h-32 w-full bg-[#1A1A1A]/[0.02] rounded-xl border border-[#F4D03F]/5 flex items-end p-3 gap-1">
                                     {Array.from({ length: 30 }).map((_, i) => {
-                                        const val = Math.random() * 80 + 20;
+                                        const val = hashToRange(`places-prod-${i}`, 20, 100);
                                         return (
                                             <motion.div
                                                 key={i}
@@ -290,12 +293,16 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         <button
                                             className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'grid' ? "bg-white shadow-md text-[#F4D03F] border border-[#F4D03F]/10" : "text-gray-300 hover:text-[#1A1A1A]")}
                                             onClick={() => setViewMode('grid')}
+                                            aria-label="Grid view"
+                                            title="Grid view"
                                         >
                                             <LayoutGrid className="w-3.5 h-3.5" />
                                         </button>
                                         <button
                                             className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'list' ? "bg-white shadow-md text-[#F4D03F] border border-[#F4D03F]/10" : "text-gray-300 hover:text-[#1A1A1A]")}
                                             onClick={() => setViewMode('list')}
+                                            aria-label="List view"
+                                            title="List view"
                                         >
                                             <ListIcon className="w-3.5 h-3.5" />
                                         </button>
@@ -382,7 +389,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         </div>
                                         <div className="space-y-0.5">
                                             <h3 className="text-sm font-semibold text-[#1A1A1A]">Asset Registry</h3>
-                                            <p className={cn(glass.microLabel, "opacity-40 uppercase tracking-widest")}>Node Management</p>
+                                            <p className={cn(glass.microLabel, "opacity-40 uppercase tracking-widest")}>Device management</p>
                                         </div>
                                     </div>
                                     <button
@@ -528,6 +535,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     <button
                         onClick={resetForm}
                         className={cn(glass.btnSecondary, "h-10 w-10 p-0 rounded-xl flex items-center justify-center bg-white shadow-sm border-[#F4D03F]/10")}
+                        aria-label="Back"
+                        title="Back"
                     >
                         <ChevronLeft className="w-6 h-6" />
                     </button>
@@ -750,7 +759,14 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     </div>
                     <div className="h-8 w-full flex gap-1 items-end mt-4">
                         {Array.from({ length: 48 }).map((_, i) => (
-                            <div key={i} className={cn("flex-1 rounded-full transition-all duration-1000", i % 3 === 0 ? "bg-[#F4D03F]/40" : i % 5 === 0 ? "bg-[#1B9157]/40" : "bg-gray-200/20")} style={{ height: `${Math.random() * 60 + 40}%` }} />
+                            <div
+                                key={i}
+                                className={cn(
+                                    "flex-1 rounded-full transition-all duration-1000",
+                                    i % 3 === 0 ? "bg-[#F4D03F]/40" : i % 5 === 0 ? "bg-[#1B9157]/40" : "bg-gray-200/20"
+                                )}
+                                style={{ height: `${hashToRange(`places-spectral-${i}`, 40, 100)}%` }}
+                            />
                         ))}
                     </div>
                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.4em] mt-3 text-center opacity-40">Spectral_Signature_Distribution_Alpha</p>
@@ -773,9 +789,9 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                         <SearchX className="w-6 h-6 text-[#F4D03F] opacity-40" />
                     </div>
                     <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight opacity-40">No Locations Found</h3>
-                    <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center uppercase tracking-widest mt-2">Initialize your first distribution node to start tracking.</p>
+                    <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center uppercase tracking-widest mt-2">Add your first location to start tracking.</p>
                     <button onClick={() => setIsAddingPlace(true)} className={cn(glass.btnPrimary, "mt-6 px-6")}>
-                        <Plus className="w-4 h-4 mr-2" /> Initialize_Site_Alpha
+                        <Plus className="w-4 h-4 mr-2" /> Add location
                     </button>
                 </motion.div>
             ) : (
@@ -805,12 +821,16 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
                                                     className="w-7 h-7 rounded-lg bg-white/50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] hover:border-gray-200 transition-all"
+                                                    aria-label="Edit location"
+                                                    title="Edit location"
                                                 >
                                                     <Edit className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleDelete(apiary.id, e); }}
                                                     className="w-7 h-7 rounded-lg bg-red-50/50 border border-red-100 flex items-center justify-center text-red-300 hover:text-red-500 hover:border-red-200 transition-all"
+                                                    aria-label="Delete location"
+                                                    title="Delete location"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
@@ -827,7 +847,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
                                         <div className="grid grid-cols-2 gap-2 mt-auto">
                                             <div className="p-2 rounded-xl bg-gray-50/50 border border-gray-100 space-y-0.5">
-                                                <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Cap_Nodes</p>
+                                                <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Capacity</p>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-sm font-black text-[#1A1A1A] tabular-nums">{apiary.expected_hives || 0}</span>
                                                     <span className="text-[8px] font-bold text-gray-300">FR</span>

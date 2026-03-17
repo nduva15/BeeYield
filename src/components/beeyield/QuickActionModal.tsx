@@ -44,17 +44,17 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
         strength: 3
     });
 
-    React.useEffect(() => {
-        if (isOpen) fetchApiaries();
-    }, [isOpen]);
-
-    const fetchApiaries = async () => {
+    const fetchApiaries = React.useCallback(async () => {
         const data = await beeyieldService.getApiaries();
         setApiaries(data);
-        if (data.length > 0 && !hiveData.apiary_id) {
-            setHiveData(prev => ({ ...prev, apiary_id: data[0].id }));
+        if (data.length > 0) {
+            setHiveData(prev => (prev.apiary_id ? prev : { ...prev, apiary_id: data[0].id }));
         }
-    };
+    }, []);
+
+    React.useEffect(() => {
+        if (isOpen) fetchApiaries();
+    }, [fetchApiaries, isOpen]);
 
     const handleAddApiary = async () => {
         if (!apiaryData.name || !apiaryData.location_name) {

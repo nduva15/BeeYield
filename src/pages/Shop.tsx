@@ -208,10 +208,10 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "hw2",
-    name: "BeeHUB Sense Node",
-    description: "Internal hive monitoring node. Tracks temperature and humidity. Connects wirelessly to the BeeHUB Queen gateway.",
+    name: "BeeHUB Sense",
+    description: "Internal hive sensor. Tracks temperature and humidity. Connects wirelessly to the BeeHUB Queen gateway.",
     category: "hardware",
-    badge: "Sensor Node",
+    badge: "Sensor",
     images: ["/images/products/beehub_temp_humidity.png"],
     rating: 4.8,
     review_count: 56,
@@ -265,7 +265,7 @@ const STATIC_PRODUCTS: Product[] = [
   {
     id: "hw6",
     name: "BeeHUB Solar Panel",
-    description: "Weatherproof solar energy harvester for BeeHUB Queen and Sense nodes. Ensures 24/7 uptime in remote locations.",
+    description: "Weatherproof solar panel for BeeHUB Queen and Sense sensors. Helps keep devices running in remote locations.",
     category: "hardware",
     badge: "Power",
     images: ["/images/products/beehub_solar_panel.png"],
@@ -293,7 +293,7 @@ const STATIC_PRODUCTS: Product[] = [
   {
     id: "hw8",
     name: "Full BeeHUB Station Kit",
-    description: "A complete starter kit including 1 BeeHUB Queen, 2 Sense nodes, 1 Tracker, and 1 Solar panel for your apiary.",
+    description: "Starter kit: 1 BeeHUB Queen, 2 Sense sensors, 1 Tracker, and 1 Solar panel for your apiary.",
     category: "hardware",
     badge: "Best Value",
     images: ["/images/products/beeyield_hub_sensor.jpg"],

@@ -164,11 +164,11 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                 {Array.from({ length: 48 }).map((_, i) => {
                                     const r = Math.floor(i / 8);
                                     const c = i % 8;
-                                    let blockName = '';
-                                    if (r < 3 && c < 4) blockName = 'Block 1C';
-                                    else if (r < 3 && c >= 4) blockName = 'Block 2D';
-                                    else if (r >= 3 && c < 4) blockName = 'Block 4B';
-                                    else blockName = 'Block 3A';
+                                    const blockName =
+                                        r < 3 && c < 4 ? 'Block 1C'
+                                            : r < 3 && c >= 4 ? 'Block 2D'
+                                                : r >= 3 && c < 4 ? 'Block 4B'
+                                                    : 'Block 3A';
 
                                     const saturation = calculateSaturation(blockName, hives);
                                     const jittered = Math.max(0, Math.min(100, saturation + (Math.sin(i) * 5)));
