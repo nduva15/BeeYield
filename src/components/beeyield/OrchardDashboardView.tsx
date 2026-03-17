@@ -125,8 +125,8 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                     </div>
                     <div className="space-y-0.5">
                         <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">{apiary.location_name || 'Orchard Sector'}</h2>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                            Live Telemetry · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        <p className="text-sm text-gray-500">
+                            Live readings · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                     </div>
                 </div>
