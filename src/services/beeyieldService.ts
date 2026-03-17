@@ -701,7 +701,7 @@ export const beeyieldService = {
         return data || [];
     },
 
-    async upsertIntegrationConfig(config: { platform: string; is_active: boolean; store_url?: string; kra_pin?: string; branch_code?: string; device_serial?: string; access_token?: string }): Promise<any> {
+    async upsertIntegrationConfig(config: { platform: string; is_active: boolean; store_url?: string; kra_pin?: string; branch_code?: string; device_serial?: string; access_token?: string; config_json?: any }): Promise<any> {
         if (!sb) return null;
         const { data: { user } } = await sb.auth.getUser();
         if (!user) return null;
@@ -1567,12 +1567,42 @@ export const beeyieldService = {
     // ========== REPORTS ==========
     async getGeneratedReports(): Promise<GeneratedReport[]> {
         try {
-            // Prefer canonical Reports Engine prefix; backend also aliases this under /beeyield/reports.
             return await apiGet<GeneratedReport[]>("/reports");
         } catch (error) {
             console.error("getGeneratedReports:", error);
             return [];
         }
+    },
+
+    async getReportStatus(jobId: string): Promise<{
+        job_id: string;
+        status: string;
+        file_url?: string | null;
+        file_name?: string | null;
+        report_type?: string | null;
+        created_at?: string | null;
+    } | null> {
+        try {
+            return await apiGet(`/reports/status/${encodeURIComponent(jobId)}`);
+        } catch (error) {
+            console.error("getReportStatus:", error);
+            return null;
+        }
+    },
+
+    async waitForReport(jobId: string, opts?: { timeoutMs?: number; pollEveryMs?: number }) {
+        const timeoutMs = opts?.timeoutMs ?? 60_000;
+        const pollEveryMs = opts?.pollEveryMs ?? 1_250;
+        const start = Date.now();
+
+        while (Date.now() - start < timeoutMs) {
+            const status = await this.getReportStatus(jobId);
+            const state = String(status?.status || "").toLowerCase();
+            if (state === "completed" && status?.file_url) return status;
+            if (state === "failed") throw new Error("Report generation failed");
+            await new Promise((r) => setTimeout(r, pollEveryMs));
+        }
+        throw new Error("Report generation timed out");
     },
 
     // ========== ACTIVITY LOGS ==========
@@ -1748,6 +1778,7 @@ export const beeyieldService = {
                 status: GeneratedReport["status"];
                 file_url?: string | null;
                 file_name?: string | null;
+                file_format?: string | null;
                 report_type?: string;
                 created_at?: string;
             }>(`/reports/status/${jobId}`);
@@ -1757,7 +1788,7 @@ export const beeyieldService = {
                 user_id: "unknown",
                 report_type: resp.report_type || "unknown",
                 status: resp.status || "pending",
-                file_format: "PDF",
+                file_format: (resp.file_format as any) || "PDF",
                 file_url: resp.file_url || undefined,
                 file_name: resp.file_name || undefined,
                 created_at: resp.created_at || new Date().toISOString(),
