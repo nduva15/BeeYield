@@ -4,8 +4,9 @@ import { cn } from '@/lib/utils';
 import { Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Line } from 'recharts';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface PollinationIntelligenceProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -54,12 +55,13 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
-            <PageHeader
+        <BeeYieldPageShell>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
+            <BeeYieldPageHeader
                 icon={Brain}
                 label="Intelligence"
                 title={<>Pollination <span className="text-[#F4D03F]">Intelligence</span></>}
@@ -275,7 +277,8 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 20px; }
             `}</style>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

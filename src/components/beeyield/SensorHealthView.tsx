@@ -374,7 +374,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50/50">
-                                    {['Hive Node', 'Temp', 'Humidity', 'Sound Profile', 'Last Sync', 'Health'].map(h => (
+                                    {['Hive', 'Temp', 'Humidity', 'Sound profile', 'Last sync', 'Health'].map(h => (
                                         <th key={h} className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">{h}</th>
                                     ))}
                                 </tr>

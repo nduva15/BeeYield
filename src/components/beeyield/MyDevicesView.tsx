@@ -46,7 +46,16 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             }
         } catch (error) {
             console.error('Add error:', error);
-            setLocalDevices([newDeviceData, ...localDevices]);
+            // If create fails (offline / RLS / network), keep a temporary local row so the UI remains responsive.
+            const temp = {
+                id: newDeviceData?.id || `temp_${Math.random().toString(36).slice(2)}`,
+                status: 'active',
+                battery_level: 100,
+                firmware_version: newDeviceData?.firmware_version || '—',
+                last_ping: new Date().toISOString(),
+                ...newDeviceData,
+            };
+            setLocalDevices([temp, ...localDevices]);
             toast.info(`Device ${newDeviceData.device_code} cached locally.`);
         }
     };
@@ -94,13 +103,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             {/* Header */}
             <PageHeader
                 icon={Cpu}
-                label="Sensor Management"
-                title={<>Device <span className="text-[#F4D03F]">Registry</span></>}
+                label="Devices"
+                title={<>Your <span className="text-[#F4D03F]">devices</span></>}
                 subtitle="Manage devices and view recent readings."
                 actions={
                     <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className={cn(glass.btnPrimary, "h-11 px-8 text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2")}
+                        className={cn(glass.btnPrimary, "h-11 px-8 text-sm font-semibold flex items-center justify-center gap-2")}
                     >
                         <Plus className="w-4 h-4" />
                         Add device
@@ -111,9 +120,9 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <GlassStatCard label="Total Inventory" value={localDevices.length} icon={Smartphone} index={0} />
-                <GlassStatCard label="Active Vector" value={measured24h} icon={RefreshCw} index={1} color="text-[#1B9157]" />
-                <GlassStatCard label="Offline Trace" value={offlineCount} icon={Wifi} index={2} color="text-red-500" />
-                <GlassStatCard label="Module Energy" value={localDevices.filter(d => d.battery_level < 20).length} icon={Battery} index={3} color="text-[#F4D03F]" />
+                <GlassStatCard label="Active today" value={measured24h} icon={RefreshCw} index={1} color="text-[#1B9157]" />
+                <GlassStatCard label="Offline" value={offlineCount} icon={Wifi} index={2} color="text-red-500" />
+                <GlassStatCard label="Low battery" value={localDevices.filter(d => d.battery_level < 20).length} icon={Battery} index={3} color="text-[#F4D03F]" />
             </div>
 
             {/* Device Registry */}
@@ -121,13 +130,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 {/* Search and Filters */}
                 <div className={glass.sectionHeader}>
                     <div className="flex-1 w-full space-y-2">
-                        <Label className="text-[9px] font-black tracking-[0.2em] text-[#1A1A1A]/40 uppercase ml-2">Device ID</Label>
+                        <Label className="text-xs font-semibold text-[#1A1A1A]/60 ml-2">Device ID</Label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                             <Input
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Search..."
+                                placeholder="Search…"
                                 className={glass.input + " pl-10 h-10 w-full"}
                             />
                         </div>
@@ -240,6 +249,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                                     <button
                                                         className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
+                                                        onClick={() => onTabChange('device', undefined, device.id)}
                                                         aria-label="View device details"
                                                         title="View device details"
                                                     >

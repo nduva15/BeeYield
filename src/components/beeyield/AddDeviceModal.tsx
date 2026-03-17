@@ -33,27 +33,27 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!deviceCode) {
+        if (!deviceCode?.trim()) {
             toast.error("Please enter the device ID");
+            return;
+        }
+        if (!selectedApiaryId) {
+            toast.error("Please select a location");
             return;
         }
 
         const toastId = toast.loading("Adding device...");
         setIsSubmitting(true);
         try {
+            const locationName = apiaries.find(a => a.id === selectedApiaryId)?.name || '';
             const newDevice = {
-                id: Math.random().toString(36).substr(2, 9),
-                device_code: deviceCode,
-                device_name: deviceName || `Device ${deviceCode}`,
+                device_code: deviceCode.trim(),
+                device_name: (deviceName || `Device ${deviceCode}`).trim(),
                 device_type: deviceType,
-                status: 'active',
-                battery_level: 100,
-                firmware_version: '1.0.0',
-                last_ping: new Date().toISOString(),
-                location_name: apiaries.find(a => a.id === selectedApiaryId)?.name || '',
+                location_name: locationName,
                 apiary_id: selectedApiaryId,
                 linked_apiary_id: selectedApiaryId,
-                hive_id: selectedHiveId
+                hive_id: selectedHiveId || null
             };
 
             await onAdd(newDevice);
@@ -220,7 +220,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             </button>
                             <button
                                 type="submit"
-                                disabled={isSubmitting || !deviceCode}
+                                disabled={isSubmitting || !deviceCode?.trim() || !selectedApiaryId}
                                 className={cn(glass.btnPrimary, "flex-[2] h-22 bg-[#FBBE24] text-[#1A1A1A] shadow-[0_45px_100px_-20px_rgba(251,191,36,0.6)] rounded-[2.5rem] px-14 font-black italic text-2xl transition-all uppercase flex items-center justify-center gap-6 group/commit pl-20")}
                             >
                                 {isSubmitting ? (

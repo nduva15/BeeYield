@@ -1,47 +1,13 @@
 import React from 'react';
-import {
-    Activity,
-    MapPin,
-    Zap,
-    TrendingUp,
-    ArrowUpRight,
-    Hexagon,
-    Target,
-    LayoutGrid,
-    BarChart3,
-    ChevronRight,
-    Plus,
-    Cpu,
-    Droplets,
-    Thermometer,
-    Wind,
-    CheckCircle2,
-    AlertTriangle,
-    Clock,
-    ArrowDownRight,
-    Bot,
-    Sparkles,
-    SearchCode,
-    Radio,
-    Terminal,
-    Layers,
-    Waves,
-    Calendar,
-    ArrowRight,
-    ShieldCheck,
-    Dna,
-    Network,
-    Lock as LockIcon,
-    Fingerprint
-} from "lucide-react";
-import beeyieldService, { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
+import { motion } from 'framer-motion';
+import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar } from 'lucide-react';
+import { glass, PageHeader } from './GlassTheme';
 import { cn } from '@/lib/utils';
-import { hashToInt, hashToRange, hashToUnit } from '@/lib/deterministic';
-import { toast } from 'sonner';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { motion, AnimatePresence } from 'framer-motion';
-import Logo from '@/assets/Logo.png';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { useAuth } from '@/contexts/AuthContext';
+import { useApiaries } from '@/hooks/useHives';
+import { useHives } from '@/hooks/useHives';
+import { useHarvests } from '@/hooks/useHarvests';
+import type { Apiary, Hive, Harvest, IoTDevice, SensorReading } from '@/services/beeyieldService';
 
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
@@ -50,207 +16,33 @@ interface DashboardHomeViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-/* ─── Animated Counter ─── */
-const AnimatedNumber: React.FC<{ value: number; prefix?: string; suffix?: string; decimals?: number }> = ({
-    value, prefix = '', suffix = '', decimals = 0
-}) => {
-    const [display, setDisplay] = React.useState(0);
-    React.useEffect(() => {
-        let start = 0;
-        const duration = 1200;
-        const step = 16;
-        const increment = value / (duration / step);
-        const timer = setInterval(() => {
-            start += increment;
-            if (start >= value) {
-                setDisplay(value);
-                clearInterval(timer);
-            } else {
-                setDisplay(start);
-            }
-        }, step);
-        return () => clearInterval(timer);
-    }, [value]);
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
     return (
-        <span className="tabular-nums">{prefix}{display.toFixed(decimals)}{suffix}</span>
-    );
-};
-
-/* ─── Spark Line ─── */
-const SparkLine: React.FC<{ data: number[]; color?: string; height?: number }> = ({
-    data,
-    color = '#FF6B00',
-    height = 36
-}) => {
-    const chartData = data.map((v, i) => ({ i, v }));
-    return (
-        <ResponsiveContainer width="100%" height={height}>
-            <AreaChart data={chartData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
-                <defs>
-                    <linearGradient id={`spark-${color}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={color} stopOpacity={0.2} />
-                        <stop offset="95%" stopColor={color} stopOpacity={0} />
-                    </linearGradient>
-                </defs>
-                <Area
-                    type="monotone"
-                    dataKey="v"
-                    stroke={color}
-                    strokeWidth={1.5}
-                    fill={`url(#spark-${color})`}
-                    dot={false}
-                    animationDuration={1500}
-                />
-            </AreaChart>
-        </ResponsiveContainer>
-    );
-};
-
-/* ─── Activity Item ─── */
-interface ActivityItem {
-    id: string;
-    type: 'sync' | 'alert' | 'harvest' | 'inspection' | 'system';
-    title: string;
-    subtitle: string;
-    time: string;
-    status: 'ok' | 'warn' | 'error' | 'pending';
-    value?: string;
-}
-
-const activityFeed: ActivityItem[] = [
-    { id: '1', type: 'alert', title: 'Weight Drop detected', subtitle: 'Hive #12 · Nakuru North', time: '2 mins ago', status: 'warn', value: '-4.2kg' },
-    { id: '2', type: 'sync', title: 'Sync Successful', subtitle: '26 sensors reported successfully', time: '8 mins ago', status: 'ok', value: '26/26' },
-    { id: '3', type: 'harvest', title: 'New Harvest recorded', subtitle: 'Mau Forest · Batch #441', time: '1 hour ago', status: 'ok', value: '38kg' },
-    { id: '4', type: 'inspection', title: 'Inspection Due', subtitle: 'Hive #7 · Scheduled health check', time: '2 hours ago', status: 'warn', value: 'Pending' },
-];
-
-const statusConfig = {
-    ok: { label: 'Online', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/', dot: 'bg-emerald-400' },
-    warn: { label: 'Alert', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10', dot: 'bg-[#F4D03F]' },
-    error: { label: 'Error', color: 'text-red-400', bg: 'bg-red-500/10', dot: 'bg-red-400' },
-    pending: { label: 'Pending', color: 'text-gray-600', bg: 'bg-[#F9F7F2]', dot: 'bg-gray-300' },
-};
-
-const typeIcon: Record<ActivityItem['type'], React.ElementType> = {
-    sync: Activity,
-    alert: AlertTriangle,
-    harvest: Hexagon,
-    inspection: CheckCircle2,
-    system: Cpu,
-};
-
-/* ─── Status Grid ─── */
-const HiveStatusMatrix: React.FC = () => {
-    const weeks = 12;
-    const days = 7;
-    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-    const matrix = React.useMemo(
-        () =>
-            Array.from({ length: weeks }, (_, w) =>
-                Array.from({ length: days }, (_, d) => {
-                    const r = hashToUnit(`hive-status-${w}-${d}`);
-                    if (r > 0.9) return 'high';
-                    if (r > 0.7) return 'med';
-                    return 'low';
-                })
-            ),
-        []
-    );
-
-    const cellColors = {
-        high: 'bg-[#F4D03F]',
-        med: 'bg-[#F4D03F]/40',
-        low: 'bg-[#F4D03F]/10'
-    };
-
-    return (
-        <div className="flex gap-1">
-            <div className="flex flex-col gap-1 pr-2">
-                {dayLabels.map((d, i) => (
-                    <span key={i} className="text-[9px] text-gray-400 w-3 h-3 flex items-center justify-center">{d}</span>
-                ))}
-            </div>
-            {matrix.map((week, wi) => (
-                <div key={wi} className="flex flex-col gap-1">
-                    {week.map((status, di) => (
-                        <motion.div
-                            key={di}
-                            className={cn("w-3 h-3 rounded-sm transition-all hover:scale-125", cellColors[status as keyof typeof cellColors])}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: wi * 0.02 + di * 0.005 }}
-                        />
-                    ))}
-                </div>
-            ))}
+        <div className="flex items-center justify-between gap-4 py-2 border-b border-[#F4D03F]/10 last:border-b-0">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{label}</span>
+            <span className="text-[11px] font-bold text-[#1A1A1A] break-all text-right">{value}</span>
         </div>
     );
-};
-
-/* ─── Forecast Bar ─── */
-const YieldForecastBar: React.FC<{ label: string; value: number; max: number; color: string; index: number }> = ({
-    label, value, max, color, index
-}) => {
-    const pct = Math.min((value / max) * 100, 100);
-    return (
-        <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 group"
-        >
-            <span className="text-[11px] font-medium text-gray-600 w-32 flex-shrink-0 truncate group-hover:text-gray-700 transition-colors">{label}</span>
-            <div className="flex-1 h-2 bg-[#F9F7F2] rounded-full relative overflow-hidden">
-                <motion.div
-                    className="absolute left-0 top-0 h-full rounded-full"
-                    style={{ backgroundColor: color === '#FFFFFF' ? 'rgba(255,255,255,0.4)' : '#FF6B00' }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
-                />
-            </div>
-            <span className="text-sm font-semibold text-[#1A1A1A] tabular-nums w-16 text-right">{value} kg</span>
-        </motion.div>
-    );
-};
+}
 
 /* ─── Main View ─── */
-const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabChange }) => {
-    const [selectedActivity, setSelectedActivity] = React.useState<string | null>(null);
-    const [realActivities, setRealActivities] = React.useState<ActivityItem[]>(activityFeed);
-    const [stats, setStats] = React.useState<any>(null);
+const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) => {
+    const { user, beeyieldUser } = useAuth();
+    const apiariesQuery = useApiaries();
+    const hivesQuery = useHives();
+    const harvestsQuery = useHarvests();
 
-    React.useEffect(() => {
-        let isMounted = true;
-        const fetchData = async () => {
-            try {
-                const [logs, dashboardStats] = await Promise.all([
-                    beeyieldService.getActivityLogs(10),
-                    beeyieldService.getStats()
-                ]);
-                if (isMounted) {
-                    if (logs && logs.length > 0) {
-                        setRealActivities(logs.map(log => ({
-                            id: log.id,
-                            type: log.event_type.includes('alert') ? 'alert' : log.event_type.includes('harvest') ? 'harvest' : log.event_type.includes('sync') ? 'sync' : 'system' as any,
-                            title: log.title,
-                            subtitle: log.subtitle || '',
-                            time: new Date(log.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-                            status: log.event_type.includes('alert') ? 'warn' : 'ok' as any,
-                            value: log.metadata?.value || undefined
-                        })));
-                    }
-                    if (dashboardStats) setStats(dashboardStats);
-                }
-            } catch (err) { console.error("Could not sync data", err); }
-        };
-        fetchData();
-        return () => { isMounted = false; };
-    }, []);
+    const apiaries = apiariesQuery.data || [];
+    const hives = hivesQuery.data || [];
+    const harvests = harvestsQuery.data || [];
 
     const now = new Date();
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+
+    const recentHarvests = [...harvests]
+        .sort((a: any, b: any) => new Date(b.harvest_date).getTime() - new Date(a.harvest_date).getTime())
+        .slice(0, 8);
 
     return (
         <motion.div
@@ -263,329 +55,167 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                 icon={LayoutGrid}
                 label="Dashboard"
                 title={<>{greeting}</>}
-                subtitle="Overview of your apiary operations, sensor data, and harvest metrics."
+                subtitle="Your BeeYield records (no mock metrics)."
                 actions={
                     <div className="flex gap-2">
                         <button
                             onClick={() => onTabChange('assistant')}
                             className={cn(glass.btnSecondary, "gap-2")}
                         >
-                            <Bot className="w-4 h-4 text-[#F4D03F]" />
-                            AI Assistant
+                            <Hexagon className="w-4 h-4 text-[#F4D03F]" />
+                            Assistant
                         </button>
                         <button
                             onClick={() => onTabChange('harvests')}
                             className={cn(glass.btnPrimary)}
                         >
-                            <Plus className="w-4 h-4" />
-                            New Harvest
+                            <Hand className="w-4 h-4" />
+                            Harvests
                         </button>
                     </div>
                 }
             />
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <GlassStatCard
-                    label="Total Hives"
-                    value={stats?.total_hives?.toString() || "—"}
-                    icon={Hexagon}
-                    index={0}
-                />
-                <GlassStatCard
-                    label="Honey Yield (kg)"
-                    value={stats?.total_honey_kg?.toLocaleString() || "—"}
-                    icon={TrendingUp}
-                    index={1}
-                    color="text-[#1B9157]"
-                />
-                <GlassStatCard
-                    label="System Status"
-                    value="Healthy"
-                    icon={ShieldCheck}
-                    index={2}
-                    color="text-[#1B9157]"
-                />
-                <GlassStatCard
-                    label="Apiaries"
-                    value={apiaries.length.toString()}
-                    icon={MapPin}
-                    index={3}
-                    color="text-[#F4D03F]"
-                />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Account */}
+                <div className="lg:col-span-4">
+                    <div className={cn(glass.section, "p-5")}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                <User className="w-4 h-4 text-[#F4D03F]" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-semibold text-[#1A1A1A]">Account</h3>
+                                <p className="text-[11px] text-gray-500">Your signed-in details</p>
+                            </div>
+                        </div>
+                        <div className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-4">
+                            <Row label="Email" value={user?.email || '—'} />
+                            <Row label="User ID" value={user?.id || '—'} />
+                            <Row label="BeeYield Profile" value={beeyieldUser ? 'Active' : '—'} />
+                            <Row label="Last sign-in" value={user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : '—'} />
+                        </div>
+                        <div className="mt-4 flex gap-2">
+                            <button onClick={() => onTabChange('settings')} className={cn(glass.btnSecondary, "flex-1 justify-center gap-2")}>
+                                <ShieldCheck className="w-4 h-4 text-[#F4D03F]" />
+                                Settings
+                            </button>
+                            <button onClick={() => onTabChange('support')} className={cn(glass.btnSecondary, "flex-1 justify-center gap-2")}>
+                                <Mail className="w-4 h-4 text-[#F4D03F]" />
+                                Support
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-            {/* Main Grid: Activity + Sidebar */}
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-
-                {/* Activity Feed */}
-                <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="xl:col-span-8"
-                >
+                {/* Apiaries */}
+                <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center">
-                                    <Activity className="w-4 h-4 text-[#F4D03F]" />
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                    <MapPin className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Recent Activity</h3>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                        <span className="text-[10px] text-gray-500">Live</span>
-                                    </div>
+                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Apiaries</h3>
+                                    <p className="text-[11px] text-gray-500">{apiaries.length} records</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => onTabChange('harvests')}
-                                className="text-[12px] text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1"
-                            >
-                                View all <ArrowRight className="w-3 h-3" />
+                            <button onClick={() => onTabChange('places')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
+                                Open
                             </button>
                         </div>
-
-                        <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
-                            <AnimatePresence mode="popLayout">
-                                {realActivities.map((item, i) => {
-                                    const cfg = statusConfig[item.status];
-                                    const ItemIcon = typeIcon[item.type];
-                                    return (
-                                        <motion.button
-                                            key={item.id}
-                                            initial={{ opacity: 0, x: -8 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.04 }}
-                                            onClick={() => setSelectedActivity(selectedActivity === item.id ? null : item.id)}
-                                            className={cn(
-                                                "w-full flex items-center gap-4 px-5 py-3.5 text-left transition-colors group/item",
-                                                selectedActivity === item.id ? "bg-[#F9F7F2]" : "hover:bg-[#F9F7F2]"
-                                            )}
-                                        >
-                                            <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0", cfg.bg)}>
-                                                <ItemIcon className={cn("w-4 h-4", cfg.color)} />
-                                            </div>
-
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-[#1A1A1A] truncate">{item.title}</p>
-                                                <p className="text-[12px] text-gray-500 truncate">{item.subtitle}</p>
-                                            </div>
-
-                                            <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                                {item.value && (
-                                                    <span className={cn("text-lg font-black tracking-tight tabular-nums relative z-10", cfg.color)}>{item.value}</span>
-                                                )}
-                                                <span className="text-[10px] text-gray-400">{item.time}</span>
-                                            </div>
-                                        </motion.button>
-                                    );
-                                })}
-                            </AnimatePresence>
+                        <div className="p-4 space-y-2">
+                            {apiariesQuery.isLoading ? (
+                                <div className="text-[11px] text-gray-500">Loading…</div>
+                            ) : apiaries.length === 0 ? (
+                                <div className="text-[11px] text-gray-500">No apiaries yet.</div>
+                            ) : (
+                                apiaries.slice(0, 8).map((a: Apiary) => (
+                                    <div key={a.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3">
+                                        <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{a.name}</div>
+                                        <div className="text-[10px] text-gray-500 truncate">{a.location_name || 'Unknown location'}</div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
-                </motion.div>
+                </div>
 
-                {/* Sidebar Widgets */}
-                <div className="xl:col-span-4 space-y-6">
-                    {/* Hive Health Grid */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className={cn(glass.section, "p-5")}
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <div>
-                                <h3 className="text-sm font-semibold text-[#1A1A1A]">Fleet Health</h3>
-                                <p className="text-[11px] text-gray-500">12-week activity</p>
-                            </div>
-                            <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center">
-                                <Network className="w-4 h-4 text-[#F4D03F]/60" />
-                            </div>
-                        </div>
-                        <div className="p-4 bg-[#F9F7F2] rounded-xl border border-[#F4D03F]/10 flex justify-center">
-                            <HiveStatusMatrix />
-                        </div>
-                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[#F4D03F]/10">
-                            {[
-                                { label: 'High', color: 'bg-[#F4D03F]' },
-                                { label: 'Normal', color: 'bg-[#F4D03F]/40' },
-                                { label: 'Idle', color: 'bg-[#F4D03F]/10' },
-                            ].map(l => (
-                                <div key={l.label} className="flex items-center gap-1.5">
-                                    <div className={cn("w-2 h-2 rounded-sm", l.color)} />
-                                    <span className="text-[10px] text-gray-500">{l.label}</span>
+                {/* Hives */}
+                <div className="lg:col-span-4">
+                    <div className={cn(glass.section, "overflow-hidden")}>
+                        <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                    <Hexagon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                            ))}
-                        </div>
-                    </motion.div>
-
-                    {/* Quick Sensors */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className={cn(glass.section, "p-5")}
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Sensor Overview</h3>
-                            <Waves className="w-4 h-4 text-gray-400" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            {[
-                                { icon: Thermometer, label: 'Temp', value: '34.2°C', color: '#FF6B00' },
-                                { icon: Droplets, label: 'Humidity', value: '68%', color: '#fff' },
-                                { icon: Activity, label: 'Vibration', value: 'Normal', color: '#fff' },
-                                { icon: Cpu, label: 'Uptime', value: '98%', color: '#FF6B00' },
-                            ].map((s) => (
-                                <div key={s.label} className="bg-[#FFF9F0] p-3.5 rounded-xl border border-[#F4D03F]/10 hover:border-[#F4D03F]/20 transition-colors">
-                                    <s.icon className="w-4 h-4 mb-2" style={{ color: s.color, opacity: 0.6 }} />
-                                    <p className="text-lg font-bold text-[#1A1A1A] tracking-tight leading-none mb-0.5">{s.value}</p>
-                                    <p className="text-[10px] text-gray-500">{s.label}</p>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Hives</h3>
+                                    <p className="text-[11px] text-gray-500">{hives.length} records</p>
                                 </div>
-                            ))}
+                            </div>
+                            <button onClick={() => onTabChange('beeyield')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
+                                Open
+                            </button>
                         </div>
-                    </motion.div>
+                        <div className="p-4 space-y-2">
+                            {hivesQuery.isLoading ? (
+                                <div className="text-[11px] text-gray-500">Loading…</div>
+                            ) : hives.length === 0 ? (
+                                <div className="text-[11px] text-gray-500">No hives yet.</div>
+                            ) : (
+                                hives.slice(0, 8).map((h: Hive) => (
+                                    <div key={h.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3">
+                                        <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{h.hive_code}</div>
+                                        <div className="text-[10px] text-gray-500 truncate">{h.status || '—'}</div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Harvest Forecast */}
-            <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className={cn(glass.section, "overflow-hidden grid grid-cols-1 lg:grid-cols-12")}
-            >
-                <div className="lg:col-span-7 p-6 border-b lg:border-b-0 lg:border-r border-[#F4D03F]/20">
-                    <div className="flex items-center justify-between mb-6">
+            {/* Harvests */}
+            <div className={cn(glass.section, "overflow-hidden mt-6")}>
+                <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                            <Hand className="w-4 h-4 text-[#F4D03F]" />
+                        </div>
                         <div>
-                            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#F4D03F]/10 rounded-lg border border-[#F4D03F]/20 mb-2">
-                                <Sparkles className="w-3 h-3 text-[#F4D03F]" />
-                                <span className="text-[10px] font-semibold text-[#F4D03F]">Forecast</span>
+                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Harvests</h3>
+                            <p className="text-[11px] text-gray-500">{harvests.length} records</p>
+                        </div>
+                    </div>
+                    <button onClick={() => onTabChange('harvests')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
+                        Open
+                    </button>
+                </div>
+                <div className="p-4 space-y-2">
+                    {harvestsQuery.isLoading ? (
+                        <div className="text-[11px] text-gray-500">Loading…</div>
+                    ) : recentHarvests.length === 0 ? (
+                        <div className="text-[11px] text-gray-500">No harvests yet.</div>
+                    ) : (
+                        recentHarvests.map((h: Harvest) => (
+                            <div key={h.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 flex items-center justify-between gap-4">
+                                <div className="min-w-0">
+                                    <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{h.batch_code || '—'}</div>
+                                    <div className="text-[10px] text-gray-500 truncate">{h.honey_type || '—'}</div>
+                                </div>
+                                <div className="flex items-center gap-3 flex-shrink-0">
+                                    <div className="text-[10px] font-black tabular-nums text-[#1A1A1A]">{(h.quantity_kg ?? 0).toFixed(1)} kg</div>
+                                    <div className="text-[10px] text-gray-500 flex items-center gap-1">
+                                        <Calendar className="w-3 h-3 opacity-60" />
+                                        {h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : '—'}
+                                    </div>
+                                </div>
                             </div>
-                            <h3 className="text-lg font-bold text-[#1A1A1A]">Harvest Projection</h3>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-xl font-black text-[#1A1A1A] tabular-nums tracking-tighter leading-none">742.4 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">kg</span></div>
-                            <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-widest mt-1 block">Predicted 2026</span>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        {[
-                            { label: 'Nakuru North', value: 248, max: 300, color: '#FF6B00' },
-                            { label: 'Mau Forest', value: 195, max: 300, color: '#FFFFFF' },
-                            { label: 'Maasai Mara', value: 172, max: 300, color: '#FF6B00' },
-                            { label: 'Aberdare Ridge', value: 127, max: 300, color: '#FFFFFF' },
-                        ].map((f, i) => (
-                            <YieldForecastBar key={f.label} {...f} index={i} />
-                        ))}
-                    </div>
+                        ))
+                    )}
                 </div>
-
-                <div className="lg:col-span-5 p-6 flex flex-col justify-between bg-[#F4D03F]/[0.02]">
-                    <div>
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#F9F7F2] rounded-lg border border-[#F4D03F]/20 mb-3">
-                            <span className="text-[11px] text-gray-600">+12.8% Growth</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">
-                            Peak Season <span className="text-[#F4D03F]">Target</span>
-                        </h3>
-                        <p className="text-sm text-gray-500 leading-relaxed">
-                            Conditions are optimal across all sectors. Production targets set for the 2026 season cycle.
-                        </p>
-                    </div>
-
-                    <div className="flex gap-3 mt-6">
-                        <button onClick={() => onTabChange('reports-exports')} className={glass.btnPrimary}>
-                            View Report
-                        </button>
-                        <button onClick={() => onTabChange('harvests')} className={glass.btnSecondary}>
-                            History
-                        </button>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Apiaries */}
-            {apiaries.length > 0 && (
-                <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="space-y-4"
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-lg font-bold text-[#1A1A1A]">Your Apiaries</h3>
-                            <p className="text-[12px] text-gray-500">{apiaries.length} active locations</p>
-                        </div>
-                        <button
-                            onClick={() => onTabChange('orchard-mapper')}
-                            className={cn(glass.btnSecondary, "text-[12px]")}
-                        >
-                            View Map <ChevronRight className="w-3 h-3" />
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {apiaries.slice(0, 6).map((apiary, i) => {
-                            const health = hashToInt(`${apiary.id}-health`, 75, 99);
-                            const spark = Array.from({ length: 12 }, (_, j) => hashToRange(`${apiary.id}-spark-${j}`, 60, 100));
-                            return (
-                                <motion.div
-                                    key={apiary.id}
-                                    initial={{ opacity: 0, scale: 0.98 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: i * 0.04 }}
-                                    onClick={() => onTabChange('orchard-mapper')}
-                                    className={cn(glass.card, "p-5 cursor-pointer")}
-                                >
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="min-w-0">
-                                            <h4 className="text-base font-semibold text-[#1A1A1A] truncate">{apiary.name}</h4>
-                                            <div className="flex items-center gap-1.5 mt-1">
-                                                <MapPin className="w-3 h-3 text-[#F4D03F]" />
-                                                <p className="text-[11px] text-gray-500 truncate">
-                                                    {apiary.location_name || 'Unknown'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <span className={cn(
-                                            "text-[10px] font-medium px-2 py-0.5 rounded-md flex-shrink-0",
-                                            health >= 85 ? "bg-[#1B9157]/ text-[#1B9157]" : "bg-[#F4D03F]/10 text-[#F4D03F]"
-                                        )}>
-                                            {health}%
-                                        </span>
-                                    </div>
-
-                                    <div className="h-12 mb-3 px-2 bg-[#F9F7F2] rounded-lg border border-[#F4D03F]/10 flex items-center">
-                                        <SparkLine data={spark} color={health >= 85 ? '#10b981' : '#FF6B00'} height={32} />
-                                    </div>
-
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {[
-                                            { l: 'Hives', v: hashToInt(`${apiary.id}-hives`, 100, 180) },
-                                            { l: 'Flow', v: `${hashToInt(`${apiary.id}-flow`, 75, 95)}%` },
-                                            { l: 'Temp', v: hashToRange(`${apiary.id}-temp`, 32, 34).toFixed(1) },
-                                        ].map((s, idx) => (
-                                            <div key={idx} className="bg-[#FFF9F0] py-2 px-2.5 rounded-lg border border-[#F4D03F]/10 text-center">
-                                                <p className="text-sm font-semibold text-[#1A1A1A] tabular-nums leading-none mb-0.5">{s.v}</p>
-                                                <p className="text-[9px] text-gray-500">{s.l}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </motion.div>
-            )}
-
-            {/* Footer */}
-            <div className="flex items-center justify-center gap-3 pt-8 border-t border-[#F4D03F]/10">
-                <img src={Logo} alt="BeeYield" className="h-6 w-auto grayscale opacity-10" />
-                <span className="text-[11px] text-gray-400">BeeYield Platform © 2026</span>
             </div>
         </motion.div>
     );

@@ -83,15 +83,12 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         });
     }, [hives, selectedPlace, searchQuery]);
 
-    // Stats
+    // Stats (counts only — avoid synthetic/derived telemetry KPIs when metrics are missing)
     const stats = React.useMemo(() => {
         return {
             total: hives.length,
             active: hives.filter(h => h.status === 'ACTIVE').length,
             critical: hives.filter(h => h.status !== 'ACTIVE').length,
-            avgWeight: hives.length > 0
-                ? (hives.reduce((sum, h) => sum + (h.latest_weight || 0), 0) / hives.length).toFixed(1)
-                : '0.0'
         };
     }, [hives]);
 
@@ -219,7 +216,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 icon={Hexagon}
                 label="Hive Management"
                 title={<>Hive <span className="text-[#F4D03F]">Inventory</span></>}
-                subtitle="Track your hives, monitor equipment health, and manage colony weight data in real-time."
+                subtitle="Track your hives and manage records."
                 actions={
                     <div className="flex items-center gap-3">
                         <button
@@ -246,7 +243,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 <GlassStatCard label="Inventory Total" value={stats.total} icon={Box} index={0} />
                 <GlassStatCard label="Online Status" value={stats.active} icon={ShieldCheck} index={1} color="text-[#1B9157]" />
                 <GlassStatCard label="Alert Vector" value={stats.critical} icon={AlertCircle} index={2} color="text-red-500" />
-                <GlassStatCard label="Mean Weight" value={`${stats.avgWeight}kg`} icon={TrendingUp} index={3} color="text-[#1A1A1A]" />
+                <GlassStatCard label="Telemetry" value="—" icon={TrendingUp} index={3} color="text-[#1A1A1A]" />
             </div>
 
             {/* ── Filter Bar ── */}

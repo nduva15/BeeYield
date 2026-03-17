@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth,
-    requests, image_analysis, acoustic, routing, forage, intelligence, ai
+    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations
 )
 
 
@@ -26,11 +26,13 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
-api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["BeeYield Reports"])
 api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=["Bluetooth"])
 api_router.include_router(requests.router, prefix="/beeyield/requests", tags=["Support Requests"])
 api_router.include_router(notes.router, prefix="/beeyield/notes", tags=["Notes"])
 api_router.include_router(billing.router, prefix="/beeyield/billing", tags=["Billing"])
+
+# OAuth integrations (QuickBooks / Shopify)
+api_router.include_router(integrations.router, prefix="/integrations", tags=["Integrations"])
 
 
 # Precision Pollination endpoint

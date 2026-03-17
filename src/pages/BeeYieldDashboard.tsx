@@ -29,6 +29,7 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
+import DeviceDetailView from '@/components/beeyield/DeviceDetailView';
 import SmartAssistantView from '@/components/beeyield/SmartAssistantView';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
@@ -139,6 +140,16 @@ const BeeYieldDashboard: React.FC = () => {
     };
 
     // Data fetching
+    const refreshTelemetryData = React.useCallback(async () => {
+        if (!user) return;
+        const [devicesData, readingsData] = await Promise.all([
+            beeyieldService.getDevices(),
+            beeyieldService.getSensorReadings(undefined, 24 * 7),
+        ]);
+        setDevices(devicesData);
+        setReadings(readingsData);
+    }, [user]);
+
     React.useEffect(() => {
         const loadData = async () => {
             // Only load data if user is authenticated
@@ -154,8 +165,24 @@ const BeeYieldDashboard: React.FC = () => {
                 ]);
 
                 const userId = beeyieldUser?.id || user?.id;
-                const filteredApiaries = userId ? apiariesData.filter(a => !a.user_id || a.user_id === userId) : apiariesData;
-                const filteredHives = userId ? hivesData.filter(h => !h.user_id || h.user_id === userId) : hivesData;
+                const baseApiaries = userId ? apiariesData.filter(a => !a.user_id || a.user_id === userId) : apiariesData;
+                const baseHives = userId ? hivesData.filter(h => !h.user_id || h.user_id === userId) : hivesData;
+
+                // Timothy's production account: show only Kibwei Sanctuary and its hives.
+                const email = (user?.email || '').toLowerCase();
+                const isTimothy =
+                    email === 'timothynduva3492@gmail.com' ||
+                    email === 'timothynduva3492gmail.com' ||
+                    email === 'timothynduva349@gmail.com';
+
+                const filteredApiaries = isTimothy
+                    ? baseApiaries.filter(a => (a.name || '').toLowerCase() === 'kibwei sanctuary')
+                    : baseApiaries;
+
+                const allowedApiaryIds = new Set(filteredApiaries.map(a => a.id));
+                const filteredHives = isTimothy
+                    ? baseHives.filter(h => !h.apiary_id || allowedApiaryIds.has(h.apiary_id))
+                    : baseHives;
 
                 setDevices(devicesData);
                 setReadings(readingsData);
@@ -172,6 +199,7 @@ const BeeYieldDashboard: React.FC = () => {
         if (!authLoading && user) {
             loadData();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, authLoading]);
 
     // Derived Stats
@@ -285,7 +313,6 @@ const BeeYieldDashboard: React.FC = () => {
                     { id: 'sound', label: t('nav_sound'), icon: Volume2 },
                     { id: 'image-analysis', label: t('nav_image_analysis'), icon: Camera },
                     { id: 'health-guide', label: t('nav_health_guide'), icon: BookOpen, hidden: !moduleFlags.patients },
-                    { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileText },
                     { id: 'label-generator', label: t('nav_label_generator'), icon: Tag },
                     { id: 'global-hive-network', label: t('nav_global_hive_network'), icon: Globe },
                 ].filter(i => !i.hidden)
@@ -309,8 +336,9 @@ const BeeYieldDashboard: React.FC = () => {
         }
 
         items.push({ id: 'notes', label: t('nav_my_notes'), icon: FileText });
-        items.push({ id: 'requests', label: t('nav_my_requests'), icon: HelpCircle });
         items.push({ id: 'task', label: t('nav_my_task'), icon: ClipboardList });
+        items.push({ id: 'reports-exports', label: t('nav_reports_exports'), icon: FileText });
+        items.push({ id: 'requests', label: t('nav_my_requests'), icon: HelpCircle });
         items.push({ id: 'buy', label: t('nav_buy'), icon: Cpu });
 
         // 5. Meters Module (Always visible but could be filtered if needed)
@@ -454,6 +482,21 @@ const BeeYieldDashboard: React.FC = () => {
                 return <BeeYieldOnlineView onTabChange={handleTabChange} />;
             case 'bluetooth':
                 return <BluetoothConnectivityView onTabChange={handleTabChange} />;
+            case 'device': {
+                const deviceId = viewParams?.action;
+                if (!deviceId) return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
+                return (
+                    <DeviceDetailView
+                        deviceId={deviceId}
+                        devices={devices}
+                        readings={readings}
+                        apiaries={apiaries}
+                        hives={hives}
+                        onBack={() => handleTabChange('devices')}
+                        onRefresh={refreshTelemetryData}
+                    />
+                );
+            }
             case 'devices':
                 return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
             case 'usb':

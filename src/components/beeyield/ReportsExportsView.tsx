@@ -14,13 +14,16 @@ import {
     ChevronRight, Search, Zap, Cpu, Database, FileSpreadsheet,
     FileJson, PieChart, BarChart3, ArrowRight, ShieldCheck,
     Layers, MapPin, Network, Terminal, Fingerprint, Lock as LockIcon,
-    SearchCode, Activity, Radio, Info, RefreshCw, ChevronDown, Box
+    SearchCode, Activity, Radio, Info, RefreshCw, ChevronDown, Box, Mail
 } from "lucide-react";
 import beeyieldService, { Apiary, Hive, GeneratedReport, ScheduledReport } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { GlassStatCard } from './GlassTheme';
 
 interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
@@ -46,6 +49,31 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
     const [selectedPlace, setSelectedPlace] = React.useState<string>('');
     const [selectedHive, setSelectedHive] = React.useState<string>('');
+    const [selectedScheduleId, setSelectedScheduleId] = React.useState<string | null>(null);
+
+    const LOCAL_SCHEDULES_KEY = React.useMemo(
+        () => `beeyield_local_schedules_v1:${userId || 'anon'}`,
+        [userId]
+    );
+
+    const readLocalSchedules = React.useCallback((): ScheduledReport[] => {
+        try {
+            const raw = globalThis.localStorage?.getItem(LOCAL_SCHEDULES_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? (parsed as ScheduledReport[]) : [];
+        } catch {
+            return [];
+        }
+    }, [LOCAL_SCHEDULES_KEY]);
+
+    const writeLocalSchedules = React.useCallback((next: ScheduledReport[]) => {
+        try {
+            globalThis.localStorage?.setItem(LOCAL_SCHEDULES_KEY, JSON.stringify(next));
+        } catch {
+            // ignore (storage disabled)
+        }
+    }, [LOCAL_SCHEDULES_KEY]);
 
     // Schedule Modal State
     const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
@@ -57,6 +85,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         recipients: [] as string[],
         is_active: true
     });
+    const [recipientsDraft, setRecipientsDraft] = React.useState('');
+    const [scheduleScopeDays, setScheduleScopeDays] = React.useState(30);
 
     // Checkboxes for sections
     const [sections, setSections] = React.useState({
@@ -91,9 +121,18 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 setReports(reportsData || []);
                 setSchedules(schedulesData || []);
             }
+
+            // No-backend fallback for schedules: if remote returns none, hydrate from local.
+            if (!schedulesData || schedulesData.length === 0) {
+                const local = readLocalSchedules();
+                if (local.length > 0) setSchedules(local.filter(s => s.is_active));
+            }
         } catch (error) {
             console.error('Data sync failed', error);
             toast.error('Sync failure: Industrial vault unreachable');
+            // In offline/no-backend scenarios, keep schedules functional from local store.
+            const local = readLocalSchedules();
+            if (local.length > 0) setSchedules(local.filter(s => s.is_active));
         } finally {
             setIsLoading(false);
         }
@@ -137,7 +176,28 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             setGenProgress(100);
 
             if (error) throw error;
-            toast.success('Report ready', { id: toastId });
+            toast.success('Report queued', { id: toastId });
+
+            const jobId = data?.id;
+            if (jobId) {
+                const started = Date.now();
+                let last: GeneratedReport | null = null;
+                while (Date.now() - started < 60_000) {
+                    last = await beeyieldService.getReportStatus(jobId);
+                    if (last?.status === 'completed' || last?.status === 'failed') break;
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+
+                if (last?.status === 'completed') {
+                    toast.success('Report ready', { id: toastId });
+                    if (last.file_url) window.open(last.file_url, '_blank');
+                } else if (last?.status === 'failed') {
+                    toast.error('Report failed', { id: toastId });
+                } else {
+                    toast.info('Report is still processing', { id: toastId });
+                }
+            }
+
             loadData();
         } catch (error) {
             console.error('Extraction failed', error);
@@ -156,7 +216,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         const toastId = toast.loading("Creating insights…");
 
         try {
-            const { error } = await beeyieldService.generateReport({
+            const { data, error } = await beeyieldService.generateReport({
                 report_type: 'ai_analysis',
                 user_id: userId || undefined,
                 parameters: {
@@ -170,7 +230,28 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             } as any);
 
             if (error) throw error;
-            toast.success('Insights ready', { id: toastId });
+            toast.success('Insights queued', { id: toastId });
+
+            const jobId = data?.id;
+            if (jobId) {
+                const started = Date.now();
+                let last: GeneratedReport | null = null;
+                while (Date.now() - started < 60_000) {
+                    last = await beeyieldService.getReportStatus(jobId);
+                    if (last?.status === 'completed' || last?.status === 'failed') break;
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+
+                if (last?.status === 'completed') {
+                    toast.success('Insights ready', { id: toastId });
+                    if (last.file_url) window.open(last.file_url, '_blank');
+                } else if (last?.status === 'failed') {
+                    toast.error('Insights failed', { id: toastId });
+                } else {
+                    toast.info('Insights are still processing', { id: toastId });
+                }
+            }
+
             loadData();
         } catch (error) {
             console.error('Synthesis failed', error);
@@ -190,18 +271,58 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         setIsSavingSchedule(true);
         const toastId = toast.loading('Saving schedule…');
         try {
+            const recipients = recipientsDraft
+                .split(/[,;\n]/g)
+                .map(s => s.trim())
+                .filter(Boolean);
+
             const { error } = await beeyieldService.createScheduledReport({
                 ...newSchedule,
+                recipients,
                 user_id: userId || undefined,
                 report_config: {
                     sections: Object.keys(sections).filter(k => sections[k as keyof typeof sections]),
-                    scope_days: 30,
+                    scope_days: scheduleScopeDays,
+                    place_id: selectedPlace || undefined,
+                    hive_id: selectedHive || undefined,
                     user_id: userId
                 }
             } as any);
 
-            if (error) throw error;
-            toast.success('Schedule saved', { id: toastId });
+            if (error) {
+                // No backend? Persist locally so UX still works.
+                const isNoBackend = String(error).toLowerCase().includes('no client');
+                if (!isNoBackend) throw error;
+
+                const local = readLocalSchedules();
+                const id = `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+                const created_at = new Date().toISOString();
+                const localRow: ScheduledReport = {
+                    id,
+                    created_at,
+                    user_id: userId || null,
+                    name: newSchedule.name,
+                    report_type: newSchedule.report_type,
+                    frequency: newSchedule.frequency,
+                    recipients,
+                    is_active: newSchedule.is_active,
+                    report_config: {
+                        sections: Object.keys(sections).filter(k => sections[k as keyof typeof sections]),
+                        scope_days: scheduleScopeDays,
+                        place_id: selectedPlace || undefined,
+                        hive_id: selectedHive || undefined,
+                        user_id: userId
+                    } as any
+                } as any;
+                const next = [localRow, ...local];
+                writeLocalSchedules(next);
+                setSchedules(next.filter(s => s.is_active));
+                toast.success('Schedule saved (local)', { id: toastId });
+            } else {
+                toast.success('Schedule saved', { id: toastId });
+                loadData();
+            }
+
             setIsScheduleModalOpen(false);
             setNewSchedule({
                 name: "",
@@ -210,7 +331,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 recipients: [],
                 is_active: true
             });
-            loadData();
+            setRecipientsDraft('');
+            setScheduleScopeDays(30);
         } catch (error) {
             console.error('Schedule save failed', error);
             toast.error('Couldn’t save schedule', { id: toastId });
@@ -223,9 +345,19 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         const toastId = toast.loading('Deleting schedule…');
         try {
             const { error } = await beeyieldService.deleteScheduledReport(id);
-            if (error) throw error;
-            toast.success('Schedule deleted', { id: toastId });
-            loadData();
+            if (error) {
+                const isNoBackend = String(error).toLowerCase().includes('no client');
+                if (!isNoBackend) throw error;
+
+                const local = readLocalSchedules();
+                const next = local.filter(s => s.id !== id);
+                writeLocalSchedules(next);
+                setSchedules(next.filter(s => s.is_active));
+                toast.success('Schedule deleted (local)', { id: toastId });
+            } else {
+                toast.success('Schedule deleted', { id: toastId });
+                loadData();
+            }
         } catch (error) {
             toast.error('Couldn’t delete schedule', { id: toastId });
         }
@@ -243,40 +375,38 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     ];
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
-            <PageHeader
-                icon={FileBarChart}
-                label="Reports"
-                title={<>Reports <span className="text-[#1B9157]">Archive</span></>}
-                subtitle="Create reports from your hive and apiary data."
-                actions={
-                    <button
-                        onClick={() => setIsScheduleModalOpen(true)}
-                        className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold flex items-center gap-2")}
-                    >
-                        <Plus className="w-4 h-4" />
-                        New schedule
-                    </button>
-                }
-            />
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <BeeYieldPageHeader
+                    icon={FileBarChart}
+                    label="Reports"
+                    title={<>Reports <span className="text-[#1B9157]">Archive</span></>}
+                    subtitle="Create reports from your hive and apiary data."
+                    actions={
+                        <button
+                            type="button"
+                            onClick={() => setIsScheduleModalOpen(true)}
+                            className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold flex items-center gap-2")}
+                        >
+                            <Plus className="w-4 h-4" aria-hidden="true" focusable="false" />
+                            New schedule
+                        </button>
+                    }
+                />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'Total Audits', value: reports.length, color: 'text-[#1A1A1A]' },
-                    { label: 'Active schedules', value: schedules.length, color: 'text-emerald-600' },
-                    { label: 'Queue Size', value: reports.filter(r => r.status === 'processing').length, color: 'text-amber-500' },
-                    { label: 'AI Modules', value: '04', color: 'text-gray-400' }
-                ].map((stat, i) => (
-                    <div key={i} className={cn(glass.card, "p-4 flex flex-col items-center text-center bg-white shadow-sm")}>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">{stat.label}</p>
-                        <p className={cn("text-xl font-bold tracking-tight", stat.color)}>{stat.value}</p>
-                    </div>
-                ))}
-            </div>
+                {/* Stats Row (match Home) */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <GlassStatCard label="Total Audits" value={reports.length.toString()} icon={FileText} index={0} />
+                    <GlassStatCard label="Active schedules" value={schedules.length.toString()} icon={Radio} index={1} color="text-[#1B9157]" />
+                    <GlassStatCard
+                        label="Queue Size"
+                        value={reports.filter(r => r.status === 'processing').length.toString()}
+                        icon={Loader2}
+                        index={2}
+                        color="text-[#F4D03F]"
+                    />
+                    <GlassStatCard label="AI Modules" value="04" icon={Sparkles} index={3} color="text-[#F4D03F]" />
+                </div>
 
             {/* Insights banner */}
             <div className={cn(glass.card, "p-5 bg-emerald-600 border-none flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden group shadow-lg")}>
@@ -375,7 +505,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     className={cn(glass.btnPrimary, "w-full relative shadow-lg")}
                                 >
                                     {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                                    <span>Initialize Data Extraction</span>
+                                    <span>Generate report</span>
                                     {isGenerating && (
                                         <motion.div 
                                             className="absolute bottom-0 left-0 h-1 bg-amber-400 shadow-[0_0_8px_#F4D03F]"
@@ -422,84 +552,196 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                 {/* Schedules */}
                 <div className="lg:col-span-4 space-y-6">
-                    <div className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm flex flex-col h-full min-h-[460px]")}>
-                        <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Schedules</h3>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Automatic reports</p>
-                            </div>
-                            <Network className="w-4 h-4 text-gray-300" />
-                        </div>
-
-                        <div className="p-4 space-y-3 flex-1 overflow-y-auto custom-scrollbar">
-                            {schedules.map((s) => (
-                                <div key={s.id} className="p-4 rounded-2xl bg-gray-50/50 border border-gray-100 flex items-center justify-between group hover:border-emerald-200 transition-all shadow-sm">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 flex items-center justify-center text-emerald-500 shadow-sm">
-                                            <Radio className="w-5 h-5 animate-pulse" />
-                                        </div>
-                                        <div className="space-y-0.5">
-                                            <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-tight">{s.name}</p>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase">{s.frequency}</p>
+                    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+                        <div className={cn(glass.section, "overflow-hidden p-0")}>
+                            <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center">
+                                        <Radio className="w-4 h-4 text-[#F4D03F]" aria-hidden="true" focusable="false" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-[#1A1A1A]">Schedules</h3>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                            <span className="text-[10px] text-gray-500">Local-ready</span>
                                         </div>
                                     </div>
-                                    <button 
-                                        onClick={() => handleDeleteSchedule(s.id)}
-                                        aria-label="Delete schedule"
-                                        title="Delete schedule"
-                                        className="w-8 h-8 rounded-lg bg-red-50 text-red-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
                                 </div>
-                            ))}
-                            
-                            <button 
-                                onClick={() => setIsScheduleModalOpen(true)}
-                                className={cn(glass.btnSecondary, "w-full border-dashed group")}
-                            >
-                                <Plus className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 group-hover:rotate-90 transition-all" />
-                                <span className={cn(glass.microLabel, "group-hover:text-emerald-600")}>Add schedule</span>
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsScheduleModalOpen(true)}
+                                    className="text-[12px] text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1"
+                                >
+                                    New <ArrowRight className="w-3 h-3" aria-hidden="true" focusable="false" />
+                                </button>
+                            </div>
 
-                        <div className="p-5 bg-emerald-50/50 border-t border-gray-50 space-y-2">
-                             <div className="flex items-center gap-2 text-emerald-700">
-                                <LockIcon className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Secure</span>
-                             </div>
-                             <p className="text-[10px] font-medium text-emerald-600/60 leading-relaxed uppercase tracking-tighter">Reports are delivered over encrypted connections.</p>
+                            <div className="divide-y divide-gray-100 max-h-[420px] overflow-y-auto custom-scrollbar">
+                                <AnimatePresence mode="popLayout">
+                                    {schedules.map((s, i) => (
+                                        <motion.div
+                                            key={s.id}
+                                            initial={{ opacity: 0, x: -8 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -8 }}
+                                            transition={{ delay: i * 0.03 }}
+                                            className="relative group"
+                                        >
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedScheduleId(selectedScheduleId === s.id ? null : s.id)}
+                                                className={cn(
+                                                    "w-full flex items-center gap-4 px-5 py-3.5 text-left transition-colors",
+                                                    selectedScheduleId === s.id ? "bg-[#F9F7F2]" : "hover:bg-[#F9F7F2]"
+                                                )}
+                                            >
+                                                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#1B9157]/10")}>
+                                                    <Radio className="w-4 h-4 text-[#1B9157]" aria-hidden="true" focusable="false" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-[#1A1A1A] truncate">{s.name}</p>
+                                                    <p className="text-[12px] text-gray-500 truncate">
+                                                        {String(s.frequency).toUpperCase()} · {(s.report_type || 'full_summary').replace('_', ' ')}
+                                                    </p>
+                                                </div>
+                                                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                                                    <span className="text-[10px] text-gray-400">
+                                                        {(s.recipients?.length || 0) > 0 ? `${s.recipients.length} recipient(s)` : 'No recipients'}
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400">
+                                                        {s.created_at ? new Date(s.created_at).toLocaleDateString() : ''}
+                                                    </span>
+                                                </div>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteSchedule(s.id)}
+                                                aria-label="Delete schedule"
+                                                title="Delete schedule"
+                                                className="absolute top-3 right-4 w-8 h-8 rounded-lg bg-red-50 text-red-400 opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                                            >
+                                                <Trash2 className="w-4 h-4" aria-hidden="true" focusable="false" />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {selectedScheduleId === s.id && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="px-5 pb-4 -mt-1"
+                                                    >
+                                                        <div className="p-4 bg-white rounded-xl border border-[#F4D03F]/10">
+                                                            <div className="grid grid-cols-2 gap-3">
+                                                                <div>
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Scope</p>
+                                                                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                                                                        {String((s as any)?.report_config?.scope_days ?? scheduleScopeDays)} days
+                                                                    </p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Sections</p>
+                                                                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                                                                        {Array.isArray((s as any)?.report_config?.sections) ? (s as any).report_config.sections.length : '—'}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            {Array.isArray(s.recipients) && s.recipients.length > 0 && (
+                                                                <div className="mt-3 pt-3 border-t border-gray-100">
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Recipients</p>
+                                                                    <p className="text-[12px] text-gray-600 break-words">{s.recipients.join(', ')}</p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+
+                                {schedules.length === 0 && (
+                                    <div className="px-5 py-8 text-center">
+                                        <p className="text-sm font-semibold text-[#1A1A1A]">No schedules yet</p>
+                                        <p className="text-[12px] text-gray-500 mt-1">Create one to automate your report exports.</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsScheduleModalOpen(true)}
+                                            className={cn(glass.btnPrimary, "mt-4 mx-auto")}
+                                        >
+                                            <Plus className="w-4 h-4" aria-hidden="true" focusable="false" />
+                                            New schedule
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
 
-            {/* Modal */}
-            <AnimatePresence>
-                {isScheduleModalOpen && (
-                    <div className={glass.modalOverlay} onClick={() => setIsScheduleModalOpen(false)}>
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                            className={cn(glass.modalCard, "p-0")}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="p-4 border-b border-[#F4D03F]/20 bg-[#F9F7F2] flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shadow-sm">
-                                        <Network className="w-4 h-4 text-emerald-600" />
-                                    </div>
-                                    <h3 className={glass.sectionTitle}>Schedule settings</h3>
+            <Dialog open={isScheduleModalOpen} onOpenChange={setIsScheduleModalOpen}>
+                <DialogContent className={cn("max-w-xl bg-transparent border-none p-0 shadow-none overflow-visible")}>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-[#F4D03F]/10 bg-[#FFF9F0]/95 backdrop-blur-2xl")}
+                    >
+                        <DialogHeader className="bg-[#FFF9F0] px-6 py-5 border-b border-border/50 relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shadow-sm border border-emerald-100">
+                                    <Network className="w-4 h-4 text-emerald-600" aria-hidden="true" focusable="false" />
                                 </div>
-                                <button
-                                    onClick={() => setIsScheduleModalOpen(false)}
-                                    aria-label="Close"
-                                    title="Close"
-                                    className="w-8 h-8 rounded-md hover:bg-white text-gray-400 hover:text-red-500 transition-all flex items-center justify-center"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
+                                <div>
+                                    <DialogTitle className={cn(glass.sectionTitle, "text-lg normal-case italic")}>
+                                        Create <span className="text-[#1B9157]">Schedule</span>
+                                    </DialogTitle>
+                                    <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-0.5 tracking-[0.1em]")}>
+                                        Configure automatic report delivery (works offline too).
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <form onSubmit={handleCreateSchedule} className="p-5 space-y-4">
+                        </DialogHeader>
+
+                        <form onSubmit={handleCreateSchedule} className="p-6 space-y-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Report type</Label>
+                                        <div className="relative">
+                                            <select
+                                                value={newSchedule.report_type}
+                                                onChange={(e) => setNewSchedule({ ...newSchedule, report_type: e.target.value })}
+                                                aria-label="Report type"
+                                                className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
+                                            >
+                                                <option value="full_summary">Full summary</option>
+                                                <option value="ai_analysis">AI analysis</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40 pointer-events-none" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Scope</Label>
+                                        <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 overflow-x-auto">
+                                            {[7, 30, 90, 365].map((d) => (
+                                                <button
+                                                    key={d}
+                                                    type="button"
+                                                    onClick={() => setScheduleScopeDays(d)}
+                                                    className={cn(
+                                                        "h-8 px-3 rounded-lg text-[10px] uppercase font-black tracking-widest transition-all whitespace-nowrap",
+                                                        scheduleScopeDays === d
+                                                            ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40"
+                                                            : "text-gray-500 hover:text-[#1A1A1A]"
+                                                    )}
+                                                >
+                                                    {d === 365 ? 'Annual' : `${d}D`}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="space-y-2">
                                     <Label className={glass.microLabel}>Schedule name</Label>
                                     <div className="relative">
@@ -511,6 +753,21 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                             placeholder="Weekly report"
                                         />
                                     </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className={glass.microLabel}>Recipients</Label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
+                                        <input
+                                            value={recipientsDraft}
+                                            onChange={(e) => setRecipientsDraft(e.target.value)}
+                                            className={cn(glass.input, "w-full pl-9")}
+                                            placeholder="email1@site.com, email2@site.com"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Comma, semicolon, or newline separated
+                                    </p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                      <div className="space-y-2">
@@ -541,21 +798,51 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         </div>
                                      </div>
                                 </div>
-                                <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "w-full mt-4")}>
-                                    {isSavingSchedule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                    Save schedule
-                                </button>
+                                <div className="space-y-2 pt-2">
+                                    <Label className={glass.microLabel}>Include sections</Label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {sectionOptions.map((opt) => (
+                                            <button
+                                                key={opt.id}
+                                                type="button"
+                                                onClick={() => setSections({ ...sections, [opt.id]: !sections[opt.id as keyof typeof sections] })}
+                                                className={cn(
+                                                    "p-3 rounded-xl border flex items-center gap-2 transition-all",
+                                                    sections[opt.id as keyof typeof sections]
+                                                        ? "bg-emerald-50 border-emerald-100 text-emerald-700"
+                                                        : "bg-white/40 border-white/40 text-gray-500 hover:bg-white/60"
+                                                )}
+                                            >
+                                                <opt.icon className={cn("w-4 h-4", sections[opt.id as keyof typeof sections] ? "text-emerald-600" : "text-gray-400")} aria-hidden="true" focusable="false" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">{opt.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="pt-2 flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsScheduleModalOpen(false)}
+                                        className={cn(glass.btnSecondary, "flex-1")}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "flex-1")}>
+                                        {isSavingSchedule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                                        Save schedule
+                                    </button>
+                                </div>
                             </form>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                    </motion.div>
+                </DialogContent>
+            </Dialog>
             
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
             `}</style>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

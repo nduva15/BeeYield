@@ -14,11 +14,12 @@ import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { glass, PageHeader } from './GlassTheme';
+import SettingsIntegrationsView from './SettingsIntegrationsView';
 
 const IntegrationsView: React.FC = () => {
     const [configs, setConfigs] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
-    const [activeTab, setActiveTab] = React.useState<'ecosystem' | 'quickbooks' | 'shopify'>('ecosystem');
+    const [activeTab, setActiveTab] = React.useState<'ecosystem' | 'quickbooks' | 'shopify' | 'etims'>('ecosystem');
     const [auditLogs, setAuditLogs] = React.useState<any[]>([]);
     const [activeConfig, setActiveConfig] = React.useState<any>(null);
 
@@ -42,9 +43,11 @@ const IntegrationsView: React.FC = () => {
                 }
             }
 
-            if (platform) {
+            if (platform && platform !== 'etims') {
                 const logs = await beeyieldService.getIntegrationAuditLogs(platform);
                 setAuditLogs(logs || []);
+            } else {
+                setAuditLogs([]);
             }
         } catch (e) {
             console.error(e);
@@ -77,16 +80,55 @@ const IntegrationsView: React.FC = () => {
 
     const handleConnectToggle = async (platform: 'quickbooks' | 'shopify') => {
         const isConnectedNode = isConnected(platform);
-        const tid = toast.loading(isConnectedNode ? `Disconnecting ${platform}…` : `Connecting ${platform}…`);
+        const tid = toast.loading(isConnectedNode ? `Disconnecting ${platform}…` : `Opening ${platform} login…`);
         try {
-            const res = await beeyieldService.upsertIntegrationConfig({
-                platform,
-                is_active: !isConnectedNode,
-                store_url: platform === 'shopify' ? shopUrl : undefined,
-            });
-            if (!res) throw new Error('Update failed');
-            toast.success(isConnectedNode ? `${platform} disconnected` : `${platform} connected`, { id: tid });
-            fetchConfigs();
+            if (isConnectedNode) {
+                const res = await beeyieldService.upsertIntegrationConfig({
+                    platform,
+                    is_active: false,
+                    store_url: platform === 'shopify' ? shopUrl : undefined,
+                });
+                if (!res) throw new Error('Update failed');
+                toast.success(`${platform} disconnected`, { id: tid });
+                fetchConfigs();
+                return;
+            }
+
+            // Start OAuth flow (redirect to provider).
+            const STATE_KEY = 'beeyield_integration_oauth_state_v1';
+            const saveState = (p: string, state: string) => {
+                try {
+                    const raw = sessionStorage.getItem(STATE_KEY);
+                    const next = raw ? (JSON.parse(raw) as Record<string, string>) : {};
+                    next[p] = state;
+                    sessionStorage.setItem(STATE_KEY, JSON.stringify(next));
+                } catch {
+                    // ignore
+                }
+            };
+
+            if (platform === 'quickbooks') {
+                const { url, state } = await beeyieldService.getQuickBooksAuthorizeUrl();
+                saveState(platform, state);
+                toast.success('Redirecting to QuickBooks…', { id: tid });
+                window.location.href = url;
+                return;
+            }
+
+            // Shopify requires a shop domain
+            const rawShop = (shopUrl || '').trim();
+            if (!rawShop) {
+                toast.error('Enter your Shopify store URL first.', { id: tid });
+                return;
+            }
+            const shop = rawShop
+                .replace(/^https?:\/\//, '')
+                .replace(/\/.*$/, '')
+                .trim();
+            const { url, state } = await beeyieldService.getShopifyAuthorizeUrl(shop);
+            saveState(platform, state);
+            toast.success('Redirecting to Shopify…', { id: tid });
+            window.location.href = url;
         } catch (e) {
             console.error(e);
             toast.error('Integration update failed', { id: tid });
@@ -115,10 +157,11 @@ const IntegrationsView: React.FC = () => {
                             <button onClick={() => setActiveTab('shopify')} className={cn(glass.btnSecondary, "h-10 px-6 font-bold text-xs")}>Shopify settings</button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
                             { name: 'QuickBooks', icon: Calculator, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10' },
-                            { name: 'Shopify', icon: ShoppingBag, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' }
+                            { name: 'Shopify', icon: ShoppingBag, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10' },
+                            { name: 'eTIMS', icon: ShieldCheck, color: 'text-[#3B82F6]', bg: 'bg-[#3B82F6]/10' }
                         ].map((s, i) => (
                             <div key={i} className={cn(glass.card, "p-5 border-gray-100 bg-gray-50 space-y-3 hover:border-gray-200 transition-all cursor-pointer group")} onClick={() => setActiveTab(s.name.toLowerCase() as any)}>
                                 <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", s.bg)}>
@@ -288,7 +331,8 @@ const IntegrationsView: React.FC = () => {
                         {[
                             { id: 'ecosystem', label: 'Connections', icon: LayoutGrid },
                             { id: 'quickbooks', label: 'QBO', icon: Calculator },
-                            { id: 'shopify', label: 'Shopify', icon: ShoppingBag }
+                            { id: 'shopify', label: 'Shopify', icon: ShoppingBag },
+                            { id: 'etims', label: 'eTIMS', icon: ShieldCheck }
                         ].map(t => (
                             <button
                                 key={t.id}
@@ -326,6 +370,37 @@ const IntegrationsView: React.FC = () => {
                             {activeTab === 'ecosystem' && renderEcosystem()}
                             {activeTab === 'quickbooks' && renderPlatform('quickbooks')}
                             {activeTab === 'shopify' && renderPlatform('shopify')}
+                            {activeTab === 'etims' && (
+                                <div className="space-y-4">
+                                    <div className={cn(glass.card, "p-5 bg-white border-gray-100")}>
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">KRA eTIMS</h2>
+                                                <p className="text-[11px] font-medium text-gray-500 leading-relaxed max-w-2xl">
+                                                    Enter your compliance details, then you’ll be redirected to eTIMS to sign in / sign up. After onboarding, you can issue and sync invoices from BeeYield Billing.
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    try {
+                                                        window.open('https://etims.kra.go.ke/', '_blank', 'noopener,noreferrer');
+                                                    } catch {
+                                                        // ignore (popup blocked)
+                                                    }
+                                                }}
+                                                className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs flex items-center gap-2 shrink-0")}
+                                            >
+                                                Open eTIMS <ExternalLink className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Reuse the existing compliance settings view */}
+                                    <div className="rounded-2xl overflow-hidden">
+                                        <SettingsIntegrationsView />
+                                    </div>
+                                </div>
+                            )}
                         </motion.div>
                     </AnimatePresence>
                 )}

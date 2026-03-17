@@ -76,7 +76,7 @@ export function UsbHubDashboard() {
             await usbDevice.claimInterface(0);
             setDevice(usbDevice);
             setConnectionStatus('connected');
-            addLog("Establishing kernel link... 0x77FF handshake accepted.");
+            addLog("Connecting to the device...");
             addLog("Connected to BeeYield Hub Alpha successfully.");
 
             await handshake(usbDevice);
@@ -101,10 +101,10 @@ export function UsbHubDashboard() {
             };
             await axios.post('/api/v1/hub/handshake', payload);
             queryClient.invalidateQueries({ queryKey: ['hub-devices'] });
-            addLog("Remote handshake successful. Device synced with BeeYield Cloud.");
+            addLog("Device synced.");
         } catch (err: any) {
             console.error("Handshake failed", err);
-            const msg = err?.response?.data?.message || err?.message || 'Handshake failed';
+            const msg = err?.response?.data?.message || err?.message || 'Could not sync device';
             setLastError(msg);
             addLog(`Sync Error: ${msg}`);
         }
@@ -351,7 +351,7 @@ export function UsbHubDashboard() {
                             {[
                                 { t: "Kill Serial Sessions", d: "Ensure single polling vector" },
                                 { t: "Stabilize 5V Voltage", d: "Prevent mid-flash brownout" },
-                                { t: "Node Resource Match", d: "Chip ID validation" },
+                                { t: "Device match", d: "Chip ID check" },
                                 { t: "Persistent Link", d: "Do not sever USB bridge" }
                             ].map((item, i) => (
                                 <li key={i} className="flex gap-4 items-start">

@@ -165,6 +165,7 @@ const AdminDashboard: React.FC = () => {
         if (isAdmin && activeTab !== 'overview' && !loadedTabs.has(activeTab)) {
             loadTabData(activeTab);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, isAdmin, loadedTabs]);
 
     const initDashboard = async () => {

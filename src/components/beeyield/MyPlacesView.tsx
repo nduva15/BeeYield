@@ -49,7 +49,6 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import { hashToRange } from '@/lib/deterministic';
 import {
     Apiary,
     ApiaryCreateInput,
@@ -180,98 +179,12 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                         ))}
                     </div>
 
-                    {/* Analytics Core */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        {/* Production Trend */}
-                        <div className="lg:col-span-8">
-                            <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md overflow-hidden")}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
-                                            <TrendingUp className="w-4 h-4 text-[#F4D03F]" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Production Vector</h3>
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em]">Estimated Dynamics (30D)</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
-                                        {['7D', '30D', '90D'].map(t => (
-                                            <button key={t} className={cn("px-2.5 py-1 text-[8px] font-black uppercase tracking-wider rounded-md transition-all", t === '30D' ? "bg-white text-[#F4D03F] shadow-sm" : "text-gray-400 hover:text-[#1A1A1A]")}>{t}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                                
-                                <div className="h-32 w-full bg-[#1A1A1A]/[0.02] rounded-xl border border-[#F4D03F]/5 flex items-end p-3 gap-1">
-                                    {Array.from({ length: 30 }).map((_, i) => {
-                                        const val = hashToRange(`places-prod-${i}`, 20, 100);
-                                        return (
-                                            <motion.div
-                                                key={i}
-                                                initial={{ height: 0 }}
-                                                animate={{ height: `${val}%` }}
-                                                transition={{ delay: i * 0.01, duration: 0.8 }}
-                                                className={cn("flex-1 rounded-t-sm bg-[#F4D03F]/10 hover:bg-[#F4D03F] transition-all cursor-pointer relative group", i > 25 ? "bg-[#1B9157]/20 hover:bg-[#1B9157]" : "")}
-                                            >
-                                                <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-[#1A1A1A] text-[7px] font-black text-white px-1.5 py-0.5 rounded-sm pointer-events-none z-50">
-                                                    +{Math.round(val/5)}kg
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                                <div className="flex justify-between mt-3 px-1 text-[8px] font-black text-gray-400 uppercase tracking-[0.3em]">
-                                    <span>T-30 DAYS</span>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="w-1 h-1 rounded-full bg-[#1B9157] animate-pulse" />
-                                        <span>LIVE_PERFORMANCE</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Health Distribution */}
-                        <div className="lg:col-span-4">
-                            <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md h-full flex flex-col justify-between")}>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-9 h-9 rounded-xl bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10">
-                                        <Activity className="w-4 h-4 text-[#1B9157]" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Health Density</h3>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em]">Biometric Vitality Protocol</p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {[
-                                        { label: 'OPTIMAL_SATURATION', count: stats.healthy, total: stats.total, color: 'bg-[#1B9157]', glow: 'shadow-[0_0_8px_rgba(27,145,87,0.3)]' },
-                                        { label: 'OBSERVATIVE_FLUX', count: stats.warnings, total: stats.total, color: 'bg-[#F4D03F]', glow: 'shadow-[0_0_8px_rgba(244,208,63,0.3)]' },
-                                        { label: 'CRITICAL_INTERVENTION', count: stats.critical, total: stats.total, color: 'bg-red-500', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.3)]' }
-                                    ].map((h, i) => (
-                                        <div key={i} className="space-y-1.5">
-                                            <div className="flex justify-between text-[8px] font-black uppercase tracking-widest items-center">
-                                                <span className="text-gray-400">{h.label}</span>
-                                                <span className="text-[#1A1A1A] tabular-nums bg-white border border-gray-100 rounded-md px-1.5 py-0.5">{h.count} UNITS</span>
-                                            </div>
-                                            <div className="h-1.5 bg-[#1A1A1A]/5 rounded-full overflow-hidden">
-                                                <motion.div 
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${(h.count / (h.total || 1)) * 100}%` }}
-                                                    className={cn("h-full rounded-full transition-all duration-1000", h.color, h.glow)}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                
-                                <div className="mt-6 p-3 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/10 relative overflow-hidden group">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                                    <p className="text-[9px] font-bold text-[#1A1A1A] leading-tight italic relative z-10 text-center uppercase tracking-tighter">
-                                        "Colony strength tracking above logic. Phase II monitoring enabled."
-                                    </p>
-                                </div>
-                            </div>
+                    <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                        <div className="space-y-1">
+                            <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Analytics</h3>
+                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                                No synthetic charts. Add real telemetry/harvest data to populate analytics.
+                            </p>
                         </div>
                     </div>
 
@@ -704,7 +617,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                 icon={MapPin}
                 label="Site Intelligence Registry"
                 title={<>Apiary <span className="text-[#F4D03F]">Network</span></>}
-                subtitle="Global management of distributed apiary infrastructure."
+                subtitle="Manage your apiary records."
                 actions={
                     <button
                         onClick={() => setIsAddingPlace(true)}
@@ -715,62 +628,15 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     </button>
                 }
             />
-            {/* Network Analytics Overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 relative overflow-hidden group backdrop-blur-md")}>
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Network Growth</span>
-                        <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
-                            <TrendingUp className="w-3.5 h-3.5 text-[#F4D03F]" />
-                        </div>
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums">{apiaries.length}</span>
-                        <span className="text-[9px] font-black text-[#1B9157] tracking-tight tabular-nums">+2.4%</span>
-                    </div>
-                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Active Site Nodes</p>
-                    <div className="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-                        <MapPin className="w-16 h-16" />
+            <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Total Apiaries</span>
+                    <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                        <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
                     </div>
                 </div>
-
-                <div className={cn(glass.card, "p-4 bg-white/40 border-[#1B9157]/10 relative overflow-hidden group backdrop-blur-md")}>
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Operational Units</span>
-                        <div className="h-6 w-6 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10 shadow-sm">
-                            <Hexagon className="w-3.5 h-3.5 text-[#1B9157]" />
-                        </div>
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums">{apiaries.reduce((acc, a) => acc + (a.hive_count || 0), 0)}</span>
-                        <span className="text-[9px] font-black text-gray-300 uppercase italic tracking-widest ml-1">GLOBAL</span>
-                    </div>
-                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Telemetry Enabled</p>
-                </div>
-
-                <div className={cn(glass.card, "p-4 lg:col-span-2 bg-[#1A1A1A]/[0.02] border-[#F4D03F]/10 relative overflow-hidden backdrop-blur-md")}>
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Flora Diversity Density</span>
-                        <div className="flex gap-1.5">
-                            {['AC', 'LV', 'MX'].map(l => (
-                                <span key={l} className="w-5 h-5 rounded-md border border-[#F4D03F]/10 bg-white/80 flex items-center justify-center text-[7px] font-black text-gray-500 shadow-sm">{l}</span>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="h-8 w-full flex gap-1 items-end mt-4">
-                        {Array.from({ length: 48 }).map((_, i) => (
-                            <div
-                                key={i}
-                                className={cn(
-                                    "flex-1 rounded-full transition-all duration-1000",
-                                    i % 3 === 0 ? "bg-[#F4D03F]/40" : i % 5 === 0 ? "bg-[#1B9157]/40" : "bg-gray-200/20"
-                                )}
-                                style={{ height: `${hashToRange(`places-spectral-${i}`, 40, 100)}%` }}
-                            />
-                        ))}
-                    </div>
-                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.4em] mt-3 text-center opacity-40">Spectral_Signature_Distribution_Alpha</p>
-                </div>
+                <div className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums mt-2">{apiaries.length}</div>
+                <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Records</p>
             </div>
 
             {isLoading ? (

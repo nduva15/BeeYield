@@ -480,10 +480,10 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                         
                         <div className="px-6 py-5 border-b border-[#F4D03F]/10 relative z-10">
                             <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3 inline-block')}>
-                                INITIALIZE_HARDWARE
+                                Add sensor
                             </div>
-                            <h2 className={cn(glass.sectionTitle, "uppercase leading-none mb-1")}>Initialize <span className="text-[#F4D03F]">Sensor</span></h2>
-                            <p className={glass.microLabel}>Link new sensor hardware to apiary node.</p>
+                            <h2 className={cn(glass.sectionTitle, "uppercase leading-none mb-1")}>Add <span className="text-[#F4D03F]">sensor</span></h2>
+                            <p className={glass.microLabel}>Link a sensor to a hive.</p>
                         </div>
 
                         <div className="p-6 space-y-5 relative z-10">
@@ -498,10 +498,10 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className={glass.microLabel}>Assigned_Node</Label>
+                                <Label className={glass.microLabel}>Hive</Label>
                                 <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
                                     <SelectTrigger className={cn(glass.select, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
-                                        <SelectValue placeholder="Select target node..." />
+                                        <SelectValue placeholder="Select a hive…" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {hives.map(hive => (
@@ -519,13 +519,13 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     onClick={handleSetupSubmit}
                                 >
                                     <ShieldCheck className="w-4 h-4" />
-                                    <span>COMMIT_LINK</span>
+                                    <span>Save</span>
                                 </button>
                                 <button
                                     className={cn(glass.btnSecondary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.3em] rounded-xl")}
                                     onClick={() => setShowSetupModal(false)}
                                 >
-                                    ABORT
+                                    Cancel
                                 </button>
                             </div>
                         </div>

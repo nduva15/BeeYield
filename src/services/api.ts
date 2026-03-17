@@ -115,6 +115,7 @@ export function getBaseUrl(endpoint: string): string {
         "/ai/", "ai/",
         "/assistant/", "assistant/",
         "/beeyield/", "beeyield/",
+        "/integrations/", "integrations/",
         "/bee-data",
         "/search",
         "/contact/",
@@ -195,7 +196,9 @@ export async function apiRequest<T>(
             return JSON.parse(responseText);
         } catch (e) {
             console.error("Failed to parse JSON for endpoint:", endpoint);
-            throw new Error(`Invalid JSON response from server`, { cause: e });
+            const err = new Error('Invalid JSON response from server');
+            (err as any).cause = e;
+            throw err;
         }
     } catch (error: any) {
         if (error.name !== 'AbortError') {

@@ -892,6 +892,44 @@ async def get_telemetry_latest(
             
     return all_readings
 
+
+@router.get("/readings", response_model=List[dict])
+async def get_hive_readings(
+    hive_id: str = Query(..., description="Hive ID to fetch readings for"),
+    limit: int = Query(50, ge=1, le=500, description="Max number of readings"),
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """
+    Fetch sensor readings for a specific hive (backend-gated; Supabase token required).
+    This enables BeeYield Online view to be fully backend-driven (no direct browser Supabase reads).
+    """
+    relevant_ids = await get_user_and_farmer_ids(user_id, token)
+
+    # Verify hive is accessible to this user (owned or shared via apiary share)
+    hives = await db_select("hives", filters={"id": hive_id, "user_id": relevant_ids}, limit=1, token=token)
+    if not hives:
+        # Shared access path: if hive belongs to an apiary shared with user, allow
+        hive_rows = await db_select("hives", filters={"id": hive_id}, limit=1, token=token)
+        if not hive_rows:
+            raise HTTPException(status_code=404, detail="Hive not found")
+        apiary_id = hive_rows[0].get("apiary_id")
+        if not apiary_id:
+            raise HTTPException(status_code=403, detail="Hive access denied")
+        shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id}, limit=1, token=token)
+        if not shares:
+            raise HTTPException(status_code=403, detail="Hive access denied")
+
+    readings = await db_select(
+        "sensor_readings",
+        filters={"hive_id": hive_id},
+        limit=limit,
+        order_by="timestamp",
+        ascending=False,
+        token=token,
+    )
+    return readings or []
+
 # ============================================
 # TASKS ENDPOINTS
 # ============================================

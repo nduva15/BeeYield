@@ -556,32 +556,32 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 }
             />
 
-            {/* Quick Stats Grid - Matching Home View standard */}
+            {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
                 <GlassStatCard
-                    label="LABELS_GENERATED"
-                    value={savedDesigns.length + 124}
+                    label="Labels created"
+                    value={savedDesigns.length}
                     icon={Tag}
                     color="text-amber-500"
                     index={0}
                 />
                 <GlassStatCard
-                    label="COMPLIANCE_SCORE"
-                    value="99.2%"
+                    label="Compliance score"
+                    value="—"
                     icon={ShieldCheck}
                     color="text-emerald-500"
                     index={1}
                 />
                 <GlassStatCard
-                    label="ACTIVE_DESIGNS"
+                    label="Saved designs"
                     value={savedDesigns.length}
                     icon={FileText}
                     color="text-blue-500"
                     index={2}
                 />
                 <GlassStatCard
-                    label="SYSTEM_HEALTH"
-                    value="OPTIMAL"
+                    label="Status"
+                    value="—"
                     icon={Activity}
                     color="text-[#F4D03F]"
                     index={3}
@@ -597,16 +597,16 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         <div className={glass.sectionHeader}>
                              <div className="flex items-center gap-2">
                                 <FileText className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className={glass.sectionTitle}>LABEL_CONTENT</h3>
+                                <h3 className={glass.sectionTitle}>Label content</h3>
                              </div>
                         </div>
                         <div className="p-5 space-y-6">
-                            {/* Apiary Selector */}
+                            {/* Location Selector */}
                             <div className="space-y-2.5">
-                                <Label className={glass.microLabel}>APIARY</Label>
+                                <Label className={glass.microLabel}>Location</Label>
                                 <Select value={selectedApiaryId} onValueChange={handleApiarySelect}>
                                     <SelectTrigger className={cn(glass.select, "w-full")}>
-                                        <SelectValue placeholder="SELECT_APIARY" />
+                                        <SelectValue placeholder="Select a location…" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {apiaries.length > 0 ? apiaries.map(a => (
@@ -614,7 +614,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 {a.name}{a.location_name ? ` — ${a.location_name}` : ''}
                                             </SelectItem>
                                         )) : (
-                                            <div className="p-2 text-center text-[10px] text-gray-400 font-black">NO_APIARIES</div>
+                                            <div className="p-2 text-center text-[10px] text-gray-400 font-black">No locations yet</div>
                                         )}
                                     </SelectContent>
                                 </Select>
@@ -622,10 +622,10 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                             {/* Hive Selector */}
                             <div className="space-y-2.5">
-                                <Label className={glass.microLabel}>ASSET_SOURCE_UNIT</Label>
+                                <Label className={glass.microLabel}>Hive</Label>
                                 <Select value={selectedHiveId} onValueChange={handleHiveSelect}>
                                     <SelectTrigger className={cn(glass.select, "w-full")}>
-                                        <SelectValue placeholder="SELECT_ASSET" />
+                                        <SelectValue placeholder="Select a hive…" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {filteredHives.length > 0 ? filteredHives.map(h => (
@@ -634,19 +634,19 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             </SelectItem>
                                         )) : (
                                             <div className="p-2 text-center text-[10px] text-gray-400 font-black">
-                                                {selectedApiaryId ? 'NO_HIVES_IN_APIARY' : 'SELECT_APIARY_FIRST'}
+                                                {selectedApiaryId ? 'No hives in this location' : 'Select a location first'}
                                             </div>
                                         )}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            {/* Batch Selector (strict: required before harvest) */}
+                            {/* Batch (required before harvest) */}
                             <div className="space-y-2.5">
-                                <Label className={glass.microLabel}>BATCH (LINKED TO HIVE)</Label>
+                                <Label className={glass.microLabel}>Batch</Label>
                                 <Select value={(design.batchNumber || '').trim()} onValueChange={handleBatchSelect}>
                                     <SelectTrigger className={cn(glass.select, "w-full")} disabled={!selectedHiveId}>
-                                        <SelectValue placeholder={selectedHiveId ? "SELECT_BATCH" : "SELECT_HIVE_FIRST"} />
+                                        <SelectValue placeholder={selectedHiveId ? "Select a batch…" : "Select a hive first"} />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {batchOptions.length > 0 ? batchOptions.map((code) => (
@@ -655,16 +655,16 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             </SelectItem>
                                         )) : (
                                             <div className="p-2 text-center text-[10px] text-gray-400 font-black">
-                                                {selectedHiveId ? 'NO_BATCH_RECORDS_FOR_HIVE' : 'SELECT_HIVE_FIRST'}
+                                                {selectedHiveId ? 'No batches for this hive' : 'Select a hive first'}
                                             </div>
                                         )}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            {/* Harvest Selector (strict: requires hive + batch) */}
+                            {/* Harvest (linked to hive + batch) */}
                             <div className="space-y-2.5">
-                                <Label className={glass.microLabel}>HARVEST (LINKED TO HIVE)</Label>
+                                <Label className={glass.microLabel}>Harvest</Label>
                                 <Select value={selectedHarvestId} onValueChange={handleHarvestSelect}>
                                     <SelectTrigger
                                         className={cn(glass.select, "w-full")}
@@ -673,23 +673,23 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <SelectValue
                                             placeholder={
                                                 !selectedHiveId
-                                                    ? "SELECT_HIVE_FIRST"
+                                                    ? "Select a hive first"
                                                     : !(design.batchNumber || '').trim()
-                                                        ? "SELECT_BATCH_FIRST"
+                                                        ? "Select a batch first"
                                                         : filteredHarvestsByBatch.length === 0
-                                                            ? "NO_HARVESTS_FOR_BATCH"
-                                                            : "SELECT_HARVEST"
+                                                            ? "No harvests for this batch"
+                                                            : "Select a harvest"
                                             }
                                         />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {filteredHarvestsByBatch.length > 0 ? filteredHarvestsByBatch.map(h => (
-                                            <SelectItem key={h.id} value={h.id} className="font-black uppercase text-[10px]">
-                                                {h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : 'NO_DATE'} {h.quantity_kg ? `• ${h.quantity_kg}KG` : ''} {h.batch_code ? `• ${h.batch_code}` : ''}
+                                            <SelectItem key={h.id} value={h.id} className="font-semibold text-[12px]">
+                                                {h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : 'No date'} {h.quantity_kg ? `• ${h.quantity_kg} kg` : ''} {h.batch_code ? `• ${h.batch_code}` : ''}
                                             </SelectItem>
                                         )) : (
                                             <div className="p-2 text-center text-[10px] text-gray-400 font-black">
-                                                {!selectedHiveId ? 'SELECT_HIVE_FIRST' : !(design.batchNumber || '').trim() ? 'SELECT_BATCH_FIRST' : 'NO_HARVESTS_FOR_BATCH'}
+                                                {!selectedHiveId ? 'Select a hive first' : !(design.batchNumber || '').trim() ? 'Select a batch first' : 'No harvests for this batch'}
                                             </div>
                                         )}
                                     </SelectContent>
@@ -701,31 +701,31 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="w-4 h-4 text-[#F4D03F]/70" />
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]/70">
-                                            HARVEST_HISTORY
+                                        <p className="text-[12px] font-semibold text-[#1A1A1A]/70">
+                                            Harvest history
                                         </p>
                                     </div>
-                                    <Badge className="bg-white/60 border border-[#F4D03F]/15 text-[#1A1A1A] font-black text-[9px] uppercase tracking-widest">
+                                    <Badge className="bg-white/60 border border-[#F4D03F]/15 text-[#1A1A1A] font-semibold text-[11px]">
                                         {selectedHiveId ? `${filteredHarvestsByBatch.length}` : '—'}
                                     </Badge>
                                 </div>
 
                                 {!selectedHiveId ? (
-                                    <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest text-center py-4">
-                                        SELECT_HIVE_TO_VIEW_HISTORY
+                                    <div className="text-[12px] text-gray-500 font-semibold text-center py-4">
+                                        Select a hive to view history
                                     </div>
                                 ) : !(design.batchNumber || '').trim() ? (
-                                    <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest text-center py-4">
-                                        SELECT_BATCH_TO_VIEW_HISTORY
+                                    <div className="text-[12px] text-gray-500 font-semibold text-center py-4">
+                                        Select a batch to view history
                                     </div>
                                 ) : filteredHarvestsByBatch.length === 0 ? (
-                                    <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest text-center py-4">
-                                        NO_HARVESTS_FOR_BATCH
+                                    <div className="text-[12px] text-gray-500 font-semibold text-center py-4">
+                                        No harvests for this batch
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
                                         {filteredHarvestsByBatch.slice(0, 6).map((h) => {
-                                            const label = h.batch_code || (h.harvest_date ? `BATCH_${h.harvest_date}` : `HARVEST_${h.id.slice(0, 6)}`);
+                                            const label = h.batch_code || (h.harvest_date ? `Batch ${h.harvest_date}` : `Harvest ${h.id.slice(0, 6)}`);
                                             const date = h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : '';
                                             const kg = typeof h.quantity_kg === 'number' ? `${h.quantity_kg.toFixed(1)}kg` : '';
                                             const isActive = selectedHarvestId === h.id;
@@ -742,10 +742,10 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     )}
                                                 >
                                                     <div className="min-w-0">
-                                                        <p className="text-[10px] font-black uppercase tracking-tight text-[#1A1A1A] truncate">
+                                                        <p className="text-[12px] font-semibold text-[#1A1A1A] truncate">
                                                             {label}
                                                         </p>
-                                                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest truncate">
+                                                        <p className="text-[11px] text-gray-500 font-medium truncate">
                                                             {date}{kg ? ` • ${kg}` : ''}
                                                         </p>
                                                     </div>
@@ -765,24 +765,24 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             <div className="h-px bg-gradient-to-r from-[#F4D03F]/20 to-transparent" />
 
                             <div className="space-y-4">
-                                <BeeYieldFormField id="by_label_product_name" label="PRODUCT_DESIGNATION" hint="UTF-8_READY">
+                                <BeeYieldFormField id="by_label_product_name" label="Product name" hint="What you want printed on the label">
                                     <BeeYieldTextInput
                                         id="by_label_product_name"
                                         value={design.productName}
                                         onChange={e => updateDesign({ productName: e.target.value })}
-                                        placeholder="E.G. WILDFLOWER_ELITE"
+                                        placeholder="e.g. Wildflower Honey"
                                     />
                                 </BeeYieldFormField>
 
                                 <div className="grid grid-cols-2 gap-3">
-                                    <BeeYieldFormField id="by_label_weight" label="MASS_VALUE">
+                                    <BeeYieldFormField id="by_label_weight" label="Weight">
                                         <BeeYieldTextInput
                                             id="by_label_weight"
                                             value={design.weight}
                                             onChange={e => updateDesign({ weight: e.target.value })}
                                         />
                                     </BeeYieldFormField>
-                                    <BeeYieldFormField id="by_label_weight_unit" label="UNIT_ID">
+                                    <BeeYieldFormField id="by_label_weight_unit" label="Unit">
                                         <BeeYieldTextInput
                                             id="by_label_weight_unit"
                                             value={design.weightUnit}
@@ -795,7 +795,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <div className="flex items-center justify-between">
                                         <Label className={glass.microLabel}>Product story</Label>
                                         <button
-                                            className="h-6 px-2 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 text-[8px] font-black text-[#F4D03F] uppercase tracking-widest flex items-center gap-1.5 hover:bg-[#F4D03F]/20 transition-all"
+                                            className="h-7 px-2.5 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 text-xs font-semibold text-[#D4AC0D] flex items-center gap-1.5 hover:bg-[#F4D03F]/20 transition-all"
                                             onClick={generateBlurb}
                                             disabled={isGeneratingBlurb}
                                         >
@@ -810,7 +810,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         onChange={e => updateDesign({ marketingNote: e.target.value })}
                                         placeholder="Write a short product story…"
                                     />
-                                    <div className="flex justify-between items-center text-[8px] font-black text-gray-400 uppercase tracking-widest">
+                                    <div className="flex justify-between items-center text-xs font-semibold text-gray-500">
                                         <span>Character limit</span>
                                         <span className={cn(design.marketingNote.length > 160 ? "text-[#F4D03F]" : "")}>{design.marketingNote.length}/180</span>
                                     </div>
@@ -828,7 +828,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             <button
                                                 type="button"
                                                 onClick={() => copyToClipboard("Full label pack (JSON)", JSON.stringify(labelPack, null, 2))}
-                                                className="h-7 px-2.5 rounded-lg bg-white/60 border border-[#F4D03F]/15 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:bg-white transition-all text-[#1A1A1A]"
+                                                className="h-8 px-3 rounded-lg bg-white/60 border border-[#F4D03F]/15 text-sm font-semibold flex items-center gap-1.5 hover:bg-white transition-all text-[#1A1A1A]"
                                             >
                                                 <Copy className="w-3 h-3" />
                                                 Copy JSON
@@ -847,7 +847,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 <div key={row.k} className="rounded-xl border border-white/40 bg-white/60 p-3">
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="min-w-0">
-                                                            <p className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]/60">
+                                                            <p className="text-xs font-semibold text-[#1A1A1A]/60">
                                                                 {row.k}
                                                             </p>
                                                             <p className="text-[11px] font-semibold text-[#1A1A1A] whitespace-pre-wrap mt-1 leading-relaxed">
@@ -947,7 +947,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 { id: 'showFooter', label: 'Include footer', value: design.showFooter },
                             ].map((item) => (
                                 <div key={item.id} className="flex items-center justify-between">
-                                    <Label className="text-[10px] font-bold text-[#1A1A1A]/80 uppercase tracking-tight">{item.label}</Label>
+                                    <Label className="text-sm font-semibold text-[#1A1A1A]/80">{item.label}</Label>
                                     <Switch 
                                         checked={item.value as boolean} 
                                         onCheckedChange={v => updateDesign({ [item.id]: v })} 
@@ -977,10 +977,10 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                          <div className={glass.sectionHeader}>
                              <div className="flex items-center gap-2">
                                  <Plus className="w-4 h-4 text-[#F4D03F]" />
-                                 <h3 className={glass.sectionTitle}>PRECISION_DESIGNER</h3>
+                                 <h3 className={glass.sectionTitle}>Label preview</h3>
                              </div>
                              <div className={glass.badge}>
-                                 OPTIC: 300_ULTRACLEAR
+                                 Preview · 300 dpi
                              </div>
                          </div>
                         
@@ -1028,7 +1028,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 ) : (
                                                     <div className="flex items-center justify-center gap-2">
                                                         <Droplet className="w-7 h-7 opacity-80" style={{ color: design.accentColor }} />
-                                                        <span className="text-[10px] font-black uppercase tracking-[0.25em] opacity-70">BEEYIELD</span>
+                                                        <span className="text-[11px] font-semibold tracking-tight opacity-80">BeeYield</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -1038,13 +1038,13 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     {/* Title row (weight separated from QR) */}
                                     <div className="flex items-start justify-between gap-6">
                                         <div className="flex-1 pr-2">
-                                            <h2 className="text-3xl font-black uppercase tracking-[0.1em] leading-tight mb-2" style={{ color: design.accentColor }}>
-                                                {design.productName || 'PURE_HONEY'}
+                                            <h2 className="text-3xl font-black tracking-tight leading-tight mb-2" style={{ color: design.accentColor }}>
+                                                {design.productName || 'Pure honey'}
                                             </h2>
                                             <div className="flex items-center gap-3">
                                                 <span className="h-[1px] w-8 bg-current opacity-30"></span>
-                                                <p className="text-[10px] font-bold tracking-widest uppercase opacity-70">
-                                                    {design.honeyType} CORE
+                                                <p className="text-[11px] font-semibold opacity-80">
+                                                    {design.honeyType}
                                                 </p>
                                             </div>
                                         </div>
@@ -1138,7 +1138,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <BeeYieldCard padded={false}>
                             <div className={glass.sectionHeader}>
-                                <h3 className={glass.sectionTitle}>SAVED_ARCHIVES</h3>
+                                <h3 className={glass.sectionTitle}>Saved labels</h3>
                                 <Save className="w-4 h-4 text-[#F4D03F]/40" />
                             </div>
                             <div className="p-4 h-[200px] overflow-y-auto space-y-2">
@@ -1151,8 +1151,8 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     savedDesigns.map(saved => (
                                         <div key={saved.id} className="p-3 rounded-lg border border-[#F4D03F]/10 bg-white/40 hover:bg-white/80 transition-all group flex justify-between items-center">
                                             <div>
-                                                <p className="text-xs font-black text-[#1A1A1A] uppercase tracking-tight">{saved.productName || 'UNNAMED_PROJECT'}</p>
-                                                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{saved.honeyType} • {saved.customWidth}x{saved.customHeight}MM</p>
+                                                <p className="text-sm font-semibold text-[#1A1A1A]">{saved.productName || 'Untitled label'}</p>
+                                                <p className="text-xs text-gray-500">{saved.honeyType} • {saved.customWidth}×{saved.customHeight} mm</p>
                                             </div>
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
@@ -1179,7 +1179,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </BeeYieldCard>
                         <BeeYieldCard padded={false}>
                             <div className={glass.sectionHeader}>
-                                <h3 className={glass.sectionTitle}>COMPLIANCE_MATRIX</h3>
+                                <h3 className={glass.sectionTitle}>Checklist</h3>
                                 <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
                             </div>
                             <div className="p-4 space-y-2">
@@ -1191,7 +1191,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <div key={i} className="flex items-center justify-between p-2.5 rounded-lg border border-black/5 bg-white/30">
                                         <div className="flex items-center gap-2.5">
                                             <c.icon className={cn("w-3.5 h-3.5", c.color)} />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">{c.label}</span>
+                                            <span className="text-xs font-semibold">{c.label}</span>
                                         </div>
                                         <span className={cn("text-[8px] font-black", c.color)}>{c.status}</span>
                                     </div>
@@ -1207,7 +1207,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         <div className={glass.sectionHeader}>
                             <div className="flex items-center gap-2">
                                 <Palette className="w-4 h-4 text-orange-500" />
-                                <h3 className={glass.sectionTitle}>STYLE_PRESETS</h3>
+                                <h3 className={glass.sectionTitle}>Styles</h3>
                             </div>
                         </div>
                         <div className="p-5 grid grid-cols-2 gap-3">
@@ -1241,30 +1241,30 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         <div className={glass.sectionHeader}>
                             <div className="flex items-center gap-2">
                                 <Grid className="w-4 h-4 text-orange-500" />
-                                <h3 className={glass.sectionTitle}>GEOMETRY_CONFIG</h3>
+                                <h3 className={glass.sectionTitle}>Size and shape</h3>
                             </div>
                         </div>
                         <div className="p-5 space-y-5">
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1.5">
-                                    <Label className={glass.microLabel}>WIDTH (MM)</Label>
+                                    <Label className={glass.microLabel}>Width (mm)</Label>
                                     <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className={glass.input} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className={glass.microLabel}>HEIGHT (MM)</Label>
+                                    <Label className={glass.microLabel}>Height (mm)</Label>
                                     <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className={glass.input} />
                                 </div>
                             </div>
                             <div className="space-y-1.5">
-                                <Label className={glass.microLabel}>GEOMETRIC_SHAPE</Label>
+                                <Label className={glass.microLabel}>Shape</Label>
                                 <Select value={design.customShape} onValueChange={v => updateDesign({ customShape: v })}>
                                     <SelectTrigger className={cn(glass.select, "w-full")}>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
-                                        <SelectItem value="Rectangle" className="font-black uppercase text-[10px]">RECTANGLE_STD</SelectItem>
-                                        <SelectItem value="Circle" className="font-black uppercase text-[10px]">ROUND_LABEL</SelectItem>
-                                        <SelectItem value="Oval" className="font-black uppercase text-[10px]">OVAL_SEAL</SelectItem>
+                                        <SelectItem value="Rectangle" className="text-sm font-semibold">Rectangle</SelectItem>
+                                        <SelectItem value="Circle" className="text-sm font-semibold">Circle</SelectItem>
+                                        <SelectItem value="Oval" className="text-sm font-semibold">Oval</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -1275,7 +1275,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         <div className={glass.sectionHeader}>
                             <div className="flex items-center gap-2">
                                 <ImageIcon className="w-4 h-4 text-orange-500" />
-                                <h3 className={glass.sectionTitle}>BRAND_UPLOAD</h3>
+                                <h3 className={glass.sectionTitle}>Logo</h3>
                             </div>
                         </div>
                         <div className="p-5">
@@ -1288,7 +1288,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 ) : (
                                     <>
                                         <Upload className="w-6 h-6 text-[#F4D03F]/40 group-hover:text-[#F4D03F] mb-2 transition-colors" />
-                                        <p className="text-[9px] text-gray-400 uppercase font-black tracking-widest">OPTIC_UPLOAD</p>
+                                        <p className="text-sm font-semibold text-gray-500">Upload a logo</p>
                                     </>
                                 )}
                             </div>
@@ -1304,8 +1304,8 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             
                             {design.logoUrl && (
                                 <div className="mt-4 space-y-2">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#F4D03F]">
-                                        <span>OPTIC_SCALE</span>
+                                    <div className="flex justify-between items-center text-sm font-semibold text-[#D4AC0D]">
+                                        <span>Logo size</span>
                                         <span>{(design.logoScale * 100).toFixed(0)}%</span>
                                     </div>
                                     <Slider

@@ -68,6 +68,7 @@ const Receipt = lazy(() => import('@/pages/Receipt'))
 const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
 const Privacy = lazy(() => import('@/pages/Privacy'))
 const Terms = lazy(() => import('@/pages/Terms'))
+const IntegrationCallback = lazy(() => import('@/pages/IntegrationCallback'))
 
 // Pollination Professional Pages
 const PollinationCalcs = lazy(() => import('@/pages/pollination/PollinationCalcs'))
@@ -142,6 +143,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                         <Route path="/login" element={<ShopAuth />} />
                                                         <Route path="/signup" element={<ShopAuth />} />
                                                         <Route path="/beeyield-login" element={<ProfessionalAuth />} />
+                                                        <Route path="/integrations/callback/:platform" element={<IntegrationCallback />} />
                                                         <Route path="/auth/callback" element={<AuthCallback />} />
                                                         <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
                                                         <Route path="/privacy" element={<Privacy />} />

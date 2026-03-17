@@ -1,5 +1,5 @@
 import { supabaseBeeYield } from '@/lib/supabase';
-import { getAuthHeaders, apiGet, apiPost } from './api';
+import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPost } from './api';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -8,6 +8,13 @@ const sb = supabaseBeeYield;
 // ========= LOCAL FALLBACK STORE (when Supabase/backends unavailable) =========
 // This allows core forms to keep working in dev/demo environments.
 type LocalEntity = { id: string; created_at?: string; updated_at?: string };
+
+/**
+ * MOCK/FALLBACK DISABLED
+ * The product requirement is: no mock/demo/local fallback data.
+ * Keep helper functions for minimal diff, but make them no-ops.
+ */
+const DISABLE_LOCAL_FALLBACK = true;
 
 const LS_KEYS = {
     apiaries: 'beeyield_local_apiaries_v1',
@@ -28,6 +35,7 @@ function _uuid() {
 }
 
 function _lsRead<T>(key: string, fallback: T): T {
+    if (DISABLE_LOCAL_FALLBACK) return fallback;
     try {
         const raw = globalThis.localStorage?.getItem(key);
         if (!raw) return fallback;
@@ -38,6 +46,7 @@ function _lsRead<T>(key: string, fallback: T): T {
 }
 
 function _lsWrite<T>(key: string, value: T) {
+    if (DISABLE_LOCAL_FALLBACK) return;
     try {
         globalThis.localStorage?.setItem(key, JSON.stringify(value));
     } catch {
@@ -46,6 +55,7 @@ function _lsWrite<T>(key: string, value: T) {
 }
 
 function _lsUpsert<T extends LocalEntity>(key: string, row: T): T {
+    if (DISABLE_LOCAL_FALLBACK) return row;
     const list = _lsRead<T[]>(key, []);
     const idx = list.findIndex((x) => x.id === row.id);
     const next = { ...row, updated_at: _nowIso() } as T;
@@ -56,6 +66,7 @@ function _lsUpsert<T extends LocalEntity>(key: string, row: T): T {
 }
 
 function _lsDelete(key: string, id: string) {
+    if (DISABLE_LOCAL_FALLBACK) return;
     const list = _lsRead<any[]>(key, []);
     _lsWrite(key, list.filter((x) => x?.id !== id));
 }
@@ -129,6 +140,25 @@ export interface IoTDeviceCreateInput {
     apiary_id?: string;
     linked_apiary_id?: string;
     hive_id?: string;
+}
+
+export type IoTDeviceUpdateInput = Partial<IoTDeviceCreateInput> & {
+    status?: 'active' | 'inactive';
+    battery_level?: number;
+    firmware_version?: string;
+    last_ping?: string;
+};
+
+export type DeviceAuditAction = 'created' | 'updated' | 'deleted';
+
+export interface DeviceAuditLog {
+    id: string;
+    device_id: string;
+    action: DeviceAuditAction;
+    user_id?: string;
+    user_email?: string;
+    changes?: any;
+    created_at: string;
 }
 
 // ========== POLLINATION TYPES ==========
@@ -229,6 +259,7 @@ export interface GeneratedReport {
     status: 'pending' | 'processing' | 'completed' | 'failed';
     file_format: string;
     file_url?: string;
+    file_name?: string;
     parameters?: any;
     created_at: string;
 }
@@ -655,6 +686,13 @@ export const beeyieldService = {
         return (data || []) as any;
     },
 
+    async getDeviceById(id: string): Promise<IoTDevice | null> {
+        if (!sb) return null;
+        const { data, error } = await sb.from('devices').select('*').eq('id', id).maybeSingle();
+        if (error) { console.error('getDeviceById:', error); return null; }
+        return (data || null) as any;
+    },
+
     // ========== INTEGRATIONS ==========
     async getIntegrationConfigs(): Promise<any[]> {
         if (!sb) return [];
@@ -678,6 +716,27 @@ export const beeyieldService = {
         return data;
     },
 
+    // ========== OAUTH INTEGRATIONS (QuickBooks / Shopify) ==========
+    async getQuickBooksAuthorizeUrl(): Promise<{ url: string; state: string }> {
+        const headers = await getAuthHeaders();
+        return apiGet<{ url: string; state: string }>('/integrations/quickbooks/authorize-url', undefined, { headers });
+    },
+
+    async completeQuickBooksOAuth(input: { code: string; realmId?: string | null; state: string }): Promise<{ success: boolean }> {
+        const headers = await getAuthHeaders();
+        return apiPost<{ success: boolean }>('/integrations/quickbooks/complete', input, { headers });
+    },
+
+    async getShopifyAuthorizeUrl(shop: string): Promise<{ url: string; state: string }> {
+        const headers = await getAuthHeaders();
+        return apiGet<{ url: string; state: string }>('/integrations/shopify/authorize-url', { shop }, { headers });
+    },
+
+    async completeShopifyOAuth(input: { query: string }): Promise<{ success: boolean }> {
+        const headers = await getAuthHeaders();
+        return apiPost<{ success: boolean }>('/integrations/shopify/complete', input, { headers });
+    },
+
     async getGateways(): Promise<any[]> {
         if (!sb) return [];
         const { data, error } = await sb.from('telemetry_gateways').select('*').order('last_ping', { ascending: false });
@@ -691,6 +750,73 @@ export const beeyieldService = {
         if (error) { console.error('createDevice:', error); toast.error('Failed to link device'); return { data: null, error }; }
         toast.success('Device linked successfully!');
         return { data: data as any, error: null };
+    },
+
+    async updateDevice(id: string, patch: IoTDeviceUpdateInput): Promise<{ data: IoTDevice | null; error: any }> {
+        if (!sb) return { data: null, error: 'No client' };
+        const clean: any = { ...patch };
+        // Avoid accidental empty strings for nullable foreign keys
+        if (clean.hive_id === '') clean.hive_id = null;
+        if (clean.apiary_id === '') clean.apiary_id = null;
+        if (clean.linked_apiary_id === '') clean.linked_apiary_id = null;
+
+        const { data, error } = await sb.from('devices').update(clean).eq('id', id).select().single();
+        if (error) { console.error('updateDevice:', error); toast.error('Failed to update device'); return { data: null, error }; }
+        toast.success('Device updated');
+        return { data: data as any, error: null };
+    },
+
+    async deleteDevice(id: string): Promise<{ success: boolean; error: any }> {
+        if (!sb) return { success: false, error: 'No client' };
+        const { error } = await sb.from('devices').delete().eq('id', id);
+        if (error) { console.error('deleteDevice:', error); toast.error('Failed to delete device'); return { success: false, error }; }
+        toast.success('Device deleted');
+        return { success: true, error: null };
+    },
+
+    // ========== DEVICE AUDIT LOGS ==========
+    async getDeviceAuditLogs(deviceId: string, limit: number = 50): Promise<DeviceAuditLog[]> {
+        if (!sb) return [];
+        try {
+            const { data, error } = await sb
+                .from('device_audit_logs')
+                .select('*')
+                .eq('device_id', deviceId)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            if (error) {
+                // Table may not exist in some deployments; fail gracefully.
+                console.warn('getDeviceAuditLogs:', error);
+                return [];
+            }
+            return (data || []) as any;
+        } catch (e) {
+            console.warn('getDeviceAuditLogs error:', e);
+            return [];
+        }
+    },
+
+    async logDeviceAuditEvent(input: { device_id: string; action: DeviceAuditAction; changes?: any }): Promise<void> {
+        if (!sb) return;
+        try {
+            const { data: auth } = await sb.auth.getUser();
+            const user = auth?.user;
+            const payload: any = {
+                device_id: input.device_id,
+                action: input.action,
+                changes: input.changes ?? null,
+                created_at: new Date().toISOString(),
+                user_id: user?.id || null,
+                user_email: user?.email || null,
+            };
+            const { error } = await sb.from('device_audit_logs').insert(payload);
+            if (error) {
+                // Fail silently if audit log isn't configured yet.
+                console.warn('logDeviceAuditEvent:', error);
+            }
+        } catch (e) {
+            console.warn('logDeviceAuditEvent error:', e);
+        }
     },
 
     async getDevicesByType(type: 'infield' | 'inland' | 'disease'): Promise<IoTDevice[]> {
@@ -707,13 +833,25 @@ export const beeyieldService = {
         return (data || []) as any;
     },
 
+    subscribeToDeviceReadings(deviceId: string, callback: (payload: any) => void) {
+        if (!sb) return null;
+        return sb
+            .channel(`device-readings-${deviceId}`)
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sensor_readings', filter: `device_id=eq.${deviceId}` }, callback)
+            .subscribe();
+    },
+
     async getReadings(hiveId: string, limit?: number): Promise<SensorReading[]> {
-        if (!sb) return [];
-        let query = sb.from('sensor_readings').select('*').eq('hive_id', hiveId).order('recorded_at', { ascending: false });
-        if (limit) query = query.limit(limit);
-        const { data, error } = await query;
-        if (error) { console.error('getReadings:', error); return []; }
-        return (data || []) as any;
+        try {
+            const headers = await getAuthHeaders();
+            const params = new URLSearchParams();
+            params.set('hive_id', hiveId);
+            if (limit) params.set('limit', String(limit));
+            return await apiGet<SensorReading[]>(`/beeyield/readings?${params.toString()}`, {}, { headers });
+        } catch (error) {
+            console.error('getReadings:', error);
+            return [];
+        }
     },
 
     async getLatestReadings(): Promise<{ infield: SensorReading | null; inland: SensorReading | null; disease: SensorReading | null }> {
@@ -1070,6 +1208,16 @@ export const beeyieldService = {
 
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
         try {
+            if (!input.apiary_id) {
+                const error = new Error("Missing apiary_id for harvest creation");
+                toast.error('Please select an apiary.');
+                return { data: null, error };
+            }
+            if (!input.hive_id) {
+                const error = new Error("Missing hive_id for harvest creation");
+                toast.error('Please select a hive.');
+                return { data: null, error };
+            }
             const headers = await getAuthHeaders();
             // Backend validates hive belongs to apiary and enriches response with hive/apiary/farmer.
             const payload = {
@@ -1085,36 +1233,18 @@ export const beeyieldService = {
                 batch_code: input.batch_code,
                 weather_conditions: input.weather_conditions,
                 moisture_content_percent: input.moisture_content_percent,
-                // Accept either nectar_source/florage_type from legacy UIs
-                notes: undefined,
+                florage_type: input.florage_type,
+                notes: input.notes,
                 is_verified: input.is_verified,
             };
 
             const data = await apiPost<Harvest>('/beeyield/harvests', payload as any, { headers });
-            toast.success('Harvest saved!');
             return { data, error: null };
         } catch (error) {
             console.error('createHarvest:', error);
-            // Fallback: persist locally so forms keep working even if backend/Supabase is down.
-            const local: Harvest = {
-                id: _uuid(),
-                hive_id: input.hive_id || null,
-                harvest_date: input.harvest_date,
-                quantity_kg: input.quantity_kg,
-                extraction_method: input.extraction_method,
-                nectar_source: input.nectar_source,
-                weather_conditions: input.weather_conditions,
-                moisture_content_percent: input.moisture_content_percent,
-                batch_code: input.batch_code || `LOCAL-${new Date().getFullYear()}-${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}`,
-                honey_type: input.honey_type,
-                color_grade: input.color_grade,
-                is_verified: input.is_verified ?? true,
-                created_at: _nowIso(),
-                updated_at: _nowIso(),
-            } as any;
-            _lsUpsert<Harvest>(LS_KEYS.harvests, local);
-            toast.success('Harvest saved (local fallback)');
-            return { data: local, error: null };
+            // Do not silently fall back to local storage for financial/traceability records.
+            // If persistence fails, surface the error so the UI can notify the user.
+            return { data: null, error };
         }
 
         // F5: Activity Log
@@ -1436,10 +1566,13 @@ export const beeyieldService = {
 
     // ========== REPORTS ==========
     async getGeneratedReports(): Promise<GeneratedReport[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('generated_reports').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getGeneratedReports:', error); return []; }
-        return (data || []) as GeneratedReport[];
+        try {
+            // Prefer canonical Reports Engine prefix; backend also aliases this under /beeyield/reports.
+            return await apiGet<GeneratedReport[]>("/reports");
+        } catch (error) {
+            console.error("getGeneratedReports:", error);
+            return [];
+        }
     },
 
     // ========== ACTIVITY LOGS ==========
@@ -1581,46 +1714,136 @@ export const beeyieldService = {
     },
 
     async generateReport(input: ReportCreateInput): Promise<{ data: GeneratedReport | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        try {
+            const parameters = input.parameters || {};
+            const resp = await apiPost<{ job_id: string; status: string }>("/reports/generate", {
+                type: input.report_type,
+                parameters,
+                file_format: input.file_format || "PDF",
+            });
 
-        // Call Edge Function for heavy aggregation
-        const { data: funcData, error: funcError } = await sb.functions.invoke('generate-season-report', {
-            body: {
-                hive_id: input.parameters?.hive_id,
-                start_date: input.parameters?.start_date || new Date(Date.now() - 90 * 86400000).toISOString(),
-                end_date: input.parameters?.end_date || new Date().toISOString()
-            }
-        });
+            const placeholder: GeneratedReport = {
+                id: resp.job_id,
+                user_id: (input as any).user_id ?? "unknown",
+                report_type: input.report_type,
+                parameters,
+                file_format: input.file_format || "PDF",
+                status: (resp.status || "pending") as any,
+                file_url: undefined,
+                file_name: undefined,
+                created_at: new Date().toISOString(),
+            };
 
-        if (funcError) {
-            console.error('generateReport function error:', funcError);
-            // Fallback: direct insert if function is unavailable
-            const { data, error } = await sb.from('generated_reports').insert({ ...input, status: 'completed' }).select().single();
-            return { data: data as GeneratedReport, error };
+            return { data: placeholder, error: null };
+        } catch (error) {
+            console.error("generateReport:", error);
+            return { data: null, error };
         }
+    },
 
-        return { data: funcData as GeneratedReport, error: null };
+    async getReportStatus(jobId: string): Promise<GeneratedReport | null> {
+        try {
+            const resp = await apiGet<{
+                job_id: string;
+                status: GeneratedReport["status"];
+                file_url?: string | null;
+                file_name?: string | null;
+                report_type?: string;
+                created_at?: string;
+            }>(`/reports/status/${jobId}`);
+
+            return {
+                id: resp.job_id,
+                user_id: "unknown",
+                report_type: resp.report_type || "unknown",
+                status: resp.status || "pending",
+                file_format: "PDF",
+                file_url: resp.file_url || undefined,
+                file_name: resp.file_name || undefined,
+                created_at: resp.created_at || new Date().toISOString(),
+            };
+        } catch (error) {
+            console.error("getReportStatus:", error);
+            return null;
+        }
+    },
+
+    async waitForReport(jobId: string, opts?: { timeoutMs?: number; pollMs?: number }): Promise<GeneratedReport | null> {
+        const timeoutMs = opts?.timeoutMs ?? 120_000;
+        const pollMs = opts?.pollMs ?? 1500;
+        const started = Date.now();
+
+        while (Date.now() - started < timeoutMs) {
+            const status = await this.getReportStatus(jobId);
+            if (!status) return null;
+            if (status.status === 'completed' || status.status === 'failed') return status;
+            await new Promise((r) => setTimeout(r, pollMs));
+        }
+        return await this.getReportStatus(jobId);
+    },
+
+    async downloadReport(report: Pick<GeneratedReport, 'file_url' | 'file_name'>): Promise<{ ok: boolean; error?: any }> {
+        try {
+            if (report.file_url) {
+                globalThis.open(report.file_url, '_blank', 'noopener,noreferrer');
+                return { ok: true };
+            }
+
+            if (!report.file_name) {
+                throw new Error('Report file not available yet.');
+            }
+
+            const authHeaders = await getAuthHeaders();
+            const base = getBaseUrl('/reports');
+            const url = `${base}/reports/download/${encodeURIComponent(report.file_name)}`;
+
+            const res = await fetch(url, { method: 'GET', headers: { ...authHeaders } });
+            if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
+            const blob = await res.blob();
+
+            const objUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = objUrl;
+            a.download = report.file_name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(objUrl);
+
+            return { ok: true };
+        } catch (error) {
+            console.error('downloadReport:', error);
+            return { ok: false, error };
+        }
     },
 
     async getScheduledReports(): Promise<ScheduledReport[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('scheduled_reports').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getScheduledReports:', error); return []; }
-        return (data || []) as ScheduledReport[];
+        try {
+            return await apiGet<ScheduledReport[]>("/reports/scheduled");
+        } catch (error) {
+            console.error("getScheduledReports:", error);
+            return [];
+        }
     },
 
     async createScheduledReport(input: ScheduledReportCreateInput): Promise<{ data: ScheduledReport | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('scheduled_reports').insert(input).select().single();
-        if (error) { console.error('createScheduledReport:', error); return { data: null, error }; }
-        return { data: data as ScheduledReport, error: null };
+        try {
+            const data = await apiPost<ScheduledReport>("/reports/scheduled", input);
+            return { data, error: null };
+        } catch (error) {
+            console.error("createScheduledReport:", error);
+            return { data: null, error };
+        }
     },
 
     async deleteScheduledReport(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
-        const { error } = await sb.from('scheduled_reports').delete().eq('id', id);
-        if (error) { console.error('deleteScheduledReport:', error); return { error }; }
-        return { error: null };
+        try {
+            await apiDelete<void>(`/reports/scheduled/${id}`);
+            return { error: null };
+        } catch (error) {
+            console.error("deleteScheduledReport:", error);
+            return { error };
+        }
     },
 
     // ========== ACOUSTIC READINGS (Sound Analysis) ==========
@@ -2306,7 +2529,15 @@ export const beeyieldService = {
     // ========== NOTES ==========
     async getNotes(): Promise<Note[]> {
         if (!sb) return _lsRead<Note[]>(LS_KEYS.notes, []);
-        const { data, error } = await sb.from('notes').select('*').order('created_at', { ascending: false });
+        const { data: { user } } = await sb.auth.getUser();
+        // If not authenticated, return empty to avoid leaking cross-user notes in shared environments.
+        if (!user) return [];
+
+        const { data, error } = await sb
+            .from('notes')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
         if (error) { console.error('getNotes:', error); return []; }
         return (data || []) as Note[];
     },
@@ -2330,7 +2561,18 @@ export const beeyieldService = {
             toast.success('Note added (local)');
             return { data: local, error: null };
         }
-        const { data, error } = await sb.from('notes').insert(input).select().single();
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) {
+            const err = 'Not authenticated';
+            toast.error(err);
+            return { data: null, error: err };
+        }
+
+        const { data, error } = await sb
+            .from('notes')
+            .insert({ ...input, user_id: user.id })
+            .select()
+            .single();
         if (error) { console.error('createNote:', error); toast.error('Failed to create note'); return { data: null, error }; }
         toast.success('Note added successfully');
         return { data: data as Note, error: null };
@@ -2338,7 +2580,16 @@ export const beeyieldService = {
 
     async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
         if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('notes').update(updates).eq('id', id).select().single();
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return { data: null, error: 'Not authenticated' };
+
+        const { data, error } = await sb
+            .from('notes')
+            .update(updates)
+            .eq('id', id)
+            .eq('user_id', user.id)
+            .select()
+            .single();
         if (error) { console.error('updateNote:', error); toast.error('Failed to update note'); return { data: null, error }; }
             toast.success('Note updated');
         return { data: data as Note, error: null };
@@ -2346,7 +2597,10 @@ export const beeyieldService = {
 
     async deleteNote(id: string): Promise<{ error: any }> {
         if (!sb) return { error: 'No client' };
-        const { error } = await sb.from('notes').delete().eq('id', id);
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return { error: 'Not authenticated' };
+
+        const { error } = await sb.from('notes').delete().eq('id', id).eq('user_id', user.id);
         if (error) { console.error('deleteNote:', error); toast.error('Failed to delete note'); return { error }; }
         toast.success('Note deleted');
             return { error: null };

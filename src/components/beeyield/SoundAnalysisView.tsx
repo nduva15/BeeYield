@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Label as UiLabel } from '@/components/ui/label';
+import beeyieldService, { Hive } from '@/services/beeyieldService';
 
 interface SoundAnalysisViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -16,31 +17,119 @@ interface SoundAnalysisViewProps {
 const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) => {
     const [recording, setRecording] = React.useState(false);
     const [analyzing, setAnalyzing] = React.useState(false);
-    const [result, setResult] = React.useState<null | 'Healthy' | 'Warning'>(null);
+    const [result, setResult] = React.useState<null | { label: 'Healthy' | 'Warning'; confidence?: number }>(null);
     const [progress, setProgress] = React.useState(0);
 
-    const handleRecord = () => {
-        setRecording(true);
-        setTimeout(() => {
-            setRecording(false);
-            handleAnalyze();
-        }, 3000);
-    };
+    const [hives, setHives] = React.useState<Hive[]>([]);
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
+    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+    const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
 
-    const handleAnalyze = () => {
-        setAnalyzing(true);
-        setProgress(0);
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setResult(Math.random() > 0.3 ? 'Healthy' : 'Warning');
+    React.useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            try {
+                const data = await beeyieldService.getHives();
+                if (!mounted) return;
+                setHives(data || []);
+                if (!selectedHiveId && (data || []).length > 0) setSelectedHiveId(data[0].id);
+            } catch {
+                // ignore (view remains usable without hive binding)
+            }
+        };
+        load();
+        return () => {
+            mounted = false;
+            try {
+                mediaRecorderRef.current?.stop();
+            } catch {
+                // ignore
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const analyzeFile = React.useCallback(
+        async (file: File) => {
+            if (analyzing) return;
+            setResult(null);
+            setAnalyzing(true);
+            setProgress(10);
+            const tick = globalThis.setInterval(() => {
+                setProgress((p) => (p >= 92 ? 92 : p + Math.random() * 8));
+            }, 250);
+
+            const tid = toast.loading('Analyzing audio…');
+            try {
+                const resp = await beeyieldService.analyzeHiveAudio({
+                    file,
+                    hiveId: selectedHiveId || undefined,
+                });
+
+                const prediction = String(resp?.prediction || resp?.label || '').toLowerCase();
+                const probability = typeof resp?.probability === 'number' ? resp.probability : undefined;
+                const label: 'Healthy' | 'Warning' =
+                    prediction.includes('healthy') || prediction.includes('normal') ? 'Healthy' : 'Warning';
+
+                setResult({ label, confidence: probability });
+                toast.success('Analysis complete', { id: tid });
+            } catch (e: any) {
+                console.error(e);
+                toast.error(e?.message || 'Analysis failed', { id: tid });
+            } finally {
+                globalThis.clearInterval(tick);
+                setProgress(100);
+                setTimeout(() => {
                     setAnalyzing(false);
-                    return 100;
+                    setProgress(0);
+                }, 400);
+            }
+        },
+        [analyzing, selectedHiveId]
+    );
+
+    const handleRecord = async () => {
+        if (recording || analyzing) return;
+
+        try {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                toast.error('Recording not supported in this browser.');
+                return;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = recorder;
+            const chunks: BlobPart[] = [];
+
+            recorder.ondataavailable = (evt) => {
+                if (evt.data && evt.data.size > 0) chunks.push(evt.data);
+            };
+
+            recorder.onstop = async () => {
+                stream.getTracks().forEach((t) => t.stop());
+                const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+                const ext = (recorder.mimeType || '').includes('ogg') ? 'ogg' : 'webm';
+                const file = new File([blob], `beeyield-audio-${Date.now()}.${ext}`, { type: blob.type });
+                await analyzeFile(file);
+            };
+
+            setRecording(true);
+            recorder.start();
+            setTimeout(() => {
+                try {
+                    recorder.stop();
+                } catch {
+                    // ignore
+                } finally {
+                    setRecording(false);
                 }
-                return prev + 10;
-            });
-        }, 200);
+            }, 3000);
+        } catch (e) {
+            console.error(e);
+            toast.error('Could not access microphone.');
+            setRecording(false);
+        }
     };
 
     return (
@@ -71,6 +160,27 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <h3 className={glass.sectionTitle}>Audio sensor</h3>
                         </div>
 
+                        <div className="space-y-2">
+                            <UiLabel className={cn(glass.microLabel, "opacity-60")}>Hive (optional)</UiLabel>
+                            <select
+                                value={selectedHiveId}
+                                onChange={(e) => setSelectedHiveId(e.target.value)}
+                                className={cn(
+                                    "w-full h-10 rounded-xl border border-white/30 bg-white/40 px-3 text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1A] outline-none",
+                                    (hives || []).length === 0 && "opacity-60"
+                                )}
+                                aria-label="Select hive for analysis"
+                                title="Select hive for analysis"
+                            >
+                                <option value="">No hive selected</option>
+                                {hives.map((h) => (
+                                    <option key={h.id} value={h.id}>
+                                        {(h.hive_code || h.id).toUpperCase()}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="flex flex-col gap-2">
                             <p className={glass.microLabel}>
                                 Record hive audio for analysis. Aim for at least 3 seconds.
@@ -94,7 +204,22 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 {recording ? <Square className="fill-current w-3 h-3" /> : <Mic2 className="w-3 h-3 shrink-0" />}
                                 {recording ? "Recording..." : "Start recording"}
                             </button>
-                            <button className={cn(glass.btnSecondary, "h-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="audio/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const f = e.target.files?.[0];
+                                    if (f) analyzeFile(f);
+                                    if (fileInputRef.current) fileInputRef.current.value = '';
+                                }}
+                            />
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={analyzing || recording}
+                                className={cn(glass.btnSecondary, "h-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}
+                            >
                                 <Upload className="w-3.5 h-3.5" /> 
                                 <span>Upload audio</span>
                             </button>
@@ -137,28 +262,35 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 animate={{ opacity: 1, y: 0 }}
                                 className={cn(
                                     glass.card, "p-5 flex flex-col gap-4 backdrop-blur-xl relative overflow-hidden",
-                                    result === 'Healthy' ? "border-[#1B9157]/20 bg-[#1B9157]/5 shadow-[#1B9157]/10" : "border-red-500/30 bg-red-500/5 shadow-red-500/10"
+                                    result.label === 'Healthy' ? "border-[#1B9157]/20 bg-[#1B9157]/5 shadow-[#1B9157]/10" : "border-red-500/30 bg-red-500/5 shadow-red-500/10"
                                 )}
                             >
-                                <div className={cn("absolute inset-0 opacity-[0.03] blur-xl", result === 'Healthy' ? "bg-[#1B9157]" : "bg-red-500")} />
+                                <div className={cn("absolute inset-0 opacity-[0.03] blur-xl", result.label === 'Healthy' ? "bg-[#1B9157]" : "bg-red-500")} />
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className={cn(
                                             "w-10 h-10 rounded-lg flex items-center justify-center shadow-sm",
-                                            result === 'Healthy' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-500/10 text-red-500"
+                                            result.label === 'Healthy' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-500/10 text-red-500"
                                         )}>
-                                            {result === 'Healthy' ? <ShieldCheck className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                                            {result.label === 'Healthy' ? <ShieldCheck className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
                                         </div>
-                                        <h4 className={cn(glass.sectionTitle, "text-xl tracking-tight uppercase", result === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
-                                            {result}
+                                        <h4 className={cn(glass.sectionTitle, "text-xl tracking-tight uppercase", result.label === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
+                                            {result.label}
                                         </h4>
                                     </div>
                                     <div className={cn(glass.badge, "border-none bg-white/20", result === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
-                                        {result === 'Healthy' ? "OPTIMAL" : "CRITICAL"}
+                                        {result.label === 'Healthy' ? "OPTIMAL" : "CRITICAL"}
                                     </div>
                                 </div>
                                 <p className={cn(glass.microLabel, "relative z-10 border-t border-[#F4D03F]/10 pt-4 mt-1 text-gray-500")}>
-                                    {result === 'Healthy' ? "Acoustic signature optimal. No anomalies detected in signal path." : "Frequency variance detected. Immediate field audit recommended."}
+                                    {result.label === 'Healthy'
+                                        ? "Acoustic signature optimal. No anomalies detected in signal path."
+                                        : "Frequency variance detected. Immediate field audit recommended."}
+                                    {typeof result.confidence === 'number' && (
+                                        <span className="ml-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                            CONF {(result.confidence * 100).toFixed(1)}%
+                                        </span>
+                                    )}
                                 </p>
                             </motion.div>
                         )}

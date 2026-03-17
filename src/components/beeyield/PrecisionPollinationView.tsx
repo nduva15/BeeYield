@@ -33,12 +33,14 @@ import {
     CheckCircle2,
     Clock,
 } from 'lucide-react';
-import { beeyieldService, IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { beeyieldService, Apiary, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { jsPDF } from 'jspdf';
 
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle } from 'react-leaflet';
 import L from 'leaflet';
@@ -271,20 +273,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     ];
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "relative overflow-hidden")}
-        >
+        <BeeYieldPageShell className="relative overflow-hidden">
             {/* Background Accents */}
             <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#1B9157]/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute -left-20 top-1/2 w-64 h-64 bg-[#F4D03F]/5 blur-[100px] rounded-full pointer-events-none" />
 
-            <PageHeader
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 relative z-10">
+            <BeeYieldPageHeader
                 icon={Target}
-                label="Tactical Kernel"
+                label="Field tools"
                 title="Precision Pollination"
-                subtitle="Orchestrating field-density optimization protocols."
+                subtitle="Plan placement and estimate coverage."
                 actions={
                     !activeSubPageOverride && (
                         <div className="flex bg-[#1B9157]/[0.05] p-1 rounded-xl border border-[#1B9157]/10 gap-1 overflow-x-auto custom-scrollbar shadow-sm">
@@ -325,7 +324,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 <div className="space-y-4 relative z-10">
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                        <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#1B9157]">KERNEL_SYNC_ACTIVE</span>
+                                        <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#1B9157]">LIVE UPDATES</span>
                                     </div>
                                     <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">Fleet <span className="text-[#1B9157]">Optimizer</span></h2>
                                     <p className="text-[10px] font-black text-gray-500 leading-relaxed max-w-xl border-l-2 border-[#1B9157]/10 pl-4 uppercase tracking-tighter">
@@ -606,7 +605,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                              <div className="flex items-center justify-between border-b border-[#1B9157]/5 pb-6">
                                 <div className="space-y-1">
                                     <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter uppercase">Deployment_Inventory</h3>
-                                    <p className="text-[9px] font-black text-[#1B9157]/40 uppercase tracking-[0.2em]">Hardware node allocation matrix</p>
+                                    <p className="text-[9px] font-black text-[#1B9157]/40 uppercase tracking-[0.2em]">Hardware allocation</p>
                                 </div>
                                 <button onClick={() => setCalcInputs(p => ({ ...p, hives: [...p.hives, { frameCount: 8, isStrong: true, isLarge: false }] }))} className={cn(glass.btnSecondary, "h-9 px-5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 border-[#1B9157]/10")}>
                                     <Plus className="w-3.5 h-3.5" /> Initialize_Unit
@@ -752,7 +751,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #D1D5DB; }
             `}</style>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

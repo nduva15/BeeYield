@@ -57,6 +57,13 @@ const SettingsIntegrationsView: React.FC = () => {
         setLoading(false);
         if (res) {
             toast.success('KRA eTIMS Compliance Hub Activated');
+            // After saving required details, take the user to eTIMS to sign in/sign up.
+            // This is the official entry point for onboarding/credentials management.
+            try {
+                window.open('https://etims.kra.go.ke/', '_blank', 'noopener,noreferrer');
+            } catch {
+                // ignore (popup blockers)
+            }
             fetchConfigs();
         }
     };
