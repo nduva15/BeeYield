@@ -973,16 +973,25 @@ export const beeyieldService = {
             if (filters?.year) list = list.filter((h) => new Date(h.harvest_date).getFullYear() === filters.year);
             return list;
         }
-        let query = sb.from('harvests').select('*, hive:hives(id, hive_code), farmer:farmers(id, name)').order('date', { ascending: false });
+        // Backend writes `harvest_date` (not legacy `date`).
+        let query = sb
+            .from('harvests')
+            .select('*, hive:hives(id, hive_code), farmer:farmers(id, name), apiary:apiaries(id, name)')
+            .order('harvest_date', { ascending: false });
         if (filters?.hive_id) query = query.eq('hive_id', filters.hive_id);
         if (filters?.year) {
             const start = `${filters.year}-01-01`;
             const end = `${filters.year}-12-31`;
-            query = query.gte('date', start).lte('date', end);
+            query = query.gte('harvest_date', start).lte('harvest_date', end);
         }
         const { data, error } = await query;
         if (error) { console.error('getHarvests:', error); return []; }
-        return (data || []).map((h: any) => ({ ...h, harvest_date: h.date, quantity_kg: h.quantity_kg })) as Harvest[];
+        return (data || []).map((h: any) => ({
+            ...h,
+            // Keep compatibility if some old rows used `date`
+            harvest_date: h.harvest_date || h.date,
+            quantity_kg: h.quantity_kg,
+        })) as Harvest[];
     },
 
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
