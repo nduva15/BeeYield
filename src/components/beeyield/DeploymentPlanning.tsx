@@ -71,9 +71,9 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
         >
             <PageHeader
                 icon={Crosshair}
-                label="Geospatial Node"
+                label="Map"
                 title={<>Field <span className="text-[#1B9157]">Planner</span></>}
-                subtitle="Interactive geospatial deployment protocols for precision apiary logistics."
+                subtitle="Plan placements on a map."
                 actions={
                     <div className="flex items-center gap-3">
                         <div className="flex flex-col items-end px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-lg shadow-sm">
@@ -101,13 +101,15 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                 <Info className="w-5 h-5 text-gray-400" />
                             </div>
                             <p className="text-xs font-medium text-gray-500 leading-relaxed uppercase tracking-tighter sm:tracking-normal">
-                                Click grid to initialize units. <br /> Drag units to optimize geospatial flow.
+                                Click the grid to add units. <br /> Drag to adjust placement.
                             </p>
                         </div>
                         <div className="flex gap-2 w-full sm:w-auto">
                             <button
                                 onClick={() => setPallets([])}
                                 className={cn(glass.btnSecondary, "w-10 h-10 p-0 flex items-center justify-center bg-white")}
+                                aria-label="Reset"
+                                title="Reset"
                             >
                                 <RotateCcw className="w-4 h-4" />
                             </button>
@@ -197,8 +199,8 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                         </div>
                         <div className="space-y-3">
                             {[
-                                { title: 'Tilt Detected: Sector A4', desc: 'Acoustic spike at node 04. Ground verification required.' },
-                                { title: 'GPS Drift: Unit WAT-12', desc: 'Perimeter breach detected. Theft protocol initialized.' }
+                                { title: 'Tilt Detected: Sector A4', desc: 'Acoustic spike at sensor 04. Ground check recommended.' },
+                                { title: 'GPS Drift: Unit WAT-12', desc: 'Perimeter breach detected. Theft alert sent.' }
                             ].map((alert, i) => (
                                 <div key={i} className="flex gap-3 p-3 bg-red-50/50 rounded-xl border border-dotted border-red-200 group">
                                     <div className="w-2 h-2 rounded-full bg-red-500 mt-1 shrink-0 animate-pulse" />

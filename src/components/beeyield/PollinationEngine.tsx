@@ -60,8 +60,8 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; isPre
 };
 
 const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) => {
-    const [schemeA, setSchemeA] = React.useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Standard Protocol' });
-    const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Optimized Protocol' });
+    const [schemeA, setSchemeA] = React.useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Standard plan' });
+    const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Optimized plan' });
     const [isSaving, setIsSaving] = React.useState(false);
     const [crops, setCrops] = React.useState<any[]>([]);
     const [selectedCrop, setSelectedCrop] = React.useState('Almond');
@@ -308,7 +308,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                         <div>
                             <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#1B9157]/10 rounded-lg border border-[#1B9157]/20 mb-2">
                                 <Sparkles className="w-3.5 h-3.5 text-[#1B9157]" />
-                                <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-widest">Protocol Analysis</span>
+                                <span className="text-sm font-semibold text-[#1B9157]">Plan comparison</span>
                             </div>
                             <h3 className="text-xl font-bold text-[#1A1A1A]">Efficiency Projection</h3>
                         </div>

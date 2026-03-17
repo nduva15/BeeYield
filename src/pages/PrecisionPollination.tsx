@@ -21,7 +21,7 @@ const PrecisionPollination = () => {
   const [isProfessionalOpen, setIsProfessionalOpen] = useState(false);
 
   const professionalTools = [
-    { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard', description: 'Real-time node monitoring' },
+    { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard', description: 'Live device monitoring' },
     { label: 'Pollination Calcs', icon: Calculator, path: '/precision-pollination/calcs', description: 'Yield & FPA analysis' },
     { label: 'Flight Mapping', icon: Navigation, path: '/precision-pollination/map', description: 'Geospatial movement' },
     { label: 'Site Reports', icon: FileBarChart, path: '/precision-pollination/reports', description: 'Audit & compliance' }
