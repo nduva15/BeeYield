@@ -694,26 +694,31 @@ export const beeyieldService = {
     },
 
     // ========== INTEGRATIONS ==========
+    // IMPORTANT: Integrations must work even when the "BeeYield" Supabase client lacks a session.
+    // We therefore route reads/writes through FastAPI, authenticated via getAuthHeaders().
     async getIntegrationConfigs(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('integration_settings').select('*');
-        if (error) { console.error('getIntegrationConfigs:', error); return []; }
-        return data || [];
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any[]>('/integrations/configs', undefined, { headers });
+        } catch (e) {
+            console.error('getIntegrationConfigs:', e);
+            return [];
+        }
     },
 
     async upsertIntegrationConfig(config: { platform: string; is_active: boolean; store_url?: string; kra_pin?: string; branch_code?: string; device_serial?: string; access_token?: string; config_json?: any }): Promise<any> {
-        if (!sb) return null;
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return null;
-
-        const { data, error } = await sb.from('integration_settings').upsert({
-            user_id: user.id,
-            ...config,
-            updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id, platform' }).select().single();
-
-        if (error) { console.error('upsertIntegrationConfig:', error); return null; }
-        return data;
+        try {
+            const headers = await getAuthHeaders();
+            return await apiPost<any>('/integrations/config', {
+                platform: config.platform,
+                is_active: config.is_active,
+                store_url: config.store_url,
+                config_json: config.config_json,
+            }, { headers });
+        } catch (e) {
+            console.error('upsertIntegrationConfig:', e);
+            return null;
+        }
     },
 
     // ========== OAUTH INTEGRATIONS (QuickBooks / Shopify) ==========
@@ -2888,6 +2893,56 @@ export const beeyieldService = {
             p_status: status,
             p_metrics: metrics
         });
+    },
+
+    async getIntegrationAuditLogs(platform: string, limit: number = 25): Promise<any[]> {
+        if (!sb) return [];
+        try {
+            // Primary: if a view/table exists, read it.
+            const { data, error } = await sb
+                .from('integration_audit_logs')
+                .select('*')
+                .eq('platform', platform)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            if (!error) return data || [];
+        } catch {
+            // ignore and fall through to RPC
+        }
+
+        // Fallback: if only RPC exists (log_integration_event), try a paired fetch RPC.
+        try {
+            const { data, error } = await sb.rpc('get_integration_events', {
+                p_platform: platform,
+                p_limit: limit
+            });
+            if (error) return [];
+            return Array.isArray(data) ? data : [];
+        } catch {
+            return [];
+        }
+    },
+
+    async getIntegrationAuditLogs(platform: string, limit = 25): Promise<any[]> {
+        if (!sb) return [];
+        try {
+            // Preferred: read from a table/view that the `log_integration_event` RPC writes into.
+            // If your schema uses a different name, we fall back gracefully to an empty list.
+            const { data, error } = await sb
+                .from('integration_audit_logs')
+                .select('*')
+                .eq('platform', platform)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            if (error) {
+                console.warn('getIntegrationAuditLogs:', error);
+                return [];
+            }
+            return data || [];
+        } catch (e) {
+            console.warn('getIntegrationAuditLogs:', e);
+            return [];
+        }
     },
 
     // ========== FLIGHT & ROUTING (PRD v2) ==========

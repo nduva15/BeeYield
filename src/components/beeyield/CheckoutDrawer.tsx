@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import beeyieldService from '@/services/beeyieldService';
 import { useAuth } from '@/contexts/AuthContext';
+import { jsPDF } from 'jspdf';
 
 interface PaymentMethod {
     id: string;
@@ -44,6 +45,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
     const [step, setStep] = React.useState<'review' | 'payment' | 'processing' | 'success'>('review');
     const [selectedMethod, setSelectedMethod] = React.useState<string>('method_1');
     const [isProcessing, setIsProcessing] = React.useState(false);
+    const [receiptRef, setReceiptRef] = React.useState<string | null>(null);
 
     const paymentMethods: PaymentMethod[] = [
         { id: 'method_1', type: 'mpesa', phone: '254700***123', isDefault: true, provider: 'Safaricom' },
@@ -92,6 +94,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                     if (status.paid) {
                         setStep('success');
                         toast.success("Payment Verified", { description: "Funds secured in vault." });
+                        setReceiptRef(status.transaction_id || idempotencyKey);
                         if (onSuccess) onSuccess(status.transaction_id || 'TXN_SUCCESS');
                         return;
                     }
@@ -290,7 +293,27 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                     {step === 'success' && (
                                         <div className="pt-8 w-full space-y-3">
                                             <button
-                                                onClick={() => toast.info("Generating Paper Trail...", { description: "Rust Invoicing Engine starting up." })}
+                                                onClick={() => {
+                                                    const tid = toast.loading('Preparing receipt…');
+                                                    try {
+                                                        const ref = receiptRef || idempotencyKey;
+                                                        const doc = new jsPDF();
+                                                        doc.setFontSize(18);
+                                                        doc.text('BeeYield Receipt', 14, 18);
+                                                        doc.setFontSize(10);
+                                                        doc.text(`Date: ${new Date().toLocaleString()}`, 14, 28);
+                                                        doc.text(`Reference: ${ref}`, 14, 34);
+                                                        doc.text(`Item: ${item?.name || 'BeeYield Hub'}`, 14, 42);
+                                                        doc.text(`Amount: ${item?.price} ${item?.currency}`, 14, 48);
+                                                        doc.text(`Method: ${currentMethod?.type || 'payment'}`, 14, 54);
+                                                        doc.text('Status: PAID', 14, 62);
+                                                        doc.save(`beeyield-receipt-${String(ref).slice(0, 12)}.pdf`);
+                                                        toast.success('Receipt downloaded', { id: tid });
+                                                    } catch (e) {
+                                                        console.error(e);
+                                                        toast.error('Could not generate receipt', { id: tid });
+                                                    }
+                                                }}
                                                 className="w-full h-14 bg-[#F59E0B] text-[#1A1A1A] font-black uppercase tracking-[0.15em] hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2"
                                             >
                                                 Download Receipt
@@ -302,7 +325,9 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                             >
                                                 Return to Vault
                                             </button>
-                                            <p className="text-[9px] text-gray-400 uppercase tracking-widest font-black">Ref: OX-7729-A12</p>
+                                            <p className="text-[9px] text-gray-400 uppercase tracking-widest font-black">
+                                                Ref: {(receiptRef || idempotencyKey || '—').toString().slice(0, 12).toUpperCase()}
+                                            </p>
                                         </div>
                                     )}
                                 </div>

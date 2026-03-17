@@ -20,6 +20,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import { glass, PageHeader } from './GlassTheme';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const CATEGORIES = [
     { id: 'Hardware', label: 'Hardware', icon: HardDrive, description: 'Sensor issues, battery, physical hive damage', color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -49,6 +51,10 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     // Filter History State
     const [searchQuery, setSearchQuery] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState("All");
+
+    // Details modal state
+    const [selectedRequest, setSelectedRequest] = React.useState<any | null>(null);
+    const [isDetailsOpen, setIsDetailsOpen] = React.useState(false);
 
     const filteredHives = React.useMemo(() => {
         if (!hivesData) return [];
