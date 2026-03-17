@@ -43,6 +43,15 @@ async def get_billing_rates():
     """Get active billing rates for all utility types."""
     return await MeterService.get_billing_rates()
 
+
+@router.post("/billing-rates", response_model=schemas.BillingRate)
+async def create_billing_rate(body: schemas.BillingRateCreate):
+    """Create a new billing rate."""
+    try:
+        return await MeterService.create_billing_rate(body.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.get("/events", response_model=List[schemas.MeterEvent])
 async def get_meter_events(severity: Optional[str] = None, limit: int = 50):
     """Get recent meter events and alarms."""

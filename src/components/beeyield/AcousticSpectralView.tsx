@@ -10,7 +10,8 @@ interface AcousticSpectralViewProps {
 
 const generateSpectralData = () => {
     return Array.from({ length: 40 }, (_, i) => ({
-        energy: Math.sin(i * 0.5) * 20 + 50 + Math.random() * 10,
+        // Placeholder animation only; deterministic (no mock randomness).
+        energy: Math.sin(i * 0.5) * 20 + 55,
     }));
 };
 

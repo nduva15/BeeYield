@@ -505,6 +505,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             <div className="relative">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                                 <input
+                                    id="precision-pollination-search"
+                                    name="search_nodes"
+                                    autoComplete="off"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     placeholder="SEARCH_NODES..."
@@ -606,7 +609,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 </div>
                                 <div className="p-6 space-y-6">
                                     <div className="space-y-3">
-                                        <label className="text-[9px] font-black text-[#1A1A1A]/40 uppercase tracking-[0.3em] ml-1">Total_Deployment_Area (AC)</label>
+                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 uppercase tracking-[0.3em] ml-1">Total_Deployment_Area (AC)</label>
                                         <div className="flex bg-white/40 p-1.5 rounded-xl border border-[#F4D03F]/10 shadow-sm">
                                             <button
                                                 onClick={() => setCalcInputs(p => ({ ...p, totalAcres: Math.max(1, p.totalAcres - 5) }))}
@@ -616,7 +619,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             >
                                                 <Minus className="w-4 h-4" />
                                             </button>
-                                            <div className="flex-1 flex items-center justify-center text-sm font-black text-[#1A1A1A] tabular-nums tracking-tighter">{calcInputs.totalAcres}</div>
+                                            <input
+                                                id="precision-pollination-total-acres"
+                                                name="total_acres"
+                                                autoComplete="off"
+                                                inputMode="numeric"
+                                                value={calcInputs.totalAcres}
+                                                readOnly
+                                                className="flex-1 flex items-center justify-center text-sm font-black text-[#1A1A1A] tabular-nums tracking-tighter bg-transparent text-center outline-none"
+                                                aria-label="Total deployment area in acres"
+                                                title="Total deployment area in acres"
+                                            />
                                             <button
                                                 onClick={() => setCalcInputs(p => ({ ...p, totalAcres: p.totalAcres + 5 }))}
                                                 className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] hover:bg-white rounded-lg transition-all"
@@ -634,6 +647,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#1B9157]/10">
                                             <input
+                                                id="precision-pollination-bloom"
+                                                name="bloom_intensity"
+                                                autoComplete="off"
                                                 type="range"
                                                 min="0.1"
                                                 max="1.0"
@@ -654,6 +670,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#F4D03F]/10">
                                             <input
+                                                id="precision-pollination-forage"
+                                                name="forage_condition"
+                                                autoComplete="off"
                                                 type="range"
                                                 min="0.1"
                                                 max="1.0"

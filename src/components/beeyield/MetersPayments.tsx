@@ -17,6 +17,29 @@ interface MetersPaymentsProps {
 const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { } }) => {
     const [rates, setRates] = React.useState<BillingRate[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
+    const [isCreating, setIsCreating] = React.useState(false);
+
+    const LOCAL_RATES_KEY = React.useMemo(() => 'beeyield_local_meter_rates_v1', []);
+
+    const readLocalRates = React.useCallback((): BillingRate[] => {
+        try {
+            const raw = globalThis.localStorage?.getItem(LOCAL_RATES_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? (parsed as BillingRate[]) : [];
+        } catch {
+            return [];
+        }
+    }, [LOCAL_RATES_KEY]);
+
+    const writeLocalRates = React.useCallback((next: BillingRate[]) => {
+        try {
+            globalThis.localStorage?.setItem(LOCAL_RATES_KEY, JSON.stringify(next));
+        } catch {
+            // ignore
+        }
+    }, [LOCAL_RATES_KEY]);
 
     const consumptionData = [
         { label: 'Energy usage', value: '12,483', unit: 'Units', subtext: 'last month', icon: Zap, color: 'text-[#1B9157]' },
@@ -35,16 +58,29 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
     React.useEffect(() => {
         const loadRates = async () => {
+            setError(null);
             try {
                 const data = await meterService.getBillingRates();
                 setRates(data);
             } catch (error) {
-                toast.error('Failed to load billing rates');
+                const local = readLocalRates();
+                if (local.length > 0) {
+                    setRates(local);
+                    toast.info('Loaded billing rates from this device');
+                } else {
+                    setError('Billing rates unavailable right now.');
+                    toast.error('Failed to load billing rates');
+                }
             } finally {
                 setLoading(false);
             }
         };
         loadRates();
+    }, [readLocalRates]);
+
+    const refreshRates = React.useCallback(async () => {
+        const data = await meterService.getBillingRates();
+        setRates(data);
     }, []);
 
     const exportRatesCsv = React.useCallback(() => {
@@ -55,11 +91,11 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
         const rows = rates.map((r: any) => ({
             id: r.id ?? '',
-            meter_type: r.meter_type ?? r.type ?? '',
+            meter_type: r.meter_type ?? '',
             unit: r.unit ?? '',
-            rate: r.rate ?? r.unit_rate ?? '',
+            rate_per_unit: r.rate_per_unit ?? '',
             currency: r.currency ?? '',
-            updated_at: r.updated_at ?? '',
+            effective_from: r.effective_from ?? '',
         }));
 
         const escapeCsv = (v: unknown) => {
@@ -84,6 +120,98 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
         toast.success('Data package exported');
     }, [rates]);
+
+    const [newRate, setNewRate] = React.useState<{
+        meter_type: 'Water' | 'Heat' | 'Energy' | 'Other';
+        rate_per_unit: string;
+        currency: string;
+        unit: string;
+        description: string;
+        is_active: boolean;
+    }>({
+        meter_type: 'Water',
+        rate_per_unit: '',
+        currency: 'USD',
+        unit: 'unit',
+        description: '',
+        is_active: true,
+    });
+
+    const addRateLocal = React.useCallback(() => {
+        const rateNum = Number(newRate.rate_per_unit);
+        if (!Number.isFinite(rateNum) || rateNum <= 0) {
+            toast.error('Enter a valid unit rate (> 0)');
+            return;
+        }
+        if (!newRate.unit.trim()) {
+            toast.error('Unit is required');
+            return;
+        }
+        if (!newRate.currency.trim()) {
+            toast.error('Currency is required');
+            return;
+        }
+
+        const row: any = {
+            id:
+                typeof crypto !== 'undefined' && 'randomUUID' in crypto
+                    ? `local-${crypto.randomUUID()}`
+                    : `local-${Date.now()}`,
+            meter_type: newRate.meter_type,
+            rate_per_unit: rateNum,
+            currency: newRate.currency.toUpperCase(),
+            unit: newRate.unit,
+            description: newRate.description,
+            is_active: newRate.is_active,
+            effective_from: new Date().toISOString(),
+        };
+
+        const next = [row as BillingRate, ...(rates || [])];
+        setRates(next);
+        writeLocalRates(next);
+        setNewRate((prev) => ({ ...prev, rate_per_unit: '', description: '' }));
+        toast.success('New billing rate saved (local)');
+    }, [newRate, rates, writeLocalRates]);
+
+    const addRateRemote = React.useCallback(async () => {
+        if (isCreating) return;
+        const rateNum = Number(newRate.rate_per_unit);
+        if (!Number.isFinite(rateNum) || rateNum <= 0) {
+            toast.error('Enter a valid unit rate (> 0)');
+            return;
+        }
+        if (!newRate.unit.trim()) {
+            toast.error('Unit is required');
+            return;
+        }
+        if (!newRate.currency.trim()) {
+            toast.error('Currency is required');
+            return;
+        }
+
+        setIsCreating(true);
+        const tid = toast.loading('Saving billing rate…');
+        try {
+            await meterService.createBillingRate({
+                meter_type: newRate.meter_type,
+                rate_per_unit: rateNum,
+                unit: newRate.unit.trim(),
+                currency: newRate.currency.trim().toUpperCase(),
+                description: newRate.description.trim() || undefined,
+                is_active: newRate.is_active,
+            });
+            toast.success('Billing rate saved', { id: tid });
+            setNewRate((prev) => ({ ...prev, rate_per_unit: '', description: '' }));
+            await refreshRates();
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e?.message || 'Could not save billing rate', { id: tid });
+            // keep UX usable even if backend is unavailable
+            addRateLocal();
+        } finally {
+            setIsCreating(false);
+        }
+    }, [addRateLocal, isCreating, newRate, refreshRates]);
 
     return (
         <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
@@ -163,6 +291,12 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]" />
                             <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] mt-4 animate-pulse">SYNCHING_PARAMETERS...</p>
                         </div>
+                    ) : error ? (
+                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                            <FileText className="w-8 h-8 text-red-300 mb-4" />
+                            <p className="text-[9px] font-black text-red-600 uppercase tracking-widest">LOAD_FAILED</p>
+                            <p className="text-[10px] font-semibold text-gray-500 mt-2 max-w-md">{error}</p>
+                        </div>
                     ) : rates.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <FileText className="w-8 h-8 text-gray-300 mb-4" />
@@ -208,7 +342,16 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                         <div className="space-y-2">
                             <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">TELE_TYPE</label>
-                            <Select defaultValue="water">
+                            <Select
+                                value={newRate.meter_type.toLowerCase()}
+                                onValueChange={(v) => {
+                                    const next =
+                                        v === 'water' ? 'Water' :
+                                        v === 'heat' ? 'Heat' :
+                                        v === 'energy' ? 'Energy' : 'Other';
+                                    setNewRate((p) => ({ ...p, meter_type: next }));
+                                }}
+                            >
                                 <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -221,18 +364,33 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">WEIGHT_RATIO_KES</label>
-                            <Input type="number" placeholder="0.00" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black font-mono w-full" />
+                            <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">UNIT_RATE</label>
+                            <Input
+                                type="number"
+                                inputMode="decimal"
+                                placeholder="0.00"
+                                value={newRate.rate_per_unit}
+                                onChange={(e) => setNewRate((p) => ({ ...p, rate_per_unit: e.target.value }))}
+                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black font-mono w-full"
+                            />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">ANNOTATION</label>
-                            <Input placeholder="COMMENT..." className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-widest w-full" />
+                            <Input
+                                placeholder="COMMENT..."
+                                value={newRate.description}
+                                onChange={(e) => setNewRate((p) => ({ ...p, description: e.target.value }))}
+                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-widest w-full"
+                            />
                         </div>
                         <button
-                            onClick={() => toast.success("NEW_BILLING_RATE_ADDED")}
+                            type="button"
+                            onClick={addRateRemote}
+                            disabled={isCreating}
                             className={cn(glass.btnPrimary, "w-full h-9 rounded-xl inline-flex items-center justify-center text-[9px] font-black uppercase tracking-[0.2em]")}
                         >
-                            <Plus className="w-3.5 h-3.5 mr-1" /> COMMIT_WEIGHT
+                            {isCreating ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Plus className="w-3.5 h-3.5 mr-1" />}
+                            COMMIT_WEIGHT
                         </button>
                     </div>
 
