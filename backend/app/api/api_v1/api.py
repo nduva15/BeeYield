@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth,
-    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub
+    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub, health_guide
 )
 
 
@@ -26,6 +26,7 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
+api_router.include_router(health_guide.router, prefix="/beeyield/health", tags=["BeeYield Health Guide"])
 api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=["Bluetooth"])
 api_router.include_router(requests.router, prefix="/beeyield/requests", tags=["Support Requests"])
 api_router.include_router(notes.router, prefix="/beeyield/notes", tags=["Notes"])

@@ -20,7 +20,10 @@ import {
   Heart,
   ShieldCheck,
   ShoppingBag,
-  User
+  User,
+  Cpu,
+  Radio,
+  Activity
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
@@ -632,7 +635,15 @@ const Shop = () => {
   };
 
   const honeyProducts = products.filter((p) => p.category === "honey").slice(0, 8);
-  const hardwareProducts = products.filter((p) => p.category === "hardware");
+  const hardwareProducts = products
+    .filter((p) => p.category === "hardware")
+    // Ensure Sensors tab is truly hardware/sensors
+    .filter((p) => /beehub|beeyield|sensor|tracker|scale|probe|acoustic|queen/i.test(`${p.name} ${p.badge ?? ''} ${p.description}`))
+    .sort((a, b) => {
+      const ap = a.variants?.[0]?.price_kes ?? 0;
+      const bp = b.variants?.[0]?.price_kes ?? 0;
+      return ap - bp;
+    });
   const merchProducts = products.filter((p) => p.category === "merch");
   const educationProducts = products.filter((p) => p.category === "education");
 
@@ -691,6 +702,44 @@ const Shop = () => {
           </div>
         </div>
 
+        {activeCategory === 'hardware' && (
+          <div className="mb-10 overflow-hidden rounded-[2.5rem] border border-border/50 bg-[#FFF9F0] shadow-premium">
+            <div className="p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Shop Sensors</p>
+                <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-foreground">
+                  BeeHUB <span className="text-[#F4D03F]">Sensors</span>
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-2xl">
+                  Gateways and hive sensors for temperature, humidity, weight, GPS, and acoustic health—built for remote apiaries.
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {[
+                    { label: 'LoRa / GSM gateway', icon: Radio },
+                    { label: 'Hive telemetry', icon: Activity },
+                    { label: 'Industrial hardware', icon: Cpu },
+                  ].map((b) => (
+                    <Badge
+                      key={b.label}
+                      className="bg-white/70 text-foreground border-border/40 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-1.5"
+                    >
+                      <b.icon className="h-3.5 w-3.5 text-primary" />
+                      {b.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <Button
+                className="h-11 rounded-2xl px-6 font-black uppercase tracking-widest text-[10px] bg-primary text-primary-foreground shadow-primary/20"
+                onClick={() => window.open('https://beeyield.com/shop-sensors', '_blank', 'noopener,noreferrer')}
+              >
+                View all sensors
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {visibleProducts.map((product) => (
             <Card
@@ -726,6 +775,28 @@ const Shop = () => {
                             Verified Quality
                           </Badge>
                         </div>
+
+                        {/* Availability badge */}
+                        {(() => {
+                          const selectedSize = selectedSizes[product.id] || (product.variants?.[0]?.size ?? "");
+                          const v = product.variants?.find((vv) => vv.size === selectedSize) || product.variants?.[0];
+                          const inStock = !!v && v.is_available && (v.stock_quantity ?? 0) > 0;
+                          const label = inStock ? `${v?.stock_quantity ?? 0} in stock` : 'Out of stock';
+                          return (
+                            <div className="absolute bottom-8 right-8 z-30">
+                              <Badge
+                                className={cn(
+                                  "backdrop-blur-sm shadow-sm font-black text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-full border",
+                                  inStock
+                                    ? "bg-emerald-50/90 text-emerald-700 border-emerald-200"
+                                    : "bg-red-50/90 text-red-700 border-red-200"
+                                )}
+                              >
+                                {label}
+                              </Badge>
+                            </div>
+                          );
+                        })()}
 
 
                       </div>
