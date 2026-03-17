@@ -6,13 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-// Asset paths (using the generated image IDs provided by the system previously)
+// NOTE: Local images are optional; fall back to placeholder if missing.
 const SPECIES_DATA = [
     {
         id: 'western-honey-bee',
         name: 'Western Honey Bee',
         scientificName: 'Apis mellifera',
-        image: '/western_honey_bee_1773232169379.png',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/1/1c/Apis_mellifera_western_honey_bee.jpg',
         category: 'Honey Bee',
         conservationStatus: 'Stable',
         description: 'The most common bee species globally, known for honey production and large colonies.',
@@ -23,7 +23,7 @@ const SPECIES_DATA = [
         id: 'bumblebee',
         name: 'Buff-tailed Bumblebee',
         scientificName: 'Bombus terrestris',
-        image: '/bumblebee_1773232475571.png',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Bombus_terrestris_%28Buff-tailed_bumblebee%29.jpg',
         category: 'Bumblebee',
         conservationStatus: 'Common',
         description: 'Large, fuzzy bees that are excellent pollinators for tomatoes and greenhouse crops.',
@@ -34,7 +34,7 @@ const SPECIES_DATA = [
         id: 'orchard-bee',
         name: 'European Orchard Bee',
         scientificName: 'Osmia cornuta',
-        image: '/orchard_bee_1773232490782.png',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Osmia_cornuta_male.jpg',
         category: 'Solitary Bee',
         conservationStatus: 'Stable',
         description: 'Active in early spring, these bees are highly efficient pollinators of fruit trees.',
@@ -45,7 +45,7 @@ const SPECIES_DATA = [
         id: 'leafcutter-bee',
         name: 'Alfalfa Leafcutter Bee',
         scientificName: 'Megachile rotundata',
-        image: '/leafcutter_bee_1773232508465.png',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Megachile_rotundata_female.jpg',
         category: 'Solitary Bee',
         conservationStatus: 'Stable',
         description: 'Unique for cutting circular pieces of leaves to build their nest cells.',
@@ -56,7 +56,7 @@ const SPECIES_DATA = [
         id: 'carpenter-bee',
         name: 'Violet Carpenter Bee',
         scientificName: 'Xylocopa violacea',
-        image: '/carpenter_bee_1773232526722.png',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/1/1f/Xylocopa_violacea_female.jpg',
         category: 'Solitary Bee',
         conservationStatus: 'Stable',
         description: 'One of the largest bees in Europe, known for boring holes into dead wood.',
@@ -154,9 +154,18 @@ export const BeeSpeciesGallery: React.FC = () => {
                             className="group cursor-pointer bg-[#FFF9F0] rounded-2xl border border-[#F4D03F]/10 overflow-hidden hover:border-[#F4D03F]/30 transition-all duration-300 shadow-sm"
                         >
                             <div className="aspect-[4/5] overflow-hidden relative">
-                                <img 
-                                    src={bee.image} 
-                                    alt={bee.name} 
+                                <img
+                                    src={bee.image}
+                                    alt={bee.name}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                        const img = e.currentTarget;
+                                        if (!img.dataset.fallback) {
+                                            img.dataset.fallback = '1';
+                                            img.src = '/placeholder.svg';
+                                        }
+                                    }}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all">
@@ -189,7 +198,20 @@ export const BeeSpeciesGallery: React.FC = () => {
                             className="flex items-center gap-4 p-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-xl hover:border-[#F4D03F]/30 transition-all cursor-pointer group shadow-sm"
                         >
                             <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-[#F4D03F]/10">
-                                <img src={bee.image} alt={bee.name} className="w-full h-full object-cover" />
+                                <img
+                                    src={bee.image}
+                                    alt={bee.name}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                        const img = e.currentTarget;
+                                        if (!img.dataset.fallback) {
+                                            img.dataset.fallback = '1';
+                                            img.src = '/placeholder.svg';
+                                        }
+                                    }}
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
@@ -221,8 +243,10 @@ export const BeeSpeciesGallery: React.FC = () => {
                             exit={{ opacity: 0, scale: 0.98, y: 20 }}
                             className="relative w-full max-w-4xl bg-[#FFF9F0] rounded-[2.5rem] overflow-hidden shadow-3xl border border-[#F4D03F]/20 z-10 flex flex-col md:flex-row max-h-[90vh]"
                         >
-                            <button 
+                            <button
                                 onClick={() => setSelectedBee(null)}
+                                aria-label="Close species details"
+                                title="Close"
                                 className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#1A1A1A]/5 hover:bg-[#F4D03F] transition-all flex items-center justify-center text-[#1A1A1A] z-20 group"
                             >
                                 <X className="w-5 h-5 group-hover:scale-110" />
@@ -230,7 +254,20 @@ export const BeeSpeciesGallery: React.FC = () => {
 
                             {/* Modal Left - Image */}
                             <div className="md:w-5/12 aspect-square md:aspect-auto relative">
-                                <img src={selectedBee.image} alt={selectedBee.name} className="w-full h-full object-cover" />
+                                <img
+                                    src={selectedBee.image}
+                                    alt={selectedBee.name}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                        const img = e.currentTarget;
+                                        if (!img.dataset.fallback) {
+                                            img.dataset.fallback = '1';
+                                            img.src = '/placeholder.svg';
+                                        }
+                                    }}
+                                    className="w-full h-full object-cover"
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent md:hidden" />
                             </div>
 

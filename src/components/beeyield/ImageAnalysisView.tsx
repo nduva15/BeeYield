@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -16,9 +17,10 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
-import beeyieldService from '@/services/beeyieldService';
-import { glass, PageHeader } from './GlassTheme';
+import { imageAnalysisService } from '@/services/imageAnalysisService';
+import { glass } from './GlassTheme';
 import { RefreshCw } from 'lucide-react';
+import { BeeYieldCard, BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface ImageAnalysisViewProps {
     onTabChange: (tab: string) => void;
@@ -26,14 +28,15 @@ interface ImageAnalysisViewProps {
 
 interface DetectionRecord {
     id: number;
-    confidence: number;
+    confidence: number; // 0..1
     health: string;
-    healthConf: number;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
     label: string;
+    bbox: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
 }
 
 const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) => {
@@ -55,7 +58,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
     }, []);
 
     const loadHistory = async () => {
-        const history = await beeyieldService.getAnalysisHistory({ limit: 5 });
+        const history = await imageAnalysisService.listAnalyses({ limit: 5, offset: 0 });
         setRecentDetections(history.items || []);
     };
 
@@ -89,10 +92,12 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
         setRealtimeCount(0);
 
         try {
-            const result = await beeyieldService.analyzeImage({
-                image: targetFile,
-                confidence_threshold: confidenceThreshold[0] / 100,
-                overlap_threshold: overlapThreshold[0] / 100,
+            const formData = new FormData();
+            formData.append('image', targetFile);
+
+            const result = await imageAnalysisService.analyzeImage(formData, {
+                confidence: confidenceThreshold[0] / 100,
+                overlap: overlapThreshold[0] / 100,
                 analysis_type: 'full'
             });
 
@@ -131,28 +136,25 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
     };
 
     const instructions = [
-        { label: 'Asset Input', description: 'Upload hive visual data. High-fidelity focus optimizes detection.' },
-        { label: 'Neural Mapping', description: 'Model-driven bounding box isolation and specimen tabulation.' },
-        { label: 'Confidence Lock', description: 'Threshold filtering for signal-to-noise optimization.' },
-        { label: 'Overlap Logic', description: 'NMS (Non-Maximum Suppression) protocol for duplicate culling.' },
-        { label: 'Telemetry Display', description: 'Dynamic UI selection for viewport labeling protocols.' },
-        { label: 'Pathogen Sweep', description: 'Deep-learning diagnostics for health status verification.' },
-        { label: 'Specimen Audit', description: 'Granular classification of individual biological entities.' },
-        { label: 'Detection Log', description: 'Indexed telemetry data with spatial-temporal coordinates.' },
-        { label: 'Cache Flush', description: 'Resetting analytical cache and purging session media.' },
+        { label: 'Upload a photo', description: 'Use a clear, well-lit image of the hive/frames.' },
+        { label: 'Run analysis', description: 'We’ll look for patterns that may indicate pests or stress.' },
+        { label: 'Check confidence', description: 'Higher confidence usually means a clearer image.' },
+        { label: 'Avoid duplicates', description: 'We try not to count the same thing twice.' },
+        { label: 'Review highlights', description: 'Focus on the marked areas in the image.' },
+        { label: 'Health check', description: 'This is a guide—not a medical diagnosis.' },
+        { label: 'Record results', description: 'Save notes so you can compare over time.' },
+        { label: 'Clear history', description: 'Remove old uploads from this session if needed.' },
     ];
 
     return (
-        <div className={glass.page}>
+        <BeeYieldPageShell>
             {/* Page Header */}
-            <PageHeader
+            <BeeYieldPageHeader
+                icon={Camera}
+                label="Optical Audit"
                 title="Optical Audit"
                 subtitle="High-fidelity visual diagnostics and neural specimen mapping."
-                icon={Camera}
-                color="text-[#F4D03F]"
-                bg="bg-[#F4D03F]/10"
-                borderColor="border-[#F4D03F]/20"
-                action={
+                actions={
                     <div className={cn(glass.badge, "px-3 py-1.5 border-[#F4D03F]/10 bg-[#F4D03F]/5 text-[#F4D03F]")}>
                         CORE: CV_MODEL_V4
                     </div>
@@ -160,18 +162,18 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             />
 
             {/* Instruction Card */}
-            <div className={cn(glass.card, "mb-8")}>
+            <BeeYieldCard className="mb-8">
                 <div className="flex items-center gap-3 mb-6 border-b border-[#F4D03F]/10 pb-4">
                     <div className="w-8 h-8 bg-[#F4D03F]/10 rounded-lg flex items-center justify-center border border-[#F4D03F]/20">
                         <Info className="w-4 h-4 text-[#F4D03F]" />
                     </div>
-                    <h2 className={glass.sectionTitle}>Session Protocols</h2>
+                    <h2 className={glass.sectionTitle}>How it works</h2>
                 </div>
 
                 <div className="space-y-6">
                     <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400">
                         <Activity className="w-3 h-3 text-[#F4D03F]/40" />
-                        <span>INDICATIVE_ONLY_NOT_MEDICAL_DIAGNOSIS</span>
+                            <span>Guide only — not a medical diagnosis</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-6 pt-2">
@@ -183,13 +185,13 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         ))}
                     </div>
                 </div>
-            </div>
+            </BeeYieldCard>
 
             {/* Upload Area */}
             {!previewUrl && (
                 <div
                     onClick={() => fileInputRef.current?.click()}
-                    className={cn(glass.card, "w-full min-h-[260px] border-dashed border-2 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-[#F4D03F]/40 transition-all bg-white/5 shadow-inner")}
+                    className={cn(glass.card, "w-full min-h-[260px] border-dashed border-2 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-[#F4D03F]/40 transition-all bg-white/5 shadow-inner p-5")}
                 >
                     <input
                         id="bee-image-upload"
@@ -215,7 +217,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             {previewUrl && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-500">
                     <div className="lg:col-span-6 space-y-6">
-                        <div className={cn(glass.card, "p-4 relative")}>
+                        <BeeYieldCard className="p-4 relative">
                             <div className="min-h-[300px] flex items-center justify-center bg-white/40 rounded-xl overflow-hidden border border-[#F4D03F]/10">
                                 <img src={previewUrl} alt="Analyzed" className="w-full h-full object-contain max-h-[500px]" />
                                 {isAnalyzing && (
@@ -231,7 +233,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </BeeYieldCard>
 
                         <div className="flex justify-start">
                             <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-widest text-[10px] rounded-xl")}>
@@ -240,7 +242,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         </div>
 
                         {results && (
-                            <div className={glass.card}>
+                            <BeeYieldCard>
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-3 pb-4 border-b border-[#F4D03F]/10">
                                         <div className="w-8 h-8 bg-[#F4D03F]/10 rounded-lg flex items-center justify-center border border-[#F4D03F]/20"><Activity className="w-4 h-4 text-[#F4D03F]" /></div>
@@ -254,13 +256,13 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                         <span className="text-[10px] font-black text-[#1A1A1A]">{results.overallConfidence}%</span>
                                     </div>
                                 </div>
-                            </div>
+                            </BeeYieldCard>
                         )}
                     </div>
 
                     <div className="lg:col-span-6 space-y-6">
                         {isAnalyzing ? (
-                            <div className={cn(glass.card, "h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]")}>
+                            <BeeYieldCard className="h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]">
                                 <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
                                     <Bot className="w-8 h-8 text-[#F4D03F]" />
                                 </div>
@@ -273,9 +275,9 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 <div className="w-full max-w-[240px] h-1.5 rounded-full bg-white/40 overflow-hidden">
                                     <div className="h-full bg-[#F4D03F] w-1/3 animate-ping" />
                                 </div>
-                            </div>
+                            </BeeYieldCard>
                         ) : error ? (
-                            <div className={cn(glass.card, "h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]")}>
+                            <BeeYieldCard className="h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]">
                                 <div className="w-16 h-16 rounded-2xl bg-red-500/5 flex items-center justify-center border border-red-500/10">
                                     <Bot className="w-8 h-8 text-red-500/50" />
                                 </div>
@@ -288,9 +290,9 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 <button onClick={clearImage} className={cn(glass.btnSecondary, "h-9 px-8 font-black uppercase text-[10px] rounded-xl border-red-500/20")}>
                                     Retry Sweep
                                 </button>
-                            </div>
+                            </BeeYieldCard>
                         ) : results ? (
-                            <div className={cn(glass.card, "space-y-6")}>
+                            <BeeYieldCard className="space-y-6">
                                 <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
                                     <h3 className={glass.sectionTitle}>Detection</h3>
                                     <div className="flex items-center gap-3">
@@ -347,26 +349,26 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                                 {results.detections.slice(0, 6).map((det: DetectionRecord, idx: number) => (
                                                     <tr key={det.id} className="hover:bg-white/60 transition-colors text-[#1A1A1A] uppercase tracking-tighter">
                                                         <td className="px-3 py-2.5 text-gray-300">{(idx + 1).toString().padStart(2, '0')}</td>
-                                                        <td className="px-3 py-2.5 tabular-nums">{det.confidence}%</td>
+                                                        <td className="px-3 py-2.5 tabular-nums">{Math.round((det.confidence || 0) * 100)}%</td>
                                                         <td className="px-3 py-2.5">
                                                             <span className={cn(
                                                                 "px-1.5 py-0.5 rounded bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/10",
-                                                                det.health !== 'healthy' && "bg-red-500/10 text-red-500 border-red-500/10"
+                                                                det.health && det.health.toLowerCase() !== 'healthy' && "bg-red-500/10 text-red-500 border-red-500/10"
                                                             )}>
-                                                                {det.health}
+                                                                {det.health || det.label || 'Unknown'}
                                                             </span>
                                                         </td>
-                                                        <td className="px-3 py-2.5 text-gray-400 font-mono">[{det.x},{det.y}]</td>
+                                                        <td className="px-3 py-2.5 text-gray-400 font-mono">[{det.bbox?.x ?? 0},{det.bbox?.y ?? 0}]</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            </div>
+                            </BeeYieldCard>
                         ) : !isAnalyzing && (
                             <div className="space-y-6">
-                                <div className={cn(glass.card, "p-8 flex flex-col justify-center items-center text-center space-y-6 md:min-h-[250px]")}>
+                                <BeeYieldCard className="p-8 flex flex-col justify-center items-center text-center space-y-6 md:min-h-[250px]">
                                     <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
                                         <Activity className="w-5 h-5 text-[#F4D03F]" />
                                     </div>
@@ -374,10 +376,10 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <button onClick={() => handleStartAnalysis()} className={cn(glass.btnPrimary, "h-10 px-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl w-full max-w-xs")}>
                                         Identify Specimen
                                     </button>
-                                </div>
+                                </BeeYieldCard>
 
                                 {recentDetections.length > 0 && (
-                                    <div className={glass.card}>
+                                    <BeeYieldCard>
                                         <div className="flex items-center justify-between mb-4 border-b border-[#F4D03F]/10 pb-3">
                                             <h3 className={glass.sectionTitle}>
                                                 History
@@ -405,14 +407,14 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </BeeYieldCard>
                                 )}
                             </div>
                         )}
                     </div>
                 </div>
             )}
-        </div>
+        </BeeYieldPageShell>
     );
 };
 
