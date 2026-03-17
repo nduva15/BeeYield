@@ -234,6 +234,10 @@ const BeeYieldDashboard: React.FC = () => {
     // Clean navigation: show only real-record tabs (no mock telemetry modules).
     const navItems: NavItem[] = React.useMemo(() => {
         return [
+            { id: 'notes', label: t('nav_my_notes'), icon: BookOpen },
+            { id: 'task', label: t('nav_my_task'), icon: ClipboardList },
+            { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileBarChart },
+            { id: 'requests', label: t('nav_my_requests'), icon: FileInput },
             { id: 'home', label: 'Home', icon: Home },
             { id: 'places', label: 'Apiaries', icon: MapPin },
             { id: 'beeyield', label: 'Hives', icon: Hexagon },
@@ -241,7 +245,7 @@ const BeeYieldDashboard: React.FC = () => {
             { id: 'settings', label: 'Settings', icon: Settings },
             { id: 'support', label: 'Support', icon: LifeBuoy },
         ];
-    }, []);
+    }, [t]);
 
     // Function to render content based on active tab
     const renderContent = () => {
