@@ -5,38 +5,97 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import beeyieldService, { Apiary, Harvest } from '@/services/beeyieldService';
 
 interface ForagingOptimizerProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
-
-// Simulated Data: Honey gain over time
-const FORAGING_MATH = [
-    { t: 0, phi: 120, baseline: 100 },
-    { t: 2, phi: 150, baseline: 100 },
-    { t: 4, phi: 310, baseline: 110 },
-    { t: 6, phi: 450, baseline: 120 },
-    { t: 8, phi: 410, baseline: 120 },
-    { t: 10, phi: 520, baseline: 130 },
-];
 
 const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) => {
     const [viewMode, setViewMode] = React.useState<'MAP' | 'MATH'>('MAP');
     const [shiftRecentlyCommitted, setShiftRecentlyCommitted] = React.useState(false);
     const shiftTimeoutRef = React.useRef<number | null>(null);
 
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const [foragePotential, setForagePotential] = React.useState<any>(null);
+    const [harvests, setHarvests] = React.useState<Harvest[]>([]);
+
+    const harvestSeries = React.useMemo(() => {
+        // Build a simple monthly series from real harvest rows.
+        const rows = (harvests || []).filter((h: any) => h?.harvest_date);
+        const buckets = new Map<string, { month: string; kg: number }>();
+        rows.forEach((h: any) => {
+            const d = new Date(h.harvest_date);
+            if (Number.isNaN(d.getTime())) return;
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            const month = d.toLocaleString('default', { month: 'short' });
+            const prev = buckets.get(key) || { month, kg: 0 };
+            prev.kg += Number(h.quantity_kg || 0);
+            buckets.set(key, prev);
+        });
+        return Array.from(buckets.entries())
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([, v]) => ({ month: v.month, kg: Number(v.kg.toFixed(2)) }));
+    }, [harvests]);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            try {
+                const [a, h] = await Promise.all([
+                    beeyieldService.getApiaries(),
+                    beeyieldService.getHarvests(),
+                ]);
+                if (!mounted) return;
+                setApiaries(a || []);
+                setHarvests(h || []);
+                if (!selectedApiaryId && (a || []).length > 0) setSelectedApiaryId(a[0].id);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        load();
+        return () => {
+            mounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedApiaryId]);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const loadPotential = async () => {
+            if (!selectedApiaryId) return;
+            const res = await beeyieldService.getFlightPotential(selectedApiaryId);
+            if (!mounted) return;
+            setForagePotential(res);
+        };
+        loadPotential();
+        return () => {
+            mounted = false;
+        };
+    }, [selectedApiaryId]);
+
     const commitLocationShift = React.useCallback(() => {
         setShiftRecentlyCommitted(true);
         if (shiftTimeoutRef.current) window.clearTimeout(shiftTimeoutRef.current);
         shiftTimeoutRef.current = window.setTimeout(() => setShiftRecentlyCommitted(false), 10_000);
-        try {
-            globalThis.localStorage?.setItem('beeyield_location_shift_committed_at', String(Date.now()));
-        } catch {
-            // ignore (storage disabled)
-        }
-        toast.success('Location shift committed (local)', {
-            description: 'Saved locally (no backend).',
-        });
+        (async () => {
+            try {
+                await beeyieldService.logActivity({
+                    event_type: 'forage_shift_committed',
+                    entity_type: 'apiary',
+                    entity_id: selectedApiaryId || undefined,
+                    title: 'Foraging shift committed',
+                    subtitle: selectedApiaryId ? `Apiary ${selectedApiaryId}` : undefined,
+                    metadata: { apiary_id: selectedApiaryId || null }
+                });
+                toast.success('Location shift committed');
+            } catch (e) {
+                console.error(e);
+                toast.error('Could not commit shift');
+            }
+        })();
     }, []);
     
     React.useEffect(() => {
@@ -53,9 +112,9 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
         >
             <PageHeader
                 icon={Target}
-                label="Efficiency Node"
+                label="Efficiency"
                 title={<>Bee <span className="text-[#1B9157]">Efficiency</span></>}
-                subtitle="Optimizing bee flight trajectories and mapping high-density floral bloom sectors."
+                subtitle="Review flight paths and bloom areas."
                 actions={
                     <div className="flex bg-gray-100 p-1.5 rounded-xl border border-gray-200">
                         <button
@@ -128,15 +187,19 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                         </div>
                                         <div className="flex items-center gap-4 text-right">
                                             <div>
-                                                <p className="text-2xl font-bold tracking-tight text-[#1A1A1A] leading-none">520 PTS</p>
-                                                <p className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider mt-1">Efficiency: Peak</p>
+                                                <p className="text-2xl font-bold tracking-tight text-[#1A1A1A] leading-none">
+                                                    {typeof foragePotential?.score === 'number' ? `${foragePotential.score} PTS` : '—'}
+                                                </p>
+                                                <p className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider mt-1">
+                                                    {String(foragePotential?.weather?.status || 'Forage status')}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex-1 w-full relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
                                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={FORAGING_MATH} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                            <AreaChart data={harvestSeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="honeyGrad" x1="0" y1="0" x2="0" y2="1">
                                                         <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.4} />
@@ -144,14 +207,14 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                                     </linearGradient>
                                                 </defs>
                                                 <CartesianGrid vertical={false} stroke="#E5E7EB" strokeDasharray="3 3" />
-                                                <XAxis dataKey="t" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#6B7280' }} dy={10} />
+                                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#6B7280' }} dy={10} />
                                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600, fill: '#6B7280' }} />
                                                 <Tooltip 
                                                   contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
                                                   itemStyle={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: 'bold' }}
                                                   labelStyle={{ display: 'none' }}
                                                 />
-                                                <Area type="monotone" dataKey="phi" stroke="#F4D03F" strokeWidth={3} fill="url(#honeyGrad)" animationDuration={1000} />
+                                                <Area type="monotone" dataKey="kg" stroke="#F4D03F" strokeWidth={3} fill="url(#honeyGrad)" animationDuration={600} />
                                             </AreaChart>
                                         </ResponsiveContainer>
                                     </div>

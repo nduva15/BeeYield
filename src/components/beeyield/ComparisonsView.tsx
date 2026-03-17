@@ -81,7 +81,7 @@ const ComparisonsView: React.FC = () => {
                         Yield <span className="text-[#F4D03F]">Variance</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
-                        Multi-Node Performance Benchmarking · Predictive Yield Delta
+                        Performance benchmarking across locations · Predictive yield delta
                     </p>
                 </div>
             </div>
@@ -318,7 +318,7 @@ const ComparisonsView: React.FC = () => {
                 <div className="relative z-10 text-center md:text-left">
                     <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Comparison Diagnostic Summary</h5>
                     <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
-                        Our recursive comparison engine analyzes yield variance across all registry nodes. The Protocol Alpha threshold reflects real-time foraging efficiency, while Protocol Beta serves as the historical baseline for predictive drift analysis.
+                        We compare yield across locations. The “Current” line reflects recent foraging conditions, and “Baseline” shows the longer-term trend.
                     </p>
                 </div>
             </motion.div>

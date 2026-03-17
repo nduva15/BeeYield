@@ -160,11 +160,11 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     const handleEnroll = async () => {
         if (enrolling) return;
         const meter_number = enrollMeterNumber.trim();
-        if (!meter_number) return toast.error('Sensor ID / serial is required');
-        if (!enrollBuildingId) return toast.error('Select an apiary/building');
+        if (!meter_number) return toast.error('Serial number is required');
+        if (!enrollBuildingId) return toast.error('Select a location');
 
         setEnrolling(true);
-        const tid = toast.loading('Enrolling sensor…');
+        const tid = toast.loading('Adding meter…');
         try {
             await meterService.createMeter({
                 meter_number,
@@ -173,13 +173,13 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 apartment_id: enrollApartmentId || undefined,
                 status: 'OK',
             });
-            toast.success('Sensor enrolled', { id: tid });
+            toast.success('Meter added.', { id: tid });
             setEnrollMeterNumber('');
             setIsAddingMeter(false);
             await refreshMeters();
         } catch (e: any) {
             console.error(e);
-            toast.error(e?.message || 'Failed to enroll sensor', { id: tid });
+            toast.error(e?.message || 'Could not add meter', { id: tid });
         } finally {
             setEnrolling(false);
         }
@@ -229,29 +229,29 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
 
                 <BeeYieldPageHeader
                     icon={Activity}
-                    label="OPERATIONAL_REGISTRY"
+                    label="Meters"
                     title={<>Sensor <span className="text-[#F4D03F]">Registry</span> <span className="text-gray-300">·</span> {title}</>}
-                    subtitle="INVENTORY_AND_TELEMETRY_LOAD"
+                    subtitle="Manage meters and view recent readings."
                 />
 
             <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                 {!isAddingMeter ? (
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div>
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">ADD_{meterType.toUpperCase()}_SENSOR</h3>
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">CONFIGURE_SERIAL_IDENTIFIER_AND_DEPLOYMENT_COORDINATES</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Add {meterType} meter</h3>
+                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">Enter the serial number and pick a location.</p>
                         </div>
                         <button
                             onClick={() => setIsAddingMeter(true)}
                             className={cn(glass.btnPrimary, "h-9 px-6 font-black uppercase text-[9px] tracking-[0.2em]")}
                         >
-                            ENROLL_DEVICE
+                            Add meter
                         </button>
                     </div>
                 ) : (
                     <div className="animate-in slide-in-from-top duration-300 space-y-4">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">DEVICE_PARAMETERIZATION</h3>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Meter details</h3>
                             <button
                                 onClick={() => setIsAddingMeter(false)}
                                 className="text-gray-400 hover:bg-white/50 hover:text-[#1A1A1A] rounded-xl h-8 w-8 p-0 flex justify-center items-center transition-colors"
@@ -265,12 +265,12 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                             <Input
                                 value={enrollMeterNumber}
                                 onChange={(e) => setEnrollMeterNumber(e.target.value)}
-                                placeholder="SERIAL_IDENTIFIER"
+                                placeholder="Serial number"
                                 className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white"
                             />
                             <Select value={enrollBuildingId} onValueChange={setEnrollBuildingId}>
                                 <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
-                                    <SelectValue placeholder="APIARY" />
+                                    <SelectValue placeholder="Location" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {buildings.map((b) => (
@@ -282,7 +282,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                             </Select>
                             <Select value={enrollApartmentId} onValueChange={setEnrollApartmentId}>
                                 <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
-                                    <SelectValue placeholder="HIVE_STATION" />
+                                    <SelectValue placeholder="Hive (optional)" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="">None</SelectItem>
@@ -299,7 +299,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                 className={cn(glass.btnPrimary, "h-9 font-black uppercase text-[9px] tracking-[0.2em]")}
                             >
                                 {enrolling ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                                COMMIT_ENROLLMENT
+                                Add meter
                             </button>
                         </div>
                     </div>

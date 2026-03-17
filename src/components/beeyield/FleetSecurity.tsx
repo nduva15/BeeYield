@@ -34,6 +34,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { glass, PageHeader } from './GlassTheme';
+import beeyieldService from '@/services/beeyieldService';
 
 interface Pallet {
     id: string;
@@ -53,20 +54,37 @@ const FleetSecurity: React.FC = () => {
 
     const [globalAlert, setGlobalAlert] = React.useState(false);
 
-    // Simulate real-time alerts
     React.useEffect(() => {
-        const interval = setInterval(() => {
-            setPallets(prev => prev.map(p => {
-                if (p.id === 'PAL-002') {
-                    const newVib = Math.random() * 0.4;
-                    const newStatus = newVib > 0.3 ? 'critical' : (newVib > 0.1 ? 'warning' : 'secured');
-                    if (newStatus === 'critical') setGlobalAlert(true);
-                    return { ...p, vibration: newVib, status: newStatus };
-                }
-                return p;
-            }));
-        }, 3000);
-        return () => clearInterval(interval);
+        let mounted = true;
+
+        const refresh = async () => {
+            try {
+                const alerts = await beeyieldService.getSensorAlerts(false, 25);
+                if (!mounted) return;
+                const hasCritical = (alerts || []).some((a: any) => String(a?.severity || '').toLowerCase() === 'critical');
+                setGlobalAlert(hasCritical);
+                setPallets((prev) =>
+                    prev.map((p) => {
+                        if (p.id !== 'PAL-002') return p;
+                        return {
+                            ...p,
+                            vibration: hasCritical ? Math.max(p.vibration, 0.35) : Math.min(p.vibration, 0.08),
+                            status: hasCritical ? 'critical' : p.status === 'critical' ? 'warning' : p.status,
+                            lastMoved: hasCritical ? 'Just now' : p.lastMoved,
+                        };
+                    })
+                );
+            } catch {
+                // ignore polling failures
+            }
+        };
+
+        refresh();
+        const interval = setInterval(refresh, 15_000);
+        return () => {
+            mounted = false;
+            clearInterval(interval);
+        };
     }, []);
 
     return (
@@ -95,7 +113,13 @@ const FleetSecurity: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2 relative z-10">
                             <button className="h-7 px-3 bg-white text-[#1A1A1A] border border-amber-200/40 shadow-sm rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-amber-50 transition-all">Suppress</button>
-                            <button onClick={() => setGlobalAlert(false)} className="w-8 h-8 flex items-center justify-center bg-transparent rounded-lg hover:bg-amber-200 transition-all text-gray-500 hover:text-[#1A1A1A]">
+                            <button
+                                onClick={() => setGlobalAlert(false)}
+                                className="w-8 h-8 flex items-center justify-center bg-transparent rounded-lg hover:bg-amber-200 transition-all text-gray-500 hover:text-[#1A1A1A]"
+                                aria-label="Dismiss alert"
+                                title="Dismiss alert"
+                                type="button"
+                            >
                                 <X className="w-4 h-4" />
                             </button>
                         </div>

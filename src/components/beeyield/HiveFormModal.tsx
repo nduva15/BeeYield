@@ -198,12 +198,12 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Biological Vector</Label>
+                                    <Label className="text-xs font-semibold text-gray-500 ml-2">Bee type</Label>
                                     <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl text-sm font-semibold transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-2">
                                                 <Binary className="w-3.5 h-3.5 text-[#F4D03F]/40" />
-                                                <SelectValue placeholder="Select Bee Type" />
+                                                <SelectValue placeholder="Select bee type" />
                                             </div>
                                         </SelectTrigger>
                                         <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">

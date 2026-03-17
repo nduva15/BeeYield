@@ -61,21 +61,28 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
         const timer = setInterval(() => {
             setLiveTime(new Date());
             setTick(t => t + 1);
-            if (Math.random() > 0.7) {
-                const nodes = ['HV-001', 'HV-004', 'HV-005'];
-                const msgs = ['Heartbeat confirmed', 'Temp stable at 35.0°C', 'Activity nominal'];
-                const node = nodes[Math.floor(Math.random() * nodes.length)];
-                const msg = msgs[Math.floor(Math.random() * msgs.length)];
-                setEvents(prev => [{
-                    id: Date.now(),
-                    hive: node,
-                    event: msg,
-                    level: 'ok',
-                    time: new Date().toLocaleTimeString('en-GB'),
-                }, ...prev.slice(0, 19)]);
-            }
         }, 3000);
-        return () => clearInterval(timer);
+
+        const refresh = setInterval(async () => {
+            try {
+                const alerts = await beeyieldService.getSensorAlerts(false, 15);
+                const mappedAlerts: HiveEvent[] = alerts.map(a => ({
+                    id: a.id,
+                    hive: a.hive_id.slice(0, 6).toUpperCase(),
+                    event: a.message,
+                    level: a.severity === 'info' ? 'ok' : a.severity === 'warning' ? 'warn' : 'critical',
+                    time: format(new Date(a.created_at), 'HH:mm:ss')
+                }));
+                setEvents(mappedAlerts);
+            } catch (err) {
+                // ignore transient polling failures
+            }
+        }, 15_000);
+
+        return () => {
+            clearInterval(timer);
+            clearInterval(refresh);
+        };
     }, []);
 
     const criticalCount = events.filter(e => e.level === 'critical').length;
@@ -212,7 +219,12 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                         </div>
                                         <p className="text-[11px] text-gray-500 truncate">{event.event}</p>
                                     </div>
-                                    <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                        aria-label="View event details"
+                                        title="View event details"
+                                        type="button"
+                                    >
                                         <ArrowRight className="w-3.5 h-3.5 text-gray-300" />
                                     </button>
                                 </motion.div>
