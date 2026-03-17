@@ -19,6 +19,7 @@ import {
   Sprout, Bug, MessageSquare, Stethoscope, Send, Loader2, CheckCircle2
 } from "lucide-react";
 import { adminService } from "@/services/adminService";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -201,7 +202,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen py-20 bg-background">
+    <BeeYieldPageShell className="min-h-screen py-20 bg-background">
       <div className="container mx-auto px-4">
 
         {/* Header */}
@@ -688,7 +689,7 @@ const Contact = () => {
         </div>
 
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

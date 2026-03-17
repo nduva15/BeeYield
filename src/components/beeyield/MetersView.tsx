@@ -21,7 +21,8 @@ import MetersListOther from './MetersListOther';
 import ReportsExportsView from './ReportsExportsView';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const usageTrendData = [
     { day: 'Day 1', value: 125 },
@@ -116,20 +117,23 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
     if (loading && activeSubTab === 'meters-dashboard') {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+            <BeeYieldPageShell className="space-y-0">
+                <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Activity className="w-8 h-8 animate-spin text-[#F4D03F]" />
                 <span className="text-[10px] font-black tracking-widest uppercase italic">SYNCHRONIZING HUBS...</span>
-            </div>
+                </div>
+            </BeeYieldPageShell>
         );
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-        >
-            <PageHeader
+        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={cn("p-4 lg:p-6 space-y-6 pb-20")}
+            >
+            <BeeYieldPageHeader
                 icon={Activity}
                 label="Environmental Telemetry"
                 title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
@@ -299,6 +303,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         />
                         <button
                             onClick={handleSendMessage}
+                            aria-label="Send telemetry query"
+                            title="Send"
                             className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-[#1A1A1A] text-white rounded-lg flex items-center justify-center shadow-md transition-transform hover:scale-105 active:scale-95"
                         >
                             <Send className="w-3.5 h-3.5" />
@@ -354,7 +360,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.1); border-radius: 10px; }
             `}</style>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

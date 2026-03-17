@@ -38,6 +38,7 @@ import {
 import { Product } from "@/services/shopService";
 import { toast } from "sonner";
 import { submitNewsletterSubscription } from "@/services/contactService";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 // Education products from Shop
 const initialEducationProducts: Product[] = [
@@ -254,7 +255,7 @@ const BeeLearn = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#FFF9F0]">
+    <BeeYieldPageShell className="bg-[#FFF9F0]">
       {/* GUIDE MODAL */}
       {isGuideModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#F9F7F2]0 backdrop-blur-sm p-4 animate-in fade-in">
@@ -354,7 +355,7 @@ const BeeLearn = () => {
               </h1>
 
               <p className="text-lg lg:text-xl text-neutral-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Access expert-led video curriculums, comprehensive PDF field manuals, and apiary certifications. From backyard hobbyists to commercial producers.
+                Access expert-led video lessons, PDF field manuals, and apiary certifications. From backyard hobbyists to commercial producers.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
@@ -481,7 +482,7 @@ const BeeLearn = () => {
                   <FileText className="h-5 w-5 text-[#F4D03F]" />
                   <p className="text-sm font-bold text-neutral-900">50+ Digital Guides</p>
                 </div>
-                <p className="text-xs text-neutral-500 mb-3">Instant access to comprehensive field manuals</p>
+                <p className="text-xs text-neutral-500 mb-3">Instant access to field manuals</p>
                 <Button size="sm" variant="outline" className="h-8 text-xs font-bold w-full border-amber-200 hover:bg-amber-50">
                   Preview Library
                 </Button>
@@ -652,7 +653,7 @@ const BeeLearn = () => {
               <span className="text-[#1B9157]">Sustainable Beekeeping</span>
             </h2>
             <p className="text-[#1B9157]/60 text-lg max-w-2xl mx-auto">
-              Join our comprehensive workshops designed for every level of expertise
+              Join our workshops designed for every level of expertise
             </p>
           </div>
 
@@ -836,7 +837,7 @@ const BeeLearn = () => {
           </div>
         </div>
       </section>
-    </main>
+    </BeeYieldPageShell>
   );
 };
 

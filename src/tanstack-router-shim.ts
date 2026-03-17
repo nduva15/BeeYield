@@ -60,12 +60,10 @@ export const useRouter = () => ({
 });
 
 // TanStack Start Shims
-console.log("[Shim] TanStack Router Shim loaded");
+// (no debug logs)
 
 export const createServerFn = (options?: any) => {
-    console.log("[Shim] createServerFn called with options:", options);
     const result: any = async (data: any) => {
-        console.log("[Shim] Running server function handler with data:", data);
         if (result._handler) {
             // Note: In TanStack Start, the handler receives an object with 'data'
             // If the user called fn({ data: value }), then data is { data: value }
@@ -76,20 +74,16 @@ export const createServerFn = (options?: any) => {
     };
 
     result.middleware = (m: any) => {
-        console.log("[Shim] .middleware() called");
         return result;
     };
     result.validator = (v: any) => {
-        console.log("[Shim] .validator() called");
         return result;
     };
     result.inputValidator = (v: any) => {
-        console.log("[Shim] .inputValidator() called");
         return result;
     };
     result._handler = null;
     result.handler = (h: any) => {
-        console.log("[Shim] .handler() registered");
         result._handler = h;
         return result;
     };
@@ -98,7 +92,6 @@ export const createServerFn = (options?: any) => {
 };
 
 export const createMiddleware = () => {
-    console.log("[Shim] createMiddleware called");
     const result: any = {
         middleware: (m: any) => result,
         handler: (h: any) => h,
@@ -107,5 +100,4 @@ export const createMiddleware = () => {
 };
 
 export const registerGlobalMiddleware = () => {
-    console.log("[Shim] registerGlobalMiddleware called");
 };

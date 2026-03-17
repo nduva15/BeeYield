@@ -133,9 +133,12 @@ async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = 
 async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Insert a record via direct REST API."""
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
-    auth_key = token or settings.SUPABASE_KEY
+    # IMPORTANT: never use service-role as apikey for user-scoped calls.
+    # apikey should be anon; Authorization should be the user JWT when present.
+    apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
+    auth_key = token or apikey
     headers = {
-        "apikey": auth_key,
+        "apikey": apikey,
         "Authorization": f"Bearer {auth_key}",
         "Content-Type": "application/json",
         "Prefer": "return=representation"
@@ -184,10 +187,11 @@ async def db_select(
             else:
                 params[k] = f"eq.{v}"
             
+    apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
     headers = {
-        "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
-        "Range": f"{offset}-{offset + limit - 1}" if limit else "0-999"
+        "apikey": apikey,
+        "Authorization": f"Bearer {token or apikey}",
+        "Range": f"{offset}-{offset + limit - 1}" if limit else "0-999",
     }
     
     try:
@@ -220,10 +224,11 @@ def db_select_sync(
         for k, v in filters.items():
             params[k] = f"eq.{v}"
             
+    apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
     headers = {
-        "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
-        "Range": f"0-{limit-1}" if limit else "0-999"
+        "apikey": apikey,
+        "Authorization": f"Bearer {token or apikey}",
+        "Range": f"0-{limit-1}" if limit else "0-999",
     }
     
     with httpx.Client(timeout=10.0) as client:
@@ -238,9 +243,10 @@ def db_select_sync(
 def db_insert_sync(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Synchronous insert for Rust core."""
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
     headers = {
-        "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "apikey": apikey,
+        "Authorization": f"Bearer {token or apikey}",
         "Content-Type": "application/json",
         "Prefer": "return=representation"
     }
@@ -302,11 +308,12 @@ async def db_upsert(
     # Add on_conflict to URL parameters
     params = {"on_conflict": on_conflict}
     
+    apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
     headers = {
-        "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "apikey": apikey,
+        "Authorization": f"Bearer {token or apikey}",
         "Content-Type": "application/json",
-        "Prefer": "return=representation,resolution=merge-duplicates"
+        "Prefer": "return=representation,resolution=merge-duplicates",
     }
     
     # Ensure data is serialized
@@ -347,11 +354,12 @@ async def db_rpc(
 ) -> Any:
     """Call a Postgres RPC function."""
     url = f"{settings.SUPABASE_URL}/rest/v1/rpc/{function_name}"
+    apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
     headers = {
-        "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "apikey": apikey,
+        "Authorization": f"Bearer {token or apikey}",
         "Content-Type": "application/json",
-        "Prefer": "return=representation"
+        "Prefer": "return=representation",
     }
     
     try:

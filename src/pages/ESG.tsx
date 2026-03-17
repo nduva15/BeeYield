@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
 import beeyieldService from "@/services/beeyieldService";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const ESG = () => {
   const [downloading, setDownloading] = useState(false);
@@ -59,7 +60,7 @@ const ESG = () => {
         // Intro
         doc.setFontSize(12);
         doc.setTextColor(75, 85, 99);
-        const introText = "BeeYield operates at the nexus of ecological stewardship and digital integrity. Our ESG framework is designed to optimize for planetary health while ensuring radical transparency across our entire supply chain.";
+        const introText = "BeeYield focuses on practical, measurable impact: healthier hives, better pollination, and traceable harvests.";
         const introLines = doc.splitTextToSize(introText, pageWidth - 28);
         doc.text(introLines, 14, yPos);
         yPos += introLines.length * 7 + 10;
@@ -78,7 +79,7 @@ const ESG = () => {
 
         const stats = [
           `Strategic Partners: ${liveStats?.beekeepers || "20+"} Local Custodians`,
-          `Managed Inventory: ${liveStats?.hive_count || "184"} Smart Hives`,
+          `Managed Inventory: ${liveStats?.hive_count || "184"} Monitored hives`,
           `Ecological Coverage: ${liveStats?.acres_pollinated || "25"} Verified Acres`,
           `Integrity Score: 99.9% System Uptime`,
           `Harvest Yield: ${liveStats?.total_honey_kg || "943kg"} Traceable Units`,
@@ -86,7 +87,7 @@ const ESG = () => {
         ];
 
         stats.forEach(stat => {
-          doc.text(`• ${stat}`, 20, yPos + 5);
+          doc.text(`? ${stat}`, 20, yPos + 5);
           yPos += 8;
         });
         yPos += 15;
@@ -101,10 +102,10 @@ const ESG = () => {
         doc.setTextColor(107, 114, 128);
 
         const pillars = [
-          "1. Ecological Intelligence - Predictive hive health sensing",
-          "2. Radical Transparency - Wasm-verified cryptographic records",
+          "1. Hive Health - Early warning from sensors and inspections",
+          "2. Traceability - Verifiable harvest records",
           "3. The 50/50 Anchor - Resource management for colony resilience",
-          "4. Precision Pollination - Data-driven agricultural support",
+          "4. Precision Pollination - Field and hive monitoring during bloom",
           "5. Women-Led Engineering - 66% diversity in founding leadership",
           "6. Circular Ecosystems - Zero-waste, chemical-free operations",
         ];
@@ -118,13 +119,13 @@ const ESG = () => {
         doc.setFontSize(9);
         doc.setTextColor(148, 163, 184);
         doc.text('BeeYield ESG Registry | www.beeyield.com', pageWidth / 2, 280, { align: 'center' });
-        doc.text('Proprietary Analysis of the Tesla of Apiculture', pageWidth / 2, 286, { align: 'center' });
+        doc.text('BeeYield ESG summary', pageWidth / 2, 286, { align: 'center' });
 
         doc.save('BeeYield_ESG_Report_2026.pdf');
-        toast.success("ESG Report Authenticated");
+        toast.success("ESG report downloaded");
       } catch (err) {
         console.error("PDF generation failed", err);
-        toast.error("Process interrupted: Calibration failed");
+        toast.error("Download failed. Please try again.");
       } finally {
         setDownloading(false);
       }
@@ -135,37 +136,37 @@ const ESG = () => {
     { value: liveStats?.beekeepers || "20+", label: "Custodians", icon: Users, description: "Strategic partners trained" },
     { value: liveStats?.acres_pollinated || "25", label: "Acres", icon: MapPin, description: "Bio-verified coverage" },
     { value: "2,500+", label: "Trees", icon: TreePine, description: "Flora restoration" },
-    { value: liveStats?.hive_count || "184", label: "Smart Hives", icon: Bug, description: "Digitally monitored colonies" },
-    { value: liveStats?.total_honey_kg || "943kg", label: "Yield", icon: Package, description: "High-fidelity production" },
-    { value: "2.4M+", label: "Pollinators", icon: Heart, description: "System bio-mass protected" },
+    { value: liveStats?.hive_count || "184", label: "Monitored hives", icon: Bug, description: "Colonies monitored during the season" },
+    { value: liveStats?.total_honey_kg || "943kg", label: "Yield", icon: Package, description: "Traceable harvest" },
+    { value: "2.4M+", label: "Pollinators", icon: Heart, description: "Estimated bees supported" },
   ];
 
   const esgPillars = [
     {
-      title: "Ecological Intelligence",
+      title: "Hive Health",
       icon: Cpu,
       color: "from-emerald-950 to-emerald-900 border-[#1B9157]/",
       initiatives: [
-        "Advanced acoustic analysis for early disease detection",
+        "Sound pattern checks to flag early disease risk",
         "Real-time hive condition snapshots (Temp, Humidity, Mass)",
-        "Predictive swarming analytics to mitigate colony exit",
-        "Automated colony health scoring via edge-computing nodes",
-        "Open-source data contribution to pollinator research"
+        "Swarm-risk indicators to support timely inspections",
+        "Simple health signals that are easy to act on",
+        "Sharing aggregated learnings with local partners"
       ],
-      impact: "System-wide 15% increase in colony resilience vs. regional baselines"
+      impact: "Earlier detection of issues and faster response during the season"
     },
     {
-      title: "Radical Transparency",
+      title: "Traceability",
       icon: ShieldCheck,
       color: "from-slate-950 to-slate-900 border-amber-500/20",
       initiatives: [
-        "Wasm-powered client-side cryptographic batch verification",
-        "Permanent immutable records for every harvest event",
-        "End-to-end provenance: Hive ID to individual jar tracking",
-        "QR-based public access to ecological integrity scores",
-        "Full-cycle audit capability for premium retail partners"
+        "Verification checks for each batch",
+        "Verifiable records for each harvest event",
+        "Hive ID to jar-level tracking where available",
+        "QR access to batch details for customers",
+        "Audit support for retail and export partners"
       ],
-      impact: "100% elimination of harvest fraud and product adulteration potential"
+      impact: "Clear, checkable records from hive to jar"
     },
     {
       title: "The 50/50 Anchor",
@@ -196,7 +197,7 @@ const ESG = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fdfbf6]">
+    <BeeYieldPageShell className="bg-[#fdfbf6]">
       {/* Hero Section */}
       <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="container relative z-10 mx-auto px-4">
@@ -207,19 +208,19 @@ const ESG = () => {
           >
             <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
               <Globe className="w-3 h-3 mr-2" />
-              ESG Governance Node
+              ESG overview
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
               Governance <br /><span className="text-beeyield-gold">by Integrity.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-              The BeeYield ESG framework is an immutable commitment to transparency, ecological restoration, and tactical precision in apiculture.
+              BeeYield focuses on measurable impact: healthier hives, better pollination, and traceable harvests.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl h-16 px-10 font-black shadow-2xl hover:bg-slate-800" onClick={handleDownloadReport} disabled={downloading}>
                 {downloading ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Download className="w-5 h-5 mr-3" />}
-                {downloading ? "Authenticating..." : "Download 2026 ESG Registry"}
+                {downloading ? "Downloadingâ€¦" : "Download 2026 ESG report"}
               </Button>
               <Button size="lg" variant="outline" asChild className="rounded-2xl h-16 px-10 border-2 font-black border-slate-100 hover:bg-[#F9F7F2]">
                 <Link to="/commitment">Vision & Purpose</Link>
@@ -310,7 +311,7 @@ const ESG = () => {
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Data-Driven <br />Food Security.</h2>
               <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 max-w-xl">
-                In semi-arid Makueni, pollination isn't just a service—it's survival. By deploying 184 sensor-optimized hives, we've increased regional food resilience by providing stable, high-performance pollination for mango and avocado smallholders.
+                In semi-arid Makueni, pollination isn't just a service?it's survival. We deploy monitored hives to support mango and avocado smallholders during flowering and document what happens in the field.
               </p>
 
               <div className="grid grid-cols-2 gap-10">
@@ -333,7 +334,7 @@ const ESG = () => {
                 <div className="absolute bottom-10 left-10 right-10">
                   <Quote className="w-10 h-10 text-beeyield-gold mb-4 opacity-50" />
                   <p className="text-xl font-medium italic text-slate-100 mb-4">
-                    "Through precision pollination, we're not just harvesting honey—we're creating local abundance."
+                    "Through precision pollination, we're not just harvesting honey?we're creating local abundance."
                   </p>
                   <p className="text-sm font-black uppercase tracking-widest text-beeyield-gold">Timothy Nduva, CEO</p>
                 </div>
@@ -352,7 +353,7 @@ const ESG = () => {
             </div>
             <h3 className="text-3xl md:text-5xl font-black text-[#1A1A1A] tracking-tighter">Verified by Design.</h3>
             <p className="text-slate-500 text-lg font-medium">
-              Every jar tracked. Every hive monitored. Every community empowered. Join the Tesla of Apiculture in our mission for radical transparency.
+              Every jar tracked. Every hive monitored. Every community supported. Partner with us to improve traceability and pollinator health.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
               <Link to="/contact" className="px-10 py-5 bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all">
@@ -365,7 +366,7 @@ const ESG = () => {
           </div>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

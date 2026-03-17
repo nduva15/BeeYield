@@ -195,7 +195,7 @@ export async function apiRequest<T>(
             return JSON.parse(responseText);
         } catch (e) {
             console.error("Failed to parse JSON for endpoint:", endpoint);
-            throw new Error(`Invalid JSON response from server`);
+            throw new Error(`Invalid JSON response from server`, { cause: e });
         }
     } catch (error: any) {
         if (error.name !== 'AbortError') {

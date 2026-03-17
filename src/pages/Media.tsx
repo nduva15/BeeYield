@@ -22,6 +22,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const Media = () => {
   const location = useLocation();
@@ -89,7 +90,7 @@ const Media = () => {
           stats: [
             { label: "Harvest Weight", value: "+15%" },
             { label: "Acres Pollinated", value: "15" },
-            { label: "Kernel Depth", value: "High" },
+            { label: "Grain fill", value: "High" },
           ],
           image:
             "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=1200",
@@ -840,7 +841,7 @@ const Media = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <BeeYieldPageShell className="min-h-screen bg-background p-0">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
         <div className="container mx-auto px-4 text-center max-w-4xl">
@@ -1047,7 +1048,7 @@ const Media = () => {
           </Button>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

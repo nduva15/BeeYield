@@ -3,6 +3,7 @@ import os
 import json
 import math
 import re
+from collections import Counter
 from datetime import datetime, timedelta
 
 # Query expansion: domain-specific synonyms for better recall
@@ -98,6 +99,9 @@ class ContentService:
         GEOSPATIAL & METADATA-AWARE SEARCH (v5.0).
         BM25-style scoring + query expansion + hybrid matching.
         """
+        # Practical bounds: keep retrieval stable and avoid huge downstream contexts.
+        limit = max(10, min(int(limit or 25), 100))
+
         lakehouse = await ContentService.get_lakehouse_data()
         nodes = lakehouse.get("lakehouse_nodes", [])
 
@@ -124,17 +128,18 @@ class ContentService:
         processed_nodes = []
         for node in nodes:
             content_lower = node.get("content", "").lower()
-            # Store split content to avoid repeated splitting
-            words = content_lower.split()
+            # Tokenize once to avoid repeated splitting and expensive term counting.
+            words = re.findall(r"[a-z0-9]+", content_lower)
             word_set = set(words)
-            processed_nodes.append((node, words, word_set))
+            word_counts = Counter(words)
+            processed_nodes.append((node, words, word_set, word_counts))
             
             for term in all_query_terms:
                 if term in word_set:
                     df_map[term] = df_map.get(term, 0) + 1
 
         # --- MAIN SCORING LOOP ---
-        for node, words, word_set in processed_nodes:
+        for node, words, word_set, word_counts in processed_nodes:
             meta = node.get("metadata", {})
             if continent and meta.get("continent") != continent and meta.get("continent") != "Global":
                 continue
@@ -143,12 +148,14 @@ class ContentService:
 
             doc_len = len(words)
             score = 0.0
+            matched_terms = 0
 
             for term in all_query_terms:
                 if term not in word_set:
                     continue
                 
-                tf = words.count(term)
+                matched_terms += 1
+                tf = word_counts.get(term, 0)
                 df = df_map.get(term, 0)
                 
                 # BM25 IDF
@@ -161,24 +168,40 @@ class ContentService:
                     score += 8.0
 
             if score > 0:
+                # Coverage boost: favor nodes matching more distinct query terms.
+                coverage = matched_terms / max(1, len(all_query_terms))
+                score *= (1.0 + min(0.6, coverage))
+
                 score *= meta.get("reliability_score", 0.7)
                 if meta.get("is_internal"):
                     score *= 2.0
                 scored_nodes.append((score, node))
 
         scored_nodes.sort(key=lambda x: x[0], reverse=True)
-        top_results = scored_nodes[:limit]
+        # Pull extra candidates for better dedupe and source extraction.
+        top_results = scored_nodes[:max(limit, 40)]
 
 
         intel_summary = ""
         bibliography = []
         seen_content = set()
-        for _, n in top_results:
+        max_summary_chars = 24000
+        for score, n in top_results:
             content = n.get("content", "").strip()
-            if content and content[:100] not in seen_content:  # Dedupe near-duplicates
-                seen_content.add(content[:100])
-                intel_summary += f"[{n.get('metadata', {}).get('source', 'Unknown')}]\n{content}\n\n"
             meta = n.get("metadata", {})
+            source = meta.get("source", "Unknown")
+            subtopic = meta.get("subtopic", "General")
+            url = meta.get("url", "")
+            # Dedupe near-duplicates (slightly larger prefix).
+            dedupe_key = content[:180]
+            if content and dedupe_key not in seen_content:
+                seen_content.add(dedupe_key)
+                header = f"[{source} | {subtopic} | score={score:.2f}]"
+                if url:
+                    header += f"\nURL: {url}"
+                intel_summary += f"{header}\n{content}\n\n"
+                if len(intel_summary) >= max_summary_chars:
+                    break
             if meta.get("url"):
                 source_id = f"{meta['source']} ({meta['subtopic']})"
                 if not any(s["name"] == source_id for s in bibliography):
@@ -186,7 +209,7 @@ class ContentService:
 
         return {
             "summary": intel_summary.strip(),
-            "sources": bibliography[:10]
+            "sources": bibliography[:25]
         }
 
     @staticmethod

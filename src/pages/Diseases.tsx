@@ -55,6 +55,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { submitContactForm } from "@/services/contactService";
 import { useToast } from "@/hooks/use-toast";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const Diseases = () => {
     const { toast } = useToast();
@@ -230,7 +231,7 @@ const Diseases = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <BeeYieldPageShell className="min-h-screen bg-background text-foreground p-0">
             {/* Hero Section */}
             <section className="relative py-24 lg:py-32 bg-gradient-to-br from-amber-500/10 via-background to-background overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
@@ -409,7 +410,7 @@ const Diseases = () => {
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Cpu className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-xl">Intelligent Hives</span>
+                                <span className="font-bold text-xl">Monitored Hives</span>
                             </div>
                         </div>
                     </div>
@@ -505,7 +506,7 @@ const Diseases = () => {
                     </div>
                 </div>
             </section>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

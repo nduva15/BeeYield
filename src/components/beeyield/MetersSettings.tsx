@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface NotificationSetting {
     id: string;
@@ -64,8 +65,9 @@ const MetersSettings: React.FC = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.page, "max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6")}>
-            <PageHeader
+        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6")}>
+            <BeeYieldPageHeader
                 icon={Settings2}
                 label="Sensor Rules and Protocols"
                 title={<>System <span className="text-[#F4D03F]">Settings</span></>}
@@ -187,7 +189,8 @@ const MetersSettings: React.FC = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

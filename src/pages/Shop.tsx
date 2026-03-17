@@ -7,6 +7,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -649,8 +650,8 @@ const Shop = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section - Zero-Trust Premium Theme */}
+    <BeeYieldPageShell className="bg-background">
+      {/* Hero Section */}
       <section className="relative py-24 sm:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
@@ -660,7 +661,7 @@ const Shop = () => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.8 }}
             className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
           >
             <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
@@ -683,7 +684,7 @@ const Shop = () => {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-[#F4D03F] text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
             >
               <Zap className="w-3.5 h-3.5" />
-              Verified Authenticity Hub
+              Traceable products
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
@@ -692,7 +693,7 @@ const Shop = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl leading-relaxed font-medium">
-              Every item in our boutique is a proof of concept for uncompromised trust. From 100% raw honey to IoT hive monitoring, quality is cryptographically verified from the source.
+              Every item in our boutique is traceable. From 100% raw honey to hive sensors, you can check where it came from and when it was harvested.
             </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
@@ -702,7 +703,7 @@ const Shop = () => {
               </div>
               <div className="flex items-center gap-3 bg-[#FFF9F0]/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
                 <ShieldCheck className="h-5 w-5 text-[#F4D03F]" />
-                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Zero-Trust Verified</span>
+                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Verified traceability</span>
               </div>
             </div>
           </motion.div>
@@ -961,21 +962,21 @@ const Shop = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             <div>
               <Badge className="bg-[#F4D03F] text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
-                BeeYield HoneyChain™
+                Traceability
               </Badge>
               <h2 className="text-4xl md:text-5xl font-black text-[#1A1A1A] mb-8 leading-[0.9] tracking-tighter uppercase">
-                Trust in Every <span className="text-[#F4D03F]">Blockchain</span> Sealed Jar
+                Proof in every jar
               </h2>
               <p className="text-neutral-400 text-lg mb-10 leading-relaxed font-medium">
-                Africa's leader in honey traceability. Our HoneyChain™ protocol guarantees authenticity, purity, and full transparency. Look for the QR code on your boutique jar.
+                Scan the QR code to see harvest details and where your honey came from.
               </p>
 
               <ul className="space-y-4 mb-10">
                 {[
-                  "Immutable Harvest Records",
+                  "Harvest details",
                   "Verified Flora & Water Sources",
-                  "Direct Impact Tracking",
-                  "Zero-Trust Verification"
+                  "Impact tracking",
+                  "Verification checks"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-[#1A1A1A] font-bold text-sm">
                     <div className="h-5 w-5 rounded-full bg-[#1B9157]/ flex items-center justify-center">
@@ -991,7 +992,7 @@ const Shop = () => {
                 className="h-14 border-2 border-[#F4D03F]/40 text-[#1A1A1A] hover:bg-[#FFF9F0] hover:text-neutral-900 font-black rounded-2xl px-10 uppercase tracking-widest text-xs transition-all"
                 asChild
               >
-                <Link to="/traceability">Explore HoneyChain™</Link>
+                <Link to="/traceability">Check a batch</Link>
               </Button>
             </div>
 
@@ -1024,7 +1025,7 @@ const Shop = () => {
           {[
             { label: "Regional Farmers", icon: Globe },
             { label: "ApiSense Network", icon: Activity },
-            { label: "Intelligent Hives", icon: Cpu },
+            { label: "Monitored Hives", icon: Cpu },
             { label: "Traceability Core", icon: ShieldCheck }
           ].map((partner, i) => (
             <div key={i} className="flex items-center gap-4 group cursor-pointer">
@@ -1038,7 +1039,7 @@ const Shop = () => {
           ))}
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

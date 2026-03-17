@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { beePollinationData } from "@/data/beePollinationData";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
   const pollinationCrops = Object.values(beePollinationData);
@@ -21,7 +22,7 @@ const CropsWePollinate = () => {
   const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
   return (
-    <div className="min-h-screen bg-background">
+    <BeeYieldPageShell className="min-h-screen bg-background p-0">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#F0F7F0] py-20 md:py-32">
         {/* Animated Background */}
@@ -263,7 +264,7 @@ const CropsWePollinate = () => {
           </Button>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

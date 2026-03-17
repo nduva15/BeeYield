@@ -112,7 +112,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                         Season <span className="text-[#F4D03F]">Summary</span>
                     </h1>
                     <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
-                        Comprehensive performance grading
+                        Performance summary
                     </p>
                 </div>
                 <button

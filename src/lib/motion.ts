@@ -1,3 +1,27 @@
+export const motionSpring = {
+  type: 'spring',
+  stiffness: 420,
+  damping: 34,
+  mass: 0.9,
+} as const;
+
+export const motionSoftSpring = {
+  type: 'spring',
+  stiffness: 260,
+  damping: 28,
+  mass: 0.9,
+} as const;
+
+export const fadeUp = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0 },
+} as const;
+
+export const fadeLeft = {
+  hidden: { opacity: 0, x: -12 },
+  visible: { opacity: 1, x: 0 },
+} as const;
+
 /**
  * Shared Framer Motion config: spring physics and easing
  * to avoid generic duration/ease slop and add a more polished feel.

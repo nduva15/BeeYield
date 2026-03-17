@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const GlobalHiveNetwork = () => {
   const [supportType, setSupportType] = useState("monthly");
 
   return (
 
-    <div className="min-h-screen bg-background">
+    <BeeYieldPageShell className="min-h-screen bg-background p-0">
       {/* Hero Section - Mobile Responsive */}
       <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-4xl">
@@ -56,7 +57,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
                   <Activity className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
+                <span className="font-bold text-base text-foreground/80">Monitored Hives</span>
               </div>
             </div>
           </div>
@@ -131,7 +132,7 @@ const GlobalHiveNetwork = () => {
                   <Globe className="h-8 w-8 text-primary" />
                 </div>
                 <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 1</p>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Intelligent Hives Network</h3>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Monitored Hives Network</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   A network of sensor-equipped hives across Makueni and Kitui. Beekeepers get real-time colony health and pollination data.
@@ -183,9 +184,9 @@ const GlobalHiveNetwork = () => {
                 <Badge className="mb-4 bg-green-100 text-[#1B9157] border-green-200">
                   <MapPin className="h-3 w-3 mr-1" /> MAKUENI COUNTY
                 </Badge>
-                <h3 className="text-3xl font-bold mb-4 text-foreground">Optimizing Mango Pollination</h3>
+                <h3 className="text-3xl font-bold mb-4 text-foreground">Improving Mango Pollination</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  In partnership with local mango growers in Makueni County, BeeYield is deploying intelligent hive sensors to maximize fruit set during the critical flowering window. Our precision monitoring ensures bee colonies are active when trees need them most.
+                  In partnership with local mango growers in Makueni County, BeeYield is deploying hive sensors to track colony conditions during flowering. This helps growers time decisions around bloom and keep colonies strong when trees need them most.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> 40% increase in mango yields observed</li>
@@ -288,7 +289,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Activity className="h-6 w-6 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Monitored Hives</span>
               </div>
             </div>
           </div>
@@ -361,7 +362,7 @@ const GlobalHiveNetwork = () => {
                 </div>
 
                 <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Partner with an intelligent hive</li>
+                  <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Partner with a monitored hive</li>
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Access to webinars & events</li>
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Exclusive network insights</li>
                 </ul>
@@ -408,7 +409,7 @@ const GlobalHiveNetwork = () => {
           </Card>
         </div>
       </section>
-    </div >
+    </BeeYieldPageShell>
   );
 };
 

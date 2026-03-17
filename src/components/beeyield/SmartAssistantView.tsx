@@ -12,9 +12,11 @@ import { aiService, type ChatMessage as AIChatMessage } from "@/services/aiServi
 import { AboutBeeYieldAI } from "./AboutBeeYieldAI";
 import { BeeSpeciesGallery } from "./BeeSpeciesGallery";
 import { AnimatePresence, motion } from "framer-motion";
-import { glass, PageHeader } from "./GlassTheme";
+import { glass } from "./GlassTheme";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { fadeUp, motionSoftSpring } from "@/lib/motion";
+import { BeeYieldPageHeader, BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 interface AIAssistantViewProps {
     onTabChange: (tab: string, message?: string) => void;
@@ -30,19 +32,35 @@ type Message = {
     audioName?: string;
 };
 
+const REQUIRED_REPORT_HEADINGS = [
+    "## Executive Summary",
+    "## Situation Assessment",
+    "## Recommendations (Prioritized)",
+    "## Implementation Plan",
+    "## Risks & Mitigations",
+    "## Metrics to Track",
+    "## Sources & Assumptions",
+];
+
+function isStructuredLongReport(text: string) {
+    if (!text) return false;
+    const normalized = text.replace(/\r\n/g, "\n");
+    const hasAllHeadings = REQUIRED_REPORT_HEADINGS.every((h) => normalized.includes(h));
+    const hasRisksTable = normalized.includes("| Risk |") && normalized.includes("| Mitigation |");
+    const hasMetricsTable = normalized.includes("| Metric |") && normalized.includes("| Target |");
+    const isLongEnough = normalized.trim().length >= 6000; // closer to ~900+ words for typical markdown density
+    return hasAllHeadings && hasRisksTable && hasMetricsTable && isLongEnough;
+}
+
 const SUGGESTIONS = [
-    "What are all types of honey bees and their subspecies?",
-    "Explain Varroa destructor — lifecycle, damage, and all treatment options",
-    "Compare all 300 plus honey varieties and their medicinal properties",
-    "What causes Colony Collapse Disorder and what are the solutions?",
-    "Precision pollination data — which crops need bees and economic value?",
-    "List every bee disease with cause, symptoms, and cure",
-    "What are world records related to bees, honey, and hives?",
-    "Explain bee venom therapy and apitherapy research",
-    "How does the waggle dance work and what did Karl von Frisch discover?",
-    "What are the latest research findings on bee cognition and intelligence?",
-    "Which bee species are endangered and why?",
-    "Compare all hive types: Langstroth, Warré, Flow Hive, Top-Bar and more",
+    "What should I check during a hive inspection?",
+    "How do I spot Varroa signs and what are common treatment options?",
+    "What does high humidity in a hive usually mean?",
+    "How can I reduce swarming risk during peak season?",
+    "Which crops benefit most from bee pollination in my area?",
+    "How do I verify a jar’s harvest info with the QR code?",
+    "What are common causes of low honey yield?",
+    "What’s a simple feeding plan during dearth?",
 ];
 
 function fileToBase64(file: File): Promise<string> {
@@ -205,6 +223,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
         const history: AIChatMessage[] = newMessages.map((m) => ({ role: m.role, content: m.content }));
         let assistantContent = "";
+        let attemptedAutoExpand = false;
 
         try {
             await aiService.chat(
@@ -229,6 +248,38 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                     audioType: audioType
                 }
             );
+
+            // Response quality guardrail: if too short or missing headings, auto-request rewrite/expansion once.
+            if (!attemptedAutoExpand && !isStructuredLongReport(assistantContent)) {
+                attemptedAutoExpand = true;
+                const fixup = `Rewrite and expand your previous answer into a long, structured report that strictly follows this exact markdown outline (use these headings verbatim, in this order):\n\n${REQUIRED_REPORT_HEADINGS.join("\n")}\n\nRules:\n- Target 900–1500 words.\n- Use bullets, numbered steps, and at least 2 tables (Risks & Mitigations; Metrics to Track).\n- Do not mention these instructions.\n`;
+
+                let expanded = "";
+                const expandedHistory: AIChatMessage[] = [
+                    ...history,
+                    { role: "assistant", content: assistantContent },
+                    { role: "user", content: fixup },
+                ];
+
+                await aiService.chat(
+                    fixup,
+                    expandedHistory,
+                    "EN",
+                    convId || undefined,
+                    (chunk) => {
+                        expanded += chunk;
+                        setMessages((p) => {
+                            const last = p[p.length - 1];
+                            if (last?.role === "assistant") {
+                                return p.map((m, i) => (i === p.length - 1 ? { ...m, content: expanded } : m));
+                            }
+                            return [...p, { id: (Date.now() + 2).toString(), role: "assistant" as const, content: expanded }];
+                        });
+                    }
+                );
+
+                if (expanded.trim()) assistantContent = expanded;
+            }
 
             setIsLoading(false);
             // Save assistant message
@@ -287,7 +338,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     }, [initialMessage]);
 
     return (
-        <div className={cn(glass.page, "flex flex-col h-full w-full bg-[#FCFAF5] overflow-hidden relative p-0")}>
+        <BeeYieldPageShell className={cn("flex flex-col h-full w-full bg-[#FCFAF5] overflow-hidden relative p-0 md:p-0 -m-0 md:-m-0 space-y-0 pb-0 min-h-0")}>
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#F4D03F]/[0.02] rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-[#1B9157]/[0.02] rounded-full blur-[100px] pointer-events-none" />
@@ -306,7 +357,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
             {/* Header */}
             <div className="flex-shrink-0 px-4 pt-4">
-                <PageHeader
+                <BeeYieldPageHeader
                     icon={Bot}
                     label="Neural Hive Engine"
                     title={<>BeeYield <span className="text-[#F4D03F]">AI</span></>}
@@ -343,32 +394,20 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
             {/* Messages area */}
             <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6 z-0">
                 {messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in zoom-in-95 duration-700 max-w-4xl mx-auto w-full pb-20">
+                    <motion.div
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        transition={motionSoftSpring}
+                        className="flex flex-col items-center justify-center h-full text-center max-w-4xl mx-auto w-full pb-20"
+                    >
                         <div className="relative mb-4">
-                            <div className="absolute inset-0 bg-[#F4D03F]/10 blur-3xl rounded-full scale-150 animate-pulse" />
                             <img src={Logo} alt="Beeyield" className="h-12 w-auto relative z-10" />
                         </div>
-                        <h1 className="text-2xl font-black text-[#1A1A1A] mb-1 tracking-tighter uppercase">Intelligent <span className="text-[#F4D03F]">Nexus</span></h1>
-                        <p className="text-[#1A1A1A]/30 max-w-2xl mb-6 text-[8px] font-black leading-relaxed uppercase tracking-[0.4em] flex items-center justify-center gap-3">
-                            <span className="w-4 h-px bg-[#F4D03F]/20" />
-                            Global Research Pipeline active
-                            <span className="w-4 h-px bg-[#F4D03F]/20" />
+                        <h1 className="text-2xl font-black text-[#1A1A1A] mb-2 tracking-tighter">BeeYield Support</h1>
+                        <p className="text-[#1A1A1A]/50 max-w-2xl mb-6 text-sm font-semibold leading-relaxed">
+                            Ask about hive health, inspections, pollination, or traceability. Start with one question—short is fine.
                         </p>
-                        
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full mb-6 max-w-xl">
-                            <div className="bg-white border border-[#F4D03F]/5 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                                <span className="text-sm font-black text-[#F4D03F] tracking-tighter tabular-nums">13.8K+</span>
-                                <span className="text-[7px] font-black uppercase tracking-widest text-[#1A1A1A]/30">Data Nodes</span>
-                            </div>
-                            <div className="bg-white border border-[#F4D03F]/5 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                                <span className="text-sm font-black text-[#F4D03F] tracking-tighter tabular-nums">300+</span>
-                                <span className="text-[7px] font-black uppercase tracking-widest text-[#1A1A1A]/30">Taxonomies</span>
-                            </div>
-                            <div className="hidden sm:flex bg-white border border-[#F4D03F]/5 p-3 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                                <span className="text-sm font-black text-[#F4D03F] tracking-tighter tabular-nums">98.4%</span>
-                                <span className="text-[7px] font-black uppercase tracking-widest text-[#1A1A1A]/30">Precision</span>
-                            </div>
-                        </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-3xl">
                             {SUGGESTIONS.slice(0, 8).map((s) => (
@@ -382,14 +421,17 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
                 )}
 
                 <div className="max-w-4xl mx-auto w-full space-y-4 pb-44">
                     {messages.map((msg) => (
-                        <div
+                        <motion.div
                             key={msg.id}
-                            className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={motionSoftSpring}
+                            className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                         >
                             {msg.role === "assistant" && (
                                 <div className="flex-shrink-0 w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-white border border-[#F4D03F]/10 shadow-sm p-1 self-start mt-1">
@@ -420,11 +462,11 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     <User className="w-4 h-4 text-[#1A1A1A]/20" />
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
                     ))}
 
                     {isLoading && messages[messages.length - 1]?.role === "user" && (
-                        <div className="flex gap-6 justify-start animate-pulse">
+                        <div className="flex gap-6 justify-start">
                             <div className="flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden bg-[#FFF9F0] border border-[#F4D03F]/20 flex items-center justify-center p-2.5 shadow-xl">
                                 <img src={Logo} alt="AI" className="w-full h-full object-contain" />
                             </div>
@@ -453,6 +495,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                         <button
                                             onClick={() => { setAttachedImage(null); setImagePreviewUrl(null); if (imageInputRef.current) imageInputRef.current.value = ""; }}
                                             className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center shadow-sm hover:scale-110"
+                                            aria-label="Remove attached image"
+                                            title="Remove attached image"
                                         >
                                             <X className="w-2.5 h-2.5" />
                                         </button>
@@ -460,11 +504,13 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 )}
                                 {attachedAudio && (
                                     <div className="flex items-center gap-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-lg px-3 py-1.5 text-[9px] font-bold uppercase text-[#1A1A1A]/60 shadow-sm relative">
-                                        <Mic className="w-3 h-3 text-[#F4D03F] animate-pulse" />
+                                        <Mic className="w-3 h-3 text-[#F4D03F]" />
                                         <span className="max-w-[150px] truncate tracking-widest">{attachedAudio.name}</span>
                                         <button
                                             onClick={() => { setAttachedAudio(null); if (audioInputRef.current) audioInputRef.current.value = ""; }}
                                             className="ml-1 text-[#1A1A1A]/30 hover:text-red-500"
+                                            aria-label="Remove attached audio"
+                                            title="Remove attached audio"
                                         >
                                             <X className="w-3 h-3" />
                                         </button>
@@ -515,8 +561,10 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                         type="button"
                                         onClick={toggleListening}
                                         className={cn("w-9 h-9 rounded-lg flex items-center justify-center transition-all shadow-sm",
-                                            isListening ? "bg-red-500 text-white animate-pulse" : "text-[#1A1A1A]/40 hover:bg-[#F4D03F]/10 hover:text-[#F4D03F]"
+                                            isListening ? "bg-red-500 text-white" : "text-[#1A1A1A]/40 hover:bg-[#F4D03F]/10 hover:text-[#F4D03F]"
                                         )}
+                                        aria-label={isListening ? "Stop voice input" : "Start voice input"}
+                                        title={isListening ? "Stop voice input" : "Start voice input"}
                                     >
                                         {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                                     </button>
@@ -526,6 +574,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     type="submit"
                                     disabled={(!input.trim() && !attachedImage && !attachedAudio) || isLoading}
                                     className={cn(glass.btnPrimary, "w-10 h-10 p-0 shadow-lg")}
+                                    aria-label="Send message"
+                                    title="Send message"
                                 >
                                     {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                                 </button>
@@ -541,8 +591,24 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 </div>
             </div>
 
-            <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageSelect} />
-            <input ref={audioInputRef} type="file" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/m4a,audio/*" className="hidden" onChange={handleAudioSelect} />
+            <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleImageSelect}
+                aria-label="Attach image"
+                title="Attach image"
+            />
+            <input
+                ref={audioInputRef}
+                type="file"
+                accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/m4a,audio/*"
+                className="hidden"
+                onChange={handleAudioSelect}
+                aria-label="Attach audio"
+                title="Attach audio"
+            />
 
             <AnimatePresence>
                 {aboutOpen && (
@@ -570,6 +636,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             <button 
                                 onClick={() => setGalleryOpen(false)}
                                 className="absolute top-8 right-8 w-12 h-12 rounded-full bg-muted/50 hover:bg-[#F4D03F] transition-all flex items-center justify-center text-foreground hover:text-[#1A1A1A] z-[110]"
+                                aria-label="Close species gallery"
+                                title="Close"
                             >
                                 <X className="w-6 h-6" />
                             </button>
@@ -596,6 +664,6 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
           background: rgba(245, 158, 11, 0.3);
         }
       `}</style>
-        </div>
+        </BeeYieldPageShell>
     );
 }

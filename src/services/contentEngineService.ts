@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Content Engine Service
  * ======================
  * Powers the "Big 45" Content Engine: AI-assisted blog creation,
@@ -460,84 +460,84 @@ export const contentEngine = {
         // 1. Keyword in Title (15 pts)
         const primaryKeyword = focusKeywords[0]?.toLowerCase() || '';
         if (primaryKeyword && lowerTitle.includes(primaryKeyword)) {
-            seoPoints += 15; seoPasses.push('âœ… Focus keyword found in H1 title');
+            seoPoints += 15; seoPasses.push('✅ Focus keyword found in H1 title');
         } else if (primaryKeyword) {
-            seoIssues.push('âš ï¸ Add focus keyword to your H1 title');
+            seoIssues.push('⚠️ Add focus keyword to your H1 title');
         }
 
         // 2. Keyword in first 100 words (10 pts)
         const first100 = words.slice(0, 100).join(' ').toLowerCase();
         if (primaryKeyword && first100.includes(primaryKeyword)) {
-            seoPoints += 10; seoPasses.push('âœ… Keyword in first 100 words');
+            seoPoints += 10; seoPasses.push('✅ Keyword in first 100 words');
         } else if (primaryKeyword) {
-            seoIssues.push('âš ï¸ Include focus keyword in the first 100 words');
+            seoIssues.push('⚠️ Include focus keyword in the first 100 words');
         }
 
         // 3. Meta Title length (10 pts)
         if (metaTitle && metaTitle.length > 0 && metaTitle.length <= 60) {
-            seoPoints += 10; seoPasses.push(`âœ… Meta title length: ${metaTitle.length}/60 chars`);
+            seoPoints += 10; seoPasses.push(`✅ Meta title length: ${metaTitle.length}/60 chars`);
         } else if (!metaTitle || metaTitle.length === 0) {
-            seoIssues.push('âš ï¸ Add a meta title (max 60 chars)');
+            seoIssues.push('⚠️ Add a meta title (max 60 chars)');
         } else {
-            seoIssues.push(`âš ï¸ Meta title too long: ${metaTitle.length}/60 chars`);
+            seoIssues.push(`⚠️ Meta title too long: ${metaTitle.length}/60 chars`);
         }
 
         // 4. Meta Description length (10 pts)
         if (metaDescription && metaDescription.length > 0 && metaDescription.length <= 160) {
-            seoPoints += 10; seoPasses.push(`âœ… Meta description: ${metaDescription.length}/160 chars`);
+            seoPoints += 10; seoPasses.push(`✅ Meta description: ${metaDescription.length}/160 chars`);
         } else if (!metaDescription || metaDescription.length === 0) {
-            seoIssues.push('âš ï¸ Add a meta description (max 160 chars)');
+            seoIssues.push('⚠️ Add a meta description (max 160 chars)');
         } else {
-            seoIssues.push(`âš ï¸ Meta description too long: ${metaDescription.length}/160 chars`);
+            seoIssues.push(`⚠️ Meta description too long: ${metaDescription.length}/160 chars`);
         }
 
         // 5. Word count > 3000 (15 pts), > 5000 bonus
         if (wordCount >= 6000) {
-            seoPoints += 15; seoPasses.push(`âœ… Excellent word count: ${wordCount.toLocaleString()} words`);
+            seoPoints += 15; seoPasses.push(`✅ Excellent word count: ${wordCount.toLocaleString()} words`);
         } else if (wordCount >= 3000) {
-            seoPoints += 10; seoPasses.push(`âœ… Good word count: ${wordCount.toLocaleString()} words`);
+            seoPoints += 10; seoPasses.push(`✅ Good word count: ${wordCount.toLocaleString()} words`);
         } else {
-            seoIssues.push(`âš ï¸ Short content: ${wordCount.toLocaleString()}/6,000 words`);
+            seoIssues.push(`⚠️ Short content: ${wordCount.toLocaleString()}/6,000 words`);
         }
 
         // 6. Subheadings (H2/H3) present (10 pts)
         const headingCount = (content.match(/<h[23][^>]*>/gi) || []).length;
         if (headingCount >= 5) {
-            seoPoints += 10; seoPasses.push(`âœ… ${headingCount} subheadings found`);
+            seoPoints += 10; seoPasses.push(`✅ ${headingCount} subheadings found`);
         } else if (headingCount >= 2) {
-            seoPoints += 5; seoIssues.push(`âš ï¸ Only ${headingCount} subheadings. Add more for structure.`);
+            seoPoints += 5; seoIssues.push(`⚠️ Only ${headingCount} subheadings. Add more for structure.`);
         } else {
-            seoIssues.push('âš ï¸ Add H2/H3 subheadings to improve structure');
+            seoIssues.push('⚠️ Add H2/H3 subheadings to improve structure');
         }
 
         // 7. Images / Alt text (10 pts)
         const images = content.match(/<img[^>]*>/gi) || [];
         const imagesWithAlt = content.match(/<img[^>]*alt="[^"]+"/gi) || [];
         if (images.length >= 3 && imagesWithAlt.length === images.length) {
-            seoPoints += 10; seoPasses.push(`âœ… ${images.length} images, all with alt text`);
+            seoPoints += 10; seoPasses.push(`✅ ${images.length} images, all with alt text`);
         } else if (images.length >= 1) {
-            seoPoints += 5; seoIssues.push('âš ï¸ Ensure all images have descriptive alt text');
+            seoPoints += 5; seoIssues.push('⚠️ Ensure all images have descriptive alt text');
         } else {
-            seoIssues.push('âš ï¸ Add images with alt text for better SEO');
+            seoIssues.push('⚠️ Add images with alt text for better SEO');
         }
 
         // 8. Internal/External links (10 pts)
         const links = content.match(/<a\s/gi) || [];
         if (links.length >= 3) {
-            seoPoints += 10; seoPasses.push(`âœ… ${links.length} links found`);
+            seoPoints += 10; seoPasses.push(`✅ ${links.length} links found`);
         } else {
-            seoIssues.push('âš ï¸ Add internal and external links (min 3)');
+            seoIssues.push('⚠️ Add internal and external links (min 3)');
         }
 
         // 9. Keyword density 1-3% (10 pts)
         const keywordOccurrences = primaryKeyword ? (lowerContent.match(new RegExp(primaryKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length : 0;
         const density = wordCount > 0 ? (keywordOccurrences / wordCount) * 100 : 0;
         if (density >= 0.5 && density <= 3) {
-            seoPoints += 10; seoPasses.push(`âœ… Keyword density: ${density.toFixed(1)}% (ideal)`);
+            seoPoints += 10; seoPasses.push(`✅ Keyword density: ${density.toFixed(1)}% (ideal)`);
         } else if (density > 3) {
-            seoIssues.push(`âš ï¸ Keyword stuffing detected: ${density.toFixed(1)}% density`);
+            seoIssues.push(`⚠️ Keyword stuffing detected: ${density.toFixed(1)}% density`);
         } else if (primaryKeyword) {
-            seoIssues.push(`âš ï¸ Low keyword density: ${density.toFixed(1)}%. Aim for 1-3%`);
+            seoIssues.push(`⚠️ Low keyword density: ${density.toFixed(1)}%. Aim for 1-3%`);
         }
 
         const seoScore = Math.min(100, seoPoints);
@@ -550,41 +550,41 @@ export const contentEngine = {
         // 1. Question Headers (25 pts)
         const questionHeaders = (content.match(/<h[234][^>]*>[^<]*\?/gi) || []).length;
         if (questionHeaders >= 3) {
-            aeoPoints += 25; aeoPasses.push(`âœ… ${questionHeaders} question headers (FAQ-ready)`);
+            aeoPoints += 25; aeoPasses.push(`✅ ${questionHeaders} question headers (FAQ-ready)`);
         } else if (questionHeaders >= 1) {
-            aeoPoints += 12; aeoIssues.push('âš ï¸ Add more question headers (e.g., "What is...?", "How does...?")');
+            aeoPoints += 12; aeoIssues.push('⚠️ Add more question headers (e.g., "What is...?", "How does...?")');
         } else {
-            aeoIssues.push('âš ï¸ No question headers found. Critical for voice search!');
+            aeoIssues.push('⚠️ No question headers found. Critical for voice search!');
         }
 
         // 2. Direct answers after questions (25 pts)
         const qaPattern = /<h[234][^>]*>[^<]*\?<\/h[234]>\s*<p>/gi;
         const directAnswers = (content.match(qaPattern) || []).length;
         if (directAnswers >= 2) {
-            aeoPoints += 25; aeoPasses.push('âœ… Direct answers follow question headers');
+            aeoPoints += 25; aeoPasses.push('✅ Direct answers follow question headers');
         } else if (directAnswers >= 1) {
             aeoPoints += 12;
-            aeoIssues.push('âš ï¸ Add direct answers immediately after question headers');
+            aeoIssues.push('⚠️ Add direct answers immediately after question headers');
         } else if (questionHeaders > 0) {
-            aeoIssues.push('âš ï¸ Place concise answers right after your question headers');
+            aeoIssues.push('⚠️ Place concise answers right after your question headers');
         }
 
         // 3. AEO Snippet provided (25 pts)
         if (aeoSnippet && aeoSnippet.split(/\s+/).length >= 20) {
-            aeoPoints += 25; aeoPasses.push('âœ… AEO answer snippet provided (voice search ready)');
+            aeoPoints += 25; aeoPasses.push('✅ AEO answer snippet provided (voice search ready)');
         } else {
-            aeoIssues.push('âš ï¸ Add a 40-word AEO snippet for voice search (Siri/Alexa)');
+            aeoIssues.push('⚠️ Add a 40-word AEO snippet for voice search (Siri/Alexa)');
         }
 
         // 4. Lists/Tables for featured snippets (25 pts)
         const hasList = /<[ou]l/i.test(content);
         const hasTable = /<table/i.test(content);
         if (hasList && hasTable) {
-            aeoPoints += 25; aeoPasses.push('âœ… Lists AND tables found (snippet-ready)');
+            aeoPoints += 25; aeoPasses.push('✅ Lists AND tables found (snippet-ready)');
         } else if (hasList || hasTable) {
-            aeoPoints += 12; aeoIssues.push('âš ï¸ Add both lists and tables for better featured snippets');
+            aeoPoints += 12; aeoIssues.push('⚠️ Add both lists and tables for better featured snippets');
         } else {
-            aeoIssues.push('âš ï¸ Add structured content (lists/tables) for featured snippets');
+            aeoIssues.push('⚠️ Add structured content (lists/tables) for featured snippets');
         }
 
         const aeoScore = Math.min(100, aeoPoints);
@@ -598,45 +598,45 @@ export const contentEngine = {
         const citationPatterns = /according to|cited by|research by|published in|study by|data from|FAO|WHO|USDA|university|journal/gi;
         const citations = (lowerContent.match(citationPatterns) || []).length;
         if (citations >= 5) {
-            geoPoints += 30; geoPasses.push(`âœ… ${citations} authoritative citations found`);
+            geoPoints += 30; geoPasses.push(`✅ ${citations} authoritative citations found`);
         } else if (citations >= 2) {
-            geoPoints += 15; geoIssues.push('âš ï¸ Add more authoritative citations (FAO, USDA, journals)');
+            geoPoints += 15; geoIssues.push('⚠️ Add more authoritative citations (FAO, USDA, journals)');
         } else {
-            geoIssues.push('âš ï¸ AI summaries prioritize cited content. Add "According to..." citations');
+            geoIssues.push('⚠️ AI summaries prioritize cited content. Add "According to..." citations');
         }
 
         // 2. Citation sources provided (20 pts)
         if (citationSources && citationSources.length >= 3) {
-            geoPoints += 20; geoPasses.push(`âœ… ${citationSources.length} citation source URLs provided`);
+            geoPoints += 20; geoPasses.push(`✅ ${citationSources.length} citation source URLs provided`);
         } else {
-            geoIssues.push('âš ï¸ Add citation source URLs for AI engine verification');
+            geoIssues.push('⚠️ Add citation source URLs for AI engine verification');
         }
 
         // 3. Data-driven content (20 pts)
         const dataIndicators = /\d+%|\d+\.\d+|statistic|data shows|research indicates|figure \d|table \d/gi;
         const dataPoints = (lowerContent.match(dataIndicators) || []).length;
         if (dataPoints >= 5) {
-            geoPoints += 20; geoPasses.push(`âœ… ${dataPoints} data points found (AI-summary friendly)`);
+            geoPoints += 20; geoPasses.push(`✅ ${dataPoints} data points found (AI-summary friendly)`);
         } else if (dataPoints >= 2) {
-            geoPoints += 10; geoIssues.push('âš ï¸ Add more statistics and data points');
+            geoPoints += 10; geoIssues.push('⚠️ Add more statistics and data points');
         } else {
-            geoIssues.push('âš ï¸ No quantitative data found. AI summaries favor data-rich content');
+            geoIssues.push('⚠️ No quantitative data found. AI summaries favor data-rich content');
         }
 
         // 4. Expertise signals (15 pts)
         const expertiseSignals = /expert|specialist|researcher|PhD|professor|years of experience|certified/gi;
         const expertCount = (lowerContent.match(expertiseSignals) || []).length;
         if (expertCount >= 2) {
-            geoPoints += 15; geoPasses.push('âœ… Expertise signals detected (E-E-A-T compliant)');
+            geoPoints += 15; geoPasses.push('✅ Expertise signals detected (E-E-A-T compliant)');
         } else {
-            geoIssues.push('âš ï¸ Add expertise signals (author credentials, experience mentions)');
+            geoIssues.push('⚠️ Add expertise signals (author credentials, experience mentions)');
         }
 
         // 5. Content depth/comprehensiveness (15 pts)
         if (wordCount >= 4000 && headingCount >= 8) {
-            geoPoints += 15; geoPasses.push('âœ… Comprehensive depth: high word count + structured headings');
+            geoPoints += 15; geoPasses.push('✅ Comprehensive depth: high word count + structured headings');
         } else {
-            geoIssues.push('âš ï¸ AI engines favor comprehensive long-form content (4000+ words, 8+ sections)');
+            geoIssues.push('⚠️ AI engines favor comprehensive long-form content (4000+ words, 8+ sections)');
         }
 
         const geoScore = Math.min(100, geoPoints);

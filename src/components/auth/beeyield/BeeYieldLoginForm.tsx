@@ -44,14 +44,14 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
         const { error, mfaRequired: needsMFA } = await signIn(email, password, 'beeyield');
 
         if (error) {
-            toast.error('Login Failed', { description: error.message });
+            toast.error('Sign-in failed', { description: error.message });
         } else if (needsMFA) {
             setShowMFAInput(true);
-            toast.info('Verification Required', { description: 'Please enter your secondary auth code.' });
+            toast.info('Two-step verification', { description: 'Enter the 6-digit code from your authenticator app.' });
             if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
             else localStorage.removeItem('savedEmail_beeyield');
         } else {
-            toast.success('Successfully logged in');
+            toast.success('Signed in');
             if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
             else localStorage.removeItem('savedEmail_beeyield');
             onSuccess?.();
@@ -66,9 +66,9 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
         const { error } = await verifyMFAChallenge(mfaCode, 'beeyield');
 
         if (error) {
-            toast.error('Invalid Code', { description: error.message });
+            toast.error('Invalid code', { description: error.message });
         } else {
-            toast.success('Identity verified');
+            toast.success('Verified');
             setShowMFAInput(false);
             onSuccess?.();
         }
@@ -82,7 +82,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
         if (error) {
-            toast.error('Google Login Failed', { description: error.message });
+            toast.error('Google sign-in failed', { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -94,9 +94,9 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                     <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto mb-3 border border-[#F4D03F]/20">
                         <LockIcon className="h-5 w-5 text-[#F4D03F]" />
                     </div>
-                    <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Identity Verification</h3>
+                    <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Two-step verification</h3>
                     <p className="text-[11px] font-medium text-gray-500 max-w-[200px] mx-auto">
-                        Enter the secondary access pulse from your authenticator.
+                        Enter the 6-digit code from your authenticator app.
                     </p>
                 </div>
 
@@ -115,7 +115,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                 </div>
 
                 <Button type="submit" className={cn(glass.btnPrimary, "w-full h-10 font-bold text-xs uppercase shadow-sm")} disabled={loading || mfaCode.length !== 6}>
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify Session'}
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify'}
                 </Button>
 
                 <button
@@ -126,7 +126,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                     }}
                     className="w-full text-[10px] font-bold text-gray-400 hover:text-[#1A1A1A] transition-colors py-1 uppercase tracking-widest"
                 >
-                    Back to login
+                    Back to sign in
                 </button>
             </form>
         );
@@ -136,7 +136,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-3.5">
                 <div className="space-y-1.5">
-                    <Label htmlFor="by-email" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Kernel Designation</Label>
+                    <Label htmlFor="by-email" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Email</Label>
                     <div className="relative group">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
                         <Input
@@ -154,14 +154,14 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
                 <div className="space-y-1.5">
                     <div className="flex items-center justify-between ml-1">
-                        <Label htmlFor="by-password" className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Access Secret</Label>
+                        <Label htmlFor="by-password" className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Password</Label>
                         {onForgotPassword && (
                             <button
                                 type="button"
                                 onClick={onForgotPassword}
                                 className="text-[10px] font-bold text-[#F4D03F] hover:underline uppercase tracking-tight"
                             >
-                                Recover
+                                Forgot?
                             </button>
                         )}
                     </div>
@@ -191,7 +191,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         htmlFor="by-remember"
                         className="text-[10px] font-bold text-gray-400 cursor-pointer hover:text-gray-900 transition-colors uppercase tracking-tight"
                     >
-                        Persistent session hash
+                        Remember me
                     </label>
                 </div>
             </div>
@@ -202,7 +202,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                 disabled={loading}
             >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                Authorize Access
+                Sign in
             </Button>
 
             <div className="relative py-1">
@@ -210,7 +210,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                     <span className="w-full border-t border-gray-100" />
                 </div>
                 <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.3em]">
-                    <span className="bg-white px-3 text-gray-300">Relay</span>
+                    <span className="bg-white px-3 text-gray-300">or</span>
                 </div>
             </div>
 
@@ -243,7 +243,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         />
                     </svg>
                 )}
-                Federated Google Link
+                Continue with Google
             </Button>
             
             {onSwitchToRegister && (
@@ -253,7 +253,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         onClick={onSwitchToRegister}
                         className="text-[10px] font-bold text-gray-400 hover:text-[#F4D03F] transition-colors uppercase tracking-tight"
                     >
-                        New Industrial Entity? <span className="text-[#F4D03F] ml-1">Register Hive</span>
+                        New here? <span className="text-[#F4D03F] ml-1">Create an account</span>
                     </button>
                </div>
             )}

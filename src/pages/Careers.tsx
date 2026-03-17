@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import beeyieldService from "@/services/beeyieldService";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 interface Job {
   id: string;
@@ -148,7 +149,7 @@ const Careers = () => {
 
   if (selectedJob) {
     return (
-      <div className="min-h-screen bg-background py-12 px-4 md:px-8">
+      <BeeYieldPageShell className="min-h-screen bg-background py-12 px-4 md:px-8 p-0">
         <div className="max-w-7xl mx-auto">
           <Button
             variant="ghost"
@@ -320,12 +321,12 @@ const Careers = () => {
             </div>
           )}
         </div>
-      </div>
+      </BeeYieldPageShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <BeeYieldPageShell className="min-h-screen bg-background p-0">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
@@ -532,7 +533,7 @@ const Careers = () => {
           </div>
         </div>
       </section>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

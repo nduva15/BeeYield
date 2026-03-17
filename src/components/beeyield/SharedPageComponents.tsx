@@ -2,103 +2,8 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, RefreshCw, Share2, Download, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface PageHeaderProps {
-    title: string;
-    subtitle?: string;
-    icon?: React.ElementType;
-    badge?: {
-        text: string;
-        variant?: 'default' | 'success' | 'warning' | 'error';
-    };
-    actions?: React.ReactNode;
-    onBack?: () => void;
-    onRefresh?: () => void;
-    className?: string;
-}
-
-export const PageHeader: React.FC<PageHeaderProps> = ({
-    title,
-    subtitle,
-    icon: Icon,
-    badge,
-    actions,
-    onBack,
-    onRefresh,
-    className
-}) => {
-    const getBadgeColor = (variant?: string) => {
-        switch (variant) {
-            case 'success':
-                return 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/';
-            case 'warning':
-                return 'bg-[#F4D03F]/ text-[#F4D03F] border-amber-500/20';
-            case 'error':
-                return 'bg-red-500/10 text-red-600 border-red-500/20';
-            default:
-                return 'bg-primary/10 text-primary border-primary/20';
-        }
-    };
-
-    return (
-        <div className={cn("space-y-4", className)}>
-            <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-3">
-                        {onBack && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={onBack}
-                                className="h-8 w-8 rounded-full"
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                            </Button>
-                        )}
-                        {Icon && (
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Icon className="w-5 h-5 text-primary" />
-                            </div>
-                        )}
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                                <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
-                                    {title}
-                                </h1>
-                                {badge && (
-                                    <Badge className={cn("text-xs font-semibold", getBadgeColor(badge.variant))}>
-                                        {badge.text}
-                                    </Badge>
-                                )}
-                            </div>
-                            {subtitle && (
-                                <p className="text-gray-600 mt-1 font-medium">
-                                    {subtitle}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    {onRefresh && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onRefresh}
-                            className="gap-2"
-                        >
-                            <RefreshCw className="w-4 h-4" />
-                            Refresh
-                        </Button>
-                    )}
-                    {actions}
-                </div>
-            </div>
-        </div>
-    );
-};
+import { BeeYieldPageHeader } from '@/components/beeyield/BeeYieldUI';
 
 interface QuickActionCardProps {
     title: string;
@@ -163,6 +68,10 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
         </Card>
     );
 };
+
+// Backwards-compatible re-export: prefer BeeYieldPageHeader for new code.
+// Keeping the name PageHeader avoids breaking existing imports.
+export const PageHeader = BeeYieldPageHeader;
 
 interface StatCardProps {
     label: string;

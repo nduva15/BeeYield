@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 import CebaLoginForm from '@/components/auth/ceba/CebaLoginForm';
 import CebaRegisterForm from '@/components/auth/ceba/CebaRegisterForm';
@@ -41,19 +42,19 @@ const AdminAuth = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <BeeYieldPageShell className="bg-white flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <div className="relative">
                         <div className="w-12 h-12 rounded-full border-4 border-honey/10 border-t-honey animate-spin" />
                     </div>
                     <span className="text-honey font-bold text-sm tracking-widest uppercase">Authorizing...</span>
                 </div>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden">
+        <BeeYieldPageShell className="bg-[#FDFCF9] text-gray-900 selection:bg-honey/20 font-sans relative overflow-hidden p-0 md:p-0 -m-4 md:-m-6">
             {/* Ambient Background */}
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-honey/5 rounded-full blur-[120px] -mr-96 -mt-96 opacity-60" />
             <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-beeyield-green/5 rounded-full blur-[120px] -ml-96 -mb-96 opacity-60" />
@@ -68,7 +69,7 @@ const AdminAuth = () => {
                             <span className="text-2xl font-black tracking-tight text-gray-900 leading-none">
                                 Bee<span className="text-honey">Yield</span>
                             </span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">Admin Central</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">Admin portal</span>
                         </div>
                     </Link>
 
@@ -90,14 +91,14 @@ const AdminAuth = () => {
                     >
                         <div className="text-center mb-12 space-y-4">
                             <h2 className="text-4xl font-black tracking-tight text-gray-900 leading-tight">
-                                {authMode === 'login' ? 'System Access' : authMode === 'register' ? 'Join Management' : 'Restoration'}
+                                {authMode === 'login' ? 'Sign in' : authMode === 'register' ? 'Request access' : 'Reset password'}
                             </h2>
                             <p className="text-gray-500 font-medium text-lg max-w-[80%] mx-auto leading-relaxed">
                                 {authMode === 'login' 
-                                    ? 'Enter your credentials to access the administrative dashboard.' 
+                                    ? 'Sign in to access the admin dashboard.' 
                                     : authMode === 'register' 
-                                    ? 'Apply for an administrative role within our system.' 
-                                    : 'Please provide your email to recover your access.'}
+                                    ? 'Request an admin account. We’ll review and get back to you.' 
+                                    : 'Enter your email and we’ll send a reset link.'}
                             </p>
                         </div>
 
@@ -145,9 +146,9 @@ const AdminAuth = () => {
                             </div>
                             
                             <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl">
-                                <div className="w-2 h-2 rounded-full bg-beeyield-green animate-pulse" />
+                                <div className="w-2 h-2 rounded-full bg-beeyield-green" />
                                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-                                    Encrypted Admin Gateway
+                                    Secure sign-in
                                 </span>
                             </div>
                         </div>
@@ -157,16 +158,16 @@ const AdminAuth = () => {
                 <footer className="py-12 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black uppercase tracking-widest text-gray-400">
                         <p>© 2026 BeeYield. All rights reserved.</p>
-                        <p className="opacity-60">Controlled Environment Access</p>
+                        <p className="opacity-60">Admin access</p>
                     </div>
                     <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
-                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Infrastructure</a>
+                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Status</a>
                         <a href="#" className="text-gray-400 hover:text-honey transition-colors">Privacy</a>
-                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Assistance</a>
+                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Support</a>
                     </div>
                 </footer>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

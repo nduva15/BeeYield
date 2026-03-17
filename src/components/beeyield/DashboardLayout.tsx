@@ -53,7 +53,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     isOpen={isQuickActionOpen}
                     onClose={() => setIsQuickActionOpen(false)}
                     onSuccess={() => {
-                        console.log('Refresh current view data');
                     }}
                 />
 

@@ -17,21 +17,22 @@ import {
     Activity,
     Hash
 } from 'lucide-react';
-import { PageHeader, glass } from '@/components/beeyield/GlassTheme';
+import { glass } from '@/components/beeyield/GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import VarroaWashInterpreter from '@/components/calculators/VarroaWashInterpreter';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BeeCalculatorSuite: React.FC = () => {
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
-            <PageHeader
+        <BeeYieldPageShell className="space-y-6 animate-in fade-in duration-500">
+            <BeeYieldPageHeader
                 icon={Calculator}
                 label="Universal Calculator Suite"
                 title={<>Precision <span className="text-[#F4D03F]">Forecasting</span></>}
                 subtitle="Feeding Math · Treatment Cycles · Pollination Economics"
                 actions={
-                    <button className={cn(glass.btnSecondary, "h-9 text-[10px]")}>
+                    <button className={cn(glass.btnSecondary, "h-9 text-[10px]")} aria-label="Open audit history" title="Audit history">
                         <History className="w-3.5 h-3.5" />
                         Audit History
                     </button>
@@ -135,7 +136,7 @@ const BeeCalculatorSuite: React.FC = () => {
                                     ))}
                                 </div>
                                 <button className="w-full h-11 border-t border-gray-100 font-black uppercase text-[9px] tracking-[0.2em] text-gray-400 hover:text-[#1A1A1A] transition-colors bg-[#F9F7F2]/30">
-                                    Load Full Audit Ledger
+                                    Load full history
                                 </button>
                             </CardContent>
                         </Card>
@@ -151,8 +152,8 @@ const BeeCalculatorSuite: React.FC = () => {
                         <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 mb-4">
                             <Droplet className="w-8 h-8 text-[#F4D03F] opacity-40" />
                         </div>
-                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Feeding Engine Initializing...</h3>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Syncing Supplement Matrices</p>
+                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Feeding tools are loading…</h3>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Please wait</p>
                     </div>
                 </TabsContent>
 
@@ -161,12 +162,12 @@ const BeeCalculatorSuite: React.FC = () => {
                         <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 mb-4">
                             <Zap className="w-8 h-8 text-[#F4D03F] opacity-40" />
                         </div>
-                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Logistics Engine Syncing...</h3>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Calculating Optimal Saturation Curves</p>
+                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Logistics tools are loading…</h3>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Please wait</p>
                     </div>
                 </TabsContent>
             </Tabs>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

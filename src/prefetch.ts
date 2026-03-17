@@ -33,7 +33,6 @@ export function initPrefetch() {
     window.addEventListener('prefetch-route', (e: any) => {
         const path = e.detail?.path;
         if (path && routeMap[path]) {
-            console.log(`[Prefetch] Pre-loading route: ${path}`);
             routeMap[path]().catch(() => { }); // Fire and forget
         }
     });

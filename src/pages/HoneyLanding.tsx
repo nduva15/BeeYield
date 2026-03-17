@@ -41,6 +41,7 @@ import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { submitNewsletterSubscription } from "@/services/contactService";
 import beeyieldService from "@/services/beeyieldService";
 import SEO from "@/components/SEO";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 // Reusing same product types and data from Shop.tsx for consistency
 import { initialHoneyProducts } from "@/data/honey-products";
@@ -505,8 +506,8 @@ const FeaturesSection = () => {
     },
     {
       icon: Droplets,
-      title: "Intelligent Hive Monitoring",
-      description: "Our hives use intelligent sensors to detect disease and stress before they impact the honey.",
+      title: "Hive Health Monitoring",
+      description: "Sensors help us spot stress or disease early, so we can support the colony before it affects the harvest.",
       color: "text-beeyield-orange bg-beeyield-orange/10"
     },
   ];
@@ -638,7 +639,7 @@ const FAQSection = () => {
     },
     {
       question: "How does BeeYield protect bees from diseases?",
-      answer: "We use intelligent sensors and sound monitoring to listen to the hive. Our technology can detect signs of stress or specific diseases (like Varroa mites) early, allowing us to help the bees before it becomes a problem.",
+      answer: "We monitor the hive with sensors and sound patterns to spot early signs of stress or disease (like Varroa mites). That gives us time to act before it becomes a bigger issue.",
     },
     {
       question: "Why does protecting bees result in better honey?",
@@ -754,7 +755,7 @@ const NewsletterSection = () => {
                 Keep in <span className="text-beeyield-gold">Touch</span>
               </h2>
               <p className="text-beeyield-green-100/80 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium">
-                Subscribe for exclusive drops, blockchain reports, and the future of verifiable beekeeping.
+                Subscribe for new releases, updates, and practical tips for beekeepers.
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-[#F9F7F2] p-2 rounded-3xl border border-[#F4D03F]/20">
@@ -928,9 +929,9 @@ const MissionStatementSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tighter leading-[1.1] mb-12 uppercase"
+            className="text-3xl md:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tighter leading-[1.1] mb-12"
           >
-            To protect the world's pollinators through <span className="text-beeyield-green">bio-digital intelligence</span> and provide consumers with <span className="text-beeyield-gold italic">radical transparency</span>.
+            To protect the world's pollinators by supporting healthier hives and giving customers clear proof of where their honey came from.
           </motion.h2>
 
           <motion.div
@@ -1035,7 +1036,7 @@ const HoneyLanding = () => {
   const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
   return (
-    <div className="min-h-screen bg-[#FFF9F0]">
+    <BeeYieldPageShell className="bg-[#FFF9F0] p-0 md:p-0 -m-4 md:-m-6">
       <SEO
         title="Premium Traceable Honey from Kibwezi"
         description="Shop 100% raw, traceable honey from Kibwezi. Powered by HoneyChainâ„¢ technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
@@ -1111,7 +1112,7 @@ const HoneyLanding = () => {
       <FlashSaleSection />
       <FAQSection />
       <NewsletterSection />
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

@@ -25,6 +25,7 @@ import {
     Gift, Store, Package, Heart, ShieldCheck, FileText, Printer, User
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 type CheckoutStep = 'cart' | 'payment-info' | 'delivery' | 'payment' | 'shipment' | 'receipt';
 type DeliveryMethod = 'delivery' | 'pickup';
@@ -85,11 +86,6 @@ const Checkout = () => {
 
     // Wishlist state (Real)
     const { items: wishlistItems, removeFromWishlist } = useWishlist();
-
-    // Debug logging
-    useEffect(() => {
-        console.log('Checkout Render:', { currentStep, cartItems: items.length, wishlistItems: wishlistItems.length });
-    }, [currentStep, items, wishlistItems]);
 
     // Shipping details
     const [shippingDetails, setShippingDetails] = useState({
@@ -317,16 +313,16 @@ const Checkout = () => {
     // Loading state
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     // Empty cart and wishlist check
     if (items.length === 0 && wishlistItems.length === 0 && currentStep !== 'payment') {
         return (
-            <div className="min-h-screen bg-background">
+            <BeeYieldPageShell className="min-h-screen bg-background p-0">
                 <div className="container max-w-6xl mx-auto px-4 py-12">
                     <div className="text-center py-20">
                         <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
@@ -341,14 +337,14 @@ const Checkout = () => {
                         </Button>
                     </div>
                 </div>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     // --- SUCCESS / RECEIPT VIEW ---
     if ((currentStep === 'payment' || currentStep === 'shipment' || currentStep === 'receipt') && orderNumber) {
         return (
-            <div className="min-h-screen bg-muted/30">
+            <BeeYieldPageShell className="min-h-screen bg-muted/30 p-0">
                 <div className="container max-w-4xl mx-auto px-4 py-0 md:py-12">
                     <Card className="border-none shadow-premium rounded-[3rem] overflow-hidden print-receipt">
                         {/* Top Header Section */}
@@ -358,7 +354,7 @@ const Checkout = () => {
                                 <span className="font-black text-xl text-foreground">BeeYield</span>
                             </div>
 
-                            <div className="w-24 h-24 rounded-full bg-[#1B9157]/ flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce">
+                            <div className="w-24 h-24 rounded-full bg-[#1B9157]/ flex items-center justify-center mx-auto mb-8 mt-4">
                                 <CheckCircle2 className="w-12 h-12 text-[#1B9157]" />
                             </div>
                             <h1 className="text-4xl font-black mb-4">Order Confirmed!</h1>
@@ -529,12 +525,12 @@ const Checkout = () => {
                         </button>
                     </div>
                 </div>
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <BeeYieldPageShell className="min-h-screen bg-background p-0">
             {/* Header with Breadcrumb */}
             <div className="border-b border-border bg-card no-print">
                 <div className="container max-w-6xl mx-auto px-4 py-4">
@@ -1030,7 +1026,7 @@ const Checkout = () => {
                                     </div>
 
                                     <div className="relative">
-                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-primary animate-pulse border-4 border-background"></div>
+                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-primary border-4 border-background"></div>
                                         <p className="font-bold text-primary">Preparing Shipment</p>
                                         <p className="text-sm text-muted-foreground">Our team is packing your items with care</p>
                                     </div>
@@ -1269,7 +1265,7 @@ const Checkout = () => {
                     </Tabs>
                 </DialogContent>
             </Dialog>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

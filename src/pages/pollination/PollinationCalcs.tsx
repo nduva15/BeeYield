@@ -11,6 +11,7 @@ import {
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const PollinationCalcs: React.FC = () => {
     // Calc Engine State
@@ -28,7 +29,7 @@ const PollinationCalcs: React.FC = () => {
     const metrics = useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
 
     return (
-        <div className="min-h-screen bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12">
+        <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12 -m-0 md:-m-0">
             <div className="max-w-7xl mx-auto space-y-12">
                 {/* Back Link */}
                 <Link to="/precision-pollination" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#10b981] hover:text-[#064e3b] transition-colors">
@@ -61,6 +62,8 @@ const PollinationCalcs: React.FC = () => {
                                     <div className="flex items-center">
                                         <button
                                             onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: Math.max(1, prev.totalAcres - 5) }))}
+                                            aria-label="Decrease total area by 5 acres"
+                                            title="Decrease total area"
                                             className="w-12 h-12 border-4 border-[#064e3b] bg-[#FFF9F0] flex items-center justify-center hover:bg-[#facc15]/10"
                                         >
                                             <Minus className="w-4 h-4" />
@@ -70,6 +73,8 @@ const PollinationCalcs: React.FC = () => {
                                         </div>
                                         <button
                                             onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: prev.totalAcres + 5 }))}
+                                            aria-label="Increase total area by 5 acres"
+                                            title="Increase total area"
                                             className="w-12 h-12 border-4 border-[#064e3b] bg-[#FFF9F0] flex items-center justify-center hover:bg-[#facc15]/10"
                                         >
                                             <Plus className="w-4 h-4" />
@@ -85,6 +90,8 @@ const PollinationCalcs: React.FC = () => {
                                         max="1.0"
                                         step="0.1"
                                         value={calcInputs.bloomIntensity}
+                                        aria-label="Bloom intensity"
+                                        title="Bloom intensity"
                                         onChange={(e) => setCalcInputs(prev => ({ ...prev, bloomIntensity: parseFloat(e.target.value) }))}
                                         className="w-full accent-[#10b981] h-2 bg-neutral-100 rounded-none appearance-none"
                                     />
@@ -103,6 +110,8 @@ const PollinationCalcs: React.FC = () => {
                                         max="1.0"
                                         step="0.1"
                                         value={calcInputs.forageCondition}
+                                        aria-label="Forage competition"
+                                        title="Forage competition"
                                         onChange={(e) => setCalcInputs(prev => ({ ...prev, forageCondition: parseFloat(e.target.value) }))}
                                         className="w-full accent-[#064e3b] h-2 bg-neutral-100 rounded-none appearance-none"
                                     />
@@ -159,7 +168,7 @@ const PollinationCalcs: React.FC = () => {
                         )}>
                             {metrics.pollinationEfficacy < 60 ? <AlertTriangle className="w-8 h-8 text-red-500 shrink-0" /> : <CheckCircle2 className="w-8 h-8 text-[#10b981] shrink-0" />}
                             <div className="space-y-2">
-                                <h5 className="font-black uppercase text-xs tracking-widest">Protocol Recommendation</h5>
+                                <h5 className="font-black uppercase text-xs tracking-widest">Recommendation</h5>
                                 <p className="text-lg font-bold leading-tight">{metrics.recommendation}</p>
                             </div>
                         </div>
@@ -186,6 +195,8 @@ const PollinationCalcs: React.FC = () => {
                             <div key={idx} className="border-4 border-[#064e3b] p-6 bg-[#FFF9F0] space-y-4 relative group">
                                 <button
                                     onClick={() => setCalcInputs(prev => ({ ...prev, hives: prev.hives.filter((_, i) => i !== idx) }))}
+                                    aria-label={`Remove unit ${idx + 1}`}
+                                    title="Remove unit"
                                     className="absolute top-4 right-4 text-neutral-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-none"
                                 >
                                     <Minus className="w-4 h-4" />
@@ -226,7 +237,7 @@ const PollinationCalcs: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

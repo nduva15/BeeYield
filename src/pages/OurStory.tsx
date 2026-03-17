@@ -8,10 +8,11 @@ import {
 import { Link } from "react-router-dom";
 import impactBeekeeping from "@/assets/impact-beekeeping.jpg";
 import Logo from "@/assets/Logo.png";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const OurStory = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <BeeYieldPageShell className="min-h-screen bg-background p-0">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#F0F7F0] py-20 sm:py-28 lg:py-32">
         {/* Decorative Background Icons */}
@@ -27,7 +28,7 @@ const OurStory = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div className="text-center lg:text-left">
               <Badge variant="secondary" className="mb-6 px-4 py-1 text-sm">
-                Our Genesis
+                Our story
               </Badge>
               <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-tight">
                 The Story of <span className="text-primary">BeeYield</span>
@@ -272,7 +273,7 @@ const OurStory = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-transparent to-transparent pointer-events-none" />
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

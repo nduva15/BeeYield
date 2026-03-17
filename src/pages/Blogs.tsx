@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBlogPosts, BlogPost } from "@/services/cmsService";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const Blogs = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -29,7 +30,7 @@ const Blogs = () => {
   }, [selectedCategory]);
 
   return (
-    <div className="min-h-screen py-20">
+    <BeeYieldPageShell className="min-h-screen py-20 p-0">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-5xl font-bold">Our Blog</h1>
@@ -103,7 +104,7 @@ const Blogs = () => {
           </div>
         )}
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

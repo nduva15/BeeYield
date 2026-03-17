@@ -192,7 +192,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
 
                     <section className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Protocol Selection</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Choose a check</h4>
                             <div className="w-6 h-6 rounded-md bg-gray-50 flex items-center justify-center border border-gray-200">
                                 <Settings className="w-3.5 h-3.5 text-gray-400" />
                             </div>
@@ -227,11 +227,11 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                     <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div className="flex items-center gap-2 mb-2">
                             <div className="w-2 h-2 bg-[#1B9157] animate-pulse rounded-full" />
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B9157]">Kernel Processing</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B9157]">Status</p>
                         </div>
-                        <div className="font-mono text-[10px] text-gray-500 leading-relaxed uppercase">
-                            <p className="animate-pulse flex gap-2"><span>&gt;</span> Cycle_Analyze [OK]</p>
-                            <p className="text-[#1B9157] font-bold flex gap-2"><span>&gt;</span> Colony_Stability_Synced</p>
+                        <div className="font-mono text-[10px] text-gray-500 leading-relaxed">
+                            <p className="flex gap-2"><span>&gt;</span> Analyzing…</p>
+                            <p className="text-[#1B9157] font-bold flex gap-2"><span>&gt;</span> Up to date</p>
                         </div>
                     </div>
                 </div>
@@ -249,9 +249,9 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                         <Info className="w-5 h-5 text-gray-400 group-hover:text-[#1B9157] transition-colors" />
                     </div>
                     <div className="space-y-1">
-                        <h5 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Sound Protocol</h5>
+                        <h5 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Sound check</h5>
                         <p className="text-[11px] font-medium text-gray-500 leading-relaxed max-w-2xl border-l-2 border-[#1B9157] pl-3">
-                            Audio telemetry confirms a healthy colony cycle. Zero swarm triggers detected.
+                            The audio pattern looks normal. No swarm warning signs detected.
                         </p>
                     </div>
                 </div>
@@ -259,7 +259,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                   onClick={() => onTabChange && onTabChange('reports-exports')}
                   className={cn(glass.btnSecondary, "w-full sm:w-auto mt-2 sm:mt-0 h-9 px-4 relative z-10 text-xs font-bold")}
                 >
-                    View Node Report
+                    View report
                 </button>
             </motion.div>
         </motion.div>

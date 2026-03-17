@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import {
     Check, TrendingUp, Shield, BarChart3, ArrowRight,
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
@@ -23,8 +24,8 @@ const PollinationServices = () => {
     const differences = [
         {
             icon: Cpu,
-            title: "Intelligent Colony Monitoring",
-            description: "Sensors inside every hive track population density and brood temperature in real-time.",
+            title: "Colony Monitoring",
+            description: "Sensors inside hives track temperature and activity so you can spot changes early.",
             link: "/precision-pollination"
         },
         {
@@ -35,33 +36,33 @@ const PollinationServices = () => {
         },
         {
             icon: Eye,
-            title: "Intelligent Field Mapping",
-            description: "Visualizing bee distribution across your acreage to ensure uniform pollination coverage.",
+            title: "Field Coverage Mapping",
+            description: "See where activity is strong or weak across the field so you can adjust placement.",
             link: "/in-land-pollination"
         },
         {
             icon: Target,
             title: "Visitation Analytics",
-            description: "Quantifying the number of bee visits per flower to optimize total harvest potential.",
+            description: "Estimate bee visits per flower to understand pollination strength.",
             link: "/in-land-pollination"
         },
         {
             icon: Shield,
             title: "Early Disease Detection",
-            description: "Molecular-level monitoring to identify Pathogens like Varroa or AFB before they spread.",
+            description: "Early warning signs from sensors and inspections to catch issues like Varroa sooner.",
             link: "/diseases"
         },
         {
             icon: Target,
             title: "Precision Pollination",
-            description: "We bring a complete ecosystem of technology, expertise, and accountability that transforms your pollination from a gamble into a guarantee.",
+            description: "A practical service: monitoring, placement support, and a record of what happened during bloom.",
             link: "/precision-pollination"
         }
     ];
 
     return (
-        <div className="min-h-screen bg-background">
-            {/* Hero Section - Zero-Trust Premium Theme */}
+        <BeeYieldPageShell className="bg-background">
+            {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden py-24 sm:py-32">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
@@ -71,7 +72,7 @@ const PollinationServices = () => {
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1 }}
+                        transition={{ duration: 0.8 }}
                         className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
                     >
                         <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
@@ -148,13 +149,13 @@ const PollinationServices = () => {
                                 <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1B9157]">Live Telemetry Active</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1B9157]">Live data</span>
                                     </div>
-                                    <p className="text-2xl font-black uppercase tracking-tighter">Genesis Node: KIB-01</p>
+                                    <p className="text-2xl font-black uppercase tracking-tighter">Site: KIB-01</p>
                                 </div>
                             </div>
 
-                            {/* Floating Zero-Trust Badge */}
+                            {/* Floating badge */}
                             <motion.div
                                 animate={{ y: [0, -10, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -403,7 +404,7 @@ const PollinationServices = () => {
                     <div className="text-center mb-16 space-y-3">
                         <Badge variant="outline" className="text-[#F4D03F] border-amber-200 bg-amber-50/50 px-4 py-1">Our Expertise</Badge>
                         <h2 className="text-3xl md:text-5xl font-black tracking-tighter">Crops We <span className="text-[#F4D03F]">Pollinate</span></h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto font-medium">Selected crops benefiting from our intelligent pollination network.</p>
+                        <p className="text-muted-foreground max-w-2xl mx-auto font-medium">Selected crops where we monitor bloom conditions and pollination activity.</p>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto">
@@ -459,7 +460,7 @@ const PollinationServices = () => {
                                     How does precision pollination differ from traditional beekeeping?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses Intelligent sensors inside every hive and optimized placement across the land. We monitor colony health, bee activity, and weather patterns 24/7 to ensure maximum results, taking the guesswork out of the harvest.
+                                    Traditional beekeeping often means placing hives near crops and waiting to see what happens. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses sensors in hives and data-informed placement across the land. We monitor colony health, bee activity, and weather during bloom so you can see what's happening and respond quickly.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -486,7 +487,7 @@ const PollinationServices = () => {
                                     Is BeeYield available in my region?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    BeeYield is currently the premier pollination partner in <strong className="font-bold text-foreground">East Africa</strong>, with major operations across Kenya and growing networks in neighboring regions. We are building a global hive network and invite farmers and beekeeping organizations worldwide to join our partner program.
+                                    BeeYield is active across <strong className="font-bold text-foreground">East Africa</strong>, with operations in Kenya and a growing network in neighboring regions. If you're outside the region, reach out?we'll tell you what's available and what timelines look like.
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -504,7 +505,7 @@ const PollinationServices = () => {
                                 "name": "How does precision pollination differ from traditional beekeeping?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Precision pollination uses IoT sensors and data-driven hive placement to monitor colony strength and bee activity 24/7. Unlike traditional beekeeping which relies on proximity alone, BeeYield ensures maximum fertilization during the critical bloom phase using real-time field data."
+                                    "text": "Precision pollination uses sensors in hives and data-informed placement to monitor colony strength, bee activity, and weather during bloom. Unlike traditional beekeeping that relies on proximity alone, it helps you see performance across the field and respond quickly when conditions change."
                                 }
                             },
                             {
@@ -512,7 +513,7 @@ const PollinationServices = () => {
                                 "name": "What results can farmers expect with BeeYield?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Farmers using BeeYield have seen up to a 35% increase in crop yield through optimized pollination. Results vary by crop and conditions. We also provide verifiable data showing a 300% increase in measurable colony activity compared to traditional methods."
+                                    "text": "Results vary by crop and conditions. Some partners have seen up to a 35% increase in yield. We also provide verifiable field and hive data so you can quantify pollination activity instead of relying on estimates."
                                 }
                             },
                             {
@@ -520,7 +521,7 @@ const PollinationServices = () => {
                                 "name": "Is BeeYield available in my region?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "BeeYield is currently active across East Africa, primarily in Kenya, and is expanding its network. We work with farmers, beekeeping equipment manufacturers, and industry organizations to improve yield outcomes."
+                                    "text": "BeeYield is currently active across East Africa, primarily in Kenya, and is expanding. If you're outside the region, contact us and we'll share availability and rollout timelines."
                                 }
                             }
                         ]
@@ -550,10 +551,10 @@ const PollinationServices = () => {
                             </Button>
                         </Link>
                     </div>
-                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support • Real-time Data • Measurable Impact</p>
+                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support ? Real-time Data ? Measurable Impact</p>
                 </div>
             </section>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

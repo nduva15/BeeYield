@@ -2,6 +2,13 @@ import { apiGet, apiPost, apiDelete, apiDownload } from './api';
 
 export interface LabelDesign {
     id: string;
+    /** Linkages for traceability context */
+    harvestId?: string;
+    hiveId?: string;
+    apiaryId?: string;
+    /** Convenience: stored traceability URL for QR / quick-open */
+    traceUrl?: string;
+
     name: string;
     productName: string;
     honeyType: string;
@@ -54,12 +61,17 @@ export interface LabelDesign {
 
 export const labelService = {
     getLabels: async (): Promise<LabelDesign[]> => {
-        const response: any = await apiGet('/labels');
-        const data = Array.isArray(response) ? response : (response.data || []);
-        return data.map((item: any) => ({
-            ...item.design_json,
-            id: item.id // Ensure we use the database ID
-        }));
+        try {
+            const response: any = await apiGet('/labels');
+            const data = Array.isArray(response) ? response : (response.data || []);
+            return data.map((item: any) => ({
+                ...item.design_json,
+                id: item.id // Ensure we use the database ID
+            }));
+        } catch (e) {
+            // If user is logged out, return empty list (dashboard shows empty tables)
+            return [];
+        }
     },
 
     saveLabel: async (design: LabelDesign): Promise<LabelDesign> => {

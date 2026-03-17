@@ -11,7 +11,6 @@ export class TraceabilityVerifier {
     private static instance: TraceabilityVerifier;
 
     private constructor() {
-        console.log("Initializing C++ Traceability Verification Engine...");
     }
 
     public static getInstance(): TraceabilityVerifier {
@@ -36,7 +35,7 @@ export class TraceabilityVerifier {
 
         return {
             isValid: true, // Verification passed
-            trustScore: 98.7, // High trust score from C++ algo
+            trustScore: 98.7,
             hash: simulatedHash
         };
     }

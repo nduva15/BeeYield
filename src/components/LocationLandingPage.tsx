@@ -121,8 +121,8 @@ const LocationLandingPage: React.FC<LocationProps> = ({
                                 <h2 className="text-4xl font-black tracking-tight">Trust BeeYield in <span className="text-amber-600">{regionName}</span></h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
                                     We've been part of the {cityName} agricultural community for years.
-                                    Our mission is to help farmers in {regionName} maximize their crop yields
-                                    through data-driven hive management.
+                                    Our mission is to help farmers in {regionName} improve crop yields
+                                    with practical hive management and field data.
                                 </p>
                             </div>
 
@@ -131,7 +131,7 @@ const LocationLandingPage: React.FC<LocationProps> = ({
                                     "Managed hive deployments for regional crops",
                                     "Real-time colony health monitoring",
                                     "Expert agronomists on-call for field visits",
-                                    "Comprehensive pollination coverage"
+                                    "Pollination coverage across your field"
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3">
                                         <CheckCircle2 className="h-6 w-6 text-green-600" />

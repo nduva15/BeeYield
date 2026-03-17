@@ -15,6 +15,38 @@ import {
     Calendar, Info
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+
+type StatCardProps = {
+    title: string;
+    value: string;
+    unit: string;
+    icon: any;
+    color: string;
+    trend: string;
+};
+
+const StatCard = ({ title, value, unit, icon: Icon, color, trend }: StatCardProps) => (
+    <Card className="bg-[#F9F7F2] border-[#F4D03F]/20 overflow-hidden relative group">
+        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Icon size={64} className={color} />
+        </div>
+        <CardHeader className="pb-2">
+            <CardDescription className="text-xs font-medium uppercase tracking-wider">{title}</CardDescription>
+            <CardTitle className="text-2xl font-bold flex items-baseline gap-1">
+                {value}<span className="text-sm font-normal text-muted-foreground">{unit}</span>
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-none px-1 py-0 h-5 text-[10px]">
+                    {trend}
+                </Badge>
+                <span className="text-[10px] text-muted-foreground whitespace-nowrap">vs last period</span>
+            </div>
+        </CardContent>
+    </Card>
+);
 
 export default function MeasurementData() {
     const [timeRange, setTimeRange] = useState('7d');
@@ -59,32 +91,8 @@ export default function MeasurementData() {
         },
     });
 
-    // --- Components ---
-
-    const StatCard = ({ title, value, unit, icon: Icon, color, trend }: any) => (
-        <Card className="bg-[#F9F7F2] border-[#F4D03F]/20 overflow-hidden relative group">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Icon size={64} className={color} />
-            </div>
-            <CardHeader className="pb-2">
-                <CardDescription className="text-xs font-medium uppercase tracking-wider">{title}</CardDescription>
-                <CardTitle className="text-2xl font-bold flex items-baseline gap-1">
-                    {value}<span className="text-sm font-normal text-muted-foreground">{unit}</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-none px-1 py-0 h-5 text-[10px]">
-                        {trend}
-                    </Badge>
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">vs last period</span>
-                </div>
-            </CardContent>
-        </Card>
-    );
-
     return (
-        <div className="container mx-auto p-6 space-y-8 min-h-screen bg-transparent">
+        <BeeYieldPageShell className="container mx-auto p-6 space-y-8 min-h-screen bg-transparent">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
@@ -120,7 +128,7 @@ export default function MeasurementData() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Brood Temp" value="34.8" unit="Â°C" icon={Thermometer} color="text-orange-500" trend="+0.2Â°" />
+                <StatCard title="Brood Temp" value="34.8" unit="°C" icon={Thermometer} color="text-orange-500" trend="+0.2°" />
                 <StatCard title="Hive Weight" value="42.5" unit="kg" icon={Weight} color="text-[#F4D03F]" trend="+1.2kg" />
                 <StatCard title="Humidity" value="62" unit="%" icon={Droplets} color="text-blue-500" trend="-2%" />
                 <StatCard title="Rain Probability" value="15" unit="%" icon={CloudRain} color="text-slate-500" trend="Stable" />
@@ -321,6 +329,6 @@ export default function MeasurementData() {
                     </div>
                 </TabsContent>
             </Tabs>
-        </div>
+        </BeeYieldPageShell>
     );
 }

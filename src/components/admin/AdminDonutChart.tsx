@@ -19,7 +19,6 @@ const AdminDonutChart: React.FC<AdminDonutChartProps> = ({
     className
 }) => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
-    let currentAngle = 0;
 
     const createSegment = (startAngle: number, endAngle: number, color: string) => {
         const startRad = (startAngle - 90) * (Math.PI / 180);
@@ -35,15 +34,19 @@ const AdminDonutChart: React.FC<AdminDonutChartProps> = ({
         return `M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`;
     };
 
-    const segments = data.map((item) => {
-        const segmentAngle = (item.value / total) * 360;
-        const segment = {
-            path: createSegment(currentAngle, currentAngle + segmentAngle, item.color),
-            color: item.color,
-        };
-        currentAngle += segmentAngle;
-        return segment;
-    });
+    const segments = data.reduce<{ segments: Array<{ path: string; color: string }>; angle: number }>(
+        (acc, item) => {
+            const segmentAngle = total > 0 ? (item.value / total) * 360 : 0;
+            const nextAngle = acc.angle + segmentAngle;
+            acc.segments.push({
+                path: createSegment(acc.angle, nextAngle, item.color),
+                color: item.color,
+            });
+            acc.angle = nextAngle;
+            return acc;
+        },
+        { segments: [], angle: 0 }
+    ).segments;
 
     return (
         <div className={cn("relative", className)}>

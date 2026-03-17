@@ -4,6 +4,7 @@ import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 /**
  * Auth Callback Page
@@ -67,7 +68,6 @@ const AuthCallback = () => {
 
                             if (!existingProfile) {
                                 // Create the profile if it doesn't exist (e.g. first time on this platform)
-                                console.log(`Auto-creating ${storedBackend} profile for ${user.email}`);
                                 await activeClient
                                     .from(profileTable)
                                     .insert({
@@ -100,7 +100,6 @@ const AuthCallback = () => {
                             });
 
                             if (Object.keys(missingMetadata).length > 0) {
-                                console.debug('Auto-adding missing metadata:', missingMetadata);
                                 await activeClient.auth.updateUser({
                                     data: { ...user.user_metadata, ...missingMetadata }
                                 });
@@ -141,13 +140,13 @@ const AuthCallback = () => {
     }, [navigate]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
+        <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-background">
             <div className="text-center space-y-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
                 <h2 className="text-xl font-semibold">Signing you in...</h2>
                 <p className="text-muted-foreground">Just a second...</p>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

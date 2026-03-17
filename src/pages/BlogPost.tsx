@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { Loader2, ArrowLeft, Calendar, User, Clock, Share2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const BlogPost = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -36,16 +37,17 @@ const BlogPost = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center pt-20">
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center pt-20">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </div>
+            </BeeYieldPageShell>
         );
     }
 
     if (!post) return null;
 
     return (
-        <article className="min-h-screen pt-24 pb-20">
+        <BeeYieldPageShell className="min-h-screen pt-24 pb-20 p-0">
+            <article>
             {/* Hero Header */}
             <div className="relative h-[60vh] min-h-[400px] w-full mb-12">
                 <div className="absolute inset-0">
@@ -158,7 +160,8 @@ const BlogPost = () => {
                     </div>
                 </div>
             </div>
-        </article>
+            </article>
+        </BeeYieldPageShell>
     );
 };
 

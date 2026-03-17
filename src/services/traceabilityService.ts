@@ -134,7 +134,6 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
         const response = await fetch(`${AI_API_URL}/traceability/code/${code}`);
         if (!response.ok) {
             if (response.status === 404) {
-                console.log("Batch not for record in system:", code);
                 return null;
             }
             throw new Error(`Connection Error: ${response.statusText}`);

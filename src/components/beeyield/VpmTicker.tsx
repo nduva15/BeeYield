@@ -62,9 +62,9 @@ const VpmTicker: React.FC = () => {
                             <motion.div
                                 className="absolute bottom-0 left-0 right-0 bg-[#F4D03F]"
                                 animate={{
-                                    height: `${Math.random() * 80 + 20}%`
+                                    height: [`${22 + (i % 4) * 12}%`, `${85 - (i % 5) * 7}%`, `${28 + (i % 3) * 10}%`]
                                 }}
-                                transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse' }}
+                                transition={{ duration: 1.1, repeat: Infinity, repeatType: 'mirror', delay: i * 0.06, ease: 'easeInOut' }}
                             />
                         </div>
                     ))}

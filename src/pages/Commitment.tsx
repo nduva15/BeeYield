@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CommitmentPage = () => {
   const sdgs = [
@@ -73,7 +74,7 @@ const CommitmentPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
+    <BeeYieldPageShell className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 p-0">
 
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -195,7 +196,7 @@ const CommitmentPage = () => {
         </div>
       </section>
 
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

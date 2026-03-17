@@ -139,16 +139,19 @@ All colors MUST be HSL.
     @apply py-12 sm:py-16 md:py-20 lg:py-24;
   }
 
-  /* Responsive text sizes for headings - small font */
+  /* Responsive text sizes for hero headings */
   .hero-title {
-    @apply text-base sm:text-lg;
-    @apply leading-tight tracking-tight;
+    /* roughly 32px → 64px */
+    font-size: clamp(2rem, 4vw + 1rem, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
     font-style: normal !important;
   }
 
   .hero-subtitle {
-    @apply text-xs sm:text-sm;
-    @apply leading-relaxed;
+    /* roughly 16px → 20px */
+    font-size: clamp(1rem, 0.6vw + 0.9rem, 1.25rem);
+    line-height: 1.6;
     font-style: normal !important;
   }
 

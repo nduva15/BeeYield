@@ -100,6 +100,17 @@ class AIService:
             Dict containing 'response', 'sources', 'suggestions'.
         """
         msg_lower = message.lower().strip()
+        history = history or []
+
+        # Lightweight conversation memory for retrieval (bounded).
+        mem_lines: List[str] = []
+        for t in history[-8:]:
+            role = str(t.get("role", "")).strip().lower()
+            content = str(t.get("content", "")).strip()
+            if role in {"user", "assistant"} and content:
+                mem_lines.append(f"{role}: {content[:400]}")
+        conversation_memory = "\n".join(mem_lines).strip()
+        retrieval_query = message if not conversation_memory else f"{message}\n\nRECENT_CONTEXT:\n{conversation_memory}"
         
         # --- PHASE 0: POLYGLOT INTENT & EXPERT ROUTING (Go Gateway -> Rust Engine) ---
         continent = None
@@ -128,7 +139,7 @@ class AIService:
         
         # --- PHASE 1: HYBRID RAG (Fused Retrieval) ---
         # HybridSearch: query expansion + BM25-style ContentService
-        hybrid_results = await HybridSearch.search(message, limit=25, continent=continent)
+        hybrid_results = await HybridSearch.search(retrieval_query, limit=40, continent=continent)
         knowledge_context = hybrid_results.get("semantic_context", "")
         citations = hybrid_results.get("sources", [])
         # Merge keyword hits (e.g. batch codes) into context
@@ -139,7 +150,7 @@ class AIService:
         # Fuse with Qdrant vector search if available (semantic diversity)
         if QDRANT_AVAILABLE and knowledge_context:
             try:
-                vector_results = await QdrantVectorStore.search(message, limit=15, continent=continent)
+                vector_results = await QdrantVectorStore.search(retrieval_query, limit=20, continent=continent)
                 vec_summary = vector_results.get("summary", "")
                 if vec_summary and vec_summary not in knowledge_context:
                     knowledge_context = f"{knowledge_context}\n\n--- ADDITIONAL SEMANTIC MATCHES ---\n{vec_summary}"
@@ -216,8 +227,9 @@ class AIService:
 
         # --- PHASE 2: TIER 1 - GEMINI FLASH (THE READER / RESPONDER) ---
         
-        # Optimization: Simple Response Mode for short/conversational queries
-        is_simple = len(message) < 50 and not any(kw in msg_lower for kw in ["compare", "analyze", "report", "detailed", "technical", "history"])
+        # Simple Response Mode should ONLY handle greetings/pleasantries.
+        # Everything else should use the long-form RAG + synthesis path.
+        is_simple = bool(re.fullmatch(r"\s*(hi|hello|hey|thanks|thank you|ok|okay)\s*[!.]?\s*", msg_lower))
         
         final_answer = ""
         
@@ -240,16 +252,31 @@ class AIService:
         if not final_answer:
             # Technical/Complex Query Path
             observation_prompt = (
-                f"You are the BEE_OBSERVER node. Extract EVERY technical fact, metric, statistic, date, and citation from this context "
-                f"related to the query: '{message}'.\n\n"
-                f"RULES:\n"
-                f"- Be EXHAUSTIVE. Include percentages, dates, names, figures.\n"
-                f"- Organize by pillar: INTELLIGENCE, GLOBAL_CONTEXT, IOT_ENVIRONMENTAL, INTERNAL_OPS, BIBLIOGRAPHY.\n"
-                f"- Output a structured JSON array: [{{\"pillar\": \"...\", \"fact\": \"...\", \"source\": \"...\"}}]\n\n"
+                "You are the BEE_OBSERVER node.\n"
+                "Task: extract ONLY what is explicitly present in CONTEXT and relevant to USER_QUERY.\n"
+                "Output MUST be valid JSON (no markdown, no prose) with shape:\n"
+                "{\n"
+                "  \"facts\": [\n"
+                "    {\n"
+                "      \"id\": \"F1\",\n"
+                "      \"pillar\": \"INTELLIGENCE|GLOBAL_CONTEXT|IOT_ENVIRONMENTAL|INTERNAL_OPS\",\n"
+                "      \"claim\": \"short atomic fact\",\n"
+                "      \"evidence\": \"verbatim snippet from CONTEXT\",\n"
+                "      \"source\": \"source name from context header\",\n"
+                "      \"url\": \"url if present else empty\",\n"
+                "      \"confidence\": 0.0\n"
+                "    }\n"
+                "  ]\n"
+                "}\n"
+                "Rules:\n"
+                "- Evidence MUST be copied verbatim from CONTEXT.\n"
+                "- If a number/date isn't in CONTEXT, do not add it.\n"
+                "- If url isn't present, set url to \"\".\n\n"
+                f"USER_QUERY:\n{message}\n\n"
                 f"CONTEXT:\n{knowledge_context}"
             )
             
-            extracted_facts = ""
+            extracted_facts_raw = ""
             google_key = settings.GOOGLE_API_KEY
             if google_key:
                 async def gemini_observe():
@@ -263,26 +290,62 @@ class AIService:
                     return obs_resp.text
                 
                 try:
-                    extracted_facts = await RateLimitManager.with_retry(
+                    extracted_facts_raw = await RateLimitManager.with_retry(
                         gemini_observe,
                         max_retries=2,
                         base_delay=1.0,
                         api_name="gemini_observe"
                     )
                 except Exception:
-                    extracted_facts = knowledge_context[:3000]
+                    extracted_facts_raw = ""
+
+            # Parse observer JSON robustly; fall back to empty facts if it isn't valid JSON.
+            extracted_facts_obj: Dict[str, Any] = {"facts": []}
+            try:
+                extracted_facts_obj = json.loads(extracted_facts_raw) if extracted_facts_raw else {"facts": []}
+            except Exception:
+                try:
+                    m = re.search(r"\{[\\s\\S]*\}", extracted_facts_raw or "")
+                    if m:
+                        extracted_facts_obj = json.loads(m.group(0))
+                except Exception:
+                    extracted_facts_obj = {"facts": []}
+
+            facts_json = json.dumps(extracted_facts_obj, ensure_ascii=False)
 
             # --- PHASE 3: TIER 2 - SYNTHESIS (THE REASONER & WRITER) ---
             system_prompt = (
                 f"You are the BEE_ARCHITECT (v5.0), the primary intelligence of BeeYield.\n"
                 f"TIMESTAMP: {current_time}, {current_date}\n\n"
                 f"STRICT GOVERNANCE:\n"
-                f"1. FACT-GROUNDING: Use ONLY facts from the extracted data below. NEVER invent data.\n"
-                f"2. LENGTH: Target 800-1200 words. Provide substantial depth without unnecessary fluff.\n"
-                f"3. STRUCTURE: Use ## for main sections, ### for subsections. Ensure at least 5-7 paragraphs.\n"
-                f"4. CITATIONS: Integrate inline [1], [2] referencing: {json.dumps(citations)}\n"
-                f"5. KEY TAKEAWAYS: Include a **Key Takeaways** list at the end of Section I.\n\n"
-                f"EXTRACTED FACTS:\n{extracted_facts}\n"
+                f"1. OUTPUT: MUST be Markdown.\n"
+                f"2. FACT-GROUNDING: You may ONLY assert claims that appear in FACTS_JSON.\n"
+                f"3. EVIDENCE: For every key claim, include an (Evidence: \"...\") snippet copied verbatim from FACTS_JSON.\n"
+                f"4. LENGTH: Target 1800-3000 words (long, structured, professional).\n"
+                f"5. STRUCTURE: Use the exact section headers below with ##, and rich subsections with ###.\n"
+                f"6. CITATIONS: Use inline numeric citations like [1], [2] and list them in the bibliography using ONLY URLs from ALLOWED_SOURCES.\n"
+                f"7. UNKNOWN HANDLING: If FACTS_JSON lacks data for a subsection, write \"Unknown\" and explain what data is missing.\n\n"
+                f"FACTS_JSON:\n{facts_json}\n\n"
+                f"ALLOWED_SOURCES:\n{json.dumps(citations)}\n\n"
+                f"REQUIRED SECTIONS:\n"
+                f"## I. INTELLIGENCE BRIEF\n"
+                f"### Summary\n"
+                f"### Key findings (bulleted; each with evidence + citation)\n"
+                f"### Actionable recommendations (ranked; each tied to evidence)\n"
+                f"## II. GLOBAL TECHNICAL CONTEXT\n"
+                f"### Industry baseline\n"
+                f"### Regional considerations\n"
+                f"### Metrics & thresholds\n"
+                f"## III. IOT & ENVIRONMENTAL CORRELATION\n"
+                f"### Signal interpretation\n"
+                f"### Environmental drivers\n"
+                f"### Correlation notes (clearly mark assumptions)\n"
+                f"## IV. INTERNAL OPERATIONS SYNC\n"
+                f"### Ops overview\n"
+                f"### Risks & mitigations\n"
+                f"### Next steps & instrumentation\n"
+                f"## V. VERIFIED BIBLIOGRAPHY\n"
+                f"### Numbered list 1..N with names + URLs\n"
             )
 
             openai_key = settings.OPENAI_API_KEY
@@ -432,4 +495,141 @@ class AIService:
                 print(f"Gemini Blurb Error: {e}")
 
         return f"Pure {floral_type} honey from {location}. Verified harvest of {harvest_year}."
+
+    @staticmethod
+    async def generate_label_pack(
+        floral_type: str,
+        location: str,
+        harvest_year: str,
+        tone: str = "luxury",
+        product_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Generate a structured "Label Pack" for the Label Generator UI.
+
+        The pack is designed to be long, predictable, and multi-field.
+        """
+        floral = (floral_type or "Wildflower").strip()
+        origin = (location or "").strip() or "Single-origin"
+        year = (harvest_year or "").strip() or "Unknown"
+        name = (product_name or "").strip() or f"{floral} Reserve"
+        tone_clean = (tone or "luxury").strip()
+
+        schema_hint = {
+            "product_name": "string",
+            "short_blurb": "string (<= 180 chars, no quotes, no hashtags)",
+            "long_story": "string (2-4 paragraphs, marketing narrative)",
+            "tasting_notes": ["string", "string", "string", "string", "string"],
+            "origin": "string",
+            "harvest_date_range": "string (e.g., 'Mar–Apr 2026')",
+            "sustainability_claims": ["string", "string", "string"],
+            "pairings": ["string", "string", "string", "string"],
+            "allergen_notes": "string",
+            "qr_landing_copy": "string (1-2 paragraphs, for landing page hero + trust)",
+            "tone": "string"
+        }
+
+        prompt = (
+            "You are an expert honey brand copywriter and compliance-conscious label specialist.\n"
+            "Return ONLY valid JSON. Do not wrap in markdown. Do not include commentary.\n"
+            "Write long, structured content for a honey label content pack.\n\n"
+            f"Inputs:\n- floral_type: {floral}\n- location: {origin}\n- harvest_year: {year}\n- product_name: {name}\n- tone: {tone_clean}\n\n"
+            "Hard rules:\n"
+            "- short_blurb must be <= 180 characters.\n"
+            "- tasting_notes must be 5 items.\n"
+            "- sustainability_claims must be 3 items.\n"
+            "- pairings must be 4 items.\n"
+            "- allergen_notes must be conservative and safe (e.g., 'May contain traces...' only if stated as assumption).\n"
+            "- Include BeeYield themes: traceability, zero-disturbance harvesting, 50/50 promise, research/monitoring.\n\n"
+            f"JSON schema example (types only):\n{json.dumps(schema_hint, indent=2)}\n"
+        )
+
+        # Try OpenAI first (best control over JSON)
+        openai_key = getattr(settings, "OPENAI_API_KEY", None)
+        if openai_key and not openai_key.startswith("sk-proj-REPLACE"):
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.post(
+                        "https://api.openai.com/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
+                        json={
+                            "model": "gpt-4o-mini",
+                            "messages": [
+                                {"role": "system", "content": "You return strict JSON only."},
+                                {"role": "user", "content": prompt},
+                            ],
+                            "temperature": 0.35,
+                            "max_tokens": 1800,
+                            "response_format": {"type": "json_object"},
+                        },
+                        timeout=25.0,
+                    )
+                    data = resp.json()
+                    if "choices" in data and data["choices"]:
+                        raw = (data["choices"][0].get("message", {}).get("content") or "").strip()
+                        if raw:
+                            return json.loads(raw)
+            except Exception:
+                pass
+
+        # Fallback to Gemini if available
+        google_key = getattr(settings, "GOOGLE_API_KEY", None)
+        if google_key:
+            try:
+                from google.genai import types
+                client = genai.Client(api_key=google_key)
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[prompt],
+                    config=types.GenerateContentConfig(
+                        temperature=0.35,
+                        max_output_tokens=1800,
+                        response_mime_type="application/json",
+                    ),
+                )
+                raw = (response.text or "").strip()
+                if raw:
+                    # Some providers still wrap JSON; extract first object if needed
+                    m = re.search(r"\{[\s\S]*\}", raw)
+                    if m:
+                        return json.loads(m.group(0))
+            except Exception:
+                pass
+
+        # Heuristic fallback (always return a valid pack)
+        season = "Mar–Apr" if year.isdigit() else "Seasonal"
+        return {
+            "product_name": name,
+            "short_blurb": f"Traceable {floral} honey from {origin} ({year}). Zero-disturbance harvested with BeeYield’s 50/50 promise.",
+            "long_story": (
+                f"From {origin}, this {floral.lower()} harvest is produced under BeeYield’s 50/50 promise—supporting farmer livelihoods while funding ecosystem monitoring and research.\n\n"
+                "Each batch is captured through zero-disturbance harvesting protocols and protected with end-to-end traceability. Scan the QR to verify harvest context, handling standards, and the story behind the jar."
+            ),
+            "tasting_notes": [
+                "Floral top-notes with clean, bright sweetness",
+                "Soft herbal undertone and warm nectar finish",
+                "Silky texture with balanced acidity",
+                "Lingering pollen-like aroma and gentle spice",
+                "Elegant aftertaste with minimal bitterness",
+            ],
+            "origin": origin,
+            "harvest_date_range": f"{season} {year}",
+            "sustainability_claims": [
+                "50/50 Promise: farmer sustainability + ecosystem research",
+                "Zero-disturbance harvesting to protect colony vitality",
+                "Traceability-first supply chain with verifiable batch history",
+            ],
+            "pairings": [
+                "Fresh bread, cultured butter, and sea salt",
+                "Greek yogurt, granola, and citrus zest",
+                "Herbal tea or black coffee as a natural sweetener",
+                "Cheese board: mild goat cheese or aged cheddar",
+            ],
+            "allergen_notes": "Honey is not recommended for infants under 12 months.",
+            "qr_landing_copy": (
+                "Scan to verify your jar. This batch is recorded with BeeYield’s traceability protocol, linking harvest timing, handling, and quality checks.\n\n"
+                "BeeYield reinvests through the 50/50 promise—supporting farmers and funding sensor-based monitoring and research that protects pollinators and ecosystems."
+            ),
+            "tone": tone_clean,
+        }
 

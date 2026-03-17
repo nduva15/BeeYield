@@ -6,10 +6,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const PollinationSolutions = () => {
   return (
-    <div className="pt-8">
+    <BeeYieldPageShell className="pt-8 p-0">
       {/* Hub Hero */}
       <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
         <div className="container mx-auto px-4 text-center max-w-4xl relative z-10">
@@ -128,7 +129,7 @@ const PollinationSolutions = () => {
 
                 <h2 className="text-3xl font-bold mb-4 text-foreground">Diseases</h2>
                 <p className="text-lg text-muted-foreground mb-8 flex-grow">
-                  Intelligent protection for your beehives. Detect diseases early and monitor colony health with intelligent analysis and real-time alerts.
+                  Early warnings for hive health. Detect disease risk sooner and monitor colony conditions with clear alerts.
                 </p>
 
                 <div className="space-y-4 mb-8">
@@ -147,7 +148,7 @@ const PollinationSolutions = () => {
                 </div>
 
                 <Button size="lg" variant="outline" className="w-full gap-2 border-[#1B9157]/ text-[#1B9157] hover:bg-green-600 hover:text-[#1A1A1A]" asChild>
-                  <Link to="/diseases">Explore Disease Technology <ArrowRight className="h-4 w-4" /></Link>
+                  <Link to="/diseases">Explore hive health <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
 
@@ -201,7 +202,7 @@ const PollinationSolutions = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Monitored Hives</span>
               </div>
             </div>
           </div>
@@ -217,7 +218,7 @@ const PollinationSolutions = () => {
             </Badge>
             <h2 className="text-4xl font-bold mb-6 text-foreground">Better Together</h2>
             <p className="text-lg text-muted-foreground">
-              While powerful individually, our In-Hive and In-Field solutions work best in tandem, providing a complete feedback loop for growers and beekeepers.
+              In-Hive and In-Field work even better together, giving growers and beekeepers a full picture from hive to crop.
             </p>
           </div>
 
@@ -233,20 +234,20 @@ const PollinationSolutions = () => {
               <div className="bg-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6">
                 <BarChart3 className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-foreground">Analyze</h3>
-              <p className="text-muted-foreground">See how hive strength affects your crop yield.</p>
+              <h3 className="text-xl font-bold mb-3 text-foreground">Review</h3>
+              <p className="text-muted-foreground">See how hive strength and bloom conditions relate to yield.</p>
             </div>
             <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Sprout className="h-6 w-6 text-[#1B9157]" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-foreground">Optimize</h3>
-              <p className="text-muted-foreground">Make data-driven decisions to boost crop yield and bee welfare.</p>
+              <h3 className="text-xl font-bold mb-3 text-foreground">Improve</h3>
+              <p className="text-muted-foreground">Use what you learn to improve yield and bee health.</p>
             </div>
           </div>
         </div>
       </section>
-    </div >
+    </BeeYieldPageShell>
   );
 };
 

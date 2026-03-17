@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const NotFound = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted/50 to-accent/5 p-4 text-center">
+    <BeeYieldPageShell className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted/50 to-accent/5 p-4 text-center">
       <div className="relative mb-8">
         <h1 className="text-[12rem] font-black leading-none tracking-tighter text-primary/10 select-none">404</h1>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -28,7 +29,7 @@ const NotFound = () => {
           Go Back
         </Button>
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 };
 

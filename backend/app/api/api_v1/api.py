@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth,
-    requests, image_analysis, acoustic, routing, forage, intelligence
+    requests, image_analysis, acoustic, routing, forage, intelligence, ai
 )
 
 
@@ -17,6 +17,9 @@ api_router = APIRouter()
 
 # Labels endpoint
 api_router.include_router(labels.router, prefix="/labels", tags=["Labels"])
+
+# AI endpoints (Label Generator, etc.)
+api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
 
 # Meters endpoint
 api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
