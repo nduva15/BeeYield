@@ -187,12 +187,41 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
         addLog("Syncing saved data...");
 
         try {
-            addLog("Checking sensor memory...");
-            await new Promise(r => setTimeout(r, 800));
+            const mac = connectedDevice?.id;
+            if (!mac) {
+                throw new Error('No connected device id available');
+            }
 
+            // Best-effort: sync at least the current live reading (and battery if present).
+            // If/when sensor memory download is implemented, this payload can become a batch.
+            const nowIso = new Date().toISOString();
+            const reading = {
+                device_mac: mac,
+                recorded_at: nowIso,
+                temp_c: typeof liveData.temp === 'number' ? liveData.temp : null,
+                weight_kg: typeof liveData.weight === 'number' ? liveData.weight : null,
+                humidity: typeof liveData.humidity === 'number' ? liveData.humidity : null,
+            };
+
+            const hasAnyMetric = Object.values(reading).some((v) => typeof v === 'number');
+            if (!hasAnyMetric) {
+                addLog("No telemetry yet. Wait for live values, then sync again.");
+                toast.info('No telemetry received yet');
+                return;
+            }
+
+            setSyncProgress(20);
+            addLog("Packaging readings…");
+
+            const res = await beeyieldService.syncBluetoothReadings({ readings: [reading] });
             setSyncProgress(100);
-            addLog("Sync complete. No new data found.");
-            toast.info("No new data to sync");
+
+            if (!res.ok) {
+                throw res.error || new Error('Sync failed');
+            }
+
+            addLog(`Sync complete. Uploaded ${res.count} reading(s).`);
+            toast.success(`Synced ${res.count} reading(s)`);
         } catch (error: any) {
             addLog(`Sync error: ${error.message}`);
             toast.error("Sync failed");
@@ -310,9 +339,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                         {stat.action && (
                             <button
                                 onClick={stat.action}
-                                className="mt-5 h-7 px-3 rounded-lg border border-[#F4D03F]/20 text-[8px] font-black text-[#F4D03F] uppercase tracking-widest hover:bg-[#F4D03F]/10 transition-all flex items-center gap-2 group/btn"
+                                className="mt-5 h-8 px-3.5 rounded-lg border border-[#F4D03F]/20 text-sm font-semibold text-[#D4AC0D] hover:bg-[#F4D03F]/10 transition-all flex items-center gap-2 group/btn"
                             >
-                                Reconfigure_Link <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
+                                Configure <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
                             </button>
                         )}
                     </motion.div>
@@ -325,10 +354,10 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                     <div className={glass.section + " p-6"}>
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h3 className="text-lg font-bold text-[#1A1A1A]">Real-Time Telemetry</h3>
+                                <h3 className="text-lg font-bold text-[#1A1A1A]">Live readings</h3>
                                 <p className="text-sm text-gray-500">Live stream of environmental metrics from the sensor.</p>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#1B9157] rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#1B9157] rounded-full text-xs font-semibold border border-emerald-100">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
                                 Live
                             </div>
@@ -336,9 +365,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                             {[
-                                { label: 'Internal_Temp', val: liveData.temp?.toFixed(1) || '0.0', unit: '°C', icon: Thermometer, color: 'text-red-500', bg: 'bg-red-500/5', max: 60, stroke: '#EF4444' },
-                                { label: 'Biomass_Weight', val: liveData.weight?.toFixed(1) || '0.0', unit: 'KG', icon: Scale, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', max: 100, stroke: '#F4D03F' },
-                                { label: 'Relative_Humidity', val: liveData.humidity || '0', unit: '%', icon: Droplet, color: 'text-blue-500', bg: 'bg-blue-500/5', max: 100, stroke: '#3B82F6' }
+                                { label: 'Temperature', val: liveData.temp?.toFixed(1) || '0.0', unit: '°C', icon: Thermometer, color: 'text-red-500', bg: 'bg-red-500/5', max: 60, stroke: '#EF4444' },
+                                { label: 'Weight', val: liveData.weight?.toFixed(1) || '0.0', unit: 'kg', icon: Scale, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', max: 100, stroke: '#F4D03F' },
+                                { label: 'Humidity', val: liveData.humidity || '0', unit: '%', icon: Droplet, color: 'text-blue-500', bg: 'bg-blue-500/5', max: 100, stroke: '#3B82F6' }
                             ].map((gauge, i) => (
                                 <div key={i} className="flex flex-col items-center gap-5 group/gauge">
                                     <div className="relative w-28 h-28 flex items-center justify-center">

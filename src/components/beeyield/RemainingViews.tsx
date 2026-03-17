@@ -357,12 +357,12 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                 }
             />
 
-            {/* Selection Registry */}
+            {/* Selection */}
             <div className={glass.section}>
                 <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                        <Label className={cn(glass.microLabel, "ml-2 opacity-40 font-black tracking-[0.2em]")}>SITE_IDENTIFIER</Label>
+                        <Label className={cn(glass.microLabel, "ml-2 opacity-70 font-semibold")}>Apiary</Label>
                         <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                             <SelectTrigger className={glass.select}>
                                 <div className="flex items-center gap-2">
@@ -371,10 +371,10 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                 </div>
                             </SelectTrigger>
                             <SelectContent className={cn(glass.selectContent, "p-2")}>
-                                <SelectItem value="none" className="p-3 rounded-lg font-black tracking-widest text-[10px] text-foreground/40 italic">GLOBAL_FLEET</SelectItem>
+                                <SelectItem value="none" className="p-3 rounded-lg text-sm font-semibold text-foreground/60 italic">All apiaries</SelectItem>
                                 {apiaries.map(a => (
-                                    <SelectItem key={a.id} value={a.id} className="p-3 rounded-lg font-black tracking-widest text-xs">
-                                        {a.name.toUpperCase()}
+                                    <SelectItem key={a.id} value={a.id} className="p-3 rounded-lg text-sm font-semibold">
+                                        {a.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -489,7 +489,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
     const fetchDevices = async () => {
         setLoading(true);
         try {
-            const data = await beeyieldService.getPairedUsbDevices();
+            const data = await beeyieldService.getBluetoothDevices();
             if (userId) {
                 setDevices(data.filter(d => !d.user_id || d.user_id === userId));
             } else {
@@ -507,24 +507,42 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
     }, [userId]);
 
     const handlePairing = async () => {
+        if (isScanning) return;
         setIsScanning(true);
-        setTimeout(async () => {
-            try {
-                const newDevice = {
-                    device_uid: `BLE-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-                    device_type: 'beeyield_hub',
-                    serial_number: `SN-${Math.floor(Math.random() * 1000000)}`,
-                    firmware_version: '1.2.5',
-                };
-                await beeyieldService.pairUsbDevice(newDevice);
-                await fetchDevices();
-                toast.success("Industrial Bluetooth hub paired successfully.");
-            } catch (err) {
-                toast.error("Handshake failed. Protocol mismatch.");
-            } finally {
-                setIsScanning(false);
+        const tid = toast.loading('Scanning for Bluetooth devices…');
+        try {
+            if (!('bluetooth' in navigator)) {
+                toast.error('Web Bluetooth is not available in this browser.', { id: tid });
+                return;
             }
-        }, 2000);
+
+            // Best-effort discovery via Web Bluetooth.
+            // Note: requires HTTPS + user gesture; if blocked, we surface a clear error.
+            // @ts-expect-error - Web Bluetooth types may not be present in TS lib
+            const btDevice = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: [],
+            });
+
+            const mac_address = String(btDevice?.id || '');
+            if (!mac_address) throw new Error('Bluetooth device id missing');
+
+            const created = await beeyieldService.registerBluetoothDevice({
+                mac_address,
+                name: String(btDevice?.name || 'BeeYield Sensor'),
+                device_type: 'scale',
+                assigned_hive_id: null
+            });
+
+            if (!created) throw new Error('Registration failed');
+            await fetchDevices();
+            toast.success('Bluetooth device registered', { id: tid });
+        } catch (err: any) {
+            console.error(err);
+            toast.error(err?.message || 'Bluetooth scan failed', { id: tid });
+        } finally {
+            setIsScanning(false);
+        }
     };
 
     return (

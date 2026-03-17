@@ -83,16 +83,12 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     const activeAlarmsCount = events.filter(e => !e.is_resolved).length;
 
     const handleSendMessage = () => {
-        if (aiMessage.trim()) {
-            setChatMessages([...chatMessages, { role: 'user', content: aiMessage }]);
-            setAiMessage('');
-            setTimeout(() => {
-                setChatMessages(prev => [...prev, {
-                    role: 'assistant',
-                    content: 'Analysis complete. Recommend checking Water Gate 04 in Kibwezi — flow rate is slightly above nominal baseline.'
-                }]);
-            }, 1000);
-        }
+        const msg = aiMessage.trim();
+        if (!msg) return;
+        setChatMessages([...chatMessages, { role: 'user', content: msg }]);
+        setAiMessage('');
+        toast.info('Opening BeeYield AI…');
+        onTabChange('assistant', `Meters: ${msg}`);
     };
 
     if (activeSubTab === 'meters-alarms') return <MetersAlarms />;

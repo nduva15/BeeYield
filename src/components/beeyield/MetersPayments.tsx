@@ -35,17 +35,14 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 
     React.useEffect(() => {
         const loadRates = async () => {
-            // Fake delay for UI loading
-            setTimeout(async () => {
-                try {
-                    const data = await meterService.getBillingRates();
-                    setRates(data);
-                } catch (error) {
-                    toast.error('Failed to load billing rates');
-                } finally {
-                    setLoading(false);
-                }
-            }, 600);
+            try {
+                const data = await meterService.getBillingRates();
+                setRates(data);
+            } catch (error) {
+                toast.error('Failed to load billing rates');
+            } finally {
+                setLoading(false);
+            }
         };
         loadRates();
     }, []);

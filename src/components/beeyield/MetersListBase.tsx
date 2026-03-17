@@ -44,6 +44,10 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     const [exportOpen, setExportOpen] = React.useState(true);
     const [downloading, setDownloading] = React.useState<string | null>(null);
     const [isAddingMeter, setIsAddingMeter] = React.useState(false);
+    const [enrollMeterNumber, setEnrollMeterNumber] = React.useState('');
+    const [enrollBuildingId, setEnrollBuildingId] = React.useState<string>('');
+    const [enrollApartmentId, setEnrollApartmentId] = React.useState<string>('');
+    const [enrolling, setEnrolling] = React.useState(false);
 
     React.useEffect(() => {
         const loadData = async () => {
@@ -57,6 +61,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 setBuildings(bData);
                 setMeters(mData);
                 setApartments(aData);
+                if (!enrollBuildingId && bData?.length) setEnrollBuildingId(bData[0].id);
             } catch (error) {
                 console.error(`Failed to load ${meterType} meters`, error);
                 toast.error(`Failed to load ${meterType} meter data`);
@@ -65,7 +70,15 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             }
         };
         loadData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [meterType]);
+
+    React.useEffect(() => {
+        if (!enrollBuildingId) return;
+        const firstUnit = apartments.find(a => a.building_id === enrollBuildingId);
+        setEnrollApartmentId(firstUnit?.id || '');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [enrollBuildingId]);
 
     // Helpers
     const getBuildingName = (id: string) => buildings.find(b => b.id === id)?.name || id;
@@ -139,6 +152,39 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
         }, 1000);
     };
 
+    const refreshMeters = async () => {
+        const mData = await meterService.getMeters({ meter_type: meterType });
+        setMeters(mData);
+    };
+
+    const handleEnroll = async () => {
+        if (enrolling) return;
+        const meter_number = enrollMeterNumber.trim();
+        if (!meter_number) return toast.error('Sensor ID / serial is required');
+        if (!enrollBuildingId) return toast.error('Select an apiary/building');
+
+        setEnrolling(true);
+        const tid = toast.loading('Enrolling sensor…');
+        try {
+            await meterService.createMeter({
+                meter_number,
+                meter_type: meterType,
+                building_id: enrollBuildingId,
+                apartment_id: enrollApartmentId || undefined,
+                status: 'OK',
+            });
+            toast.success('Sensor enrolled', { id: tid });
+            setEnrollMeterNumber('');
+            setIsAddingMeter(false);
+            await refreshMeters();
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e?.message || 'Failed to enroll sensor', { id: tid });
+        } finally {
+            setEnrolling(false);
+        }
+    };
+
     const generatePDF = () => {
         const doc = new jsPDF();
         doc.setFontSize(22);
@@ -206,15 +252,55 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     <div className="animate-in slide-in-from-top duration-300 space-y-4">
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">DEVICE_PARAMETERIZATION</h3>
-                            <button onClick={() => setIsAddingMeter(false)} className="text-gray-400 hover:bg-white/50 hover:text-[#1A1A1A] rounded-xl h-8 w-8 p-0 flex justify-center items-center transition-colors">
+                            <button
+                                onClick={() => setIsAddingMeter(false)}
+                                className="text-gray-400 hover:bg-white/50 hover:text-[#1A1A1A] rounded-xl h-8 w-8 p-0 flex justify-center items-center transition-colors"
+                                aria-label="Close"
+                                title="Close"
+                            >
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                            <Input placeholder="SERIAL_IDENTIFIER" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white" />
-                            <Select><SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="APIARY" /></SelectTrigger></Select>
-                            <Input placeholder="HIVE_STATION" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white" />
-                            <button className={cn(glass.btnPrimary, "h-9 font-black uppercase text-[9px] tracking-[0.2em]")}>COMMIT_ENROLLMENT</button>
+                            <Input
+                                value={enrollMeterNumber}
+                                onChange={(e) => setEnrollMeterNumber(e.target.value)}
+                                placeholder="SERIAL_IDENTIFIER"
+                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white"
+                            />
+                            <Select value={enrollBuildingId} onValueChange={setEnrollBuildingId}>
+                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                    <SelectValue placeholder="APIARY" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {buildings.map((b) => (
+                                        <SelectItem key={b.id} value={b.id}>
+                                            {b.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Select value={enrollApartmentId} onValueChange={setEnrollApartmentId}>
+                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                    <SelectValue placeholder="HIVE_STATION" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="">None</SelectItem>
+                                    {filteredUnits.map((a) => (
+                                        <SelectItem key={a.id} value={a.id}>
+                                            {a.unit_number}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <button
+                                onClick={handleEnroll}
+                                disabled={enrolling}
+                                className={cn(glass.btnPrimary, "h-9 font-black uppercase text-[9px] tracking-[0.2em]")}
+                            >
+                                {enrolling ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                                COMMIT_ENROLLMENT
+                            </button>
                         </div>
                     </div>
                 )}
@@ -312,7 +398,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/20 bg-white/30">
-                                {['SENSOR_IDENTIFIER', 'DEPLOYMENT_LOCATION', 'TELEMETRY_LOAD', 'PROTOCOL_STATUS', 'ACTIONS'].map(h => (
+                                {['SENSOR_IDENTIFIER', 'DEPLOYMENT_LOCATION', 'TELEMETRY_LOAD', 'STATUS', 'ACTIONS'].map(h => (
                                     <th key={h} className="text-left py-4 px-5 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">{h}</th>
                                 ))}
                             </tr>
@@ -356,8 +442,21 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                         </td>
                                         <td className="py-4 px-5">
                                             <div className="flex gap-2">
-                                                <button className="h-8 w-8 rounded-xl bg-white/50 border border-white/40 flex items-center justify-center text-gray-500 hover:bg-white hover:text-[#1A1A1A] transition-colors"><Info className="w-3.5 h-3.5" /></button>
-                                                <button className="h-8 w-8 rounded-xl bg-[#1B9157]/10 border border-[#1B9157]/20 flex items-center justify-center text-[#1B9157] hover:bg-[#1B9157] hover:text-white transition-colors" onClick={() => generatePDF()}><Download className="w-3.5 h-3.5" /></button>
+                                                <button
+                                                    className="h-8 w-8 rounded-xl bg-white/50 border border-white/40 flex items-center justify-center text-gray-500 hover:bg-white hover:text-[#1A1A1A] transition-colors"
+                                                    aria-label="Meter details"
+                                                    title="Meter details"
+                                                >
+                                                    <Info className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                    className="h-8 w-8 rounded-xl bg-[#1B9157]/10 border border-[#1B9157]/20 flex items-center justify-center text-[#1B9157] hover:bg-[#1B9157] hover:text-white transition-colors"
+                                                    onClick={() => generatePDF()}
+                                                    aria-label="Download report"
+                                                    title="Download report"
+                                                >
+                                                    <Download className="w-3.5 h-3.5" />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
