@@ -24,16 +24,6 @@ import { motion } from 'framer-motion';
 import { glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
-const usageTrendData = [
-    { day: 'Day 1', value: 125 },
-    { day: 'Day 3', value: 165 },
-    { day: 'Day 5', value: 185 },
-    { day: 'Day 7', value: 195 },
-    { day: 'Day 9', value: 210 },
-    { day: 'Day 11', value: 200 },
-    { day: 'Day 13', value: 195 },
-];
-
 interface MetersViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
     activeSubTab?: string;
@@ -44,16 +34,41 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     const [events, setEvents] = React.useState<MeterEvent[]>([]);
     const [buildings, setBuildings] = React.useState<Building[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
     const [usageFilter, setUsageFilter] = React.useState<'Water' | 'Heat' | 'Energy'>('Water');
     const [aiMessage, setAiMessage] = React.useState('');
     const [chatMessages, setChatMessages] = React.useState([
         { role: 'assistant', content: 'Checking system status... How can I help you today?' },
     ]);
 
+    const LS_KEY = React.useMemo(() => 'beeyield_meters_dashboard_cache_v1', []);
+    const readCache = React.useCallback((): { meters: Meter[]; events: MeterEvent[]; buildings: Building[] } | null => {
+        try {
+            const raw = globalThis.localStorage?.getItem(LS_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            const m = Array.isArray(parsed?.meters) ? (parsed.meters as Meter[]) : [];
+            const e = Array.isArray(parsed?.events) ? (parsed.events as MeterEvent[]) : [];
+            const b = Array.isArray(parsed?.buildings) ? (parsed.buildings as Building[]) : [];
+            return { meters: m, events: e, buildings: b };
+        } catch {
+            return null;
+        }
+    }, [LS_KEY]);
+
+    const writeCache = React.useCallback((next: { meters: Meter[]; events: MeterEvent[]; buildings: Building[] }) => {
+        try {
+            globalThis.localStorage?.setItem(LS_KEY, JSON.stringify(next));
+        } catch {
+            // ignore
+        }
+    }, [LS_KEY]);
+
     React.useEffect(() => {
         const loadDashboardData = async () => {
             if (activeSubTab !== 'meters-dashboard') return;
             setLoading(true);
+            setError(null);
             try {
                 const [mData, eData, bData] = await Promise.all([
                     meterService.getMeters(),
@@ -63,15 +78,25 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 setMeters(mData);
                 setEvents(eData);
                 setBuildings(bData);
+                writeCache({ meters: mData || [], events: eData || [], buildings: bData || [] });
             } catch (error) {
                 console.error('Failed to load meter dashboard', error);
-                toast.error('Failed to load dashboard data');
+                const cached = readCache();
+                if (cached && (cached.meters.length > 0 || cached.events.length > 0 || cached.buildings.length > 0)) {
+                    setMeters(cached.meters);
+                    setEvents(cached.events);
+                    setBuildings(cached.buildings);
+                    toast.info('Loaded meters dashboard from this device');
+                } else {
+                    setError('Meters backend unavailable. Data may be incomplete until you reconnect.');
+                    toast.error('Failed to load dashboard data');
+                }
             } finally {
                 setLoading(false);
             }
         };
         loadDashboardData();
-    }, [activeSubTab]);
+    }, [activeSubTab, readCache, writeCache]);
 
     const getUsageByMedium = (medium: string) => {
         const mediumMeters = meters.filter(m => m.meter_type === medium);
@@ -79,6 +104,36 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         const unit = mediumMeters[0]?.last_reading_unit || (medium === 'Energy' ? 'kWh' : medium === 'Heat' ? 'GJ' : 'm³');
         return { total: total.toFixed(1), unit };
     };
+
+    const trendData = React.useMemo(() => {
+        const mediumMeters = meters.filter((m) => m.meter_type === usageFilter);
+        const points = mediumMeters
+            .map((m) => {
+                const ts = m.last_reading_at ? new Date(m.last_reading_at).getTime() : NaN;
+                const v = typeof m.last_reading_value === 'number' ? m.last_reading_value : 0;
+                return Number.isFinite(ts) ? { ts, v } : null;
+            })
+            .filter(Boolean) as { ts: number; v: number }[];
+
+        if (points.length < 2) return [];
+
+        // Aggregate by day (YYYY-MM-DD) to create a small trend series.
+        const byDay = new Map<string, number>();
+        for (const p of points) {
+            const d = new Date(p.ts);
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            byDay.set(key, (byDay.get(key) || 0) + p.v);
+        }
+
+        const rows = Array.from(byDay.entries())
+            .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+            .slice(-14) // last ~2 weeks of datapoints
+            .map(([key, value]) => ({
+                day: key.slice(5), // MM-DD
+                value: Number(value.toFixed(2)),
+            }));
+        return rows;
+    }, [meters, usageFilter]);
 
     const activeAlarmsCount = events.filter(e => !e.is_resolved).length;
 
@@ -173,6 +228,24 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 }
             />
 
+            {error && (
+                <div className={cn(glass.card, "p-4 border border-red-200 bg-red-50/60")}>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Offline mode</div>
+                            <div className="text-sm font-semibold text-slate-700 mt-1">{error}</div>
+                        </div>
+                        <Button
+                            variant="outline"
+                            className="h-10 rounded-xl text-[10px] font-black uppercase tracking-widest"
+                            onClick={() => onTabChange('meters-dashboard')}
+                        >
+                            Retry
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             {/* Dashboard Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {(['Water', 'Heat', 'Energy'] as const).map((medium, i) => {
@@ -244,23 +317,32 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         </div>
                     </div>
                     <div className="h-[250px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={usageTrendData}>
-                                <defs>
-                                    <linearGradient id="meterGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9CA3AF' }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9CA3AF' }} />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '10px' }}
-                                />
-                                <Area type="monotone" dataKey="value" stroke="#F4D03F" strokeWidth={3} fillOpacity={1} fill="url(#meterGrad)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        {trendData.length < 2 ? (
+                            <div className="h-full w-full flex items-center justify-center text-center">
+                                <div className="space-y-2">
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Not enough readings</div>
+                                    <div className="text-sm font-semibold text-gray-600">Connect devices to populate trends.</div>
+                                </div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={trendData}>
+                                    <defs>
+                                        <linearGradient id="meterGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9CA3AF' }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9CA3AF' }} />
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '10px' }}
+                                    />
+                                    <Area type="monotone" dataKey="value" stroke="#F4D03F" strokeWidth={3} fillOpacity={1} fill="url(#meterGrad)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 

@@ -175,6 +175,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="register-firstName"
+                            name="first_name"
+                            autoComplete="given-name"
                             placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
@@ -187,6 +189,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Label htmlFor="register-lastName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
                     <Input
                         id="register-lastName"
+                        name="last_name"
+                        autoComplete="family-name"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -202,6 +206,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="register-email"
+                        name="email"
+                        autoComplete="email"
                         type="email"
                         placeholder="you@email.com"
                         value={email}
@@ -218,6 +224,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="register-password"
+                            name="password"
+                            autoComplete="new-password"
                         type="password"
                         placeholder="••••••••"
                         value={password}
@@ -234,6 +242,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="register-confirmPassword"
+                            name="confirm_password"
+                            autoComplete="new-password"
                         type="password"
                         placeholder="••••••••"
                         value={confirmPassword}

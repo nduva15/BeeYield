@@ -259,7 +259,8 @@ const Team = () => {
                                 <img 
                                     src="/antigravity/brain/b2a8ae08-a486-48a2-ab35-59df514ab2bf/kibwezi_farm_arid_beauty_1773451657629.png" 
                                     alt="Kibwezi Farm Genesis" 
-                                    className="w-full h-full object-cover grayscale opacity-60 group-hover:scale-110 transition-transform duration-[2s]"
+                                    className="w-full h-full object-cover grayscale opacity-60 group-hover:scale-110 transition-transform"
+                                    style={{ transitionDuration: '2000ms' }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
                                 <div className="absolute bottom-12 left-12 right-12 p-10 bg-white/5 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-2xl">

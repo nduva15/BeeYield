@@ -517,9 +517,11 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
                         <div className="p-6 space-y-5 relative z-10">
                             <div className="space-y-2">
-                                <Label className={glass.microLabel}>Sensor_Alias</Label>
+                                <Label htmlFor="bluetooth-setup-name" className={glass.microLabel}>Sensor_Alias</Label>
                                 <Input
-                                    id="name"
+                                    id="bluetooth-setup-name"
+                                    name="device_name"
+                                    autoComplete="off"
                                     value={setupName}
                                     onChange={(e) => setSetupName(e.target.value)}
                                     className={cn(glass.input, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}
@@ -529,7 +531,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                             <div className="space-y-2">
                                 <Label className={glass.microLabel}>Hive</Label>
                                 <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                                    <SelectTrigger className={cn(glass.select, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
+                                    <SelectTrigger id="bluetooth-setup-hive" aria-label="Hive" className={cn(glass.select, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
                                         <SelectValue placeholder="Select a hive…" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>

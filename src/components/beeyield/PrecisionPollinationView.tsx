@@ -154,6 +154,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [isOptimizing, setIsOptimizing] = React.useState(false);
     const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const [crops, setCrops] = React.useState<any[]>([]);
+    const [selectedCrop, setSelectedCrop] = React.useState<string>('');
 
     const selectedApiary = React.useMemo(
         () => apiaries.find((a) => a.id === selectedApiaryId),
@@ -217,7 +219,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             const results = await beeyieldService.optimizePollinationPlacement2({
                 orchard_geojson: orchardGeoJSON,
                 hive_count: calcInputs.hives.length,
-                target_crop: (selectedApiary?.forage_type || 'Almond') as any,
+                target_crop: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
                 bee_flight_radius_km: 1.5,
                 ahp_weights: { bloom: 0.8, roads: 0.2, water: 0.1 }
             });
@@ -232,6 +234,29 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     React.useEffect(() => {
         fetchDeployments();
+    }, []);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const loadCrops = async () => {
+            try {
+                const data = await beeyieldService.getCropRequirements();
+                if (!mounted) return;
+                setCrops(data || []);
+                const names = (data || []).map((c: any) => String(c?.crop_name || c?.cropName || '').trim()).filter(Boolean);
+                setSelectedCrop((prev) => {
+                    if (prev && names.includes(prev)) return prev;
+                    if (selectedApiary?.forage_type && names.includes(String(selectedApiary.forage_type))) return String(selectedApiary.forage_type);
+                    return names[0] || '';
+                });
+            } catch {
+                if (!mounted) return;
+                setCrops([]);
+            }
+        };
+        loadCrops();
+        return () => { mounted = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     React.useEffect(() => {
@@ -263,7 +288,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         try {
             const result = await beeyieldService.savePollinationDeployment({
                 field_name: `Tactical Deployment ${new Date().toLocaleDateString()}`,
-                crop_type: 'Almond',
+                crop_type: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
                 total_acres: calcInputs.totalAcres,
                 bloom_intensity: calcInputs.bloomIntensity,
                 forage_condition: calcInputs.forageCondition,
@@ -387,22 +412,85 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 subtitle="Plan placement and estimate coverage."
                 actions={
                     !activeSubPageOverride && (
-                        <div className="flex bg-[#1B9157]/[0.05] p-1 rounded-xl border border-[#1B9157]/10 gap-1 overflow-x-auto custom-scrollbar shadow-sm">
-                            {subPageOptions.map(opt => (
-                                <button
-                                    key={opt.id}
-                                    onClick={() => setActiveSubPage(opt.id as SubPage)}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <div className={cn("flex items-center gap-2 px-3 h-9 rounded-xl bg-white/40 border border-[#1B9157]/10 shadow-sm")}>
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 whitespace-nowrap">
+                                    Apiary
+                                </span>
+                                <select
+                                    id="precision-pollination-apiary"
+                                    name="apiary"
+                                    autoComplete="off"
+                                    value={selectedApiaryId}
+                                    onChange={(e) => setSelectedApiaryId(e.target.value)}
                                     className={cn(
-                                        "h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap flex items-center gap-2",
-                                        activeSubPage === opt.id
-                                            ? "bg-[#1B9157] text-white shadow-lg shadow-[#1B9157]/20"
-                                            : "text-gray-400 hover:text-[#1A1A1A] hover:bg-white/50"
+                                        "h-7 bg-transparent text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1A] outline-none",
+                                        "min-w-[180px]"
                                     )}
+                                    aria-label="Select apiary"
+                                    title="Select apiary"
                                 >
-                                    <opt.icon className="w-3.5 h-3.5" />
-                                    {opt.label}
-                                </button>
-                            ))}
+                                    <option value="" disabled>
+                                        Select…
+                                    </option>
+                                    {apiaries.map((a) => (
+                                        <option key={a.id} value={a.id}>
+                                            {(a.name || a.id).toUpperCase()}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className={cn("flex items-center gap-2 px-3 h-9 rounded-xl bg-white/40 border border-[#1B9157]/10 shadow-sm")}>
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 whitespace-nowrap">
+                                    Crop
+                                </span>
+                                <select
+                                    id="precision-pollination-crop"
+                                    name="crop"
+                                    autoComplete="off"
+                                    value={selectedCrop}
+                                    onChange={(e) => setSelectedCrop(e.target.value)}
+                                    className={cn(
+                                        "h-7 bg-transparent text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1A] outline-none",
+                                        "min-w-[160px]"
+                                    )}
+                                    aria-label="Select crop"
+                                    title="Select crop"
+                                    disabled={(crops || []).length === 0}
+                                >
+                                    <option value="" disabled>
+                                        {(crops || []).length === 0 ? 'Loading…' : 'Select…'}
+                                    </option>
+                                    {crops.map((c: any) => {
+                                        const name = String(c?.crop_name || c?.cropName || '').trim();
+                                        if (!name) return null;
+                                        return (
+                                            <option key={name} value={name}>
+                                                {name.toUpperCase()}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+
+                            <div className="flex bg-[#1B9157]/[0.05] p-1 rounded-xl border border-[#1B9157]/10 gap-1 overflow-x-auto custom-scrollbar shadow-sm">
+                                {subPageOptions.map(opt => (
+                                    <button
+                                        key={opt.id}
+                                        onClick={() => setActiveSubPage(opt.id as SubPage)}
+                                        className={cn(
+                                            "h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap flex items-center gap-2",
+                                            activeSubPage === opt.id
+                                                ? "bg-[#1B9157] text-white shadow-lg shadow-[#1B9157]/20"
+                                                : "text-gray-400 hover:text-[#1A1A1A] hover:bg-white/50"
+                                        )}
+                                    >
+                                        <opt.icon className="w-3.5 h-3.5" />
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     )
                 }
