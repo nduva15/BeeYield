@@ -64,7 +64,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
     const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Optimized plan' });
     const [isSaving, setIsSaving] = React.useState(false);
     const [crops, setCrops] = React.useState<any[]>([]);
-    const [selectedCrop, setSelectedCrop] = React.useState('Almond');
+    const [selectedCrop, setSelectedCrop] = React.useState<string>('');
     const [calcResultA, setCalcResultA] = React.useState<any>(null);
     const [calcResultB, setCalcResultB] = React.useState<any>(null);
     const [isCalculating, setIsCalculating] = React.useState(false);
@@ -73,11 +73,17 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
         const loadCrops = async () => {
             const data = await beeyieldService.getCropRequirements();
             setCrops(data);
+            const names = (data || []).map((c: any) => String(c?.crop_name || c?.cropName || '').trim()).filter(Boolean);
+            setSelectedCrop((prev) => {
+                if (prev && names.includes(prev)) return prev;
+                return names[0] || '';
+            });
         };
         loadCrops();
     }, []);
 
     const runCalculation = React.useCallback(async () => {
+        if (!selectedCrop) return;
         setIsCalculating(true);
         try {
             const [resA, resB] = await Promise.all([

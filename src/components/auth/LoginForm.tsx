@@ -248,6 +248,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     <Label htmlFor="mfa-code" className="text-xs font-bold text-gray-500 ml-1">CODE</Label>
                     <Input
                         id="mfa-code"
+                        name="mfa_code"
+                        autoComplete="one-time-code"
                         type="text"
                         placeholder="000 000"
                         value={mfaCode}
@@ -321,6 +323,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="email"
+                            name="email"
+                            autoComplete="email"
                             type="email"
                             placeholder="your@email.com"
                             value={email}
@@ -348,6 +352,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="login-password"
+                            name="password"
+                            autoComplete="current-password"
                             type="password"
                             placeholder="••••••••"
                             value={password}

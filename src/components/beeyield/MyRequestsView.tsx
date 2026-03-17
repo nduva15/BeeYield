@@ -38,7 +38,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     const createRequest = useCreateRequest();
 
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>("");
-    const [selectedHive, setSelectedHive] = React.useState<string>("");
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
     const [localRequests, setLocalRequests] = React.useState<any[]>([]);
 
     const LOCAL_REQUESTS_KEY = React.useMemo(() => 'beeyield_local_requests_v1', []);
@@ -124,7 +124,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 type: category,
                 category,
                 priority,
-                hive_id: selectedHive || undefined,
+                hive_id: selectedHiveId || undefined,
+                apiary_id: selectedPlaceId || undefined,
             });
             setShowWizard(false);
             setWizardStep(0);
@@ -143,7 +144,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 category,
                 type: category,
                 priority,
-                hive_id: selectedHive || null,
+                hive_id: selectedHiveId || null,
                 apiary_id: selectedPlaceId || null,
                 created_at: createdAt,
                 updated_at: createdAt,
@@ -307,14 +308,14 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                         id="request-related-hive"
                                                         name="related_hive"
                                                         autoComplete="off"
-                                                        value={selectedHive}
-                                                        onChange={(e) => setSelectedHive(e.target.value)}
+                                                value={selectedHiveId}
+                                                onChange={(e) => setSelectedHiveId(e.target.value)}
                                                         className={cn(glass.select, "h-10 text-xs px-4 rounded-xl")}
                                                         aria-label="Related hive"
                                                         title="Related hive"
                                                     >
                                                         <option value="">Select Hive (Optional)</option>
-                                                        {filteredHives.map(h => <option key={h.id} value={h.hive_code}>{h.hive_code.toUpperCase()}</option>)}
+                                                {filteredHives.map(h => <option key={h.id} value={h.id}>{h.hive_code.toUpperCase()}</option>)}
                                                     </select>
                                                 </div>
                                             </div>
@@ -397,7 +398,11 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                     </div>
                                                     <div className="text-right">
                                                         <p className={glass.microLabel}>Entity Mapping</p>
-                                                        <p className="text-xs font-bold text-foreground uppercase mt-1">{selectedHive || "General System"}</p>
+                                                        <p className="text-xs font-bold text-foreground uppercase mt-1">
+                                                            {selectedHiveId
+                                                                ? (filteredHives.find((h: any) => h.id === selectedHiveId)?.hive_code || "Selected hive")
+                                                                : (selectedPlaceId ? "Selected apiary" : "General System")}
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div className="space-y-1">

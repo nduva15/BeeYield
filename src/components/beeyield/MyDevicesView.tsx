@@ -120,10 +120,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 {/* Search and Filters */}
                 <div className={glass.sectionHeader}>
                     <div className="flex-1 w-full space-y-2">
-                        <Label className="text-xs font-semibold text-[#1A1A1A]/60 ml-2">Device ID</Label>
+                        <Label htmlFor="my-devices-search" className="text-xs font-semibold text-[#1A1A1A]/60 ml-2">Device ID</Label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                             <Input
+                                id="my-devices-search"
+                                name="search_devices"
+                                autoComplete="off"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search…"
@@ -134,7 +137,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                     <div className="w-[200px] flex flex-col gap-1">
                         <Label className={glass.microLabel + " ml-1"}>Location</Label>
                         <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                            <SelectTrigger className={glass.select}>
+                            <SelectTrigger id="my-devices-filter-location" aria-label="Location" className={glass.select}>
                                 <div className="flex items-center gap-2">
                                     <Layers className="w-4 h-4 text-[#F4D03F]" />
                                             <SelectValue placeholder="All devices" />

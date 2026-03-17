@@ -400,13 +400,19 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Device name</Label>
-                <Input value={draft?.device_name || ''} onChange={(e) => setDraft((d) => d ? { ...d, device_name: e.target.value } : d)} />
+                <Label htmlFor="device-edit-name">Device name</Label>
+                <Input
+                  id="device-edit-name"
+                  name="device_name"
+                  autoComplete="off"
+                  value={draft?.device_name || ''}
+                  onChange={(e) => setDraft((d) => d ? { ...d, device_name: e.target.value } : d)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Device type</Label>
                 <Select value={draft?.device_type} onValueChange={(v: any) => setDraft((d) => d ? { ...d, device_type: v } : d)}>
-                  <SelectTrigger>
+                  <SelectTrigger id="device-edit-type" aria-label="Device type">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -422,7 +428,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
                   value={draft?.linked_apiary_id || ''}
                   onValueChange={(v) => setDraft((d) => d ? { ...d, linked_apiary_id: v, hive_id: '' } : d)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="device-edit-location" aria-label="Location">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
                   <SelectContent>
@@ -439,7 +445,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
                   onValueChange={(v) => setDraft((d) => d ? { ...d, hive_id: v } : d)}
                   disabled={!draft?.linked_apiary_id}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="device-edit-hive" aria-label="Hive (optional)">
                     <SelectValue placeholder={draft?.linked_apiary_id ? 'Select hive' : 'Select location first'} />
                   </SelectTrigger>
                   <SelectContent>

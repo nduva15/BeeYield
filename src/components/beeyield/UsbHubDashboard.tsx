@@ -317,6 +317,8 @@ export function UsbHubDashboard() {
                                     </p>
                                     <Input
                                         id="firmware-input-dash"
+                                        name="firmware_bin"
+                                        autoComplete="off"
                                         type="file"
                                         accept=".bin"
                                         className="hidden"
@@ -338,7 +340,11 @@ export function UsbHubDashboard() {
 
                             <div className="md:col-span-7 flex flex-col">
                                 <div className="bg-[#1A1A1A]/5 rounded-2xl p-4 flex-1 border border-[#F4D03F]/5">
+                                    <label htmlFor="firmware-manifest-json" className="sr-only">Manifest JSON</label>
                                     <Textarea
+                                        id="firmware-manifest-json"
+                                        name="manifest_json"
+                                        autoComplete="off"
                                         value={manifestJson}
                                         onChange={(e) => {
                                             const v = e.target.value;

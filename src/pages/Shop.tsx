@@ -526,6 +526,7 @@ const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [products, setProducts] = useState<Product[]>(STATIC_PRODUCTS);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<Product["category"]>('honey');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -631,36 +632,67 @@ const Shop = () => {
   };
 
   const honeyProducts = products.filter((p) => p.category === "honey").slice(0, 8);
+  const hardwareProducts = products.filter((p) => p.category === "hardware");
+  const merchProducts = products.filter((p) => p.category === "merch");
+  const educationProducts = products.filter((p) => p.category === "education");
+
+  const visibleProducts =
+    activeCategory === 'honey' ? honeyProducts :
+      activeCategory === 'hardware' ? hardwareProducts :
+        activeCategory === 'merch' ? merchProducts :
+          educationProducts;
 
   return (
     <BeeYieldPageShell className="bg-background">
-      {/* Honey Shop (8 items only) */}
+      {/* Shop */}
       <section className="container mx-auto px-4 py-10">
         <div className="flex items-end justify-between gap-6 flex-wrap mb-8">
           <div className="space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Honey Shop</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Shop</p>
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
-              BeeYield <span className="text-[#F4D03F]">Honey</span>
+              BeeYield <span className="text-[#F4D03F]">Store</span>
             </h1>
             <p className="text-sm text-muted-foreground max-w-xl">
-              Browse our curated honey collection. Showing 8 items only.
+              Browse honey, sensors, merch, and education.
             </p>
           </div>
 
-          <Button
-            variant="outline"
-            className="h-11 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-black text-[10px] uppercase tracking-widest gap-2"
-            asChild
-          >
-            <Link to="/my-account">
-              <User className="h-4 w-4 text-primary" />
-              <span>My Account</span>
-            </Link>
-          </Button>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex bg-muted/40 border border-border/50 rounded-xl p-1 gap-1">
+              {([
+                { id: 'honey', label: 'Honey' },
+                { id: 'hardware', label: 'Sensors' },
+                { id: 'merch', label: 'Merch' },
+                { id: 'education', label: 'Learn' },
+              ] as const).map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setActiveCategory(c.id)}
+                  className={cn(
+                    "h-9 px-4 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all",
+                    activeCategory === c.id ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              className="h-11 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-black text-[10px] uppercase tracking-widest gap-2"
+              asChild
+            >
+              <Link to="/my-account">
+                <User className="h-4 w-4 text-primary" />
+                <span>My Account</span>
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {honeyProducts.map((product) => (
+          {visibleProducts.map((product) => (
             <Card
               key={product.id}
               className={cn(

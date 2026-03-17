@@ -245,7 +245,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                 </div>
                                 <Button
                                     variant="ghost"
-                                    onClick={() => window.open('https://beeyield.com', '_blank', 'noopener,noreferrer')}
+                                    onClick={() => window.open('https://beeyield.com/shop-sensors', '_blank', 'noopener,noreferrer')}
                                     className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2 uppercase tracking-widest text-[10px]"
                                 >
                                     Discover more <ArrowRight className="w-4 h-4" />

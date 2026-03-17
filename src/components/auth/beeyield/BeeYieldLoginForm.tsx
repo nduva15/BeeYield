@@ -95,6 +95,8 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                 <div className="space-y-1.5">
                     <Input
                         id="by-mfa-code"
+                        name="mfa_code"
+                        autoComplete="one-time-code"
                         type="text"
                         placeholder="000 000"
                         value={mfaCode}
