@@ -1,9 +1,78 @@
+import { apiDelete, apiGet, getAuthHeaders } from './api';
 
-import { getAuthHeaders, ImageAnalysisResponse, AnalysisHistoryResponse, HealthTrendsResponse } from './beeyieldService';
-import { apiGet, apiDelete } from './api';
+export interface BoundingBox {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 
-// Re-export types for convenience
-export type { ImageAnalysisResponse, AnalysisHistoryResponse, HealthTrendsResponse } from './beeyieldService';
+export interface BeeDetection {
+    id: number;
+    label: string;
+    confidence: number; // 0..1
+    health?: string;
+    health_confidence?: number; // 0..1
+    bbox: BoundingBox;
+}
+
+export interface DiseaseIndicator {
+    disease: string;
+    probability: number; // 0..1
+    affected_bees: number[];
+    severity: 'Low' | 'Medium' | 'High' | 'Critical' | string;
+}
+
+export interface AnalysisResults {
+    bee_count: number;
+    health_status: 'Healthy' | 'Warning' | 'Critical' | 'Unknown' | string;
+    health_score: number;
+    confidence: number; // 0..1
+    detections: BeeDetection[];
+    disease_indicators: DiseaseIndicator[];
+    recommendations: string[];
+}
+
+export interface ImageAnalysisResponse {
+    success: boolean;
+    analysis_id: string;
+    status: 'processing' | 'completed' | 'failed' | string;
+    results: AnalysisResults;
+    image_url?: string | null;
+    annotated_image_url?: string | null;
+    created_at: string;
+    processing_time_ms: number;
+}
+
+export interface AnalysisHistoryItem {
+    id: string;
+    thumbnail_url?: string | null;
+    bee_count: number;
+    health_score: number;
+    health_status: string;
+    created_at?: string | null;
+    hive_id?: string | null;
+    apiary_id?: string | null;
+}
+
+export interface AnalysisHistoryResponse {
+    total: number;
+    items: AnalysisHistoryItem[];
+}
+
+export interface HealthTrendPoint {
+    date?: string | null;
+    health_score: number;
+    bee_count: number;
+    health_status?: string | null;
+}
+
+export interface HealthTrendsResponse {
+    hive_id: string;
+    trends: HealthTrendPoint[];
+    average_score?: number | null;
+    total_analyses?: number;
+}
 
 export const imageAnalysisService = {
     // Analyze Bee Image
@@ -38,8 +107,8 @@ export const imageAnalysisService = {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || 'Analysis failed');
+                const error = await response.json().catch(() => ({}));
+                throw new Error((error as any).detail || 'Analysis failed');
             }
 
             return await response.json();
