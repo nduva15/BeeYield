@@ -160,10 +160,10 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => toast.info("Development tools coming soon to global hive network.")}
+                                    onClick={() => onTabChange('support')}
                                     className="rounded-2xl px-10 h-16 text-lg font-bold border-[#F4D03F]/20"
                                 >
-                                    View development tools
+                                    Talk to support
                                 </Button>
                             </div>
 
@@ -245,7 +245,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                 </div>
                                 <Button
                                     variant="ghost"
-                                    onClick={() => toast.success("Redirecting to product documentation...")}
+                                    onClick={() => window.open('https://beeyield.com', '_blank', 'noopener,noreferrer')}
                                     className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2 uppercase tracking-widest text-[10px]"
                                 >
                                     Discover more <ArrowRight className="w-4 h-4" />
@@ -310,7 +310,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     </div>
                     <div className="flex flex-wrap justify-center gap-4">
                         <Button
-                            onClick={() => toast.info("Device configuration panel will be available in next update.")}
+                            onClick={() => onTabChange('settings')}
                             className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-8 h-14 font-bold border-none shadow-lg shadow-green-500/20"
                         >
                             Maintainance_Matrix

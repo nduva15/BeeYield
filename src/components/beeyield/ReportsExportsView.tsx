@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +25,7 @@ import { glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GlassStatCard } from './GlassTheme';
+import { Switch } from '@/components/ui/switch';
 
 interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
@@ -728,10 +730,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Schedule name</Label>
+                                    <Label className={glass.microLabel} htmlFor="beeyield-schedule-name">Schedule name</Label>
                                     <div className="relative">
                                         <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
                                         <input 
+                                            id="beeyield-schedule-name"
+                                            name="schedule_name"
+                                            autoComplete="off"
                                             value={newSchedule.name}
                                             onChange={(e) => setNewSchedule({ ...newSchedule, name: e.target.value })}
                                             className={cn(glass.input, "w-full pl-9")}
@@ -740,10 +745,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Recipients</Label>
+                                    <Label className={glass.microLabel} htmlFor="beeyield-schedule-recipients">Recipients</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
                                         <input
+                                            id="beeyield-schedule-recipients"
+                                            name="recipients"
+                                            autoComplete="email"
                                             value={recipientsDraft}
                                             onChange={(e) => setRecipientsDraft(e.target.value)}
                                             className={cn(glass.input, "w-full pl-9")}
@@ -756,9 +764,12 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                      <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Frequency</Label>
+                                        <Label className={glass.microLabel} htmlFor="beeyield-schedule-frequency">Frequency</Label>
                                         <div className="relative">
                                             <select
+                                                id="beeyield-schedule-frequency"
+                                                name="frequency"
+                                                autoComplete="off"
                                                 value={newSchedule.frequency}
                                                 onChange={(e) => setNewSchedule({ ...newSchedule, frequency: e.target.value as any })}
                                                 aria-label="Schedule frequency"
@@ -772,10 +783,11 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         </div>
                                      </div>
                                      <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Status</Label>
+                                        <Label className={glass.microLabel} htmlFor="beeyield-schedule-active">Status</Label>
                                         <div className={cn(glass.input, "w-full flex items-center justify-between")}>
                                             <span className="text-[10px] font-bold uppercase text-[#1A1A1A]/60">Active</span>
                                             <Switch 
+                                                id="beeyield-schedule-active"
                                                 checked={newSchedule.is_active}
                                                 onCheckedChange={(c) => setNewSchedule({ ...newSchedule, is_active: !!c })}
                                                 className="data-[state=checked]:bg-[#1B9157]"
