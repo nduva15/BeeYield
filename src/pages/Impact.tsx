@@ -146,9 +146,9 @@ const Impact = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center"
           >
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
+            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-semibold text-sm">
               <Globe className="w-3 h-3 mr-2" />
-              Global Impact Registry
+              Global impact
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
               Ecological <span className="text-beeyield-green">Impact.</span> <br />
@@ -210,7 +210,7 @@ const Impact = () => {
                       <stat.icon className="h-7 w-7" />
                     </div>
                     <h3 className="text-4xl font-black text-[#1A1A1A] mb-2 tracking-tighter">{stat.value}</h3>
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                    <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -232,7 +232,7 @@ const Impact = () => {
                 <img src={impactImage} alt="BeYield Sustainable Beekeeping" className="w-full aspect-[4/5] object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
                 <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
-                  <p className="text-sm font-black uppercase tracking-[0.3em] mb-2">Location: Kibwezi, Kenya</p>
+                  <p className="text-sm font-semibold mb-2">Location: Kibwezi, Kenya</p>
                   <h4 className="text-2xl font-bold">Resilient Landscapes</h4>
                 </div>
               </div>
@@ -254,7 +254,7 @@ const Impact = () => {
               <div className="space-y-8">
                 <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-[#1B9157]/">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-black text-[#1B9157] text-sm uppercase tracking-widest">Habitat Fidelity</span>
+                    <span className="font-semibold text-[#1B9157] text-sm">Habitat health</span>
                     <span className="font-black text-[#1B9157]">95%</span>
                   </div>
                   <Progress value={95} className="h-3 bg-emerald-100" />
@@ -262,7 +262,7 @@ const Impact = () => {
 
                 <div className="p-6 rounded-[2.5rem] bg-beeyield-gold/5 border border-beeyield-gold/10">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-black text-[#F4D03F] text-sm uppercase tracking-widest">Chemical-Free Index</span>
+                    <span className="font-semibold text-[#D4AC0D] text-sm">Chemical-free index</span>
                     <span className="font-black text-beeyield-gold">100%</span>
                   </div>
                   <Progress value={100} className="h-3 bg-amber-100" />
@@ -270,7 +270,7 @@ const Impact = () => {
 
                 <div className="p-6 rounded-[2.5rem] bg-blue-50 border border-blue-100">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-black text-blue-800 text-sm uppercase tracking-widest">Acoustic Health Baseline</span>
+                    <span className="font-semibold text-blue-800 text-sm">Acoustic health baseline</span>
                     <span className="font-black text-blue-700">88%</span>
                   </div>
                   <Progress value={88} className="h-3 bg-blue-100" />
@@ -282,7 +282,7 @@ const Impact = () => {
                   <Zap className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-[#1A1A1A] uppercase">Live Pulse Integration</p>
+                  <p className="text-sm font-semibold text-[#1A1A1A]">Live data sync</p>
                   <p className="text-xs text-slate-400 font-medium">Data synced with Kibwezi Sensor Network</p>
                 </div>
               </div>

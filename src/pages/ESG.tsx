@@ -206,7 +206,7 @@ const ESG = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center"
           >
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
+            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-semibold text-sm">
               <Globe className="w-3 h-3 mr-2" />
               ESG overview
             </Badge>
@@ -249,7 +249,7 @@ const ESG = () => {
                   <stat.icon className="w-6 h-6 text-beeyield-green" />
                 </div>
                 <div className="text-2xl font-black text-[#1A1A1A] mb-1 tracking-tighter">{stat.value}</div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{stat.label}</div>
+                <div className="text-sm font-semibold text-slate-500 mb-1">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -287,7 +287,7 @@ const ESG = () => {
                       </div>
 
                       <div className="pt-8 border-t border-[#F4D03F]/20">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-beeyield-gold mb-2 italic">Quantified Impact</p>
+                        <p className="text-sm font-semibold text-beeyield-gold mb-2">Measured impact</p>
                         <p className="text-lg font-bold text-[#1A1A1A] leading-tight">
                           {pillar.impact}
                         </p>
@@ -306,7 +306,7 @@ const ESG = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
-              <Badge variant="outline" className="mb-6 border-beeyield-gold/40 text-beeyield-gold font-black uppercase tracking-[0.2em] text-[10px]">
+              <Badge variant="outline" className="mb-6 border-beeyield-gold/40 text-beeyield-gold font-semibold text-sm">
                 Strategic Focus: SDG 2
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Data-Driven <br />Food Security.</h2>
@@ -317,11 +317,11 @@ const ESG = () => {
               <div className="grid grid-cols-2 gap-10">
                 <div className="space-y-2">
                   <p className="text-4xl font-black text-beeyield-gold">25+</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Acres Under Guardianship</p>
+                  <p className="text-sm font-semibold text-slate-600">Acres supported</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-4xl font-black text-beeyield-green">100%</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pesticide-Free Baseline</p>
+                  <p className="text-sm font-semibold text-slate-600">Pesticide-free baseline</p>
                 </div>
               </div>
             </div>
@@ -336,7 +336,7 @@ const ESG = () => {
                   <p className="text-xl font-medium italic text-slate-100 mb-4">
                     "Through precision pollination, we're not just harvesting honey?we're creating local abundance."
                   </p>
-                  <p className="text-sm font-black uppercase tracking-widest text-beeyield-gold">Timothy Nduva, CEO</p>
+                  <p className="text-sm font-semibold text-beeyield-gold">Timothy Nduva, CEO</p>
                 </div>
               </div>
             </div>

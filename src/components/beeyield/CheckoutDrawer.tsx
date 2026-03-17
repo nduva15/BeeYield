@@ -46,10 +46,10 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
     const [selectedMethod, setSelectedMethod] = React.useState<string>('method_1');
     const [isProcessing, setIsProcessing] = React.useState(false);
     const [receiptRef, setReceiptRef] = React.useState<string | null>(null);
+    const [mpesaPhone, setMpesaPhone] = React.useState<string>('');
 
     const paymentMethods: PaymentMethod[] = [
-        { id: 'method_1', type: 'mpesa', phone: '254700***123', isDefault: true, provider: 'Safaricom' },
-        { id: 'method_2', type: 'card', last4: '4242', isDefault: false, provider: 'Visa' },
+        { id: 'method_1', type: 'mpesa', phone: mpesaPhone || undefined, isDefault: true, provider: 'Safaricom' },
     ];
 
     const currentMethod = paymentMethods.find(m => m.id === selectedMethod) || paymentMethods[0];
@@ -61,6 +61,16 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
             setStep('payment');
             return;
         }
+
+        if (currentMethod.type === 'mpesa') {
+            const phone = (mpesaPhone || '').trim().replace(/\s+/g, '');
+            if (!phone) {
+                toast.error('Enter your M-Pesa phone number to continue.');
+                setStep('payment');
+                return;
+            }
+        }
+
         setIsProcessing(true);
         setStep('processing');
 
@@ -75,7 +85,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                     amount: item.price,
                     currency: item.currency,
                     payment_method: currentMethod.type,
-                    phone: currentMethod.phone,
+                    phone: currentMethod.type === 'mpesa' ? (mpesaPhone || '').trim().replace(/\s+/g, '') : currentMethod.phone,
                     description: `Order for ${item.name}`
                 }
             });
@@ -210,11 +220,11 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                 >
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-10 h-10 bg-[#F9F7F2] flex items-center justify-center">
-                                                            {method.type === 'card' ? <CreditCard size={20} className="text-gray-600" /> : <Smartphone size={20} className="text-[#1B9157]" />}
+                                                            <Smartphone size={20} className="text-[#1B9157]" />
                                                         </div>
                                                         <div>
                                                             <p className="text-[12px] font-bold text-[#1A1A1A]">
-                                                                {method.type === 'card' ? `•••• ${method.last4}` : method.phone}
+                                                                {method.phone || 'Enter phone below'}
                                                             </p>
                                                             <p className="text-[9px] text-gray-400 uppercase font-black">{method.provider}</p>
                                                         </div>
@@ -223,6 +233,23 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                 </button>
                                             ))}
                                         </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">M-Pesa phone</p>
+                                        <input
+                                            value={mpesaPhone}
+                                            onChange={(e) => setMpesaPhone(e.target.value)}
+                                            placeholder="2547XXXXXXXX"
+                                            inputMode="tel"
+                                            autoComplete="tel"
+                                            className="w-full h-12 bg-[#111] border border-[#1A1A1A] px-4 text-[12px] font-bold text-[#1A1A1A] placeholder:text-gray-600 outline-none focus:border-[#F59E0B]"
+                                            aria-label="M-Pesa phone number"
+                                            title="M-Pesa phone number"
+                                        />
+                                        <p className="text-[10px] text-gray-500 leading-relaxed font-bold">
+                                            Use international format (e.g. 2547…). We’ll prompt on your phone to confirm the payment.
+                                        </p>
                                     </div>
 
                                     <div className="p-4 bg-[#1B9157]/ border border-[#1B9157]/ flex gap-3">

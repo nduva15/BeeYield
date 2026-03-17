@@ -382,9 +382,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <div className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {[
-                                    { id: 'beehives', label: 'Commercial Apiaries', desc: 'Main telemetry flow for hive health.', icon: Hexagon, color: 'text-[#F4D03F]' },
+                                    { id: 'beehives', label: 'Commercial apiaries', desc: 'Hive health metrics and alerts.', icon: Hexagon, color: 'text-[#F4D03F]' },
                                     { id: 'agro', label: 'Meteo & Bloom', desc: 'Satellite weather analytics.', icon: Globe, color: 'text-[#1B9157]' },
-                                    { id: 'trackers', label: 'Auxiliary Hardware', desc: 'Solar device status & telemetry.', icon: Cpu, color: 'text-blue-500' },
+                                    { id: 'trackers', label: 'Hardware add-ons', desc: 'Solar device status and metrics.', icon: Cpu, color: 'text-blue-500' },
                                     { id: 'patients', label: 'Biometric Lab', desc: 'Advanced veterinary disease analysis.', icon: Activity, color: 'text-red-500' }
                                 ].map((mod, idx) => (
                                     <motion.div

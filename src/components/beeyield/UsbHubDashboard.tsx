@@ -114,9 +114,16 @@ export function UsbHubDashboard() {
 
     const handshake = async (usbDevice: USBDevice) => {
         try {
+            let fw = 'unknown';
+            try {
+                const parsed = JSON.parse(manifestJson);
+                fw = String(parsed?.version || fw);
+            } catch {
+                // ignore
+            }
             const payload = {
                 serial_number: usbDevice.serialNumber || 'UNKNOWN-SN',
-                firmware_version: '1.2.0',
+                firmware_version: fw,
                 config_json: { sample_rate: 300 },
                 user_id: userId
             };
@@ -189,9 +196,9 @@ export function UsbHubDashboard() {
                 user_id: userId
             });
 
-            addLog("Firmware overwrite successful. Validating checksum...");
-            addLog("Hub rebooting... Connection state: PERSISTENT.");
-            toast.success("Firmware Updated");
+            addLog("Firmware payload staged locally. Checksum validated.");
+            addLog("NOTE: Actual device flashing requires a hardware-specific flasher/toolchain.");
+            toast.success("Firmware staged", { description: "Upload + validation completed. Connect a supported flasher to write firmware." });
         } catch (err) {
             addLog("Write execution error. Buffer underrun or link severed.");
             toast.error("Update failed");

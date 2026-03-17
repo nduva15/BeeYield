@@ -659,7 +659,7 @@ const Shop = () => {
       <section className="container mx-auto px-4 py-10">
         <div className="flex items-end justify-between gap-6 flex-wrap mb-8">
           <div className="space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Shop</p>
+            <p className="text-sm font-semibold text-muted-foreground">Shop</p>
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
               BeeYield <span className="text-[#F4D03F]">Store</span>
             </h1>
@@ -680,7 +680,7 @@ const Shop = () => {
                   key={c.id}
                   onClick={() => setActiveCategory(c.id)}
                   className={cn(
-                    "h-9 px-4 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all",
+                    "h-9 px-4 rounded-lg font-semibold text-sm transition-all",
                     activeCategory === c.id ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -691,7 +691,7 @@ const Shop = () => {
 
             <Button
               variant="outline"
-              className="h-11 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-black text-[10px] uppercase tracking-widest gap-2"
+              className="h-11 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-semibold text-sm gap-2"
               asChild
             >
               <Link to="/my-account">
@@ -706,7 +706,7 @@ const Shop = () => {
           <div className="mb-10 overflow-hidden rounded-[2.5rem] border border-border/50 bg-[#FFF9F0] shadow-premium">
             <div className="p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Shop Sensors</p>
+                <p className="text-sm font-semibold text-muted-foreground">Sensors</p>
                 <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-foreground">
                   BeeHUB <span className="text-[#F4D03F]">Sensors</span>
                 </h2>
@@ -716,12 +716,12 @@ const Shop = () => {
                 <div className="flex flex-wrap gap-2 pt-1">
                   {[
                     { label: 'LoRa / GSM gateway', icon: Radio },
-                    { label: 'Hive telemetry', icon: Activity },
+                    { label: 'Hive metrics', icon: Activity },
                     { label: 'Industrial hardware', icon: Cpu },
                   ].map((b) => (
                     <Badge
                       key={b.label}
-                      className="bg-white/70 text-foreground border-border/40 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-1.5"
+                      className="bg-white/70 text-foreground border-border/40 font-semibold text-sm px-3 py-1.5 rounded-full flex items-center gap-1.5"
                     >
                       <b.icon className="h-3.5 w-3.5 text-primary" />
                       {b.label}
@@ -731,7 +731,7 @@ const Shop = () => {
               </div>
 
               <Button
-                className="h-11 rounded-2xl px-6 font-black uppercase tracking-widest text-[10px] bg-primary text-primary-foreground shadow-primary/20"
+                className="h-11 rounded-2xl px-6 font-semibold text-sm bg-primary text-primary-foreground shadow-primary/20"
                 onClick={() => window.open('https://beeyield.com/shop-sensors', '_blank', 'noopener,noreferrer')}
               >
                 View all sensors
