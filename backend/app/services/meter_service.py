@@ -63,3 +63,15 @@ class MeterService:
         
         # 2. Update last reading in meter device
         await db_update("meters_devices", {"last_reading_value": value, "last_reading_unit": unit, "last_reading_at": datetime.utcnow().isoformat()}, {"id": meter_id})
+
+    @staticmethod
+    async def create_meter(payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create a new meter device row in meters_devices.
+        Expects keys compatible with schemas.MeterCreate.
+        """
+        res = await db_insert("meters_devices", payload)
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to create meter")
+        rows = res.get("data") or []
+        return rows[0] if isinstance(rows, list) and rows else payload
