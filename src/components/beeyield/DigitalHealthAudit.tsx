@@ -206,8 +206,8 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                         </div>
                                     </div>
                                     <div className="text-center space-y-2 px-12">
-                                        <p className="text-sm font-bold text-[#1A1A1A] uppercase tracking-[0.2em]">Neural Engine Ready</p>
-                                        <p className="text-xs text-gray-500 max-w-xs leading-relaxed">Please upload a high-resolution hive image to initialize the health diagnostic protocol.</p>
+                                        <p className="text-sm font-bold text-[#1A1A1A] uppercase tracking-[0.2em]">Ready</p>
+                                        <p className="text-xs text-gray-500 max-w-xs leading-relaxed">Upload a clear photo of the hive (good light, in focus).</p>
                                     </div>
                                 </motion.div>
                             )}

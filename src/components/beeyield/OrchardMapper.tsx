@@ -137,7 +137,7 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                     <div className={cn(glass.card, "p-4 bg-[#F9F7F2] border-[#F4D03F]/20 space-y-2")}>
                         <div className="flex items-center gap-2 text-[#1B9157]">
                             <Zap className="w-4 h-4" />
-                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement Protocol</h4>
+                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement notes</h4>
                         </div>
                         <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
                             Optimal hive placement algorithm increases pollination coverage by <span className="text-[#1A1A1A] font-bold">18%</span> through geospatial saturation analysis.

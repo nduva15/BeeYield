@@ -126,7 +126,7 @@ const HpaOptimizer: React.FC = () => {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-50 pb-4">
                         <div className="space-y-0.5 px-1">
                             <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">Placement Suggestions</h2>
-                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Full crop coverage dynamics protocol</p>
+                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Suggested placements for better coverage</p>
                         </div>
                         <div className="bg-emerald-50/50 border border-emerald-100 px-4 py-2 rounded-2xl flex items-center gap-4 shadow-sm backdrop-blur-sm">
                             <Zap className="w-5 h-5 text-amber-500" />
@@ -204,9 +204,9 @@ const HpaOptimizer: React.FC = () => {
                             <Info className="w-4 h-4 text-gray-300" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-[10px] font-bold text-[#1A1A1A] tracking-widest uppercase">Industrial Mapping Protocol</h4>
+                            <h4 className="text-[10px] font-bold text-[#1A1A1A] tracking-widest uppercase">Mapping notes</h4>
                             <p className="text-[10px] font-medium text-gray-400 leading-relaxed border-l-2 border-emerald-500/30 pl-4 mt-2">
-                                Coverage optimized for industrial apiary flow. Movement patterns validated for maximal foraging efficiency across heterogeneous terrain.
+                                Coverage is estimated from acreage and tree density. Use this as a starting point, then adjust based on bloom timing and access.
                             </p>
                         </div>
                     </div>

@@ -189,7 +189,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
                         <div className="lg:col-span-4 flex flex-col gap-3 justify-center">
                             <button className={glass.btnSecondary}>
-                                <Activity className="w-4 h-4" /> Technical Protocols
+                                <Activity className="w-4 h-4" /> Troubleshooting
                             </button>
                             <button onClick={() => window.print()} className={glass.btnSecondary}>
                                 <Printer className="w-4 h-4" /> Export Service Form

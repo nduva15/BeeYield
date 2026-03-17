@@ -69,7 +69,7 @@ const MetersSettings: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6")}>
             <BeeYieldPageHeader
                 icon={Settings2}
-                label="Sensor Rules and Protocols"
+                label="Sensor rules"
                 title={<>System <span className="text-[#F4D03F]">Settings</span></>}
                 subtitle="Configure operational bounds and notification triggers."
             />

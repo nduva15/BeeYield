@@ -58,7 +58,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                 return (
                     <div className={cn(glass.card, "flex flex-col items-center justify-center py-24 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                         <FileText className="w-10 h-10 text-gray-300 mb-4" />
-                        <p className="text-gray-500 font-black uppercase tracking-[0.2em] text-[9px]">ASYNCHRONOUS_DATA_INGEST_PROTOCOL: INTERRUPTED</p>
+                        <p className="text-gray-500 font-black uppercase tracking-[0.2em] text-[9px]">Data sync interrupted</p>
                     </div>
                 );
             default:
