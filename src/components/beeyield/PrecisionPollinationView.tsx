@@ -211,7 +211,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         setIsOptimizing(true);
         try {
             const results = await beeyieldService.optimizePollinationPlacement({
-                orchard_geojson: mockGeoJSON,
+                orchard_geojson: orchardGeoJSON,
                 hive_count: calcInputs.hives.length,
                 target_crop: 'Almond',
                 bee_flight_radius_km: 1.5,
@@ -228,6 +228,25 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     React.useEffect(() => {
         fetchDeployments();
+    }, []);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const loadApiaries = async () => {
+            try {
+                const data = await beeyieldService.getApiaries();
+                if (!mounted) return;
+                setApiaries(data || []);
+                if (!selectedApiaryId && (data || []).length > 0) setSelectedApiaryId(data[0].id);
+            } catch {
+                // ignore
+            }
+        };
+        loadApiaries();
+        return () => {
+            mounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSaveDeployment = async () => {
