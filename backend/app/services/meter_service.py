@@ -45,6 +45,18 @@ class MeterService:
         return await db_select("meters_billing_rates", filters={"is_active": True})
 
     @staticmethod
+    async def create_billing_rate(payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create a new billing rate row in meters_billing_rates.
+        Expects keys compatible with schemas.BillingRateCreate.
+        """
+        res = await db_insert("meters_billing_rates", payload)
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to create billing rate")
+        rows = res.get("data") or []
+        return rows[0] if isinstance(rows, list) and rows else payload
+
+    @staticmethod
     async def get_events(severity: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
         filters = {}
         if severity:

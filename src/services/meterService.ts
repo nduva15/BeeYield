@@ -99,6 +99,17 @@ export const meterService = {
         return apiGet<BillingRate[]>('/meters/billing-rates');
     },
 
+    async createBillingRate(input: {
+        meter_type: string;
+        rate_per_unit: number;
+        unit: string;
+        currency?: string;
+        description?: string;
+        is_active?: boolean;
+    }): Promise<BillingRate> {
+        return apiPost<BillingRate>('/meters/billing-rates', input);
+    },
+
     async getEvents(severity?: string): Promise<MeterEvent[]> {
         return apiGet<MeterEvent[]>('/meters/events', severity ? { severity } : {});
     },

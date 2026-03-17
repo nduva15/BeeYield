@@ -58,7 +58,7 @@ const PollinationCalcs: React.FC = () => {
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Total Area (Acres)</label>
+                                    <label htmlFor="pollination-calcs-total-acres" className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Total Area (Acres)</label>
                                     <div className="flex items-center">
                                         <button
                                             onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: Math.max(1, prev.totalAcres - 5) }))}
@@ -68,9 +68,16 @@ const PollinationCalcs: React.FC = () => {
                                         >
                                             <Minus className="w-4 h-4" />
                                         </button>
-                                        <div className="flex-1 h-12 border-y-4 border-[#064e3b] flex items-center justify-center font-black text-xl">
-                                            {calcInputs.totalAcres}
-                                        </div>
+                                        <input
+                                            id="pollination-calcs-total-acres"
+                                            name="total_acres"
+                                            autoComplete="off"
+                                            inputMode="numeric"
+                                            readOnly
+                                            value={calcInputs.totalAcres}
+                                            className="flex-1 h-12 border-y-4 border-[#064e3b] flex items-center justify-center font-black text-xl bg-transparent text-center outline-none"
+                                            aria-label="Total area in acres"
+                                        />
                                         <button
                                             onClick={() => setCalcInputs(prev => ({ ...prev, totalAcres: prev.totalAcres + 5 }))}
                                             aria-label="Increase total area by 5 acres"
@@ -83,8 +90,11 @@ const PollinationCalcs: React.FC = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Bloom Intensity (0.1 - 1.0)</label>
+                                    <label htmlFor="pollination-calcs-bloom-intensity" className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Bloom Intensity (0.1 - 1.0)</label>
                                     <input
+                                        id="pollination-calcs-bloom-intensity"
+                                        name="bloom_intensity"
+                                        autoComplete="off"
                                         type="range"
                                         min="0.1"
                                         max="1.0"
@@ -103,8 +113,11 @@ const PollinationCalcs: React.FC = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Forage Competition</label>
+                                    <label htmlFor="pollination-calcs-forage-competition" className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block">Forage Competition</label>
                                     <input
+                                        id="pollination-calcs-forage-competition"
+                                        name="forage_competition"
+                                        autoComplete="off"
                                         type="range"
                                         min="0.1"
                                         max="1.0"

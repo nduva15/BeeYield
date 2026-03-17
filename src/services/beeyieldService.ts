@@ -1370,18 +1370,20 @@ export const beeyieldService = {
             const all = _lsRead<Inspection[]>(LS_KEYS.inspections, []);
             return hiveId ? all.filter((i: any) => i.hive_id === hiveId) : all;
         }
-        let query = sb.from('inspections').select('*').order('date', { ascending: false });
+        // Supabase schema uses `inspection_date` (older code used `date`).
+        // Ordering by a non-existent column causes PostgREST 400, so prefer `inspection_date`.
+        let query = sb.from('inspections').select('*').order('inspection_date', { ascending: false });
         if (hiveId) query = query.eq('hive_id', hiveId);
         const { data, error } = await query;
         if (error) { console.error('getInspections:', error); return []; }
-        return (data || []).map((i: any) => ({ ...i, inspection_date: i.date })) as Inspection[];
+        return (data || []) as Inspection[];
     },
 
     async getInspectionById(id: string): Promise<Inspection | null> {
         if (!sb) return null;
         const { data, error } = await sb.from('inspections').select('*').eq('id', id).single();
         if (error) { console.error('getInspectionById:', error); return null; }
-        return data ? { ...data, inspection_date: data.date } as any : null;
+        return data ? (data as any) : null;
     },
 
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
@@ -1414,7 +1416,6 @@ export const beeyieldService = {
             return { data: local, error: null };
         }
         const payload: any = { ...inspection };
-        if (inspection.inspection_date) { payload.date = inspection.inspection_date; delete payload.inspection_date; }
         const { data, error } = await sb.from('inspections').insert(payload).select().single();
         if (error) { console.error('createInspection:', error); toast.error('Failed to save inspection'); return { data: null, error }; }
 
@@ -1435,7 +1436,6 @@ export const beeyieldService = {
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
         if (!sb) return { data: null, error: 'No client' };
         const payload: any = { ...updates };
-        if (updates.inspection_date) { payload.date = updates.inspection_date; delete payload.inspection_date; }
         const { data, error } = await sb.from('inspections').update(payload).eq('id', id).select().single();
         if (error) { console.error('updateInspection:', error); toast.error('Failed to update inspection'); return { data: null, error }; }
         toast.success('Inspection updated successfully');
@@ -1941,7 +1941,7 @@ export const beeyieldService = {
 
     async getVarroaTreatments(hiveId?: string): Promise<any[]> {
         if (!sb) return [];
-        let query = sb.from('inspections').select('*').eq('health_status', 'treated').order('date', { ascending: false });
+        let query = sb.from('inspections').select('*').eq('health_status', 'treated').order('inspection_date', { ascending: false });
         if (hiveId) query = query.eq('hive_id', hiveId);
         const { data, error } = await query;
         if (error) { console.error('getVarroaTreatments:', error); return []; }
@@ -1960,7 +1960,7 @@ export const beeyieldService = {
         if (!sb) return { data: null, error: 'No client' };
         const { data, error } = await sb.from('inspections').insert({
             hive_id: input.hive_id,
-            date: input.start_date,
+            inspection_date: input.start_date,
             health_status: 'treated',
             actions_taken: `${input.treatment_type} - ${input.dosage || 'standard'}`,
             notes: input.notes,

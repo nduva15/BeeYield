@@ -25,7 +25,6 @@ import { glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GlassStatCard } from './GlassTheme';
-import { Switch } from '@/components/ui/switch';
 
 interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
@@ -276,7 +275,10 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 if (!isNoBackend) throw error;
 
                 const local = readLocalSchedules();
-                const id = `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+                const id =
+                    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+                        ? `local-${crypto.randomUUID()}`
+                        : `local-${Date.now()}`;
                 const created_at = new Date().toISOString();
                 const localRow: ScheduledReport = {
                     id,

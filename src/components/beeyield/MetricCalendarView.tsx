@@ -67,6 +67,18 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
     const days = generateCalendarDays();
     const config = metricConfig[activeMetric];
 
+    const monthStats = React.useMemo(() => {
+        const monthKey = format(currentDate, 'yyyy-MM');
+        const vals = Array.from(dayMetrics.entries())
+            .filter(([k]) => k.startsWith(monthKey))
+            .map(([, v]) => v.value)
+            .filter((v) => typeof v === 'number' && Number.isFinite(v));
+        if (!vals.length) return { max: null as number | null, avg: null as number | null };
+        const max = Math.max(...vals);
+        const avg = vals.reduce((s, x) => s + x, 0) / vals.length;
+        return { max: Number(max.toFixed(2)), avg: Number(avg.toFixed(2)) };
+    }, [dayMetrics, currentDate]);
+
     React.useEffect(() => {
         let mounted = true;
 
@@ -370,19 +382,21 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                             <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly peak</p>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">—</span>
+                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{monthStats.max ?? '—'}</span>
                                     <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">Max ({config.unit})</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-gray-400">
                                     <ArrowUpRight className="w-3 h-3" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">Needs real telemetry</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest">
+                                        {loading ? 'Loading' : monthStats.max === null ? 'No data yet' : 'Based on recent readings'}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly average</p>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">—</span>
+                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{monthStats.avg ?? '—'}</span>
                                     <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">Avg ({config.unit})</span>
                                 </div>
                             </div>

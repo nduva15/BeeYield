@@ -56,7 +56,8 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
             setAnalyzing(true);
             setProgress(10);
             const tick = globalThis.setInterval(() => {
-                setProgress((p) => (p >= 92 ? 92 : p + Math.random() * 8));
+                // UI-only progress; deterministic (no synthetic randomness).
+                setProgress((p) => (p >= 92 ? 92 : p + 4));
             }, 250);
 
             const tid = toast.loading('Analyzing audio…');
