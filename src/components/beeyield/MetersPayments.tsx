@@ -50,6 +50,44 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         loadRates();
     }, []);
 
+    const exportRatesCsv = React.useCallback(() => {
+        if (!rates || rates.length === 0) {
+            toast.info('No billing rates to export');
+            return;
+        }
+
+        const rows = rates.map((r: any) => ({
+            id: r.id ?? '',
+            meter_type: r.meter_type ?? r.type ?? '',
+            unit: r.unit ?? '',
+            rate: r.rate ?? r.unit_rate ?? '',
+            currency: r.currency ?? '',
+            updated_at: r.updated_at ?? '',
+        }));
+
+        const escapeCsv = (v: unknown) => {
+            const s = String(v ?? '');
+            if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+            return s;
+        };
+
+        const header = Object.keys(rows[0]).join(',');
+        const body = rows.map((row) => Object.values(row).map(escapeCsv).join(',')).join('\n');
+        const csv = `${header}\n${body}\n`;
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `beeyield-billing-rates-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        toast.success('Data package exported');
+    }, [rates]);
+
     return (
         <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn("p-8 -m-0 space-y-12 pb-12 min-h-screen")}>
@@ -107,10 +145,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     </div>
 
                     <button
-                        onClick={() => {
-                            toast.info("PREPARING_DATA_PACKAGE_FOR_EXPORT...");
-                            setTimeout(() => toast.success("DATA_PACKAGE_EXPORTED_SUCCESSFULLY"), 2000);
-                        }}
+                        onClick={exportRatesCsv}
                         className={cn(glass.btnPrimary, "w-full md:w-auto h-10 px-6 font-black text-[10px] uppercase tracking-[0.2em]")}
                     >
                         EXECUTE_BATCH_EXPORT

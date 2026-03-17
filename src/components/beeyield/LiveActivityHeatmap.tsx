@@ -2,6 +2,7 @@ import React from 'react';
 import { MapPin, Zap, Info, Layers, PieChart, Activity, Minimize2, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Tooltip as ReTooltip } from 'recharts';
+import { hashToInt, hashToUnit } from '@/lib/deterministic';
 
 interface LiveActivityHeatmapProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -29,8 +30,8 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
     const sectors = React.useMemo(() => {
         return Array.from({ length: 24 }).map((_, i) => ({
             id: i,
-            vpm: Math.floor(Math.random() * 12) + 6, // 6-18 VPM range
-            intensity: Math.random(),
+            vpm: hashToInt(`heatmap-vpm-${i}`, 6, 18), // 6-18 VPM range
+            intensity: hashToUnit(`heatmap-intensity-${i}`),
         }));
     }, []);
 

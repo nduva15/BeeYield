@@ -1026,7 +1026,7 @@ const Traceability = () => {
                         <div className="flex-1 last:pb-0">
                           <div className="flex flex-wrap items-center gap-3 mb-4">
                             <h4 className="font-black text-2xl sm:text-3xl text-[#1A1A1A] tracking-tighter">Final Custody</h4>
-                            <Badge className="bg-[#FFF9F0] text-[#1A1A1A] border-none font-black text-[10px] px-3 py-1">END NODE</Badge>
+                            <Badge className="bg-[#FFF9F0] text-[#1A1A1A] border-none font-black text-[10px] px-3 py-1">FINAL STEP</Badge>
                           </div>
                           <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
                             Hand-bottled and assigned to batch <span className="text-beeyield-gold font-black underline underline-offset-4 decoration-2">{traceData?.batch_code}</span>. Destination: Excellence.

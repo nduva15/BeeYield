@@ -68,7 +68,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
                                 <Terminal className="w-4 h-4 text-[#F4D03F]" />
                             </div>
-                            <h3 className={glass.sectionTitle}>Audio Node</h3>
+                            <h3 className={glass.sectionTitle}>Audio sensor</h3>
                         </div>
 
                         <div className="flex flex-col gap-2">

@@ -5,6 +5,61 @@ import { toast } from 'sonner';
 // Shorthand for the Supabase client used throughout this service
 const sb = supabaseBeeYield;
 
+// ========= LOCAL FALLBACK STORE (when Supabase/backends unavailable) =========
+// This allows core forms to keep working in dev/demo environments.
+type LocalEntity = { id: string; created_at?: string; updated_at?: string };
+
+const LS_KEYS = {
+    apiaries: 'beeyield_local_apiaries_v1',
+    hives: 'beeyield_local_hives_v1',
+    harvests: 'beeyield_local_harvests_v1',
+    requests: 'beeyield_local_requests_v1',
+    inspections: 'beeyield_local_inspections_v1',
+    notes: 'beeyield_local_notes_v1',
+} as const;
+
+function _nowIso() {
+    return new Date().toISOString();
+}
+
+function _uuid() {
+    // crypto.randomUUID exists in modern browsers; fall back gracefully.
+    return (globalThis.crypto as any)?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function _lsRead<T>(key: string, fallback: T): T {
+    try {
+        const raw = globalThis.localStorage?.getItem(key);
+        if (!raw) return fallback;
+        return JSON.parse(raw) as T;
+    } catch {
+        return fallback;
+    }
+}
+
+function _lsWrite<T>(key: string, value: T) {
+    try {
+        globalThis.localStorage?.setItem(key, JSON.stringify(value));
+    } catch {
+        // ignore (private mode / storage disabled)
+    }
+}
+
+function _lsUpsert<T extends LocalEntity>(key: string, row: T): T {
+    const list = _lsRead<T[]>(key, []);
+    const idx = list.findIndex((x) => x.id === row.id);
+    const next = { ...row, updated_at: _nowIso() } as T;
+    if (idx >= 0) list[idx] = next;
+    else list.unshift({ ...next, created_at: next.created_at || _nowIso() });
+    _lsWrite(key, list);
+    return next;
+}
+
+function _lsDelete(key: string, id: string) {
+    const list = _lsRead<any[]>(key, []);
+    _lsWrite(key, list.filter((x) => x?.id !== id));
+}
+
 // Types for BeeYield Dashboard
 export interface InfieldReadings {
     temperature: number;
@@ -759,7 +814,9 @@ export const beeyieldService = {
 
     // ========== APIARIES ==========
     async getApiaries(): Promise<Apiary[]> {
-        if (!sb) return [];
+        if (!sb) {
+            return _lsRead<Apiary[]>(LS_KEYS.apiaries, []);
+        }
         const { data, error } = await sb.from('apiaries').select('*, farmer:farmers(*)').order('created_at', { ascending: false });
         if (error) { console.error('getApiaries:', error); return []; }
         return (data || []).map((a: any) => ({
@@ -770,7 +827,26 @@ export const beeyieldService = {
     },
 
     async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const created: Apiary = {
+                id: _uuid(),
+                name: input?.name || 'New Apiary',
+                type: input?.type || input?.apiary_type || 'Permanent',
+                location_name: input?.location_name || null,
+                region: input?.region || null,
+                forage_type: input?.forage_type || '',
+                expected_hives: input?.expected_hives,
+                size_acres: input?.size_acres,
+                notes: input?.notes,
+                status: 'active',
+                hive_count: 0,
+                created_at: _nowIso(),
+                updated_at: _nowIso(),
+            } as any;
+            _lsUpsert<Apiary>(LS_KEYS.apiaries, created);
+            toast.success('Apiary deployed (local)');
+            return { data: created, error: null };
+        }
         const payload = {
                 ...input,
             apiary_type: input.type || input.apiary_type || 'Permanent',
@@ -786,7 +862,14 @@ export const beeyieldService = {
     },
 
     async updateApiary(id: string, input: Partial<ApiaryCreateInput>): Promise<{ data: Apiary | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const list = _lsRead<Apiary[]>(LS_KEYS.apiaries, []);
+            const existing = list.find((a) => a.id === id);
+            if (!existing) return { data: null, error: 'Not found' };
+            const updated = _lsUpsert<Apiary>(LS_KEYS.apiaries, { ...(existing as any), ...(input as any), id } as any);
+            toast.success('Apiary updated (local)');
+            return { data: updated, error: null };
+        }
             const payload: any = { ...input };
         if (input.forage_type) { payload.primary_forage = input.forage_type; delete payload.forage_type; }
         if (input.type) { payload.apiary_type = input.type; delete payload.type; }
@@ -798,7 +881,14 @@ export const beeyieldService = {
     },
 
     async deleteApiary(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
+        if (!sb) {
+            _lsDelete(LS_KEYS.apiaries, id);
+            // Cascade delete local hives linked to this apiary
+            const hives = _lsRead<any[]>(LS_KEYS.hives, []);
+            _lsWrite(LS_KEYS.hives, hives.filter((h) => h?.apiary_id !== id));
+            toast.success('Apiary removed (local)');
+            return { error: null };
+        }
         const { error } = await sb.from('apiaries').delete().eq('id', id);
         if (error) { console.error('deleteApiary:', error); toast.error('Failed to delete apiary'); return { error }; }
             toast.success('Apiary removed');
@@ -807,7 +897,11 @@ export const beeyieldService = {
 
     // ========== HIVES ==========
     async getHives(apiaryId?: string): Promise<Hive[]> {
-        if (!sb) return [];
+        if (!sb) {
+            const all = _lsRead<Hive[]>(LS_KEYS.hives, []);
+            const filtered = apiaryId ? all.filter((h: any) => (h.apiary_id || h.apiary?.id) === apiaryId) : all;
+            return filtered;
+        }
         let query = sb.from('hives').select('*, apiary:apiaries(id, name)').order('created_at', { ascending: false });
         if (apiaryId) query = query.eq('apiary_id', apiaryId);
         const { data, error } = await query;
@@ -816,7 +910,26 @@ export const beeyieldService = {
     },
 
     async createHive(input: HiveCreateInput): Promise<{ data: Hive | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const created: Hive = {
+                id: _uuid(),
+                apiary_id: input.apiary_id || null,
+                hive_code: input.hive_code,
+                hive_type: input.hive_type,
+                bee_type: input.bee_type,
+                frame_count: input.frame_count,
+                material: input.material,
+                status: input.status || 'active',
+                installation_date: input.installation_date || new Date().toISOString().split('T')[0],
+                has_sensors: input.has_sensors,
+                notes: input.notes,
+                created_at: _nowIso(),
+                updated_at: _nowIso(),
+            } as any;
+            _lsUpsert<Hive>(LS_KEYS.hives, created);
+            toast.success('Hive added (local)');
+            return { data: created, error: null };
+        }
         const payload = { ...input, installation_date: input.installation_date || new Date().toISOString().split('T')[0] };
         const { data, error } = await sb.from('hives').insert(payload).select().single();
         if (error) { console.error('createHive:', error); toast.error('Failed to create hive'); return { data: null, error }; }
@@ -825,7 +938,14 @@ export const beeyieldService = {
     },
 
     async updateHive(id: string, input: Partial<HiveCreateInput>): Promise<{ data: Hive | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const list = _lsRead<Hive[]>(LS_KEYS.hives, []);
+            const existing = list.find((h) => h.id === id);
+            if (!existing) return { data: null, error: 'Not found' };
+            const updated = _lsUpsert<Hive>(LS_KEYS.hives, { ...(existing as any), ...(input as any), id } as any);
+            toast.success('Hive updated (local)');
+            return { data: updated, error: null };
+        }
         const { data, error } = await sb.from('hives').update(input).eq('id', id).select().single();
         if (error) { console.error('updateHive:', error); toast.error('Failed to update hive'); return { data: null, error }; }
             toast.success('Hive updated!');
@@ -833,7 +953,11 @@ export const beeyieldService = {
     },
 
     async deleteHive(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
+        if (!sb) {
+            _lsDelete(LS_KEYS.hives, id);
+            toast.success('Hive removed (local)');
+            return { error: null };
+        }
         const { error } = await sb.from('hives').delete().eq('id', id);
         if (error) { console.error('deleteHive:', error); toast.error('Failed to delete hive'); return { error }; }
             toast.success('Hive removed');
@@ -842,7 +966,13 @@ export const beeyieldService = {
 
     // ========== HARVESTS ==========
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
-        if (!sb) return [];
+        if (!sb) {
+            let list = _lsRead<Harvest[]>(LS_KEYS.harvests, []);
+            if (filters?.hive_id) list = list.filter((h: any) => (h.hive_id || h.hive?.id) === filters.hive_id);
+            if (filters?.apiary_id) list = list.filter((h: any) => (h.apiary?.id || (h as any).apiary_id) === filters.apiary_id);
+            if (filters?.year) list = list.filter((h) => new Date(h.harvest_date).getFullYear() === filters.year);
+            return list;
+        }
         let query = sb.from('harvests').select('*, hive:hives(id, hive_code), farmer:farmers(id, name)').order('date', { ascending: false });
         if (filters?.hive_id) query = query.eq('hive_id', filters.hive_id);
         if (filters?.year) {
@@ -956,8 +1086,26 @@ export const beeyieldService = {
             return { data, error: null };
         } catch (error) {
             console.error('createHarvest:', error);
-            toast.error('Failed to record harvest');
-            return { data: null, error };
+            // Fallback: persist locally so forms keep working even if backend/Supabase is down.
+            const local: Harvest = {
+                id: _uuid(),
+                hive_id: input.hive_id || null,
+                harvest_date: input.harvest_date,
+                quantity_kg: input.quantity_kg,
+                extraction_method: input.extraction_method,
+                nectar_source: input.nectar_source,
+                weather_conditions: input.weather_conditions,
+                moisture_content_percent: input.moisture_content_percent,
+                batch_code: input.batch_code || `LOCAL-${new Date().getFullYear()}-${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}`,
+                honey_type: input.honey_type,
+                color_grade: input.color_grade,
+                is_verified: input.is_verified ?? true,
+                created_at: _nowIso(),
+                updated_at: _nowIso(),
+            } as any;
+            _lsUpsert<Harvest>(LS_KEYS.harvests, local);
+            toast.success('Harvest saved (local fallback)');
+            return { data: local, error: null };
         }
 
         // F5: Activity Log
@@ -1074,7 +1222,10 @@ export const beeyieldService = {
 
     // ========== INSPECTIONS ==========
     async getInspections(hiveId?: string): Promise<Inspection[]> {
-        if (!sb) return [];
+        if (!sb) {
+            const all = _lsRead<Inspection[]>(LS_KEYS.inspections, []);
+            return hiveId ? all.filter((i: any) => i.hive_id === hiveId) : all;
+        }
         let query = sb.from('inspections').select('*').order('date', { ascending: false });
         if (hiveId) query = query.eq('hive_id', hiveId);
         const { data, error } = await query;
@@ -1090,7 +1241,34 @@ export const beeyieldService = {
     },
 
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const local: Inspection = {
+                id: _uuid(),
+                hive_id: inspection.hive_id,
+                inspection_date: inspection.inspection_date,
+                inspector_name: inspection.inspector_name,
+                findings: inspection.findings,
+                actions_taken: inspection.actions_taken,
+                health_status: inspection.health_status,
+                temperament: inspection.temperament,
+                honey_stores: inspection.honey_stores,
+                pollen_stores: inspection.pollen_stores,
+                brood_pattern: inspection.brood_pattern,
+                eggs_seen: inspection.eggs_seen,
+                queen_seen: inspection.queen_seen,
+                queen_cells_seen: inspection.queen_cells_seen,
+                varroa_mite_count: inspection.varroa_mite_count,
+                small_hive_beetles_seen: inspection.small_hive_beetles_seen,
+                weather_condition: inspection.weather_condition,
+                temperature_celsius: inspection.temperature_celsius,
+                notes: inspection.notes,
+                created_at: _nowIso(),
+                updated_at: _nowIso(),
+            } as any;
+            _lsUpsert<Inspection>(LS_KEYS.inspections, local);
+            toast.success('Inspection saved (local)');
+            return { data: local, error: null };
+        }
         const payload: any = { ...inspection };
         if (inspection.inspection_date) { payload.date = inspection.inspection_date; delete payload.inspection_date; }
         const { data, error } = await sb.from('inspections').insert(payload).select().single();
@@ -1215,14 +1393,32 @@ export const beeyieldService = {
 
     // ========== REQUESTS ==========
     async getRequests(): Promise<Request[]> {
-        if (!sb) return [];
+        if (!sb) return _lsRead<Request[]>(LS_KEYS.requests, []);
         const { data, error } = await sb.from('requests').select('*').order('created_at', { ascending: false });
         if (error) { console.error('getRequests:', error); return []; }
         return (data || []) as Request[];
     },
 
     async createRequest(input: RequestCreateInput): Promise<{ data: Request | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const local: Request = {
+                id: _uuid(),
+                user_id: 'local',
+                subject: input.subject,
+                description: input.description,
+                status: 'new',
+                priority: (input.priority as any) || 'medium',
+                type: (input.type as any) || 'support',
+                apiary_id: input.apiary_id,
+                hive_id: input.hive_id,
+                category: input.category,
+                created_at: _nowIso(),
+                updated_at: _nowIso(),
+            };
+            _lsUpsert<Request>(LS_KEYS.requests, local);
+            toast.success('Request submitted (local)');
+            return { data: local, error: null };
+        }
         const { data, error } = await sb.from('requests').insert(input).select().single();
         if (error) { console.error('createRequest:', error); toast.error('Failed to submit request'); return { data: null, error }; }
         toast.success('Request submitted successfully');
@@ -2100,14 +2296,31 @@ export const beeyieldService = {
 
     // ========== NOTES ==========
     async getNotes(): Promise<Note[]> {
-        if (!sb) return [];
+        if (!sb) return _lsRead<Note[]>(LS_KEYS.notes, []);
         const { data, error } = await sb.from('notes').select('*').order('created_at', { ascending: false });
         if (error) { console.error('getNotes:', error); return []; }
         return (data || []) as Note[];
     },
 
     async createNote(input: NoteCreateInput): Promise<{ data: Note | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        if (!sb) {
+            const local: Note = {
+                id: _uuid(),
+                user_id: 'local',
+                apiary_id: input.apiary_id,
+                hive_id: input.hive_id,
+                title: input.title,
+                content: input.content,
+                category: input.category,
+                priority: (input.priority as any) || 'medium',
+                note_date: input.note_date || new Date().toISOString().split('T')[0],
+                created_at: _nowIso(),
+                updated_at: _nowIso(),
+            };
+            _lsUpsert<Note>(LS_KEYS.notes, local);
+            toast.success('Note added (local)');
+            return { data: local, error: null };
+        }
         const { data, error } = await sb.from('notes').insert(input).select().single();
         if (error) { console.error('createNote:', error); toast.error('Failed to create note'); return { data: null, error }; }
         toast.success('Note added successfully');

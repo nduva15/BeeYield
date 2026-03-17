@@ -92,6 +92,46 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
         });
     }, [harvests, searchQuery, filterYear]);
 
+    const exportHarvestsCsv = React.useCallback(() => {
+        const rows = filteredHarvests.map((h) => ({
+            batch_code: h.batch_code || '',
+            harvest_date: h.harvest_date || '',
+            apiary: (h as any).apiary?.name || '',
+            hive_code: (h as any).hive?.hive_code || '',
+            quantity_kg: h.quantity_kg ?? '',
+            honey_type: h.honey_type || '',
+            color_grade: h.color_grade || '',
+            verified: (h as any).is_verified ?? '',
+        }));
+
+        if (rows.length === 0) {
+            toast.info('No harvests to export');
+            return;
+        }
+
+        const escapeCsv = (v: unknown) => {
+            const s = String(v ?? '');
+            if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+            return s;
+        };
+
+        const header = Object.keys(rows[0]).join(',');
+        const body = rows.map((r) => Object.values(r).map(escapeCsv).join(',')).join('\n');
+        const csv = `${header}\n${body}\n`;
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `beeyield-harvests-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        toast.success('Harvest export generated');
+    }, [filteredHarvests]);
+
     const getColorGradeStyles = (grade?: string) => {
         const styles: Record<string, string> = {
             'Extra Light Amber': 'bg-[#F4D03F]/ text-[#F4D03F] border-amber-500/20',
@@ -462,7 +502,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                         </SelectContent>
                     </Select>
                     <div className="w-px h-4 bg-[#F4D03F]/20 mx-1 hidden md:block" />
-                    <button className="h-8 px-3 text-xs font-bold text-gray-500 hover:text-[#F4D03F] transition-all flex items-center gap-2">
+                    <button
+                        onClick={exportHarvestsCsv}
+                        className="h-8 px-3 text-xs font-bold text-gray-500 hover:text-[#F4D03F] transition-all flex items-center gap-2"
+                        aria-label="Export filtered harvests as CSV"
+                        title="Export CSV"
+                    >
                         <Download className="w-3.5 h-3.5" />
                         Export
                     </button>

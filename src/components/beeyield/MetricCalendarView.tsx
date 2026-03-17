@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
+import { hashToRange } from '@/lib/deterministic';
 
 interface MetricCalendarViewProps {
     onTabChange?: (tab: string) => void;
@@ -53,7 +54,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
         const month = date.getMonth();
         // Seeded random-ish value
         const seed = (day * 13 + month * 7) % 100;
-        let intensity = seed / 100;
+        const intensity = seed / 100;
         let value = 0;
 
         switch (type) {
@@ -267,7 +268,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 <motion.div
                                     key={i}
                                     initial={{ height: 0 }}
-                                    animate={{ height: `${Math.random() * 60 + 20}%` }}
+                                    animate={{ height: `${hashToRange(`metric-cal-bar-${i}`, 20, 80)}%` }}
                                     transition={{ delay: i * 0.05, duration: 1 }}
                                     className="flex-1 rounded-full bg-[#1A1A1A]/5 border border-[#1A1A1A]/10 relative group"
                                 >

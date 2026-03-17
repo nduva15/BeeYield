@@ -137,7 +137,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 icon={Activity}
                 label="Environmental Telemetry"
                 title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
-                subtitle="Real-time multi-node environment and vibration metrics monitoring."
+                subtitle="Live environment and vibration readings from your meters."
                 actions={
                     <div className="flex items-center gap-3">
                          <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">
@@ -156,7 +156,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div className="absolute right-0 top-full mt-2 w-56 bg-white/90 backdrop-blur-xl border border-[#F4D03F]/20 rounded-2xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all z-50 overflow-hidden">
                                 {[
                                     { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
-                                    { id: 'meters-list', label: 'Node List', icon: List },
+                                    { id: 'meters-list', label: 'Meter list', icon: List },
                                     { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
                                     { id: 'meters-payments', label: 'Payments', icon: Banknote },
                                     { id: 'meters-reports', label: 'Reports', icon: FileText },

@@ -75,6 +75,24 @@ const IntegrationsView: React.FC = () => {
         }
     };
 
+    const handleConnectToggle = async (platform: 'quickbooks' | 'shopify') => {
+        const isConnectedNode = isConnected(platform);
+        const tid = toast.loading(isConnectedNode ? `Disconnecting ${platform}…` : `Connecting ${platform}…`);
+        try {
+            const res = await beeyieldService.upsertIntegrationConfig({
+                platform,
+                is_active: !isConnectedNode,
+                store_url: platform === 'shopify' ? shopUrl : undefined,
+            });
+            if (!res) throw new Error('Update failed');
+            toast.success(isConnectedNode ? `${platform} disconnected` : `${platform} connected`, { id: tid });
+            fetchConfigs();
+        } catch (e) {
+            console.error(e);
+            toast.error('Integration update failed', { id: tid });
+        }
+    };
+
     const isConnected = (p: string) => (configs || []).some(c => c.platform === p && c.is_active);
 
     const renderEcosystem = () => (
@@ -162,7 +180,10 @@ const IntegrationsView: React.FC = () => {
                         <button onClick={() => handleSyncNow(p)} disabled={!isConnectedNode} className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs flex items-center gap-2", !isConnectedNode && "opacity-50 cursor-not-allowed")}>
                             Sync now <RefreshCw className="w-3.5 h-3.5" />
                         </button>
-                        <button className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-[#1A1A1A]")} onClick={() => toast.info("Starting…")}>
+                        <button
+                            className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-[#1A1A1A]")}
+                            onClick={() => handleConnectToggle(p as any)}
+                        >
                             {isConnectedNode ? 'Reconnect' : 'Connect'}
                         </button>
                     </div>
@@ -212,17 +233,17 @@ const IntegrationsView: React.FC = () => {
                         <div className={cn(glass.card, "p-4 space-y-4 bg-white")}>
                             <div>
                                 <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Target <span style={{ color }}>Config</span></h4>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Industrial node parameters</p>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Connection settings</p>
                             </div>
                             
                             {p === 'quickbooks' ? (
                                 <>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Revenue Node</Label>
+                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Revenue account</Label>
                                         <Input value={qboIncomeAccount} onChange={(e) => setQboIncomeAccount(e.target.value)} className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Expense Node</Label>
+                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Expense account</Label>
                                         <Input value={qboExpenseAccount} onChange={(e) => setQboExpenseAccount(e.target.value)} className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                     </div>
                                 </>
@@ -265,7 +286,7 @@ const IntegrationsView: React.FC = () => {
                 actions={
                     <div className="flex bg-gray-50 p-1 rounded-lg border border-gray-100 gap-1 shrink-0 shadow-sm">
                         {[
-                            { id: 'ecosystem', label: 'Nodes', icon: LayoutGrid },
+                            { id: 'ecosystem', label: 'Connections', icon: LayoutGrid },
                             { id: 'quickbooks', label: 'QBO', icon: Calculator },
                             { id: 'shopify', label: 'Shopify', icon: ShoppingBag }
                         ].map(t => (

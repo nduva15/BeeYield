@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,21 +21,13 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
     onSwitchToRegister
 }) => {
     const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(() => localStorage.getItem('savedEmail_beeyield') || '');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
-
-    useEffect(() => {
-        const saved = localStorage.getItem('savedEmail_beeyield');
-        if (saved) {
-            setEmail(saved);
-            setRememberMe(true);
-        }
-    }, []);
+    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem('savedEmail_beeyield')));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
