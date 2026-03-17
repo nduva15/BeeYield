@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { beeyieldService } from "@/services/beeyieldService"
 
 type ThemeState = {
-    theme: "light"
-    setTheme: (theme: "light") => void
+    theme: "light" | "dark"
+    setTheme: (theme: "light" | "dark") => void
 }
 
 const initialState: ThemeState = {
@@ -19,14 +20,29 @@ type ThemeProviderProps = {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
+    const storageKey = "beeyield_theme_v1";
+    const [theme, setThemeState] = useState<"light" | "dark">(() => {
+        const saved = window.localStorage.getItem(storageKey);
+        return saved === "dark" ? "dark" : "light";
+    });
+
     useEffect(() => {
-        const root = window.document.documentElement
-        root.classList.remove("dark")
-        root.classList.add("light")
-    }, [])
+        const root = window.document.documentElement;
+        root.classList.remove("dark", "light");
+        root.classList.add(theme);
+        window.localStorage.setItem(storageKey, theme);
+    }, [theme]);
+
+    const setTheme = (next: "light" | "dark") => {
+        setThemeState(next);
+        // Persist to Supabase auth user_metadata as source-of-truth across devices
+        void beeyieldService.updateUserMetadata({ theme: next });
+    };
+
+    const value = useMemo(() => ({ theme, setTheme }), [theme]);
 
     return (
-        <ThemeContext.Provider value={{ theme: "light", setTheme: () => null }}>
+        <ThemeContext.Provider value={value}>
             {children}
         </ThemeContext.Provider>
     )
