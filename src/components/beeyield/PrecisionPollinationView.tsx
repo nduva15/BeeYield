@@ -46,6 +46,40 @@ import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle } from 'react-l
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+const acresToSquarePolygon = (lat: number, lng: number, acres: number) => {
+    const areaM2 = Math.max(1, acres) * 4046.8564224;
+    const sideM = Math.sqrt(areaM2);
+    const half = sideM / 2;
+    const dLat = half / 111_320;
+    const dLng = half / (111_320 * Math.cos((lat * Math.PI) / 180));
+    return [
+        [lat - dLat, lng - dLng],
+        [lat - dLat, lng + dLng],
+        [lat + dLat, lng + dLng],
+        [lat + dLat, lng - dLng],
+    ];
+};
+
+const polygonToGeoJSON = (poly: number[][]) => ({
+    type: "FeatureCollection",
+    features: [
+        {
+            type: "Feature",
+            geometry: {
+                type: "Polygon",
+                coordinates: [[
+                    [poly[0][1], poly[0][0]],
+                    [poly[1][1], poly[1][0]],
+                    [poly[2][1], poly[2][0]],
+                    [poly[3][1], poly[3][0]],
+                    [poly[0][1], poly[0][0]],
+                ]]
+            },
+            properties: {}
+        }
+    ]
+});
+
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -118,32 +152,22 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     const [optimalPlacements, setOptimalPlacements] = React.useState<any[]>([]);
     const [isOptimizing, setIsOptimizing] = React.useState(false);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
 
-    // Mock orchard bounding box in Kenya (-1.29, 36.82)
-    const mockOrchardPolygon = [
-        [-1.29, 36.82],
-        [-1.29, 36.83],
-        [-1.28, 36.83],
-        [-1.28, 36.82]
-    ];
-    // Converting lat/lng pairs to GeoJSON 
-    const mockGeoJSON = {
-        type: "FeatureCollection",
-        features: [{
-            type: "Feature",
-            geometry: {
-                type: "Polygon",
-                coordinates: [[
-                    [36.82, -1.29],
-                    [36.83, -1.29],
-                    [36.83, -1.28],
-                    [36.82, -1.28],
-                    [36.82, -1.29]
-                ]]
-            },
-            properties: {}
-        }]
-    };
+    const selectedApiary = React.useMemo(
+        () => apiaries.find((a) => a.id === selectedApiaryId),
+        [apiaries, selectedApiaryId]
+    );
+
+    const orchardPolygon = React.useMemo(() => {
+        const lat = selectedApiary?.latitude ?? -1.285;
+        const lng = selectedApiary?.longitude ?? 36.825;
+        const acres = selectedApiary?.size_acres ?? calcInputs.totalAcres ?? 25;
+        return acresToSquarePolygon(lat, lng, acres);
+    }, [selectedApiary, calcInputs.totalAcres]);
+
+    const orchardGeoJSON = React.useMemo(() => polygonToGeoJSON(orchardPolygon), [orchardPolygon]);
 
     const fetchDeployments = async () => {
         setLoading(true);

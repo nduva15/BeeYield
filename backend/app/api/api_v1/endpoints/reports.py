@@ -132,6 +132,7 @@ async def get_report_status(
         "status": report.get("status", "unknown"),
         "file_url": report.get("file_url"),
         "file_name": report.get("file_name"),
+        "file_format": report.get("file_format"),
         "report_type": report.get("report_type"),
         "created_at": report.get("created_at")
     }
