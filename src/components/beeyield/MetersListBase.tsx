@@ -120,36 +120,34 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
 
     const handleExport = (format: 'CSV' | 'XLS' | 'PDF') => {
         setDownloading(format);
-        setTimeout(() => {
-            try {
-                if (format === 'PDF') {
-                    generatePDF();
-                } else {
-                    const exportData = filteredMeters.map(meter => ({
-                        'Sensor ID': meter.id,
-                        'Device Number': meter.meter_number,
-                        'Type': meter.meter_type,
-                        'Apiary': getBuildingName(meter.building_id),
-                        'Apiary Address': getBuildingAddress(meter.building_id),
-                        'Hive / Unit': getApartmentNumber(meter.apartment_id),
-                        'Last Reading': `${meter.last_reading_value} ${meter.last_reading_unit}`,
-                        'Status': meter.status,
-                        'Alarm': meter.has_alarm ? 'YES' : 'NO'
-                    }));
+        try {
+            if (format === 'PDF') {
+                generatePDF();
+            } else {
+                const exportData = filteredMeters.map(meter => ({
+                    'Sensor ID': meter.id,
+                    'Device Number': meter.meter_number,
+                    'Type': meter.meter_type,
+                    'Apiary': getBuildingName(meter.building_id),
+                    'Apiary Address': getBuildingAddress(meter.building_id),
+                    'Hive / Unit': getApartmentNumber(meter.apartment_id),
+                    'Last Reading': `${meter.last_reading_value} ${meter.last_reading_unit}`,
+                    'Status': meter.status,
+                    'Alarm': meter.has_alarm ? 'YES' : 'NO'
+                }));
 
-                    const wb = XLSX.utils.book_new();
-                    const ws = XLSX.utils.json_to_sheet(exportData);
-                    XLSX.utils.book_append_sheet(wb, ws, "Meters");
-                    XLSX.writeFile(wb, `meters_list_${meterType.toLowerCase()}.${format === 'XLS' ? 'xlsx' : 'csv'}`);
-                    toast.success(`${format} exported successfully`);
-                }
-            } catch (error) {
-                console.error('Export failed', error);
-                toast.error(`Failed to export ${format}`);
-            } finally {
-                setDownloading(null);
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                XLSX.utils.book_append_sheet(wb, ws, "Meters");
+                XLSX.writeFile(wb, `meters_list_${meterType.toLowerCase()}.${format === 'XLS' ? 'xlsx' : 'csv'}`);
+                toast.success(`${format} exported successfully`);
             }
-        }, 1000);
+        } catch (error) {
+            console.error('Export failed', error);
+            toast.error(`Failed to export ${format}`);
+        } finally {
+            setDownloading(null);
+        }
     };
 
     const refreshMeters = async () => {
