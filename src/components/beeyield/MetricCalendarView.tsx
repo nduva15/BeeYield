@@ -94,9 +94,9 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
             {/* Header Area */}
             <PageHeader
                 icon={config.icon}
-                label="CHRONOMETRIC_ANALYSIS"
+                label="METRICS"
                 title={<>Metric <span className="text-[#F4D03F]">Calendar</span></>}
-                subtitle="ADVANCED_TEMPORAL_DENSITY_VISUALIZATION_FOR_APIARY_METRICS"
+                subtitle="See how your hive metrics change over time."
                 actions={
                     <div className="flex gap-3 bg-white/30 p-1.5 rounded-2xl border border-white/40 shadow-inner backdrop-blur-xl relative z-10">
                         {(['VPM', 'YIELD', 'TEMP', 'VIBE'] as MetricType[]).map((m) => {
@@ -133,20 +133,26 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 <h3 className="text-sm font-black text-black tracking-tighter uppercase leading-none">
                                     {format(currentDate, "MMMM")} <span className="text-[#F4D03F]">{format(currentDate, "yyyy")}</span>
                                 </h3>
-                                <p className="text-[6px] font-black text-black opacity-50 uppercase tracking-[0.2em] mt-0.5">DENSITY_MAPPING_PROTOCOL</p>
+                                <p className="text-[6px] font-black text-black opacity-50 uppercase tracking-[0.2em] mt-0.5">Monthly view</p>
                             </div>
                             <div className="flex gap-2">
                                 <button
+                                    type="button"
                                     onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+                                    aria-label="Previous month"
+                                    title="Previous month"
                                     className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center rounded-xl bg-white/40 border-white/40 hover:bg-white/60 shadow-sm transition-all text-black")}
                                 >
-                                    <ChevronLeft className="w-4 h-4" />
+                                    <ChevronLeft className="w-4 h-4" aria-hidden="true" focusable="false" />
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+                                    aria-label="Next month"
+                                    title="Next month"
                                     className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center rounded-xl bg-white/40 border-white/40 hover:bg-white/60 shadow-sm transition-all text-black")}
                                 >
-                                    <ChevronRight className="w-4 h-4" />
+                                    <ChevronRight className="w-4 h-4" aria-hidden="true" focusable="false" />
                                 </button>
                             </div>
                         </div>
@@ -225,7 +231,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                     {/* Insights Card */}
                     <div className={cn(glass.card, "p-8 space-y-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl overflow-hidden group")}>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Diagnostic_Insights</h3>
+                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Summary</h3>
                             <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center border border-white/40 shadow-sm group-hover:scale-110 transition-transform">
                                 <Info className="w-5 h-5 text-[#F4D03F]" />
                             </div>
@@ -233,36 +239,36 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
 
                         <div className="space-y-4">
                             <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">MONTHLY_PEAK</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly peak</p>
                                 <div className="flex items-end gap-2">
                                     <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">18.4</span>
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">MAX_{config.unit}</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">Max ({config.unit})</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#1B9157]">
                                     <ArrowUpRight className="w-3 h-3" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">+12.4% vs LAST_MONTH</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest">+12.4% vs last month</span>
                                 </div>
                             </div>
 
                             <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">DENSITY_AVERAGE</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly average</p>
                                 <div className="flex items-end gap-2">
                                     <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">12.2</span>
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">AVG_{config.unit}</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase mb-2">Avg ({config.unit})</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="pt-4">
                             <button className={cn(glass.btnSecondary, "w-full h-12 rounded-2xl border-white/60 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-[#1A1A1A] transition-all")}>
-                                DOWNLOAD_TIME_SERIES
+                                Download data
                             </button>
                         </div>
                     </div>
 
                     {/* Summary Graph Card */}
                     <div className={cn(glass.card, "p-8 space-y-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl overflow-hidden")}>
-                        <h3 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] mb-4">FLOW_QUOTIENT</h3>
+                        <h3 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] mb-4">Trend</h3>
                         <div className="h-24 flex items-end gap-1.5 px-2">
                             {Array.from({ length: 12 }).map((_, i) => (
                                 <motion.div
@@ -276,8 +282,8 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 </motion.div>
                             ))}
                         </div>
-                        <p className="text-[9px] font-medium text-gray-400 italic leading-relaxed uppercase pt-4 border-t border-white/40">
-                            Telemetry signal indicates a stable resonance across all active nodes for the selected temporal window.
+                        <p className="text-[9px] font-medium text-gray-400 italic leading-relaxed pt-4 border-t border-white/40">
+                            This chart shows how the selected metric changes across the month.
                         </p>
                     </div>
                 </div>
@@ -291,9 +297,9 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                         <Activity className="w-8 h-8 text-[#F4D03F]" />
                     </div>
                     <div className="space-y-2 text-center md:text-left">
-                        <h4 className="text-2xl font-black tracking-tighter uppercase">Anomalous <span className="text-[#F4D03F]">Protocol</span> Detected</h4>
+                        <h4 className="text-2xl font-black tracking-tighter uppercase">No issues <span className="text-[#F4D03F]">found</span></h4>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed max-w-4xl">
-                            SYSTEM_SCAN_COMPLETE: Temporal window shows zero critical deviations. Apiary health index remains at 98.4% nominal capacity.
+                            Check the calendar to spot peaks and drops, and compare weeks or months.
                         </p>
                     </div>
                 </div>

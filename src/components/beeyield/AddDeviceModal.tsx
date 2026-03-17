@@ -34,11 +34,11 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
         e.preventDefault();
 
         if (!deviceCode) {
-            toast.error("Please enter the BeeHUB ID");
+            toast.error("Please enter the device ID");
             return;
         }
 
-        const toastId = toast.loading("Executing hardware integration protocol...");
+        const toastId = toast.loading("Adding device...");
         setIsSubmitting(true);
         try {
             const newDevice = {
@@ -64,10 +64,10 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
             setSelectedApiaryId("");
             setSelectedHiveId("");
             onOpenChange(false);
-            toast.success("Node successfully synchronized with registry", { id: toastId });
+            toast.success("Device added.", { id: toastId });
         } catch (error) {
             console.error(error);
-            toast.error("Hardware handshake failed", { id: toastId });
+            toast.error("Could not add device. Please try again.", { id: toastId });
         } finally {
             setIsSubmitting(false);
         }
@@ -91,25 +91,27 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 <div className="flex items-center gap-6">
                                     <div className="inline-flex items-center gap-4 px-6 py-2 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/20 shadow-2xl skew-x-[-12deg]">
                                         <Cpu className="w-5 h-5 text-[#F4D03F]" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] skew-x-[12deg] italic">Hardware Protocol v4.4_X</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] skew-x-[12deg] italic">Add device</span>
                                     </div>
                                     <div className="flex items-center gap-3 bg-[#1B9157]/ px-4 py-2 rounded-full border border-[#1B9157]/ shadow-inner">
                                         <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
-                                        <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest italic font-mono">LINK: STANDBY</span>
+                                        <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest italic">Ready</span>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">
-                                        Initialize <span className="text-[#F4D03F]">Node</span>
+                                        Add <span className="text-[#F4D03F]">device</span>
                                     </h2>
                                     <p className="text-gray-500 font-black text-[11px] uppercase tracking-[0.4em] mt-3 italic border-l-2 border-[#F4D03F]/20 pl-8 max-w-sm">
-                                        Pairing industrial IOT hardware with strategic sector registry hub_v4
+                                        Link a sensor or gateway to a location (and optionally a hive).
                                     </p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => onOpenChange(false)}
                                 className="w-16 h-16 rounded-[2rem] bg-[#F9F7F2] border border-[#F4D03F]/20 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-500 transition-all duration-700 shadow-2xl group"
+                                aria-label="Close"
+                                title="Close"
                             >
                                 <X className="w-8 h-8 group-hover:rotate-90 transition-transform" />
                             </button>
@@ -123,7 +125,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 <div className="relative">
                                     <Network className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-[#F4D03F] transition-colors group-focus-within:text-foreground" />
                                     <Input
-                                        placeholder="E.G. HUB_KIB_PRIME_001"
+                                        placeholder="e.g. HUB-KIB-001"
                                         value={deviceCode}
                                         onChange={(e) => setDeviceCode(e.target.value)}
                                         className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-2xl bg-[#F9F7F2] border-none shadow-inner normal-case placeholder:opacity-10")}
@@ -132,7 +134,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             </div>
 
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Node Classification</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device type</Label>
                                 <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
                                     <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
@@ -141,9 +143,9 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                         </div>
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
-                                        <SelectItem value="inland" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Industrial_Master_Hub</SelectItem>
-                                        <SelectItem value="infield" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Regional_Tactical_Station</SelectItem>
-                                        <SelectItem value="disease" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Bio_Spectral_Monitor</SelectItem>
+                                        <SelectItem value="inland" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Gateway</SelectItem>
+                                        <SelectItem value="infield" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Sensor</SelectItem>
+                                        <SelectItem value="disease" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Health monitor</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -151,12 +153,12 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Strategic Sector</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Location</Label>
                                 <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
                                     <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Database className="w-6 h-6 text-[#F4D03F]" />
-                                            <SelectValue placeholder="LOCATE_SECTOR..." />
+                                            <SelectValue placeholder="Select a location…" />
                                         </div>
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
@@ -170,7 +172,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             </div>
 
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#1B9157]/ pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Target Registry ID</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#1B9157]/ pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Hive (optional)</Label>
                                 <Select
                                     value={selectedHiveId}
                                     onValueChange={setSelectedHiveId}
@@ -179,7 +181,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     <SelectTrigger className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner disabled:opacity-20')}>
                                         <div className="flex items-center gap-6">
                                             <ShieldCheck className="w-6 h-6 text-[#1B9157]" />
-                                            <SelectValue placeholder="SELECT_UNIT_ID..." />
+                                            <SelectValue placeholder="Select a hive…" />
                                         </div>
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
@@ -194,7 +196,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         </div>
 
                         <div className="space-y-6 group">
-                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Human-Readable Neural Alias</Label>
+                            <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device name (optional)</Label>
                             <div className="relative">
                                 <Binary className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-[#F4D03F] opacity-20 group-hover:opacity-100 transition-opacity" />
                                 <Input
@@ -202,7 +204,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     name="device_name"
                                     value={deviceName}
                                     onChange={(e) => setDeviceName(e.target.value)}
-                                    placeholder="E.G. ALPHA_GATEWAY_PRIME"
+                                    placeholder="e.g. Orchard gateway"
                                     className={cn(glass.input, "h-20 pl-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner normal-case placeholder:opacity-10")}
                                 />
                             </div>
@@ -214,7 +216,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 onClick={() => onOpenChange(false)}
                                 className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic uppercase text-lg tracking-widest transition-all bg-gray-400")}
                             >
-                                Abort Protocol
+                                Cancel
                             </button>
                             <button
                                 type="submit"
@@ -226,7 +228,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 ) : (
                                     <ShieldCheck className="w-10 h-10 group-hover/commit:scale-125 transition-all duration-1000 text-[#1A1A1A] fill-current" />
                                 )}
-                                Commit Registry
+                                Add device
                             </button>
                         </div>
                     </form>
@@ -243,9 +245,9 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 <Info className="w-8 h-8 text-[#F4D03F]" />
                             </div>
                             <div className="relative z-10 space-y-2">
-                                <p className="text-xl italic font-black text-foreground tracking-tighter uppercase">Deployment Logic</p>
+                                <p className="text-xl italic font-black text-foreground tracking-tighter uppercase">Tip</p>
                                 <p className="text-[13px] italic font-medium opacity-40 leading-relaxed text-foreground max-w-xl">
-                                    Initializing a node links hardware telemetry to specific hive assets. Ensure the HUB_ID matches the cryptographic sticker on the device for recursive data integrity.
+                                    Use the ID printed on the device. You can rename it later.
                                 </p>
                             </div>
                         </motion.div>

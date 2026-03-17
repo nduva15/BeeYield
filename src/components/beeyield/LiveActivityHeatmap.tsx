@@ -66,7 +66,7 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10">
                 {/* Map View Area */}
                 <div className="lg:col-span-8 relative">
-                    <div className="border-8 border-[#064e3b] bg-[#064e3b]/5 h-[600px] relative overflow-hidden shadow-[20px_20px_0px_px_rgba(6,78,59,0.05)]">
+                    <div className="border-8 border-[#064e3b] bg-[#064e3b]/5 h-[600px] relative overflow-hidden shadow-[20px_20px_0px_0px_rgba(6,78,59,0.05)]">
                         {/* Mock Satellite Background */}
                         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center grayscale" />
 

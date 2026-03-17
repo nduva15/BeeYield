@@ -21,7 +21,8 @@ import {
     ShieldCheck,
     Box,
     FileCode,
-    Loader2
+    Loader2,
+    Terminal
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -38,6 +39,7 @@ export function UsbHubDashboard() {
     const [syncProgress, setSyncProgress] = React.useState(0);
     const [isFlashing, setIsFlashing] = React.useState(false);
     const [logs, setLogs] = React.useState<string[]>([]);
+    const [lastError, setLastError] = React.useState<string | null>(null);
     const logsEndRef = React.useRef<HTMLDivElement>(null);
 
     const [firmwareFile, setFirmwareFile] = React.useState<File | null>(null);
@@ -67,6 +69,7 @@ export function UsbHubDashboard() {
     const connectDevice = async () => {
         try {
             setConnectionStatus('connecting');
+            setLastError(null);
             const usbDevice = await navigator.usb.requestDevice({ filters: [] });
             await usbDevice.open();
             if (usbDevice.configuration === null) await usbDevice.selectConfiguration(1);
@@ -81,7 +84,10 @@ export function UsbHubDashboard() {
         } catch (error: any) {
             setConnectionStatus('error');
             console.error(error);
-            toast.error('Connection aborted');
+            const msg = error?.message || 'Connection aborted';
+            setLastError(msg);
+            addLog(`Connection Error: ${msg}`);
+            toast.error(msg);
         }
     };
 
@@ -98,7 +104,9 @@ export function UsbHubDashboard() {
             addLog("Remote handshake successful. Device synced with BeeYield Cloud.");
         } catch (err: any) {
             console.error("Handshake failed", err);
-            addLog(`Sync Error: ${err.message}`);
+            const msg = err?.response?.data?.message || err?.message || 'Handshake failed';
+            setLastError(msg);
+            addLog(`Sync Error: ${msg}`);
         }
     };
 
@@ -199,6 +207,26 @@ export function UsbHubDashboard() {
                 </div>
 
                 <div className="p-6">
+                    {connectionStatus === 'error' && lastError && (
+                        <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4">
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">USB Error</p>
+                                    <p className="text-sm font-semibold text-[#1A1A1A] break-words">{lastError}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                                    onClick={() => {
+                                        setLastError(null);
+                                        setConnectionStatus('disconnected');
+                                    }}
+                                >
+                                    Dismiss
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     <div className="bg-[#1A1A1A] rounded-xl p-6 font-mono text-[11px] relative overflow-hidden shadow-inner border border-black min-h-[300px] text-[#F4D03F]">
                         {logs.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full gap-4 py-20 opacity-30">
