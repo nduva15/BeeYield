@@ -268,7 +268,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                     icon={Microscope}
                     label="Inspection_Log"
                     title={<>Hive <span className="text-[#F4D03F]">Diagnostic</span></>}
-                    subtitle="Unit health synthesis and protocol registry."
+                    subtitle="Record inspection notes and health status."
                     actions={
                         <div className="flex gap-2">
                              <button
@@ -810,6 +810,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 <button
                                                     onClick={() => handleEdit(inspection)}
                                                     className="w-9 h-9 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F] hover:scale-105 transition-all"
+                                                    aria-label="Edit inspection"
+                                                    title="Edit"
                                                 >
                                                     <ArrowRight className="w-4 h-4" />
                                                 </button>
