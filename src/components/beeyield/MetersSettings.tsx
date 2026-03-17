@@ -24,6 +24,9 @@ interface ThresholdSetting {
 const MetersSettings: React.FC = () => {
     const [activeDialog, setActiveDialog] = React.useState<{ type: 'notification' | 'threshold', id: string } | null>(null);
     const [tempValue, setTempValue] = React.useState('');
+    const [isIntegrationsOpen, setIsIntegrationsOpen] = React.useState(false);
+
+    const LS_KEY = React.useMemo(() => 'beeyield_meters_settings_v1', []);
 
     const [notificationSettings, setNotificationSettings] = React.useState<NotificationSetting[]>([
         { id: 'water_leak', title: 'Water leak', value: 'Email + SMS' },
@@ -37,6 +40,28 @@ const MetersSettings: React.FC = () => {
         { id: 'energy', title: 'Energy', value: '+18%' },
     ]);
 
+    // Hydrate + persist locally so settings work without backend.
+    React.useEffect(() => {
+        try {
+            const raw = globalThis.localStorage?.getItem(LS_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed?.notificationSettings)) setNotificationSettings(parsed.notificationSettings);
+            if (Array.isArray(parsed?.thresholdSettings)) setThresholdSettings(parsed.thresholdSettings);
+        } catch {
+            // ignore
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    React.useEffect(() => {
+        try {
+            globalThis.localStorage?.setItem(LS_KEY, JSON.stringify({ notificationSettings, thresholdSettings }));
+        } catch {
+            // ignore
+        }
+    }, [LS_KEY, notificationSettings, thresholdSettings]);
+
     const handleEdit = (type: 'notification' | 'threshold', id: string, currentValue: string) => {
         setActiveDialog({ type, id });
         setTempValue(currentValue);
@@ -45,13 +70,16 @@ const MetersSettings: React.FC = () => {
     const handleSave = () => {
         if (!activeDialog) return;
 
+        const nextValue = tempValue.trim();
+        if (!nextValue) return;
+
         if (activeDialog.type === 'notification') {
             setNotificationSettings(prev => prev.map(item =>
-                item.id === activeDialog.id ? { ...item, value: tempValue } : item
+                item.id === activeDialog.id ? { ...item, value: nextValue } : item
             ));
         } else {
             setThresholdSettings(prev => prev.map(item =>
-                item.id === activeDialog.id ? { ...item, value: tempValue } : item
+                item.id === activeDialog.id ? { ...item, value: nextValue } : item
             ));
         }
         setActiveDialog(null);
@@ -138,11 +166,55 @@ const MetersSettings: React.FC = () => {
                         </div>
                         <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] leading-tight">EXTERNAL<br />SYSTEM_INTERCONNECT</h3>
                     </div>
-                    <button className={cn(glass.btnPrimary, "w-full sm:w-auto h-8 px-5 font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2")}>
+                    <button
+                        type="button"
+                        onClick={() => setIsIntegrationsOpen(true)}
+                        className={cn(glass.btnPrimary, "w-full sm:w-auto h-8 px-5 font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2")}
+                    >
                         BRIDGE_ARCHITECTURES <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                 </div>
             </div>
+
+            <Dialog open={isIntegrationsOpen} onOpenChange={setIsIntegrationsOpen}>
+                <DialogContent className={cn(glass.card, "p-0 overflow-hidden shadow-xl max-w-md mx-auto bg-white/80 border-white/40")}>
+                    <DialogHeader className="p-5 border-b border-white/20 bg-white/30">
+                        <DialogTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1A1A1A] text-center">
+                            Integrations
+                        </DialogTitle>
+                        <DialogDescription className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]/50 text-center mt-1">
+                            LOCAL_CONFIGURATION_ONLY
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="p-5 space-y-3">
+                        <p className="text-[11px] font-semibold text-gray-600">
+                            This Meters module does not require a backend to save settings. If you want to connect a billing system, export CSV from Payments or Meter List.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            <button
+                                type="button"
+                                className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                                onClick={() => {
+                                    try {
+                                        navigator.clipboard.writeText(JSON.stringify({ notificationSettings, thresholdSettings }, null, 2));
+                                    } catch {
+                                        // ignore
+                                    }
+                                }}
+                            >
+                                Copy settings JSON
+                            </button>
+                            <button
+                                type="button"
+                                className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                                onClick={() => setIsIntegrationsOpen(false)}
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Edit Dialog */}
             <Dialog open={!!activeDialog} onOpenChange={(open) => !open && setActiveDialog(null)}>

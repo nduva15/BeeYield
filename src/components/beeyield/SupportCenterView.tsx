@@ -221,6 +221,9 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         <div className="relative group w-full md:w-72">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-all" />
                             <input
+                                id="support-center-filter"
+                                name="search_tickets"
+                                autoComplete="off"
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)}
                                 placeholder="Search tickets..."
@@ -312,7 +315,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     <div className="space-y-2">
                                         <Label className={glass.microLabel}>Category</Label>
                                         <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
-                                            <SelectTrigger className={glass.select}>
+                                            <SelectTrigger id="support-ticket-category" aria-label="Category" className={glass.select}>
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className={glass.selectContent}>
@@ -327,7 +330,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     <div className="space-y-2">
                                         <Label className={glass.microLabel}>Priority</Label>
                                         <Select value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
-                                            <SelectTrigger className={glass.select}>
+                                            <SelectTrigger id="support-ticket-priority" aria-label="Priority" className={glass.select}>
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className={glass.selectContent}>
@@ -340,9 +343,11 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Subject</Label>
+                                    <Label htmlFor="support-ticket-subject" className={glass.microLabel}>Subject</Label>
                                     <Input
+                                        id="support-ticket-subject"
                                         name="subject"
+                                        autoComplete="off"
                                         value={formData.subject}
                                         onChange={handleInputChange}
                                         placeholder="Briefly describe the issue..."
@@ -351,9 +356,11 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel}>Description</Label>
+                                    <Label htmlFor="support-ticket-description" className={glass.microLabel}>Description</Label>
                                     <Textarea
+                                        id="support-ticket-description"
                                         name="description"
+                                        autoComplete="off"
                                         value={formData.description}
                                         onChange={handleInputChange}
                                         placeholder="Provide full details..."

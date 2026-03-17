@@ -37,6 +37,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { UsbHubDashboard } from './UsbHubDashboard';
 import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 // --- Custom Components for Modals ---
 
@@ -629,20 +630,18 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
 
 // USB View
 export const USBView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
-    <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className={glass.page}
-    >
-        <PageHeader
-            icon={Usb}
-            label="Serial Terminal Dashboard v1.8"
-            title={<>USB <span className="text-[#F4D03F]">Architecture</span></>}
-            subtitle="Manage industrial hub firmware and monitor raw serial output directly via encrypted physical link."
-        />
+    <BeeYieldPageShell>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+            <BeeYieldPageHeader
+                icon={Usb}
+                label="Serial Terminal Dashboard v1.8"
+                title={<>USB <span className="text-[#F4D03F]">Architecture</span></>}
+                subtitle="Manage industrial hub firmware and monitor raw serial output directly via encrypted physical link."
+            />
 
-        <div className="relative z-10">
-            <UsbHubDashboard />
-        </div>
-    </motion.div>
+            <div className="relative z-10">
+                <UsbHubDashboard />
+            </div>
+        </motion.div>
+    </BeeYieldPageShell>
 );

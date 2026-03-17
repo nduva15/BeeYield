@@ -31,6 +31,32 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     const [apartments, setApartments] = React.useState<Apartment[]>([]);
     const [meters, setMeters] = React.useState<Meter[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
+
+    const LS_KEY = React.useMemo(() => `beeyield_meters_local_v1:${meterType.toLowerCase()}`, [meterType]);
+
+    const readLocal = React.useCallback(() => {
+        try {
+            const raw = globalThis.localStorage?.getItem(LS_KEY);
+            if (!raw) return { buildings: [] as Building[], apartments: [] as Apartment[], meters: [] as Meter[] };
+            const parsed = JSON.parse(raw);
+            return {
+                buildings: Array.isArray(parsed?.buildings) ? parsed.buildings : [],
+                apartments: Array.isArray(parsed?.apartments) ? parsed.apartments : [],
+                meters: Array.isArray(parsed?.meters) ? parsed.meters : [],
+            };
+        } catch {
+            return { buildings: [] as Building[], apartments: [] as Apartment[], meters: [] as Meter[] };
+        }
+    }, [LS_KEY]);
+
+    const writeLocal = React.useCallback((next: { buildings: Building[]; apartments: Apartment[]; meters: Meter[] }) => {
+        try {
+            globalThis.localStorage?.setItem(LS_KEY, JSON.stringify(next));
+        } catch {
+            // ignore
+        }
+    }, [LS_KEY]);
 
     // Filter States
     const [buildingFilter, setBuildingFilter] = React.useState<string>('all');
@@ -52,6 +78,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     React.useEffect(() => {
         const loadData = async () => {
             setLoading(true);
+            setError(null);
             try {
                 const [bData, mData, aData] = await Promise.all([
                     meterService.getBuildings(),
@@ -62,9 +89,20 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 setMeters(mData);
                 setApartments(aData);
                 if (!enrollBuildingId && bData?.length) setEnrollBuildingId(bData[0].id);
+                writeLocal({ buildings: bData || [], apartments: aData || [], meters: mData || [] });
             } catch (error) {
                 console.error(`Failed to load ${meterType} meters`, error);
-                toast.error(`Failed to load ${meterType} meter data`);
+                const local = readLocal();
+                if ((local.meters || []).length > 0 || (local.buildings || []).length > 0) {
+                    setBuildings(local.buildings || []);
+                    setApartments(local.apartments || []);
+                    setMeters((local.meters || []).filter((m: any) => String(m.meter_type) === String(meterType)));
+                    if (!enrollBuildingId && (local.buildings || []).length) setEnrollBuildingId(local.buildings[0].id);
+                    toast.info('Loaded meter registry from this device');
+                } else {
+                    setError(`Meter service unavailable. You can still enroll meters locally.`);
+                    toast.error(`Failed to load ${meterType} meter data`);
+                }
             } finally {
                 setLoading(false);
             }
@@ -151,8 +189,15 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     };
 
     const refreshMeters = async () => {
-        const mData = await meterService.getMeters({ meter_type: meterType });
-        setMeters(mData);
+        try {
+            const mData = await meterService.getMeters({ meter_type: meterType });
+            setMeters(mData);
+            const local = readLocal();
+            writeLocal({ buildings: local.buildings, apartments: local.apartments, meters: mData || [] });
+        } catch {
+            const local = readLocal();
+            setMeters((local.meters || []).filter((m: any) => String(m.meter_type) === String(meterType)));
+        }
     };
 
     const handleEnroll = async () => {
@@ -177,7 +222,29 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             await refreshMeters();
         } catch (e: any) {
             console.error(e);
-            toast.error(e?.message || 'Could not add meter', { id: tid });
+            // Offline/no backend: persist locally.
+            const createdAt = new Date().toISOString();
+            const localRow: Meter = {
+                id: `local-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                meter_type: meterType,
+                meter_number,
+                meter_code: `LOCAL-${meter_number.slice(-6).toUpperCase()}`,
+                building_id: enrollBuildingId,
+                apartment_id: enrollApartmentId || undefined,
+                status: 'OK',
+                has_alarm: false,
+                last_reading_value: 0,
+                last_reading_unit: meterType === 'Energy' ? 'kWh' : meterType === 'Heat' ? 'GJ' : 'm³',
+                last_reading_at: createdAt,
+                created_at: createdAt,
+            };
+            const local = readLocal();
+            const nextMeters = [localRow, ...(local.meters || [])];
+            setMeters(nextMeters.filter((m: any) => String(m.meter_type) === String(meterType)));
+            writeLocal({ buildings: local.buildings, apartments: local.apartments, meters: nextMeters });
+            toast.success('Meter enrolled (local)', { id: tid });
+            setEnrollMeterNumber('');
+            setIsAddingMeter(false);
         } finally {
             setEnrolling(false);
         }
@@ -231,6 +298,24 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     title={<>Sensor <span className="text-[#F4D03F]">Registry</span> <span className="text-gray-300">·</span> {title}</>}
                     subtitle="Manage meters and view recent readings."
                 />
+
+            {error && (
+                <div className={cn(glass.card, "p-4 border border-red-200 bg-red-50/60")}>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Offline mode</div>
+                            <div className="text-sm font-semibold text-slate-700 mt-1">{error}</div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={refreshMeters}
+                            className={cn(glass.btnSecondary, "h-10 px-4 text-[10px] font-black uppercase tracking-widest")}
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                 {!isAddingMeter ? (

@@ -458,7 +458,13 @@ const HiveTelemetryView: React.FC = () => {
 
             {/* Performance Graphs */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                <WeightDynamicsChart />
+                <WeightDynamicsChart
+                    data={(data || []).map((p) => ({
+                        time: p.time,
+                        weight: p.weight,
+                        velocity: p.dwdt,
+                    }))}
+                />
                 <AcousticWaveform />
             </div>
 

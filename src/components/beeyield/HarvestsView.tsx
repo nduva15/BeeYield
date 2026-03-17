@@ -273,7 +273,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             setSelectedApiaryId(val);
                                             setSelectedHiveId('');
                                         }}>
-                                            <SelectTrigger className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
+                                            <SelectTrigger id="harvest-apiary" aria-label="Apiary" className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
                                                 <div className="flex items-center gap-2">
                                                     <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                     <SelectValue placeholder="Select apiary" />
@@ -293,7 +293,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     <div className="space-y-2">
                                         <Label className={glass.microLabel}>Hive *</Label>
                                         <Select value={selectedHiveId} onValueChange={setSelectedHiveId} disabled={!selectedApiaryId}>
-                                            <SelectTrigger className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
+                                            <SelectTrigger id="harvest-hive" aria-label="Hive" className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
                                                 <div className="flex items-center gap-2">
                                                     <Hexagon className="w-3.5 h-3.5 text-[#1B9157]/40" />
                                                     <SelectValue placeholder={selectedApiaryId ? "Select hive" : "Select apiary first"} />
@@ -317,6 +317,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <div className="relative group/input">
                                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
                                             <Input
+                                                id="harvest-date"
+                                                name="harvest_date"
+                                                autoComplete="off"
                                                 type="date"
                                                 value={formData.harvest_date}
                                                 onChange={(e) => setFormData({ ...formData, harvest_date: e.target.value })}
@@ -330,6 +333,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <div className="relative group/input">
                                             <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1B9157]/40" />
                                             <Input
+                                                id="harvest-quantity-kg"
+                                                name="quantity_kg"
+                                                autoComplete="off"
                                                 type="number"
                                                 step="0.1"
                                                 placeholder="0.0"
@@ -346,7 +352,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             value={formData.honey_type}
                                             onValueChange={(val) => setFormData({ ...formData, honey_type: val })}
                                         >
-                                            <SelectTrigger className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
+                                            <SelectTrigger id="harvest-honey-type" aria-label="Honey type" className={cn(glass.select, "border-white/40 bg-white/50 h-10")}>
                                                 <div className="flex items-center gap-2">
                                                     <Database className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                                     <SelectValue placeholder="Select type" />
@@ -365,7 +371,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                             value={formData.color_grade}
                                             onValueChange={(val) => setFormData({ ...formData, color_grade: val })}
                                         >
-                                            <SelectTrigger className={glass.select}>
+                                            <SelectTrigger id="harvest-color-grade" aria-label="Grade index" className={glass.select}>
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-2.5 h-2.5 rounded-full bg-[#F4D03F]" />
                                                     <SelectValue placeholder="Select grade" />
@@ -383,6 +389,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <div className="relative group/input">
                                             <Cpu className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                                             <Input
+                                                id="harvest-extraction-method"
+                                                name="extraction_method"
+                                                autoComplete="off"
                                                 placeholder="e.g. Cold Centrifuge"
                                                 value={formData.extraction_method || ''}
                                                 onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
@@ -395,6 +404,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <div className="relative group/input">
                                             <Wind className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                                             <Input
+                                                id="harvest-weather-conditions"
+                                                name="weather_conditions"
+                                                autoComplete="off"
                                                 placeholder="e.g. Sunny"
                                                 value={formData.weather_conditions || ''}
                                                 onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
@@ -481,6 +493,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 <div className="flex-1 w-full relative group/search">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                     <Input
+                        id="harvests-search"
+                        name="search_harvests"
+                        autoComplete="off"
                         placeholder="Search harvests…"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -489,7 +504,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto p-1 border-t md:border-t-0 md:border-l border-white/20">
                     <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger className="h-10 w-full md:w-32 bg-white/50 border border-white/40 rounded-xl focus:bg-white text-sm font-semibold text-gray-600 transition-colors">
+                        <SelectTrigger id="harvests-filter-year" aria-label="Filter year" className="h-10 w-full md:w-32 bg-white/50 border border-white/40 rounded-xl focus:bg-white text-sm font-semibold text-gray-600 transition-colors">
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-3.5 h-3.5" />
                                 <SelectValue placeholder="Year" />
