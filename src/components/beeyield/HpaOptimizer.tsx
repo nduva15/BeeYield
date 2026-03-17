@@ -14,20 +14,52 @@ import {
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { beeyieldService } from '@/services/beeyieldService';
 
 const HpaOptimizer: React.FC = () => {
     const [acreage, setAcreage] = React.useState(40);
     const [treeDensity, setTreeDensity] = React.useState('high'); // high, medium, low
-    const [variety, setVariety] = React.useState('almond');
+    const [variety, setVariety] = React.useState<string>('');
+    const [cropOptions, setCropOptions] = React.useState<string[]>([]);
+    const [cropsLoading, setCropsLoading] = React.useState(true);
 
     // Logic for suggested hive placement
     const calculateSuggestedHPA = () => {
         let base = 2.0;
         if (treeDensity === 'high') base += 0.5;
         if (treeDensity === 'low') base -= 0.5;
-        if (variety === 'cherry') base += 0.2;
+        if (variety.toLowerCase().includes('cherry')) base += 0.2;
         return base;
     };
+
+    React.useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            setCropsLoading(true);
+            try {
+                const data = await beeyieldService.getCropRequirements();
+                const names = (data || [])
+                    .map((c: any) => String(c?.crop_name || c?.cropName || '').trim())
+                    .filter(Boolean);
+                if (!mounted) return;
+                setCropOptions(names);
+                setVariety((prev) => {
+                    if (prev && names.includes(prev)) return prev;
+                    return names[0] || '';
+                });
+            } catch {
+                if (!mounted) return;
+                setCropOptions([]);
+                setVariety('');
+            } finally {
+                if (mounted) setCropsLoading(false);
+            }
+        };
+        load();
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     const suggestedHPA = calculateSuggestedHPA();
     const totalHives = Math.round(acreage * suggestedHPA);
@@ -105,18 +137,28 @@ const HpaOptimizer: React.FC = () => {
                             <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Crop Profile</h3>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                            {['Almond', 'Cherry', 'Apple', 'Blueberry'].map((c) => (
-                                <button
-                                    key={c}
-                                    onClick={() => setVariety(c.toLowerCase())}
-                                    className={cn(
-                                        "h-8 rounded-xl border text-center text-[10px] font-bold transition-all uppercase tracking-tighter",
-                                        variety === c.toLowerCase() ? "bg-white border-[#F4D03F]/50 text-[#1A1A1A] shadow-sm ring-1 ring-[#F4D03F]/10" : "bg-transparent border-transparent text-gray-400 hover:border-gray-100 hover:bg-white"
-                                    )}
-                                >
-                                    {c}
-                                </button>
-                            ))}
+                            {cropsLoading ? (
+                                <div className="col-span-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    Loading crops…
+                                </div>
+                            ) : cropOptions.length === 0 ? (
+                                <div className="col-span-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    No crop requirements found
+                                </div>
+                            ) : (
+                                cropOptions.slice(0, 6).map((c) => (
+                                    <button
+                                        key={c}
+                                        onClick={() => setVariety(c)}
+                                        className={cn(
+                                            "h-8 rounded-xl border text-center text-[10px] font-bold transition-all uppercase tracking-tighter",
+                                            variety === c ? "bg-white border-[#F4D03F]/50 text-[#1A1A1A] shadow-sm ring-1 ring-[#F4D03F]/10" : "bg-transparent border-transparent text-gray-400 hover:border-gray-100 hover:bg-white"
+                                        )}
+                                    >
+                                        {c}
+                                    </button>
+                                ))
+                            )}
                         </div>
                     </section>
                 </div>

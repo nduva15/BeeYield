@@ -2404,14 +2404,17 @@ export const beeyieldService = {
     },
 
     // ========== HEALTH KNOWLEDGE BASE ==========
-    async getHealthKnowledgeBase(_category?: string): Promise<any[]> {
-        // Static knowledge base — no DB table needed
-        return [
-            { id: '1', category: 'diseases', title: 'Varroa Mite Management', content: 'Monitor mite levels monthly...', severity: 'high' },
-            { id: '2', category: 'nutrition', title: 'Supplemental Feeding', content: 'Feed sugar syrup in dearth periods...', severity: 'medium' },
-            { id: '3', category: 'diseases', title: 'American Foulbrood', content: 'Look for sunken, perforated cappings...', severity: 'critical' },
-            { id: '4', category: 'management', title: 'Swarm Prevention', content: 'Ensure adequate space and ventilation...', severity: 'medium' },
-        ];
+    async getHealthGuide(kind: 'diseases' | 'species', q?: string): Promise<any[]> {
+        try {
+            const resp = await apiGet<{ items: any[] }>(
+                "/beeyield/health/knowledge",
+                { kind, q }
+            );
+            return Array.isArray(resp?.items) ? resp.items : [];
+        } catch (error) {
+            console.error("getHealthGuide:", error);
+            return [];
+        }
     },
 
     // ========== AI GENERATION (Python backend — kept as-is) ==========

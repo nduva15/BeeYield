@@ -380,12 +380,12 @@ const Team = () => {
                                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
                                     />
                                     <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[8px] text-beeyield-green font-black uppercase">
-                                       <span>ID_SEC: {member.name.substring(0,3).toUpperCase()}00{index}</span>
-                                       <span className="flex items-center gap-1"><div className="w-1 h-1 bg-beeyield-green rounded-full animate-pulse" />SYS_OK</span>
+                                    <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[10px] text-beeyield-green font-semibold">
+                                       <span>ID: {member.name.substring(0,3).toUpperCase()}00{index}</span>
+                                       <span className="flex items-center gap-1"><div className="w-1 h-1 bg-beeyield-green rounded-full animate-pulse" />Online</span>
                                     </div>
                                     <div className="absolute bottom-10 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                                       <Button className="w-full bg-beeyield-green text-black font-black uppercase text-[10px] tracking-widest h-12 rounded-xl border border-beeyield-green shadow-[0_0_30px_rgba(45,168,79,0.2)]">Verify Dossier</Button>
+                                       <Button className="w-full bg-beeyield-green text-black font-semibold h-12 rounded-xl border border-beeyield-green shadow-[0_0_30px_rgba(45,168,79,0.2)]">View profile</Button>
                                     </div>
                                 </div>
                                 <div className="text-center space-y-3">
@@ -544,7 +544,7 @@ const Team = () => {
                 </div>
             </section>
 
-            {/* Member Modal - High-Fidelity Dossier */}
+            {/* Member Modal */}
             <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
                 <DialogContent className="max-w-[900px] bg-transparent border-none p-0 shadow-none overflow-visible">
                     <AnimatePresence>
@@ -587,7 +587,7 @@ const Team = () => {
                                    <div className="md:w-[55%] p-16 flex flex-col justify-center bg-white relative">
                                       <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-green/[0.02] rounded-full translate-x-12 -translate-y-12 border border-beeyield-green/10" />
                                       <div className="mb-10">
-                                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-beeyield-green block mb-4">Directorate Dossier</span>
+                                         <span className="text-[12px] font-semibold text-beeyield-green block mb-4">Team member</span>
                                          <h2 className="text-4xl font-black text-neutral-900 uppercase italic leading-[0.9] tracking-tighter">{selectedMember.role}</h2>
                                       </div>
                                       <p className="text-neutral-500 text-xl leading-relaxed font-medium mb-10">
@@ -595,7 +595,7 @@ const Team = () => {
                                       </p>
                                       
                                       <div className="space-y-4 pt-6 border-t border-neutral-100">
-                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-300 block mb-2">Verifiable Achievements</span>
+                                         <span className="text-[12px] font-semibold text-neutral-400 block mb-2">Highlights</span>
                                          {selectedMember.achievements.map((ach, i) => (
                                             <div key={i} className="flex items-center gap-3">
                                                <CheckCircle2 className="w-5 h-5 text-beeyield-green" />
