@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth,
-    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations
+    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub
 )
 
 
@@ -33,6 +33,9 @@ api_router.include_router(billing.router, prefix="/beeyield/billing", tags=["Bil
 
 # OAuth integrations (QuickBooks / Shopify)
 api_router.include_router(integrations.router, prefix="/integrations", tags=["Integrations"])
+
+# USB hub (hardware pairing/sync sessions)
+api_router.include_router(usb_hub.router, prefix="/hub", tags=["USB Hub"])
 
 
 # Precision Pollination endpoint

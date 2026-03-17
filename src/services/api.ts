@@ -115,6 +115,7 @@ export function getBaseUrl(endpoint: string): string {
         "/ai/", "ai/",
         "/assistant/", "assistant/",
         "/beeyield/", "beeyield/",
+        "/hub/", "hub/",
         "/integrations/", "integrations/",
         "/bee-data",
         "/search",
