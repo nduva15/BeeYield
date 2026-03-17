@@ -329,19 +329,9 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         </div>
                     </div>
                     <div className="flex items-end gap-1 h-12 border-t border-gray-50 pt-3 mt-4">
-                        {Array.from({ length: 24 }).map((_, i) => (
-                            <div
-                                key={i}
-                                className={cn("flex-1 rounded-t-sm transition-all duration-300",
-                                    selectedHive.acoustic === 'Healthy' ? "bg-emerald-400" :
-                                        selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-400" : "bg-red-400"
-                                )}
-                                style={{
-                                    height: `${Math.random() * (selectedHive.acoustic === 'Healthy' ? 60 : selectedHive.acoustic === 'Swarm Risk' ? 100 : 30)}%`,
-                                    opacity: 0.3 + (Math.random() * 0.7)
-                                }}
-                            />
-                        ))}
+                        <div className="w-full text-[10px] font-bold text-gray-400">
+                            No acoustic waveform data available yet.
+                        </div>
                     </div>
                 </div>
             </div>
