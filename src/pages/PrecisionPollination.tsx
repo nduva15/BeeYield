@@ -36,12 +36,12 @@ const PrecisionPollination = () => {
             <div className="w-8 h-8 bg-[#facc15] border-2 border-[#064e3b] flex items-center justify-center">
               <Zap className="w-4 h-4 text-[#064e3b]" />
             </div>
-            <span className="font-black uppercase tracking-widest text-[10px] text-[#064e3b]">Precision System 2.4</span>
+            <span className="font-black text-[10px] text-[#064e3b]">Precision System 2.4</span>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-[#1A1A1A] border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
+              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-[#1A1A1A] border-2 border-[#064e3b] font-black text-[10px] hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
                 Professional Suite
                 <ChevronDown className="w-3 h-3" />
               </button>
@@ -54,8 +54,8 @@ const PrecisionPollination = () => {
                       <tool.icon className="w-4 h-4 text-[#064e3b] group-hover:text-[#10b981]" />
                     </div>
                     <div>
-                      <p className="font-black uppercase text-[10px] tracking-widest text-[#064e3b]">{tool.label}</p>
-                      <p className="text-[9px] font-bold text-[#064e3b]/40 mt-1 uppercase">{tool.description}</p>
+                      <p className="font-black text-[10px] text-[#064e3b]">{tool.label}</p>
+                      <p className="text-[9px] font-bold text-[#064e3b]/40 mt-1">{tool.description}</p>
                     </div>
                   </Link>
                 </DropdownMenuItem>

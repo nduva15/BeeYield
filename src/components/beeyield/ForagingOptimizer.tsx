@@ -12,7 +12,7 @@ interface ForagingOptimizerProps {
 }
 
 const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) => {
-    const [viewMode, setViewMode] = React.useState<'MAP' | 'MATH'>('MAP');
+    const [viewMode, setViewMode] = React.useState<'MAP' | 'Math'>('MAP');
     const [shiftRecentlyCommitted, setShiftRecentlyCommitted] = React.useState(false);
     const shiftTimeoutRef = React.useRef<number | null>(null);
 
@@ -128,10 +128,10 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                             Flight Map
                         </button>
                         <button
-                            onClick={() => setViewMode('MATH')}
+                            onClick={() => setViewMode('Math')}
                             className={cn(
                                 "h-8 px-4 rounded-lg font-bold text-xs transition-all flex items-center gap-2",
-                                viewMode === 'MATH' ? "bg-white text-[#1A1A1A] shadow-sm" : "text-gray-500 hover:text-[#1A1A1A] hover:bg-white/50"
+                                viewMode === 'Math' ? "bg-white text-[#1A1A1A] shadow-sm" : "text-gray-500 hover:text-[#1A1A1A] hover:bg-white/50"
                             )}
                         >
                             <BarChart3 className="w-3.5 h-3.5" />
@@ -157,7 +157,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
                                 <div className="absolute top-8 left-8 p-4 bg-white/95 backdrop-blur border border-gray-200 rounded-xl shadow-lg group hover:-translate-y-1 transition-transform">
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B9157] mb-1">Primary Sector</p>
+                                    <p className="text-[10px] font-bold tracking-wider text-[#1B9157] mb-1">Primary Sector</p>
                                     <p className="text-sm font-bold text-[#1A1A1A] tracking-tight">Healthy Bloom 04</p>
                                 </div>
 
@@ -183,14 +183,14 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                     <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
                                         <div className="space-y-1">
                                             <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Honey Gain Profile</h3>
-                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Seasonal Yield Forecast Alpha</p>
+                                            <p className="text-[10px] font-bold text-gray-500 tracking-wider">Seasonal Yield Forecast Alpha</p>
                                         </div>
                                         <div className="flex items-center gap-4 text-right">
                                             <div>
                                                 <p className="text-2xl font-bold tracking-tight text-[#1A1A1A] leading-none">
                                                     {typeof foragePotential?.score === 'number' ? `${foragePotential.score} PTS` : '—'}
                                                 </p>
-                                                <p className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider mt-1">
+                                                <p className="text-[10px] font-bold text-[#1B9157] tracking-wider mt-1">
                                                     {String(foragePotential?.weather?.status || 'Forage status')}
                                                 </p>
                                             </div>
@@ -221,15 +221,15 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                 </div>
                                 <div className="mt-6 border-t border-gray-100 pt-6 grid grid-cols-3 gap-6">
                                     <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-1">
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Metabolic Cost</p>
+                                        <p className="text-[10px] font-bold tracking-wider text-gray-500">Metabolic Cost</p>
                                         <p className="text-sm font-bold text-[#1A1A1A] tracking-tight">Normal Ops</p>
                                     </div>
                                     <div className="bg-amber-50 p-3 rounded-lg border border-amber-100 space-y-1">
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600">Honey Velocity</p>
+                                        <p className="text-[10px] font-bold tracking-wider text-amber-600">Honey Velocity</p>
                                         <p className="text-sm font-bold text-amber-700 tracking-tight">High Yield</p>
                                     </div>
                                     <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-1 text-right">
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Net Score</p>
+                                        <p className="text-[10px] font-bold tracking-wider text-gray-500">Net Score</p>
                                         <p className="text-sm font-bold text-[#1A1A1A] tracking-tight">92% Eff</p>
                                     </div>
                                 </div>
@@ -252,7 +252,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                 </div>
                                 <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Colony Activity</h3>
                             </div>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Live Sensors</span>
+                            <span className="text-[10px] font-bold text-gray-500 tracking-wider">Live Sensors</span>
                         </div>
 
                         <div className="p-4 space-y-3">
@@ -263,10 +263,10 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                             ].map((item, i) => (
                                 <div key={i} className="flex justify-between items-center p-3 rounded-xl bg-gray-50 border border-gray-100 group hover:border-[#1A1A1A]/10 hover:bg-white transition-all shadow-sm">
                                     <div className="space-y-0.5">
-                                        <p className="text-[10px] font-bold uppercase text-gray-500 tracking-wider">{item.label}</p>
+                                        <p className="text-[10px] font-bold text-gray-500 tracking-wider">{item.label}</p>
                                         <p className="text-lg font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors">{item.val}</p>
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase px-2 py-1 bg-white border border-gray-200 text-gray-600 rounded-md shadow-sm">{item.status}</span>
+                                    <span className="text-[10px] font-bold px-2 py-1 bg-white border border-gray-200 text-gray-600 rounded-md shadow-sm">{item.status}</span>
                                 </div>
                             ))}
                         </div>

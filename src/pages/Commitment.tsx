@@ -85,7 +85,7 @@ const CommitmentPage = () => {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden z-10">
         <div className="container mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-8 px-4 py-2 border-primary/20 bg-primary/5 text-primary tracking-widest uppercase font-semibold text-xs rounded-full">
+          <Badge variant="outline" className="mb-8 px-4 py-2 border-primary/20 bg-primary/5 text-primary font-semibold text-xs rounded-full">
             Sustainable Development Goals
           </Badge>
 

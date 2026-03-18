@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
     Droplet, Flame, Zap, AlertTriangle, TrendingUp, Send,
-    Bot, ThermometerSun, Activity, Search, RefreshCw, ChevronRight, Database, Layers, ShieldCheck
+    Bot, ThermometerSun, Activity, Search, RefreshCw, ChevronRight, Database, Layers, ShieldCheck,
+    LayoutList, ChevronDown, Gauge, List, Bell, Banknote, FileText, Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -142,7 +143,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         if (!msg) return;
         setChatMessages([...chatMessages, { role: 'user', content: msg }]);
         setAiMessage('');
-        toast.info('Opening BeeYield AI…');
+        toast.info('Opening BeeYield Assistant…');
         onTabChange('assistant', `Meters: ${msg}`);
     };
 
@@ -219,7 +220,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                         className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#F4D03F]/10 transition-colors border-b border-[#F4D03F]/5 last:border-none group/item"
                                     >
                                         <item.icon className="w-4 h-4 text-gray-400 group-hover/item:text-[#F4D03F] transition-colors" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">{item.label}</span>
+                                        <span className="text-[10px] font-black text-gray-600">{item.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -232,12 +233,12 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <div className={cn(glass.card, "p-4 border border-red-200 bg-red-50/60")}>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Offline mode</div>
+                            <div className="text-[10px] font-black text-red-600">Offline mode</div>
                             <div className="text-sm font-semibold text-slate-700 mt-1">{error}</div>
                         </div>
                         <Button
                             variant="outline"
-                            className="h-10 rounded-xl text-[10px] font-black uppercase tracking-widest"
+                            className="h-10 rounded-xl text-[10px] font-black"
                             onClick={() => onTabChange('meters-dashboard')}
                         >
                             Retry
@@ -266,13 +267,13 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     <Icon className="w-4 h-4" />
                                 </div>
                                 <Badge className={cn("text-[8px] px-1.5 py-0.5 rounded-md border-none font-bold", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-[#1B9157]/10 text-[#1B9157]")}>
-                                    {alertCount > 0 ? `${alertCount} ALARMS` : 'OPTIMIZED'}
+                                    {alertCount > 0 ? `${alertCount} ALARMS` : 'Optimized'}
                                 </Badge>
                             </div>
                             <div>
-                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{medium}_LOAD</p>
+                                <p className="text-[8px] font-black text-gray-400">{medium}_LOAD</p>
                                 <p className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                     {total} <span className="text-[9px] font-medium opacity-30 tracking-normal font-sans uppercase">{unit}</span>
+                                     {total} <span className="text-[9px] font-medium opacity-30 tracking-normal font-sans">{unit}</span>
                                 </p>
                             </div>
                         </div>
@@ -284,10 +285,10 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-red-500/20 bg-white shadow-sm text-red-500 group-hover:scale-105 transition-transform">
                             <AlertTriangle className="w-4 h-4 animate-pulse" />
                         </div>
-                        <Badge className="bg-red-500 text-white border-none px-1.5 py-0.5 rounded-md font-bold text-[8px] animate-pulse">ACTION</Badge>
+                        <Badge className="bg-red-500 text-white border-none px-1.5 py-0.5 rounded-md font-bold text-[8px] animate-pulse">Action</Badge>
                     </div>
                     <div>
-                        <p className="text-[8px] font-black text-red-500/60 uppercase tracking-widest">Alerts</p>
+                        <p className="text-[8px] font-black text-red-500/60">Alerts</p>
                         <p className="text-lg font-black text-red-600 tracking-tighter tabular-nums">{activeAlarmsCount}</p>
                     </div>
                 </div>
@@ -298,8 +299,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <div className={cn(glass.card, "lg:col-span-2 p-5 space-y-4 bg-white/40 border-white/20 shadow-xl")}>
                     <div className="flex justify-between items-center border-b border-white/20 pb-4">
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Resource_Flow</h3>
-                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">BIOMASS_ACCUMULATION_DELTA</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Resource_Flow</h3>
+                            <p className="text-[8px] font-black text-gray-400">Biomass Accumulation Delta</p>
                         </div>
                         <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 backdrop-blur-sm">
                             {(['Water', 'Heat', 'Energy'] as const).map(m => (
@@ -307,7 +308,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     key={m}
                                     onClick={() => setUsageFilter(m)}
                                     className={cn(
-                                        "h-7 px-4 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all",
+                                        "h-7 px-4 rounded-lg text-[8px] font-black transition-all",
                                         usageFilter === m ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40" : "text-gray-400 hover:text-[#1A1A1A]/60"
                                     )}
                                 >
@@ -320,7 +321,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         {trendData.length < 2 ? (
                             <div className="h-full w-full flex items-center justify-center text-center">
                                 <div className="space-y-2">
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Not enough readings</div>
+                                    <div className="text-[10px] font-black text-gray-400">Not enough readings</div>
                                     <div className="text-sm font-semibold text-gray-600">Connect devices to populate trends.</div>
                                 </div>
                             </div>
@@ -346,15 +347,15 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     </div>
                 </div>
 
-                {/* AI Assistant */}
+                {/* Assistant */}
                 <div className={cn(glass.card, "p-5 flex flex-col bg-white/40 border-white/20 shadow-xl")}>
                     <div className="flex items-center gap-3 mb-4 border-b border-white/20 pb-4">
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-[#1A1A1A]/10 shadow-sm">
                             <Bot className="w-5 h-5 text-[#1A1A1A]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Co_Pilot</h3>
-                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">ACOUSTIC_RESONANCE_EXPERT</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Co_Pilot</h3>
+                            <p className="text-[8px] font-black text-gray-400">Acoustic Resonance Expert</p>
                         </div>
                     </div>
 
@@ -362,7 +363,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         {chatMessages.map((msg, idx) => (
                             <div key={idx} className={cn("flex", msg.role === 'user' ? "justify-end" : "justify-start")}>
                                 <div className={cn(
-                                    "px-4 py-2.5 rounded-2xl max-w-[90%] text-[10px] font-black uppercase tracking-wider leading-relaxed shadow-sm",
+                                    "px-4 py-2.5 rounded-2xl max-w-[90%] text-[10px] font-black tracking-wider leading-relaxed shadow-sm",
                                     msg.role === 'user' ? "bg-[#1A1A1A] text-white rounded-tr-none" : "bg-white border border-white/40 text-gray-500 rounded-tl-none"
                                 )}>
                                     {msg.content}
@@ -377,7 +378,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             value={aiMessage}
                             onChange={e => setAiMessage(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                            className="w-full h-10 bg-white border border-white/40 rounded-xl pl-4 pr-12 text-[9px] font-black tracking-widest uppercase outline-none focus:ring-1 focus:ring-[#1A1A1A]/10 shadow-sm"
+                            className="w-full h-10 bg-white border border-white/40 rounded-xl pl-4 pr-12 text-[9px] font-black outline-none focus:ring-1 focus:ring-[#1A1A1A]/10 shadow-sm"
                         />
                         <button
                             onClick={handleSendMessage}
@@ -396,9 +397,9 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <div className="p-4 border-b border-white/20 bg-white/20 flex justify-between items-center backdrop-blur-sm">
                     <div className="flex items-center gap-3">
                         <TrendingUp className="w-4 h-4 text-[#1B9157]" />
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Audit_Records</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Audit_Records</h3>
                     </div>
-                    <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-[#1A1A1A] hover:bg-white/40 rounded-xl px-3 h-7">
+                    <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black text-gray-500 hover:text-[#1A1A1A] hover:bg-white/40 rounded-xl px-3 h-7">
                         Historical_Log <ChevronRight className="w-3" />
                     </Button>
                 </div>
@@ -408,10 +409,10 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "w-2 h-2 rounded-full",
-                                    event.severity === 'CRITICAL' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" : "bg-[#1B9157]"
+                                    event.severity === 'Critical' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" : "bg-[#1B9157]"
                                 )} />
                                 <div>
-                                    <p className={cn("text-[11px] font-black uppercase tracking-tight italic", event.severity === 'CRITICAL' ? "text-red-500" : "text-[#1A1A1A]")}>
+                                    <p className={cn("text-[11px] font-black tracking-tight italic", event.severity === 'Critical' ? "text-red-500" : "text-[#1A1A1A]")}>
                                         {event.event_type}
                                     </p>
                                     <p className="text-[10px] text-[#1A1A1A]/40 font-medium italic mt-0.5 truncate max-w-[400px]">
@@ -427,7 +428,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     {events.length === 0 && (
                         <div className="p-20 text-center opacity-30 italic">
                             <Activity className="w-10 h-10 mx-auto mb-4 opacity-20" />
-                            <p className="text-[10px] font-black tracking-widest uppercase">STABLE_NOMINAL_BASELINE_DETECTED</p>
+                            <p className="text-[10px] font-black">Stable Nominal Baseline Detected</p>
                         </div>
                     )}
                 </div>

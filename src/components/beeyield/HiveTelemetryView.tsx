@@ -309,12 +309,12 @@ const HiveTelemetryView: React.FC = () => {
                 <Card className="border border-red-200 bg-red-50/60">
                     <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Data load failed</div>
+                            <div className="text-[10px] font-black text-red-600">Data load failed</div>
                             <div className="text-sm font-semibold text-slate-700 break-words mt-1">{error}</div>
                         </div>
                         <Button
                             onClick={loadSeries}
-                            className="h-11 rounded-2xl bg-neutral-900 text-white font-black uppercase text-[10px] tracking-widest"
+                            className="h-11 rounded-2xl bg-neutral-900 text-white font-black text-[10px]"
                         >
                             Retry
                         </Button>
@@ -338,7 +338,7 @@ const HiveTelemetryView: React.FC = () => {
                 {/* Weight Card */}
                 <Card className={cn(glass.card, "shadow-xl overflow-hidden group")}>
                     <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 italic">Current Biomass Score</p>
+                        <p className="text-[10px] font-black text-slate-400 mb-2 italic">Current Biomass Score</p>
                         <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
                             {latest ? latest.weight : '—'}<span className="text-2xl ml-1 opacity-20 not-italic">kg</span>
                         </CardTitle>
@@ -346,7 +346,7 @@ const HiveTelemetryView: React.FC = () => {
                     <CardContent className="p-6 flex flex-col justify-between min-h-[220px]">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between p-4 rounded-2xl bg-[#F9F7F2] border border-slate-100">
-                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none">24h Delta</span>
+                                <span className="text-[9px] font-black text-slate-400 leading-none">24h Delta</span>
                                 <span className={cn("text-base font-black flex items-center gap-1 leading-none", latest && data[0] && (latest.weight - data[0].weight) > 0 ? "text-[#1B9157]" : "text-red-500")}>
                                     {latest && data[0] && (latest.weight - data[0].weight) > 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                                     {latest && data[0] ? `${Math.abs(latest.weight - data[0].weight).toFixed(2)}kg` : '—'}
@@ -357,14 +357,14 @@ const HiveTelemetryView: React.FC = () => {
                             <Button
                                 onClick={handleTare}
                                 disabled={isTaring}
-                                className="h-14 rounded-2xl bg-neutral-900 text-[#1A1A1A] font-black uppercase text-[10px] tracking-widest shadow-xl shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="h-14 rounded-2xl bg-neutral-900 text-[#1A1A1A] font-black text-[10px] shadow-xl shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
                             >
                                 {isTaring ? <Activity className="w-4 h-4 animate-spin" /> : "Calibration"}
                             </Button>
                             <Button
                                 variant="ghost"
                                 onClick={handleManualOffset}
-                                className="h-14 rounded-2xl border border-slate-200 bg-[#FFF9F0] text-slate-400 hover:text-[#F4D03F] font-black uppercase text-[10px] tracking-widest transition-all"
+                                className="h-14 rounded-2xl border border-slate-200 bg-[#FFF9F0] text-slate-400 hover:text-[#F4D03F] font-black text-[10px] transition-all"
                             >
                                 Manual Offset
                             </Button>
@@ -375,13 +375,13 @@ const HiveTelemetryView: React.FC = () => {
                 {/* Flux Calculus Card */}
                 <Card className={cn(glass.card, "shadow-xl overflow-hidden")}>
                     <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 italic">Flux Velocity ($dW/dt$)</p>
+                        <p className="text-[10px] font-black text-slate-400 mb-2 italic">Flux Velocity ($dW/dt$)</p>
                         <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
                             {dwdt > 0 ? '+' : ''}{dwdt.toFixed(3)}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pb-8 flex flex-col justify-between min-h-[220px]">
-                        <p className="text-[10px] font-bold text-slate-400 leading-relaxed uppercase italic">
+                        <p className="text-[10px] font-bold text-slate-400 leading-relaxed italic">
                             Rate of change. Positive values often mean foragers are bringing in nectar and moisture is dropping.
                         </p>
                         <div className="space-y-4 mt-8">
@@ -393,7 +393,7 @@ const HiveTelemetryView: React.FC = () => {
                                     transition={{ type: 'spring', damping: 20 }}
                                 />
                             </div>
-                            <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 italic">
+                            <div className="flex justify-between text-[9px] font-black text-slate-400 italic">
                                 <span>Net Consumption</span>
                                 <span>Nectar Influx</span>
                             </div>
@@ -405,7 +405,7 @@ const HiveTelemetryView: React.FC = () => {
                 <Card className={cn(glass.card, "bg-neutral-900 border-neutral-800 shadow-xl overflow-hidden relative group")}>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <CardHeader className="p-6 pb-4 border-b border-[#F4D03F]/10 relative z-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 mb-2 italic">Integrative Season Total</p>
+                        <p className="text-[10px] font-black text-gray-600 mb-2 italic">Integrative Season Total</p>
                         <CardTitle className="text-6xl font-black text-[#F4D03F] tracking-tighter italic tabular-nums leading-none">
                             {totalYield}<span className="text-2xl ml-1 text-[#1A1A1A] opacity-40 not-italic">kg</span>
                         </CardTitle>
@@ -414,13 +414,13 @@ const HiveTelemetryView: React.FC = () => {
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
                                 <Zap className="w-5 h-5 text-[#F4D03F] group-hover:scale-125 transition-transform" />
-                                <span className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">ROI Audit Confirmed</span>
+                                <span className="text-[10px] font-black text-[#1A1A1A] italic">ROI Audit Confirmed</span>
                             </div>
-                            <p className="text-[10px] font-medium text-gray-600 uppercase leading-relaxed italic">
+                            <p className="text-[10px] font-medium text-gray-600 leading-relaxed italic">
                                 Value extrapolated via trapezoidal integration of periodic biomass shifts. Primary certification for premium pollination tariffs.
                             </p>
                         </div>
-                        <Button className="w-full mt-8 h-16 rounded-2xl bg-[#FFF9F0] text-neutral-900 hover:bg-neutral-100:bg-amber-100 font-black uppercase text-xs tracking-widest shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-3 border-none">
+                        <Button className="w-full mt-8 h-16 rounded-2xl bg-[#FFF9F0] text-neutral-900 hover:bg-neutral-100:bg-amber-100 font-black text-xs shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-3 border-none">
                             <Download className="w-4 h-4" />
                             Certify Audit
                         </Button>
@@ -440,16 +440,16 @@ const HiveTelemetryView: React.FC = () => {
                             <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border transition-all", isAlert ? "bg-red-500 text-[#1A1A1A] border-red-400" : "bg-[#F9F7F2] text-slate-300 border-slate-100")}>
                                 <AlertTriangle className="w-8 h-8" />
                             </div>
-                            <Badge className={cn("rounded-full px-4 py-1.5 font-black text-[9px] uppercase tracking-widest border-none", isAlert ? "bg-red-500 text-[#1A1A1A]" : "bg-[#F9F7F2] text-slate-300")}>
+                            <Badge className={cn("rounded-full px-4 py-1.5 font-black text-[9px] border-none", isAlert ? "bg-red-500 text-[#1A1A1A]" : "bg-[#F9F7F2] text-slate-300")}>
                                 SECURE
                             </Badge>
                         </div>
                     </CardHeader>
                     <CardContent className="p-6 pt-0">
-                        <h3 className={cn("text-2xl font-black uppercase tracking-tighter italic mb-4", isAlert ? "text-red-600" : "text-[#1A1A1A]")}>
+                        <h3 className={cn("text-2xl font-black tracking-tighter italic mb-4", isAlert ? "text-red-600" : "text-[#1A1A1A]")}>
                             Theft Mitigation
                         </h3>
-                        <p className="text-[11px] font-medium text-slate-500 uppercase leading-relaxed italic">
+                        <p className="text-[11px] font-medium text-slate-500 leading-relaxed italic">
                             Continuous monitoring for anomalous mass reduction events. Synced with spectral acoustic signatures for secondary validation.
                         </p>
                     </CardContent>

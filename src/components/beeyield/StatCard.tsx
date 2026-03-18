@@ -32,7 +32,7 @@ const StatCard: React.FC<StatCardProps> = ({
                         </div>
                         {trend && (
                             <div className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest border backdrop-blur-sm",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] border backdrop-blur-sm",
                                 trendType === 'positive' ? "bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/" :
                                     trendType === 'negative' ? "bg-red-500/10 text-red-600 border-red-500/20" :
                                         "bg-muted/30 text-muted-foreground border-border"
@@ -46,13 +46,13 @@ const StatCard: React.FC<StatCardProps> = ({
                     </div>
 
                     <div className="space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-70">
+                        <p className="text-[10px] font-black text-muted-foreground opacity-70">
                             {title}
                         </p>
-                        <h3 className="text-4xl font-serif font-black text-foreground uppercase tracking-tight leading-none pb-1">
+                        <h3 className="text-4xl font-serif font-black text-foreground tracking-tight leading-none pb-1">
                             {value}
                         </h3>
-                        {subtitle && <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest border-t border-border pt-4 mt-6">{subtitle}</p>}
+                        {subtitle && <p className="text-[10px] text-muted-foreground font-black border-t border-border pt-4 mt-6">{subtitle}</p>}
                     </div>
                 </CardContent>
             </Card>

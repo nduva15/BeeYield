@@ -390,7 +390,7 @@ export const beeSpeciesData: Record<string, BeeSpeciesDetail> = {
         climateSuitability: "Mediterranean/Arid transition zones.",
         pros: ["Total synchrony with local floral pulses", "Varroa tolerance"],
         cons: ["High swarm rate", "Aggression"],
-        description: "The primary honey bee of North Africa. BeeYield's AI-driven swarming prediction is vital for managing this subspecies."
+        description: "The primary honey bee of North Africa. BeeYield's predictive swarming models are vital for managing this subspecies."
     },
     "Indian Hive Bee": {
         scientificName: "Apis cerana indica",

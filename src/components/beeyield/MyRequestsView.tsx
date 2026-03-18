@@ -199,7 +199,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 actions={
                     <button
                         onClick={() => setShowWizard(!showWizard)}
-                        className={cn(glass.btnPrimary, "px-4 h-9 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2")}
+                        className={cn(glass.btnPrimary, "px-4 h-9 text-[10px] font-bold flex items-center gap-2")}
                     >
                         {showWizard ? "Close Form" : (<><Plus className="w-4 h-4" /> New Request</>)}
                     </button>
@@ -228,7 +228,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                 {wizardStep === 1 && "Request Details"}
                                                 {wizardStep === 2 && "Review and Submit"}
                                             </h3>
-                                            <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em]">Step {wizardStep + 1} of 3</p>
+                                            <p className="text-[10px] font-bold text-foreground/30">Step {wizardStep + 1} of 3</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-1.5">
@@ -351,7 +351,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                             key={p}
                                                             onClick={() => setPriority(p)}
                                                             className={cn(
-                                                                "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border transition-all",
+                                                                "px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
                                                                 priority === p
                                                                     ? "bg-[#F4D03F] border-[#F4D03F] text-[#1A1A1A]"
                                                                     : "bg-white border-foreground/5 text-foreground/30 hover:text-foreground/60"
@@ -364,7 +364,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                 <button
                                                     onClick={() => setWizardStep(2)}
                                                     disabled={!subject || !description}
-                                                    className={cn(glass.btnPrimary, "px-6 h-9 text-[10px] uppercase font-bold tracking-widest")}
+                                                    className={cn(glass.btnPrimary, "px-6 h-9 text-[10px] font-bold")}
                                                 >
                                                     Review <ArrowRight className="w-4 h-4 ml-2" />
                                                 </button>
@@ -385,9 +385,9 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                     <div>
                                                         <p className={glass.microLabel}>Category / Priority</p>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 text-[9px] font-bold uppercase tracking-widest">{category}</Badge>
+                                                            <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 text-[9px] font-bold">{category}</Badge>
                                                             <Badge className={cn(
-                                                                "border-none text-[9px] font-bold uppercase tracking-widest",
+                                                                "border-none text-[9px] font-bold",
                                                                 priority === 'High' ? "bg-red-500/10 text-red-500" :
                                                                     priority === 'Medium' ? "bg-orange-500/10 text-orange-500" :
                                                                         "bg-blue-500/10 text-blue-500"
@@ -418,14 +418,14 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                             <div className="flex items-center justify-between">
                                                 <button
                                                     onClick={() => setWizardStep(1)}
-                                                    className={cn(glass.btnSecondary, "px-4 h-9 text-[10px] font-bold uppercase tracking-widest")}
+                                                    className={cn(glass.btnSecondary, "px-4 h-9 text-[10px] font-bold")}
                                                 >
                                                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                                                 </button>
                                                 <button
                                                     onClick={handleFormSubmit}
                                                     disabled={createRequest.isPending}
-                                                    className={cn(glass.btnPrimary, "px-8 h-9 text-[10px] font-bold uppercase tracking-widest")}
+                                                    className={cn(glass.btnPrimary, "px-8 h-9 text-[10px] font-bold")}
                                                 >
                                                     {createRequest.isPending ? (
                                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -450,7 +450,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 <div className={cn(glass.filterBar, "p-3")}>
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
-                            <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]/40">Request History</h2>
+                            <h2 className="text-[10px] font-bold text-[#1A1A1A]/40">Request History</h2>
                             <div className="px-2 py-0.5 bg-[#F4D03F]/10 border border-[#F4D03F]/20 rounded-lg text-[9px] font-bold text-[#F4D03F]">{filteredRequests.length}</div>
                         </div>
 
@@ -473,7 +473,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                         key={s}
                                         onClick={() => setStatusFilter(s)}
                                         className={cn(
-                                            "px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all",
+                                            "px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all",
                                             statusFilter === s
                                                 ? "bg-white text-[#F4D03F] shadow-sm"
                                                 : "text-gray-400 hover:text-gray-600"
@@ -491,7 +491,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                     {isLoadingRequests ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3">
                             <Loader2 className="w-8 h-8 text-[#F4D03F] animate-spin" />
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fetching archives...</p>
+                            <p className="text-[10px] font-bold text-gray-400">Fetching archives...</p>
                         </div>
                     ) : filteredRequests.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center px-10">
@@ -506,12 +506,12 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                             <Table>
                                 <TableHeader className="bg-gray-50/50">
                                     <TableRow className="border-gray-100 hover:bg-transparent">
-                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Reference</TableHead>
-                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Subject</TableHead>
-                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Entity</TableHead>
-                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Category</TableHead>
-                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400">Status</TableHead>
-                                        <TableHead className="h-10 text-[9px] font-bold uppercase tracking-widest text-gray-400 text-right pr-6">Timestamp</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold text-gray-400">Reference</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold text-gray-400">Subject</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold text-gray-400">Entity</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold text-gray-400">Category</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold text-gray-400">Status</TableHead>
+                                        <TableHead className="h-10 text-[9px] font-bold text-gray-400 text-right pr-6">Timestamp</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -531,26 +531,26 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                 </TableCell>
                                                 <TableCell className="py-3.5">
                                                     <div className="flex flex-col">
-                                                        <span className="text-[11px] font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors uppercase leading-none">{req.subject}</span>
+                                                        <span className="text-[11px] font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors leading-none">{req.subject}</span>
                                                         <span className="text-[9px] text-gray-400 line-clamp-1 mt-1">{req.description}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="py-3.5">
                                                     <div className="flex items-center gap-1.5">
                                                         <Box className="w-3 h-3 text-gray-300" />
-                                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">UNIT_{req.id.slice(-4).toUpperCase()}</span>
+                                                        <span className="text-[10px] font-bold text-gray-500 tracking-tight">UNIT_{req.id.slice(-4).toUpperCase()}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="py-3.5">
-                                                    <Badge className="bg-gray-100 text-gray-400 border-none text-[8px] font-bold uppercase tracking-widest h-5 leading-none">{req.category}</Badge>
+                                                    <Badge className="bg-gray-100 text-gray-400 border-none text-[8px] font-bold h-5 leading-none">{req.category}</Badge>
                                                 </TableCell>
                                                 <TableCell className="py-3.5">
-                                                    <div className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-[8px] font-bold uppercase tracking-widest shadow-sm", getStatusStyles(req.status))}>
+                                                    <div className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-[8px] font-bold shadow-sm", getStatusStyles(req.status))}>
                                                         <StatusIcon className="w-2.5 h-2.5" />
                                                         {req.status}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="py-3.5 text-right text-[9px] font-bold text-gray-400 pr-6 uppercase">
+                                                <TableCell className="py-3.5 text-right text-[9px] font-bold text-gray-400 pr-6">
                                                     {new Date(req.created_at).toLocaleDateString(undefined, {
                                                         year: 'numeric',
                                                         month: 'short',
@@ -580,17 +580,17 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Status</p>
-                                    <p className="text-sm font-black text-[#1A1A1A] uppercase">{selectedRequest.status}</p>
+                                    <p className="text-[10px] font-bold text-gray-400">Status</p>
+                                    <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.status}</p>
                                 </div>
                                 <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Category</p>
-                                    <p className="text-sm font-black text-[#1A1A1A] uppercase">{selectedRequest.category}</p>
+                                    <p className="text-[10px] font-bold text-gray-400">Category</p>
+                                    <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.category}</p>
                                 </div>
                             </div>
 
                             <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject</p>
+                                <p className="text-[10px] font-bold text-gray-400">Subject</p>
                                 <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.subject}</p>
                                 <p className="text-[11px] text-gray-600 mt-2 whitespace-pre-wrap">{selectedRequest.description}</p>
                             </div>

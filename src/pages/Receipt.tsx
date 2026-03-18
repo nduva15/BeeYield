@@ -97,7 +97,7 @@ const Receipt = () => {
             <Card className="max-w-4xl mx-auto bg-[#FFF9F0] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border-none overflow-hidden rounded-[2rem] print:shadow-none print:rounded-none">
                 {/* Status Bar */}
                 <div className="bg-primary/10 py-3 px-8 flex justify-between items-center print:hidden">
-                    <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-widest">
+                    <div className="flex items-center gap-2 text-primary font-bold text-sm">
                         <CheckCircle2 className="w-4 h-4" /> {order.status}
                     </div>
                     <div className="text-slate-500 text-xs font-medium">
@@ -119,7 +119,7 @@ const Receipt = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
                                 <div className="space-y-2">
-                                    <h3 className="text-xs font-black uppercase tracking-tighter text-slate-400">Our Headquarters</h3>
+                                    <h3 className="text-xs font-black tracking-tighter text-slate-400">Our Headquarters</h3>
                                     <div className="text-slate-600 space-y-1">
                                         <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-primary" /> Kibwezi West, Makueni, KE</p>
                                         <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-primary" /> +254 742 004 187</p>
@@ -128,7 +128,7 @@ const Receipt = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-xs font-black uppercase tracking-tighter text-slate-400">Bill To</h3>
+                                    <h3 className="text-xs font-black tracking-tighter text-slate-400">Bill To</h3>
                                     {order.shipping_address ? (
                                         <div className="text-[#1A1A1A] font-bold space-y-1">
                                             <p className="text-lg">{order.shipping_address.name || order.shipping_address.first_name + ' ' + order.shipping_address.last_name}</p>
@@ -145,7 +145,7 @@ const Receipt = () => {
 
                         <div className="md:text-right flex flex-col justify-between items-start md:items-end">
                             <div>
-                                <h2 className="text-5xl font-black text-slate-200 mb-4 tracking-tighter print:text-slate-300">RECEIPT</h2>
+                                <h2 className="text-5xl font-black text-slate-200 mb-4 tracking-tighter print:text-slate-300">Receipt</h2>
                                 <div className="space-y-1">
                                     <p className="text-sm text-slate-500">Transaction ID</p>
                                     <p className="text-lg font-black text-[#1A1A1A]">#{order.order_number}</p>
@@ -153,7 +153,7 @@ const Receipt = () => {
                             </div>
                             <div className="mt-6 md:mt-0">
                                 <p className="text-sm text-slate-500">Date Issued</p>
-                                <p className="text-lg font-black text-[#1A1A1A] uppercase">{new Date(order.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                                <p className="text-lg font-black text-[#1A1A1A]">{new Date(order.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                             </div>
                         </div>
                     </div>
@@ -164,10 +164,10 @@ const Receipt = () => {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b-2 border-slate-100">
-                                        <th className="pb-4 pt-0 font-black text-slate-400 uppercase text-[10px] tracking-widest">Item Detail</th>
-                                        <th className="pb-4 pt-0 font-black text-slate-400 uppercase text-[10px] tracking-widest text-center">Qty</th>
-                                        <th className="pb-4 pt-0 font-black text-slate-400 uppercase text-[10px] tracking-widest text-right">Unit Price</th>
-                                        <th className="pb-4 pt-0 font-black text-slate-400 uppercase text-[10px] tracking-widest text-right">Amount</th>
+                                        <th className="pb-4 pt-0 font-black text-slate-400 text-[10px]">Item Detail</th>
+                                        <th className="pb-4 pt-0 font-black text-slate-400 text-[10px] text-center">Qty</th>
+                                        <th className="pb-4 pt-0 font-black text-slate-400 text-[10px] text-right">Unit Price</th>
+                                        <th className="pb-4 pt-0 font-black text-slate-400 text-[10px] text-right">Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -185,7 +185,7 @@ const Receipt = () => {
                                                         )}
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <h4 className="font-black text-[#1A1A1A] text-lg leading-tight uppercase tracking-tight">{item.product_name}</h4>
+                                                        <h4 className="font-black text-[#1A1A1A] text-lg leading-tight tracking-tight">{item.product_name}</h4>
                                                         <p className="text-sm font-bold text-primary">{item.variant_size || 'Standard Jar'}</p>
                                                         <p className="text-xs text-slate-400 max-w-xs line-clamp-1">Natural honey product from Makueni.</p>
                                                     </div>
@@ -224,7 +224,7 @@ const Receipt = () => {
                                         <span>Total Paid</span>
                                         <span className="text-primary">{formatCurrency(Number(order.total_kes))}</span>
                                     </div>
-                                    <p className="text-right text-[10px] text-slate-400 mt-2 uppercase tracking-widest">Inclusive of all taxes</p>
+                                    <p className="text-right text-[10px] text-slate-400 mt-2">Inclusive of all taxes</p>
                                 </div>
                             </div>
                         </div>

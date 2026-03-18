@@ -75,7 +75,7 @@ const PollinationServices = () => {
                         transition={{ duration: 0.8 }}
                         className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
                     >
-                        <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                        <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
                             Partner in Pollination
                         </span>
                     </motion.div>
@@ -92,7 +92,7 @@ const PollinationServices = () => {
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-[#F4D03F] text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
+                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-[#F4D03F] text-[11px] font-black mb-8 border border-amber-100 shadow-sm"
                             >
                                 <Zap className="w-3.5 h-3.5" />
                                 Partner in Pollination
@@ -108,10 +108,10 @@ const PollinationServices = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-black rounded-2xl px-10 h-14 shadow-xl uppercase tracking-widest text-xs transition-all hover:scale-105" asChild>
+                                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-black rounded-2xl px-10 h-14 shadow-xl text-xs transition-all hover:scale-105" asChild>
                                     <Link to="/pollination-request">Get Free Consultation</Link>
                                 </Button>
-                                <Button size="lg" variant="outline" className="border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 uppercase tracking-widest text-xs" asChild>
+                                <Button size="lg" variant="outline" className="border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
                                     <Link to="/pollination-solutions">See How It Works</Link>
                                 </Button>
                             </div>
@@ -125,7 +125,7 @@ const PollinationServices = () => {
                                 ].map((stat, i) => (
                                     <div key={i}>
                                         <p className={`text-4xl font-black ${stat.color} tracking-tighter`}>{stat.value}</p>
-                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{stat.label}</p>
+                                        <p className="text-[10px] font-bold text-neutral-400">{stat.label}</p>
                                     </div>
                                 ))}
                             </div>
@@ -149,9 +149,9 @@ const PollinationServices = () => {
                                 <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1B9157]">Live data</span>
+                                <span className="text-[10px] font-black text-[#1B9157]">Live data</span>
                                     </div>
-                                    <p className="text-2xl font-black uppercase tracking-tighter">Site: KIB-01</p>
+                                    <p className="text-2xl font-black tracking-tighter">Site: KIB-01</p>
                                 </div>
                             </div>
 
@@ -166,7 +166,7 @@ const PollinationServices = () => {
                                 </div>
                                 <div className="text-center">
                                     <span className="block text-xl font-black text-neutral-900">Verified</span>
-                                    <span className="block text-[9px] font-black text-[#F4D03F] uppercase tracking-widest">Pollination Partner</span>
+                                    <span className="block text-[9px] font-black text-[#F4D03F]">Pollination Partner</span>
                                 </div>
                             </motion.div>
                         </motion.div>
@@ -192,7 +192,7 @@ const PollinationServices = () => {
                         {/* Acres Card */}
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
-                                <h3 className="text-sm font-black text-neutral-800 tracking-widest uppercase mb-4">Acres</h3>
+                                <h3 className="text-sm font-black text-neutral-800 mb-4">Acres</h3>
                                 <p className="text-5xl sm:text-6xl font-black text-neutral-900">25<sup className="text-3xl sm:text-4xl">+</sup></p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
@@ -203,7 +203,7 @@ const PollinationServices = () => {
                         {/* Hives Card */}
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
-                                <h3 className="text-sm font-black text-neutral-800 tracking-widest uppercase mb-4">Hives</h3>
+                                <h3 className="text-sm font-black text-neutral-800 mb-4">Hives</h3>
                                 <p className="text-5xl sm:text-6xl font-black text-neutral-900">184</p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
@@ -214,7 +214,7 @@ const PollinationServices = () => {
                         {/* Data Points Card */}
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
-                                <h3 className="text-sm font-black text-neutral-800 tracking-widest uppercase mb-4">Data Points</h3>
+                                <h3 className="text-sm font-black text-neutral-800 mb-4">Data Points</h3>
                                 <p className="text-4xl sm:text-5xl font-black text-neutral-900 leading-tight">Growing <br /> Daily</p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
@@ -275,10 +275,10 @@ const PollinationServices = () => {
 
                 <div className="container mx-auto px-4 sm:px-6 relative z-10">
                     <div className="text-center mb-24 space-y-4">
-                        <Badge className="bg-[#F4D03F] text-neutral-900 border-none px-6 py-1.5 font-black uppercase tracking-widest text-xs">
+                        <Badge className="bg-[#F4D03F] text-neutral-900 border-none px-6 py-1.5 font-black text-xs">
                             Direct Records
                         </Badge>
-                        <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-[0.9]">
+                        <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] tracking-tighter leading-[0.9]">
                             Three Ways to <br /> <span className="text-[#F4D03F]">Track Your Results</span>
                         </h2>
                     </div>
@@ -300,9 +300,9 @@ const PollinationServices = () => {
                                 <div className={`h-16 w-16 mb-8 rounded-2xl ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                                     <item.icon className="h-8 w-8 text-neutral-900" />
                                 </div>
-                                <h3 className="text-2xl font-black text-[#1A1A1A] mb-4 uppercase italic tracking-tighter">{item.title}</h3>
+                                <h3 className="text-2xl font-black text-[#1A1A1A] mb-4 italic tracking-tighter">{item.title}</h3>
                                 <p className="text-neutral-400 font-medium mb-8 leading-relaxed">{item.desc}</p>
-                                <Button variant="link" className="text-[#F4D03F] font-black p-0 h-auto uppercase tracking-widest text-[10px] group" asChild>
+                                <Button variant="link" className="text-[#F4D03F] font-black p-0 h-auto text-[10px] group" asChild>
                                     <Link to={item.link}>Explore Module <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" /></Link>
                                 </Button>
                             </motion.div>
@@ -319,7 +319,7 @@ const PollinationServices = () => {
                             The Standard
                         </Badge>
                         <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
-                            BEEYIELD <span className="text-[#F4D03F]">PRECISION POLLINATION</span>
+                            BEEYIELD <span className="text-[#F4D03F]">Precision Pollination</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
                             We bring a complete ecosystem of technology, expertise, and accountability
@@ -426,7 +426,7 @@ const PollinationServices = () => {
                                     <Badge className="mb-2 bg-[#F4D03F] text-neutral-900 text-[9px] font-black border-none px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
                                         {crop.beeDependence.split('(')[0].trim()}
                                     </Badge>
-                                    <h3 className="font-black text-lg text-[#1A1A1A] leading-tight uppercase tracking-tighter">
+                                    <h3 className="font-black text-lg text-[#1A1A1A] leading-tight tracking-tighter">
                                         {crop.cropName}
                                     </h3>
                                     <div className="h-0.5 w-0 group-hover:w-12 bg-[#F4D03F] transition-all duration-700 mt-2 rounded-full" />
@@ -437,7 +437,7 @@ const PollinationServices = () => {
 
                     <div className="mt-20 text-center">
                         <Link to="/contact">
-                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-[#1A1A1A] font-black rounded-2xl px-12 h-14 shadow-2xl uppercase tracking-[0.2em] text-[10px] transition-all hover:scale-105 active:scale-95">
+                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-[#1A1A1A] font-black rounded-2xl px-12 h-14 shadow-2xl text-[10px] transition-all hover:scale-105 active:scale-95">
                                 Start Pollination Project
                             </Button>
                         </Link>
@@ -551,7 +551,7 @@ const PollinationServices = () => {
                             </Button>
                         </Link>
                     </div>
-                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support ? Real-time Data ? Measurable Impact</p>
+                    <p className="text-neutral-400 text-xs font-black">Support ? Real-time Data ? Measurable Impact</p>
                 </div>
             </section>
         </BeeYieldPageShell>

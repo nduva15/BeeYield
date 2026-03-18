@@ -50,7 +50,7 @@ const BeeCalculatorSuite: React.FC = () => {
                         <TabsTrigger
                             key={tab.id}
                             value={tab.id}
-                            className="flex-1 h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-[#F4D03F] data-[state=active]:shadow-sm text-[10px] font-black uppercase tracking-widest text-gray-400 transition-all flex items-center gap-2"
+                            className="flex-1 h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-[#F4D03F] data-[state=active]:shadow-sm text-[10px] font-black text-gray-400 transition-all flex items-center gap-2"
                         >
                             <tab.icon className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">{tab.label}</span>
@@ -68,28 +68,28 @@ const BeeCalculatorSuite: React.FC = () => {
                                         <Wallet className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Pollination Contract Optimizer</CardTitle>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Pricing Strategy Engine</p>
+                                        <CardTitle className="text-[10px] font-black text-[#1A1A1A]">Pollination Contract Optimizer</CardTitle>
+                                        <p className="text-[8px] font-bold text-gray-400">Pricing Strategy Engine</p>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-5 space-y-6">
                                 <div className="space-y-4">
                                     <div className="p-4 bg-white/50 rounded-xl border border-[#F4D03F]/10">
-                                        <p className="text-[9px] font-bold text-gray-500 uppercase leading-relaxed mb-4 tracking-wider">
+                                        <p className="text-[9px] font-bold text-gray-500 leading-relaxed mb-4 tracking-wider">
                                             Determine ideal price lift for certified Grade A pallets based on spot prices.
                                         </p>
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center p-3 bg-white/80 rounded-lg border border-[#F4D03F]/20">
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Spot Price / Hive</span>
+                                                <span className="text-[10px] font-black">Spot Price / Hive</span>
                                                 <span className="text-lg font-black text-[#1B9157] tabular-nums">$185.00</span>
                                             </div>
                                             <div className="flex justify-between items-center p-3 bg-white/80 rounded-lg border border-[#F4D03F]/20">
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Grade A Premium</span>
+                                                <span className="text-[10px] font-black">Grade A Premium</span>
                                                 <span className="text-lg font-black text-[#F4D03F] tabular-nums">+25.8%</span>
                                             </div>
                                         </div>
-                                        <button className={cn(glass.btnPrimary, "w-full h-11 mt-6 text-[10px] tracking-[0.2em]")}>
+                                        <button className={cn(glass.btnPrimary, "w-full h-11 mt-6 text-[10px]")}>
                                             Calculate ROI Lift
                                             <ArrowUpRight className="w-4 h-4" />
                                         </button>
@@ -106,17 +106,17 @@ const BeeCalculatorSuite: React.FC = () => {
                                         <History className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <CardTitle className="text-[10px] font-black tracking-widest uppercase text-white/90 italic">Cloud Sync Audit</CardTitle>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Persisted Log Registry</p>
+                                        <CardTitle className="text-[10px] font-black text-white/90 italic">Cloud Sync Audit</CardTitle>
+                                        <p className="text-[8px] font-bold text-gray-400">Persisted Log Registry</p>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-0">
                                 <div className="divide-y divide-gray-100">
                                     {[
-                                        { type: 'Feeding', name: 'Winter Syrup Prep', date: '2026-02-19', status: 'SYNCED', icon: Droplet },
-                                        { type: 'Economic', name: 'Almond Delta Calc', date: '2026-02-18', status: 'SYNCED', icon: Wallet },
-                                        { type: 'Logistics', name: 'Pallet Saturation', date: '2026-02-15', status: 'ARCHIVED', icon: Zap },
+                                        { type: 'Feeding', name: 'Winter Syrup Prep', date: '2026-02-19', status: 'Synced', icon: Droplet },
+                                        { type: 'Economic', name: 'Almond Delta Calc', date: '2026-02-18', status: 'Synced', icon: Wallet },
+                                        { type: 'Logistics', name: 'Pallet Saturation', date: '2026-02-15', status: 'Archived', icon: Zap },
                                     ].map((log, idx) => (
                                         <div key={idx} className="px-5 py-3.5 flex items-center justify-between hover:bg-[#F4D03F]/5 transition-colors group cursor-pointer">
                                             <div className="flex items-center gap-4">
@@ -124,8 +124,8 @@ const BeeCalculatorSuite: React.FC = () => {
                                                     <log.icon className="w-4 h-4 text-[#F4D03F]" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-tighter">{log.name}</h4>
-                                                    <p className="text-[8px] font-bold uppercase text-gray-400">{log.date} · {log.type}</p>
+                                                    <h4 className="text-[11px] font-black text-[#1A1A1A] tracking-tighter">{log.name}</h4>
+                                                    <p className="text-[8px] font-bold text-gray-400">{log.date} · {log.type}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
@@ -135,7 +135,7 @@ const BeeCalculatorSuite: React.FC = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <button className="w-full h-11 border-t border-gray-100 font-black uppercase text-[9px] tracking-[0.2em] text-gray-400 hover:text-[#1A1A1A] transition-colors bg-[#F9F7F2]/30">
+                                <button className="w-full h-11 border-t border-gray-100 font-black text-[9px] text-gray-400 hover:text-[#1A1A1A] transition-colors bg-[#F9F7F2]/30">
                                     Load full history
                                 </button>
                             </CardContent>
@@ -152,8 +152,8 @@ const BeeCalculatorSuite: React.FC = () => {
                         <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 mb-4">
                             <Droplet className="w-8 h-8 text-[#F4D03F] opacity-40" />
                         </div>
-                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Feeding tools are loading…</h3>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Please wait</p>
+                        <h3 className="text-sm font-black text-[#1A1A1A]">Feeding tools are loading…</h3>
+                        <p className="text-[10px] font-bold text-gray-400 mt-2">Please wait</p>
                     </div>
                 </TabsContent>
 
@@ -162,8 +162,8 @@ const BeeCalculatorSuite: React.FC = () => {
                         <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 mb-4">
                             <Zap className="w-8 h-8 text-[#F4D03F] opacity-40" />
                         </div>
-                        <h3 className="text-sm font-black uppercase text-[#1A1A1A] tracking-widest">Logistics tools are loading…</h3>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 mt-2 tracking-widest">Please wait</p>
+                        <h3 className="text-sm font-black text-[#1A1A1A]">Logistics tools are loading…</h3>
+                        <p className="text-[10px] font-bold text-gray-400 mt-2">Please wait</p>
                     </div>
                 </TabsContent>
             </Tabs>

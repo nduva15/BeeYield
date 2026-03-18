@@ -93,11 +93,13 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                 <div className="space-y-2">
                     <Input
                         id="shop-mfa-code"
+                        name="mfa_code"
+                        autoComplete="one-time-code"
                         type="text"
                         placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 tracking-[0.2em] rounded-xl"
+                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
@@ -164,7 +166,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
+                <div className="relative flex justify-center text-xs font-bold">
                     <span className="bg-white px-4 text-gray-300">or</span>
                 </div>
             </div>
@@ -176,6 +178,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="shop-email"
+                            name="email"
                             type="email"
                             placeholder="name@example.com"
                             value={email}
@@ -204,6 +207,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="shop-password"
+                            name="password"
                             type="password"
                             placeholder="••••••••"
                             value={password}

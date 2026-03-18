@@ -99,7 +99,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
+                <div className="relative flex justify-center text-xs font-bold">
                     <span className="bg-white px-4 text-gray-300">or</span>
                 </div>
             </div>
@@ -111,6 +111,8 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="ceba-firstName"
+                            name="given-name"
+                            autoComplete="given-name"
                             placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
@@ -123,6 +125,8 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                     <Label htmlFor="ceba-lastName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
                     <Input
                         id="ceba-lastName"
+                        name="family-name"
+                        autoComplete="family-name"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -138,7 +142,9 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="ceba-reg-email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="admin@beeyield.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -155,7 +161,9 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="ceba-reg-password"
+                            name="new-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -170,7 +178,9 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                             id="ceba-reg-confirm"
+                            name="confirm-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}

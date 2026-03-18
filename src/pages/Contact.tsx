@@ -354,6 +354,8 @@ const Contact = () => {
                     <Label htmlFor="firstName">First Name *</Label>
                     <Input
                       id="firstName"
+                      name="given-name"
+                      autoComplete="given-name"
                       type="text"
                       required
                       value={formData.firstName}
@@ -365,6 +367,8 @@ const Contact = () => {
                     <Label htmlFor="lastName">Last Name *</Label>
                     <Input
                       id="lastName"
+                      name="family-name"
+                      autoComplete="family-name"
                       type="text"
                       required
                       value={formData.lastName}
@@ -377,6 +381,8 @@ const Contact = () => {
                     <Label htmlFor="city">City *</Label>
                     <Input
                       id="city"
+                      name="city"
+                      autoComplete="address-level2"
                       type="text"
                       required
                       value={formData.city}
@@ -389,6 +395,8 @@ const Contact = () => {
                       <Label htmlFor="state">State *</Label>
                       <Input
                         id="state"
+                        name="state"
+                        autoComplete="address-level1"
                         type="text"
                         required
                         value={formData.state}
@@ -400,6 +408,8 @@ const Contact = () => {
                       <Label htmlFor="country">Country *</Label>
                       <Input
                         id="country"
+                        name="country"
+                        autoComplete="country-name"
                         type="text"
                         required
                         value={formData.country}
@@ -413,7 +423,9 @@ const Contact = () => {
                     <Label htmlFor="email">Email *</Label>
                     <Input
                       id="email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
                       required
                       value={formData.email}
                       onChange={(e) => handleChange("email", e.target.value)}
@@ -424,7 +436,9 @@ const Contact = () => {
                     <Label htmlFor="phone">Phone Number *</Label>
                     <Input
                       id="phone"
+                      name="phone"
                       type="tel"
+                      autoComplete="tel"
                       required
                       value={formData.phone}
                       onChange={(e) => handleChange("phone", e.target.value)}
@@ -444,6 +458,7 @@ const Contact = () => {
                         <Label htmlFor="farmName">Farm Name *</Label>
                         <Input
                           id="farmName"
+                          name="farm_name"
                           type="text"
                           required={activeTab === "grower"}
                           value={formData.farmName}
@@ -452,12 +467,12 @@ const Contact = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Crop *</Label>
+                        <Label htmlFor="cropType">Crop *</Label>
                         <Select
                           value={formData.cropType}
                           onValueChange={(value) => handleChange("cropType", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="cropType" aria-label="Select Crop">
                             <SelectValue placeholder="Select Crop" />
                           </SelectTrigger>
                           <SelectContent>
@@ -478,6 +493,7 @@ const Contact = () => {
                         <Label htmlFor="acres">Acres *</Label>
                         <Input
                           id="acres"
+                          name="acres"
                           type="number"
                           step="any"
                           required={activeTab === "grower"}
@@ -487,12 +503,12 @@ const Contact = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Topic *</Label>
+                        <Label htmlFor="growerTopic">Topic *</Label>
                         <Select
                           value={formData.topic}
                           onValueChange={(value) => handleChange("topic", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="growerTopic" aria-label="Select Topic">
                             <SelectValue placeholder="Select Topic" />
                           </SelectTrigger>
                           <SelectContent>
@@ -512,6 +528,7 @@ const Contact = () => {
                         <Label htmlFor="apiaryName">Apiary Name *</Label>
                         <Input
                           id="apiaryName"
+                          name="apiary_name"
                           type="text"
                           required={activeTab === "beekeeper"}
                           value={formData.apiaryName}
@@ -523,6 +540,7 @@ const Contact = () => {
                         <Label htmlFor="hiveCount">Number of Hives *</Label>
                         <Input
                           id="hiveCount"
+                          name="hive_count"
                           type="number"
                           required={activeTab === "beekeeper"}
                           value={formData.hiveCount}
@@ -531,12 +549,12 @@ const Contact = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Years of Experience *</Label>
+                        <Label htmlFor="experienceYears">Years of Experience *</Label>
                         <Select
                           value={formData.experienceYears}
                           onValueChange={(value) => handleChange("experienceYears", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="experienceYears" aria-label="Experience">
                             <SelectValue placeholder="Experience" />
                           </SelectTrigger>
                           <SelectContent>
@@ -547,12 +565,12 @@ const Contact = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Topic *</Label>
+                        <Label htmlFor="beekeeperTopic">Topic *</Label>
                         <Select
                           value={formData.topic}
                           onValueChange={(value) => handleChange("topic", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="beekeeperTopic" aria-label="Topic">
                             <SelectValue placeholder="Topic" />
                           </SelectTrigger>
                           <SelectContent>
@@ -569,12 +587,12 @@ const Contact = () => {
                   {activeTab === "diseases" && (
                     <>
                       <div className="md:col-span-2 space-y-2">
-                        <Label>Which disease are you inquiring about? *</Label>
+                        <Label htmlFor="diseaseTopic">Which disease are you inquiring about? *</Label>
                         <Select
                           value={formData.topic}
                           onValueChange={(value) => handleChange("topic", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="diseaseTopic" aria-label="Select Disease">
                             <SelectValue placeholder="Select Disease" />
                           </SelectTrigger>
                           <SelectContent>
@@ -600,6 +618,8 @@ const Contact = () => {
                         <Label htmlFor="company">Company / Organization</Label>
                         <Input
                           id="company"
+                          name="organization"
+                          autoComplete="organization"
                           type="text"
                           value={formData.company}
                           onChange={(e) => handleChange("company", e.target.value)}
@@ -607,12 +627,12 @@ const Contact = () => {
                         />
                       </div>
                       <div className="md:col-span-2 space-y-2">
-                        <Label>Topic *</Label>
+                        <Label htmlFor="generalTopic">Topic *</Label>
                         <Select
                           value={formData.topic}
                           onValueChange={(value) => handleChange("topic", value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="generalTopic" aria-label="Select Topic">
                             <SelectValue placeholder="Select Topic" />
                           </SelectTrigger>
                           <SelectContent>
@@ -633,6 +653,7 @@ const Contact = () => {
                     <Label htmlFor="message">Message</Label>
                     <Textarea
                       id="message"
+                      name="message"
                       value={formData.message}
                       onChange={(e) => handleChange("message", e.target.value)}
                       placeholder="How can we help you?"

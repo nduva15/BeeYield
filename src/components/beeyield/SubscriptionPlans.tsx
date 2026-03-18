@@ -118,7 +118,7 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                                     <Icon className="w-8 h-8" />
                                 </div>
                                 {isCurrent && (
-                                    <Badge className="bg-[#F4D03F] text-white rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-honey/20">
+                                    <Badge className="bg-[#F4D03F] text-white rounded-full px-4 py-1.5 text-[10px] font-black shadow-lg shadow-honey/20">
                                         Current Plan
                                     </Badge>
                                 )}

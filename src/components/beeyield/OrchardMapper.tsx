@@ -56,13 +56,13 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             onClick={() => setIsDrawing(!isDrawing)}
                             className={cn(
                                 isDrawing ? glass.btnPrimary : glass.btnSecondary,
-                                "h-8 px-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"
+                                "h-8 px-4 text-[10px] font-bold flex items-center gap-2"
                             )}
                         >
                             <MousePointer2 className="w-3 h-3" />
-                            {isDrawing ? "FINISH" : "DRAW AREA"}
+                            {isDrawing ? "Finish" : "DRAW AREA"}
                         </button>
-                        <button className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-white")}>
+                        <button className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold flex items-center gap-2 bg-white")}>
                             <Share2 className="w-3 h-3" />
                             SAVE MAP
                         </button>
@@ -115,17 +115,17 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Area</p>
+                                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Total Area</p>
                                 <div className="flex items-end gap-2">
                                     <p className="text-3xl font-bold tracking-tight text-[#1A1A1A]">{acreage.toFixed(1)}</p>
-                                    <span className="text-[10px] font-bold text-[#1B9157] mb-1.5">ACRES</span>
+                                    <span className="text-[10px] font-bold text-[#1B9157] mb-1.5">Acres</span>
                                 </div>
                             </div>
                             <div className="space-y-1 pt-4 border-t border-gray-100">
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Suggested Hives</p>
+                                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Suggested Hives</p>
                                 <div className="flex items-end gap-2">
                                     <p className="text-3xl font-bold tracking-tight text-[#1A1A1A]">{suggestedHives}</p>
-                                    <span className="text-[10px] font-bold text-[#F4D03F] mb-1.5">HIVES</span>
+                                    <span className="text-[10px] font-bold text-[#F4D03F] mb-1.5">Hives</span>
                                 </div>
                                 <p className="text-[10px] font-medium text-gray-400 leading-tight mt-2">
                                     Based on <span className="text-gray-600 font-bold">2.5 hives/acre</span> (standard density).

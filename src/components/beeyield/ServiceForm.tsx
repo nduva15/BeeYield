@@ -22,12 +22,12 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                     <div className="flex items-center gap-6">
                         <img src={Logo} alt="BeeYield Logo" className="h-[140px] w-auto" />
                         <div className="flex flex-col">
-                            <span className="text-[28px] font-black tracking-tight text-[#0F172A] leading-none uppercase">BeeYield</span>
-                            <span className="text-[11px] font-bold text-[#B48428] tracking-[0.25em] uppercase mt-1.5">Partner in pollination</span>
+                            <span className="text-[28px] font-black tracking-tight text-[#0F172A] leading-none">BeeYield</span>
+                            <span className="text-[11px] font-bold text-[#B48428] mt-1.5">Partner in pollination</span>
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">Service Dept.</span>
+                        <span className="text-[10px] font-black text-gray-300">Service Dept.</span>
                     </div>
                 </div>
 
@@ -123,7 +123,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                 {/* Footer Address - Exact Spacing */}
                 <div className="mt-12 pt-8 border-t border-gray-50 flex justify-between items-end">
                     <div className="space-y-1">
-                        <p className="text-[11px] font-[900] text-gray-400 uppercase tracking-widest mb-2">Service address</p>
+                        <p className="text-[11px] font-[900] text-gray-400 mb-2">Service address</p>
                         <p className="text-[15px] font-black text-[#0F172A]">BeeYield</p>
                         <p className="text-[13px] text-gray-500 font-medium">Kibwezi, Kenya</p>
                     </div>

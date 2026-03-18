@@ -77,11 +77,11 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 actions={
                     <div className="flex items-center gap-3">
                         <div className="flex flex-col items-end px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-lg shadow-sm">
-                            <span className="text-[10px] font-bold uppercase text-emerald-600 opacity-60 leading-none mb-1">Coverage</span>
+                            <span className="text-[10px] font-bold text-emerald-600 opacity-60 leading-none mb-1">Coverage</span>
                             <span className="text-sm font-bold text-emerald-700 leading-none">{avgCoverage}%</span>
                         </div>
                         <div className="flex flex-col items-end px-3 py-1 bg-[#F9F7F2] border border-amber-100 rounded-lg shadow-sm">
-                            <span className="text-[10px] font-bold uppercase text-amber-600 opacity-60 leading-none mb-1">Units</span>
+                            <span className="text-[10px] font-bold text-amber-600 opacity-60 leading-none mb-1">Units</span>
                             <span className="text-sm font-bold text-amber-700 leading-none">{totalHives}</span>
                         </div>
                     </div>
@@ -205,7 +205,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                 <div key={i} className="flex gap-3 p-3 bg-red-50/50 rounded-xl border border-dotted border-red-200 group">
                                     <div className="w-2 h-2 rounded-full bg-red-500 mt-1 shrink-0 animate-pulse" />
                                     <div>
-                                        <p className="text-[10px] font-bold text-red-700 uppercase tracking-wider mb-1 leading-none">{alert.title}</p>
+                                        <p className="text-[10px] font-bold text-red-700 tracking-wider mb-1 leading-none">{alert.title}</p>
                                         <p className="text-[10px] font-medium text-gray-500 leading-relaxed">{alert.desc}</p>
                                     </div>
                                 </div>
@@ -231,11 +231,11 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                     <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center gap-2">
                                             <div className={cn("w-1.5 h-1.5 rounded-full", log.type === 'syrup' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                                            <span className="text-[10px] font-bold tracking-wider text-gray-500">
                                                 {log.type === 'syrup' ? 'System_Feeding' : 'Registry_Audit'}
                                             </span>
                                         </div>
-                                        <span className="text-[10px] font-bold text-gray-300 group-hover:text-gray-400 transition-colors uppercase">{log.time}</span>
+                                        <span className="text-[10px] font-bold text-gray-300 group-hover:text-gray-400 transition-colors">{log.time}</span>
                                     </div>
                                     <p className="text-[11px] font-medium text-[#1A1A1A] leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">
                                         {log.desc}
@@ -253,7 +253,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 </div>
             </div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -265,7 +265,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 </div>
                 <div className="flex-1 space-y-1 relative z-10">
                     <h5 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Intelligence Sync</h5>
-                    <p className="text-[11px] font-medium text-gray-500 leading-relaxed uppercase tracking-tighter sm:tracking-normal border-l-2 border-[#1B9157] pl-4">
+                    <p className="text-[11px] font-medium text-gray-500 leading-relaxed tracking-tighter sm:tracking-normal border-l-2 border-[#1B9157] pl-4">
                         Current field plan coverage at <span className="text-[#1A1A1A] font-bold">82%</span>. Shift Section A-4 trajectories North-East to close gap.
                         Security flags in Sector 4 require urgent ground verification.
                     </p>

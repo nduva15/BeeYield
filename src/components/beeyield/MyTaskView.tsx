@@ -23,7 +23,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           actions={
             <button
               onClick={() => onTabChange?.('requests')}
-              className="h-9 px-4 rounded-xl bg-white border border-gray-200 shadow-sm text-[10px] font-bold uppercase tracking-wider text-gray-700 hover:text-[#1A1A1A] hover:border-gray-300 transition-all flex items-center gap-2"
+              className="h-9 px-4 rounded-xl bg-white border border-gray-200 shadow-sm text-[10px] font-bold tracking-wider text-gray-700 hover:text-[#1A1A1A] hover:border-gray-300 transition-all flex items-center gap-2"
               aria-label="Go to requests"
               title="Go to requests"
             >

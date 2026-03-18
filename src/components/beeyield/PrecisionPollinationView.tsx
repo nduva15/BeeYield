@@ -414,7 +414,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     !activeSubPageOverride && (
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <div className={cn("flex items-center gap-2 px-3 h-9 rounded-xl bg-white/40 border border-[#1B9157]/10 shadow-sm")}>
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 whitespace-nowrap">
+                                <span className="text-[9px] font-black text-gray-500 whitespace-nowrap">
                                     Apiary
                                 </span>
                                 <select
@@ -424,7 +424,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     value={selectedApiaryId}
                                     onChange={(e) => setSelectedApiaryId(e.target.value)}
                                     className={cn(
-                                        "h-7 bg-transparent text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1A] outline-none",
+                                        "h-7 bg-transparent text-[10px] font-black text-[#1A1A1A] outline-none",
                                         "min-w-[180px]"
                                     )}
                                     aria-label="Select apiary"
@@ -442,7 +442,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             </div>
 
                             <div className={cn("flex items-center gap-2 px-3 h-9 rounded-xl bg-white/40 border border-[#1B9157]/10 shadow-sm")}>
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 whitespace-nowrap">
+                                <span className="text-[9px] font-black text-gray-500 whitespace-nowrap">
                                     Crop
                                 </span>
                                 <select
@@ -452,7 +452,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     value={selectedCrop}
                                     onChange={(e) => setSelectedCrop(e.target.value)}
                                     className={cn(
-                                        "h-7 bg-transparent text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1A] outline-none",
+                                        "h-7 bg-transparent text-[10px] font-black text-[#1A1A1A] outline-none",
                                         "min-w-[160px]"
                                     )}
                                     aria-label="Select crop"
@@ -480,7 +480,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         key={opt.id}
                                         onClick={() => setActiveSubPage(opt.id as SubPage)}
                                         className={cn(
-                                            "h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap flex items-center gap-2",
+                                            "h-8 px-4 rounded-lg text-[9px] font-black transition-all whitespace-nowrap flex items-center gap-2",
                                             activeSubPage === opt.id
                                                 ? "bg-[#1B9157] text-white shadow-lg shadow-[#1B9157]/20"
                                                 : "text-gray-400 hover:text-[#1A1A1A] hover:bg-white/50"
@@ -513,27 +513,27 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 <div className="space-y-4 relative z-10">
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                        <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#1B9157]">LIVE UPDATES</span>
+                                        <span className="text-[8px] font-black text-[#1B9157]">Live Updates</span>
                                     </div>
-                                    <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">Fleet <span className="text-[#1B9157]">Optimizer</span></h2>
-                                    <p className="text-[10px] font-black text-gray-500 leading-relaxed max-w-xl border-l-2 border-[#1B9157]/10 pl-4 uppercase tracking-tighter">
+                                    <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">Fleet <span className="text-[#1B9157]">Optimizer</span></h2>
+                                    <p className="text-[10px] font-black text-gray-500 leading-relaxed max-w-xl border-l-2 border-[#1B9157]/10 pl-4 tracking-tighter">
                                         Continuous spatial analysis and real-time fleet orchestration. 
                                         Monitoring colony distribution and bloom saturation vectors.
                                     </p>
                                 </div>
                                 <div className="mt-10 pt-6 border-t border-[#1B9157]/10 flex gap-12 relative z-10">
                                     <div className="space-y-1">
-                                        <p className={glass.microLabel}>TACTICAL_NODES</p>
+                                        <p className={glass.microLabel}>Tactical Nodes</p>
                                         <div className="flex items-baseline gap-1">
                                             <p className="text-2xl font-black tabular-nums tracking-tighter">{devices.length}</p>
-                                            <span className="text-[8px] font-black text-[#1B9157] uppercase">SYNCED</span>
+                                            <span className="text-[8px] font-black text-[#1B9157]">Synced</span>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className={glass.microLabel}>SATURATION_INDEX</p>
+                                        <p className={glass.microLabel}>Saturation Index</p>
                                         <div className="flex items-baseline gap-1">
                                             <p className="text-2xl font-black text-[#1B9157] tabular-nums tracking-tighter">98<span className="text-[14px]">%</span></p>
-                                            <span className="text-[8px] font-black text-[#1B9157] uppercase">OPTIMAL</span>
+                                            <span className="text-[8px] font-black text-[#1B9157]">Optimal</span>
                                         </div>
                                     </div>
                                 </div>
@@ -541,15 +541,15 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                             <div className="space-y-4">
                                 {[
-                                    { label: 'Bloom Intensity', val: '72%', sub: 'BLOOM_FLUX', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
-                                    { label: 'Activity Factor', val: '8.4', sub: 'HIGH_CAPACITY', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
+                                    { label: 'Bloom Intensity', val: '72%', sub: 'Bloom Flux', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
+                                    { label: 'Activity Factor', val: '8.4', sub: 'High Capacity', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
                                 ].map((stat, i) => (
                                     <div key={i} className={cn(glass.card, "p-4 flex items-center justify-between border-white/40 shadow-sm", stat.bg, stat.border)}>
                                        <div className="space-y-1">
                                             <p className={glass.microLabel}>{stat.label}</p>
                                             <div className="flex items-baseline gap-2">
                                                 <p className={cn("text-xl font-black tracking-tighter tabular-nums", stat.color)}>{stat.val}</p>
-                                                <span className={cn("text-[8px] font-black uppercase tracking-widest", stat.color)}>{stat.sub}</span>
+                                                <span className={cn("text-[8px] font-black", stat.color)}>{stat.sub}</span>
                                             </div>
                                        </div>
                                        <div className="w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
@@ -574,8 +574,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         <opt.icon className="w-5 h-5 text-[#1B9157] group-hover:text-white transition-colors" />
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">{opt.label}</p>
-                                        <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-[#1B9157]/40">ACCESS_PROTOCOL</p>
+                                        <p className="text-[10px] font-black text-[#1A1A1A]">{opt.label}</p>
+                                        <p className="text-[8px] font-bold text-[#1B9157]/40">Access Protocol</p>
                                     </div>
                                 </motion.button>
                             ))}
@@ -595,7 +595,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     placeholder="SEARCH_NODES..."
-                                    className={cn(glass.input, "h-11 pl-11 text-[10px] font-black uppercase tracking-[0.2em] bg-white/40")}
+                                    className={cn(glass.input, "h-11 pl-11 text-[10px] font-black bg-white/40")}
                                 />
                             </div>
                             <div className={cn(glass.card, "p-2 h-[500px] overflow-y-auto thin-scrollbar bg-white/20 border-[#1B9157]/5")}>
@@ -615,11 +615,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#1B9157]" />
                                             )}
                                             <div className="text-left space-y-1">
-                                                <p className={cn("text-[11px] font-black uppercase tracking-tight", selectedDeviceId === device.id ? "text-[#1B9157]" : "text-[#1A1A1A]")}>{device.device_code}</p>
-                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate w-32">{device.location_name || 'UNDEFINED_SECTOR'}</p>
+                                                <p className={cn("text-[11px] font-black tracking-tight", selectedDeviceId === device.id ? "text-[#1B9157]" : "text-[#1A1A1A]")}>{device.device_code}</p>
+                                                <p className="text-[9px] font-bold text-gray-400 truncate w-32">{device.location_name || 'Undefined Sector'}</p>
                                             </div>
-                                            <div className={cn("px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest", device.status === 'active' ? "bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20" : "bg-red-50 text-red-600 border border-red-100")}>
-                                                {device.status === 'active' ? 'ONLINE' : 'OFFLINE'}
+                                            <div className={cn("px-2.5 py-1 rounded-lg text-[8px] font-black", device.status === 'active' ? "bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20" : "bg-red-50 text-red-600 border border-red-100")}>
+                                                {device.status === 'active' ? 'Online' : 'Offline'}
                                             </div>
                                         </button>
                                     ))}
@@ -645,7 +645,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-5 whitespace-nowrap">
                                                 <div className="px-4 py-2 bg-white/90 rounded-xl border border-[#1B9157]/20 shadow-2xl flex items-center gap-2">
                                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                                    <span className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">{selectedDevice.device_code}</span>
+                                                    <span className="text-[10px] font-black text-[#1A1A1A]">{selectedDevice.device_code}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -668,7 +668,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                              <p className={glass.microLabel}>{s.label}</p>
                                              <div className="flex items-baseline gap-1">
                                                 <p className="text-xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{s.val}</p>
-                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{s.unit}</span>
+                                                <span className="text-[10px] font-black text-gray-400 leading-none">{s.unit}</span>
                                              </div>
                                           </div>
                                        </div>
@@ -687,13 +687,13 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.05]">
                                     <div className="flex items-center gap-2">
                                         <Calculator className="w-4 h-4 text-[#F4D03F]" />
-                                        <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Tactical_Parameters</h3>
+                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Tactical_Parameters</h3>
                                     </div>
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shadow-sm shadow-[#F4D03F]/50 animate-pulse" />
                                 </div>
                                 <div className="p-6 space-y-6">
                                     <div className="space-y-3">
-                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 uppercase tracking-[0.3em] ml-1">Total_Deployment_Area (AC)</label>
+                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 ml-1">Total_Deployment_Area (AC)</label>
                                         <div className="flex bg-white/40 p-1.5 rounded-xl border border-[#F4D03F]/10 shadow-sm">
                                             <button
                                                 onClick={() => setCalcInputs(p => ({ ...p, totalAcres: Math.max(1, p.totalAcres - 5) }))}
@@ -725,7 +725,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] ml-1">
+                                        <div className="flex justify-between items-center text-[9px] font-black ml-1">
                                             <span className="text-[#1A1A1A]/40">Bloom_Saturation</span>
                                             <span className="text-[#1B9157]">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
                                         </div>
@@ -748,7 +748,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] ml-1">
+                                        <div className="flex justify-between items-center text-[9px] font-black ml-1">
                                             <span className="text-[#1A1A1A]/40">Competitor_Density</span>
                                             <span className="text-[#F4D03F]">{Math.round(calcInputs.forageCondition * 100)}%</span>
                                         </div>
@@ -778,22 +778,22 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                       <p className={glass.microLabel}>Absolute_Capacity</p>
                                       <div className="flex items-baseline gap-2">
                                         <p className="text-3xl font-black tracking-tighter text-[#1A1A1A] tabular-nums">{metrics.totalFrames}</p>
-                                        <span className="text-[10px] font-black uppercase text-[#1A1A1A]/30 tracking-widest">FRAMES</span>
+                                        <span className="text-[10px] font-black text-[#1A1A1A]/30">Frames</span>
                                       </div>
                                    </div>
                                    <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1B9157] space-y-2 shadow-sm border-white/40 bg-[#1B9157]/5")}>
                                       <p className={glass.microLabel}>Target_Logic_Yield</p>
                                       <div className="flex items-baseline gap-2">
                                         <p className="text-3xl font-black tracking-tighter text-[#1B9157] tabular-nums">{metrics.effectiveFrames}</p>
-                                        <span className="text-[10px] font-black uppercase text-[#1B9157]/40 tracking-widest">E_FRAMES</span>
+                                        <span className="text-[10px] font-black text-[#1B9157]/40">E Frames</span>
                                       </div>
                                    </div>
                                 </div>
                                 <div className={cn(glass.card, "p-5 grid grid-cols-3 gap-6 shadow-sm border-white/40")}>
                                    {[
-                                       { l: 'FPA_RATIO', v: metrics.framesPerAcre, c: 'text-[#1A1A1A]' },
-                                       { l: 'EFF_FPA', v: metrics.effectiveFPA, c: 'text-[#1B9157]' },
-                                       { l: 'EFFICACY', v: metrics.pollinationEfficacy + '%', c: 'text-[#1B9157]' }
+                                       { l: 'Fpa Ratio', v: metrics.framesPerAcre, c: 'text-[#1A1A1A]' },
+                                       { l: 'Eff Fpa', v: metrics.effectiveFPA, c: 'text-[#1B9157]' },
+                                       { l: 'Efficacy', v: metrics.pollinationEfficacy + '%', c: 'text-[#1B9157]' }
                                    ].map((m, i) => (
                                        <div key={i} className="text-center space-y-1">
                                           <p className={glass.microLabel}>{m.l}</p>
@@ -801,9 +801,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                        </div>
                                    ))}
                                 </div>
-                                <button onClick={handleSaveDeployment} disabled={isSaving} className={cn(glass.btnPrimary, "w-full h-11 text-[10px] font-black uppercase tracking-[0.4em] rounded-2xl group transition-all duration-500 shadow-xl shadow-[#1B9157]/10")}>
+                                <button onClick={handleSaveDeployment} disabled={isSaving} className={cn(glass.btnPrimary, "w-full h-11 text-[10px] font-black rounded-2xl group transition-all duration-500 shadow-xl shadow-[#1B9157]/10")}>
                                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 group-hover:rotate-12 transition-transform" />}
-                                    <span>COMMIT_SYNC_MATRIX</span>
+                                    <span>Commit Sync Matrix</span>
                                 </button>
                             </div>
 
@@ -812,10 +812,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl space-y-6")}>
                              <div className="flex items-center justify-between border-b border-[#1B9157]/5 pb-6">
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter uppercase">Deployment_Inventory</h3>
-                                    <p className="text-[9px] font-black text-[#1B9157]/40 uppercase tracking-[0.2em]">Hardware allocation</p>
+                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter">Deployment_Inventory</h3>
+                                    <p className="text-[9px] font-black text-[#1B9157]/40">Hardware allocation</p>
                                 </div>
-                                <button onClick={() => setCalcInputs(p => ({ ...p, hives: [...p.hives, { frameCount: 8, isStrong: true, isLarge: false }] }))} className={cn(glass.btnSecondary, "h-9 px-5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 border-[#1B9157]/10")}>
+                                <button onClick={() => setCalcInputs(p => ({ ...p, hives: [...p.hives, { frameCount: 8, isStrong: true, isLarge: false }] }))} className={cn(glass.btnSecondary, "h-9 px-5 rounded-xl text-[9px] font-black flex items-center gap-2 border-[#1B9157]/10")}>
                                     <Plus className="w-3.5 h-3.5" /> Initialize_Unit
                                 </button>
                              </div>
@@ -854,17 +854,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <MapIcon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className={glass.sectionTitle}>SPATIAL_TELEMETRY</h3>
+                                    <h3 className={glass.sectionTitle}>Spatial Telemetry</h3>
                                     <p className={glass.microLabel}>Sector_Alignment: Alpha_01</p>
                                 </div>
                              </div>
                              <div className="flex gap-3">
-                                <button onClick={handleOptimize} disabled={isOptimizing} className={cn(glass.btnSecondary, "h-9 px-4 text-[9px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2 transition-all")}>
+                                <button onClick={handleOptimize} disabled={isOptimizing} className={cn(glass.btnSecondary, "h-9 px-4 text-[9px] font-black rounded-xl flex items-center gap-2 transition-all")}>
                                     {isOptimizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />} 
-                                    <span>SYNC_MATRIX</span>
+                                    <span>Sync Matrix</span>
                                 </button>
                                 {optimalPlacements.length > 0 && (
-                                    <button onClick={handleCommitTasks} disabled={isSaving} className={cn(glass.btnPrimary, "h-9 px-5 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl flex items-center gap-2 shadow-xl shadow-[#1B9157]/10")}>
+                                    <button onClick={handleCommitTasks} disabled={isSaving} className={cn(glass.btnPrimary, "h-9 px-5 text-[9px] font-black rounded-xl flex items-center gap-2 shadow-xl shadow-[#1B9157]/10")}>
                                         DEPLOY_FLEET
                                     </button>
                                 )}
@@ -877,7 +877,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 {optimalPlacements.map((pos, idx) => (
                                     <React.Fragment key={idx}>
                                         <Marker position={[pos.lat, pos.lng] as any}>
-                                            <Popup className="custom-popup"><p className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">TACTICAL_NODE_#{idx+1}</p></Popup>
+                                            <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1A1A1A]">TACTICAL_NODE_#{idx+1}</p></Popup>
                                         </Marker>
                                         <Circle center={[pos.lat, pos.lng] as any} radius={pos.coverage_radius_km * 1000} pathOptions={{ color: '#F4D03F', weight: 1, fillOpacity: 0.1, dashArray: '5, 5' }} />
                                     </React.Fragment>
@@ -891,8 +891,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     <motion.div key="reports" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {[
-                                { title: 'Bloom_Saturation_Flux', icon: Terminal, color: 'text-[#1B9157]', val: '92.4%', label: 'PEAK_INDEX' },
-                                { title: 'Fleet_Efficiency_Audit', icon: Activity, color: 'text-[#1A1A1A]', val: '45', label: 'NODES_DEPLOYED' }
+                                { title: 'Bloom_Saturation_Flux', icon: Terminal, color: 'text-[#1B9157]', val: '92.4%', label: 'Peak Index' },
+                                { title: 'Fleet_Efficiency_Audit', icon: Activity, color: 'text-[#1A1A1A]', val: '45', label: 'Nodes Deployed' }
                             ].map((r, i) => (
                                 <div key={i} className={cn(glass.card, "p-0 overflow-hidden border-white/40 shadow-sm")}>
                                     <div className="p-4 border-b border-[#1B9157]/5 flex justify-between items-center bg-white/50">
@@ -906,12 +906,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <span className={glass.microLabel}>Protocol_Consensus</span>
                                             <div className="flex items-baseline gap-2">
                                                 <span className={cn("text-3xl font-black tracking-tighter", r.color)}>{r.val}</span>
-                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{r.label}</span>
+                                                <span className="text-[9px] font-black text-gray-400">{r.label}</span>
                                             </div>
                                         </div>
-                                        <button onClick={() => handleExport(r.title)} className={cn(glass.btnSecondary, "w-full h-10 text-[9px] font-black uppercase tracking-[0.3em] rounded-xl flex items-center justify-center gap-2 group")}>
+                                        <button onClick={() => handleExport(r.title)} className={cn(glass.btnSecondary, "w-full h-10 text-[9px] font-black rounded-xl flex items-center justify-center gap-2 group")}>
                                             <FileDown className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" /> 
-                                            <span>SYNC_LOG</span>
+                                            <span>Sync Log</span>
                                         </button>
                                     </div>
                                 </div>
@@ -920,10 +920,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                         <div className={cn(glass.card, "p-0 bg-white/40 border-[#1B9157]/10 overflow-hidden shadow-xl")}>
                             <div className="p-5 border-b border-[#1B9157]/10 bg-[#1B9157]/[0.02] flex items-center justify-between">
-                                <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Deployment_History_Chain</h3>
+                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Deployment_History_Chain</h3>
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                    <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-widest">{deployments.length} BYTES_LOGGED</span>
+                                    <span className="text-[9px] font-black text-[#1B9157]">{deployments.length} BYTES_LOGGED</span>
                                 </div>
                             </div>
                             <div className="p-6 space-y-3 max-h-[400px] overflow-y-auto thin-scrollbar">
@@ -932,15 +932,15 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         <div className="w-14 h-14 rounded-3xl bg-gray-100 flex items-center justify-center">
                                             <Terminal className="w-7 h-7" />
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em]">REGISTRY_NULL</span>
+                                        <span className="text-[10px] font-black">Registry Null</span>
                                     </div>
                                 ) : (
                                     deployments.map((d, i) => (
                                         <div key={i} className="flex items-center gap-6 p-4 rounded-2xl border border-[#1B9157]/10 bg-white/40 hover:bg-white hover:border-[#1B9157]/30 transition-all group cursor-default">
                                             <span className="text-[10px] font-black text-[#1B9157] w-24 tabular-nums tracking-tighter">{new Date(d.created_at).toLocaleDateString()}</span>
                                             <div className="flex-1 flex items-baseline gap-3">
-                                                <span className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-tight group-hover:text-[#1B9157] transition-colors">{d.field_name}</span>
-                                                <span className="text-[9px] font-bold text-gray-400 tabular-nums uppercase tracking-widest">{d.total_acres} AC_NET</span>
+                                                <span className="text-[11px] font-black text-[#1A1A1A] tracking-tight group-hover:text-[#1B9157] transition-colors">{d.field_name}</span>
+                                                <span className="text-[9px] font-bold text-gray-400 tabular-nums">{d.total_acres} AC_NET</span>
                                             </div>
                                             <div className="w-2 h-2 rounded-full bg-[#1B9157]/10 group-hover:bg-[#1B9157] group-hover:shadow-sm group-hover:shadow-[#1B9157]/50 transition-all" />
                                         </div>

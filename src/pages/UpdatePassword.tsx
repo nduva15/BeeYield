@@ -65,7 +65,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             onClick={() => navigate(loginPath)}
-                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-[#1A1A1A] font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                            className="w-full h-14 bg-beeyield-green hover:bg-beeyield-green-dark text-[#1A1A1A] font-black rounded-xl shadow-glow transition-all"
                         >
                             Go to sign in
                         </Button>
@@ -80,7 +80,7 @@ const UpdatePasswordForm: React.FC = () => {
             <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-beeyield-cream p-4">
                 <div className="text-center space-y-4">
                     <Loader2 className="h-10 w-10 animate-spin text-beeyield-green mx-auto" />
-                    <p className="text-xs font-black uppercase tracking-[0.3em] text-beeyield-green/40">Checking session…</p>
+                    <p className="text-xs font-black text-beeyield-green/40">Checking session…</p>
                 </div>
             </BeeYieldPageShell>
         );
@@ -103,7 +103,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="new-password" title="Enter at least 6 characters" className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/60 pl-1">New password</Label>
+                                <Label htmlFor="new-password" title="Enter at least 6 characters" className="text-[10px] font-black text-beeyield-green/60 pl-1">New password</Label>
                                 <div className="relative group">
                                     <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
                                     <Input
@@ -120,7 +120,7 @@ const UpdatePasswordForm: React.FC = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="confirm-password" className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/60 pl-1">Confirm password</Label>
+                                <Label htmlFor="confirm-password" className="text-[10px] font-black text-beeyield-green/60 pl-1">Confirm password</Label>
                                 <div className="relative group">
                                     <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-colors" />
                                     <Input
@@ -138,7 +138,7 @@ const UpdatePasswordForm: React.FC = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-[#1A1A1A] font-black uppercase tracking-widest rounded-xl shadow-glow transition-all"
+                            className="w-full h-14 bg-gradient-to-r from-beeyield-gold to-beeyield-orange text-[#1A1A1A] font-black rounded-xl shadow-glow transition-all"
                             disabled={loading}
                         >
                             {loading ? (
@@ -151,7 +151,7 @@ const UpdatePasswordForm: React.FC = () => {
                         <button
                             type="button"
                             onClick={() => navigate(loginPath)}
-                            className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
+                            className="w-full flex items-center justify-center gap-2 text-[10px] font-black text-beeyield-green/40 hover:text-beeyield-gold transition-colors"
                         >
                             <ArrowLeft className="h-3 w-3" />
                             Back to sign in

@@ -58,7 +58,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                 return (
                     <div className={cn(glass.card, "flex flex-col items-center justify-center py-24 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                         <FileText className="w-10 h-10 text-gray-300 mb-4" />
-                        <p className="text-gray-500 font-black uppercase tracking-[0.2em] text-[9px]">Data sync interrupted</p>
+                        <p className="text-gray-500 font-black text-[9px]">Data sync interrupted</p>
                     </div>
                 );
             default:
@@ -71,9 +71,9 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
         <div className={cn("p-8 -m-0 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}>
             <BeeYieldPageHeader
                 icon={TrendingUp}
-                label="SIGNAL_LOAD_ANALYTICS"
+                label="Signal Load Analytics"
                 title={<>Diagnostic <span className="text-[#F4D03F]">Engine</span></>}
-                subtitle="ADVANCED_TELEMETRY_PROCESSING_AND_ANOMALY_DETECTION"
+                subtitle="Advanced Telemetry Processing And Anomaly Detection"
             />
 
             {/* Navigation Tabs (Cards) */}
@@ -102,14 +102,14 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                                     <Icon className="w-4 h-4" />
                                 </div>
                                 <h3 className={cn(
-                                    "font-black text-[11px] uppercase tracking-[0.15em] transition-colors",
+                                    "font-black text-[11px] transition-colors",
                                     isActive ? "text-[#1A1A1A]" : "text-gray-500 group-hover:text-[#1A1A1A]"
                                 )}>
                                     {tab.label}
                                 </h3>
                             </div>
                             <p className={cn(
-                                "text-[9px] font-bold uppercase tracking-widest pl-11",
+                                "text-[9px] font-bold pl-11",
                                 isActive ? "text-[#1A1A1A]/60" : "text-gray-400 opacity-60"
                             )}>
                                 {tab.subtext}

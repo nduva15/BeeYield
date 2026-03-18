@@ -107,7 +107,7 @@ const AdminDashboard: React.FC = () => {
     const [farmerForm, setFarmerForm] = useState<FarmerInput>({
         name: '', phone: '', email: '', id_number: '', experience_years: 0,
         story: '', latitude: -1.286389, longitude: 36.817223, location_name: '',
-        region: '', county: '', ward: '', certification_status: 'PENDING', status: 'active'
+        region: '', county: '', ward: '', certification_status: 'Pending', status: 'active'
     });
 
     const [editingApiary, setEditingApiary] = useState<any | null>(null);
@@ -173,9 +173,18 @@ const AdminDashboard: React.FC = () => {
         try {
             // AUTOMATIC DEEP SYNC: Guaranteed data freshness on entry
             await Promise.allSettled([
-                adminService.syncAll(),
-                adminService.seedData()
+                adminService.syncAll()
             ]);
+
+            // Also preload orders, products, and batches for Overview tab logic
+            const [ordersData, productsData, batchesData] = await Promise.all([
+                adminService.getOrders(),
+                adminService.getProducts(),
+                adminService.getBatches()
+            ]);
+            setOrders(ordersData);
+            setProducts(productsData);
+            setBatches(batchesData.reverse());
 
             const stats = await adminService.getDashboardStats();
             if (stats) {
@@ -279,7 +288,7 @@ const AdminDashboard: React.FC = () => {
             setLoadedTabs(prev => new Set(prev).add(tab));
         } catch (error) {
             console.error(`Failed to load data for tab ${tab}:`, error);
-            toast.error(`Terminal Error: Failed to load ${tab} data`);
+            toast.error(`Failed to load ${tab} data`);
         }
     };
 
@@ -886,7 +895,7 @@ const AdminDashboard: React.FC = () => {
         return (
             <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-sm font-medium animate-pulse text-muted-foreground">Authenticating Terminal...</p>
+                <p className="text-sm font-medium animate-pulse text-muted-foreground">Loading dashboard...</p>
             </BeeYieldPageShell>
         );
     }
@@ -896,7 +905,7 @@ const AdminDashboard: React.FC = () => {
             <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
                 <Shield className="h-16 w-16 text-destructive animate-pulse" />
                 <h2 className="text-2xl font-black">Restricted Access</h2>
-                <p className="text-muted-foreground">This terminal is for authorized administrators only.</p>
+                <p className="text-muted-foreground">You do not have permission to access administration pages.</p>
                 <Button onClick={() => navigate('/')} className="rounded-xl px-8 shadow-lg">Return Home</Button>
             </BeeYieldPageShell>
         );
@@ -984,8 +993,8 @@ const AdminDashboard: React.FC = () => {
                 {/* Header Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
-                        <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">CEBA <span className="text-beeyield-gold italic">Terminal</span></h1>
-                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">Command</p>
+                        <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">Admin <span className="text-beeyield-gold italic">Dashboard</span></h1>
+                        <p className="text-beeyield-green/40 font-black text-[10px] mt-2">Management Console</p>
                     </div>
                 </div>
 
@@ -1022,8 +1031,8 @@ const AdminDashboard: React.FC = () => {
                             {/* General Report Section */}
                             <Col span={4} className="space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Overview</h3>
-                                    <select aria-label="Report period" className="text-[10px] font-black uppercase tracking-widest bg-beeyield-green/5 border-none rounded-full px-4 py-2 text-beeyield-green outline-none focus:ring-2 focus:ring-beeyield-gold/20">
+                                    <h3 className="text-xs font-black text-beeyield-green/30">Overview</h3>
+                                    <select aria-label="Report period" className="text-[10px] font-black bg-beeyield-green/5 border-none rounded-full px-4 py-2 text-beeyield-green outline-none focus:ring-2 focus:ring-beeyield-gold/20">
                                         <option>Daily</option>
                                         <option>Weekly</option>
                                         <option>Monthly</option>
@@ -1043,42 +1052,37 @@ const AdminDashboard: React.FC = () => {
                                     title="Total Revenue"
                                     value={`KES ${dashboardStats.totalRevenue.toLocaleString()}`}
                                     icon={CreditCard}
-                                    trend="40%"
-                                    trendDirection="up"
-                                    description="Economic Flux: Positive"
+                                    description="All time revenue"
                                     className="h-auto"
                                 />
 
                                 <div className="flex gap-3">
                                     <div className="flex-1 bg-[#FFF9F0] border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
-                                        <p className="text-[9px] font-black text-beeyield-green/20 uppercase tracking-widest">GROSS YIELD</p>
-                                        <p className="text-md font-black text-beeyield-green mt-1">KES 72K <span className="text-beeyield-green text-[10px] ml-1">↑4%</span></p>
+                                        <p className="text-[9px] font-black text-beeyield-green/20">Gross Revenue</p>
+                                        <p className="text-md font-black text-beeyield-green mt-1">KES {dashboardStats.totalRevenue.toLocaleString()}</p>
                                     </div>
                                     <div className="flex-1 bg-[#FFF9F0] border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
-                                        <p className="text-[9px] font-black text-beeyield-green/20 uppercase tracking-widest">PROFIT CORE</p>
-                                        <p className="text-md font-black text-beeyield-green mt-1">KES 54K <span className="text-beeyield-green text-[10px] ml-1">↑6%</span></p>
+                                        <p className="text-[9px] font-black text-beeyield-green/20">Net Profit</p>
+                                        <p className="text-md font-black text-beeyield-green mt-1">KES {Math.round(dashboardStats.totalRevenue * 0.65).toLocaleString()}</p>
                                     </div>
                                 </div>
 
                                 <Button onClick={loadAllData} className="w-full h-14 rounded-[24px] shadow-xl shadow-beeyield-gold/20">
-                                    <RefreshCw className="w-4 h-4 mr-2" /> Sync Terminal
+                                    <RefreshCw className="w-4 h-4 mr-2" /> Refresh Data
                                 </Button>
                             </Col>
 
                             {/* Visitors Section */}
                             <Col span={4} className="space-y-6">
-                                <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Network Traffic</h3>
+                                <h3 className="text-xs font-black text-beeyield-green/30">Platform Metrics</h3>
 
                                 <Card className="bg-[#FFF9F0] border-beeyield-green/5 rounded-[32px] p-8 shadow-2xl shadow-beeyield-green/[0.02] border-none">
                                     <div className="flex items-center justify-between mb-6">
                                         <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30">Live Nodes</p>
-                                            <p className="text-5xl font-black text-beeyield-green tracking-tighter mt-1">{dashboardStats.totalUsers || 214}</p>
+                                            <p className="text-[10px] font-black text-beeyield-green/30">Total Users</p>
+                                            <p className="text-5xl font-black text-beeyield-green tracking-tighter mt-1">{dashboardStats.totalUsers}</p>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30">Hz Sync</p>
-                                            <p className="text-xl font-black text-beeyield-gold mt-1">2.5</p>
-                                        </div>
+                                        {/* Hz Sync removed */}
                                     </div>
 
                                     {/* Mini Chart */}
@@ -1111,7 +1115,7 @@ const AdminDashboard: React.FC = () => {
                                             <span className="font-medium text-[#F4D03F]">{dashboardStats.totalHives}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                            <span className="text-muted-foreground">Batches Indexed</span>
+                                            <span className="text-muted-foreground">Total Honey</span>
                                             <span className="font-medium text-blue-500">{dashboardStats.totalHoneyKg} kg</span>
                                         </div>
                                     </div>
@@ -1121,10 +1125,10 @@ const AdminDashboard: React.FC = () => {
                                 </Card>
                             </Col>
 
-                            {/* Users By Age Section */}
+                            {/* Platform Audience Section */}
                             <Col span={4} className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-bold text-foreground">Users By Age</h3>
+                                    <h3 className="text-lg font-bold text-foreground">Platform Audience</h3>
                                     <span className="text-xs text-muted-foreground">Show More</span>
                                 </div>
 
@@ -1150,7 +1154,7 @@ const AdminDashboard: React.FC = () => {
                                                 strokeDasharray="37.7 251.2" strokeDashoffset="-213.6" strokeLinecap="round" />
                                         </svg>
                                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                            <span className="text-2xl font-bold">{dashboardStats.totalUsers || 2501}</span>
+                                            <span className="text-2xl font-bold">{dashboardStats.totalUsers}</span>
                                             <span className="text-[10px] text-muted-foreground">Active Users</span>
                                         </div>
                                     </div>
@@ -1190,7 +1194,7 @@ const AdminDashboard: React.FC = () => {
                                                 </Button>
                                             </div>
                                         </div>
-                                        <p className="text-xs text-muted-foreground mt-1">250 Official stores in 21 countries, click the marker to see location details.</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{dashboardStats.totalApiaries || 0} Apiaries actively managed across Kenya.</p>
                                     </div>
 
                                     {/* Interactive Map Styles */}
@@ -1244,7 +1248,7 @@ const AdminDashboard: React.FC = () => {
                                         })}
                                         {apiaries.length === 0 && (
                                             <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm font-medium">
-                                                No apiaries localized on network
+                                                No apiaries registered yet
                                             </div>
                                         )}
 
@@ -1325,11 +1329,11 @@ const AdminDashboard: React.FC = () => {
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-muted/30">
-                                        <TableHead className="font-bold text-xs uppercase">Images</TableHead>
-                                        <TableHead className="font-bold text-xs uppercase">Product Name</TableHead>
-                                        <TableHead className="font-bold text-xs uppercase text-right">Stock</TableHead>
-                                        <TableHead className="font-bold text-xs uppercase">Status</TableHead>
-                                        <TableHead className="font-bold text-xs uppercase text-right">Actions</TableHead>
+                                        <TableHead className="font-bold text-xs">Images</TableHead>
+                                        <TableHead className="font-bold text-xs">Product Name</TableHead>
+                                        <TableHead className="font-bold text-xs text-right">Stock</TableHead>
+                                        <TableHead className="font-bold text-xs">Status</TableHead>
+                                        <TableHead className="font-bold text-xs text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -1350,7 +1354,7 @@ const AdminDashboard: React.FC = () => {
                                                 <p className="font-bold text-sm text-foreground">{product.name}</p>
                                                 <p className="text-[11px] text-muted-foreground">{product.category}</p>
                                             </TableCell>
-                                            <TableCell className="text-right font-bold text-sm">{product.variants?.[0]?.stock_quantity || 120}</TableCell>
+                                            <TableCell className="text-right font-bold text-sm">{product.variants?.[0]?.stock_quantity ?? 0}</TableCell>
                                             <TableCell>
                                                 <span className={cn(
                                                     "px-2 py-0.5 rounded text-[10px] font-bold border flex items-center w-fit gap-1",
@@ -1376,7 +1380,7 @@ const AdminDashboard: React.FC = () => {
                                     )) : (
                                         <TableRow>
                                             <TableCell colSpan={5} className="text-center py-20 text-muted-foreground font-medium">
-                                                No product inventory synchronized.
+                                                No products found.
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -1504,7 +1508,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     ))}
                                     {orders.length === 0 && batches.length === 0 && (
-                                        <p className="text-xs text-muted-foreground text-center py-10">No recent network activity</p>
+                                        <p className="text-xs text-muted-foreground text-center py-10">No recent activity</p>
                                     )}
                                 </div>
                             </Card></Col>
@@ -1565,18 +1569,18 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Order #</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Customer</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Items</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Total (KES)</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Order #</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Customer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Items</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Total (KES)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {orders.length === 0 ? (
-                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No order data synchronized.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No orders found.</TableCell></TableRow>
                                             ) : (
                                                 orders.map((order) => (
                                                     <TableRow key={order.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -1592,15 +1596,15 @@ const AdminDashboard: React.FC = () => {
                                                                 defaultValue={order.status}
                                                                 onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
                                                             >
-                                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-black uppercase tracking-wider rounded-xl bg-background/50 border-border/50">
+                                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-black tracking-wider rounded-xl bg-background/50 border-border/50">
                                                                     <SelectValue />
                                                                 </SelectTrigger>
                                                                 <SelectContent className="rounded-xl border-border/50">
-                                                                    <SelectItem value="pending" className="text-xs font-bold">PENDING</SelectItem>
-                                                                    <SelectItem value="processing" className="text-xs font-bold">PROCESSING</SelectItem>
-                                                                    <SelectItem value="shipped" className="text-xs font-bold">SHIPPED</SelectItem>
-                                                                    <SelectItem value="completed" className="text-xs font-bold">COMPLETED</SelectItem>
-                                                                    <SelectItem value="cancelled" className="text-xs font-bold">CANCELLED</SelectItem>
+                                                                    <SelectItem value="pending" className="text-xs font-bold">Pending</SelectItem>
+                                                                    <SelectItem value="processing" className="text-xs font-bold">Processing</SelectItem>
+                                                                    <SelectItem value="shipped" className="text-xs font-bold">Shipped</SelectItem>
+                                                                    <SelectItem value="completed" className="text-xs font-bold">Completed</SelectItem>
+                                                                    <SelectItem value="cancelled" className="text-xs font-bold">Cancelled</SelectItem>
                                                                 </SelectContent>
                                                             </Select>
                                                         </TableCell>
@@ -1631,34 +1635,34 @@ const AdminDashboard: React.FC = () => {
                                     <DialogTitle className="text-xl font-bold flex gap-2 items-center">
                                         <Package className="w-6 h-6 text-primary" /> Order Details
                                     </DialogTitle>
-                                    <DialogDescription>Full transaction manifest.</DialogDescription>
+                                    <DialogDescription>Order details and items.</DialogDescription>
                                 </DialogHeader>
                                 {selectedOrder && (
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Order ID</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Order ID</p>
                                                 <p className="font-mono font-bold">{selectedOrder.order_number || selectedOrder.id}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Status</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Status</p>
                                                 <Badge variant="outline">{selectedOrder.status}</Badge>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Customer</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Customer</p>
                                                 <p className="font-bold">{selectedOrder.shipping_address?.first_name} {selectedOrder.shipping_address?.last_name}</p>
                                                 <p className="text-muted-foreground">{selectedOrder.customer_email}</p>
                                                 <p className="text-muted-foreground">{selectedOrder.shipping_address?.phone}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Shipping Address</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Shipping Address</p>
                                                 <p className="whitespace-pre-wrap">{selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}</p>
                                                 <p>{selectedOrder.shipping_address?.postal_code}, {selectedOrder.shipping_address?.country}</p>
                                             </div>
                                         </div>
 
                                         <div className="border-t border-border/10 pt-4">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3">Items Manifest</p>
+                                            <p className="text-[10px] font-black text-muted-foreground mb-3">Items Manifest</p>
                                             <div className="space-y-2">
                                                 {selectedOrder.items?.map((item: any, i: number) => (
                                                     <div key={i} className="flex justify-between items-center bg-muted/30 p-2 rounded-lg">
@@ -1680,7 +1684,7 @@ const AdminDashboard: React.FC = () => {
                                                 <p>Payment Method: {selectedOrder.payment_method || 'Stripe'}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Total Value</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Total Value</p>
                                                 <p className="text-xl font-bold text-primary">KES {selectedOrder.total_amount?.toLocaleString()}</p>
                                             </div>
                                         </div>
@@ -1694,12 +1698,12 @@ const AdminDashboard: React.FC = () => {
                     <TabsContent value="products" className="space-y-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h2 className="text-xl font-bold tracking-tight">Venture Inventory</h2>
-                                <p className="text-muted-foreground font-medium">Manage and deploy products to the digital storefront.</p>
+                                <h2 className="text-xl font-bold tracking-tight">Product Inventory</h2>
+                                <p className="text-muted-foreground font-medium">Manage products listed in the online shop.</p>
                             </div>
                             <div className="flex gap-2">
-                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
-                                    <Plus className="mr-2 h-5 w-5" /> Add New Asset
+                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black text-xs h-auto">
+                                    <Plus className="mr-2 h-5 w-5" /> Add Product
                                 </Button>
                             </div>
                         </div>
@@ -1714,7 +1718,7 @@ const AdminDashboard: React.FC = () => {
                                             <div className="w-full h-full grid place-items-center text-muted-foreground/30"><ShoppingBag className="w-12 h-12" /></div>
                                         )}
                                         <div className="absolute top-3 right-3">
-                                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black uppercase tracking-widest">{product.category}</Badge>
+                                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black">{product.category}</Badge>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
@@ -1724,7 +1728,7 @@ const AdminDashboard: React.FC = () => {
                                         <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed h-8">{product.description}</p>
                                         <div className="flex justify-between items-end pt-2">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground mb-1">MSRP</p>
+                                                <p className="text-[10px] font-black tracking-tighter text-muted-foreground mb-1">Price</p>
                                                 <span className="text-xl font-bold text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
                                             </div>
                                             <div className="flex gap-1">
@@ -1745,12 +1749,12 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingProduct ? 'Update Asset' : 'Create New Asset'}</DialogTitle>
-                                    <DialogDescription>Populate the matrix with product configurations.</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingProduct ? 'Edit Product' : 'Add Product'}</DialogTitle>
+                                    <DialogDescription>Fill in the product details below.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Product Designation</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Product Name</Label>
                                         <Input
                                             id="product-name"
                                             name="product-name"
@@ -1761,7 +1765,7 @@ const AdminDashboard: React.FC = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Description</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Description</Label>
                                         <Textarea
                                             id="product-description"
                                             name="product-description"
@@ -1773,7 +1777,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Classification</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Category</Label>
                                             <Input
                                                 id="product-category"
                                                 name="product-category"
@@ -1783,7 +1787,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">MSRP (KES)</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Price (KES)</Label>
                                             <Input
                                                 id="product-price"
                                                 name="product-price"
@@ -1796,7 +1800,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Initial Reserve</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Stock Quantity</Label>
                                             <Input
                                                 id="product-stock"
                                                 name="product-stock"
@@ -1807,7 +1811,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Visual Matrix (URL)</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Image URL</Label>
                                             <Input
                                                 id="product-images"
                                                 name="product-images"
@@ -1821,7 +1825,7 @@ const AdminDashboard: React.FC = () => {
                                 </div>
                                 <DialogFooter className="gap-2 sm:gap-0">
                                     <Button variant="ghost" onClick={() => setIsProductModalOpen(false)} className="rounded-xl font-bold">Cancel</Button>
-                                    <Button onClick={handleCreateProduct} className="rounded-xl font-black uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Save changes' : 'Add product'}</Button>
+                                    <Button onClick={handleCreateProduct} className="rounded-xl font-black text-xs px-8 shadow-glow">{editingProduct ? 'Save changes' : 'Add product'}</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -1840,7 +1844,7 @@ const AdminDashboard: React.FC = () => {
                                         <Badge className="bg-[#1B9157]/ text-[#1B9157] border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                             {stockMovements.length} RECORDS
                                         </Badge>
-                                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black uppercase tracking-widest text-[10px]">
+                                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black text-[10px]">
                                             <Plus className="w-3 h-3 mr-1" /> New Movement
                                         </Button>
                                     </div>
@@ -1851,11 +1855,11 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Product</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Reason</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Product</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Reason</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -1892,7 +1896,7 @@ const AdminDashboard: React.FC = () => {
                                 </DialogHeader>
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Selection</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Product</Label>
                                         <Select value={stockForm.product_id} onValueChange={(val) => setStockForm({ ...stockForm, product_id: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Product" />
@@ -1906,7 +1910,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Movement Type</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Movement Type</Label>
                                             <Select value={stockForm.type} onValueChange={(val) => setStockForm({ ...stockForm, type: val })}>
                                                 <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
@@ -1918,7 +1922,7 @@ const AdminDashboard: React.FC = () => {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Quantity</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Quantity</Label>
                                             <Input
                                                 id="stock-quantity"
                                                 name="stock-quantity"
@@ -1930,7 +1934,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Reason</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Reason</Label>
                                         <Input
                                             id="stock-reason"
                                             name="stock-reason"
@@ -1942,8 +1946,8 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        Commit Inventory Update
+                                    <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-black transition-all hover:scale-[1.02]">
+                                        Record Movement
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -1959,7 +1963,7 @@ const AdminDashboard: React.FC = () => {
                                     <CardDescription>Verifiable records for each batch.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-[10px] py-5 bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none px-6 shadow-glow transition-all active:scale-95">
+                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black text-[10px] py-5 bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none px-6 shadow-glow transition-all active:scale-95">
                                         <Plus className="mr-2 h-4 w-4" /> Add batch
                                     </Button>
                                 </div>
@@ -1969,14 +1973,14 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Batch Code</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Honey Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Origin</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Record ID</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Batch Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Honey Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Origin</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farmer / Beekeeper</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Harvest Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity (KG)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Record ID</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -2019,13 +2023,13 @@ const AdminDashboard: React.FC = () => {
                                                             <div className="flex flex-col gap-1">
                                                                 {batch.farmer_name && (
                                                                     <div className="flex flex-col">
-                                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Farmer</span>
+                                                                        <span className="text-[10px] text-muted-foreground tracking-wider">Farmer</span>
                                                                         <span className="font-semibold text-xs">{batch.farmer_name}</span>
                                                                     </div>
                                                                 )}
                                                                 {batch.beekeeper_name && (
                                                                     <div className="flex flex-col">
-                                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Beekeeper</span>
+                                                                        <span className="text-[10px] text-muted-foreground tracking-wider">Beekeeper</span>
                                                                         <span className="font-semibold text-xs">{batch.beekeeper_name}</span>
                                                                     </div>
                                                                 )}
@@ -2085,15 +2089,15 @@ const AdminDashboard: React.FC = () => {
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black">New History Entry</DialogTitle>
-                                    <DialogDescription>This action will finalize the batch data on the irreversible HoneyChain network.</DialogDescription>
+                                    <DialogDescription>Enter the details for this honey batch record.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     {/* Basic Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Batch Details</h4>
+                                        <h4 className="font-black text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Batch Details</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Honey Variety</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Honey Variety</Label>
                                                 <Input
                                                     id="batch-honey-type"
                                                     name="batch-honey-type"
@@ -2104,7 +2108,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Date</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Harvest Date</Label>
                                                 <Input
                                                     id="batch-harvest-date"
                                                     name="batch-harvest-date"
@@ -2115,7 +2119,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Packaged Date</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Packaged Date</Label>
                                                 <Input
                                                     id="batch-packaged-date"
                                                     name="batch-packaged-date"
@@ -2126,7 +2130,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Quantity (KG)</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Harvest Quantity (KG)</Label>
                                                 <Input
                                                     id="batch-quantity"
                                                     name="batch-quantity"
@@ -2137,7 +2141,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Method</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Processing Method</Label>
                                                 <Select onValueChange={(val) => setBatchForm({ ...batchForm, processing_method: val })} defaultValue={batchForm.processing_method}>
                                                     <SelectTrigger className="rounded-xl h-11 bg-muted/50">
                                                         <SelectValue placeholder="Select Method" />
@@ -2155,10 +2159,10 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Source Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Source Origin</h4>
+                                        <h4 className="font-black text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Source Origin</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Farmer Name</Label>
                                                 <Input
                                                     id="batch-farmer-name"
                                                     name="batch-farmer-name"
@@ -2169,7 +2173,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Contact Phone</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Contact Phone</Label>
                                                 <Input
                                                     id="batch-farmer-phone"
                                                     name="batch-farmer-phone"
@@ -2180,7 +2184,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper Name</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Beekeeper Name</Label>
                                                 <Input
                                                     id="batch-beekeeper-name"
                                                     name="batch-beekeeper-name"
@@ -2191,7 +2195,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper ID</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Beekeeper ID</Label>
                                                 <Input
                                                     id="batch-beekeeper-id"
                                                     name="batch-beekeeper-id"
@@ -2202,7 +2206,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                                <Label className=" text-[10px] font-black ml-1">County</Label>
                                                 <Input
                                                     id="batch-county"
                                                     name="batch-county"
@@ -2213,7 +2217,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Region</Label>
                                                 <Input
                                                     id="batch-region"
                                                     name="batch-region"
@@ -2224,7 +2228,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Apiary Name</Label>
                                                 <Input
                                                     id="batch-apiary-name"
                                                     name="batch-apiary-name"
@@ -2236,7 +2240,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
+                                                    <Label className=" text-[10px] font-black ml-1">Lat</Label>
                                                     <Input
                                                         id="batch-latitude"
                                                         name="batch-latitude"
@@ -2248,7 +2252,7 @@ const AdminDashboard: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Long</Label>
+                                                    <Label className=" text-[10px] font-black ml-1">Long</Label>
                                                     <Input
                                                         id="batch-longitude"
                                                         name="batch-longitude"
@@ -2265,10 +2269,10 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Quality Metrics */}
                                     <div className="space-y-4">
-                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Quality Assurance</h4>
+                                        <h4 className="font-black text-xs text-primary border-b border-[#F4D03F]/20 pb-2">Quality Assurance</h4>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Grade</Label>
                                                 <Select onValueChange={(val) => setBatchForm({ ...batchForm, quality_grade: val } as any)} defaultValue="A">
                                                     <SelectTrigger className="rounded-xl h-11 bg-muted/50">
                                                         <SelectValue placeholder="Grade" />
@@ -2281,7 +2285,7 @@ const AdminDashboard: React.FC = () => {
                                                 </Select>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture Level (%)</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Moisture Level (%)</Label>
                                                 <Input
                                                     id="batch-moisture"
                                                     name="batch-moisture"
@@ -2294,7 +2298,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Color Grade</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Color Grade</Label>
                                                 <Select onValueChange={(val) => setBatchForm({ ...batchForm, color_grade: val } as any)}>
                                                     <SelectTrigger className="rounded-xl h-11 bg-muted/50">
                                                         <SelectValue placeholder="Select Color" />
@@ -2314,7 +2318,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none shadow-glow">Save</Button>
+                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black text-xs bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none shadow-glow">Save</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -2337,55 +2341,55 @@ const AdminDashboard: React.FC = () => {
                                         {/* Header Status Card */}
                                         <div className="bg-muted/30 p-4 rounded-2xl flex justify-between items-center border border-border/50">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Batch Code</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Batch Code</p>
                                                 <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
                                             </div>
-                                            <Badge className="bg-[#1B9157]/ text-[#1B9157] px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
+                                            <Badge className="bg-[#1B9157]/ text-[#1B9157] px-4 py-1 h-8 rounded-xl font-black border-none">
                                                 VERIFIED HISTORY
                                             </Badge>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-8">
                                             <div className="space-y-4">
-                                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <h4 className="font-black text-xs border-b border-border/50 pb-2 flex items-center gap-2">
                                                     <Package className="w-4 h-4" /> Product Details
                                                 </h4>
                                                 <div className="space-y-3">
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Honey Type</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Honey Type</p>
                                                         <p className="font-semibold">{selectedBatch.honey_type}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Quantity</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Quantity</p>
                                                         <p className="font-semibold">{selectedBatch.quantity_kg} KG</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Processing</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Processing</p>
                                                         <p className="font-semibold">{selectedBatch.processing_method}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Harvest Date</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Harvest Date</p>
                                                         <p className="font-mono text-sm">{selectedBatch.harvest_date}</p>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-4">
-                                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <h4 className="font-black text-xs border-b border-border/50 pb-2 flex items-center gap-2">
                                                     <Users className="w-4 h-4" /> Origin Source
                                                 </h4>
                                                 <div className="space-y-3">
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Farmer</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Farmer</p>
                                                         <p className="font-semibold">{selectedBatch.farmer_name || 'N/A'}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Beekeeper</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Beekeeper</p>
                                                         <p className="font-semibold">{selectedBatch.beekeeper_name || 'N/A'}</p>
                                                         <p className="text-xs text-muted-foreground">{selectedBatch.beekeeper_id}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Location</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Location</p>
                                                         <p className="font-semibold">{selectedBatch.location_county || 'N/A'}, {selectedBatch.location_region || ''}</p>
                                                         <p className="text-xs text-muted-foreground">{selectedBatch.apiary_name}</p>
                                                         {selectedBatch.latitude && (
@@ -2400,7 +2404,7 @@ const AdminDashboard: React.FC = () => {
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Contact</p>
+                                                        <p className="text-[10px] text-muted-foreground font-bold">Contact</p>
                                                         <p className="font-mono text-sm">{selectedBatch.farmer_phone || 'N/A'}</p>
                                                     </div>
                                                 </div>
@@ -2408,20 +2412,20 @@ const AdminDashboard: React.FC = () => {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                            <h4 className="font-black text-xs border-b border-border/50 pb-2 flex items-center gap-2">
                                                 <Shield className="w-4 h-4" /> Quality Assurance
                                             </h4>
                                             <div className="grid grid-cols-3 gap-4">
                                                 <div className="bg-muted/30 p-3 rounded-xl text-center">
-                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Grade</p>
+                                                    <p className="text-[10px] text-muted-foreground font-bold">Grade</p>
                                                     <p className="text-lg font-black">{selectedBatch.quality_grade || 'A'}</p>
                                                 </div>
                                                 <div className="bg-muted/30 p-3 rounded-xl text-center">
-                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Moisture</p>
+                                                    <p className="text-[10px] text-muted-foreground font-bold">Moisture</p>
                                                     <p className="text-lg font-black">{selectedBatch.moisture_content || 0}%</p>
                                                 </div>
                                                 <div className="bg-muted/30 p-3 rounded-xl text-center">
-                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Color</p>
+                                                    <p className="text-[10px] text-muted-foreground font-bold">Color</p>
                                                     <p className="text-sm font-black mt-1">{selectedBatch.color_grade || 'N/A'}</p>
                                                 </div>
                                             </div>
@@ -2441,12 +2445,12 @@ const AdminDashboard: React.FC = () => {
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-xl font-bold">Agricultural Partners</CardTitle>
-                                    <CardDescription>Authenticated network of honey harvesters and growers.</CardDescription>
+                                    <CardDescription>Manage registered beekeepers and farmers.</CardDescription>
                                 </div>
                                 <Button
                                     onClick={() => setIsFarmerModalOpen(true)}
                                     variant="outline"
-                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className="rounded-xl font-black text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Register Farmer
                                 </Button>
@@ -2456,12 +2460,12 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Contact</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Experience</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farmer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Contact</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Experience</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -2477,7 +2481,7 @@ const AdminDashboard: React.FC = () => {
                                                                 </div>
                                                                 <div className="flex flex-col">
                                                                     <span className="font-bold">{farmer.name}</span>
-                                                                    <span className="text-[10px] text-muted-foreground uppercase font-mono">{farmer.farmer_id || 'ID-PENDING'}</span>
+                                                                    <span className="text-[10px] text-muted-foreground font-mono">{farmer.farmer_id || 'ID-PENDING'}</span>
                                                                 </div>
                                                             </div>
                                                         </TableCell>
@@ -2495,8 +2499,8 @@ const AdminDashboard: React.FC = () => {
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge className={farmer.certification_status === 'CERTIFIED' ? 'bg-[#1B9157]/ text-[#1B9157] border-none' : 'bg-[#F4D03F]/ text-[#F4D03F] border-none'}>
-                                                                {farmer.certification_status || 'PENDING'}
+                                                            <Badge className={farmer.certification_status === 'Certified' ? 'bg-[#1B9157]/ text-[#1B9157] border-none' : 'bg-[#F4D03F]/ text-[#F4D03F] border-none'}>
+                                                                {farmer.certification_status || 'Pending'}
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell className="px-6 text-right">
@@ -2523,12 +2527,12 @@ const AdminDashboard: React.FC = () => {
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
                                     <DialogTitle className="text-3xl font-black tracking-tighter">{editingFarmer ? 'Modify Partner' : 'Register Partner'}</DialogTitle>
-                                    <DialogDescription>{editingFarmer ? 'Update beekeeper credentials and parameters.' : 'Initialize a new beekeeper record on the BeeYield network.'}</DialogDescription>
+                                    <DialogDescription>{editingFarmer ? 'Update beekeeper credentials.' : 'Add a new beekeeper to the directory.'}</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Full Name</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Full Name</Label>
                                             <Input
                                                 id="farmer-fullname"
                                                 name="farmer-fullname"
@@ -2539,7 +2543,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Phone Number</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Phone Number</Label>
                                             <Input
                                                 id="farmer-phone"
                                                 name="farmer-phone"
@@ -2552,7 +2556,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Email Address</Label>
                                             <Input
                                                 id="farmer-email"
                                                 name="farmer-email"
@@ -2564,7 +2568,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">ID Number</Label>
+                                            <Label className=" text-[10px] font-black ml-1">ID Number</Label>
                                             <Input
                                                 id="farmer-id-number"
                                                 name="farmer-id-number"
@@ -2577,7 +2581,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                            <Label className=" text-[10px] font-black ml-1">County</Label>
                                             <Input
                                                 id="farmer-county"
                                                 name="farmer-county"
@@ -2588,7 +2592,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Region</Label>
                                             <Input
                                                 id="farmer-region"
                                                 name="farmer-region"
@@ -2599,7 +2603,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Years Experience</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Years Experience</Label>
                                             <Input
                                                 id="farmer-experience"
                                                 name="farmer-experience"
@@ -2611,7 +2615,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Location Details / Ward</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Location Details / Ward</Label>
                                         <Input
                                             id="farmer-location"
                                             name="farmer-location"
@@ -2622,7 +2626,7 @@ const AdminDashboard: React.FC = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">The Beekeeper's Story</Label>
+                                        <Label className=" text-[10px] font-black ml-1">The Beekeeper's Story</Label>
                                         <Textarea
                                             id="farmer-story"
                                             name="farmer-story"
@@ -2634,8 +2638,8 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingFarmer ? 'Update Partner Records' : 'Complete Network Registration'}
+                                    <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black transition-all hover:scale-[1.02]">
+                                        {editingFarmer ? 'Update Partner Records' : 'Register Farmer'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -2648,12 +2652,12 @@ const AdminDashboard: React.FC = () => {
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-xl font-bold">Apiary Locations</CardTitle>
-                                    <CardDescription>Geospatial management of hive clusters and honey production sites.</CardDescription>
+                                    <CardDescription>Manage apiaries and their locations.</CardDescription>
                                 </div>
                                 <Button
                                     onClick={() => setIsApiaryModalOpen(true)}
                                     variant="outline"
-                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className="rounded-xl font-black text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Register Apiary
                                 </Button>
@@ -2663,17 +2667,17 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Hives</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farmer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Hives</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {apiaries.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered on the BeeYield grid.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered yet.</TableCell></TableRow>
                                             ) : (
                                                 apiaries.map((apiary) => (
                                                     <TableRow key={apiary.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -2714,12 +2718,12 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isApiaryModalOpen} onOpenChange={(open) => { setIsApiaryModalOpen(open); if (!open) setEditingApiary(null); }}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingApiary ? 'Calibrate Apiary' : 'Map New Apiary'}</DialogTitle>
-                                    <DialogDescription>Define production site parameters and associate with agricultural partners.</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingApiary ? 'Edit Apiary' : 'Add Apiary'}</DialogTitle>
+                                    <DialogDescription>Set apiary details and assign a farmer.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Apiary Name</Label>
                                         <Input
                                             id="apiary-name"
                                             name="apiary-name"
@@ -2731,7 +2735,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                            <Label className=" text-[10px] font-black ml-1">County</Label>
                                             <Input
                                                 id="apiary-county"
                                                 name="apiary-county"
@@ -2742,7 +2746,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Region</Label>
                                             <Input
                                                 id="apiary-region"
                                                 name="apiary-region"
@@ -2754,7 +2758,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Assigned Farmer</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Assigned Farmer</Label>
                                         <Select value={apiaryForm.farmer_id} onValueChange={val => setApiaryForm({ ...apiaryForm, farmer_id: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Partner" />
@@ -2768,7 +2772,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Latitude</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Latitude</Label>
                                             <Input
                                                 id="apiary-latitude"
                                                 name="apiary-latitude"
@@ -2779,7 +2783,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Longitude</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Longitude</Label>
                                             <Input
                                                 id="apiary-longitude"
                                                 name="apiary-longitude"
@@ -2792,8 +2796,8 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingApiary ? 'Update Production Site' : 'Authenticate Site Registration'}
+                                    <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-black transition-all hover:scale-[1.02]">
+                                        {editingApiary ? 'Update Production Site' : 'Save Apiary'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -2811,7 +2815,7 @@ const AdminDashboard: React.FC = () => {
                                 <Button
                                     onClick={() => setIsHiveModalOpen(true)}
                                     variant="outline"
-                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className="rounded-xl font-black text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Add hive
                                 </Button>
@@ -2821,17 +2825,17 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Hive Code</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Apiary</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Installed</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Hive Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Apiary</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Installed</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {hives.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives deployed in the honeycomb network.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives registered yet.</TableCell></TableRow>
                                             ) : (
                                                 hives.map((hive) => (
                                                     <TableRow key={hive.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -2867,13 +2871,13 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
-                                    <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Edit Hive' : 'Add Hive'}</DialogTitle>
+                                    <DialogDescription>Enter the hive details below.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Hive Code</Label>
                                             <Input
                                                 id="hive-code"
                                                 name="hive-code"
@@ -2884,7 +2888,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Hive Type</Label>
                                             <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
                                                 <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
@@ -2898,7 +2902,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Target Apiary</Label>
                                         <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Site" />
@@ -2912,7 +2916,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Installation Date</Label>
                                             <Input
                                                 id="hive-install-date"
                                                 name="hive-install-date"
@@ -2923,7 +2927,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
+                                            <Label className=" text-[10px] font-black ml-1">Health Status</Label>
                                             <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
                                                 <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
@@ -2938,7 +2942,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
+                                        <Label className=" text-[10px] font-black ml-1">Notes</Label>
                                         <Textarea
                                             id="hive-notes"
                                             name="hive-notes"
@@ -2950,8 +2954,8 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
+                                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black transition-all hover:scale-[1.02]">
+                                        {editingHive ? 'Sync Unit Parameters' : 'Save Hive'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -2995,19 +2999,19 @@ const AdminDashboard: React.FC = () => {
                                             </CardHeader>
                                             <CardContent className="space-y-4">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Clearance Level</span>
+                                                    <span className="text-[10px] font-black text-muted-foreground">Role</span>
                                                     <Select
                                                         defaultValue={userObj.role}
                                                         onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
                                                         disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
                                                     >
-                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black uppercase tracking-widest border-none bg-muted/60">
+                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black border-none bg-muted/60">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl">
-                                                            <SelectItem value="user" className="text-xs font-bold">OPERATIVE (USER)</SelectItem>
-                                                            <SelectItem value="admin" className="text-xs font-bold">OVERSEER (ADMIN)</SelectItem>
-                                                            <SelectItem value="super_admin" className="text-xs font-bold">ENTITY (SUPER ADMIN)</SelectItem>
+                                                            <SelectItem value="user" className="text-xs font-bold">User</SelectItem>
+                                                            <SelectItem value="admin" className="text-xs font-bold">Admin</SelectItem>
+                                                            <SelectItem value="super_admin" className="text-xs font-bold">Super Admin</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -3015,18 +3019,18 @@ const AdminDashboard: React.FC = () => {
                                                 <div className="flex gap-2 pt-2">
                                                     <Button
                                                         variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
+                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black hover:bg-primary/10 hover:text-primary transition-colors"
                                                         onClick={() => handleEditUser(userObj)}
                                                     >
                                                         <Edit className="h-4 w-4 mr-2" /> Modify
                                                     </Button>
                                                     <Button
                                                         variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
+                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
                                                         onClick={() => handleDeleteUser(userObj.id)}
                                                         disabled={userObj.email === user?.email} // Can't delete self
                                                     >
-                                                        <UserMinus className="h-4 w-4 mr-2" /> De-Authenticate
+                                                        <UserMinus className="h-4 w-4 mr-2" /> Remove User
                                                     </Button>
                                                 </div>
 
@@ -3040,7 +3044,7 @@ const AdminDashboard: React.FC = () => {
                                         className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
                                     >
                                         <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
-                                        <h3 className="font-black uppercase tracking-widest text-xs">Add a team member</h3>
+                                        <h3 className="font-black text-xs">Add a team member</h3>
                                         <p className="text-[10px] font-medium text-center mt-2 opacity-60">Create an account and set permissions</p>
                                     </Card>
                                 </div>
@@ -3055,7 +3059,7 @@ const AdminDashboard: React.FC = () => {
                                         <div className="grid gap-5 py-4">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
+                                                    <Label className=" text-[10px] font-black ml-1">First Name</Label>
                                                     <Input
                                                         id="user-firstname"
                                                         name="user-firstname"
@@ -3066,7 +3070,7 @@ const AdminDashboard: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
+                                                    <Label className=" text-[10px] font-black ml-1">Last Name</Label>
                                                     <Input
                                                         id="user-lastname"
                                                         name="user-lastname"
@@ -3078,7 +3082,7 @@ const AdminDashboard: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Email Address</Label>
                                                 <Input
                                                     id="user-email"
                                                     name="user-email"
@@ -3091,7 +3095,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                             {!editingUser && (
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
+                                                    <Label className=" text-[10px] font-black ml-1">Access Password</Label>
                                                     <Input
                                                         id="user-password"
                                                         name="user-password"
@@ -3104,22 +3108,22 @@ const AdminDashboard: React.FC = () => {
                                                 </div>
                                             )}
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
+                                                <Label className=" text-[10px] font-black ml-1">Role</Label>
                                                 <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
                                                     <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
                                                         <SelectValue placeholder="Select Role" />
                                                     </SelectTrigger>
                                                     <SelectContent className="rounded-xl">
-                                                        <SelectItem value="user" className="font-bold">OPERATIVE (USER)</SelectItem>
-                                                        <SelectItem value="admin" className="font-bold">OVERSEER (ADMIN)</SelectItem>
-                                                        <SelectItem value="super_admin" className="font-bold">ENTITY (SUPER ADMIN)</SelectItem>
+                                                        <SelectItem value="user" className="font-bold">User</SelectItem>
+                                                        <SelectItem value="admin" className="font-bold">Admin</SelectItem>
+                                                        <SelectItem value="super_admin" className="font-bold">Super Admin</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
                                         </div>
                                         <DialogFooter>
-                                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                                {editingUser ? 'Update Operator' : 'Finalize Authentication'}
+                                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black transition-all hover:scale-[1.02]">
+                                                {editingUser ? 'Save Changes' : 'Add User'}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
@@ -3148,15 +3152,15 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Phone</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Crop Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farm Size</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -3179,7 +3183,7 @@ const AdminDashboard: React.FC = () => {
                                                         </TableCell>
                                                         <TableCell className="px-6">
                                                             <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black"><SelectValue /></SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectItem value="pending">Pending</SelectItem>
                                                                     <SelectItem value="contacted">Contacted</SelectItem>
@@ -3219,31 +3223,31 @@ const AdminDashboard: React.FC = () => {
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Farmer</p>
                                                 <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Contact</p>
                                                 <p className="text-xs">{selectedPollination.email}</p>
                                                 <p className="text-xs font-mono">{selectedPollination.phone}</p>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Crop</p>
                                                 <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
+                                                <p className="text-[10px] font-black text-muted-foreground">Size</p>
                                                 <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
                                             </div>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                            <p className="text-[10px] font-black text-muted-foreground">Location</p>
                                             <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
                                         </div>
                                         <div className="space-y-1 pt-2 border-t border-border/10">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
+                                            <p className="text-[10px] font-black text-muted-foreground">Additional Notes</p>
                                             <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl">
                                                 "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
                                             </p>
@@ -3273,13 +3277,13 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Subject</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] max-w-md">Message</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -3295,7 +3299,7 @@ const AdminDashboard: React.FC = () => {
                                                         <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
                                                         <TableCell className="px-6">
                                                             <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black"><SelectValue /></SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectItem value="new">New</SelectItem>
                                                                     <SelectItem value="read">Read</SelectItem>
@@ -3350,7 +3354,7 @@ const AdminDashboard: React.FC = () => {
                                             <div className="text-right">
                                                 <Badge variant="outline" className="mb-2">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
                                                 <div className="flex justify-end">
-                                                    <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
+                                                    <Badge className="bg-primary/10 text-primary border-none text-[10px] tracking-wider">
                                                         {selectedContact.inquiry_type || 'General'}
                                                     </Badge>
                                                 </div>
@@ -3361,7 +3365,7 @@ const AdminDashboard: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                             {(selectedContact.city || selectedContact.state || selectedContact.country) && (
                                                 <div className="space-y-1">
-                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                                    <p className="text-[10px] font-black text-muted-foreground">Location</p>
                                                     <p className="text-sm font-medium">
                                                         {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
                                                     </p>
@@ -3369,7 +3373,7 @@ const AdminDashboard: React.FC = () => {
                                             )}
                                             {selectedContact.company && (
                                                 <div className="space-y-1">
-                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
+                                                    <p className="text-[10px] font-black text-muted-foreground">Company</p>
                                                     <p className="text-sm font-medium">{selectedContact.company}</p>
                                                 </div>
                                             )}
@@ -3378,7 +3382,7 @@ const AdminDashboard: React.FC = () => {
                                         {/* Grower Specifics */}
                                         {(selectedContact.farm_name || selectedContact.crop_type) && (
                                             <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                <p className="text-[10px] font-black text-primary flex items-center gap-2">
                                                     <Leaf className="w-3 h-3" /> Farm Details
                                                 </p>
                                                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -3398,7 +3402,7 @@ const AdminDashboard: React.FC = () => {
                                         {/* Beekeeper Specifics */}
                                         {(selectedContact.apiary_name || selectedContact.hive_count) && (
                                             <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                <p className="text-[10px] font-black text-primary flex items-center gap-2">
                                                     <Database className="w-3 h-3" /> Apiary Details
                                                 </p>
                                                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -3417,7 +3421,7 @@ const AdminDashboard: React.FC = () => {
 
                                         {/* Message Body */}
                                         <div className="space-y-2">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
+                                            <p className="text-[10px] font-black text-muted-foreground">
                                                 {selectedContact.topic || selectedContact.subject || 'Message'}
                                             </p>
                                             <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
@@ -3447,10 +3451,10 @@ const AdminDashboard: React.FC = () => {
                                 <Table>
                                     <TableHeader>
                                         <TableRow className="bg-muted/20 border-border/10">
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Subscribed On</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>

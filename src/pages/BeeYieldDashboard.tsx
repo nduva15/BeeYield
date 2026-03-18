@@ -16,6 +16,7 @@ import {
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock as LockIcon, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
     Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug, Calendar
 } from "lucide-react";
+import { Target } from "lucide-react";
 import { Award } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -235,7 +236,7 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield AI', icon: MessageSquare },
+            { id: 'assistant', label: 'BeeYield Assistant', icon: MessageSquare },
             { id: 'devices', label: 'Devices', icon: Cpu },
             {
                 id: 'precision-pollination-folder',

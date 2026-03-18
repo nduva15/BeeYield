@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import {
     TrendingUp, TrendingDown, FileText, FileSpreadsheet,
-    AlertCircle, BarChart3, Lightbulb, Info, Activity, Download
+    AlertCircle, BarChart3, Lightbulb, Info, Activity, Download, Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
@@ -199,7 +199,7 @@ const ChartsView: React.FC = () => {
                                     y={0.55}
                                     stroke="hsl(var(--destructive) / 0.3)"
                                     strokeDasharray="6 6"
-                                    label={{ value: 'PROTOCOL_CAP', fill: 'hsl(var(--destructive))', fontSize: 10, fontWeight: 700, position: 'insideTopRight' }}
+                                    label={{ value: 'Protocol Cap', fill: 'hsl(var(--destructive))', fontSize: 10, fontWeight: 700, position: 'insideTopRight' }}
                                 />
                                 <Line
                                     type="monotone"
@@ -293,7 +293,7 @@ const ChartsView: React.FC = () => {
                 </motion.div>
             </div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -315,4 +315,4 @@ const ChartsView: React.FC = () => {
     );
 };
 
-export default ChartsView;
+export default ChartsVi

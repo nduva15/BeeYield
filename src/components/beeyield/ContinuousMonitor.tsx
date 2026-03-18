@@ -145,15 +145,15 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                     <div className={cn("w-2.5 h-2.5 rounded-full", cfg.dot)} />
                                     <div>
                                         <p className="text-sm font-bold text-[#1A1A1A]">{node.id}</p>
-                                        <p className="text-[10px] text-gray-400 tabular-nums uppercase tracking-widest">{node.temp}°C</p>
+                                        <p className="text-[10px] text-gray-400 tabular-nums">{node.temp}°C</p>
                                     </div>
                                 </div>
                                 <div className={cn(
-                                    "px-2 py-0.5 rounded-full text-[8px] font-black tracking-widest border",
+                                    "px-2 py-0.5 rounded-full text-[8px] font-black border",
                                     node.status === 'ok' ? 'bg-emerald-50 text-[#1B9157] border-emerald-100' :
                                     node.status === 'warn' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-red-50 text-red-500 border-red-100'
                                 )}>
-                                    {node.status === 'ok' ? 'NOMINAL' : node.status === 'warn' ? 'WARNING' : 'CRITICAL'}
+                                    {node.status === 'ok' ? 'Nominal' : node.status === 'warn' ? 'Warning' : 'Critical'}
                                 </div>
                             </div>
 
@@ -186,7 +186,7 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                         </div>
                         <div>
                             <h3 className="text-sm font-bold text-[#1A1A1A]">Activity Ledger</h3>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Real-time Events</p>
+                            <p className="text-[10px] text-gray-500 text-[9px]">Real-time Events</p>
                         </div>
                     </div>
                     <div className={cn(glass.badge, "bg-[#F9F7F2] border-[#F4D03F]/20 py-1.5")}>

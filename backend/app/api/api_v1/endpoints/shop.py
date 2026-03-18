@@ -213,6 +213,16 @@ async def delete_address(
     await shop_service.delete_user_address(user_id, address_id, token=token)
     return {"status": "success"}
 
+@router.put("/addresses/{address_id}", response_model=schemas.Address)
+async def update_address(
+    address_id: str,
+    address_in: schemas.AddressCreate, # Using same schema for update for simplicity
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    user_id = current_user.get("sub")
+    return await shop_service.update_user_address(user_id, address_id, address_in.dict(), token=token)
+
 # --- Tracking ---
 @router.get("/orders/{order_id}/tracking", response_model=schemas.TrackingInfo)
 async def track_order(

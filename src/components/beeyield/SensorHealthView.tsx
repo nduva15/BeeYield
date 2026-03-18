@@ -94,7 +94,7 @@ const VitalsCard: React.FC<{
         <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all h-full bg-white shadow-sm")}>
             <div className="flex items-start justify-between mb-4">
                 <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{label}</p>
+                    <p className="text-[10px] font-bold tracking-wider text-gray-400">{label}</p>
                     <div className="flex items-baseline gap-1">
                         <span className={cn("text-3xl font-bold tracking-tight", status === 'ok' ? 'text-[#1A1A1A]' : status === 'warn' ? 'text-amber-600' : 'text-red-600')}>{value}</span>
                         <span className="text-xs font-bold text-gray-400">{unit}</span>
@@ -111,10 +111,10 @@ const VitalsCard: React.FC<{
             </div>
             <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-4">
                 <div className="flex flex-col">
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Target</span>
+                    <span className="text-[9px] font-bold text-gray-400">Target</span>
                     <span className="text-xs font-bold text-gray-600">{target}</span>
                 </div>
-                <div className={cn("flex items-center gap-1 font-bold text-[10px] uppercase", trendColor)}>
+                <div className={cn("flex items-center gap-1 font-bold text-[10px]", trendColor)}>
                     <TrendIcon className="w-3 h-3" />
                     <span>{trend}</span>
                 </div>
@@ -210,13 +210,13 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <div className={cn(glass.card, "p-6 border border-red-200 bg-red-50/60")}>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Sensor health load failed</div>
+                            <div className="text-[10px] font-black text-red-600">Sensor health load failed</div>
                             <div className="text-sm font-semibold text-slate-700 break-words mt-1">{error}</div>
                         </div>
                         <button
                             type="button"
                             onClick={loadInitialData}
-                            className={cn(glass.btnSecondary, "h-10 px-5 text-[10px] font-black uppercase tracking-widest")}
+                            className={cn(glass.btnSecondary, "h-10 px-5 text-[10px] font-black")}
                         >
                             Retry
                         </button>
@@ -238,7 +238,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         <button
                             type="button"
                             onClick={loadInitialData}
-                            className={cn(glass.btnSecondary, "h-11 px-6 text-[10px] font-black uppercase tracking-widest")}
+                            className={cn(glass.btnSecondary, "h-11 px-6 text-[10px] font-black")}
                         >
                             Refresh
                         </button>
@@ -296,7 +296,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                 <p className="text-xs font-medium text-gray-500">{alert.message}</p>
                             </div>
                             <div className="shrink-0 text-right">
-                                <span className="text-[10px] font-bold text-gray-300 uppercase">{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</span>
+                                <span className="text-[10px] font-bold text-gray-300">{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</span>
                             </div>
                         </motion.div>
                     ))}
@@ -307,7 +307,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-gray-400" />
-                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Hive selection</h3>
+                    <h3 className="text-[10px] font-bold tracking-wider text-gray-500">Hive selection</h3>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {realHives.map(hive => {
@@ -362,7 +362,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all bg-white shadow-sm overflow-hidden")}>
                     <div className="flex items-start justify-between mb-2">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Hive Sound</p>
+                            <p className="text-[10px] font-bold tracking-wider text-gray-400">Hive Sound</p>
                             <h3 className={cn("text-xl font-bold tracking-tight uppercase", acoustic.color)}>
                                 {selectedHive.acoustic}
                             </h3>
@@ -395,7 +395,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">History Trends</h2>
                     </div>
                     <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                        <span className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Past {historyRange} Mo</span>
+                        <span className="px-3 text-[10px] font-bold text-gray-400">Past {historyRange} Mo</span>
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={() => setHistoryRange(r => Math.max(1, r - 1))}
@@ -456,7 +456,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             <thead>
                                 <tr className="bg-gray-50/50">
                                     {['Hive', 'Temp', 'Humidity', 'Sound profile', 'Last sync', 'Health'].map(h => (
-                                        <th key={h} className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">{h}</th>
+                                        <th key={h} className="px-6 py-4 text-[10px] font-bold tracking-wider text-gray-400 border-b border-gray-100">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -478,9 +478,9 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                                 "bg-red-50 text-red-600 border-red-100"
                                             )}>{hive.acoustic}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-[10px] font-bold text-gray-300 uppercase tracking-tighter sm:tracking-normal">{hive.lastSeen}</td>
+                                        <td className="px-6 py-4 text-[10px] font-bold text-gray-300 tracking-tighter sm:tracking-normal">{hive.lastSeen}</td>
                                         <td className="px-6 py-4">
-                                            {hive.alert ? <span className="bg-red-50 text-red-500 border border-red-100 px-3 py-1 rounded-lg font-bold text-[10px] uppercase shadow-sm">Alert</span> : <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-lg font-bold text-[10px] uppercase shadow-sm">OK</span>}
+                                            {hive.alert ? <span className="bg-red-50 text-red-500 border border-red-100 px-3 py-1 rounded-lg font-bold text-[10px] shadow-sm">Alert</span> : <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-lg font-bold text-[10px] shadow-sm">Ok</span>}
                                         </td>
                                     </tr>
                                 ))}

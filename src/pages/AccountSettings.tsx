@@ -30,7 +30,7 @@ const AccountSettings = () => {
             <BeeYieldPageShell className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-8 w-8 animate-spin text-[#1B9157]" />
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Loading…</span>
+                    <span className="text-xs font-bold text-gray-500">Loading…</span>
                 </div>
             </BeeYieldPageShell>
         );
@@ -48,7 +48,7 @@ const AccountSettings = () => {
                         <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
                             Account <span className="text-[#F4D03F]">Access</span>
                         </h1>
-                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
+                        <p className="text-[11px] font-bold text-gray-500">
                             {authMode === 'login'
                                 ? 'Sign in to your account'
                                 : 'Create a new account'}
@@ -61,7 +61,7 @@ const AccountSettings = () => {
                                 <button
                                     type="button"
                                     onClick={() => setAuthMode('login')}
-                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-[10px] uppercase transition-all ${authMode === 'login'
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-[10px] transition-all ${authMode === 'login'
                                         ? 'bg-white text-[#1A1A1A] shadow-sm border border-gray-200'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
@@ -71,7 +71,7 @@ const AccountSettings = () => {
                                 <button
                                     type="button"
                                     onClick={() => setAuthMode('register')}
-                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-[10px] uppercase transition-all ${authMode === 'register'
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-md font-bold text-[10px] transition-all ${authMode === 'register'
                                         ? 'bg-white text-[#1A1A1A] shadow-sm border border-gray-200'
                                         : 'text-gray-400 hover:text-gray-600'
                                         }`}
@@ -99,15 +99,15 @@ const AccountSettings = () => {
                     <div className="grid grid-cols-3 gap-3 text-center opacity-70 hover:opacity-100 transition-opacity">
                         <div className="p-3 rounded-xl bg-white/50 border border-gray-100 backdrop-blur-sm">
                             <span className="text-xl">🍯</span>
-                            <p className="text-[9px] font-bold mt-1.5 text-gray-500 uppercase tracking-widest">Track Orders</p>
+                            <p className="text-[9px] font-bold mt-1.5 text-gray-500">Track Orders</p>
                         </div>
                         <div className="p-3 rounded-xl bg-white/50 border border-gray-100 backdrop-blur-sm">
                             <span className="text-xl">⚡</span>
-                            <p className="text-[9px] font-bold mt-1.5 text-gray-500 uppercase tracking-widest">Fast Checkout</p>
+                            <p className="text-[9px] font-bold mt-1.5 text-gray-500">Fast Checkout</p>
                         </div>
                         <div className="p-3 rounded-xl bg-white/50 border border-gray-100 backdrop-blur-sm">
                             <span className="text-xl">🎁</span>
-                            <p className="text-[9px] font-bold mt-1.5 text-gray-500 uppercase tracking-widest">Exclusive Deals</p>
+                            <p className="text-[9px] font-bold mt-1.5 text-gray-500">Exclusive Deals</p>
                         </div>
                     </div>
                     </div>
@@ -140,7 +140,7 @@ const AccountSettings = () => {
                             </div>
                             <div>
                                 <CardTitle className="text-xl font-bold text-[#1A1A1A] tracking-tight">Your Profile</CardTitle>
-                                <CardDescription className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-1">Personal account information</CardDescription>
+                                <CardDescription className="text-[11px] font-bold text-gray-500 tracking-wider mt-1">Personal account information</CardDescription>
                             </div>
                         </div>
                     </CardHeader>
@@ -172,18 +172,18 @@ const AccountSettings = () => {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Login Type</span>
+                                <span className="text-[10px] font-bold tracking-wider text-gray-500">Login Type</span>
                                 <p className="text-sm font-bold text-[#1A1A1A]">{user.app_metadata?.provider || 'Email'}</p>
                             </div>
                             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Account status</span>
+                                <span className="text-[10px] font-bold tracking-wider text-gray-500">Account status</span>
                                 <p className={`text-sm font-bold flex items-center gap-2 ${user.email_confirmed_at ? 'text-[#1B9157]' : 'text-[#F4D03F]'}`}>
                                     <span className={`w-1.5 h-1.5 rounded-full ${user.email_confirmed_at ? 'bg-[#1B9157]' : 'bg-[#F4D03F]'}`} />
                                     {user.email_confirmed_at ? 'Verified' : 'Pending'}
                                 </p>
                             </div>
                             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1.5 sm:col-span-2">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Member Since</span>
+                                <span className="text-[10px] font-bold tracking-wider text-gray-500">Member Since</span>
                                 <p className="text-sm font-bold text-[#1A1A1A]">{new Date(user.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                             </div>
                         </div>
@@ -217,7 +217,7 @@ const AccountSettings = () => {
                                     </div>
                                     <button
                                         onClick={handleSignOut}
-                                        className={cn("w-full h-10 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100 hover:border-red-600 rounded-lg font-bold text-xs uppercase flex items-center justify-center gap-2 transition-all shadow-sm")}
+                                        className={cn("w-full h-10 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100 hover:border-red-600 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm")}
                                     >
                                         <LogOut className="h-4 w-4" />
                                         Logout from Device

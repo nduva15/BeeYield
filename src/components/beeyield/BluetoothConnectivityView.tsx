@@ -48,7 +48,7 @@ interface BluetoothDevice {
 export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
     const [connectedDevice, setConnectedDevice] = React.useState<any>(null);
     const [gattServer, setGattServer] = React.useState<any>(null);
-    const [status, setStatus] = React.useState<'IDLE' | 'SCANNING' | 'CONNECTING' | 'CONNECTED' | 'ERROR'>('IDLE');
+    const [status, setStatus] = React.useState<'Idle' | 'Scanning' | 'Connecting' | 'Connected' | 'Error'>('Idle');
     const [logs, setLogs] = React.useState<string[]>([]);
     const [liveData, setLiveData] = React.useState<{ temp?: number, weight?: number, humidity?: number, battery?: number }>({});
     const [syncProgress, setSyncProgress] = React.useState(0);
@@ -93,7 +93,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
         }
 
         try {
-            setStatus('SCANNING');
+            setStatus('Scanning');
             addLog("Searching for sensors...");
 
             const device = await navigator.bluetooth.requestDevice({
@@ -103,14 +103,14 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
             addLog(`Found: ${device.name}`);
             setConnectedDevice(device);
-            setStatus('CONNECTING');
+            setStatus('Connecting');
 
             device.addEventListener('gattserverdisconnected', onDisconnected);
 
             addLog("Connecting...");
             const server = await device.gatt.connect();
             setGattServer(server);
-            setStatus('CONNECTED');
+            setStatus('Connected');
             addLog("Connected.");
 
             checkDeviceInDB(device.id, device.name || 'BeeYield Device');
@@ -118,7 +118,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
         } catch (error: any) {
             console.error(error);
-            setStatus('ERROR');
+            setStatus('Error');
             addLog(`Error: ${error.message}`);
             if (error.name !== 'NotFoundError' && error.name !== 'UserCancelledError') {
                 toast.error(`Bluetooth Error: ${error.message}`);
@@ -127,7 +127,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
     };
 
     const onDisconnected = () => {
-        setStatus('IDLE');
+        setStatus('Idle');
         setConnectedDevice(null);
         setGattServer(null);
         addLog("Disconnected.");
@@ -263,14 +263,14 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                 actions={
                     <div className="flex gap-3">
                         <AnimatePresence mode="wait">
-                            {status === 'CONNECTED' ? (
+                            {status === 'Connected' ? (
                                 <motion.button
                                     key="disconnect"
                                     initial={{ opacity: 0, scale: 0.98 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.98 }}
                                     onClick={() => gattServer?.device.gatt.disconnect()}
-                                    className={cn(glass.btnSecondary, "h-8 px-4 text-red-500 border-red-500/10 hover:bg-red-500/10 font-black uppercase text-[9px] tracking-[0.2em] rounded-xl shadow-sm flex items-center gap-2")}
+                                    className={cn(glass.btnSecondary, "h-8 px-4 text-red-500 border-red-500/10 hover:bg-red-500/10 font-black text-[9px] rounded-xl shadow-sm flex items-center gap-2")}
                                 >
                                     <X className="w-3.5 h-3.5" />
                                     Disconnect_Link
@@ -282,10 +282,10 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.98 }}
                                     onClick={handleSearch}
-                                    disabled={status === 'SCANNING' || status === 'CONNECTING'}
+                                    disabled={status === 'Scanning' || status === 'Connecting'}
                                     className={glass.btnPrimary}
                                 >
-                                     {status === 'SCANNING' ? (
+                                     {status === 'Scanning' ? (
                                          <>
                                              <Loader2 className="w-4 h-4 animate-spin" />
                                              Scanning...
@@ -306,9 +306,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             {/* Status Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {[
-                    { label: 'Network status', value: status === 'IDLE' ? 'READY' : status.toUpperCase(), icon: Smartphone, color: status === 'CONNECTED' ? 'bg-[#1B9157]/10 text-[#1B9157]' : 'bg-[#F4D03F]/10 text-[#F4D03F]', sub: connectedDevice ? connectedDevice.id : 'Waiting...' },
+                    { label: 'Network status', value: status === 'Idle' ? 'Ready' : status.toUpperCase(), icon: Smartphone, color: status === 'Connected' ? 'bg-[#1B9157]/10 text-[#1B9157]' : 'bg-[#F4D03F]/10 text-[#F4D03F]', sub: connectedDevice ? connectedDevice.id : 'Waiting...' },
                     { label: 'Battery Level', value: liveData.battery ? `${liveData.battery}%` : '0%', icon: Battery, color: liveData.battery && liveData.battery < 20 ? 'bg-red-500/10 text-red-500' : 'bg-[#1B9157]/10 text-[#1B9157]', progress: liveData.battery || 0 },
-                    { label: 'Hive Sync', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'Active' : 'Not Linked', icon: Activity, color: 'bg-[#F4D03F]/10 text-[#F4D03F]', action: () => status === 'CONNECTED' && setShowSetupModal(true) }
+                    { label: 'Hive Sync', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'Active' : 'Not Linked', icon: Activity, color: 'bg-[#F4D03F]/10 text-[#F4D03F]', action: () => status === 'Connected' && setShowSetupModal(true) }
                 ].map((stat, i) => (
                     <motion.div
                         key={i}
@@ -385,7 +385,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                         </svg>
                                         <div className="flex flex-col items-center relative z-10">
                                             <span className="text-lg font-bold tabular-nums leading-none tracking-tight mb-0.5 text-[#1A1A1A]">{gauge.val}</span>
-                                            <span className="text-[9px] font-bold opacity-40 uppercase">{gauge.unit}</span>
+                                            <span className="text-[9px] font-bold opacity-40">{gauge.unit}</span>
                                         </div>
                                     </div>
                                     <div className={glass.badge}>
@@ -425,13 +425,13 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                             <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
                                         </div>
                                         <div>
-                                            <p className="text-[7px] font-black uppercase tracking-[0.2em] text-gray-400">LAST_SYNCHRONIZATION</p>
-                                            <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tighter">{knownDevice?.last_sync_at || 'NO_RECORD'}</p>
+                                            <p className="text-[7px] font-black text-gray-400">Last Synchronization</p>
+                                            <p className="text-[10px] font-black text-[#1A1A1A] tracking-tighter">{knownDevice?.last_sync_at || 'No Record'}</p>
                                         </div>
                                     </div>
                                     <div className="text-center sm:text-right">
-                                        <p className="text-[7px] font-black uppercase tracking-[0.3em] text-gray-400">INGEST_STATE</p>
-                                        <span className="text-[9px] font-black text-[#1B9157] uppercase tracking-widest">READY_FOR_EGRESS</span>
+                                        <p className="text-[7px] font-black text-gray-400">Ingest State</p>
+                                        <span className="text-[9px] font-black text-[#1B9157]">Ready For Egress</span>
                                     </div>
                                 </div>
 
@@ -444,7 +444,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                             className="space-y-3"
                                         >
                                             <div className="flex justify-between items-end px-1">
-                                                <span className="text-[9px] font-black text-[#F4D03F] uppercase tracking-widest animate-pulse">Sync_In_Progress...</span>
+                                                <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Sync_In_Progress...</span>
                                                 <span className="text-lg font-black tabular-nums tracking-tighter text-[#1A1A1A]">{syncProgress}%</span>
                                             </div>
                                             <div className="h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 p-0.5">
@@ -480,7 +480,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                 {logs.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full opacity-20 gap-2">
                                         <Loader2 className="w-4 h-4 animate-spin-slow" />
-                                        <p className="text-[8px] font-black tracking-[0.3em] uppercase">LINK_IDLE_AWAIT_FRAME</p>
+                                        <p className="text-[8px] font-black">Link Idle Await Frame</p>
                                     </div>
                                 ) : (
                                     logs.map((log, i) => (
@@ -524,19 +524,19 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     autoComplete="off"
                                     value={setupName}
                                     onChange={(e) => setSetupName(e.target.value)}
-                                    className={cn(glass.input, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}
+                                    className={cn(glass.input, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}
                                     placeholder="e.g. ALPHA_SCALE_01"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <Label className={glass.microLabel}>Hive</Label>
                                 <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                                    <SelectTrigger id="bluetooth-setup-hive" aria-label="Hive" className={cn(glass.select, "w-full h-10 uppercase font-black tracking-[0.2em] text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
+                                    <SelectTrigger id="bluetooth-setup-hive" aria-label="Hive" className={cn(glass.select, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
                                         <SelectValue placeholder="Select a hive…" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {hives.map(hive => (
-                                            <SelectItem key={hive.id} value={hive.id} className="uppercase font-black text-[10px] tracking-[0.1em]">
+                                            <SelectItem key={hive.id} value={hive.id} className=" font-black text-[10px]">
                                                 {hive.hive_code}
                                             </SelectItem>
                                         ))}
@@ -546,14 +546,14 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
                             <div className="flex flex-col gap-2 pt-4 border-t border-[#F4D03F]/10">
                                 <button
-                                    className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.3em] rounded-xl")}
+                                    className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black rounded-xl")}
                                     onClick={handleSetupSubmit}
                                 >
                                     <ShieldCheck className="w-4 h-4" />
                                     <span>Save</span>
                                 </button>
                                 <button
-                                    className={cn(glass.btnSecondary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.3em] rounded-xl")}
+                                    className={cn(glass.btnSecondary, "w-full h-10 text-[10px] font-black rounded-xl")}
                                     onClick={() => setShowSetupModal(false)}
                                 >
                                     Cancel

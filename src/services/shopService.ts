@@ -63,6 +63,7 @@ export interface CheckoutOrder {
         postal_code?: string;
     };
     payment_method: "mpesa" | "card";
+    payment_method_id?: string;
     items: {
         product_id: string;
         variant_id: string;
@@ -70,7 +71,7 @@ export interface CheckoutOrder {
     }[];
     total_kes: number;
     notes?: string;
-    idempotency_key: string;
+    idempotency_key?: string;
 }
 
 export interface CheckoutResponse {
@@ -117,6 +118,11 @@ export const getAddresses = async () => {
 
 export const addAddress = async (address: unknown) => {
     return await apiPost<unknown>('/shop/addresses', address);
+};
+
+export const updateAddress = async (addressId: string, address: unknown) => {
+    const { apiPut } = await import("./api");
+    return await apiPut<unknown>(`/shop/addresses/${addressId}`, address);
 };
 
 export const deleteAddress = async (addressId: string) => {

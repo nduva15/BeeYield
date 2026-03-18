@@ -188,7 +188,7 @@ const ESG = () => {
       initiatives: [
         "Co-Founded by Agatha Nduva (IT Architecture) & Carole Nduva (Growth)",
         "Diversity-first engineering and strategic leadership teams",
-        "Mentorship programs for women in digital agriculture and AI",
+        "Mentorship programs for women in digital agriculture and advanced intelligence",
         "Strategic focus on inclusive economic growth in Kibwezi",
         "Leadership in Africa's emerging high-tech ag-ecosystem"
       ],

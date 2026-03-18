@@ -218,9 +218,9 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn("p-8 -m-0 space-y-12 pb-12 min-h-screen")}>
             <BeeYieldPageHeader
                 icon={CreditCard}
-                label="USAGE_SETTLEMENT_REGISTRY"
+                label="Usage Settlement Registry"
                 title={<>Financial <span className="text-[#F4D03F]">Logistics</span></>}
-                subtitle="RESOURCE_VALUATION_AND_BILLING_METRICS"
+                subtitle="Resource Valuation And Billing Metrics"
             />
 
             {/* Consumption Summary */}
@@ -229,7 +229,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                         <CreditCard className="w-4 h-4 text-[#1B9157]" />
                     </div>
-                    <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">CONSUMPTION_MATRIX</h3>
+                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Consumption Matrix</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
@@ -244,11 +244,11 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-white/40 group-hover:scale-110 transition-transform duration-300 bg-white/60", item.color)}>
                                 <item.icon className="w-5 h-5" />
                             </div>
-                            <p className="text-[9px] font-black tracking-widest uppercase text-gray-500 mb-1">{item.label}</p>
+                            <p className="text-[9px] font-black text-gray-500 mb-1">{item.label}</p>
                             <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                {item.value} <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.unit}</span>
+                                {item.value} <span className="text-[10px] font-bold text-gray-400">{item.unit}</span>
                             </h3>
-                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-2">{item.subtext}</p>
+                            <p className="text-[8px] font-black text-gray-400 mt-2">{item.subtext}</p>
                         </motion.div>
                     ))}
                 </div>
@@ -264,14 +264,14 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             <FileText className="w-6 h-6 text-[#1B9157]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">BATCH_SETTLEMENT_EXPORT</h3>
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">COMPILE_PAYMENT_ARCHIVES_FOR_EXTERNAL_PROCESSING</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Batch Settlement Export</h3>
+                            <p className="text-[9px] font-bold text-gray-500">Compile Payment Archives For External Processing</p>
                         </div>
                     </div>
 
                     <button
                         onClick={exportRatesCsv}
-                        className={cn(glass.btnPrimary, "w-full md:w-auto h-10 px-6 font-black text-[10px] uppercase tracking-[0.2em]")}
+                        className={cn(glass.btnPrimary, "w-full md:w-auto h-10 px-6 font-black text-[10px]")}
                     >
                         EXECUTE_BATCH_EXPORT
                     </button>
@@ -281,26 +281,26 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             {/* Sample billing rates */}
             <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
                 <div className="p-5 border-b border-white/10 bg-white/20">
-                    <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">BILLING_PARAMETERIZATION</h3>
-                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">DEFINE_RESOURCE_SPECIFIC_VALUATION_WEIGHTS</p>
+                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Billing Parameterization</h3>
+                    <p className="text-[9px] font-bold text-gray-500 mt-1">Define Resource Specific Valuation Weights</p>
                 </div>
 
                 <div className="p-5 space-y-4">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]" />
-                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] mt-4 animate-pulse">SYNCHING_PARAMETERS...</p>
+                            <p className="text-[9px] font-black text-gray-500 mt-4 animate-pulse">SYNCHING_PARAMETERS...</p>
                         </div>
                     ) : error ? (
                         <div className="flex flex-col items-center justify-center py-10 text-center">
                             <FileText className="w-8 h-8 text-red-300 mb-4" />
-                            <p className="text-[9px] font-black text-red-600 uppercase tracking-widest">LOAD_FAILED</p>
+                            <p className="text-[9px] font-black text-red-600">Load Failed</p>
                             <p className="text-[10px] font-semibold text-gray-500 mt-2 max-w-md">{error}</p>
                         </div>
                     ) : rates.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <FileText className="w-8 h-8 text-gray-300 mb-4" />
-                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">ZERO_RATE_CONFIGURATION_DETECTED</p>
+                            <p className="text-[9px] font-black text-gray-500">Zero Rate Configuration Detected</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -319,17 +319,17 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                             {item.meter_type === 'Energy' && <Zap className="w-4 h-4 text-[#1B9157]" />}
                                         </div>
                                         <div>
-                                            <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">{item.meter_type}_RATE</h4>
-                                            <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{item.description || 'GLOBAL_STANDARD_SETTLEMENT'}</p>
+                                            <h4 className="text-[10px] font-black text-[#1A1A1A]">{item.meter_type}_RATE</h4>
+                                            <p className="text-[8px] font-bold text-gray-500 mt-0.5">{item.description || 'Global Standard Settlement'}</p>
                                         </div>
                                     </div>
                                     <div className="text-left md:text-right">
                                         <p className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                            {item.rate_per_unit.toFixed(2)} <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{item.currency} / {item.unit}</span>
+                                            {item.rate_per_unit.toFixed(2)} <span className="text-[9px] font-bold text-gray-400">{item.currency} / {item.unit}</span>
                                         </p>
                                         <div className="flex items-center md:justify-end gap-2 mt-1">
-                                            {item.is_active && <div className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest">ACTIVE_PROTOCOL</div>}
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">EFF: {new Date(item.effective_from).toLocaleDateString()}</p>
+                                            {item.is_active && <div className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 px-2 py-0.5 rounded-md text-[8px] font-black">Active Protocol</div>}
+                                            <p className="text-[8px] font-bold text-gray-400">EFF: {new Date(item.effective_from).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -341,7 +341,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                 <div className="p-5 border-t border-white/10 bg-white/20 space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">TELE_TYPE</label>
+                            <label className="text-[9px] font-black text-gray-500 ml-1">Tele Type</label>
                             <Select
                                 value={newRate.meter_type.toLowerCase()}
                                 onValueChange={(v) => {
@@ -352,19 +352,19 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                     setNewRate((p) => ({ ...p, meter_type: next }));
                                 }}
                             >
-                                <SelectTrigger id="meters-payments-meter-type" aria-label="Meter type" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                <SelectTrigger id="meters-payments-meter-type" aria-label="Meter type" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
-                                    <SelectItem value="water" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">WATER</SelectItem>
-                                    <SelectItem value="heat" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">HEAT</SelectItem>
-                                    <SelectItem value="energy" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">ENERGY</SelectItem>
-                                    <SelectItem value="other" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">OTHER</SelectItem>
+                                    <SelectItem value="water" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Water</SelectItem>
+                                    <SelectItem value="heat" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Heat</SelectItem>
+                                    <SelectItem value="energy" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Energy</SelectItem>
+                                    <SelectItem value="other" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Other</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label htmlFor="meters-payments-rate-per-unit" className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">UNIT_RATE</label>
+                            <label htmlFor="meters-payments-rate-per-unit" className="text-[9px] font-black text-gray-500 ml-1">Unit Rate</label>
                             <Input
                                 id="meters-payments-rate-per-unit"
                                 name="rate_per_unit"
@@ -378,7 +378,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             />
                         </div>
                         <div className="space-y-2">
-                            <label htmlFor="meters-payments-description" className="text-[9px] font-black tracking-widest uppercase text-gray-500 ml-1">ANNOTATION</label>
+                            <label htmlFor="meters-payments-description" className="text-[9px] font-black text-gray-500 ml-1">Annotation</label>
                             <Input
                                 id="meters-payments-description"
                                 name="description"
@@ -386,14 +386,14 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                 placeholder="COMMENT..."
                                 value={newRate.description}
                                 onChange={(e) => setNewRate((p) => ({ ...p, description: e.target.value }))}
-                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-widest w-full"
+                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black w-full"
                             />
                         </div>
                         <button
                             type="button"
                             onClick={addRateRemote}
                             disabled={isCreating}
-                            className={cn(glass.btnPrimary, "w-full h-9 rounded-xl inline-flex items-center justify-center text-[9px] font-black uppercase tracking-[0.2em]")}
+                            className={cn(glass.btnPrimary, "w-full h-9 rounded-xl inline-flex items-center justify-center text-[9px] font-black")}
                         >
                             {isCreating ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Plus className="w-3.5 h-3.5 mr-1" />}
                             COMMIT_WEIGHT
@@ -403,8 +403,8 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     {/* Drag and Drop Columns */}
                     <div className="pt-5 border-t border-white/10">
                         <div className="mb-4">
-                            <h4 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">RECURSIVE_DIMENSIONALITY</h4>
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">CONFIGURE_HIERARCHICAL_ORDERING_FOR_BATCH_OUTPUT</p>
+                            <h4 className="text-[11px] font-black text-[#1A1A1A]">Recursive Dimensionality</h4>
+                            <p className="text-[9px] font-bold text-gray-500 mt-1">Configure Hierarchical Ordering For Batch Output</p>
                         </div>
 
                         <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -418,7 +418,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                         <div className="w-6 h-6 rounded-md bg-white/50 flex items-center justify-center border border-white/40 shadow-sm group-hover:bg-[#F4D03F] group-hover:border-[#F4D03F] group-hover:text-white transition-colors duration-200">
                                             <GripVertical className="w-3 h-3 text-gray-500 group-hover:text-white" />
                                         </div>
-                                        <span className="text-[9px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">{column}</span>
+                                        <span className="text-[9px] font-black text-[#1A1A1A]">{column}</span>
                                     </div>
                                 </Reorder.Item>
                             ))}

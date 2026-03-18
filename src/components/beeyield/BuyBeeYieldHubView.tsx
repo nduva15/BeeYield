@@ -238,7 +238,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             </div>
                             <div className="p-8 flex-1 flex flex-col justify-between">
                                 <div className="space-y-4">
-                                    <h3 className="text-2xl font-black text-[#1A1A1A] uppercase tracking-tighter">{item.name}</h3>
+                                    <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tighter">{item.name}</h3>
                                     <p className="text-[#1A1A1A]/70 text-sm leading-relaxed">
                                         {item.description}
                                     </p>
@@ -246,7 +246,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                 <Button
                                     variant="ghost"
                                     onClick={() => window.open('https://beeyield.com/shop-sensors', '_blank', 'noopener,noreferrer')}
-                                    className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2 uppercase tracking-widest text-[10px]"
+                                    className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2 text-[10px]"
                                 >
                                     Discover more <ArrowRight className="w-4 h-4" />
                                 </Button>
@@ -260,7 +260,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             <div className="space-y-8 py-12">
                 <div className="space-y-2">
                     <h2 className="text-4xl font-black tracking-tight">Set</h2>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PRODUCT CODE</p>
+                    <p className="text-[10px] font-bold text-gray-400">Product Code</p>
                 </div>
 
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-sm")}>
@@ -268,12 +268,12 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                         <TableHeader className="bg-[#F9F7F2]">
                             <TableRow className="border-none hover:bg-transparent">
                                 <TableHead className="font-bold text-[#1A1A1A] px-8 h-14">ID</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14">SERIAL NO</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14">DESCRIPTION</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14">LAST LAT</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14">LAST LONG</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14">STATUS</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] px-8 h-14 text-right">UP TIME</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14">Serial No</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14">Description</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14">Last Lat</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14">Last Long</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14">Status</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] px-8 h-14 text-right">Up Time</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -305,8 +305,8 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                 <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-[120px] pointer-events-none group-hover:bg-blue-500/20 transition-all duration-1000" />
                 <div className="relative flex flex-col md:flex-row justify-between items-center gap-10">
                     <div className="space-y-3">
-                        <h3 className="text-4xl font-black text-white tracking-tighter uppercase">Industrial <span className="text-[#F4D03F]">Efficiency</span></h3>
-                        <p className="text-blue-200/60 font-black text-[10px] uppercase tracking-[0.2em]">Recursive power management for hyper-scale IoT</p>
+                        <h3 className="text-4xl font-black text-white tracking-tighter">Industrial <span className="text-[#F4D03F]">Efficiency</span></h3>
+                        <p className="text-blue-200/60 font-black text-[10px]">Recursive power management for hyper-scale IoT</p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-4">
                         <Button
@@ -332,7 +332,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     <h2 className="text-3xl font-bold tracking-tight px-12 uppercase">
                         What the Bee Hub Platform measures
                     </h2>
-                    <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">SMART SENSORS</p>
+                    <p className="text-[10px] font-bold text-[#F4D03F]">Smart Sensors</p>
                 </div>
 
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-sm")}>
@@ -340,8 +340,8 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                         <TableHeader className="bg-[#F9F7F2]">
                             <TableRow className="border-none hover:bg-transparent">
                                 <TableHead className="font-bold text-[#1A1A1A] px-8 h-14 w-16">ID</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14 w-[300px]">PARAMETER</TableHead>
-                                <TableHead className="font-bold text-[#1A1A1A] h-14 px-8">DESCRIPTION</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14 w-[300px]">Parameter</TableHead>
+                                <TableHead className="font-bold text-[#1A1A1A] h-14 px-8">Description</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

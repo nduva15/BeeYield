@@ -76,7 +76,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                 <div className="space-y-4">
                     <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
                         <ClipboardList className="w-3.5 h-3.5" />
-                        <span className="uppercase tracking-[0.1em]">Smart Urgency Filter</span>
+                        <span className="">Smart Urgency Filter</span>
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
                         Yard <span className="text-[#F4D03F]">Operations</span>
@@ -104,7 +104,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 key={u}
                                 onClick={() => setFilterUrgency(u)}
                                 className={cn(
-                                    "px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                                    "px-5 py-2.5 rounded-xl text-[10px] font-black transition-all whitespace-nowrap",
                                     filterUrgency === u
                                         ? "bg-[#FFF9F0] text-foreground shadow-sm"
                                         : "text-muted-foreground hover:text-foreground"
@@ -119,7 +119,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                 <button
                     onClick={() => setShowResolved(r => !r)}
                     className={cn(
-                        "px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ml-auto",
+                        "px-6 py-3 rounded-2xl text-[10px] font-black transition-all border ml-auto",
                         showResolved ? "bg-[#1B9157] border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-[#F9F7F2]0 border-border text-muted-foreground hover:border-[#1B9157]/ hover:text-[#1B9157]"
                     )}
                 >
@@ -180,7 +180,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 </div>
 
                                 <div className="flex items-center gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-border">
-                                    <span className={cn("px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-transparent", cfg.bg, cfg.color, cfg.border)}>
+                                    <span className={cn("px-4 py-2 rounded-xl text-[10px] font-black border border-transparent", cfg.bg, cfg.color, cfg.border)}>
                                         {cfg.label}
                                     </span>
                                     {!task.resolved && (

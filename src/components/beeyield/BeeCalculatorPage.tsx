@@ -204,7 +204,7 @@ const BeeCalculatorPage: React.FC = () => {
                             className={cn(glass.btnSecondary, "px-3 h-8 shadow-sm group")}
                         >
                             <History className="w-3.5 h-3.5 mr-2 text-foreground/40 group-hover:text-[#F4D03F] transition-colors" />
-                            <span className="text-[10px] font-black uppercase tracking-tight">Ledger</span>
+                            <span className="text-[10px] font-black tracking-tight">Ledger</span>
                         </button>
                         <button
                             onClick={handleSave}
@@ -212,7 +212,7 @@ const BeeCalculatorPage: React.FC = () => {
                             className={cn(glass.btnPrimary, "px-4 h-8 shadow-sm group")}
                         >
                             {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : <Save className="w-3.5 h-3.5 mr-2" />}
-                            <span className="text-[10px] font-black uppercase tracking-tight">Save</span>
+                            <span className="text-[10px] font-black tracking-tight">Save</span>
                         </button>
                     </div>
                 }
@@ -243,7 +243,7 @@ const BeeCalculatorPage: React.FC = () => {
                             )}
                             <div className="flex items-center gap-3">
                                 <item.icon className={cn("w-4 h-4", activeSection === item.id ? item.color : "text-gray-400")} />
-                                <span className={cn("text-xs font-black uppercase tracking-tight", activeSection === item.id ? "text-foreground" : "text-foreground/60")}>
+                                <span className={cn("text-xs font-black tracking-tight", activeSection === item.id ? "text-foreground" : "text-foreground/60")}>
                                     {item.label}
                                 </span>
                             </div>
@@ -257,9 +257,9 @@ const BeeCalculatorPage: React.FC = () => {
                     <div className={cn(glass.card, "mt-6 p-6 space-y-3 bg-[#F4D03F]/5 border-[#F4D03F]/10 relative overflow-hidden group rounded-2xl")}>
                         <div className="flex items-center gap-2 relative z-10">
                             <Info className="w-3.5 h-3.5 text-[#F4D03F]" />
-                            <h4 className="text-[10px] font-black uppercase text-[#F4D03F] tracking-tight">Cloud Sync</h4>
+                            <h4 className="text-[10px] font-black text-[#F4D03F] tracking-tight">Cloud Sync</h4>
                         </div>
-                        <p className="text-[10px] font-bold opacity-60 leading-tight relative z-10 uppercase tracking-tighter">
+                        <p className="text-[10px] font-bold opacity-60 leading-tight relative z-10 tracking-tighter">
                             Changes auto-save. Start on mobile, finish on desktop.
                         </p>
                     </div>
@@ -381,7 +381,7 @@ const BeeCalculatorPage: React.FC = () => {
                                             <div className="p-5 rounded-2xl bg-muted/30 border border-black/5 space-y-4">
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-sm font-semibold text-foreground/70">Deficit</span>
-                                                    <span className="text-2xl font-black tabular-nums text-red-500 leading-none">{winterResult.deficitKg} <span className="text-[10px] opacity-40 ml-1">KG</span></span>
+                                                    <span className="text-2xl font-black tabular-nums text-red-500 leading-none">{winterResult.deficitKg} <span className="text-[10px] opacity-40 ml-1">Kg</span></span>
                                                 </div>
                                                 <div className="h-px bg-black/5" />
                                                 <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
@@ -426,8 +426,8 @@ const BeeCalculatorPage: React.FC = () => {
 
                                         <div className="flex justify-between items-start relative z-10">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Varroa <span className="text-[#1B9157]">Wash</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Mite Density Analysis</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Varroa <span className="text-[#1B9157]">Wash</span></h3>
+                                                <p className="text-[10px] font-black opacity-40 leading-none">Mite Density Analysis</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
                                                 <Zap className="w-4 h-4 text-[#1B9157]" />
@@ -435,7 +435,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4 relative z-10">
                                             <div className="space-y-2">
-                                                <label htmlFor="varroa_mites_found" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Total Mites Found (300 Bees)</label>
+                                                <label htmlFor="varroa_mites_found" className="text-[10px] font-black opacity-40 pl-1">Total Mites Found (300 Bees)</label>
                                                 <input
                                                     id="varroa_mites_found"
                                                     name="varroa_mites_found"
@@ -457,9 +457,9 @@ const BeeCalculatorPage: React.FC = () => {
                                                     varroaResult.status === 'safe' ? "text-[#1B9157]" :
                                                         varroaResult.status === 'warning' ? "text-amber-500" : "text-red-500"
                                                 )}>{varroaResult.percentage}%</p>
-                                                <p className="text-[8px] font-black uppercase opacity-40 tracking-widest leading-none uppercase">Infestation Rate</p>
+                                                <p className="text-[8px] font-black opacity-40 leading-none">Infestation Rate</p>
                                                 <div className={cn(
-                                                    glass.badge, "font-black px-3 py-1 mt-2 shadow-sm border-none text-[8px] tracking-widest",
+                                                    glass.badge, "font-black px-3 py-1 mt-2 shadow-sm border-none text-[8px]",
                                                     varroaResult.status === 'safe' ? "bg-[#1B9157] text-white" :
                                                         varroaResult.status === 'warning' ? "bg-amber-500 text-white" : "bg-red-500 text-white"
                                                 )}>
@@ -475,8 +475,8 @@ const BeeCalculatorPage: React.FC = () => {
 
                                         <div className="flex justify-between items-start relative z-10">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Treatment <span className="text-blue-500">Limits</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Ambient Thermal thresholds</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Treatment <span className="text-blue-500">Limits</span></h3>
+                                                <p className="text-[10px] font-black opacity-40 leading-none">Ambient Thermal thresholds</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
                                                 <Thermometer className="w-4 h-4 text-blue-500" />
@@ -484,7 +484,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4 relative z-10 flex-1 flex flex-col justify-end">
                                             <div className="space-y-3 p-4 rounded-2xl bg-muted/30 border border-black/5">
-                                                <label htmlFor="treatment_ambient_temp_c" className="text-[10px] font-black uppercase opacity-40 tracking-widest block">Ambient Temp (℃)</label>
+                                                <label htmlFor="treatment_ambient_temp_c" className="text-[10px] font-black opacity-40 block">Ambient Temp (℃)</label>
                                                 <div className="flex items-center gap-4">
                                                     <input
                                                         id="treatment_ambient_temp_c"
@@ -503,7 +503,7 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mb-1">Product Compatibility</p>
+                                                <p className="text-[8px] font-black opacity-40 mb-1">Product Compatibility</p>
                                                 <div className="space-y-1.5">
                                                     {[
                                                         { name: 'Formic Pro', max: 30, risk: temp > 30 },
@@ -511,12 +511,12 @@ const BeeCalculatorPage: React.FC = () => {
                                                         { name: 'Oxalic Vapor', max: 25, risk: temp > 25 }
                                                     ].map((p) => (
                                                         <div key={p.name} className="flex justify-between items-center px-4 py-2 rounded-xl bg-white/40 border border-black/5 transition-colors group">
-                                                            <span className="text-[10px] font-black uppercase tracking-tight text-foreground/60 group-hover:text-foreground">{p.name}</span>
+                                                            <span className="text-[10px] font-black tracking-tight text-foreground/60 group-hover:text-foreground">{p.name}</span>
                                                             <div className={cn(
-                                                                glass.badge, "border-none px-2 py-0.5 text-[8px] font-black tracking-widest shadow-none",
+                                                                glass.badge, "border-none px-2 py-0.5 text-[8px] font-black shadow-none",
                                                                 p.risk ? "bg-red-500 text-white" : "bg-[#1B9157] text-white"
                                                             )}>
-                                                                {p.risk ? 'RISK' : 'SAFE'}
+                                                                {p.risk ? 'Risk' : 'Safe'}
                                                             </div>
                                                         </div>
                                                     ))}
@@ -541,8 +541,8 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Equipment <span className="text-[#F4D03F]">BOM</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Bill of Materials</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Equipment <span className="text-[#F4D03F]">Bom</span></h3>
+                                                <p className="text-[10px] font-black opacity-40 leading-none">Bill of Materials</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
                                                 <Package className="w-4 h-4 text-[#F4D03F]" />
@@ -550,7 +550,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         </div>
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label htmlFor="equipment_target_colony_count" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Target Colony Count</label>
+                                                <label htmlFor="equipment_target_colony_count" className="text-[10px] font-black opacity-40 pl-1">Target Colony Count</label>
                                                 <input
                                                     id="equipment_target_colony_count"
                                                     name="equipment_target_colony_count"
@@ -571,7 +571,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     { label: 'Foundations', val: bomResult.foundations }
                                                 ].map((item) => (
                                                     <div key={item.label} className="p-3 rounded-xl bg-muted/30 border border-black/5 flex flex-col justify-center">
-                                                        <span className="text-[8px] font-black uppercase opacity-40 tracking-widest mb-1">{item.label}</span>
+                                                        <span className="text-[8px] font-black opacity-40 mb-1">{item.label}</span>
                                                         <span className="text-xl font-black tabular-nums leading-none tracking-tight">{item.val}</span>
                                                     </div>
                                                 ))}
@@ -583,8 +583,8 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Supply <span className="text-emerald-500">Estimator</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Packaging & Labels</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Supply <span className="text-emerald-500">Estimator</span></h3>
+                                                <p className="text-[10px] font-black opacity-40 leading-none">Packaging & Labels</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
                                                 <Tag className="w-4 h-4 text-[#1B9157]" />
@@ -593,7 +593,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label htmlFor="supply_honey_yield_kg" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Honey Yield (kg)</label>
+                                                    <label htmlFor="supply_honey_yield_kg" className="text-[10px] font-black opacity-40 pl-1">Honey Yield (kg)</label>
                                                     <input
                                                         id="supply_honey_yield_kg"
                                                         name="supply_honey_yield_kg"
@@ -607,7 +607,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label htmlFor="supply_jar_size_ml" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Jar Size (ml)</label>
+                                                    <label htmlFor="supply_jar_size_ml" className="text-[10px] font-black opacity-40 pl-1">Jar Size (ml)</label>
                                                     <select
                                                         id="supply_jar_size_ml"
                                                         name="supply_jar_size_ml"
@@ -615,7 +615,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                         onChange={(e) => setJarSize(Number(e.target.value))}
                                                         title="Jar size (ml)"
                                                         aria-label="Jar size (ml)"
-                                                        className={cn(glass.input, "w-full h-11 rounded-xl text-xs font-black uppercase tracking-widest px-4 py-0 appearance-none")}
+                                                        className={cn(glass.input, "w-full h-11 rounded-xl text-xs font-black px-4 py-0 appearance-none")}
                                                     >
                                                         <option value={250}>250 ML / 350G</option>
                                                         <option value={500}>500 ML / 700G</option>
@@ -627,17 +627,17 @@ const BeeCalculatorPage: React.FC = () => {
                                                 <div className="p-4 rounded-2xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 text-center flex flex-col items-center justify-center h-24 relative overflow-hidden group">
                                                     <div className="absolute inset-0 bg-gradient-to-tr from-[#F4D03F]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                     <p className="text-3xl font-black tabular-nums transition-transform group-hover:scale-105 duration-300">{harvestResult.jars}</p>
-                                                    <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mt-1">Jars Needed</p>
+                                                    <p className="text-[8px] font-black opacity-40 mt-1">Jars Needed</p>
                                                 </div>
                                                 <div className="p-4 rounded-2xl bg-muted/30 border border-black/5 text-center flex flex-col items-center justify-center h-24 relative overflow-hidden group">
                                                     <p className="text-3xl font-black tabular-nums transition-transform group-hover:scale-105 duration-300">{harvestResult.labels}</p>
-                                                    <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mt-1">Labels (5% ext)</p>
+                                                    <p className="text-[8px] font-black opacity-40 mt-1">Labels (5% ext)</p>
                                                 </div>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => handleShare('Harvest Logistics')}
-                                            className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm")}
+                                            className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black rounded-xl transition-all shadow-sm")}
                                         >
                                             <Share2 className="w-3.5 h-3.5 mr-2" />
                                             Share BOM
@@ -650,8 +650,8 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none -mr-12 -mt-12 transition-transform group-hover:scale-110 duration-700" />
                                     <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 relative z-10">
                                         <div className="space-y-1">
-                                            <h3 className="text-xl font-black uppercase tracking-tight leading-none">Queen <span className="text-[#F4D03F]">Logistics</span></h3>
-                                            <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Nuc & Queen Procurement logic</p>
+                                            <h3 className="text-xl font-black tracking-tight leading-none">Queen <span className="text-[#F4D03F]">Logistics</span></h3>
+                                            <p className="text-[10px] font-black opacity-40 leading-none">Nuc & Queen Procurement logic</p>
                                         </div>
                                         <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
                                             <Award className="w-5 h-5 text-[#F4D03F]" />
@@ -661,7 +661,7 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
                                         <div className="lg:col-span-4 space-y-4">
                                             <div className="space-y-2">
-                                                <label htmlFor="queen_apiary_size" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Apiary Size</label>
+                                                <label htmlFor="queen_apiary_size" className="text-[10px] font-black opacity-40 pl-1">Apiary Size</label>
                                                 <input
                                                     id="queen_apiary_size"
                                                     name="queen_apiary_size"
@@ -675,7 +675,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label htmlFor="queen_turnover_rate" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Turnover ({replacementRate}%)</label>
+                                                <label htmlFor="queen_turnover_rate" className="text-[10px] font-black opacity-40 pl-1">Turnover ({replacementRate}%)</label>
                                                 <div className="flex items-center gap-4 px-4 py-3 rounded-xl bg-muted/30 border border-black/5">
                                                     <input
                                                         id="queen_turnover_rate"
@@ -697,13 +697,13 @@ const BeeCalculatorPage: React.FC = () => {
                                             <div className="flex-1 p-6 rounded-2xl bg-white/40 border border-black/5 flex flex-col items-center justify-center text-center shadow-inner relative overflow-hidden group/result">
                                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover/result:scale-150 transition-transform duration-700" />
                                                 <p className="text-6xl font-black tabular-nums tracking-tighter text-foreground relative z-10 leading-none">{queensNeeded}</p>
-                                                <p className="text-[8px] font-black uppercase opacity-30 tracking-[0.2em] mt-3 relative z-10">Mated Queens Required</p>
+                                                <p className="text-[8px] font-black opacity-30 mt-3 relative z-10">Mated Queens Required</p>
                                             </div>
                                             <div className="sm:w-56 p-6 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/10 flex flex-col justify-center items-center gap-3 text-center shadow-sm">
-                                                <div className={cn(glass.badge, "bg-[#1B9157] text-white border-none px-2 py-0.5 text-[8px] font-black tracking-widest")}>
+                                                <div className={cn(glass.badge, "bg-[#1B9157] text-white border-none px-2 py-0.5 text-[8px] font-black")}>
                                                     ORDER_QUEUE
                                                 </div>
-                                                <p className="text-[10px] font-bold opacity-60 leading-tight uppercase tracking-tight">Lock-in early spring pricing<br/>(est. $35/ea)</p>
+                                                <p className="text-[10px] font-bold opacity-60 leading-tight tracking-tight">Lock-in early spring pricing<br/>(est. $35/ea)</p>
                                             </div>
                                         </div>
                                     </div>
@@ -724,8 +724,8 @@ const BeeCalculatorPage: React.FC = () => {
                                     <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Cost <span className="text-indigo-500">Baseline</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Global Unit Economics</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Cost <span className="text-indigo-500">Baseline</span></h3>
+                                                <p className="text-[10px] font-black opacity-40 leading-none">Global Unit Economics</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
                                                 <Scale className="w-4 h-4 text-indigo-500" />
@@ -734,7 +734,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-4 relative">
                                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[80%] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none -z-10" />
                                             <div className="space-y-2 relative z-10">
-                                                <label htmlFor="economy_labor_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Labor ($)</label>
+                                                <label htmlFor="economy_labor_cost" className="text-[10px] font-black opacity-40 pl-1">Labor ($)</label>
                                                 <input
                                                     id="economy_labor_cost"
                                                     name="economy_labor_cost"
@@ -748,7 +748,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2 relative z-10">
-                                                <label htmlFor="economy_fuel_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Fuel ($)</label>
+                                                <label htmlFor="economy_fuel_cost" className="text-[10px] font-black opacity-40 pl-1">Fuel ($)</label>
                                                 <input
                                                     id="economy_fuel_cost"
                                                     name="economy_fuel_cost"
@@ -762,7 +762,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2 relative z-10">
-                                                <label htmlFor="economy_med_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Medical ($)</label>
+                                                <label htmlFor="economy_med_cost" className="text-[10px] font-black opacity-40 pl-1">Medical ($)</label>
                                                 <input
                                                     id="economy_med_cost"
                                                     name="economy_med_cost"
@@ -776,7 +776,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2 relative z-10">
-                                                <label htmlFor="economy_equip_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Equip ($)</label>
+                                                <label htmlFor="economy_equip_cost" className="text-[10px] font-black opacity-40 pl-1">Equip ($)</label>
                                                 <input
                                                     id="economy_equip_cost"
                                                     name="economy_equip_cost"
@@ -793,10 +793,10 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="p-6 rounded-2xl bg-indigo-500 border border-indigo-400 text-white flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm group relative overflow-hidden">
                                             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                             <div>
-                                                <p className="text-[8px] font-black uppercase opacity-60 tracking-widest mb-1">Break-Even Point</p>
+                                                <p className="text-[8px] font-black opacity-60 mb-1">Break-Even Point</p>
                                                 <p className="text-4xl font-black tabular-nums leading-none"><span className="text-xl opacity-60 mr-1">$</span>{marginResult.costPerKg} <span className="text-[10px] opacity-60 ml-1">/ KG</span></p>
                                             </div>
-                                            <div className={cn(glass.badge, "bg-white/20 text-white border-none px-3 py-1 text-[8px] font-black tracking-widest backdrop-blur-md")}>
+                                            <div className={cn(glass.badge, "bg-white/20 text-white border-none px-3 py-1 text-[8px] font-black backdrop-blur-md")}>
                                                 TARGET: 40%
                                             </div>
                                         </div>
@@ -808,8 +808,8 @@ const BeeCalculatorPage: React.FC = () => {
                                             hikingROI.isWorthIt ? "bg-emerald-500/10" : "bg-red-500/10")} />
                                         <div className="flex justify-between items-start relative z-10">
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-black uppercase tracking-tight leading-none">Expedition <span className="text-[#1B9157]">ROI</span></h3>
-                                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest leading-none">Yield Deployment Analysis</p>
+                                                <h3 className="text-xl font-black tracking-tight leading-none">Expedition <span className="text-[#1B9157]">Roi</span></h3>
+                                                <p className="text-[10px] font-black opacity-40 leading-none">Yield Deployment Analysis</p>
                                             </div>
                                             <div className="w-8 h-8 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
                                                 <TrendingUp className="w-4 h-4 text-[#1B9157]" />
@@ -818,7 +818,7 @@ const BeeCalculatorPage: React.FC = () => {
                                         <div className="space-y-4 relative z-10">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label htmlFor="roi_hives" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Hives</label>
+                                                    <label htmlFor="roi_hives" className="text-[10px] font-black opacity-40 pl-1">Hives</label>
                                                     <input
                                                         id="roi_hives"
                                                         name="roi_hives"
@@ -832,7 +832,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label htmlFor="roi_transport_cost" className="text-[10px] font-black uppercase opacity-40 tracking-widest pl-1">Transport ($)</label>
+                                                    <label htmlFor="roi_transport_cost" className="text-[10px] font-black opacity-40 pl-1">Transport ($)</label>
                                                     <input
                                                         id="roi_transport_cost"
                                                         name="roi_transport_cost"
@@ -854,17 +854,17 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <p className={cn("text-3xl font-black tabular-nums leading-none tracking-tight",
                                                         hikingROI.isWorthIt ? "text-[#1B9157]" : "text-red-500"
                                                     )}>
-                                                        {hikingROI.isWorthIt ? 'DEPLOY_HIVES' : 'ABORT_HIKE'}
+                                                        {hikingROI.isWorthIt ? 'Deploy Hives' : 'Abort Hike'}
                                                     </p>
-                                                    <p className="text-[8px] font-black uppercase opacity-40 tracking-widest">Investment recommendation</p>
+                                                    <p className="text-[8px] font-black opacity-40">Investment recommendation</p>
                                                 </div>
                                                 <div className="w-full flex justify-between items-center pt-4 border-t border-black/5">
                                                     <div className="space-y-1">
-                                                        <span className="text-[8px] font-black uppercase opacity-40 tracking-widest">Net Profit</span>
+                                                        <span className="text-[8px] font-black opacity-40">Net Profit</span>
                                                         <p className="text-lg font-black tabular-nums tracking-tighter"><span className="text-xs opacity-40 mr-1">$</span>{hikingROI.netProfit.toLocaleString()}</p>
                                                     </div>
                                                     <div className="space-y-1 text-right">
-                                                        <span className="text-[8px] font-black uppercase opacity-40 tracking-widest">Per Hive</span>
+                                                        <span className="text-[8px] font-black opacity-40">Per Hive</span>
                                                         <p className="text-lg font-black tabular-nums tracking-tighter text-foreground/70"><span className="text-xs opacity-40 mr-1">$</span>{hikingROI.profitPerHive.toFixed(0)}</p>
                                                     </div>
                                                 </div>
@@ -898,8 +898,8 @@ const BeeCalculatorPage: React.FC = () => {
                         >
                             <div className="flex justify-between items-center mb-10 border-b border-black/5 pb-6">
                                 <div className="space-y-1">
-                                    <h2 className="text-2xl font-black uppercase tracking-tight leading-none">Math <span className="text-[#F4D03F]">Ledger</span></h2>
-                                    <p className="text-[10px] font-black opacity-40 uppercase tracking-widest">Historical Calculation Sync</p>
+                                    <h2 className="text-2xl font-black tracking-tight leading-none">Math <span className="text-[#F4D03F]">Ledger</span></h2>
+                                    <p className="text-[10px] font-black opacity-40">Historical Calculation Sync</p>
                                 </div>
                                 <button onClick={() => setShowHistory(false)} className="w-8 h-8 rounded-full bg-black/5 border border-black/5 flex items-center justify-center hover:bg-black/10 transition-colors">
                                     <span className="text-sm font-black opacity-40">✕</span>
@@ -931,35 +931,35 @@ const BeeCalculatorPage: React.FC = () => {
                                         >
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
                                             <div className="flex justify-between items-start mb-4">
-                                                <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#F4D03F] border-none px-2 py-0.5 text-[8px] font-black tracking-widest")}>
+                                                <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#F4D03F] border-none px-2 py-0.5 text-[8px] font-black")}>
                                                     {log.calculation_type?.toUpperCase()}
                                                 </div>
-                                                <span className="text-[8px] font-black opacity-30 uppercase tracking-widest">
+                                                <span className="text-[8px] font-black opacity-30">
                                                     {new Date(log.created_at).toLocaleDateString()}
                                                 </span>
                                             </div>
-                                            <h4 className="text-sm font-black uppercase tracking-tight mb-4">
+                                            <h4 className="text-sm font-black tracking-tight mb-4">
                                                 {log.sub_type === 'snapshot' ? 'Manual Snapshot' : 'Auto-Log'}
                                             </h4>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="p-3 rounded-xl bg-muted/30 border border-black/5">
-                                                    <p className="text-[8px] font-black uppercase opacity-40 tracking-widest mb-2">Inputs</p>
+                                                    <p className="text-[8px] font-black opacity-40 mb-2">Inputs</p>
                                                     <div className="space-y-1">
                                                         {Object.entries(log.inputs || {}).slice(0, 3).map(([k, v]: any) => (
-                                                            <p key={k} className="text-[9px] font-bold truncate leading-tight"><span className="opacity-40 uppercase mr-1">{k}:</span> {v}</p>
+                                                            <p key={k} className="text-[9px] font-bold truncate leading-tight"><span className="opacity-40 mr-1">{k}:</span> {v}</p>
                                                         ))}
                                                     </div>
                                                 </div>
                                                 <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/10">
-                                                    <p className="text-[8px] font-black uppercase text-[#F4D03F] tracking-widest mb-2">Results</p>
+                                                    <p className="text-[8px] font-black text-[#F4D03F] mb-2">Results</p>
                                                     <div className="space-y-1">
                                                         {Object.values(log.results || {}).slice(0, 2).map((v: any, i) => (
-                                                            <p key={i} className="text-[9px] font-bold truncate text-[#F4D03F] leading-tight"><span className="opacity-40 uppercase mr-1 text-foreground">Res:</span> {JSON.stringify(v)}</p>
+                                                            <p key={i} className="text-[9px] font-bold truncate text-[#F4D03F] leading-tight"><span className="opacity-40 mr-1 text-foreground">Res:</span> {JSON.stringify(v)}</p>
                                                         ))}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button className={cn(glass.btnSecondary, "w-full mt-4 h-8 justify-center opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 text-[10px] font-black uppercase tracking-tight rounded-xl")}>
+                                            <button className={cn(glass.btnSecondary, "w-full mt-4 h-8 justify-center opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 text-[10px] font-black tracking-tight rounded-xl")}>
                                                 Restore State
                                             </button>
                                         </motion.div>

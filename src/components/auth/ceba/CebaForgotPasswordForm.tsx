@@ -74,7 +74,9 @@ const CebaForgotPasswordForm: React.FC<CebaForgotPasswordFormProps> = ({
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="ceba-reset-email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="admin@beeyield.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

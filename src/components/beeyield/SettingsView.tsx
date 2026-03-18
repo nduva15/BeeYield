@@ -699,7 +699,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                         <XCircle className="w-4 h-4" />
                                                     </button>
                                                     <div className="pt-12 space-y-6">
-                                                        <p className="text-xl font-mono tracking-[0.25em]">
+                                                        <p className="text-xl font-mono">
                                                             •••• •••• •••• {pm.last4 || '----'}
                                                         </p>
                                                         <div className="flex items-end justify-between gap-4">
@@ -731,7 +731,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <h4 className="text-sm font-bold text-[#1A1A1A]">Payment history</h4>
                                             <p className="text-xs text-gray-500">Recent transactions</p>
                                         </div>
-                                        <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] uppercase tracking-widest px-2 py-0.5">
+                                        <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] px-2 py-0.5">
                                             Last 50
                                         </Badge>
                                     </div>

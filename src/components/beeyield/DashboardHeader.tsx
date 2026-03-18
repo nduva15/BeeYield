@@ -78,14 +78,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-3">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 border border-[#F4D03F]/20 rounded-lg">
-                            <span className="text-[11px] font-semibold text-[#F4D03F] uppercase tracking-wider">Dashboard</span>
+                            <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wider">Dashboard</span>
                         </div>
                         <span className="text-gray-300">/</span>
                         <motion.span
                             key={activeTab}
                             initial={{ opacity: 0, x: -6 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="text-[11px] font-medium text-gray-600 uppercase tracking-wider"
+                            className="text-[11px] font-medium text-gray-600 tracking-wider"
                         >
                             {activeTab.replace(/-/g, ' ')}
                         </motion.span>
@@ -186,7 +186,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         sideOffset={8}
                         className="w-56 rounded-xl border border-[#F4D03F]/20 p-2 shadow-xl bg-[#FFF9F0]/95 backdrop-blur-xl"
                     >
-                        <DropdownMenuLabel className="px-3 py-2 text-[11px] font-medium text-gray-500 uppercase tracking-wider">
+                        <DropdownMenuLabel className="px-3 py-2 text-[11px] font-medium text-gray-500 tracking-wider">
                             Account
                         </DropdownMenuLabel>
                         <DropdownMenuItem

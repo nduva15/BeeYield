@@ -112,7 +112,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                         <div className="space-y-6 relative z-10">
                             <div>
                                 <p className={glass.microLabel}>Colony Mood</p>
-                                <p className="text-2xl font-bold text-[#1B9157] tracking-tight mt-1">CALM</p>
+                                <p className="text-2xl font-bold text-[#1B9157] tracking-tight mt-1">Calm</p>
                             </div>
                             <div className="h-2 bg-white/40 rounded-full overflow-hidden border border-white/20 shadow-inner">
                                 <motion.div
@@ -161,7 +161,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                 </div>
             </div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

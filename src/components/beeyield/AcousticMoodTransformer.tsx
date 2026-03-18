@@ -131,12 +131,12 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                             </div>
                             <div>
                                 <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Spectral Flow</h3>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Digital MFCC Array</p>
+                                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Digital MFCC Array</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm">
                             <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" />
-                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Live Link</span>
+                            <span className="text-[10px] font-bold text-emerald-600 tracking-wider">Live Link</span>
                         </div>
                     </div>
 
@@ -158,7 +158,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                                         if (active && payload && payload.length) {
                                             return (
                                                 <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100">
-                                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">{payload[0].payload.freq} Hz</p>
+                                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1">{payload[0].payload.freq} Hz</p>
                                                     <div className="flex items-baseline gap-1">
                                                         <p className="text-sm font-bold text-[#1A1A1A] tracking-tight tabular-nums">{payload[0].value?.toFixed(1)}</p>
                                                         <span className="text-[10px] font-medium text-gray-400">dB</span>
@@ -189,7 +189,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                             { label: 'Gain', val: '58.2', unit: 'dB', icon: Volume2 }
                         ].map((stat, i) => (
                             <div key={i} className="p-3 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center gap-1 group hover:border-[#1B9157]/30 hover:bg-[#F9F7F2]/50 transition-colors">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-gray-600 transition-colors">{stat.label}</p>
+                                <p className="text-[10px] font-bold tracking-wider text-gray-500 group-hover:text-gray-600 transition-colors">{stat.label}</p>
                                 <div className="flex items-baseline gap-1">
                                     <p className="text-base font-bold text-[#1A1A1A] leading-none tracking-tight">{stat.val}</p>
                                     {stat.unit && <span className="text-[10px] font-medium text-gray-400">{stat.unit}</span>}
@@ -228,7 +228,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
 
                     <section className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Choose a check</h4>
+                            <h4 className="text-[10px] font-bold tracking-wider text-gray-500">Choose a check</h4>
                             <div className="w-6 h-6 rounded-md bg-gray-50 flex items-center justify-center border border-gray-200">
                                 <Settings className="w-3.5 h-3.5 text-gray-400" />
                             </div>
@@ -263,7 +263,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                     <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div className="flex items-center gap-2 mb-2">
                             <div className="w-2 h-2 bg-[#1B9157] animate-pulse rounded-full" />
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B9157]">Status</p>
+                            <p className="text-[10px] font-bold tracking-wider text-[#1B9157]">Status</p>
                         </div>
                         <div className="font-mono text-[10px] text-gray-500 leading-relaxed">
                             <p className="flex gap-2"><span>&gt;</span> Analyzing…</p>
@@ -273,7 +273,7 @@ const AcousticMoodTransformer: React.FC = ({ onTabChange }: any) => {
                 </div>
             </div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

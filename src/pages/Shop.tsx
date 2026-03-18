@@ -416,7 +416,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "BEEKEEPING STARTER GUIDE",
     description: "Entry-level handbook: hive setup, bee care, and your first honey harvest.",
     category: "education",
-    badge: "DIGITAL",
+    badge: "Digital",
     images: ["/images/products/beekeeping_guide.png"],
     rating: 4.9,
     review_count: 215,
@@ -430,7 +430,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "PRECISION POLLINATION HANDBOOK",
     description: "Data-driven techniques for crop yields. For commercial farmers and professional beekeepers.",
     category: "education",
-    badge: "PROFESSIONAL",
+    badge: "Professional",
     images: ["/images/products/beekeeping_guide.png"],
     rating: 5.0,
     review_count: 48,
@@ -458,7 +458,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "HONEY PROCESSING MANUAL",
     description: "Complete guide to extraction, filtering, bottling, and quality certification for commercial honey production.",
     category: "education",
-    badge: "BESTSELLER",
+    badge: "Bestseller",
     images: ["/images/products/beekeeping_guide.png"],
     rating: 4.7,
     review_count: 134,
@@ -472,7 +472,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "HIVE MONITORING COURSE",
     description: "Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.",
     category: "education",
-    badge: "TECHNICAL",
+    badge: "Technical",
     images: ["/images/products/beekeeping_guide.png"],
     rating: 4.9,
     review_count: 56,
@@ -486,7 +486,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "DISEASE & PEST MANAGEMENT",
     description: "Identify and treat common bee diseases and pests in East Africa. Includes natural and chemical treatment options.",
     category: "education",
-    badge: "ESSENTIAL",
+    badge: "Essential",
     images: ["/images/products/beekeeping_guide.png"],
     rating: 4.8,
     review_count: 98,
@@ -500,7 +500,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "BUSINESS OF BEEKEEPING",
     description: "Transform your hobby into a profitable venture. Covers pricing, marketing, regulations, and scaling operations.",
     category: "education",
-    badge: "ENTREPRENEUR",
+    badge: "Entrepreneur",
     images: ["/images/products/beekeeping_guide.png"],
     rating: 4.6,
     review_count: 73,
@@ -770,7 +770,7 @@ const Shop = () => {
                         />
 
                         <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
-                          <Badge className="bg-[#FFF9F0]/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-[#FFF9F0] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
+                          <Badge className="bg-[#FFF9F0]/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-[#FFF9F0] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] tracking-wider">
                             <ShieldCheck className="h-3.5 w-3.5" />
                             Verified Quality
                           </Badge>
@@ -786,7 +786,7 @@ const Shop = () => {
                             <div className="absolute bottom-8 right-8 z-30">
                               <Badge
                                 className={cn(
-                                  "backdrop-blur-sm shadow-sm font-black text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-full border",
+                                  "backdrop-blur-sm shadow-sm font-black text-[10px] tracking-wider px-3 py-1.5 rounded-full border",
                                   inStock
                                     ? "bg-emerald-50/90 text-emerald-700 border-emerald-200"
                                     : "bg-red-50/90 text-red-700 border-red-200"
@@ -848,19 +848,19 @@ const Shop = () => {
                         <div className="space-y-4">
                           {!product.variants || product.variants.length === 0 ? (
                             <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">No variants available</span>
+                              <span className="text-[10px] font-black text-muted-foreground">No variants available</span>
                             </div>
                           ) : product.variants.length > 1 ? (
                             <Select
                               value={selectedSizes[product.id] || product.variants[0].size}
                               onValueChange={(value) => handleSizeChange(product.id, value)}
                             >
-                              <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-black uppercase tracking-widest text-[10px]">
+                              <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-black text-[10px]">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="rounded-xl border-none shadow-glow">
                                 {product.variants.map((v) => (
-                                  <SelectItem key={v.id} value={v.size} className="font-black uppercase tracking-widest text-[10px] focus:bg-primary focus:text-primary-foreground">
+                                  <SelectItem key={v.id} value={v.size} className="font-black text-[10px] focus:bg-primary focus:text-primary-foreground">
                                     {v.size} — {formatPrice(v.price_kes)}
                                   </SelectItem>
                                 ))}
@@ -868,14 +868,14 @@ const Shop = () => {
                             </Select>
                           ) : (
                             <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-2">Edition:</span>
-                              <span className="text-xs font-black uppercase tracking-widest">{product.variants[0]?.size}</span>
+                              <span className="text-[10px] font-black text-muted-foreground mr-2">Edition:</span>
+                              <span className="text-xs font-black">{product.variants[0]?.size}</span>
                             </div>
                           )}
 
                           <div className="flex items-center gap-3">
                             <div className="flex-1">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Price</p>
+                              <p className="text-[10px] font-black text-muted-foreground mb-0.5">Price</p>
                               <p className="text-2xl font-black text-foreground">
                                 {formatPrice(
                                   product.variants?.find(
@@ -888,7 +888,7 @@ const Shop = () => {
                             <div className="flex flex-col gap-2">
                               <Button
                                 className={cn(
-                                  "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
+                                  "w-full h-12 rounded-2xl font-black text-[10px] transition-all duration-300 shadow-lg px-6",
                                   (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
                                     ? "bg-[#F9F7F2] text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
                                     : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"

@@ -162,7 +162,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 value={selectedHiveId}
                                 onChange={(e) => setSelectedHiveId(e.target.value)}
                                 className={cn(
-                                    "w-full h-10 rounded-xl border border-white/30 bg-white/40 px-3 text-[10px] font-black uppercase tracking-[0.15em] text-[#1A1A1A] outline-none",
+                                    "w-full h-10 rounded-xl border border-white/30 bg-white/40 px-3 text-[10px] font-black text-[#1A1A1A] outline-none",
                                     (hives || []).length === 0 && "opacity-60"
                                 )}
                                 aria-label="Select hive for analysis"
@@ -181,7 +181,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <p className={glass.microLabel}>
                                 Record hive audio for analysis. Aim for at least 3 seconds.
                             </p>
-                            <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400">
+                            <div className="flex items-center gap-2 text-[8px] font-black text-gray-400">
                                 <Activity className="w-3 h-3 text-[#F4D03F]/40" />
                                 <span>Signal locked</span>
                             </div>
@@ -193,7 +193,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 disabled={recording || analyzing}
                                 className={cn(
                                     glass.btnPrimary,
-                                    "h-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl transition-all duration-300",
+                                    "h-10 font-black text-[10px] rounded-xl transition-all duration-300",
                                     recording ? "bg-red-500 text-white border-red-600 shadow-red-500/20 scale-[0.98]" : ""
                                 )}
                             >
@@ -216,7 +216,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={analyzing || recording}
-                                className={cn(glass.btnSecondary, "h-10 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}
+                                className={cn(glass.btnSecondary, "h-10 font-black text-[10px] rounded-xl")}
                             >
                                 <Upload className="w-3.5 h-3.5" /> 
                                 <span>Upload audio</span>
@@ -236,7 +236,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 <div className="flex justify-between items-end mb-3">
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(glass.microLabel, "animate-pulse")}>Processing Signal...</span>
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">In progress</span>
+                                        <span className="text-[8px] font-black text-gray-400">In progress</span>
                                     </div>
                                     <span className="text-xl tabular-nums font-black leading-none text-[#F4D03F]">{progress}%</span>
                                 </div>
@@ -277,7 +277,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                         </h4>
                                     </div>
                                     <div className={cn(glass.badge, "border-none bg-white/20", result === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
-                                        {result.label === 'Healthy' ? "OPTIMAL" : "CRITICAL"}
+                                        {result.label === 'Healthy' ? "Optimal" : "Critical"}
                                     </div>
                                 </div>
                                 <p className={cn(glass.microLabel, "relative z-10 border-t border-[#F4D03F]/10 pt-4 mt-1 text-gray-500")}>
@@ -285,7 +285,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                         ? "Acoustic signature optimal. No anomalies detected in signal path."
                                         : "Frequency variance detected. Immediate field audit recommended."}
                                     {typeof result.confidence === 'number' && (
-                                        <span className="ml-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        <span className="ml-2 text-[10px] font-black text-gray-400">
                                             CONF {(result.confidence * 100).toFixed(1)}%
                                         </span>
                                     )}
@@ -302,7 +302,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <Activity className="w-4 h-4 text-[#F4D03F]" />
                             <h3 className={glass.sectionTitle}>Spectral Wave</h3>
                         </div>
-                        <div className={cn(glass.badge, "bg-[#F4D03F]/5 text-[#F4D03F] border-[#F4D03F]/10")}>LIVE_FEED</div>
+                        <div className={cn(glass.badge, "bg-[#F4D03F]/5 text-[#F4D03F] border-[#F4D03F]/10")}>Live Feed</div>
                     </div>
 
                     <div className="flex-1 flex flex-col items-center justify-center min-h-[350px] p-5 relative">

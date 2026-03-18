@@ -50,7 +50,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                         <span className="text-sm font-bold text-[#1A1A1A] tracking-tight uppercase">{row.getValue('hive_code')}</span>
                         <div className="flex items-center gap-1">
                             <Binary className="w-2.5 h-2.5 text-[#F4D03F]/40" />
-                            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Firmware v5.2</span>
+                            <span className="text-[8px] font-bold text-gray-400">Firmware v5.2</span>
                         </div>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
 
                 return (
                     <div className={cn(
-                        "inline-flex items-center gap-2 px-3 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider",
+                        "inline-flex items-center gap-2 px-3 py-1 rounded-md border text-[10px] font-bold tracking-wider",
                         isHealthy ? 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20' :
                             isWarning ? 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20' :
                                 isCritical ? 'bg-red-500/10 text-red-500 border-red-500/20' :
@@ -79,7 +79,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                                     isCritical ? 'bg-red-500 animate-pulse' :
                                         'bg-gray-400'
                         )} />
-                        {row.getValue('status') || 'UNKNOWN'}
+                        {row.getValue('status') || 'Unknown'}
                     </div>
                 )
             }
@@ -95,7 +95,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                         <div className="flex items-center gap-2">
                             <Scale className="w-3.5 h-3.5 text-[#F4D03F]/40 group-hover/cell:text-[#F4D03F] transition-colors" />
                             <span className="text-sm font-bold tabular-nums text-[#1A1A1A]">
-                                {weight ? weight.toFixed(1) : '---'}<span className="text-[10px] text-gray-400 ml-0.5 font-bold uppercase">kg</span>
+                                {weight ? weight.toFixed(1) : '---'}<span className="text-[10px] text-gray-400 ml-0.5 font-bold">kg</span>
                             </span>
                         </div>
                     </div>
@@ -117,7 +117,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                             <span className={cn("text-sm font-bold tabular-nums transition-colors",
                                 temp && temp > 36 ? 'text-red-500' : 'text-[#1A1A1A]'
                             )}>
-                                {temp ? temp.toFixed(1) : '---'}<span className="text-[10px] text-gray-400 ml-0.5 font-bold uppercase">°C</span>
+                                {temp ? temp.toFixed(1) : '---'}<span className="text-[10px] text-gray-400 ml-0.5 font-bold">°C</span>
                             </span>
                         </div>
                     </div>
@@ -134,7 +134,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                     <div className="flex items-center gap-4 justify-end group/bat">
                         <div className="flex flex-col items-end gap-1.5">
                             <div className="flex items-center gap-2">
-                                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">PWR: </span>
+                                <span className="text-[8px] font-bold text-gray-400">PWR: </span>
                                 <span className="text-xs font-bold tabular-nums text-[#1A1A1A]">{batVal}%</span>
                             </div>
                             <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden border border-[#F4D03F]/5">
@@ -186,7 +186,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                 </div>
                 <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-[#1B9157]/5 rounded-lg border border-[#1B9157]/10">
                     <Activity className="w-3 h-3 text-[#1B9157]" />
-                    <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider">Live Link</span>
+                    <span className="text-[10px] font-bold text-[#1B9157] tracking-wider">Live Link</span>
                 </div>
             </div>
 
@@ -235,7 +235,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                                                 </div>
                                                 <div className="space-y-1">
                                                     <p className="text-sm font-bold text-[#1A1A1A] tracking-tight uppercase">Registry Null</p>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Revise search parameters</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold">Revise search parameters</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -250,14 +250,14 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             {/* Pagination */}
             {table.getPageCount() > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <div className="text-[10px] font-bold text-gray-400">
                         Segment {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </div>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
-                            className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] uppercase tracking-widest disabled:opacity-30")}
+                            className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] disabled:opacity-30")}
                         >
                             <ChevronLeft className="w-3.5 h-3.5 mr-2" />
                             Prev
@@ -265,7 +265,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                         <button
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
-                            className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] uppercase tracking-widest disabled:opacity-30")}
+                            className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] disabled:opacity-30")}
                         >
                             Next
                             <ChevronRight className="w-3.5 h-3.5 ml-2" />

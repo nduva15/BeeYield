@@ -32,15 +32,15 @@ interface PalletData {
     morningWeight: number; // kg
     grade: 'A' | 'B';
     confidence: number;
-    status: 'CERTIFIED' | 'PENDING';
+    status: 'Certified' | 'Pending';
 }
 
 const pallets: PalletData[] = [
-    { id: 'PLT-0824', location: 'Section A-4', acousticDensity: 92, morningWeight: 44.2, grade: 'A', confidence: 99.4, status: 'CERTIFIED' },
-    { id: 'PLT-0825', location: 'Section A-4', acousticDensity: 88, morningWeight: 43.8, grade: 'A', confidence: 98.2, status: 'CERTIFIED' },
-    { id: 'PLT-0912', location: 'Section B-1', acousticDensity: 74, morningWeight: 38.5, grade: 'B', confidence: 95.1, status: 'CERTIFIED' },
-    { id: 'PLT-1102', location: 'North Block', acousticDensity: 95, morningWeight: 45.1, grade: 'A', confidence: 99.7, status: 'CERTIFIED' },
-    { id: 'PLT-1105', location: 'North Block', acousticDensity: 62, morningWeight: 34.2, grade: 'B', confidence: 92.4, status: 'PENDING' },
+    { id: 'PLT-0824', location: 'Section A-4', acousticDensity: 92, morningWeight: 44.2, grade: 'A', confidence: 99.4, status: 'Certified' },
+    { id: 'PLT-0825', location: 'Section A-4', acousticDensity: 88, morningWeight: 43.8, grade: 'A', confidence: 98.2, status: 'Certified' },
+    { id: 'PLT-0912', location: 'Section B-1', acousticDensity: 74, morningWeight: 38.5, grade: 'B', confidence: 95.1, status: 'Certified' },
+    { id: 'PLT-1102', location: 'North Block', acousticDensity: 95, morningWeight: 45.1, grade: 'A', confidence: 99.7, status: 'Certified' },
+    { id: 'PLT-1105', location: 'North Block', acousticDensity: 62, morningWeight: 34.2, grade: 'B', confidence: 92.4, status: 'Pending' },
 ];
 
 const ContractVerificationModule: React.FC = () => {
@@ -216,7 +216,7 @@ const ContractVerificationModule: React.FC = () => {
                                             >
                                                 <Share2 className="w-3.5 h-3.5" />
                                             </button>
-                                            <button className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] font-bold uppercase tracking-widest")}>Verify</button>
+                                            <button className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] font-bold")}>Verify</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -276,7 +276,7 @@ const ContractVerificationModule: React.FC = () => {
                 </motion.div>
             </div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

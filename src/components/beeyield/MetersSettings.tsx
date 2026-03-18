@@ -109,18 +109,18 @@ const MetersSettings: React.FC = () => {
                         <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                             <Bell className="w-4 h-4 text-[#F4D03F]" />
                         </div>
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">NOTIFICATION_TRIGGERS</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Notification Triggers</h3>
                     </div>
                     <div className="p-6 space-y-2">
                         {notificationSettings.map((item) => (
                             <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl hover:bg-white/50 transition-colors border border-transparent hover:border-white/40 group">
                                 <div className="space-y-0.5">
-                                    <div className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">{item.title}</div>
-                                    <div className="text-[9px] font-bold text-gray-500 uppercase">{item.value}</div>
+                                    <div className="text-[10px] font-black text-[#1A1A1A]">{item.title}</div>
+                                    <div className="text-[9px] font-bold text-gray-500">{item.value}</div>
                                 </div>
                                 <button
                                     onClick={() => handleEdit('notification', item.id, item.value)}
-                                    className={cn(glass.btnSecondary, "text-[9px] font-black uppercase tracking-[0.2em] h-8 px-4 w-full sm:w-auto opacity-0 group-hover:opacity-100 transition-opacity")}
+                                    className={cn(glass.btnSecondary, "text-[9px] font-black h-8 px-4 w-full sm:w-auto opacity-0 group-hover:opacity-100 transition-opacity")}
                                 >
                                     CONFIG
                                 </button>
@@ -135,18 +135,18 @@ const MetersSettings: React.FC = () => {
                         <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                             <Shield className="w-4 h-4 text-[#1B9157]" />
                         </div>
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">OPERATIONAL_BOUNDS</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Operational Bounds</h3>
                     </div>
                     <div className="p-6 space-y-2">
                         {thresholdSettings.map((item) => (
                             <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl hover:bg-white/50 transition-colors border border-transparent hover:border-white/40 group">
                                 <div className="space-y-0.5">
-                                    <div className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">{item.title}</div>
-                                    <div className="text-[9px] font-bold text-gray-500 uppercase">{item.value}</div>
+                                    <div className="text-[10px] font-black text-[#1A1A1A]">{item.title}</div>
+                                    <div className="text-[9px] font-bold text-gray-500">{item.value}</div>
                                 </div>
                                 <button
                                     onClick={() => handleEdit('threshold', item.id, item.value)}
-                                    className={cn(glass.btnSecondary, "text-[9px] font-black uppercase tracking-[0.2em] h-8 px-4 w-full sm:w-auto opacity-0 group-hover:opacity-100 transition-opacity")}
+                                    className={cn(glass.btnSecondary, "text-[9px] font-black h-8 px-4 w-full sm:w-auto opacity-0 group-hover:opacity-100 transition-opacity")}
                                 >
                                     TUNE
                                 </button>
@@ -164,12 +164,12 @@ const MetersSettings: React.FC = () => {
                         <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center border border-white/40 shadow-sm">
                             <Plug className="w-5 h-5 text-[#F4D03F]" />
                         </div>
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] leading-tight">EXTERNAL<br />SYSTEM_INTERCONNECT</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A] leading-tight">External<br />System Interconnect</h3>
                     </div>
                     <button
                         type="button"
                         onClick={() => setIsIntegrationsOpen(true)}
-                        className={cn(glass.btnPrimary, "w-full sm:w-auto h-8 px-5 font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2")}
+                        className={cn(glass.btnPrimary, "w-full sm:w-auto h-8 px-5 font-black text-[9px] flex items-center justify-center gap-2")}
                     >
                         BRIDGE_ARCHITECTURES <ArrowRight className="w-3.5 h-3.5" />
                     </button>
@@ -179,10 +179,10 @@ const MetersSettings: React.FC = () => {
             <Dialog open={isIntegrationsOpen} onOpenChange={setIsIntegrationsOpen}>
                 <DialogContent className={cn(glass.card, "p-0 overflow-hidden shadow-xl max-w-md mx-auto bg-white/80 border-white/40")}>
                     <DialogHeader className="p-5 border-b border-white/20 bg-white/30">
-                        <DialogTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1A1A1A] text-center">
+                        <DialogTitle className="text-[11px] font-black text-[#1A1A1A] text-center">
                             Integrations
                         </DialogTitle>
-                        <DialogDescription className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]/50 text-center mt-1">
+                        <DialogDescription className="text-[9px] font-bold text-[#1A1A1A]/50 text-center mt-1">
                             LOCAL_CONFIGURATION_ONLY
                         </DialogDescription>
                     </DialogHeader>
@@ -193,7 +193,7 @@ const MetersSettings: React.FC = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                             <button
                                 type="button"
-                                className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                                className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black")}
                                 onClick={() => {
                                     try {
                                         navigator.clipboard.writeText(JSON.stringify({ notificationSettings, thresholdSettings }, null, 2));
@@ -206,7 +206,7 @@ const MetersSettings: React.FC = () => {
                             </button>
                             <button
                                 type="button"
-                                className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                                className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-black")}
                                 onClick={() => setIsIntegrationsOpen(false)}
                             >
                                 Done
@@ -220,34 +220,34 @@ const MetersSettings: React.FC = () => {
             <Dialog open={!!activeDialog} onOpenChange={(open) => !open && setActiveDialog(null)}>
                 <DialogContent className={cn(glass.card, "p-0 overflow-hidden shadow-xl max-w-sm mx-auto bg-white/80 border-white/40")}>
                     <DialogHeader className="p-5 border-b border-white/20 bg-white/30">
-                        <DialogTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1A1A1A] text-center">{getDialogTitle()}</DialogTitle>
-                        <DialogDescription className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]/50 text-center mt-1">
+                        <DialogTitle className="text-[11px] font-black text-[#1A1A1A] text-center">{getDialogTitle()}</DialogTitle>
+                        <DialogDescription className="text-[9px] font-bold text-[#1A1A1A]/50 text-center mt-1">
                             UPDATE_SYSTEM_PREFERENCES_BELOW
                         </DialogDescription>
                     </DialogHeader>
                     <div className="p-5 space-y-4">
                         <div className="space-y-2">
                             {activeDialog?.type === 'notification' ? (
-                                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/50 ml-1">
+                                <Label className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
                                     PROTOCOL_METHOD
                                 </Label>
                             ) : (
-                                <Label htmlFor="setting-value" className="text-[9px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/50 ml-1">
+                                <Label htmlFor="setting-value" className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
                                     TARGET_THRESHOLD
                                 </Label>
                             )}
                             {activeDialog?.type === 'notification' ? (
                                 <Select value={tempValue} onValueChange={setTempValue}>
-                                    <SelectTrigger id="meters-settings-notification-method" aria-label="Protocol method" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
-                                        <SelectValue placeholder="SELECT_METHOD" />
+                                    <SelectTrigger id="meters-settings-notification-method" aria-label="Protocol method" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
+                                        <SelectValue placeholder="Select Method" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90">
-                                        <SelectItem value="Email" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">EMAIL</SelectItem>
-                                        <SelectItem value="SMS" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">SMS</SelectItem>
-                                        <SelectItem value="Push" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">PUSH</SelectItem>
-                                        <SelectItem value="Email + SMS" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">EMAIL_SMS</SelectItem>
-                                        <SelectItem value="Email + Push" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">EMAIL_PUSH</SelectItem>
-                                        <SelectItem value="All" className="text-[9px] font-black uppercase tracking-widest hover:bg-white/50 cursor-pointer">ALL_CHANNELS</SelectItem>
+                                        <SelectItem value="Email" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email</SelectItem>
+                                        <SelectItem value="SMS" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">SMS</SelectItem>
+                                        <SelectItem value="Push" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Push</SelectItem>
+                                        <SelectItem value="Email + SMS" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email Sms</SelectItem>
+                                        <SelectItem value="Email + Push" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email Push</SelectItem>
+                                        <SelectItem value="All" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">All Channels</SelectItem>
                                     </SelectContent>
                                 </Select>
                             ) : (
@@ -258,14 +258,14 @@ const MetersSettings: React.FC = () => {
                                     value={tempValue}
                                     onChange={(e) => setTempValue(e.target.value)}
                                     placeholder="E.G. +25%"
-                                    className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus:bg-white transition-colors"
+                                    className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black focus:bg-white transition-colors"
                                 />
                             )}
                         </div>
                     </div>
                     <DialogFooter className="p-4 border-t border-white/20 bg-white/40 flex sm:justify-end gap-2">
-                        <button onClick={() => setActiveDialog(null)} className={cn(glass.btnSecondary, "h-8 px-4 font-black tracking-[0.2em] text-[8px] uppercase w-full sm:w-auto")}>ABORT</button>
-                        <button onClick={handleSave} className={cn(glass.btnPrimary, "h-8 px-5 font-black tracking-[0.2em] text-[8px] uppercase w-full sm:w-auto")}>COMMIT_CHANGES</button>
+                        <button onClick={() => setActiveDialog(null)} className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[8px] w-full sm:w-auto")}>Abort</button>
+                        <button onClick={handleSave} className={cn(glass.btnPrimary, "h-8 px-5 font-black text-[8px] w-full sm:w-auto")}>Commit Changes</button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

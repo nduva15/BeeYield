@@ -109,7 +109,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
         return (
             <div className="p-12 flex flex-col items-center justify-center bg-white rounded-xl border border-gray-100 shadow-sm space-y-3">
                 <Loader2 className="h-6 w-6 animate-spin text-[#F4D03F] opacity-50" />
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Hydrating Security Kernel...</span>
+                <span className="text-[10px] font-bold text-gray-400">Hydrating Security Kernel...</span>
             </div>
         );
     }
@@ -171,7 +171,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                                     placeholder="000 000"
                                     value={verificationCode}
                                     onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                    className="h-12 text-center text-2xl tracking-[0.3em] font-bold bg-gray-50 border-gray-100 focus:bg-white focus:border-[#F4D03F] rounded-xl"
+                                    className="h-12 text-center text-2xl font-bold bg-gray-50 border-gray-100 focus:bg-white focus:border-[#F4D03F] rounded-xl"
                                     maxLength={6}
                                     required
                                 />

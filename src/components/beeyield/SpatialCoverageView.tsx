@@ -10,9 +10,9 @@ const SpatialCoverageView: React.FC = () => {
     const [zoom, setZoom] = React.useState(1);
 
     const pallets = [
-        { id: 'P1', x: 30, y: 40, type: 'ALMOND' },
-        { id: 'P2', x: 60, y: 25, type: 'ALMOND' },
-        { id: 'P3', x: 45, y: 70, type: 'BLUEBERRY' },
+        { id: 'P1', x: 30, y: 40, type: 'Almond' },
+        { id: 'P2', x: 60, y: 25, type: 'Almond' },
+        { id: 'P3', x: 45, y: 70, type: 'Blueberry' },
     ];
 
     return (
@@ -47,7 +47,7 @@ const SpatialCoverageView: React.FC = () => {
                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
                         <div className="absolute top-4 left-4 p-3 rounded-xl bg-white/90 border border-gray-200 shadow-sm backdrop-blur-md z-10 hidden md:block">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Coverage Legend</p>
+                            <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-2 border-b border-gray-100 pb-2">Coverage Legend</p>
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157] shadow-sm" />
@@ -89,7 +89,7 @@ const SpatialCoverageView: React.FC = () => {
                                 </g>
                             ))}
                             <circle cx="85" cy="80" r="6" className="fill-red-500/5 stroke-red-400 stroke-[0.5]" strokeDasharray="1 1.5" />
-                            <text x="85" y="72" className="fill-red-500 font-bold text-[2px]" textAnchor="middle">BLIND SPOT</text>
+                            <text x="85" y="72" className="fill-red-500 font-bold text-[2px]" textAnchor="middle">Blind Spot</text>
                             <circle cx="85" cy="80" r="1" className="fill-red-500 stroke-none" />
                         </svg>
 
@@ -106,21 +106,21 @@ const SpatialCoverageView: React.FC = () => {
                     {/* Coverage Stats */}
                     <div className="grid grid-cols-3 gap-3">
                         <div className={cn(glass.card, "p-4 space-y-1 bg-white border-l-2 border-l-red-500")}>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Saturation</p>
+                            <p className="text-[10px] font-bold text-gray-500 tracking-wider">Total Saturation</p>
                             <div className="flex items-end justify-between">
                                 <p className="text-2xl font-bold tracking-tight text-[#1A1A1A]">84.2%</p>
                                 <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-md border border-red-100 mb-1">Low</span>
                             </div>
                         </div>
                         <div className={cn(glass.card, "p-4 space-y-1 bg-white border-l-2 border-l-[#1B9157]")}>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Overlap Zone</p>
+                            <p className="text-[10px] font-bold text-gray-500 tracking-wider">Overlap Zone</p>
                             <div className="flex items-end justify-between">
                                 <p className="text-2xl font-bold tracking-tight text-[#1B9157]">1,280</p>
                                 <span className="text-[10px] font-medium text-gray-400 mb-1">m²</span>
                             </div>
                         </div>
                         <div className={cn(glass.card, "p-4 space-y-1 bg-[#F9F7F2] border-l-2 border-l-[#F4D03F]")}>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Yield Impact</p>
+                            <p className="text-[10px] font-bold text-gray-500 tracking-wider">Yield Impact</p>
                             <p className="text-2xl font-bold tracking-tight text-[#1A1A1A]">+12.5%</p>
                         </div>
                     </div>

@@ -361,7 +361,7 @@ const BeeLearn = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
                 <Button
                   size="lg"
-                  className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl shadow-lg uppercase tracking-widest text-xs"
+                  className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl shadow-lg text-xs"
                   asChild
                 >
                   <a href="#courses">
@@ -510,7 +510,7 @@ const BeeLearn = () => {
             {partners.map((partner, index) => (
               <span
                 key={index}
-                className="text-neutral-400 font-bold text-xs lg:text-sm tracking-widest uppercase hover:text-neutral-600 transition-colors cursor-default"
+                className="text-neutral-400 font-bold text-xs lg:text-sm hover:text-neutral-600 transition-colors cursor-default"
               >
                 {partner}
               </span>
@@ -601,7 +601,7 @@ const BeeLearn = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl uppercase tracking-widest text-xs">
+              <Button size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl text-xs">
                 Learn More About Our Team
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -711,7 +711,7 @@ const BeeLearn = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                    <Badge className="absolute top-4 left-4 bg-[#FFF9F0]/90 backdrop-blur-md text-neutral-900 border-none font-bold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-xl shadow-sm">
+                    <Badge className="absolute top-4 left-4 bg-[#FFF9F0]/90 backdrop-blur-md text-neutral-900 border-none font-bold text-[10px] px-3 py-1.5 rounded-xl shadow-sm">
                       {product.badge}
                     </Badge>
                     <button
@@ -755,7 +755,7 @@ const BeeLearn = () => {
 
                     <div className="mt-auto pt-6 border-t border-neutral-50 flex items-center justify-between">
                       <div>
-                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-0.5">Price</p>
+                        <p className="text-[10px] text-neutral-400 font-bold mb-0.5">Price</p>
                         <p className="text-xl font-black text-[#F4D03F]">
                           {formatPrice(product.variants[0].price_kes)}
                         </p>
@@ -829,7 +829,7 @@ const BeeLearn = () => {
                   value={newsletterEmail}
                   onChange={e => setNewsletterEmail(e.target.value)}
                 />
-                <Button type="submit" size="lg" disabled={isSubmitting} className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl uppercase tracking-widest text-xs">
+                <Button type="submit" size="lg" disabled={isSubmitting} className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl text-xs">
                   {isSubmitting ? "Joining..." : "Get All-Access Pass"}
                 </Button>
               </form>

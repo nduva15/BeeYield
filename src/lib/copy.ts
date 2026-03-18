@@ -26,7 +26,7 @@ export function humanizeToken(input: string): string {
   // Title-case words, keep common acronyms as-is
   return words
     .map((w) => {
-      if (w === 'ai') return 'AI';
+      if (w === 'ai') return 'BeeYield';
       if (w === 'qr') return 'QR';
       if (w === 'api') return 'API';
       if (w === 'gps') return 'GPS';

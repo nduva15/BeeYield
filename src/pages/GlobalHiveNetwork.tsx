@@ -37,7 +37,7 @@ const GlobalHiveNetwork = () => {
 
           {/* Hero Partners */}
           <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col items-center">
-            <p className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-widest">Trusted By Global Leaders</p>
+            <p className="text-sm font-medium text-muted-foreground mb-4">Trusted By Global Leaders</p>
             <div className="flex flex-wrap justify-center gap-6 sm:gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
@@ -131,7 +131,7 @@ const GlobalHiveNetwork = () => {
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Globe className="h-8 w-8 text-primary" />
                 </div>
-                <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 1</p>
+                <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Goal 1</p>
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Monitored Hives Network</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -145,7 +145,7 @@ const GlobalHiveNetwork = () => {
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Activity className="h-8 w-8 text-primary" />
                 </div>
-                <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 2</p>
+                <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Goal 2</p>
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Health Monitoring</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 100M+ signals</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -159,7 +159,7 @@ const GlobalHiveNetwork = () => {
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                   <BookOpen className="h-8 w-8 text-primary" />
                 </div>
-                <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 3</p>
+                <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Goal 3</p>
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Farmer Education</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 50K farmers</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -349,7 +349,7 @@ const GlobalHiveNetwork = () => {
             {/* Higher Tier Card */}
             <Card className="border-2 border-primary shadow-2xl relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground">MOST POPULAR</Badge>
+                <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
               </div>
               <CardContent className="p-8 pt-10">
                 <h3 className="text-xl font-bold text-center mb-6 text-foreground">Patron of the Hive</h3>

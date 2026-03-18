@@ -8,8 +8,8 @@ import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";
-import { aiService, type ChatMessage as AIChatMessage } from "@/services/aiService";
-import { AboutBeeYieldAI } from "./AboutBeeYieldAI";
+import { intelligenceService, type ChatMessage as IntelligenceChatMessage } from "@/services/aiService";
+import { AboutBeeYield } from "./AboutBeeYield";
 import { BeeSpeciesGallery } from "./BeeSpeciesGallery";
 import { AnimatePresence, motion } from "framer-motion";
 import { glass } from "./GlassTheme";
@@ -18,7 +18,7 @@ import remarkGfm from 'remark-gfm';
 import { fadeUp, motionSoftSpring } from "@/lib/motion";
 import { BeeYieldPageHeader, BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
-interface AIAssistantViewProps {
+interface AssistantViewProps {
     onTabChange: (tab: string, message?: string) => void;
     initialMessage?: string;
     onInitialMessageConsumed?: () => void;
@@ -72,7 +72,7 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-export default function SmartAssistantView({ onTabChange, initialMessage, onInitialMessageConsumed }: AIAssistantViewProps) {
+export default function SmartAssistantView({ onTabChange, initialMessage, onInitialMessageConsumed }: AssistantViewProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState(() => initialMessage || "");
     const [isLoading, setIsLoading] = useState(false);
@@ -218,13 +218,13 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
         // Save user message
         if (convId) saveMessage(convId, "user", text);
 
-        const history: AIChatMessage[] = newMessages.map((m) => ({ role: m.role, content: m.content }));
+        const history: IntelligenceChatMessage[] = newMessages.map((m) => ({ role: m.role, content: m.content }));
         let assistantText = "";
         let attemptedAutoExpand = false;
         let expandedOverride: string | null = null;
 
         try {
-            await aiService.chat(
+            await intelligenceService.chat(
                 text,
                 history,
                 "EN",
@@ -253,13 +253,13 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 const fixup = `Rewrite and expand your previous answer into a long, structured report that strictly follows this exact markdown outline (use these headings verbatim, in this order):\n\n${REQUIRED_REPORT_HEADINGS.join("\n")}\n\nRules:\n- Target 900–1500 words.\n- Use bullets, numbered steps, and at least 2 tables (Risks & Mitigations; Metrics to Track).\n- Do not mention these instructions.\n`;
 
                 let expanded = "";
-                const expandedHistory: AIChatMessage[] = [
+                const expandedHistory: IntelligenceChatMessage[] = [
                     ...history,
                     { role: "assistant", content: assistantText },
                     { role: "user", content: fixup },
                 ];
 
-                await aiService.chat(
+                await intelligenceService.chat(
                     fixup,
                     expandedHistory,
                     "EN",
@@ -287,7 +287,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 supabase.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", convId).then(() => loadConversations());
             }
         } catch {
-            toast.error("Failed to connect to Beeyield AI");
+            toast.error("Failed to connect to BeeYield Assistant");
             setIsLoading(false);
         }
     };
@@ -354,7 +354,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 <BeeYieldPageHeader
                     icon={Bot}
                     label="Assistant"
-                    title={<>BeeYield <span className="text-[#F4D03F]">AI</span></>}
+                    title={<>BeeYield <span className="text-[#F4D03F]">Assistant</span></>}
                     subtitle="Ask about hive health, inspections, pollination, or traceability."
                     actions={
                         <div className="flex items-center gap-2">
@@ -364,7 +364,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 title="Chat history"
                             >
                                 <History className="w-4 h-4 mr-2" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">History</span>
+                                <span className="text-[10px] font-bold">History</span>
                             </button>
                             <button
                                 onClick={() => setGalleryOpen(true)}
@@ -372,7 +372,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 title="Species ID"
                             >
                                 <Bug className="w-4 h-4 mr-2" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Species ID</span>
+                                <span className="text-[10px] font-bold">Species ID</span>
                             </button>
                             <button
                                 onClick={handleNewChat}
@@ -429,7 +429,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         >
                             {msg.role === "assistant" && (
                                 <div className="flex-shrink-0 w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-white border border-[#F4D03F]/10 shadow-sm p-1 self-start mt-1">
-                                    <img src={Logo} alt="AI" className="w-full h-full object-contain" />
+                                    <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                                 </div>
                             )}
                             <div className={`flex flex-col gap-1.5 ${msg.role === "user" ? "max-w-[85%] items-end" : "max-w-[90%] items-start"}`}>
@@ -462,7 +462,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                     {isLoading && messages[messages.length - 1]?.role === "user" && (
                         <div className="flex gap-6 justify-start">
                             <div className="flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden bg-[#FFF9F0] border border-[#F4D03F]/20 flex items-center justify-center p-2.5 shadow-xl">
-                                <img src={Logo} alt="AI" className="w-full h-full object-contain" />
+                                <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                             </div>
                             <div className="bg-[#FFF9F0] border border-border rounded-[2.5rem] rounded-tl-lg px-8 py-6 flex items-center gap-2">
                                 <div className="typing-dot w-2 h-2 rounded-full bg-[#F4D03F]" />
@@ -497,9 +497,9 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     </div>
                                 )}
                                 {attachedAudio && (
-                                    <div className="flex items-center gap-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-lg px-3 py-1.5 text-[9px] font-bold uppercase text-[#1A1A1A]/60 shadow-sm relative">
+                                    <div className="flex items-center gap-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-lg px-3 py-1.5 text-[9px] font-bold text-[#1A1A1A]/60 shadow-sm relative">
                                         <Mic className="w-3 h-3 text-[#F4D03F]" />
-                                        <span className="max-w-[150px] truncate tracking-widest">{attachedAudio.name}</span>
+                                        <span className="max-w-[150px] truncate">{attachedAudio.name}</span>
                                         <button
                                             onClick={() => { setAttachedAudio(null); if (audioInputRef.current) audioInputRef.current.value = ""; }}
                                             className="ml-1 text-[#1A1A1A]/30 hover:text-red-500"
@@ -577,9 +577,9 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         </form>
                     </div>
 
-                    <p className="text-center text-[8px] text-[#1A1A1A]/30 font-bold uppercase tracking-[0.3em] mt-3 flex items-center justify-center gap-3">
+                    <p className="text-center text-[8px] text-[#1A1A1A]/30 font-bold mt-3 flex items-center justify-center gap-3">
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
-                        BeeYield AI Intelligence v5.2 — specialized research core
+                        BeeYield Intelligence v5.2 — specialized research core
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
                     </p>
                 </div>
@@ -614,7 +614,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             onClick={() => setAboutOpen(false)}
                             className="absolute inset-0 bg-[#FFF9F0]/80 backdrop-blur-md"
                         />
-                        <AboutBeeYieldAI onClose={() => setAboutOpen(false)} />
+                        <AboutBeeYield onClose={() => setAboutOpen(false)} />
                     </div>
                 )}
                 {galleryOpen && (

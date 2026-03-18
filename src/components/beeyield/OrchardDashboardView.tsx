@@ -53,12 +53,12 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
     const stats = React.useMemo(() => {
         if (!hives.length) return null;
         const totalHives = hives.length;
-        const activeHives = hives.filter(h => h.status === 'ACTIVE' || h.status === 'active').length;
+        const activeHives = hives.filter(h => h.status === 'Active' || h.status === 'active').length;
         const avgStrength = hives.reduce((acc, h) => {
             let score = 0;
             const t = h.latest_temp || (h as any).telemetry?.temperature;
             const w = h.latest_weight || (h as any).telemetry?.weight;
-            if (h.status === 'ACTIVE' || h.status === 'active') score += 50;
+            if (h.status === 'Active' || h.status === 'active') score += 50;
             if (w > 20) score += 30;
             if (t > 32 && t < 37) score += 20;
             return acc + score;
@@ -148,13 +148,13 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                             {s.trend && (
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#1B9157]/10 text-[#1B9157]">
                                     <TrendingUp className="w-3 h-3" />
-                                    <span className="text-[10px] font-bold uppercase">Live</span>
+                                    <span className="text-[10px] font-bold">Live</span>
                                 </div>
                             )}
                         </div>
                         <div className="space-y-0.5 mt-1">
                             <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">{s.value}</p>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{s.label}</p>
+                            <p className="text-[10px] font-bold text-gray-500 tracking-wider">{s.label}</p>
                         </div>
                     </div>
                 ))}
@@ -168,7 +168,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                             <Activity className="w-4 h-4 text-[#1B9157]" />
                             <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Foraging Activity</h3>
                         </div>
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Today</span>
+                        <span className="text-[10px] font-bold text-gray-500 tracking-wider">Today</span>
                     </div>
                     <div className="p-4 flex-1">
                         <ResponsiveContainer width="99%" height={220}>
@@ -222,7 +222,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                 <span className="text-2xl font-bold tracking-tight text-[#1A1A1A]">
                                     {isWeatherLoading ? '...' : (weather?.temperature ? `${Math.round(weather.temperature)}°` : '24°')}
                                 </span>
-                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold text-gray-500 tracking-wider">
                                     {weather?.summary || 'Sunny'}
                                 </span>
                             </div>
@@ -235,7 +235,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                     <span className="text-sm font-bold text-[#1A1A1A]">{weather?.wind_speed || '12'}</span>
                                     <span className="text-[10px] font-medium text-gray-500">km/h</span>
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Wind</span>
+                                <span className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Wind</span>
                             </div>
                             <div className="flex flex-col items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
                                 <Droplets className="w-4 h-4 text-cyan-500 mb-1.5" />
@@ -243,7 +243,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                     <span className="text-sm font-bold text-[#1A1A1A]">{weather?.humidity || '45'}</span>
                                     <span className="text-[10px] font-medium text-gray-500">%</span>
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Humidity</span>
+                                <span className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Humidity</span>
                             </div>
                         </div>
                     </div>

@@ -152,7 +152,7 @@ export async function getStoreStats(): Promise<VectorStoreStats> {
   return invoke<VectorStoreStats>("get_store_stats");
 }
 
-// ── AI Pipeline Commands ─────────────────────────────────────
+// ── Intelligence Pipeline Commands ─────────────────────────────────────
 
 export async function askBeeYield(query: AIQuery): Promise<AIResponse> {
   return invoke<AIResponse>("ask_beeyield", { query });

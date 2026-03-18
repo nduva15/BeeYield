@@ -86,7 +86,7 @@ const VarroaView: React.FC = () => {
                 title="Varroa Analysis"
                 subtitle="Review infestation risk and next steps."
                 actions={
-                    <button className={cn(glass.btnPrimary, "h-10 px-6 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}>
+                    <button className={cn(glass.btnPrimary, "h-10 px-6 font-black text-[10px] rounded-xl")}>
                         <Microscope className="w-4 h-4" />
                         <span>Run check</span>
                     </button>
@@ -109,12 +109,12 @@ const VarroaView: React.FC = () => {
                         <AlertTriangle className="w-5 h-5 text-red-500" />
                     </div>
                     <div className="flex-1 relative z-10">
-                        <h3 className="text-[10px] font-black text-red-700 uppercase tracking-[0.2em] mb-0.5">High infestation</h3>
-                        <p className="text-[11px] font-black text-red-600/60 uppercase tracking-tighter">
+                        <h3 className="text-[10px] font-black text-red-700 mb-0.5">High infestation</h3>
+                        <p className="text-[11px] font-black text-red-600/60 tracking-tighter">
                             Hive {criticalHive.id} shows a {criticalHive.infestation}% infestation rate. Treatment recommended within 48 hours.
                         </p>
                     </div>
-                    <button className={cn(glass.btnPrimary, "h-9 px-4 bg-red-500 border-red-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl relative z-10")}>
+                    <button className={cn(glass.btnPrimary, "h-9 px-4 bg-red-500 border-red-600 text-white font-black text-[9px] rounded-xl relative z-10")}>
                         Treatment steps
                     </button>
                 </div>
@@ -140,14 +140,14 @@ const VarroaView: React.FC = () => {
                         </div>
                         <div className="space-y-0.5">
                             <p className="text-2xl font-black text-[#1A1A1A] tabular-nums tracking-tighter leading-none">{hive.infestation}%</p>
-                            <p className={glass.microLabel}>INFESTATION_RATE</p>
+                            <p className={glass.microLabel}>Infestation Rate</p>
                         </div>
                         <div className="pt-3 border-t border-[#F4D03F]/10 flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                                 <TrendingUp className={cn("w-3 h-3", hive.trend === 'up' ? "text-red-500" : hive.trend === 'down' ? "text-[#1B9157]" : "text-gray-400")} />
-                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{hive.trend}</span>
+                                <span className="text-[8px] font-black text-gray-400">{hive.trend}</span>
                             </div>
-                            <span className="text-[7px] font-black text-gray-300 uppercase">AUDIT_NOMINAL</span>
+                            <span className="text-[7px] font-black text-gray-300">Audit Nominal</span>
                         </div>
                     </div>
                 ))}
@@ -163,14 +163,14 @@ const VarroaView: React.FC = () => {
                             <History className="w-4 h-4 text-[#1B9157]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className={glass.sectionTitle}>HISTORIC_TRENDS</h3>
+                            <h3 className={glass.sectionTitle}>Historic Trends</h3>
                             <p className={glass.microLabel}>Infestation levels last 30-day epoch.</p>
                         </div>
                     </div>
                     <div className="h-[200px] w-full bg-white/20 rounded-2xl flex flex-col items-center justify-center border border-dashed border-[#F4D03F]/20 relative group">
                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                         <BarChart3 className="w-10 h-10 text-[#F4D03F]/20 group-hover:scale-110 transition-transform duration-500" />
-                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-2">SYNCING_DATA_STREAM...</span>
+                        <span className="text-[8px] font-black text-gray-400 mt-2">SYNCING_DATA_STREAM...</span>
                     </div>
                 </div>
 
@@ -182,7 +182,7 @@ const VarroaView: React.FC = () => {
                             <ShieldCheck className="w-4 h-4 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className={glass.sectionTitle}>ACTION_PROTOCOLS</h3>
+                            <h3 className={glass.sectionTitle}>Action Protocols</h3>
                             <p className={glass.microLabel}>Recommended field mitigation procedures.</p>
                         </div>
                     </div>
@@ -194,8 +194,8 @@ const VarroaView: React.FC = () => {
                         ]).map((t: any, i: number) => (
                             <div key={i} className="p-3.5 rounded-xl bg-white/40 border border-[#F4D03F]/10 flex items-center justify-between group cursor-pointer hover:border-[#F4D03F]/40 transition-all">
                                 <div className="space-y-0.5">
-                                    <h4 className="font-black text-[#1A1A1A] text-[11px] uppercase tracking-tight transition-colors group-hover:text-[#F4D03F]">{(t.treatment_type || 'treatment').replace(/_/g, ' ')}</h4>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{t.notes || 'REGISTRY_ENTRY_EMPTY'}</p>
+                                    <h4 className="font-black text-[#1A1A1A] text-[11px] tracking-tight transition-colors group-hover:text-[#F4D03F]">{(t.treatment_type || 'treatment').replace(/_/g, ' ')}</h4>
+                                    <p className="text-[8px] font-black text-gray-400">{t.notes || 'Registry Entry Empty'}</p>
                                 </div>
                                 <div className="w-7 h-7 rounded-lg bg-white border border-transparent group-hover:border-[#F4D03F]/20 flex items-center justify-center transition-all">
                                     <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />

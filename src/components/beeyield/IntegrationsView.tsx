@@ -143,7 +143,7 @@ const IntegrationsView: React.FC = () => {
                 <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     <div className="space-y-4">
-                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-3 py-1 rounded-lg font-bold text-[10px] tracking-wider uppercase">
+                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-3 py-1 rounded-lg font-bold text-[10px] tracking-wider">
                             Connected services
                         </Badge>
                         <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight leading-none">
@@ -212,11 +212,11 @@ const IntegrationsView: React.FC = () => {
                         <div className="space-y-1">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-2xl font-bold text-[#1A1A1A] tracking-tight leading-none capitalize">{p} <span style={{ color }}>Industrial</span></h2>
-                                <Badge className={cn("px-2 py-0.5 rounded-md font-bold text-[10px] tracking-wider uppercase border-none", isConnectedNode ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>
+                                <Badge className={cn("px-2 py-0.5 rounded-md font-bold text-[10px] tracking-wider border-none", isConnectedNode ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>
                                     {isConnectedNode ? "Connected" : "Not connected"}
                                 </Badge>
                             </div>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Sync and settings</p>
+                            <p className="text-[10px] font-bold text-gray-500 leading-none">Sync and settings</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
@@ -238,7 +238,7 @@ const IntegrationsView: React.FC = () => {
                             <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                                 <div>
                                     <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recent activity</h4>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Sync history</p>
+                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider mt-0.5">Sync history</p>
                                 </div>
                                 <Terminal className="w-4 h-4 text-gray-400" />
                             </div>
@@ -246,9 +246,9 @@ const IntegrationsView: React.FC = () => {
                                 <table className="w-full text-left">
                                     <thead className="bg-gray-50/50">
                                         <tr>
-                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Timestamp</th>
-                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Event</th>
-                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Status</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 tracking-wider border-b border-gray-100">Timestamp</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 tracking-wider border-b border-gray-100">Event</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 tracking-wider border-b border-gray-100">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -257,7 +257,7 @@ const IntegrationsView: React.FC = () => {
                                                 <td className="px-4 py-3 text-[11px] font-medium text-gray-600 tabular-nums">{new Date(log.created_at).toLocaleString()}</td>
                                                 <td className="px-4 py-3 text-[11px] font-bold text-[#1A1A1A]">{log.event_type}</td>
                                                 <td className="px-4 py-3">
-                                                    <span className={cn("text-[10px] font-bold uppercase px-2 py-0.5 rounded-md", log.status === 'success' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>{log.status}</span>
+                                                    <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md", log.status === 'success' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>{log.status}</span>
                                                 </td>
                                             </tr>
                                         ))}
@@ -276,23 +276,23 @@ const IntegrationsView: React.FC = () => {
                         <div className={cn(glass.card, "p-4 space-y-4 bg-white")}>
                             <div>
                                 <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Target <span style={{ color }}>Config</span></h4>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-1">Connection settings</p>
+                                <p className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Connection settings</p>
                             </div>
                             
                             {p === 'quickbooks' ? (
                                 <>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Revenue account</Label>
+                                        <Label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Revenue account</Label>
                                         <Input value={qboIncomeAccount} onChange={(e) => setQboIncomeAccount(e.target.value)} className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Expense account</Label>
+                                        <Label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Expense account</Label>
                                         <Input value={qboExpenseAccount} onChange={(e) => setQboExpenseAccount(e.target.value)} className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                     </div>
                                 </>
                             ) : (
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Shopify Store URL</Label>
+                                    <Label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Shopify Store URL</Label>
                                     <Input value={shopUrl} onChange={(e) => setShopUrl(e.target.value)} placeholder="name.myshopify.com" className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                 </div>
                             )}
@@ -369,7 +369,7 @@ const IntegrationsView: React.FC = () => {
                                 key={t.id}
                                 onClick={() => setActiveTab(t.id as any)}
                                 className={cn(
-                                    "flex items-center gap-1.5 px-3 h-8 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                                    "flex items-center gap-1.5 px-3 h-8 rounded-md text-[10px] font-bold tracking-wider transition-all",
                                     activeTab === t.id
                                         ? "bg-white text-[#1A1A1A] shadow-sm border border-gray-200"
                                         : "text-gray-500 hover:text-[#1A1A1A]"
@@ -387,7 +387,7 @@ const IntegrationsView: React.FC = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center min-h-[300px] space-y-3 opacity-50">
                         <RefreshCw className="w-6 h-6 text-[#1B9157] animate-spin" />
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Loading…</span>
+                        <span className="text-[10px] font-bold text-gray-500 tracking-wider">Loading…</span>
                     </div>
                 ) : (
                     <AnimatePresence mode="wait">
