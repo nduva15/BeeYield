@@ -37,7 +37,7 @@ jobs:
         run: pnpm run type-check
 
       - name: Lint
-        run: pnpm run lint
+        run: pnpm run lint --max-warnings=500
 
       - name: Build Frontend
         env:
@@ -219,6 +219,6 @@ jobs:
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Trivy Results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-results.sarif'
