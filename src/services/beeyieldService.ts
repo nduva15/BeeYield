@@ -2491,11 +2491,11 @@ export const beeyieldService = {
     },
 
     // ========== MODELS (Python backend) ==========
-    async getAIModels(): Promise<any[]> {
+    async getIntelligenceModels(): Promise<any[]> {
         try {
             const apiUrl = import.meta.env.VITE_API_URL || '';
             const headers = await getAuthHeaders();
-            const response = await fetch(`${apiUrl}/api/v1/ai/models`, { headers });
+            const response = await fetch(`${apiUrl}/api/v1/intelligence/models`, { headers });
             if (!response.ok) return [];
             return response.json();
         } catch (error) {

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import {
-    ArrowLeftRight, FileText, FileSpreadsheet, Loader2, MapPin, Info, Settings2, Download
+    ArrowLeftRight, FileText, FileSpreadsheet, Loader2, MapPin, Info, Settings2, Download, TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { beeyieldService, Apiary } from '@/services/beeyieldService';
