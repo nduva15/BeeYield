@@ -34,7 +34,7 @@ jobs:
           vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
           vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
           vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
-          vercel-args: --prod
+          vercel-args: --prod --force --yes
 
   deploy-staging:
     name: Deploy to Vercel (Staging)
@@ -61,6 +61,7 @@ jobs:
           vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
           vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
           vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
+          vercel-args: --force --yes
 
   deploy-preview:
     name: Deploy Preview (PR)
@@ -87,6 +88,7 @@ jobs:
           vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
           vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
           vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
+          vercel-args: --force --yes
       - uses: actions/github-script@v7
         with:
           script: |
