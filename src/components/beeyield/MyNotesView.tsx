@@ -378,12 +378,13 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
     return (
         <BeeYieldPageShell>
-            <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#F4D03F]/[0.03] rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#F4D03F][0.03] rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
 
             {/* Title Section */}
             <BeeYieldPageHeader
                 icon={StickyNote}
                 label="Notes"
+                onBack={() => onTabChange?.('home')}
                 title={<>Your <span className="text-[#F4D03F]">notes</span></>}
                 subtitle="Write down observations and link them to an apiary or hive."
                 actions={

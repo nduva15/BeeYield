@@ -314,7 +314,7 @@ const Traceability = () => {
                     className="max-w-md w-full px-8 text-center"
                   >
                     <div className="relative mb-12">
-                      <div className="absolute inset-0 bg-[#F4D03F]/ rounded-full blur-[120px] opacity-60"></div>
+                      <div className="absolute inset-0 bg-[#F4D03F] rounded-full blur-[120px] opacity-60"></div>
 
                       {/* High-Tech Scanner Visual */}
                       <div className="relative h-56 w-56 mx-auto bg-neutral-900 rounded-[3rem] shadow-2xl flex items-center justify-center border border-[#F4D03F]/20 overflow-hidden group">
@@ -336,7 +336,7 @@ const Traceability = () => {
                           </motion.div>
                           <div className="flex gap-1.5">
                             {[1, 2, 3].map(i => (
-                              <div key={i} className="h-1 w-6 rounded-full bg-[#1B9157]/ overflow-hidden">
+                              <div key={i} className="h-1 w-6 rounded-full bg-[#1B9157] overflow-hidden">
                                 <motion.div
                                   animate={{ x: ["-100%", "100%"] }}
                                   transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
@@ -416,7 +416,7 @@ const Traceability = () => {
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-12 relative z-10">
                       <div className="relative group scale-110">
-                        <div className="absolute -inset-6 bg-[#F4D03F]/ rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
+                        <div className="absolute -inset-6 bg-[#F4D03F] rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
                         <img src={LOGO} alt="BeeYield Logo" className="h-32 md:h-40 object-contain relative z-10 hover:scale-110 transition-transform duration-500 filter drop-shadow-2xl" />
                       </div>
 
@@ -432,7 +432,7 @@ const Traceability = () => {
                       ) : null}
                     </div>
 
-                    <Badge className="bg-green-100 text-[#1B9157] border-green-200 text-xs px-4 py-2 hover:bg-[#1B9157]/ transition-colors inline-flex items-center font-bold mb-4">
+                    <Badge className="bg-green-100 text-[#1B9157] border-green-200 text-xs px-4 py-2 hover:bg-[#1B9157] transition-colors inline-flex items-center font-bold mb-4">
                       <ShieldCheck className="mr-1.5 h-4 w-4" /> Verified Authentic
                     </Badge>
 
@@ -620,7 +620,7 @@ const Traceability = () => {
                               </Badge>
                             </div>
 
-                            <div className="bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-[#1A1A1A] rounded-[2rem] p-6 overflow-hidden relative border border-[#1B9157]/ shadow-2xl">
+                            <div className="bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-[#1A1A1A] rounded-[2rem] p-6 overflow-hidden relative border border-[#1B9157] shadow-2xl">
                               {/* Background Pattern */}
                               <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
                                 <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -636,7 +636,7 @@ const Traceability = () => {
                                 <div className="flex justify-between items-start mb-6 pb-6 border-b border-[#F4D03F]/20">
                                   <div className="flex items-center gap-4">
                               <div className="relative">
-                                      <div className="absolute -inset-2 bg-[#F4D03F]/ rounded-full blur-lg opacity-60" />
+                                      <div className="absolute -inset-2 bg-[#F4D03F] rounded-full blur-lg opacity-60" />
                                       <div className="h-14 w-14 bg-[#F4D03F]/10 backdrop-blur-md rounded-2xl border border-[#F4D03F]/40 flex items-center justify-center relative z-10 shadow-lg group-hover:bg-gray-200 transition-all duration-500">
                                         <div className="text-center">
                                           <Cpu className="h-5 w-5 text-[#F4D03F] mb-0.5 mx-auto" />
@@ -646,11 +646,11 @@ const Traceability = () => {
                                     </div>
                                     <div>
                                       <h4 className="text-lg font-black leading-tight tracking-tight flex items-center gap-2">
-                                        Hive <span className="px-1.5 py-0.5 bg-[#1B9157]/ border border-[#1B9157]/ text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
+                                        Hive <span className="px-1.5 py-0.5 bg-[#1B9157] border border-[#1B9157] text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
                                       </h4>
                                       <div className="flex items-center gap-2 mt-1">
                                         {traceData.sensor_snapshot?.queen_status === 'present' ? (
-                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#1B9157]/ border border-[#1B9157]/ rounded-full">
+                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#1B9157] border border-[#1B9157] rounded-full">
                                             <span className="text-[10px] text-[#1B9157] font-bold leading-none">🛡️</span>
                                             <span className="text-[9px] font-black text-[#1B9157]">Queen Present</span>
                                           </div>
@@ -668,7 +668,7 @@ const Traceability = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="text-right glass-panel p-2 rounded-xl bg-[#1B9157]/ border border-[#1B9157]/">
+                                  <div className="text-right glass-panel p-2 rounded-xl bg-[#1B9157] border border-[#1B9157]">
                                     <p className="text-[8px] font-black text-[#1B9157] mb-0.5">GPS Location</p>
                                     <p className="text-[10px] font-mono font-bold text-[#1A1A1A] mb-0.5">{traceData.sensor_snapshot?.latitude || "-1.2870"}</p>
                                     <p className="text-[10px] font-mono font-bold text-[#1A1A1A]">{traceData.sensor_snapshot?.longitude || "36.8252"}</p>
@@ -742,13 +742,13 @@ const Traceability = () => {
                                   {/* Flight Territory Map */}
                                   <div className="space-y-2">
                                     <p className="text-[10px] font-black text-[#1B9157]">Foraging Range (5km Radius)</p>
-                                    <div className="aspect-[4/3] md:aspect-square rounded-2xl bg-[#022c22]/50 relative overflow-hidden border border-[#1B9157]/ flex items-center justify-center">
+                                    <div className="aspect-[4/3] md:aspect-square rounded-2xl bg-[#022c22]/50 relative overflow-hidden border border-[#1B9157] flex items-center justify-center">
                                       {/* Grid Overlays */}
                                       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #34d399 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                                       {/* Concentric Circles */}
                                       <div className="absolute inset-0 flex items-center justify-center opacity-30">
                                         {[100, 75, 50, 25].map((size) => (
-                                          <div key={size} className="absolute border border-[#1B9157]/ rounded-full" style={{ width: `${size}%`, height: `${size}%` }} />
+                                          <div key={size} className="absolute border border-[#1B9157] rounded-full" style={{ width: `${size}%`, height: `${size}%` }} />
                                         ))}
                                       </div>
                                       {/* Floral Pins (Simulated - Deterministic) */}
@@ -758,7 +758,7 @@ const Traceability = () => {
                                       <div className="relative z-10 p-2.5 bg-[#145A32] rounded-xl shadow-2xl border border-[#F4D03F]/40">
                                         <MapPin className="h-4 w-4 text-[#1A1A1A]" />
                                       </div>
-                                      <div className="absolute bottom-3 left-3 text-[9px] font-black text-[#1B9157] bg-[#1B9157]/ px-2 py-1 rounded-lg backdrop-blur-md border border-[#F4D03F]/20">
+                                      <div className="absolute bottom-3 left-3 text-[9px] font-black text-[#1B9157] bg-[#1B9157] px-2 py-1 rounded-lg backdrop-blur-md border border-[#F4D03F]/20">
                                         {traceData?.apiary?.environment_type || "Savanna Wooded"}
                                       </div>
                                     </div>
@@ -767,12 +767,12 @@ const Traceability = () => {
                                   {/* Record Integrity Block - Simplified */}
                                   <div className="space-y-2 flex flex-col">
                                     <p className="text-[10px] font-black text-[#1B9157]">Record Integrity</p>
-                                    <div className="bg-[#022c22]/40 rounded-2xl p-5 border border-[#1B9157]/ flex-1 flex flex-col justify-between">
+                                    <div className="bg-[#022c22]/40 rounded-2xl p-5 border border-[#1B9157] flex-1 flex flex-col justify-between">
                                       <div className="space-y-4">
                                         <div>
                                           <p className="text-[9px] font-black text-[#1B9157] mb-2 tracking-tighter">Safe & Verified</p>
-                                          <div className="flex items-center gap-3 p-3 bg-[#1B9157]/ rounded-xl border border-[#1B9157]/">
-                                            <div className="h-8 w-8 rounded-full bg-[#1B9157]/ flex items-center justify-center">
+                                          <div className="flex items-center gap-3 p-3 bg-[#1B9157] rounded-xl border border-[#1B9157]">
+                                            <div className="h-8 w-8 rounded-full bg-[#1B9157] flex items-center justify-center">
                                               <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
                                             </div>
                                             <div>
@@ -869,11 +869,11 @@ const Traceability = () => {
                         </div>
                       </div>
 
-                      <div className="pt-8 border-t border-[#1B9157]/ relative z-10">
+                      <div className="pt-8 border-t border-[#1B9157] relative z-10">
                         <p className="text-[10px] font-black text-[#1B9157] mb-4">Our Commitment</p>
-                        <div className="bg-[#1B9157]/ rounded-xl p-4 mb-6 backdrop-blur-sm border border-[#1B9157]/">
+                        <div className="bg-[#1B9157] rounded-xl p-4 mb-6 backdrop-blur-sm border border-[#1B9157]">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="h-8 w-8 rounded-full bg-[#1B9157]/ flex items-center justify-center">
+                            <div className="h-8 w-8 rounded-full bg-[#1B9157] flex items-center justify-center">
                               <Scale className="h-4 w-4 text-[#1B9157]" />
                             </div>
                             <p className="font-bold text-lg text-[#1A1A1A]">50% Harvest Promise</p>
@@ -888,7 +888,7 @@ const Traceability = () => {
                       </div>
 
                       {/* Decorative BG Blob */}
-                      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#1B9157]/ rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl pointer-events-none" />
                     </Card>
                   </div>
 

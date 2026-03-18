@@ -19,9 +19,10 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const CATEGORIES = [
     { id: 'Hardware', label: 'Hardware', icon: HardDrive, description: 'Sensor issues, battery, physical hive damage', color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -184,16 +185,18 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
-            <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#F4D03F]/[0.03] rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
+        <BeeYieldPageShell className={glass.page}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
+            <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-[#F4D03F][0.03] rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
 
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={MessageSquare}
                 label="Support Intelligence"
+                onBack={() => onTabChange('home')}
                 title={<>My <span className="text-[#F4D03F]">Requests</span></>}
                 subtitle="Track and manage your technical support tickets."
                 actions={
@@ -617,7 +620,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                     )}
                 </DialogContent>
             </Dialog>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

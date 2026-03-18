@@ -252,7 +252,7 @@ const Impact = () => {
               </div>
 
               <div className="space-y-8">
-                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-[#1B9157]/">
+                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-[#1B9157]">
                   <div className="flex items-center justify-between mb-4">
                     <span className="font-semibold text-[#1B9157] text-sm">Habitat health</span>
                     <span className="font-black text-[#1B9157]">95%</span>

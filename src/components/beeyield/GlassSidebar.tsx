@@ -21,7 +21,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     onLogout,
     navItems
 }) => {
-    const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'data', 'precision-pollination-folder', 'management-folder']);
+    const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'data', 'precision-pollination-folder', 'meters']);
     const { theme, setTheme } = useTheme();
 
     // Dark mode is disabled.
@@ -62,7 +62,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 <div className="space-y-0.5">
                     {navItems.filter(item => !item.hidden).map((item) => {
                         const isActive = activeTab === item.id;
-                        const isFolder = item.hasSubmenu;
+                        const isFolder = item.hasSubmenu || (item.submenuItems && item.submenuItems.length > 0);
                         const isExpanded = expandedFolders.includes(item.id);
 
                         return (

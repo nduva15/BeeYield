@@ -474,7 +474,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 </select>
                             </div>
 
-                            <div className="flex bg-[#1B9157]/[0.05] p-1 rounded-xl border border-[#1B9157]/10 gap-1 overflow-x-auto custom-scrollbar shadow-sm">
+                            <div className="flex bg-[#1B9157][0.05] p-1 rounded-xl border border-[#1B9157]/10 gap-1 overflow-x-auto custom-scrollbar shadow-sm">
                                 {subPageOptions.map(opt => (
                                     <button
                                         key={opt.id}
@@ -629,7 +629,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                         <div className="lg:col-span-8 space-y-5">
                             <div className={cn(glass.card, "p-0 aspect-video relative overflow-hidden bg-white/40 border-[#1B9157]/10 shadow-xl")}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#1B9157]/[0.02] to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#1B9157][0.02] to-transparent" />
                                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1B9157 1px, transparent 1px), linear-gradient(to bottom, #1B9157 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                                 {selectedDevice && (
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -684,7 +684,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     <motion.div key="calcs" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-5">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                             <div className={cn(glass.card, "p-0 space-y-0 bg-white/40 border-[#F4D03F]/10 overflow-hidden shadow-xl")}>
-                                <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.05]">
+                                <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.05]">
                                     <div className="flex items-center gap-2">
                                         <Calculator className="w-4 h-4 text-[#F4D03F]" />
                                         <h3 className="text-[10px] font-black text-[#1A1A1A]">Tactical_Parameters</h3>
@@ -919,7 +919,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         </div>
 
                         <div className={cn(glass.card, "p-0 bg-white/40 border-[#1B9157]/10 overflow-hidden shadow-xl")}>
-                            <div className="p-5 border-b border-[#1B9157]/10 bg-[#1B9157]/[0.02] flex items-center justify-between">
+                            <div className="p-5 border-b border-[#1B9157]/10 bg-[#1B9157][0.02] flex items-center justify-between">
                                 <h3 className="text-[10px] font-black text-[#1A1A1A]">Deployment_History_Chain</h3>
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />

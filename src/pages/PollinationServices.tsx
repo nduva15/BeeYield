@@ -533,7 +533,7 @@ const PollinationServices = () => {
             <section className="py-32 relative overflow-hidden bg-[#F0F7F0] text-neutral-900 rounded-[5rem] mx-4 mb-8 border border-green-100">
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-200 rounded-full blur-[120px] -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F4D03F]/ rounded-full blur-[120px] -ml-24 -mb-24" />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F4D03F] rounded-full blur-[120px] -ml-24 -mb-24" />
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10 text-center space-y-12">

@@ -64,7 +64,8 @@ import {
 import { HivesTable } from './HivesTable';
 import HiveFormModal from './HiveFormModal';
 import OrchardDashboardView from './OrchardDashboardView';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 // --- Detail View Component ---
 const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: Apiary; setViewingApiary: (a: Apiary | null) => void; onTabChange?: (tab: string) => void }) => {
@@ -111,25 +112,17 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
             animate={{ opacity: 1 }}
             className={glass.page}
         >
-            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F]/[0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F][0.04] rounded-full blur-[150px] -mr-40 -mt-20 pointer-events-none" />
 
             {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={MapPin}
                 label="Site Intelligence"
+                onBack={() => setViewingApiary(null)}
                 title={<>{apiary.name.split(' ')[0]} <span className="text-[#F4D03F]">{apiary.name.split(' ').slice(1).join(' ') || 'Site'}</span></>}
                 subtitle="Operational telemetry for this location."
                 actions={
                     <div className="flex items-center gap-2 relative z-10">
-                        <button
-                            onClick={() => setViewingApiary(null)}
-                            className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
-                            aria-label="Back to locations"
-                            title="Back to locations"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-
                         <div className="flex bg-[#F9F7F2] p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
                             <button
                                 onClick={() => setActiveView('dashboard')}
@@ -197,7 +190,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                 transition={{ duration: 1 }}
                                 className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md min-h-[500px] flex flex-col p-0 overflow-hidden")}
                             >
-                                <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
+                                <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02]">
                                     <div className="space-y-0.5">
                                         <h3 className="text-[10px] font-black text-[#1A1A1A]">Asset Matrix</h3>
                                         <p className="text-[8px] font-bold text-gray-400">High-Density Grid</p>
@@ -467,7 +460,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
                 {/* Form Card */}
                 <div className={cn(glass.card, 'max-w-4xl shadow-2xl p-0 overflow-hidden bg-white/70 border-[#F4D03F]/10 rounded-3xl mx-auto backdrop-blur-xl')}>
-                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] relative z-10 flex items-center justify-between">
+                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] relative z-10 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                 <Layers className="w-4 h-4 text-[#F4D03F]" />
@@ -607,15 +600,12 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-        >
+        <BeeYieldPageShell className={cn("p-4 lg:p-6 space-y-6 pb-20")}>
             {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={MapPin}
                 label="Apiaries"
+                onBack={() => onTabChange?.('home')}
                 title={<>Apiary <span className="text-[#F4D03F]">Network</span></>}
                 subtitle="Manage your apiary records."
                 actions={
@@ -745,7 +735,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
             `}</style>
-        </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

@@ -916,7 +916,7 @@ const AdminDashboard: React.FC = () => {
             case 'pending': return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-200"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
             case 'processing': return <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200"><RefreshCw className="w-3 h-3 mr-1" /> Processing</Badge>;
             case 'shipped': return <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-200"><Package className="w-3 h-3 mr-1" /> Shipped</Badge>;
-            case 'completed': return <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-green-200"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</Badge>;
+            case 'completed': return <Badge variant="outline" className="bg-[#1B9157] text-[#1B9157] border-green-200"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</Badge>;
             case 'cancelled': return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-200"><XCircle className="w-3 h-3 mr-1" /> Cancelled</Badge>;
             default: return <Badge variant="outline">{status}</Badge>;
         }
@@ -1234,7 +1234,7 @@ const AdminDashboard: React.FC = () => {
                                                         transform: 'translate(-50%, -50%)'
                                                     }}
                                                 >
-                                                    <div className="w-6 h-6 bg-[#F4D03F]/ rounded-full flex items-center justify-center animate-pulse absolute"></div>
+                                                    <div className="w-6 h-6 bg-[#F4D03F] rounded-full flex items-center justify-center animate-pulse absolute"></div>
                                                     <div className="relative w-6 h-6">
                                                         <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-[#1A1A1A] font-bold text-[10px]">
                                                             {idx + 1}
@@ -1841,7 +1841,7 @@ const AdminDashboard: React.FC = () => {
                                         <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Badge className="bg-[#1B9157]/ text-[#1B9157] border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                        <Badge className="bg-[#1B9157] text-[#1B9157] border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                             {stockMovements.length} RECORDS
                                         </Badge>
                                         <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black text-[10px]">
@@ -1870,7 +1870,7 @@ const AdminDashboard: React.FC = () => {
                                                     <TableRow key={mov.id} className="hover:bg-muted/20 transition-colors border-border/10">
                                                         <TableCell className="px-6 font-semibold">{mov.products?.name || 'Unknown Product'}</TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge variant="outline" className={mov.type === 'addition' ? 'bg-[#1B9157]/ text-[#1B9157] border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
+                                                            <Badge variant="outline" className={mov.type === 'addition' ? 'bg-[#1B9157] text-[#1B9157] border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
                                                                 {mov.type === 'addition' ? <TrendingUp className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
                                                                 {mov.type}
                                                             </Badge>
@@ -2063,7 +2063,7 @@ const AdminDashboard: React.FC = () => {
                                                                     <Button
                                                                         size="icon"
                                                                         variant="outline"
-                                                                        className="rounded-xl w-8 h-8 border-border/50 text-[#F4D03F] hover:bg-[#F4D03F]/"
+                                                                        className="rounded-xl w-8 h-8 border-border/50 text-[#F4D03F] hover:bg-[#F4D03F]"
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             window.open(`/trace?code=${batch.batch_code}`, '_blank');
@@ -2344,7 +2344,7 @@ const AdminDashboard: React.FC = () => {
                                                 <p className="text-[10px] font-black text-muted-foreground">Batch Code</p>
                                                 <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
                                             </div>
-                                            <Badge className="bg-[#1B9157]/ text-[#1B9157] px-4 py-1 h-8 rounded-xl font-black border-none">
+                                            <Badge className="bg-[#1B9157] text-[#1B9157] px-4 py-1 h-8 rounded-xl font-black border-none">
                                                 VERIFIED HISTORY
                                             </Badge>
                                         </div>
@@ -2499,7 +2499,7 @@ const AdminDashboard: React.FC = () => {
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge className={farmer.certification_status === 'Certified' ? 'bg-[#1B9157]/ text-[#1B9157] border-none' : 'bg-[#F4D03F]/ text-[#F4D03F] border-none'}>
+                                                            <Badge className={farmer.certification_status === 'Certified' ? 'bg-[#1B9157] text-[#1B9157] border-none' : 'bg-[#F4D03F] text-[#F4D03F] border-none'}>
                                                                 {farmer.certification_status || 'Pending'}
                                                             </Badge>
                                                         </TableCell>
@@ -2691,7 +2691,7 @@ const AdminDashboard: React.FC = () => {
                                                             {hives.filter(h => h.apiary_id === apiary.id).length}
                                                         </TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-[#1B9157]/ text-[#1B9157] border-green-200" : "bg-muted text-muted-foreground"}>
+                                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-[#1B9157] text-[#1B9157] border-green-200" : "bg-muted text-muted-foreground"}>
                                                                 {apiary.status?.toUpperCase()}
                                                             </Badge>
                                                         </TableCell>
@@ -2844,7 +2844,7 @@ const AdminDashboard: React.FC = () => {
                                                         <TableCell className="px-6">{hive.type}</TableCell>
                                                         <TableCell className="px-6 text-sm text-muted-foreground">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
                                                         <TableCell className="px-6">
-                                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-[#1B9157]/ text-[#1B9157] border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
+                                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-[#1B9157] text-[#1B9157] border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
                                                                 {hive.status?.toUpperCase()}
                                                             </Badge>
                                                         </TableCell>
@@ -3267,7 +3267,7 @@ const AdminDashboard: React.FC = () => {
                                         <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
                                         <CardDescription>Messages received through the contact form.</CardDescription>
                                     </div>
-                                    <Badge className="bg-[#F4D03F]/ text-[#F4D03F] border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                    <Badge className="bg-[#F4D03F] text-[#F4D03F] border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                         {contacts.length} MESSAGES
                                     </Badge>
                                 </div>

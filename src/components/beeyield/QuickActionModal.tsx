@@ -244,7 +244,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <div className="space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50">
                                     <div className="flex justify-between items-center">
                                         <Label className="text-sm font-medium">Colony Strength</Label>
-                                        <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ text-xs">
+                                        <Badge variant="outline" className="bg-[#1B9157] text-[#1B9157] border-[#1B9157] text-xs">
                                             {Math.round(hiveData.strength * 20)}%
                                         </Badge>
                                     </div>

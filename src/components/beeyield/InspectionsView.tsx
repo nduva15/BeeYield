@@ -16,7 +16,8 @@ import { toast } from 'sonner';
 import beeyieldService, { Apiary, Hive, Inspection } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -642,15 +643,17 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
+        <BeeYieldPageShell className={glass.page}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
             {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={ClipboardList}
                 label="Health_Surveillance"
+                onBack={() => onTabChange('home')}
                 title={<>Diagnostic <span className="text-[#F4D03F]">Audit</span></>}
                 subtitle="High-fidelity inspection reports and autonomous health monitoring."
                 actions={
@@ -852,7 +855,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                     </div>
                 )}
             </div>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

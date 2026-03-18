@@ -33,7 +33,7 @@ const StatCard: React.FC<StatCardProps> = ({
                         {trend && (
                             <div className={cn(
                                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] border backdrop-blur-sm",
-                                trendType === 'positive' ? "bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/" :
+                                trendType === 'positive' ? "bg-[#1B9157] text-[#1B9157] border-[#1B9157]" :
                                     trendType === 'negative' ? "bg-red-500/10 text-red-600 border-red-500/20" :
                                         "bg-muted/30 text-muted-foreground border-border"
                             )}>

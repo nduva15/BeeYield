@@ -27,9 +27,9 @@ const initialTasks: HiveTask[] = [];
 
 const urgencyConfig: Record<Urgency, { label: string; color: string; bg: string; border: string; dot: string }> = {
     critical: { label: 'Critical', color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20', dot: 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]' },
-    high: { label: 'High', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/', border: 'border-amber-500/20', dot: 'bg-[#F4D03F] shadow-[0_0_10px_rgba(245,158,11,0.5)]' },
+    high: { label: 'High', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]', border: 'border-amber-500/20', dot: 'bg-[#F4D03F] shadow-[0_0_10px_rgba(245,158,11,0.5)]' },
     medium: { label: 'Medium', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', dot: 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
-    low: { label: 'Low', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/', border: 'border-[#1B9157]/', dot: 'bg-[#1B9157] shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
+    low: { label: 'Low', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]', border: 'border-[#1B9157]', dot: 'bg-[#1B9157] shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
 };
 
 const TOTAL_ACRES = 80;
@@ -120,7 +120,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                     onClick={() => setShowResolved(r => !r)}
                     className={cn(
                         "px-6 py-3 rounded-2xl text-[10px] font-black transition-all border ml-auto",
-                        showResolved ? "bg-[#1B9157] border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-[#F9F7F2]0 border-border text-muted-foreground hover:border-[#1B9157]/ hover:text-[#1B9157]"
+                        showResolved ? "bg-[#1B9157] border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-[#F9F7F2]0 border-border text-muted-foreground hover:border-[#1B9157] hover:text-[#1B9157]"
                     )}
                 >
                     {showResolved ? 'Hide Resolved' : 'Show Resolved'}
@@ -131,7 +131,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
             <div className="space-y-4">
                 {filtered.length === 0 && (
                     <div className={glass.emptyState}>
-                        <div className="w-24 h-24 rounded-[2rem] bg-[#1B9157]/ border border-[#1B9157]/ flex items-center justify-center mb-6 shadow-sm">
+                        <div className="w-24 h-24 rounded-[2rem] bg-[#1B9157] border border-[#1B9157] flex items-center justify-center mb-6 shadow-sm">
                             <CheckCircle2 className="w-10 h-10 text-[#1B9157]" />
                         </div>
                         <p className={cn(glass.sectionTitle, "text-2xl normal-case")}>All Clear</p>

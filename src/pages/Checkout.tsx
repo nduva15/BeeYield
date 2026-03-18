@@ -354,7 +354,7 @@ const Checkout = () => {
                                 <span className="font-black text-xl text-foreground">BeeYield</span>
                             </div>
 
-                            <div className="w-24 h-24 rounded-full bg-[#1B9157]/ flex items-center justify-center mx-auto mb-8 mt-4">
+                            <div className="w-24 h-24 rounded-full bg-[#1B9157] flex items-center justify-center mx-auto mb-8 mt-4">
                                 <CheckCircle2 className="w-12 h-12 text-[#1B9157]" />
                             </div>
                             <h1 className="text-4xl font-black mb-4">Order Confirmed!</h1>
@@ -783,7 +783,7 @@ const Checkout = () => {
                                             onClick={() => setPaymentMethod('mpesa')}
                                         >
                                             <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 rounded-2xl bg-[#1B9157]/ flex items-center justify-center">
+                                                <div className="w-14 h-14 rounded-2xl bg-[#1B9157] flex items-center justify-center">
                                                     <Smartphone className="text-[#1B9157] w-8 h-8" />
                                                 </div>
                                                 <div>
@@ -1035,7 +1035,7 @@ const Checkout = () => {
                                         <h2 className="text-2xl font-black">Shipment Status</h2>
                                         <p className="text-muted-foreground">Order ID: {orderNumber}</p>
                                     </div>
-                                    <div className="w-16 h-16 rounded-full bg-[#1B9157]/ flex items-center justify-center">
+                                    <div className="w-16 h-16 rounded-full bg-[#1B9157] flex items-center justify-center">
                                         <Package className="w-8 h-8 text-[#1B9157]" />
                                     </div>
                                 </div>
@@ -1088,7 +1088,7 @@ const Checkout = () => {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {appliedCoupon ? (
-                                    <div className="flex items-center justify-between p-3 bg-[#1B9157]/ rounded-xl border border-[#1B9157]/">
+                                    <div className="flex items-center justify-between p-3 bg-[#1B9157] rounded-xl border border-[#1B9157]">
                                         <div className="flex items-center gap-2">
                                             <CheckCircle2 className="w-5 h-5 text-[#1B9157]" />
                                             <span className="font-bold text-[#1B9157]">{appliedCoupon.code}</span>

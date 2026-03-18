@@ -190,6 +190,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 label="Apiary readings"
                 title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
                 subtitle="Live readings from your devices."
+                onBack={() => onTabChange('home')}
                 actions={
                     <div className="flex items-center gap-3">
                          <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">

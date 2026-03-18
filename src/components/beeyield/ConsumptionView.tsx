@@ -31,7 +31,7 @@ const ConsumptionView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157] text-[#1B9157] border-[#1B9157] mb-2')}>
                         <Activity className="w-4 h-4 mr-2" />
                         Usage Volumetric Engine v4.2
                     </div>

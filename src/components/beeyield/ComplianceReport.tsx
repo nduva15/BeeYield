@@ -19,22 +19,25 @@ import {
     Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
-const ComplianceReport: React.FC = () => {
+const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ onTabChange }) => {
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "space-y-8 pb-32")}
-        >
+        <BeeYieldPageShell className={cn(glass.page, "space-y-8 pb-32")}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-8"
+            >
             {/* Report Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={FileText}
-                label="Certified Pollination Document v2.4"
+                label="Certified Pollination Report"
+                onBack={() => onTabChange?.('home')}
                 title={<>Compliance <span className="text-[#F4D03F]">Report</span></>}
-                subtitle="Season: Spring 2026 // REF: BY-CERT-00824"
+                subtitle="Season: Spring 2026 // Ref: BY-CERT-00824"
                 actions={
                     <div className="flex gap-3">
                         <button className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-[10px]")}>
@@ -58,13 +61,13 @@ const ComplianceReport: React.FC = () => {
                         className={cn(glass.card, "p-8 relative overflow-hidden shadow-sm border-[#F4D03F]/20 rounded-3xl")}
                     >
                         {/* Decorative Background Stamp */}
-                        <Award className="absolute -top-10 -right-10 w-96 h-96 text-[#F4D03F]/[0.03] rotate-12 pointer-events-none" />
+                        <Award className="absolute -top-10 -right-10 w-96 h-96 text-[#F4D03F][0.03] rotate-12 pointer-events-none" />
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-[80px] pointer-events-none" />
 
                         <div className="space-y-6 relative z-10">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
-                                    <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">Verified Strength Audit</h3>
+                                    <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">Hive Strength Audit</h3>
                                     <p className="text-[10px] font-bold text-gray-400">Frames of Bees (FOB) Certification</p>
                                 </div>
                                 <div className="text-right">
@@ -94,12 +97,12 @@ const ComplianceReport: React.FC = () => {
                                     <h4 className="text-base font-bold text-[#1A1A1A] tracking-tight uppercase">Quality Guarantee</h4>
                                 </div>
                                 <p className="text-[10px] font-medium text-gray-500 leading-relaxed mb-5 tracking-tighter relative z-10">
-                                    Acoustic biometric analysis confirms that the apiary strength meets or exceeds the minimum sustainable foraging threshold.
+                                    Acoustic health analysis confirms that the apiary strength meets or exceeds the minimum healthy foraging levels.
                                 </p>
                                 <div className="flex items-center justify-between border-t border-[#F4D03F]/10 pt-4 relative z-10">
                                     <div className="flex items-center gap-2">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                        <span className="text-[9px] font-bold text-emerald-600">Authenticated</span>
+                                        <span className="text-[9px] font-bold text-emerald-600">Verified</span>
                                     </div>
                                     <div className="text-right">
                                         <p className="font-mono text-[8px] text-gray-400">SEC_ID: b57492...e91a02</p>
@@ -136,7 +139,7 @@ const ComplianceReport: React.FC = () => {
                                     <p className="text-[10px] font-medium text-gray-300">/100</p>
                                 </div>
                                 <p className="text-[10px] font-bold text-gray-500 tracking-tighter pt-2 border-t border-gray-100">
-                                    Positive weight gain trajectory.
+                                    Healthy weight gain trend.
                                 </p>
                             </div>
                         </div>
@@ -155,10 +158,10 @@ const ComplianceReport: React.FC = () => {
                             <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm">
                                 <Info className="w-4 h-4 text-indigo-500" />
                             </div>
-                            <h4 className="text-base font-bold text-[#1A1A1A] tracking-tight uppercase">Standardization</h4>
+                            <h4 className="text-base font-bold text-[#1A1A1A] tracking-tight uppercase">Certification</h4>
                         </div>
                         <p className="text-[10px] font-bold opacity-60 leading-relaxed tracking-tight text-foreground">
-                            Standardized document generated for global crop insurance and GAP certification. Verifiable record of orchard synergy.
+                            Standardized report for crop insurance and GAP certification. Verified record of pollination activity.
                         </p>
                         <Separator className="bg-border/50 h-[1px]" />
                         <div className="space-y-3">
@@ -199,7 +202,8 @@ const ComplianceReport: React.FC = () => {
                     </motion.div>
                 </div>
             </div>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

@@ -428,7 +428,7 @@ const ShopDashboard = () => {
             case 'processing': return <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200">Processing</Badge>;
             case 'shipped': return <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-200">Shipped</Badge>;
             case 'delivered':
-            case 'completed': return <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-green-200">Delivered</Badge>;
+            case 'completed': return <Badge variant="outline" className="bg-[#1B9157] text-[#1B9157] border-green-200">Delivered</Badge>;
             case 'cancelled': return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-200">Cancelled</Badge>;
             default: return <Badge variant="outline">{status}</Badge>;
         }
@@ -1113,7 +1113,7 @@ const ShopDashboard = () => {
 
                         {checkoutStep === 'confirmation' ? (
                             <Card className="border-none shadow-premium rounded-[2.5rem] p-12 text-center">
-                                <div className="w-20 h-20 rounded-full bg-[#1B9157]/ flex items-center justify-center mx-auto mb-6 animate-bounce">
+                                <div className="w-20 h-20 rounded-full bg-[#1B9157] flex items-center justify-center mx-auto mb-6 animate-bounce">
                                     <CheckCircle2 className="w-10 h-10 text-[#1B9157]" />
                                 </div>
                                 <h1 className="text-3xl font-black mb-4">Order Confirmed! 🎉</h1>

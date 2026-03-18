@@ -116,7 +116,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                         onClick={e => e.stopPropagation()}
                     >
                         {/* ── Header ── */}
-                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex justify-between items-center relative z-10">
+                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex justify-between items-center relative z-10">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                     <Hexagon className="w-4 h-4 text-[#F4D03F]" />

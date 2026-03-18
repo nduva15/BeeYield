@@ -806,8 +806,8 @@ const BeeLearn = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="bg-[#0A2612] rounded-3xl p-8 lg:p-16 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157]/ rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#1B9157]/ rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#1B9157] rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
             <div className="relative z-10">
               <Badge className="mb-6 bg-green-700 text-[#1A1A1A] font-bold">

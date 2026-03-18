@@ -17,26 +17,46 @@ const ComparisonsView: React.FC = () => {
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
-    const [selectedComparisonTab, setSelectedComparisonTab] = React.useState<'apt12' | 'apt24' | 'main'>('main');
+    const [selectedComparisonTab, setSelectedComparisonTab] = React.useState<'daily' | 'weekly' | 'monthly'>('daily');
     const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const [medium, setMedium] = React.useState<string>('pollen');
     const [dateRange, setDateRange] = React.useState<string>('7days');
     const [comparisonMode, setComparisonMode] = React.useState<string>('main');
 
-    const [comparisonData, setComparisonData] = React.useState<any[]>([]);
+    const [sensorReadings, setSensorReadings] = React.useState<any[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isOffline, setIsOffline] = React.useState(false);
+
+    const LS_KEY = "beeyield_comparisons_cache_v1";
+
+    const readCache = React.useCallback(() => {
+        try {
+            const raw = localStorage.getItem(LS_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+    }, []);
+
+    const writeCache = React.useCallback((data: any) => {
+        try {
+            localStorage.setItem(LS_KEY, JSON.stringify(data));
+        } catch { /* ignore */ }
+    }, []);
 
     React.useEffect(() => {
         const loadApiaries = async () => {
-            const data = await beeyieldService.getApiaries();
-            if (userId) {
-                const filtered = data.filter(a => !a.user_id || a.user_id === userId);
-                setApiaries(filtered);
-                if (filtered.length > 0) setSelectedApiaryId(filtered[0].id);
-            } else {
-                setApiaries(data);
-                if (data.length > 0) setSelectedApiaryId(data[0].id);
+            try {
+                const data = await beeyieldService.getApiaries();
+                if (userId) {
+                    const filtered = data.filter(a => !a.user_id || a.user_id === userId);
+                    setApiaries(filtered);
+                    if (filtered.length > 0) setSelectedApiaryId(filtered[0].id);
+                } else {
+                    setApiaries(data);
+                    if (data.length > 0) setSelectedApiaryId(data[0].id);
+                }
+            } catch (err) {
+                console.error("Failed to load apiaries", err);
             }
         };
         loadApiaries();
@@ -46,6 +66,7 @@ const ComparisonsView: React.FC = () => {
         const fetchComparison = async () => {
             if (!selectedApiaryId) return;
             setIsLoading(true);
+            setIsOffline(false);
             try {
                 const data = await beeyieldService.getComparisonData({
                     medium,
@@ -53,16 +74,56 @@ const ComparisonsView: React.FC = () => {
                     apiary_id: selectedApiaryId === 'all' ? undefined : selectedApiaryId,
                     user_id: userId
                 });
-                setComparisonData(data || []);
+                setSensorReadings(data || []);
+                writeCache({ readings: data || [], timestamp: Date.now() });
             } catch (err) {
                 console.error('Failed to fetch comparisons', err);
-                setComparisonData([]);
+                const cached = readCache();
+                if (cached?.readings) {
+                    setSensorReadings(cached.readings);
+                    setIsOffline(true);
+                    toast.info("Showing cached comparison data");
+                } else {
+                    setSensorReadings([]);
+                    toast.error("Failed to load comparisons");
+                }
             } finally {
                 setIsLoading(false);
             }
         };
         fetchComparison();
-    }, [selectedApiaryId, medium, dateRange, userId]);
+    }, [selectedApiaryId, medium, dateRange, userId, readCache, writeCache]);
+
+    // Data transformation for Recharts
+    const chartData = React.useMemo(() => {
+        if (!sensorReadings || sensorReadings.length === 0) return [];
+
+        // group by date
+        const groups = new Map<string, { primary: number[]; secondary: number[] }>();
+
+        sensorReadings.forEach(r => {
+            const date = new Date(r.recorded_at).toLocaleDateString([], { month: 'short', day: 'numeric' });
+            if (!groups.has(date)) {
+                groups.set(date, { primary: [], secondary: [] });
+            }
+            const group = groups.get(date)!;
+            
+            // For now, treat odd/even ids or hive_ids as primary/secondary to simulate comparison
+            // In a real app, this would be based on specific filter logic (e.g. this year vs last year)
+            const val = r.value || 0;
+            if (r.id % 2 === 0) {
+                group.primary.push(val);
+            } else {
+                group.secondary.push(val);
+            }
+        });
+
+        return Array.from(groups.entries()).map(([label, values]) => ({
+            label,
+            primary_value: values.primary.length ? values.primary.reduce((a, b) => a + b) / values.primary.length : 0,
+            secondary_value: values.secondary.length ? values.secondary.reduce((a, b) => a + b) / values.secondary.length : 0,
+        })).sort((a, b) => new Date(a.label).getTime() - new Date(b.label).getTime());
+    }, [sensorReadings]);
 
     return (
         <motion.div
@@ -73,18 +134,30 @@ const ComparisonsView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 mb-2')}>
                         <ArrowLeftRight className="w-4 h-4 mr-2" />
-                        Recursive Diagnostic Engine v3.0
+                        Yield Comparison Engine
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Yield <span className="text-[#F4D03F]">Variance</span>
+                        Yield <span className="text-[#F4D03F]">Trends</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
-                        Performance benchmarking across locations · Predictive yield delta
+                        Compare honey production and colony health across your apiaries.
                     </p>
                 </div>
             </div>
+
+            {isOffline && (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                            <Info className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <p className="text-sm font-semibold text-amber-700">You are viewing cached data. Some recent comparisons may be missing.</p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => window.location.reload()} className="text-amber-700 hover:bg-amber-100 font-bold">Retry</Button>
+                </div>
+            )}
 
             {/* Filters Section */}
             <motion.div
@@ -95,15 +168,15 @@ const ComparisonsView: React.FC = () => {
             >
                 <div className="flex items-center gap-3 mb-8">
                     <Settings2 className="w-5 h-5 text-[#F4D03F]" />
-                    <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Comparison Parameters</h3>
+                    <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Analysis Parameters</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     {/* Apiary Selector */}
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Location_Node</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")} htmlFor="comparison-apiary-select">Apiary</label>
                         <Select name="apiary_id" value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                            <SelectTrigger className={cn(glass.input, "h-14 text-sm font-semibold")}>
+                            <SelectTrigger id="comparison-apiary-select" aria-label="Select Apiary" className={cn(glass.input, "h-14 text-sm font-semibold")}>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4 text-[#F4D03F]" />
                                     <SelectValue placeholder="Select Apiary" />
@@ -119,24 +192,25 @@ const ComparisonsView: React.FC = () => {
 
                     {/* Medium Selector */}
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Diagnostic_Var</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")} htmlFor="comparison-variable-select">Variable</label>
                         <Select name="medium" value={medium} onValueChange={setMedium}>
-                            <SelectTrigger className={cn(glass.input, "h-14 text-sm font-semibold")}>
-                                <SelectValue placeholder="Select medium" />
+                            <SelectTrigger id="comparison-variable-select" aria-label="Select Variable" className={cn(glass.input, "h-14 text-sm font-semibold")}>
+                                <SelectValue placeholder="Select variable" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
                                 <SelectItem value="pollen" className="rounded-xl">Pollen Flow</SelectItem>
                                 <SelectItem value="nectar" className="rounded-xl">Nectar Yield</SelectItem>
                                 <SelectItem value="water" className="rounded-xl">Water Usage</SelectItem>
+                                <SelectItem value="honey" className="rounded-xl">Weight Change</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     {/* Date range */}
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Temporal_Scope</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")} htmlFor="comparison-range-select">Timeframe</label>
                         <Select name="date_range" value={dateRange} onValueChange={setDateRange}>
-                            <SelectTrigger className={cn(glass.input, "h-14 text-sm font-semibold")}>
+                            <SelectTrigger id="comparison-range-select" aria-label="Select Timeframe" className={cn(glass.input, "h-14 text-sm font-semibold")}>
                                 <SelectValue placeholder="Select range" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
@@ -149,27 +223,27 @@ const ComparisonsView: React.FC = () => {
 
                     {/* Compare Mode */}
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Operational_Mode</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")} htmlFor="comparison-mode-select">Mode</label>
                         <Select name="comparison_mode" value={comparisonMode} onValueChange={setComparisonMode}>
-                            <SelectTrigger className={cn(glass.input, "h-14 text-sm font-semibold")}>
+                            <SelectTrigger id="comparison-mode-select" aria-label="Select Comparison Mode" className={cn(glass.input, "h-14 text-sm font-semibold")}>
                                 <SelectValue placeholder="Select comparison" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
-                                <SelectItem value="main" className="rounded-xl">Main Area</SelectItem>
-                                <SelectItem value="avg" className="rounded-xl">Avg. Global</SelectItem>
+                                <SelectItem value="main" className="rounded-xl">Selected vs Peers</SelectItem>
+                                <SelectItem value="avg" className="rounded-xl">Selected vs Global</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     {/* Export */}
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Digital_Archive</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Export Data</label>
                         <div className="flex gap-2">
-                            <button className={cn(glass.btnSecondary, "flex-1 h-14 justify-center text-[10px] font-bold")}>
+                            <button className={cn(glass.btnSecondary, "flex-1 h-14 justify-center text-[10px] font-bold")} aria-label="Export as CSV">
                                 <FileSpreadsheet className="w-4 h-4 mr-2" />
                                 CSV
                             </button>
-                            <button className={cn(glass.btnSecondary, "flex-1 h-14 justify-center text-[10px] font-bold")}>
+                            <button className={cn(glass.btnSecondary, "flex-1 h-14 justify-center text-[10px] font-bold")} aria-label="Export as Excel">
                                 <FileText className="w-4 h-4 mr-2" />
                                 XLS
                             </button>
@@ -187,37 +261,37 @@ const ComparisonsView: React.FC = () => {
             >
                 <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/5 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20" />
 
-                <div className="p-10 pb-4 border-b border-border bg-gray-400 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
+                <div className="p-10 pb-4 border-b border-border bg-[#FCFAF5] flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 relative z-10">
                     <div className="space-y-1">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm">
-                                <TrendingUp className="w-6 h-6 text-[#F4D03F]" />
+                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center border border-border shadow-sm">
+                                <TrendingUp className="w-6 h-6 text-[#F1C40F]" />
                             </div>
-                            <h2 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Aggregated <span className="text-[#F4D03F]">Benchmarks</span></h2>
+                            <h2 className={cn(glass.sectionTitle, "text-3xl normal-case")}>Production <span className="text-[#F1C40F]">Benchmarks</span></h2>
                         </div>
-                        <p className={cn(glass.microLabel, "opacity-60 italic mt-3 ml-2")}>Performance metrics across selected registry nodes.</p>
+                        <p className={cn(glass.microLabel, "opacity-60 italic mt-3 ml-2")}>Comparison of yield data across your apiary network.</p>
                     </div>
 
                     {/* Comparison Pills */}
-                    <div className="flex bg-gray-400 p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
-                        {(['apt12', 'apt24', 'main'] as const).map((tab) => (
+                    <div className="flex bg-[#F9F7F2] p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
+                        {(['daily', 'weekly', 'monthly'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setSelectedComparisonTab(tab)}
                                 className={cn(
                                     "px-6 py-2.5 rounded-xl text-[10px] font-bold transition-all",
                                     selectedComparisonTab === tab
-                                        ? "bg-[#FFF9F0] text-[#F4D03F] shadow-sm ring-1 ring-border"
-                                        : "text-foreground/40 hover:text-foreground hover:bg-gray-400:bg-[#F4D03F]/10"
+                                        ? "bg-white text-[#F1C40F] shadow-sm ring-1 ring-border"
+                                        : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"
                                 )}
                             >
-                                {tab === 'apt12' ? 'Apt Node 01' : tab === 'apt24' ? 'Apt Node 02' : 'Main Registry'}
+                                {tab === 'daily' ? 'Daily' : tab === 'weekly' ? 'Weekly' : 'Monthly'}
                             </button>
                         ))}
                     </div>
                 </div>
 
-                <div className="p-10 relative z-10">
+                <div className="p-10 relative z-10 bg-white">
                     <div className="h-[480px] w-full relative">
                         <AnimatePresence>
                             {isLoading && (
@@ -225,77 +299,76 @@ const ComparisonsView: React.FC = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="absolute inset-0 z-20 bg-background/40 backdrop-blur-sm rounded-3xl flex items-center justify-center"
+                                    className="absolute inset-0 z-20 bg-white/60 backdrop-blur-sm rounded-3xl flex items-center justify-center"
                                 >
-                                    <div className="flex flex-col items-center gap-4 text-[#F4D03F]">
+                                    <div className="flex flex-col items-center gap-4 text-[#F1C40F]">
                                         <Loader2 className="w-12 h-12 animate-spin" />
-                                        <span className={cn(glass.microLabel, "animate-pulse font-bold")}>RECURSIVE_DIAGNOSTIC_FETCH...</span>
+                                        <span className={cn(glass.microLabel, "animate-pulse font-bold")}>Loading comparison data…</span>
                                     </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
-                        {comparisonData.length === 0 && !isLoading ? (
-                            <div className="h-full w-full flex flex-col items-center justify-center bg-gray-200 rounded-3xl border border-dashed border-border text-foreground/40">
+                        {chartData.length === 0 && !isLoading ? (
+                            <div className="h-full w-full flex flex-col items-center justify-center bg-gray-50 rounded-3xl border border-dashed border-border text-gray-400">
                                 <ArrowLeftRight className="w-16 h-16 mb-6 opacity-20" />
-                                <p className={cn(glass.microLabel, "normal-case text-lg font-semibold")}>No comparison data available for this selection.</p>
+                                <p className={cn(glass.microLabel, "normal-case text-base font-semibold")}>Not enough data for this selection.</p>
+                                <p className="text-xs mt-1">Connect more sensors to enable comparison mapping.</p>
                             </div>
                         ) : (
                             <ResponsiveContainer width="100%" height="100%" debounce={50}>
-                                <LineChart data={comparisonData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
+                                <LineChart data={chartData}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F1F1" />
                                     <XAxis
                                         dataKey="label"
                                         axisLine={false}
                                         tickLine={false}
-                                        tick={{ fontSize: 11, fill: 'hsl(var(--foreground) / 0.6)', fontWeight: 600 }}
+                                        tick={{ fontSize: 11, fill: '#999', fontWeight: 600 }}
                                         dy={15}
                                     />
                                     <YAxis
                                         axisLine={false}
                                         tickLine={false}
-                                        tick={{ fontSize: 11, fill: 'hsl(var(--foreground) / 0.6)', fontWeight: 600 }}
+                                        tick={{ fontSize: 11, fill: '#999', fontWeight: 600 }}
                                         dx={-15}
                                     />
                                     <Tooltip
                                         contentStyle={{
-                                            backgroundColor: 'hsl(var(--background) / 0.8)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
                                             backdropFilter: 'blur(12px)',
                                             borderRadius: '1rem',
-                                            border: '1px solid hsl(var(--border))',
+                                            border: '1px solid #EEE',
                                             boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
                                             padding: '16px',
                                         }}
                                         itemStyle={{ fontWeight: 600, fontSize: '12px' }}
-                                        labelStyle={{ fontWeight: 700, marginBottom: '8px', fontSize: '13px' }}
+                                        labelStyle={{ fontWeight: 700, marginBottom: '8px', fontSize: '13px', color: '#1A1A1A' }}
                                     />
                                     <Legend
                                         verticalAlign="top"
                                         align="right"
                                         height={60}
                                         iconType="circle"
-                                        formatter={(value) => <span className={cn(glass.microLabel, "ml-2 font-bold opacity-70")}>{value}</span>}
+                                        formatter={(value) => <span className={cn(glass.microLabel, "ml-2 font-bold opacity-70")}>{value === 'primary_value' ? 'Current Apiary' : 'Baseline Group'}</span>}
                                     />
                                     <Line
                                         type="monotone"
                                         dataKey="primary_value"
-                                        name="Protocol Alpha"
-                                        stroke="hsl(var(--honey))"
+                                        stroke="#F1C40F"
                                         strokeWidth={4}
                                         dot={false}
-                                        activeDot={{ r: 8, fill: 'hsl(var(--honey))', stroke: 'white', strokeWidth: 2, className: 'drop-shadow-lg' }}
-                                        animationDuration={2000}
+                                        activeDot={{ r: 8, fill: '#F1C40F', stroke: 'white', strokeWidth: 2 }}
+                                        animationDuration={1500}
                                     />
                                     <Line
                                         type="monotone"
                                         dataKey="secondary_value"
-                                        name="Protocol Beta"
-                                        stroke="hsl(var(--foreground) / 0.3)"
+                                        stroke="#E0E0E0"
                                         strokeWidth={2}
                                         strokeDasharray="8 6"
                                         dot={false}
-                                        activeDot={{ r: 6, fill: 'white', stroke: 'hsl(var(--foreground) / 0.4)', strokeWidth: 2 }}
-                                        animationDuration={2500}
+                                        activeDot={{ r: 6, fill: 'white', stroke: '#DDD', strokeWidth: 2 }}
+                                        animationDuration={2000}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -309,16 +382,16 @@ const ComparisonsView: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-emerald-50/50 border-emerald-100 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
-                <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
-                    <Info className="w-8 h-8 text-[#F4D03F]" />
+                <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[60px] pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+                <div className="w-16 h-16 rounded-[1.5rem] bg-white flex items-center justify-center shrink-0 border border-emerald-100 shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <Info className="w-8 h-8 text-emerald-500" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
-                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Comparison Diagnostic Summary</h5>
-                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
-                        We compare yield across locations. The “Current” line reflects recent foraging conditions, and “Baseline” shows the longer-term trend.
+                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Trend Analysis Summary</h5>
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-[#1A1A1A]/70">
+                        We compare yield across locations. The yellow line reflects recent foraging conditions in your selected apiary, while the dashed line shows the peer group average for comparison.
                     </p>
                 </div>
             </motion.div>

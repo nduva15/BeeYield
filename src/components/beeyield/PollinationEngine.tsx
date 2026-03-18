@@ -334,7 +334,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
-                <div className="lg:col-span-4 p-8 flex flex-col justify-between bg-[#F4D03F]/[0.02]">
+                <div className="lg:col-span-4 p-8 flex flex-col justify-between bg-[#F4D03F][0.02]">
                     <div className="text-center">
                         <p className="text-[10px] font-bold text-gray-500 mb-2">Cost Delta</p>
                         <div className="text-4xl font-black text-[#1A1A1A] tracking-tighter mb-1">

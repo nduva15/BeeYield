@@ -145,7 +145,7 @@ const ESG = () => {
     {
       title: "Hive Health",
       icon: Cpu,
-      color: "from-emerald-950 to-emerald-900 border-[#1B9157]/",
+      color: "from-emerald-950 to-emerald-900 border-[#1B9157]",
       initiatives: [
         "Sound pattern checks to flag early disease risk",
         "Real-time hive condition snapshots (Temp, Humidity, Mass)",

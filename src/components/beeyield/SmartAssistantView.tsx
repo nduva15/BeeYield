@@ -8,7 +8,7 @@ import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";
-import { intelligenceService, type ChatMessage as IntelligenceChatMessage } from "@/services/aiService";
+import { intelligenceService, type ChatMessage as IntelligenceChatMessage } from "@/services/intelligenceService";
 import { AboutBeeYield } from "./AboutBeeYield";
 import { BeeSpeciesGallery } from "./BeeSpeciesGallery";
 import { AnimatePresence, motion } from "framer-motion";
@@ -72,6 +72,8 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
+const CONVERSATIONS_CACHE_KEY = 'beeyield_assistant_conversations_v1';
+
 export default function SmartAssistantView({ onTabChange, initialMessage, onInitialMessageConsumed }: AssistantViewProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState(() => initialMessage || "");
@@ -81,7 +83,10 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
     // Conversation state
     const [conversationId, setConversationId] = useState<string | null>(null);
-    const [conversations, setConversations] = useState<Conversation[]>([]);
+    const [conversations, setConversations] = useState<Conversation[]>(() => {
+        const cached = localStorage.getItem(CONVERSATIONS_CACHE_KEY);
+        return cached ? JSON.parse(cached) : [];
+    });
     const [historyOpen, setHistoryOpen] = useState(false);
     const [aboutOpen, setAboutOpen] = useState(false);
     const [galleryOpen, setGalleryOpen] = useState(false);
@@ -110,13 +115,23 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     }, [messages]);
 
     const loadConversations = useCallback(async () => {
-        const { data } = await supabase
-            .from("conversations")
-            .select("id, title, updated_at")
-            .eq("device_id", deviceId)
-            .order("updated_at", { ascending: false })
-            .limit(50);
-        if (data) setConversations(data);
+        try {
+            const { data, error } = await supabase
+                .from("conversations")
+                .select("id, title, updated_at")
+                .eq("device_id", deviceId)
+                .order("updated_at", { ascending: false })
+                .limit(50);
+            
+            if (error) throw error;
+            if (data) {
+                setConversations(data);
+                localStorage.setItem(CONVERSATIONS_CACHE_KEY, JSON.stringify(data));
+            }
+        } catch (err) {
+            console.error("Failed to load conversations:", err);
+            // We keep the cached ones
+        }
     }, [deviceId]);
 
     const loadConversation = async (id: string) => {
@@ -334,8 +349,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     return (
         <BeeYieldPageShell className={cn("flex flex-col h-full w-full bg-[#FCFAF5] overflow-hidden relative p-0 md:p-0 -m-0 md:-m-0 space-y-0 pb-0 min-h-0")}>
             {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#F4D03F]/[0.02] rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-[#1B9157]/[0.02] rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#F4D03F][0.02] rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-[#1B9157][0.02] rounded-full blur-[100px] pointer-events-none" />
 
             {/* Chat History Sidebar */}
             <ChatHistory
@@ -533,21 +548,25 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 </button>
                             </div>
 
-                            <textarea
-                                ref={textareaRef}
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Ask a question…"
-                                className="flex-1 bg-transparent border-none px-2 py-2 text-sm text-[#1A1A1A] placeholder:text-[#1A1A1A]/30 outline-none focus:ring-0 transition-all resize-none min-h-[40px] max-h-[160px] font-semibold"
-                                rows={1}
-                                disabled={isLoading}
-                                onInput={(e) => {
-                                    const el = e.currentTarget;
-                                    el.style.height = "auto";
-                                    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
-                                }}
-                            />
+                            <div className="flex-1 flex flex-col">
+                                <label htmlFor="assistant-chat-input" className="sr-only">Ask a question to the BeeYield Assistant</label>
+                                <textarea
+                                    id="assistant-chat-input"
+                                    ref={textareaRef}
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Ask a question…"
+                                    className="w-full bg-transparent border-none px-2 py-2 text-sm text-[#1A1A1A] placeholder:text-[#1A1A1A]/30 outline-none focus:ring-0 transition-all resize-none min-h-[40px] max-h-[160px] font-semibold"
+                                    rows={1}
+                                    disabled={isLoading}
+                                    onInput={(e) => {
+                                        const el = e.currentTarget;
+                                        el.style.height = "auto";
+                                        el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+                                    }}
+                                />
+                            </div>
 
                             <div className="flex gap-1.5 pb-1">
                                 {voiceSupported && (
@@ -579,7 +598,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
                     <p className="text-center text-[8px] text-[#1A1A1A]/30 font-bold mt-3 flex items-center justify-center gap-3">
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
-                        BeeYield Intelligence v5.2 — specialized research core
+                        Powered by BeeYield Intelligence — Specialist Research Engine
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
                     </p>
                 </div>

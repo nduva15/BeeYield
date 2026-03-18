@@ -147,7 +147,7 @@ const PollinationSolutions = () => {
                   </div>
                 </div>
 
-                <Button size="lg" variant="outline" className="w-full gap-2 border-[#1B9157]/ text-[#1B9157] hover:bg-green-600 hover:text-[#1A1A1A]" asChild>
+                <Button size="lg" variant="outline" className="w-full gap-2 border-[#1B9157] text-[#1B9157] hover:bg-green-600 hover:text-[#1A1A1A]" asChild>
                   <Link to="/diseases">Explore hive health <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
