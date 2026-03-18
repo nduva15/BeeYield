@@ -148,6 +148,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
         const file = event.target.files?.[0];
         if (!file || !user) return;
 
+        // Validate file type
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error('Please select a PNG, JPEG, WebP, or GIF image.');
+            return;
+        }
+
         // Size check (max 2MB)
         if (file.size > 2 * 1024 * 1024) {
             toast.error('Image size must be less than 2MB');
@@ -163,11 +170,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             if (updateError) throw updateError;
 
             toast.success('Profile photo updated successfully!');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload failed:', error);
-            toast.error('Failed to update profile photo.');
+            const msg = error?.message || 'Failed to update profile photo.';
+            toast.error(msg);
         } finally {
             setUploading(false);
+            // Reset the file input so the same file can be re-selected
+            if (event.target) event.target.value = '';
         }
     };
 

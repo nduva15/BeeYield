@@ -45,6 +45,8 @@ import { Container, Grid, Col, Section } from '@/components/ui/layout';
 import ContentDashboard from '@/components/beeyield/ContentDashboard';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { glass, PageHeader, GlassStatCard } from '@/components/beeyield/GlassTheme';
+import { motion } from 'framer-motion';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
@@ -1025,608 +1027,296 @@ const AdminDashboard: React.FC = () => {
                         <button className="text-beeyield-green/60 hover:text-beeyield-green transition-colors">✕</button>
                     </div>
 
-                    <TabsContent value="overview" className="space-y-10">
-                        {/* Row 1: General Report + Visitors + Users By Age */}
-                        <Grid cols={12} gap="lg">
-                            {/* General Report Section */}
-                            <Col span={4} className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-xs font-black text-beeyield-green/30">Overview</h3>
-                                    <select aria-label="Report period" className="text-[10px] font-black bg-beeyield-green/5 border-none rounded-full px-4 py-2 text-beeyield-green outline-none focus:ring-2 focus:ring-beeyield-gold/20">
-                                        <option>Daily</option>
-                                        <option>Weekly</option>
-                                        <option>Monthly</option>
-                                    </select>
-                                </div>
+                    <TabsContent value="overview" className="space-y-6">
+                        <PageHeader
+                            icon={LayoutDashboard}
+                            label="Management Console"
+                            title="Admin Overview"
+                            subtitle="Welcome to your centralized intelligence hub. Monitor network activity and store performance."
+                            actions={
+                                <button onClick={loadAllData} className={glass.btnSecondary}>
+                                    <RefreshCw className="w-4 h-4" /> Refresh Data
+                                </button>
+                            }
+                        />
 
-                                {/* Stats Card */}
-                                <AdminMetricCard
-                                    title="Total Orders"
-                                    value={(dashboardStats as any).total_orders || orders.length}
-                                    icon={CreditCard}
-                                    description={`${dashboardStats.pendingOrders} processing`}
-                                    className="h-auto"
-                                />
+                        {/* KPIs */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <GlassStatCard
+                                label="Total Revenue (KES)"
+                                value={dashboardStats.totalRevenue.toLocaleString()}
+                                icon={CreditCard}
+                                color="text-[#1B9157]"
+                            />
+                            <GlassStatCard
+                                label="Pending Orders"
+                                value={dashboardStats.pendingOrders}
+                                icon={Package}
+                                color="text-[#F4D03F]"
+                                index={1}
+                            />
+                            <GlassStatCard
+                                label="Active Apiaries"
+                                value={dashboardStats.totalApiaries}
+                                icon={MapPin}
+                                color="text-amber-500"
+                                index={2}
+                            />
+                            <GlassStatCard
+                                label="Total Honey Processed"
+                                value={`${dashboardStats.totalHoneyKg} kg`}
+                                icon={Database}
+                                color="text-blue-500"
+                                index={3}
+                            />
+                        </div>
 
-                                <AdminMetricCard
-                                    title="Total Revenue"
-                                    value={`KES ${dashboardStats.totalRevenue.toLocaleString()}`}
-                                    icon={CreditCard}
-                                    description="All time revenue"
-                                    className="h-auto"
-                                />
-
-                                <div className="flex gap-3">
-                                    <div className="flex-1 bg-[#FFF9F0] border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
-                                        <p className="text-[9px] font-black text-beeyield-green/20">Gross Revenue</p>
-                                        <p className="text-md font-black text-beeyield-green mt-1">KES {dashboardStats.totalRevenue.toLocaleString()}</p>
-                                    </div>
-                                    <div className="flex-1 bg-[#FFF9F0] border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
-                                        <p className="text-[9px] font-black text-beeyield-green/20">Net Profit</p>
-                                        <p className="text-md font-black text-beeyield-green mt-1">KES {Math.round(dashboardStats.totalRevenue * 0.65).toLocaleString()}</p>
-                                    </div>
-                                </div>
-
-                                <Button onClick={loadAllData} className="w-full h-14 rounded-[24px] shadow-xl shadow-beeyield-gold/20">
-                                    <RefreshCw className="w-4 h-4 mr-2" /> Refresh Data
-                                </Button>
-                            </Col>
-
-                            {/* Visitors Section */}
-                            <Col span={4} className="space-y-6">
-                                <h3 className="text-xs font-black text-beeyield-green/30">Platform Metrics</h3>
-
-                                <Card className="bg-[#FFF9F0] border-beeyield-green/5 rounded-[32px] p-8 shadow-2xl shadow-beeyield-green/[0.02] border-none">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div>
-                                            <p className="text-[10px] font-black text-beeyield-green/30">Total Users</p>
-                                            <p className="text-5xl font-black text-beeyield-green tracking-tighter mt-1">{dashboardStats.totalUsers}</p>
-                                        </div>
-                                        {/* Hz Sync removed */}
-                                    </div>
-
-                                    {/* Mini Chart */}
-                                    <div className="h-20 w-full mb-6">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={[
-                                                { t: '1', v: 50 }, { t: '2', v: 80 }, { t: '3', v: 60 },
-                                                { t: '4', v: 90 }, { t: '5', v: 70 }, { t: '6', v: 100 },
-                                                { t: '7', v: 85 }
-                                            ]}>
-                                                <defs>
-                                                    <linearGradient id="visitorsGrad" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.4} />
-                                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
-                                                    </linearGradient>
-                                                </defs>
-                                                <Area type="monotone" dataKey="v" stroke="#F4D03F" fill="url(#visitorsGrad)" strokeWidth={3} />
-                                            </AreaChart>
-                                        </ResponsiveContainer>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <p className="text-xs font-medium text-muted-foreground">System Health</p>
-                                        <div className="flex justify-between text-xs">
-                                            <span className="text-muted-foreground">Apiaries Connected</span>
-                                            <span className="font-medium text-[#1B9157]">{dashboardStats.totalApiaries}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                            <span className="text-muted-foreground">Active Hives</span>
-                                            <span className="font-medium text-[#F4D03F]">{dashboardStats.totalHives}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                            <span className="text-muted-foreground">Total Honey</span>
-                                            <span className="font-medium text-blue-500">{dashboardStats.totalHoneyKg} kg</span>
-                                        </div>
-                                    </div>
-                                    <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto mt-2">
-                                        Real-Time Report →
-                                    </Button>
-                                </Card>
-                            </Col>
-
-                            {/* Platform Audience Section */}
-                            <Col span={4} className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-bold text-foreground">Platform Audience</h3>
-                                    <span className="text-xs text-muted-foreground">Show More</span>
-                                </div>
-
-                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
-                                    <div className="flex gap-2 mb-4">
-                                        <Button size="sm" className="rounded-full bg-[#F4D03F] text-[#1A1A1A] text-xs px-4 h-7">Active</Button>
-                                        <Button size="sm" variant="outline" className="rounded-full text-xs px-4 h-7">Inactive</Button>
-                                    </div>
-
-                                    {/* Donut Chart */}
-                                    <div className="relative w-36 h-36 mx-auto mb-4">
-                                        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                                            {/* Background circle */}
-                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="12" className="dark:stroke-gray-700" />
-                                            {/* Amber segment - 60% */}
-                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" strokeWidth="12"
-                                                strokeDasharray="150.8 251.2" strokeLinecap="round" />
-                                            {/* Green segment - 25% */}
-                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" strokeWidth="12"
-                                                strokeDasharray="62.8 251.2" strokeDashoffset="-150.8" strokeLinecap="round" />
-                                            {/* Gray segment - 15% */}
-                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#94a3b8" strokeWidth="12"
-                                                strokeDasharray="37.7 251.2" strokeDashoffset="-213.6" strokeLinecap="round" />
-                                        </svg>
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                            <span className="text-2xl font-bold">{dashboardStats.totalUsers}</span>
-                                            <span className="text-[10px] text-muted-foreground">Active Users</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Legend */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between text-xs">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-[#F4D03F]"></div>
-                                                <span className="text-muted-foreground">Verified Farmers</span>
-                                            </div>
-                                            <span className="font-medium">{dashboardStats.totalFarmers}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between text-xs">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                <span className="text-muted-foreground">Subscribers</span>
-                                            </div>
-                                            <span className="font-medium">{subscribers.length}</span>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Col>
-                        </Grid>
-
-                        {/* Row 2: Map + Weekly Best Sellers */}
-                        <Grid cols={12} gap="lg">
-                            {/* Map Section */}
-                            <Col span={8}>
-                                <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
-                                    <div className="p-4 border-b border-border bg-card z-10">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-bold">Official Store</h3>
-                                            <div className="flex gap-2">
-                                                <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2 bg-[#FFF9F0]">
-                                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Filter by city
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground mt-1">{dashboardStats.totalApiaries || 0} Apiaries actively managed across Kenya.</p>
-                                    </div>
-
-                                    {/* Interactive Map Styles */}
-                                    <div className="flex-1 relative bg-[#F4D03F]/10 min-h-[350px]">
-                                        {/* Map Controls */}
-                                        <div className="absolute top-4 left-4 z-10 flex bg-[#FFF9F0] rounded-lg shadow-sm border border-[#F4D03F]/20 overflow-hidden">
-                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-[#F9F7F2] border-r border-[#F4D03F]/20">Map</button>
-                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-[#F9F7F2] text-muted-foreground">Satellite</button>
-                                        </div>
-
-                                        <div className="absolute top-4 right-4 z-10 bg-[#FFF9F0] rounded-lg p-1.5 shadow-sm border border-[#F4D03F]/20 hover:bg-[#F9F7F2] cursor-pointer">
-                                            <Maximize2 className="w-4 h-4 text-gray-500" />
-                                        </div>
-
-                                        <div className="absolute bottom-8 left-4 z-10 flex flex-col bg-[#FFF9F0] rounded-lg shadow-sm border border-[#F4D03F]/20 overflow-hidden">
-                                            <button aria-label="Zoom in" className="p-1.5 hover:bg-[#F9F7F2] border-b border-[#F4D03F]/20"><Plus className="w-4 h-4 text-gray-600" /></button>
-                                            <button aria-label="Zoom out" className="p-1.5 hover:bg-[#F9F7F2]"><Minus className="w-4 h-4 text-gray-600" /></button>
-                                        </div>
-
-                                        {/* Map Background Pattern */}
-                                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
-                                        {/* Dynamic Map Markers */}
-                                        {apiaries.slice(0, 10).map((apiary, idx) => {
-                                            // Simple pseudo-random positioning if no lat/long, or use real if available
-                                            // Focusing on Kenya region
-                                            const left = apiary.longitude ? ((apiary.longitude - 34) / 8) * 100 : (20 + (idx * 15) % 60);
-                                            const top = apiary.latitude ? ((1 - (apiary.latitude + 4) / 10)) * 100 : (30 + (idx * 20) % 50);
-
-                                            return (
-                                                <div
-                                                    key={apiary.id}
-                                                    className="absolute group cursor-pointer"
-                                                    style={{
-                                                        left: `${Math.max(5, Math.min(95, left))}%`,
-                                                        top: `${Math.max(5, Math.min(95, top))}%`,
-                                                        transform: 'translate(-50%, -50%)'
-                                                    }}
-                                                >
-                                                    <div className="w-6 h-6 bg-[#F4D03F] rounded-full flex items-center justify-center animate-pulse absolute"></div>
-                                                    <div className="relative w-6 h-6">
-                                                        <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-[#1A1A1A] font-bold text-[10px]">
-                                                            {idx + 1}
-                                                        </div>
-                                                    </div>
-                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-[#FFF9F0] px-2 py-0.5 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                                                        {apiary.name}
-                                                    </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            {/* Platform Audience */}
+                            <div className="lg:col-span-4">
+                                <div className={cn(glass.section, "p-6 h-full flex flex-col justify-center")}>
+                                    <h3 className={glass.sectionTitle}>Network Status</h3>
+                                    <p className="text-xs text-muted-foreground mb-6">Real-time counts of active participants.</p>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center p-3 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-[#1B9157]/10 flex items-center justify-center text-[#1B9157]">
+                                                    <Users className="w-5 h-5" />
                                                 </div>
-                                            );
-                                        })}
-                                        {apiaries.length === 0 && (
-                                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm font-medium">
-                                                No apiaries registered yet
+                                                <div>
+                                                    <p className="text-sm font-bold">Total Users</p>
+                                                    <p className="text-[10px] text-muted-foreground">Registered accounts</p>
+                                                </div>
                                             </div>
-                                        )}
+                                            <span className="text-xl font-black">{dashboardStats.totalUsers}</span>
+                                        </div>
 
-                                        {/* Watermark */}
-                                        <div className="absolute bottom-1 left-2 text-[10px] text-gray-400 font-sans">Google</div>
-                                    </div>
-                                </Card>
-                            </Col>
+                                        <div className="flex justify-between items-center p-3 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-[#F4D03F]/10 flex items-center justify-center text-amber-600">
+                                                    <Leaf className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold">Verified Farmers</p>
+                                                    <p className="text-[10px] text-muted-foreground">Master beekeepers</p>
+                                                </div>
+                                            </div>
+                                            <span className="text-xl font-black">{dashboardStats.totalFarmers}</span>
+                                        </div>
 
-                            {/* Weekly Best Sellers */}
-                            <Col span={4}>
-                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm h-full flex flex-col">
-                                    <h3 className="text-lg font-bold mb-6">Weekly Best Sellers</h3>
-
-                                    <div className="space-y-6 flex-1">
-                                        <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                                            <TrendingUp className="w-12 h-12 text-muted-foreground/30 mb-4" />
-                                            <p className="text-sm font-medium text-muted-foreground">Sales analysis pending</p>
-                                            <p className="text-[10px] text-muted-foreground/60">Best seller metrics will appear after order threshold is met.</p>
+                                        <div className="flex justify-between items-center p-3 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                                    <Mail className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold">Subscribers</p>
+                                                    <p className="text-[10px] text-muted-foreground">Newsletter audience</p>
+                                                </div>
+                                            </div>
+                                            <span className="text-xl font-black">{subscribers.length}</span>
                                         </div>
                                     </div>
-
-                                    <Button variant="secondary" className="w-full mt-4 bg-[#F4D03F]/10 hover:bg-gray-200 text-gray-600 text-xs font-medium h-9 rounded-xl">
-                                        View More
-                                    </Button>
-                                </Card>
-                            </Col>
-                        </Grid>
-
-                        {/* Row 3: Promotional Banners */}
-                        <Grid cols={2} gap="lg">
-                            {/* Activity Overview Summary */}
-                            <Col span={1}>
-                                <Card className="bg-amber-600 rounded-2xl p-6 text-[#1A1A1A] relative overflow-hidden flex flex-col justify-center h-48">
-                                    <div className="relative z-10 max-w-xs">
-                                        <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
-                                        <p className="text-[#F4D03F] text-xs mb-4">Monitor and support our master beekeepers.</p>
-                                        <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-[#FFF9F0] text-[#F4D03F] hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
-                                            Manage Farmers
-                                        </Button>
-                                    </div>
-                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                        <Users className="w-24 h-24 text-[#F4D03F]/30" />
-                                    </div>
-                                </Card>
-                            </Col>
-                            <Col span={1}>
-
-                                <Card className="bg-indigo-600 rounded-2xl p-6 text-[#1A1A1A] relative overflow-hidden flex flex-col justify-center h-48">
-                                    <div className="relative z-10 max-w-xs">
-                                        <h3 className="text-lg font-bold mb-1 leading-tight">Log</h3>
-                                        <p className="text-indigo-100 text-xs mb-4">View honey batch records.</p>
-                                        <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-[#FFF9F0] text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
-                                            View batches
-                                        </Button>
-                                    </div>
-                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                        <Database className="w-24 h-24 text-indigo-400/30" />
-                                    </div>
-                                </Card>
-                            </Col>
-                        </Grid>
-
-                        {/* Row 4: Weekly Top Products Table */}
-                        <Card className="bg-card border-border rounded-2xl shadow-sm overflow-hidden">
-                            <div className="p-4 border-b border-border flex items-center justify-between">
-                                <h3 className="text-lg font-bold">Weekly Top Products</h3>
-                                <div className="flex gap-2">
-                                    <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2">
-                                        <Package className="w-3 h-3" /> Export to Excel
-                                    </Button>
-                                    <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2">
-                                        <FileText className="w-3 h-3" /> Export to PDF
-                                    </Button>
                                 </div>
                             </div>
-
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-muted/30">
-                                        <TableHead className="font-bold text-xs">Images</TableHead>
-                                        <TableHead className="font-bold text-xs">Product Name</TableHead>
-                                        <TableHead className="font-bold text-xs text-right">Stock</TableHead>
-                                        <TableHead className="font-bold text-xs">Status</TableHead>
-                                        <TableHead className="font-bold text-xs text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {products.length > 0 ? products.slice(0, 5).map((product, i) => (
-                                        <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-border/50">
-                                            <TableCell className="py-3">
-                                                <div className="w-10 h-10 rounded-lg bg-[#F4D03F]/10 overflow-hidden border border-border">
-                                                    {product.images?.[0] ? (
-                                                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-amber-50">
-                                                            <Package className="w-5 h-5 text-[#F4D03F]" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <p className="font-bold text-sm text-foreground">{product.name}</p>
-                                                <p className="text-[11px] text-muted-foreground">{product.category}</p>
-                                            </TableCell>
-                                            <TableCell className="text-right font-bold text-sm">{product.variants?.[0]?.stock_quantity ?? 0}</TableCell>
-                                            <TableCell>
-                                                <span className={cn(
-                                                    "px-2 py-0.5 rounded text-[10px] font-bold border flex items-center w-fit gap-1",
-                                                    (product.variants?.[0]?.stock_quantity || 0) > 10
-                                                        ? "text-[#1B9157] border-green-200 bg-green-50"
-                                                        : "text-red-500 border-red-200 bg-red-50"
-                                                )}>
-                                                    {(product.variants?.[0]?.stock_quantity || 0) > 10 ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                                                    {(product.variants?.[0]?.stock_quantity || 0) > 10 ? 'Active' : 'Inactive'}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex items-center justify-end gap-3">
-                                                    <button className="text-gray-400 hover:text-[#F4D03F] flex items-center gap-1 text-[11px] font-medium transition-colors">
-                                                        <Edit className="w-3.5 h-3.5" /> Edit
-                                                    </button>
-                                                    <button className="text-gray-400 hover:text-red-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
-                                                        <Trash2 className="w-3.5 h-3.5" /> Delete
-                                                    </button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    )) : (
-                                        <TableRow>
-                                            <TableCell colSpan={5} className="text-center py-20 text-muted-foreground font-medium">
-                                                No products found.
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-
-                            {/* Pagination */}
-                            <div className="p-4 border-t border-border flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&lt;</Button>
-                                    <Button size="sm" className="w-8 h-8 rounded-lg bg-[#F4D03F] text-[#1A1A1A]">1</Button>
-                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">2</Button>
-                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">3</Button>
-                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&gt;</Button>
-                                </div>
-                                <select aria-label="Rows per page" className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5">
-                                    <option>10 per page</option>
-                                    <option>25 per page</option>
-                                    <option>50 per page</option>
-                                </select>
-                            </div>
-                        </Card>
-
-                        {/* Row 5: Important Notes */}
-                        <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-bold">Important Notes</h3>
-                                <div className="flex gap-2">
-                                    <Button size="icon" variant="outline" className="w-8 h-8 rounded-lg">
-                                        <ChevronRight className="w-4 h-4 rotate-180" />
-                                    </Button>
-                                    <Button size="icon" variant="outline" className="w-8 h-8 rounded-lg">
-                                        <ChevronRight className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <div className="bg-muted/30 rounded-xl p-4">
-                                <h4 className="font-bold text-sm mb-1">Welcome to BeeYield Admin Dashboard</h4>
-                                <p className="text-[10px] text-muted-foreground mb-2">24 hours ago</p>
-                                <p className="text-sm text-muted-foreground">
-                                    This dashboard gives you a complete overview of your beekeeping network metrics.
-                                    Monitor honey production, track farmer performance, and manage your product inventory all in one place.
-                                </p>
-                                <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto mt-2">
-                                    View Notes →
-                                </Button>
-                            </div>
-                        </Card>
-
-                        {/* Row 6: Bottom Widgets - Schedules, Recent Activities, Transactions */}
-                        <Grid cols={12} gap="lg">
-                            {/* Schedules / Calendar */}
-                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold">Schedules</h3>
-                                    <Button size="sm" variant="outline" className="rounded-lg text-xs h-7 gap-1">
-                                        <Plus className="w-3 h-3" /> Add New Schedules
-                                    </Button>
-                                </div>
-
-                                {/* Simple Calendar */}
-                                <div className="grid grid-cols-7 gap-1 text-center text-xs mb-4">
-                                    {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
-                                        <div key={d} className="font-medium text-muted-foreground py-1">{d}</div>
-                                    ))}
-                                    {Array.from({ length: 35 }, (_, i) => {
-                                        const day = i - 3;
-                                        const isCurrentMonth = day >= 1 && day <= 30;
-                                        const isToday = day === 16;
-                                        const hasEvent = [7, 8, 9, 10, 23, 24].includes(day);
-                                        return (
-                                            <div
-                                                key={i}
-                                                className={cn(
-                                                    "py-1.5 rounded-lg",
-                                                    !isCurrentMonth && "text-muted-foreground/30",
-                                                    isToday && "bg-[#F4D03F] text-[#1A1A1A] font-bold",
-                                                    hasEvent && !isToday && "bg-amber-100 text-[#F4D03F] font-medium"
-                                                )}
-                                            >
-                                                {isCurrentMonth ? day : day <= 0 ? 30 + day : day - 30}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* Schedule Items Placeholder */}
-                                <div className="flex flex-col items-center justify-center h-48 text-center bg-muted/20 rounded-xl">
-                                    <Clock className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                                    <p className="text-xs font-medium text-muted-foreground">No upcoming inspections</p>
-                                </div>
-                            </Card></Col>
 
                             {/* Recent Activities */}
-                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold">Recent Activities</h3>
-                                    <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto">Show More</Button>
+                            <div className="lg:col-span-4">
+                                <div className={cn(glass.section, "p-6 h-full")}>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className={glass.sectionTitle}>Recent Orders</h3>
+                                        <button onClick={() => setActiveTab('orders')} className="text-[#F4D03F] text-xs font-bold hover:underline">View All</button>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        {orders.slice(0, 5).map((order, i) => (
+                                            <div key={order.id || i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#F9F7F2] transition-colors border border-transparent hover:border-[#F4D03F]/10">
+                                                <div className="w-8 h-8 rounded-md bg-[#F4D03F]/10 flex items-center justify-center text-[#1A1A1A] font-bold text-xs">
+                                                    {order.shipping_address?.first_name?.charAt(0) || 'U'}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold text-[#1A1A1A] truncate">
+                                                        {order.shipping_address?.first_name || 'Customer'} {order.shipping_address?.last_name || ''}
+                                                    </p>
+                                                    <p className="text-[10px] text-muted-foreground truncate">
+                                                        Order {order.order_number || order.id.slice(0, 8)}
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className={cn(
+                                                        "text-xs font-black block",
+                                                        order.status === 'completed' ? "text-[#1B9157]" : "text-[#F4D03F]"
+                                                    )}>
+                                                        KES {order.total_amount?.toLocaleString() || '0'}
+                                                    </span>
+                                                    <span className="text-[9px] text-muted-foreground uppercase">{order.status}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {orders.length === 0 && (
+                                            <p className="text-sm text-muted-foreground text-center py-10">No recent orders</p>
+                                        )}
+                                    </div>
                                 </div>
+                            </div>
 
-                                <div className="space-y-4">
-                                    {orders.slice(0, 4).map((order, i) => (
-                                        <div key={order.id || i} className="flex items-start gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-[#F4D03F] flex items-center justify-center text-[#1A1A1A] text-xs font-bold">
-                                                O
+                            {/* Recent Batches */}
+                            <div className="lg:col-span-4">
+                                <div className={cn(glass.section, "p-6 h-full")}>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className={glass.sectionTitle}>Latest Traceability</h3>
+                                        <button onClick={() => setActiveTab('batches')} className="text-[#F4D03F] text-xs font-bold hover:underline">View All</button>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        {batches.slice(0, 5).map((batch, i) => (
+                                            <div key={batch.id || i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#F9F7F2] transition-colors border border-transparent hover:border-[#F4D03F]/10">
+                                                <div className="w-8 h-8 rounded-md bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">
+                                                    <Database className="w-4 h-4" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold text-[#1A1A1A] truncate">{batch.batch_code}</p>
+                                                    <p className="text-[10px] text-muted-foreground truncate">{batch.honey_type} • {batch.quantity_kg}kg</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-[10px] font-mono text-muted-foreground block truncate max-w-[80px]">
+                                                        {batch.block_hash ? batch.block_hash.slice(0, 8) + '...' : 'Pending'}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">Order {order.order_number || order.id.slice(0, 8)}</p>
-                                                <p className="text-[10px] text-muted-foreground">Status: {order.status}</p>
-                                            </div>
-                                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">{new Date(order.created_at).toLocaleDateString()}</span>
-                                        </div>
-                                    ))}
-                                    {batches.slice(0, 2).map((batch, i) => (
-                                        <div key={batch.id || i} className="flex items-start gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-[#1A1A1A] text-xs font-bold">
-                                                B
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">Batch {batch.batch_code}</p>
-                                                <p className="text-[10px] text-muted-foreground">{batch.honey_type}</p>
-                                            </div>
-                                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">{new Date(batch.created_at || Date.now()).toLocaleDateString()}</span>
-                                        </div>
-                                    ))}
-                                    {orders.length === 0 && batches.length === 0 && (
-                                        <p className="text-xs text-muted-foreground text-center py-10">No recent activity</p>
-                                    )}
+                                        ))}
+                                        {batches.length === 0 && (
+                                            <p className="text-sm text-muted-foreground text-center py-10">No recent batches</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </Card></Col>
+                            </div>
+                        </div>
 
-                            {/* Transactions */}
-                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
-                                <h3 className="font-bold mb-4">Transactions</h3>
-
-                                <div className="space-y-4">
-                                    {orders.slice(0, 4).map((order, i) => (
-                                        <div key={order.id || i} className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-[#1A1A1A] text-xs font-bold">
-                                                {order.shipping_address?.first_name?.charAt(0) || 'U'}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">
-                                                    {order.shipping_address?.first_name || 'Customer'} {order.shipping_address?.last_name || ''}
-                                                </p>
-                                                <p className="text-[10px] text-muted-foreground">
-                                                    {new Date(order.created_at).toLocaleDateString()}
-                                                </p>
-                                            </div>
-                                            <span className={cn(
-                                                "text-xs font-bold",
-                                                order.status === 'completed' ? "text-[#1B9157]" : "text-[#F4D03F]"
-                                            )}>
-                                                +KES {order.total_amount?.toLocaleString() || '0'}
-                                            </span>
-                                        </div>
-                                    ))}
-                                    {orders.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-4">No transactions yet</p>
-                                    )}
+                        {/* Interactive Map (Refined) */}
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="p-6 border-b border-[#F4D03F]/10 flex items-center justify-between bg-white z-10 relative">
+                                <div>
+                                    <h3 className={glass.sectionTitle}>Global Apiary Network</h3>
+                                    <p className="text-xs text-muted-foreground mt-1">Live tracking of {apiaries.length} distribution zones.</p>
                                 </div>
+                            </div>
+                            <div className="relative bg-[#F4D03F]/5 min-h-[400px]">
+                                {/* Map Background Pattern */}
+                                <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#1A1A1A_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                                
+                                {/* Dynamic Map Markers */}
+                                {apiaries.length > 0 ? apiaries.map((apiary, idx) => {
+                                    const left = apiary.longitude ? ((apiary.longitude - 34) / 8) * 100 : (20 + (idx * 15) % 60);
+                                    const top = apiary.latitude ? ((1 - (apiary.latitude + 4) / 10)) * 100 : (30 + (idx * 20) % 50);
 
-                                <Button variant="link" className="text-[#F4D03F] text-xs p-0 h-auto mt-4">
-                                    View More →
-                                </Button>
-                            </Card></Col>
-                        </Grid>
+                                    return (
+                                        <div
+                                            key={apiary.id}
+                                            className="absolute group cursor-pointer"
+                                            style={{
+                                                left: `${Math.max(5, Math.min(95, left))}%`,
+                                                top: `${Math.max(5, Math.min(95, top))}%`,
+                                                transform: 'translate(-50%, -50%)'
+                                            }}
+                                        >
+                                            <div className="w-8 h-8 bg-[#F4D03F]/60 rounded-full flex items-center justify-center animate-ping absolute -ml-1 -mt-1 opacity-75"></div>
+                                            <div className="relative z-10 w-6 h-6 bg-amber-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-[10px]">
+                                                {idx + 1}
+                                            </div>
+                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-3 py-1.5 rounded-lg shadow-xl border border-[#F4D03F]/20 text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all z-50 pointer-events-none">
+                                                {apiary.name}
+                                                <span className="block text-[9px] text-muted-foreground font-normal">{apiary.location_county || 'Unknown Location'}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                }) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm font-medium">
+                                        Map data gathering...
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
-                        {/* Quick Actions Removed */}
                     </TabsContent>
 
                     {/* --- ORDERS TAB --- */}
                     <TabsContent value="orders" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div>
-                                        <CardTitle className="text-xl font-bold">Recent Orders</CardTitle>
-                                        <CardDescription>View and manage all customer transactions.</CardDescription>
-                                    </div>
+                        <PageHeader
+                            icon={Package}
+                            label="Store Management"
+                            title="Orders & Transactions"
+                            subtitle="View and manage all customer transactions and fulfillment status."
+                        />
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="p-6 border-b border-[#F4D03F]/10 flex items-center justify-between">
+                                <div>
+                                    <h3 className={glass.sectionTitle}>Order Log</h3>
+                                    <p className="text-xs text-muted-foreground mt-1">Complete history of platform purchases.</p>
                                 </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Order #</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Customer</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Items</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Total (KES)</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {orders.length === 0 ? (
-                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No orders found.</TableCell></TableRow>
-                                            ) : (
-                                                orders.map((order) => (
-                                                    <TableRow key={order.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-mono font-bold text-primary">{order.order_number || `BY-${order.id.toString().slice(0, 8)}`}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <div className="font-semibold">{order.shipping_address?.first_name || 'Anonymous'} {order.shipping_address?.last_name || ''}</div>
-                                                            <div className="text-xs text-muted-foreground">{order.customer_email || order.shipping_address?.email}</div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right font-medium">{order.items?.length || 0}</TableCell>
-                                                        <TableCell className="px-6 text-right font-black">{order.total_amount?.toLocaleString()}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Select
-                                                                defaultValue={order.status}
-                                                                onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
-                                                            >
-                                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-black tracking-wider rounded-xl bg-background/50 border-border/50">
-                                                                    <SelectValue />
-                                                                </SelectTrigger>
-                                                                <SelectContent className="rounded-xl border-border/50">
-                                                                    <SelectItem value="pending" className="text-xs font-bold">Pending</SelectItem>
-                                                                    <SelectItem value="processing" className="text-xs font-bold">Processing</SelectItem>
-                                                                    <SelectItem value="shipped" className="text-xs font-bold">Shipped</SelectItem>
-                                                                    <SelectItem value="completed" className="text-xs font-bold">Completed</SelectItem>
-                                                                    <SelectItem value="cancelled" className="text-xs font-bold">Cancelled</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-xs text-muted-foreground font-medium">{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewOrder(order)}>
-                                                                    <Search className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteOrder(order.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Order #</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Customer</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Items</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Total (KES)</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {orders.length === 0 ? (
+                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No orders found.</TableCell></TableRow>
+                                        ) : (
+                                            orders.map((order) => (
+                                                <TableRow key={order.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6 font-mono font-bold text-primary">{order.order_number || `BY-${order.id.toString().slice(0, 8)}`}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="font-semibold">{order.shipping_address?.first_name || 'Anonymous'} {order.shipping_address?.last_name || ''}</div>
+                                                        <div className="text-xs text-muted-foreground">{order.customer_email || order.shipping_address?.email}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right font-medium">{order.items?.length || 0}</TableCell>
+                                                    <TableCell className="px-6 text-right font-black">{order.total_amount?.toLocaleString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select
+                                                            defaultValue={order.status}
+                                                            onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
+                                                        >
+                                                            <SelectTrigger className="w-[140px] h-9 text-[10px] font-black tracking-wider rounded-xl bg-background/50 border-border/50">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="rounded-xl border-border/50">
+                                                                <SelectItem value="pending" className="text-xs font-bold">Pending</SelectItem>
+                                                                <SelectItem value="processing" className="text-xs font-bold">Processing</SelectItem>
+                                                                <SelectItem value="shipped" className="text-xs font-bold">Shipped</SelectItem>
+                                                                <SelectItem value="completed" className="text-xs font-bold">Completed</SelectItem>
+                                                                <SelectItem value="cancelled" className="text-xs font-bold">Cancelled</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-xs text-muted-foreground font-medium">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewOrder(order)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteOrder(order.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Order Details Dialog */}
                         <Dialog open={isOrderDetailsOpen} onOpenChange={setIsOrderDetailsOpen}>
@@ -1696,21 +1386,21 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- PRODUCTS TAB --- */}
                     <TabsContent value="products" className="space-y-6">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div>
-                                <h2 className="text-xl font-bold tracking-tight">Product Inventory</h2>
-                                <p className="text-muted-foreground font-medium">Manage products listed in the online shop.</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black text-xs h-auto">
-                                    <Plus className="mr-2 h-5 w-5" /> Add Product
+                        <PageHeader
+                            icon={ShoppingBag}
+                            label="Product Catalog"
+                            title="Shop Inventory"
+                            subtitle="Manage honey varieties and apiary products for the online store."
+                            actions={
+                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className={glass.btnPrimary}>
+                                    <Plus className="mr-2 h-4 w-4" /> Add Product
                                 </Button>
-                            </div>
-                        </div>
+                            }
+                        />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {products.map((product) => (
-                                <div key={product.id} className="group relative bg-card hover:shadow-xl border-border border rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1">
+                                <div key={product.id} className={cn(glass.card, "group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 p-5 border border-transparent hover:border-[#F4D03F]/20")}>
                                     <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-5 relative">
                                         {product.images?.[0] ? (
                                             <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -1831,31 +1521,27 @@ const AdminDashboard: React.FC = () => {
                         </Dialog>
 
                         {/* Stock Movements Section */}
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden mt-8 shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <CardTitle className="text-xl font-black flex items-center gap-2">
-                                            <History className="w-5 h-5" /> Stock Movements
-                                        </CardTitle>
-                                        <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Badge className="bg-[#1B9157] text-[#1B9157] border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                                            {stockMovements.length} RECORDS
-                                        </Badge>
-                                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black text-[10px]">
-                                            <Plus className="w-3 h-3 mr-1" /> New Movement
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Product</TableHead>
+                        <div className="flex justify-between items-center mt-12 mb-6 px-2">
+                            <div>
+                                <h3 className={glass.sectionTitle}>Stock Movements</h3>
+                                <p className="text-xs text-muted-foreground mt-1">Track inventory additions, removals, and adjustments.</p>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                                <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                    {stockMovements.length} RECORDS
+                                </Badge>
+                                <Button onClick={() => setIsStockModalOpen(true)} size="sm" className={cn(glass.btnSecondary, "h-8 px-4")}>
+                                    <Plus className="w-3 h-3 mr-1" /> New Movement
+                                </Button>
+                            </div>
+                        </div>
+                        
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Product</TableHead>
                                                 <TableHead className="py-4 px-6 font-black text-[10px]">Type</TableHead>
                                                 <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity</TableHead>
                                                 <TableHead className="py-4 px-6 font-black text-[10px]">Reason</TableHead>
@@ -1884,8 +1570,7 @@ const AdminDashboard: React.FC = () => {
                                         </TableBody>
                                     </Table>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
 
                         {/* Stock Movement Dialog */}
                         <Dialog open={isStockModalOpen} onOpenChange={setIsStockModalOpen}>
@@ -1956,133 +1641,126 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- BATCHES TAB --- */}
                     <TabsContent value="batches" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-bold">Honey batches</CardTitle>
-                                    <CardDescription>Verifiable records for each batch.</CardDescription>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black text-[10px] py-5 bg-[#F4D03F] hover:bg-[#F4D03F]-dark text-[#1A1A1A] border-none px-6 shadow-glow transition-all active:scale-95">
-                                        <Plus className="mr-2 h-4 w-4" /> Add batch
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Batch Code</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Honey Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Origin</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farmer / Beekeeper</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Harvest Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity (KG)</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Record ID</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {batches.length === 0 ? (
-                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium">No honey batches yet.</TableCell></TableRow>
-                                            ) : (
-                                                batches.map((batch, i) => (
-                                                    <TableRow
-                                                        key={batch.id || i}
-                                                        className="hover:bg-muted/20 transition-colors border-border/10 cursor-pointer"
-                                                        onClick={() => handleViewBatch(batch)}
-                                                    >
-                                                        <TableCell className="px-6">
-                                                            <div className="font-black text-primary tracking-tighter flex items-center gap-2">
-                                                                <CheckCircle2 className="w-4 h-4" />
-                                                                {batch.batch_code || `BC-00${i}`}
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 font-semibold">{batch.honey_type}</TableCell>
-                                                        <TableCell className="px-6 text-sm">
-                                                            {(batch.location_county || batch.location_region) ? (
-                                                                <div className="flex flex-col gap-0.5">
-                                                                    <span className="font-bold text-xs">{batch.location_county}</span>
-                                                                    <span className="text-[10px] text-muted-foreground">{batch.location_region || batch.apiary_name}</span>
-                                                                    {batch.latitude && batch.longitude && (
-                                                                        <a
-                                                                            href={`https://www.google.com/maps?q=${batch.latitude},${batch.longitude}`}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-400 hover:underline mt-1 transition-colors"
-                                                                            onClick={(e) => e.stopPropagation()}
-                                                                        >
-                                                                            <MapPin className="w-3 h-3" /> View Map
-                                                                        </a>
-                                                                    )}
-                                                                </div>
-                                                            ) : <span className="text-muted-foreground">-</span>}
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-sm">
-                                                            <div className="flex flex-col gap-1">
-                                                                {batch.farmer_name && (
-                                                                    <div className="flex flex-col">
-                                                                        <span className="text-[10px] text-muted-foreground tracking-wider">Farmer</span>
-                                                                        <span className="font-semibold text-xs">{batch.farmer_name}</span>
-                                                                    </div>
-                                                                )}
-                                                                {batch.beekeeper_name && (
-                                                                    <div className="flex flex-col">
-                                                                        <span className="text-[10px] text-muted-foreground tracking-wider">Beekeeper</span>
-                                                                        <span className="font-semibold text-xs">{batch.beekeeper_name}</span>
-                                                                    </div>
-                                                                )}
-                                                                <span className="text-[10px] text-muted-foreground pt-1 border-t border-border/10">
-                                                                    {batch.farmer_phone || batch.beekeeper_id || '-'}
-                                                                </span>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
-                                                        <TableCell className="px-6 text-right font-black">{batch.quantity_kg}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <div className="flex items-center gap-2 group cursor-help" title={batch.block_hash}>
-                                                                <div className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
-                                                                <code className="text-[10px] bg-muted px-2 py-1 rounded-md opacity-70 group-hover:opacity-100 transition-opacity truncate max-w-[120px] font-mono">
-                                                                    {batch.block_hash || '0x00...00'}
-                                                                </code>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <div className="flex items-center gap-1">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10" onClick={(e) => { e.stopPropagation(); handleViewBatch(batch); }}>
-                                                                    <Eye className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
-                                                                    <Edit className="h-4 w-4" />
-                                                                </Button>
-                                                                {batch.batch_code && (
-                                                                    <Button
-                                                                        size="icon"
-                                                                        variant="outline"
-                                                                        className="rounded-xl w-8 h-8 border-border/50 text-[#F4D03F] hover:bg-[#F4D03F]"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            window.open(`/trace?code=${batch.batch_code}`, '_blank');
-                                                                        }}
-                                                                        title="View public record"
+                        <PageHeader
+                            icon={History}
+                            label="Verification Protocol"
+                            title="Honey Batches"
+                            subtitle="Verifiable production records and harvest history."
+                            actions={
+                                <Button onClick={() => setIsBatchModalOpen(true)} className={glass.btnPrimary}>
+                                    <Plus className="mr-2 h-4 w-4" /> Add Batch
+                                </Button>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Batch Code</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Honey Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Origin</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Farmer / Beekeeper</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Harvest Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity (KG)</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Record ID</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {batches.length === 0 ? (
+                                            <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium">No honey batches yet.</TableCell></TableRow>
+                                        ) : (
+                                            batches.map((batch, i) => (
+                                                <TableRow
+                                                    key={batch.id || i}
+                                                    className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10 cursor-pointer"
+                                                    onClick={() => handleViewBatch(batch)}
+                                                >
+                                                    <TableCell className="px-6">
+                                                        <div className="font-black text-primary tracking-tighter flex items-center gap-2">
+                                                            <CheckCircle2 className="w-4 h-4" />
+                                                            {batch.batch_code || `BC-00${i}`}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 font-semibold">{batch.honey_type}</TableCell>
+                                                    <TableCell className="px-6 text-sm">
+                                                        {(batch.location_county || batch.location_region) ? (
+                                                            <div className="flex flex-col gap-0.5">
+                                                                <span className="font-bold text-xs">{batch.location_county}</span>
+                                                                <span className="text-[10px] text-muted-foreground">{batch.location_region || batch.apiary_name}</span>
+                                                                {batch.latitude && batch.longitude && (
+                                                                    <a
+                                                                        href={`https://www.google.com/maps?q=${batch.latitude},${batch.longitude}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-400 hover:underline mt-1 transition-colors"
+                                                                        onClick={(e) => e.stopPropagation()}
                                                                     >
-                                                                        <Globe className="h-4 w-4" />
-                                                                    </Button>
+                                                                        <MapPin className="w-3 h-3" /> View Map
+                                                                    </a>
                                                                 )}
                                                             </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                                        ) : <span className="text-muted-foreground">-</span>}
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-sm">
+                                                        <div className="flex flex-col gap-1">
+                                                            {batch.farmer_name && (
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] text-muted-foreground tracking-wider">Farmer</span>
+                                                                    <span className="font-semibold text-xs">{batch.farmer_name}</span>
+                                                                </div>
+                                                            )}
+                                                            {batch.beekeeper_name && (
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] text-muted-foreground tracking-wider">Beekeeper</span>
+                                                                    <span className="font-semibold text-xs">{batch.beekeeper_name}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
+                                                    <TableCell className="px-6 text-right font-black">{batch.quantity_kg}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="flex items-center gap-2 group cursor-help" title={batch.block_hash}>
+                                                            <div className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
+                                                            <code className="text-[10px] bg-muted px-2 py-1 rounded-md opacity-70 group-hover:opacity-100 transition-opacity truncate max-w-[120px] font-mono">
+                                                                {batch.block_hash || '0x00...00'}
+                                                            </code>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="flex items-center justify-end gap-1">
+                                                            {batch.batch_code && (
+                                                                <Button
+                                                                    size="icon"
+                                                                    variant="outline"
+                                                                    className="rounded-xl w-8 h-8 border-border/50 text-[#F4D03F] hover:bg-[#F4D03F] hover:text-[#1A1A1A]"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        window.open(`/trace?code=${batch.batch_code}`, '_blank');
+                                                                    }}
+                                                                    title="View public record"
+                                                                >
+                                                                    <Globe className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Batch Creation Dialog */}
                         <Dialog open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
@@ -2441,86 +2119,91 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- FARMERS TAB --- */}
                     <TabsContent value="farmers" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-bold">Agricultural Partners</CardTitle>
-                                    <CardDescription>Manage registered beekeepers and farmers.</CardDescription>
-                                </div>
+                        <PageHeader
+                            icon={Users}
+                            label="Agricultural Partners"
+                            title="Partners & Producers"
+                            subtitle="Directory of certified beekeepers and registered farmers."
+                            actions={
                                 <Button
                                     onClick={() => setIsFarmerModalOpen(true)}
-                                    variant="outline"
-                                    className="rounded-xl font-black text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className={glass.btnPrimary}
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Register Farmer
                                 </Button>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farmer</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Contact</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Experience</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {farmers.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No registered farmers found.</TableCell></TableRow>
-                                            ) : (
-                                                farmers.map((farmer) => (
-                                                    <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/20 flex items-center justify-center font-black text-[#F4D03F]">
-                                                                    {farmer.name?.[0]?.toUpperCase() || 'F'}
-                                                                </div>
-                                                                <div className="flex flex-col">
-                                                                    <span className="font-bold">{farmer.name}</span>
-                                                                    <span className="text-[10px] text-muted-foreground font-mono">{farmer.farmer_id || 'ID-PENDING'}</span>
-                                                                </div>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Farmer</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Contact</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Experience</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {farmers.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No registered farmers found.</TableCell></TableRow>
+                                        ) : (
+                                            farmers.map((farmer) => (
+                                                <TableRow key={farmer.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/20 flex items-center justify-center font-black text-[#F4D03F]">
+                                                                {farmer.name?.[0]?.toUpperCase() || 'F'}
                                                             </div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <div className="text-sm font-medium">{farmer.phone}</div>
-                                                            <div className="text-[10px] text-muted-foreground">{farmer.email || 'No email'}</div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <div className="text-sm">{farmer.county || 'N/A'}</div>
-                                                            <div className="text-[10px] text-muted-foreground">{farmer.region || farmer.location_name || ''}</div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Badge variant="outline" className="bg-blue-500/5 text-blue-600 border-blue-200">
-                                                                {farmer.experience_years} Years
-                                                            </Badge>
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Badge className={farmer.certification_status === 'Certified' ? 'bg-[#1B9157] text-[#1B9157] border-none' : 'bg-[#F4D03F] text-[#F4D03F] border-none'}>
-                                                                {farmer.certification_status || 'Pending'}
-                                                            </Badge>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={() => handleEditFarmer(farmer)}>
-                                                                    <Edit className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteFarmer(farmer.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="font-bold truncate">{farmer.name}</div>
+                                                                <div className="text-[10px] text-muted-foreground font-mono truncate">{farmer.farmer_id || 'ID-PENDING'}</div>
                                                             </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-sm font-medium">{farmer.phone}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{farmer.email || 'No email'}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-sm font-bold">{farmer.county || 'N/A'}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{farmer.region || farmer.location_name || ''}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className="bg-blue-500/5 text-blue-600 border-blue-200/50 rounded-lg">
+                                                            {farmer.experience_years} Years
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge className={cn(
+                                                            "rounded-lg border-none px-3 py-1 text-[10px] font-black",
+                                                            farmer.certification_status === 'Certified' 
+                                                                ? 'bg-[#1B9157]/10 text-[#1B9157]' 
+                                                                : 'bg-[#F4D03F]/10 text-[#F4D03F]'
+                                                        )}>
+                                                            {farmer.certification_status || 'Pending'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10" onClick={() => handleEditFarmer(farmer)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteFarmer(farmer.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Farmer Registration Dialog */}
                         <Dialog open={isFarmerModalOpen} onOpenChange={(open) => { setIsFarmerModalOpen(open); if (!open) setEditingFarmer(null); }}>
@@ -2647,72 +2330,82 @@ const AdminDashboard: React.FC = () => {
                     </TabsContent>
 
                     {/* --- APIARIES TAB --- */}
+                    {/* --- APIARIES TAB --- */}
                     <TabsContent value="apiaries" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-bold">Apiary Locations</CardTitle>
-                                    <CardDescription>Manage apiaries and their locations.</CardDescription>
-                                </div>
+                        <PageHeader
+                            icon={MapPin}
+                            label="Production Capacity"
+                            title="Apiary Locations"
+                            subtitle="Strategic honey production sites and cluster management."
+                            actions={
                                 <Button
                                     onClick={() => setIsApiaryModalOpen(true)}
-                                    variant="outline"
-                                    className="rounded-xl font-black text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className={glass.btnPrimary}
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Register Apiary
                                 </Button>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farmer</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Hives</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {apiaries.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered yet.</TableCell></TableRow>
-                                            ) : (
-                                                apiaries.map((apiary) => (
-                                                    <TableRow key={apiary.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-bold">{apiary.name}</TableCell>
-                                                        <TableCell className="px-6">{apiary.farmers?.name || 'Assigned Partner'}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <div className="text-sm font-medium">{apiary.location_name || apiary.county}</div>
-                                                            <div className="text-[10px] text-muted-foreground">{apiary.region}</div>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right font-black">
-                                                            {hives.filter(h => h.apiary_id === apiary.id).length}
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-[#1B9157] text-[#1B9157] border-green-200" : "bg-muted text-muted-foreground"}>
-                                                                {apiary.status?.toUpperCase()}
-                                                            </Badge>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditApiary(apiary)}>
-                                                                    <Edit className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteApiary(apiary.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Apiary Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Assigned Partner</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Coordination</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Hives</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {apiaries.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered yet.</TableCell></TableRow>
+                                        ) : (
+                                            apiaries.map((apiary) => (
+                                                <TableRow key={apiary.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6 font-black text-primary tracking-tight">{apiary.name}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="font-semibold text-sm">{apiaries.find(a => a.id === apiary.id)?.farmers?.name || 'Assigned Partner'}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-sm font-bold">{apiary.location_name || apiary.county}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{apiary.region}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right font-black">
+                                                        <Badge variant="outline" className="rounded-lg font-black border-primary/20 bg-primary/5">
+                                                            {hives.filter(h => h.apiary_id === apiary.id).length} UNITS
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge className={cn(
+                                                            "rounded-lg border-none px-3 py-1 text-[10px] font-black",
+                                                            apiary.status === 'active' 
+                                                                ? "bg-[#1B9157]/10 text-[#1B9157]" 
+                                                                : "bg-muted text-muted-foreground"
+                                                        )}>
+                                                            {apiary.status?.toUpperCase()}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditApiary(apiary)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteApiary(apiary.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Apiary Modal */}
                         <Dialog open={isApiaryModalOpen} onOpenChange={(open) => { setIsApiaryModalOpen(open); if (!open) setEditingApiary(null); }}>
@@ -2806,66 +2499,73 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- HIVES TAB --- */}
                     <TabsContent value="hives" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-bold">Hives</CardTitle>
-                                    <CardDescription>Inventory and health status of individual colony units.</CardDescription>
-                                </div>
+                        <PageHeader
+                            icon={Database}
+                            label="Inventory Asset"
+                            title="Hive Registry"
+                            subtitle="Detailed tracking of individual hive units and health metrics."
+                            actions={
                                 <Button
                                     onClick={() => setIsHiveModalOpen(true)}
-                                    variant="outline"
-                                    className="rounded-xl font-black text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className={glass.btnPrimary}
                                 >
-                                    <Plus className="mr-2 h-4 w-4" /> Add hive
+                                    <Plus className="mr-2 h-4 w-4" /> Register Hive
                                 </Button>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Hive Code</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Apiary</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Installed</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {hives.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives registered yet.</TableCell></TableRow>
-                                            ) : (
-                                                hives.map((hive) => (
-                                                    <TableRow key={hive.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-mono font-bold text-primary">{hive.hive_code}</TableCell>
-                                                        <TableCell className="px-6 font-semibold">{hive.apiaries?.name || 'Assigned Site'}</TableCell>
-                                                        <TableCell className="px-6">{hive.type}</TableCell>
-                                                        <TableCell className="px-6 text-sm text-muted-foreground">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-[#1B9157] text-[#1B9157] border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
-                                                                {hive.status?.toUpperCase()}
-                                                            </Badge>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditHive(hive)}>
-                                                                    <Edit className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteHive(hive.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Hive Code</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Apiary</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Installed</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {hives.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives registered yet.</TableCell></TableRow>
+                                        ) : (
+                                            hives.map((hive) => (
+                                                <TableRow key={hive.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6 font-mono font-black text-primary tracking-tighter">{hive.hive_code}</TableCell>
+                                                    <TableCell className="px-6 font-semibold">{hive.apiaries?.name || 'Assigned Site'}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className="rounded-lg text-[10px] font-black">{hive.type || 'Standard'}</Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground tabular-nums opacity-70">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge className={cn(
+                                                            "rounded-lg border-none px-3 py-1 text-[10px] font-black",
+                                                            hive.status === 'active' 
+                                                                ? "bg-[#1B9157]/10 text-[#1B9157]" 
+                                                                : "bg-[#F4D03F]/10 text-[#F4D03F]"
+                                                        )}>
+                                                            {hive.status?.toUpperCase()}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditHive(hive)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteHive(hive.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Hive Modal */}
                         <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
@@ -2966,87 +2666,90 @@ const AdminDashboard: React.FC = () => {
                     {
                         isSuperAdmin && (
                             <TabsContent value="team" className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <h2 className="text-xl font-bold flex gap-2 items-center">
-                                            <Shield className="w-6 h-6 text-primary" /> Team management
-                                        </h2>
-                                        <p className="text-muted-foreground font-medium">Manage users and permissions.</p>
-                                    </div>
-                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
-                                        {systemUsers.length} MEMBERS
-                                    </Badge>
-                                </div>
+                                <PageHeader
+                                    icon={Shield}
+                                    label="Administrative Control"
+                                    title="Team Management"
+                                    subtitle="Define administrative roles and control system permissions."
+                                    actions={
+                                        <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
+                                            {systemUsers.length} MEMBERS
+                                        </Badge>
+                                    }
+                                />
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                     {systemUsers.map((userObj) => (
-                                        <Card key={userObj.id} className="border-border/50 bg-card/60 backdrop-blur rounded-3xl overflow-hidden hover:shadow-xl transition-all border group">
-                                            <CardHeader className="pb-3 relative">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
-                                                        {userObj.email?.[0].toUpperCase()}
-                                                        {userObj.role === 'super_admin' && (
-                                                            <div className="absolute -top-1 -right-1 bg-yellow-400 text-[#1A1A1A] rounded-xl p-0.5 shadow-lg border-2 border-background">
-                                                                <Crown className="w-3 h-3" />
-                                                            </div>
-                                                        )}
+                                        <div key={userObj.id} className={cn(glass.card, "group overflow-hidden")}>
+                                            <div className="p-6 relative">
+                                                <div className="flex justify-between items-start mb-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative shadow-glow">
+                                                            {userObj.email?.[0].toUpperCase()}
+                                                            {userObj.role === 'super_admin' && (
+                                                                <div className="absolute -top-1 -right-1 bg-[#F4D03F] text-[#1A1A1A] rounded-xl p-0.5 shadow-lg border-2 border-[#1A1A1A]">
+                                                                    <Crown className="w-3 h-3" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="text-lg font-black tracking-tighter truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</div>
+                                                            <div className="font-mono text-[9px] truncate opacity-50 uppercase tracking-widest">{userObj.email}</div>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <CardTitle className="text-lg font-black truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
-                                                        <CardDescription className="font-mono text-[10px] truncate opacity-80">{userObj.email}</CardDescription>
-                                                    </div>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-black text-muted-foreground">Role</span>
-                                                    <Select
-                                                        defaultValue={userObj.role}
-                                                        onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
-                                                        disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
-                                                    >
-                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black border-none bg-muted/60">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="rounded-xl">
-                                                            <SelectItem value="user" className="text-xs font-bold">User</SelectItem>
-                                                            <SelectItem value="admin" className="text-xs font-bold">Admin</SelectItem>
-                                                            <SelectItem value="super_admin" className="text-xs font-bold">Super Admin</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
                                                 </div>
 
-                                                <div className="flex gap-2 pt-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black hover:bg-primary/10 hover:text-primary transition-colors"
-                                                        onClick={() => handleEditUser(userObj)}
-                                                    >
-                                                        <Edit className="h-4 w-4 mr-2" /> Modify
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
-                                                        onClick={() => handleDeleteUser(userObj.id)}
-                                                        disabled={userObj.email === user?.email} // Can't delete self
-                                                    >
-                                                        <UserMinus className="h-4 w-4 mr-2" /> Remove User
-                                                    </Button>
-                                                </div>
+                                                <div className="space-y-4 pt-4 border-t border-[#F4D03F]/10">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Authority</span>
+                                                        <Select
+                                                            defaultValue={userObj.role}
+                                                            onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
+                                                            disabled={userObj.role === 'super_admin' && userObj.email === user?.email}
+                                                        >
+                                                            <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black border-none bg-background/50">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="rounded-xl">
+                                                                <SelectItem value="user">User</SelectItem>
+                                                                <SelectItem value="admin">Admin</SelectItem>
+                                                                <SelectItem value="super_admin">Super Admin</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
 
-                                            </CardContent>
-                                        </Card>
+                                                    <div className="flex gap-2 pt-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="flex-1 rounded-xl h-10 border-border/50 text-[10px] font-black hover:bg-primary/10 hover:text-primary transition-all active:scale-95"
+                                                            onClick={() => handleEditUser(userObj)}
+                                                        >
+                                                            <Edit className="h-4 w-4 mr-2" /> Modify
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            className="flex-1 rounded-xl h-10 border-border/50 text-[10px] font-black hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-all active:scale-95"
+                                                            onClick={() => handleDeleteUser(userObj.id)}
+                                                            disabled={userObj.email === user?.email}
+                                                        >
+                                                            <UserMinus className="h-4 w-4 mr-2" /> Revoke
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     ))}
 
-                                    {/* Add User Simulation Card */}
-                                    <Card
+                                    <div
                                         onClick={() => { setEditingUser(null); setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' }); setIsUserModalOpen(true); }}
-                                        className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
+                                        className="border-dashed border-2 border-[#F4D03F]/20 bg-background/20 rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-[#F4D03F]/50 hover:bg-[#F4D03F]/5 cursor-pointer transition-all group h-full min-h-[220px]"
                                     >
-                                        <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
-                                        <h3 className="font-black text-xs">Add a team member</h3>
-                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Create an account and set permissions</p>
-                                    </Card>
+                                        <div className="p-4 rounded-full bg-[#F4D03F]/10 mb-4 group-hover:scale-110 transition-transform">
+                                            <Users className="h-8 w-8 text-[#F4D03F]/50" />
+                                        </div>
+                                        <h3 className="font-black text-xs text-[#F4D03F]">Add Member</h3>
+                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize new account parameters</p>
+                                    </div>
                                 </div>
 
                                 {/* User CRUD Dialog */}
@@ -3135,81 +2838,88 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- POLLINATION REQUESTS TAB --- */}
                     <TabsContent value="pollination" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
-                                        <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
-                                    </div>
-                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                                        {pollinationRequests.length} REQUESTS
-                                    </Badge>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Phone</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Crop Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Farm Size</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {pollinationRequests.length === 0 ? (
-                                                <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
-                                            ) : (
-                                                pollinationRequests.map((req) => (
-                                                    <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-semibold">{req.name || req.first_name}</TableCell>
-                                                        <TableCell className="px-6 text-sm">{req.email}</TableCell>
-                                                        <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
-                                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{req.crop_type || req.crop}</Badge></TableCell>
-                                                        <TableCell className="px-6 text-sm">{req.farm_size || req.acreage || req.farm_size_acres} acres</TableCell>
-                                                        <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
-                                                        <TableCell className="px-6 text-xs font-mono">
-                                                            {req.contract_start_date
-                                                                ? `${new Date(req.contract_start_date).toLocaleDateString()} - ${new Date(req.contract_end_date).toLocaleDateString()}`
-                                                                : new Date(req.created_at).toLocaleDateString()
-                                                            }
-                                                        </TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black"><SelectValue /></SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="pending">Pending</SelectItem>
-                                                                    <SelectItem value="contacted">Contacted</SelectItem>
-                                                                    <SelectItem value="completed">Completed</SelectItem>
-                                                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
-                                                                    <Search className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <PageHeader
+                            icon={Bug}
+                            label="Ecosystem Services"
+                            title="Pollination Requests"
+                            subtitle="Inbound service requests for crop pollination and hive placement."
+                            actions={
+                                <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                    {pollinationRequests.length} REQUESTS
+                                </Badge>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Phone</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Crop Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Farm Size</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Location</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {pollinationRequests.length === 0 ? (
+                                            <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
+                                        ) : (
+                                            pollinationRequests.map((req) => (
+                                                <TableRow key={req.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6 font-bold">{req.name || req.first_name}</TableCell>
+                                                    <TableCell className="px-6 text-sm">{req.email}</TableCell>
+                                                    <TableCell className="px-6 text-[10px] font-mono tracking-tighter">{req.phone}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className="rounded-lg bg-primary/5 text-primary border-primary/10">
+                                                            {req.crop_type || req.crop}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="font-black text-xs">{req.farm_size || req.acreage || req.farm_size_acres} <span className="text-[8px] opacity-70">ACRES</span></div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-[10px] font-medium text-muted-foreground">{req.location || req.county}</TableCell>
+                                                    <TableCell className="px-6 text-[10px] font-mono opacity-70">
+                                                        {req.contract_start_date
+                                                            ? `${new Date(req.contract_start_date).toLocaleDateString()} - ${new Date(req.contract_end_date).toLocaleDateString()}`
+                                                            : new Date(req.created_at).toLocaleDateString()
+                                                        }
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                            <SelectTrigger className="h-8 w-[110px] rounded-xl text-[9px] font-black bg-background/50 border-none">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="pending">Pending</SelectItem>
+                                                                <SelectItem value="contacted">Contacted</SelectItem>
+                                                                <SelectItem value="completed">Completed</SelectItem>
+                                                                <SelectItem value="rejected">Rejected</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Pollination Details Dialog */}
                         <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
@@ -3260,71 +2970,85 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- CONTACT REQUESTS TAB --- */}
                     <TabsContent value="contact" className="space-y-6">
-                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                            <CardHeader className="border-b border-border bg-muted/30">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
-                                        <CardDescription>Messages received through the contact form.</CardDescription>
-                                    </div>
-                                    <Badge className="bg-[#F4D03F] text-[#F4D03F] border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                                        {contacts.length} MESSAGES
-                                    </Badge>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Subject</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] max-w-md">Message</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {contacts.length === 0 ? (
-                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
-                                            ) : (
-                                                contacts.map((contact) => (
-                                                    <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-semibold">{contact.name || `${contact.first_name} ${contact.last_name}`}</TableCell>
-                                                        <TableCell className="px-6 text-sm">{contact.email}</TableCell>
-                                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{contact.subject || 'General'}</Badge></TableCell>
-                                                        <TableCell className="px-6 text-sm text-muted-foreground max-w-md truncate">{contact.message}</TableCell>
-                                                        <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black"><SelectValue /></SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="new">New</SelectItem>
-                                                                    <SelectItem value="read">Read</SelectItem>
-                                                                    <SelectItem value="replied">Replied</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
-                                                                    <Search className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <PageHeader
+                            icon={MessageSquare}
+                            label="Public Relations"
+                            title="Contact Submissions"
+                            subtitle="Inbound messages and inquiries from the official portal."
+                            actions={
+                                <Badge className={cn(glass.badge, "px-4 py-1.5 bg-[#F4D03F]/20 text-[#1A1A1A] border-[#F4D03F]/40")}>
+                                    {contacts.length} MESSAGES
+                                </Badge>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Sender</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Contact Info</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Subject</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] max-w-md">Message Preview</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {contacts.length === 0 ? (
+                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
+                                        ) : (
+                                            contacts.map((contact) => (
+                                                <TableRow key={contact.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6">
+                                                        <div className="font-bold text-sm tracking-tight">{contact.name || `${contact.first_name} ${contact.last_name}`}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-[10px] font-medium opacity-80">{contact.email}</div>
+                                                        <div className="text-[9px] font-mono text-muted-foreground">{contact.phone || ''}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className="rounded-lg text-[9px] font-black tracking-widest bg-muted/30">
+                                                            {contact.subject?.toUpperCase() || 'GENERAL'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-[11px] text-muted-foreground max-w-md truncate font-medium">
+                                                        {contact.message}
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-[10px] font-mono opacity-70">
+                                                        {new Date(contact.created_at).toLocaleDateString()}
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                            <SelectTrigger className="h-8 w-[90px] rounded-xl text-[9px] font-black bg-background/50 border-none">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="new">New</SelectItem>
+                                                                <SelectItem value="read">Read</SelectItem>
+                                                                <SelectItem value="replied">Replied</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
 
                         {/* Contact Details Dialog */}
                         <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
@@ -3442,42 +3166,49 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- NEWSLETTER TAB --- */}
                     <TabsContent value="newsletter" className="space-y-6">
-                        <Card className="border-none shadow-2xl glass bg-background/50 rounded-3xl overflow-hidden">
-                            <CardHeader className="bg-muted/30 border-b border-border/10">
-                                <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
-                                <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="bg-muted/20 border-border/10">
-                                            <TableHead className="py-4 px-6 font-black text-[10px]">Email</TableHead>
-                                            <TableHead className="py-4 px-6 font-black text-[10px]">Name</TableHead>
-                                            <TableHead className="py-4 px-6 font-black text-[10px]">Subscribed On</TableHead>
-                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {subscribers.length === 0 ? (
-                                            <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
-                                        ) : (
-                                            subscribers.map((sub) => (
-                                                <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                    <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
-                                                    <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
-                                                    <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
-                                                    <TableCell className="px-6 text-right">
-                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
+                        <PageHeader
+                            icon={Mail}
+                            label="Audience Growth"
+                            title="Newsletter Subscribers"
+                            subtitle="Directory of active email subscriptions and mailing lists."
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                        <TableHead className="py-4 px-6 font-black text-[10px]">Email Address</TableHead>
+                                        <TableHead className="py-4 px-6 font-black text-[10px]">Subscriber Name</TableHead>
+                                        <TableHead className="py-4 px-6 font-black text-[10px]">Subscription Date</TableHead>
+                                        <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {subscribers.length === 0 ? (
+                                        <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
+                                    ) : (
+                                        subscribers.map((sub) => (
+                                            <TableRow key={sub.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                <TableCell className="px-6">
+                                                    <div className="font-bold text-primary tracking-tight">{sub.email}</div>
+                                                </TableCell>
+                                                <TableCell className="px-6 font-medium text-muted-foreground">
+                                                    {sub.first_name || <span className="text-[10px] font-black opacity-50">ANONYMOUS</span>}
+                                                </TableCell>
+                                                <TableCell className="px-6 text-[10px] font-mono opacity-70">
+                                                    {new Date(sub.created_at).toLocaleString()}
+                                                </TableCell>
+                                                <TableCell className="px-6 text-right">
+                                                    <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </TabsContent>
 
                     {/* --- NEW EXTENDED TABS --- */}

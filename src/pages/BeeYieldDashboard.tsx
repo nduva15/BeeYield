@@ -236,7 +236,7 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield Assistant', icon: Hexagon },
+            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
             { id: 'agro-intelligence', label: 'Strategic Insights', icon: LayoutGrid },
             {
                 id: 'precision-pollination-folder',

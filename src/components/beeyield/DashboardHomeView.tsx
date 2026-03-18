@@ -67,7 +67,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             className={cn(glass.btnSecondary, "gap-2")}
                         >
                             <Hexagon className="w-4 h-4 text-[#F4D03F]" />
-                            Assistant
+                            BeeYield AI
                         </button>
                         <button
                             onClick={() => onTabChange('harvests')}

@@ -24,7 +24,11 @@ import {
     Settings,
     Truck,
     ArrowLeft,
-    Lock as LockIcon
+    Lock as LockIcon,
+    ShieldCheck,
+    Clock,
+    ChevronRight,
+    Map
 } from 'lucide-react';
 
 import { useState, useEffect } from 'react';
@@ -54,9 +58,12 @@ import ShopDashboardLayout from '@/components/shop/ShopDashboardLayout';
 import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
 import { adminService } from '@/services/adminService';
 
-// Toast utility import (adjust if needed)
+// ... preceding imports ...
 import { toast } from 'sonner';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 const ShopDashboard = () => {
     const { user, signOut, loading: authLoading, session } = useAuth();
@@ -423,14 +430,15 @@ const ShopDashboard = () => {
 
 
     const getStatusBadge = (status: string) => {
+        const baseClass = "px-3 py-0.5 rounded-lg font-bold text-[10px] uppercase tracking-wider";
         switch (status?.toLowerCase()) {
-            case 'pending': return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-200">Pending</Badge>;
-            case 'processing': return <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200">Processing</Badge>;
-            case 'shipped': return <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-200">Shipped</Badge>;
+            case 'pending': return <Badge variant="outline" className={cn(baseClass, "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20")}>Pending</Badge>;
+            case 'processing': return <Badge variant="outline" className={cn(baseClass, "bg-blue-50 text-blue-600 border-blue-100")}>Processing</Badge>;
+            case 'shipped': return <Badge variant="outline" className={cn(baseClass, "bg-indigo-50 text-indigo-600 border-indigo-100")}>Shipped</Badge>;
             case 'delivered':
-            case 'completed': return <Badge variant="outline" className="bg-[#1B9157] text-[#1B9157] border-green-200">Delivered</Badge>;
-            case 'cancelled': return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-200">Cancelled</Badge>;
-            default: return <Badge variant="outline">{status}</Badge>;
+            case 'completed': return <Badge variant="outline" className={cn(baseClass, "bg-green-50 text-green-600 border-green-100")}>Delivered</Badge>;
+            case 'cancelled': return <Badge variant="outline" className={cn(baseClass, "bg-red-50 text-red-600 border-red-100")}>Cancelled</Badge>;
+            default: return <Badge variant="outline" className={baseClass}>{status}</Badge>;
         }
     };
 
@@ -438,223 +446,251 @@ const ShopDashboard = () => {
         switch (activeTab) {
             case 'overview':
                 return (
-                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                            <div>
-                                <h1 className="text-5xl font-black tracking-tightest text-beeyield-green">Dashboard <span className="text-beeyield-gold italic">Overview</span></h1>
-                                <p className="text-beeyield-green/40 font-bold text-xs mt-2">Welcome back to the hive, {profileForm.firstName || 'Customer'}</p>
-                            </div>
-                            <Button onClick={() => navigate('/shop')} className="rounded-full px-10 h-14 shadow-xl shadow-beeyield-green/20 text-sm">
-                                <ShoppingBag className="w-5 h-5 mr-2" /> Start Shopping
-                            </Button>
-                        </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-8"
+                    >
+                        <PageHeader
+                            icon={LayoutGrid}
+                            label="Customer Dashboard"
+                            title={<>Welcome back, <span className="text-[#F4D03F]">{profileForm.firstName || 'Customer'}</span></>}
+                            subtitle="Manage your honey orders and account preferences."
+                            actions={
+                                <Button onClick={() => navigate('/shop')} className={cn(glass.btnPrimary, "px-8")}>
+                                    <ShoppingBag className="w-4 h-4 mr-2" /> Start Shopping
+                                </Button>
+                            }
+                        />
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             {[
-                                { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-beeyield-green', bg: 'bg-beeyield-green/5' },
-                                { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-beeyield-orange', bg: 'bg-beeyield-orange/5' },
-                                { label: 'Delivery Locations', value: addresses.length, icon: MapPin, color: 'text-beeyield-green', bg: 'bg-beeyield-green/5' },
-                                { label: 'My Favorites', value: wishlistItems.length.toString(), icon: Heart, color: 'text-beeyield-orange', bg: 'bg-beeyield-orange/5' },
+                                { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-[#F4D03F]' },
+                                { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-[#F4D03F]' },
+                                { label: 'Locations', value: addresses.length, icon: MapPin, color: 'text-[#F4D03F]' },
+                                { label: 'Wishlist', value: wishlistItems.length, icon: Heart, color: 'text-[#F4D03F]' },
                             ].map((stat, i) => (
-                                <Card key={i} className="border-none shadow-2xl shadow-beeyield-green/[0.02] rounded-[32px] overflow-hidden group hover:scale-[1.02] transition-all duration-300">
-                                    <CardContent className="p-8">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="text-[10px] font-black text-beeyield-green/30 mb-3">{stat.label}</p>
-                                                <p className="text-3xl font-black text-beeyield-green">{stat.value}</p>
-                                            </div>
-                                            <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
-                                                <stat.icon className="w-5 h-5" />
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <div key={i} className={cn(glass.section, "p-5 flex items-center justify-between")}>
+                                    <div>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">{stat.label}</p>
+                                        <p className="text-2xl font-black text-[#1A1A1A]">{stat.value}</p>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                        <stat.icon className={cn("w-5 h-5", stat.color)} />
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
-                        {/* Tracking Dialog */}
-                        <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
-                            <DialogContent className="max-w-md rounded-3xl">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
-                                    <DialogDescription>
-                                        Order {trackingOrder?.order_number || trackingOrder?.id}
-                                    </DialogDescription>
-                                </DialogHeader>
-                                {loadingTracking ? (
-                                    <div className="flex flex-col items-center justify-center py-10 space-y-4">
-                                        <Loader className="w-10 h-10 text-primary animate-spin" />
-                                        <p className="text-sm font-bold opacity-50">Syncing with logistics network...</p>
-                                    </div>
-                                ) : trackingInfo ? (
-                                    <div className="space-y-6 pt-4">
-                                        <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
-                                            <div>
-                                                <p className="text-[10px] font-black opacity-60">Status</p>
-                                                <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
-                                            </div>
-                                            <Badge className="bg-primary text-[#1A1A1A]">{trackingInfo.estimated_delivery}</Badge>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            {/* Recent Activity */}
+                            <div className="lg:col-span-8">
+                                <div className={cn(glass.section, "overflow-hidden")}>
+                                    <div className="px-6 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between bg-white/30">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-[#1A1A1A]">Recent Activity</h3>
+                                            <p className="text-[11px] text-gray-500">Your latest shop interactions</p>
                                         </div>
-
-                                        <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
-                                            {(trackingInfo.events || []).map((event, i: number) => (
-                                                <div key={i} className="relative group">
-                                                    <div className={`absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${i === 0 ? 'bg-primary' : 'bg-muted'} shadow-sm group-hover:scale-125 transition-transform`} />
-                                                    <div className="space-y-1">
-                                                        <p className={`font-black tracking-tight ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{event.status.toUpperCase()}</p>
-                                                        <p className="text-sm text-muted-foreground font-medium">{event.description}</p>
-                                                        <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 tracking-tighter">
-                                                            <span>{new Date(event.created_at).toLocaleString()}</span>
-                                                            {event.location && <span>• {event.location}</span>}
-                                                        </div>
+                                        <button onClick={() => setActiveTab('orders')} className="text-[11px] font-bold text-[#F4D03F] hover:underline">
+                                            View all
+                                        </button>
+                                    </div>
+                                    <div className="p-4 space-y-2">
+                                        {orders.slice(0, 3).map(order => (
+                                            <div key={order.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-4 flex items-center justify-between group hover:border-[#F4D03F]/30 transition-all">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-lg bg-[#F4D03F]/5 flex items-center justify-center">
+                                                        <Package className="w-5 h-5 text-[#F4D03F]" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[13px] font-bold text-[#1A1A1A]">{order.order_number || 'ORD-' + order.id.slice(0, 5)}</p>
+                                                        <p className="text-[11px] text-gray-500">{new Date(order.created_at).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-10 opacity-50">
-                                        <p>Tracking information not yet available for this order.</p>
-                                    </div>
-                                )}
-                            </DialogContent>
-                        </Dialog>
-
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <Card className="border-none shadow-premium rounded-[2.5rem]">
-                                <CardHeader className="p-8 pb-0 flex flex-row items-center justify-between">
-                                    <div>
-                                        <CardTitle className="text-2xl font-black">Recent Orders</CardTitle>
-                                        <CardDescription>Your last 3 transactions</CardDescription>
-                                    </div>
-                                    <Button variant="ghost" className="rounded-full" onClick={() => setActiveTab('orders')}>View All</Button>
-                                </CardHeader>
-                                <CardContent className="p-8 space-y-4">
-                                    {orders.slice(0, 3).map(order => (
-                                        <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl border border-muted hover:bg-muted/30 transition-colors">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
-                                                    <Package className="w-6 h-6 text-primary" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold">{order.order_number || 'ORD-' + order.id.slice(0, 5)}</p>
-                                                    <p className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-[13px] font-bold">KES {order.total_amount.toLocaleString()}</span>
+                                                    {getStatusBadge(order.status)}
                                                 </div>
                                             </div>
-                                            <div className="text-right flex items-center gap-4">
-                                                <p className="font-black text-sm">KES {order.total_amount.toLocaleString()}</p>
-                                                {getStatusBadge(order.status)}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {orders.length === 0 && (
-                                        <div className="text-center py-10 bg-muted/20 rounded-xl">
-                                            <p className="text-muted-foreground">No recent orders found.</p>
-                                            <Button variant="link" onClick={() => navigate('/shop')}>Start Shopping</Button>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                        ))}
+                                        {orders.length === 0 && (
+                                            <div className="text-center py-10 opacity-50 italic text-sm">No recent activity</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
 
-                            <Card className="border-none shadow-premium rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-transparent">
-                                <CardHeader className="p-8 pb-0">
-                                    <CardTitle className="text-2xl font-black">Quick Actions</CardTitle>
-                                    <CardDescription>Commonly tasks for your account</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-8 grid grid-cols-2 gap-4">
-                                    {[
-                                        { label: 'Track Order', icon: MapPin, tab: 'orders' },
-                                        { label: 'Order History', icon: Package, tab: 'orders' }, // Replaced Wallet
-                                        { label: 'Update Profile', icon: User, tab: 'profile' },
-                                        { label: 'Support Chat', icon: HelpCircle, tab: 'help' }
-                                    ].map((action, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => setActiveTab(action.tab)}
-                                            className="flex flex-col items-center justify-center p-6 bg-[#FFF9F0] rounded-3xl border border-[#F4D03F]/40 hover:scale-105 transition-all shadow-sm"
-                                        >
-                                            <action.icon className="w-8 h-8 text-primary mb-3" />
-                                            <span className="text-sm font-bold">{action.label}</span>
-                                        </button>
-                                    ))}
-                                </CardContent>
-                            </Card>
+                            {/* Quick Workflows */}
+                            <div className="lg:col-span-4">
+                                <div className={cn(glass.section, "p-6")}>
+                                    <h3 className="text-sm font-bold text-[#1A1A1A] mb-4">Quick Workflows</h3>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {[
+                                            { id: 'orders', label: 'Track Shipment', icon: Truck, sub: 'Logistics network' },
+                                            { id: 'profile', label: 'Update Profile', icon: User, sub: 'Account settings' },
+                                            { id: 'addresses', label: 'Manage Places', icon: MapPin, sub: 'Shipping locations' },
+                                            { id: 'help', label: 'Support Center', icon: HelpCircle, sub: 'Get assistance' },
+                                        ].map((v) => (
+                                            <button
+                                                key={v.id}
+                                                onClick={() => setActiveTab(v.id)}
+                                                className="w-full text-left bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 hover:bg-white/80 hover:border-[#F4D03F]/30 transition-all flex items-center gap-3 group"
+                                            >
+                                                <div className="w-10 h-10 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 group-hover:scale-105 transition-transform">
+                                                    <v.icon className="w-5 h-5 text-[#F4D03F]" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <div className="text-[12px] font-bold text-[#1A1A1A]">{v.label}</div>
+                                                    <div className="text-[10px] text-gray-500">{v.sub}</div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </motion.div>
                 );
             case 'orders':
                 return (
-                    <div className="space-y-6 animate-in fade-in duration-500">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-black tracking-tight">Order History</h2>
-                            {/* Removed manual refresh button for orders */}
-                        </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-6"
+                    >
+                        <PageHeader
+                            icon={Package}
+                            label="Customer Management"
+                            title="Order History"
+                            subtitle="View and track all your transactions with BeeYield."
+                        />
 
                         {orders.length === 0 ? (
-                            <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed border-muted">
-                                <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground/30 mb-6" />
-                                <h3 className="text-xl font-bold mb-2">No Orders Yet</h3>
-                                <Button onClick={() => navigate('/shop')}>Browse Shop</Button>
+                            <div className={cn(glass.section, "py-20 text-center")}>
+                                <ShoppingBag className="h-16 w-16 mx-auto text-gray-200 mb-6" />
+                                <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">No Orders Yet</h3>
+                                <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">You haven't placed any orders. Start exploring our harvest now.</p>
+                                <Button onClick={() => navigate('/shop')} className={glass.btnPrimary}>Browse Shop</Button>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {orders.map(order => (
-                                    <Card key={order.id} className="border-none shadow-sm hover:shadow-md transition-all rounded-3xl">
-                                        <CardContent className="p-6">
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                                <div className="flex gap-6">
-                                                    <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">
-                                                        <Package className="w-8 h-8 text-muted-foreground" />
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <p className="text-lg font-black">{order.order_number || 'ORD-' + order.id.slice(0, 5)}</p>
-                                                        <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
-                                                        <div className="flex gap-2 pt-1">
-                                                            {getStatusBadge(order.status)}
-                                                            <Badge variant="secondary" className="bg-muted text-foreground border-none">KES {order.total_amount.toLocaleString()}</Badge>
-                                                        </div>
-                                                    </div>
+                                    <div key={order.id} className={cn(glass.section, "p-0 overflow-hidden group hover:border-[#F4D03F]/30 transition-all")}>
+                                        <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                            <div className="flex gap-5">
+                                                <div className="w-14 h-14 rounded-2xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
+                                                    <Package className="w-6 h-6 text-[#F4D03F]" />
                                                 </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    <Button variant="secondary" size="sm" className="rounded-full" onClick={() => handleTrackOrder(order)}>
-                                                        <Truck className="w-4 h-4 mr-2" /> Track
-                                                    </Button>
-                                                    <Button variant="outline" size="sm" className="rounded-full" onClick={() => navigate(`/receipt/${order.id}`)}>
-                                                        <FileText className="w-4 h-4 mr-2" /> Receipt
-                                                    </Button>
-                                                    <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleDownloadInvoice(order)}>
-                                                        <Download className="w-4 h-4 mr-2" /> PDF
-                                                    </Button>
+                                                <div className="space-y-1">
+                                                    <p className="text-lg font-black text-[#1A1A1A] tracking-tight">{order.order_number || 'ORD-' + order.id.slice(0, 5)}</p>
+                                                    <p className="text-[11px] text-gray-500 font-medium">{new Date(order.created_at).toLocaleDateString()}</p>
+                                                    <div className="flex gap-2 pt-2">
+                                                        {getStatusBadge(order.status)}
+                                                        <Badge variant="outline" className="px-2 py-0.5 rounded-lg font-bold text-[10px] bg-white text-[#1A1A1A] border-[#F4D03F]/10">KES {order.total_amount.toLocaleString()}</Badge>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                            <div className="flex flex-wrap gap-2">
+                                                <button onClick={() => handleTrackOrder(order)} className={cn(glass.btnSecondary, "text-[11px] h-9 px-4")}>
+                                                    <Truck className="w-3.5 h-3.5 mr-2 text-[#F4D03F]" /> Track
+                                                </button>
+                                                <button onClick={() => navigate(`/receipt/${order.id}`)} className={cn(glass.btnSecondary, "text-[11px] h-9 px-4")}>
+                                                    <FileText className="w-3.5 h-3.5 mr-2 text-[#F4D03F]" /> Receipt
+                                                </button>
+                                                <button onClick={() => handleDownloadInvoice(order)} className={cn(glass.btnSecondary, "text-[11px] h-9 px-4")}>
+                                                    <Download className="w-3.5 h-3.5 mr-2 text-[#F4D03F]" /> PDF Invoice
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </motion.div>
                 );
             case 'wallet':
                 return null; // Removed
 
             case 'addresses':
                 return (
-                    <div className="space-y-6 animate-in fade-in duration-500">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h2 className="text-2xl font-black tracking-tight">Delivery Locations</h2>
-                                <p className="text-muted-foreground">Manage your shipping addresses.</p>
-                            </div>
-                            <Dialog open={isAddressModalOpen} onOpenChange={setIsAddressModalOpen}>
-                                <DialogTrigger asChild>
-                                    <Button onClick={() => { setEditingAddress(null); setIsAddressModalOpen(true); }}><Plus className="h-4 w-4 mr-2" /> Add Address</Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>{editingAddress ? 'Edit Address' : 'Add New Address'}</DialogTitle>
-                                        <DialogDescription>{editingAddress ? 'Update your delivery location details.' : 'Add a new delivery location for checkout.'}</DialogDescription>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-6"
+                    >
+                        <PageHeader
+                            icon={MapPin}
+                            label="Shipping Logistics"
+                            title="Delivery Locations"
+                            subtitle="Manage your saved addresses for efficient fulfillment."
+                            actions={
+                                <Button onClick={() => { setEditingAddress(null); setIsAddressModalOpen(true); }} className={glass.btnPrimary}>
+                                    <Plus className="h-4 w-4 mr-2" /> New Location
+                                </Button>
+                            }
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {addresses.map((addr) => (
+                                <div key={addr.id} className={cn(glass.section, "p-0 overflow-hidden group hover:border-[#F4D03F]/30 transition-all")}>
+                                    <div className="p-6 flex flex-col h-full bg-white/40">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 text-[#F4D03F]">
+                                                    <MapPin className="w-4 h-4" />
+                                                </div>
+                                                <p className="text-sm font-bold text-[#1A1A1A]">{addr.name}</p>
+                                            </div>
+                                            {addr.is_default && (
+                                                <Badge className="bg-[#F4D03F]/15 text-[#1A1A1A] font-bold text-[9px] uppercase tracking-wider border-[#F4D03F]/20">Default</Badge>
+                                            )}
+                                        </div>
+                                        <div className="space-y-1.5 flex-1 pl-12 text-[12px] text-gray-500 font-medium">
+                                            <p className="text-[#1A1A1A] font-bold">{addr.street}</p>
+                                            <p>{addr.building}</p>
+                                            <p>{addr.city}, {addr.county}</p>
+                                            <p className="pt-2">{addr.phone}</p>
+                                        </div>
+                                        <div className="mt-6 pt-4 border-t border-[#F4D03F]/10 flex justify-end gap-2">
+                                            <button 
+                                                onClick={() => { setEditingAddress(addr); setIsAddressModalOpen(true); }}
+                                                className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] hover:border-[#F4D03F]/30 transition-all shadow-sm"
+                                            >
+                                                <Edit2 className="w-3.5 h-3.5" />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteAddress(addr.id)}
+                                                className="w-8 h-8 rounded-lg bg-white border border-red-50 flex items-center justify-center text-gray-300 hover:text-red-500 hover:border-red-100 transition-all shadow-sm"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {addresses.length === 0 && (
+                                <div className={cn(glass.section, "col-span-1 md:col-span-2 lg:col-span-3 py-16 text-center bg-white/40")}>
+                                    <MapPin className="h-12 w-12 mx-auto text-gray-200 mb-4" />
+                                    <h3 className="font-bold text-[#1A1A1A] mb-1">No Locations Saved</h3>
+                                    <p className="text-sm text-gray-500 mb-6">Add a delivery address to speed up your checkout process.</p>
+                                    <Button onClick={() => { setEditingAddress(null); setIsAddressModalOpen(true); }} className={glass.btnSecondary}>
+                                        Add First Address
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Address Dialog - Refined to match theme */}
+                        <Dialog open={isAddressModalOpen} onOpenChange={setIsAddressModalOpen}>
+                            <DialogContent className="max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-premium">
+                                <div className="p-8 bg-white">
+                                    <DialogHeader className="mb-8">
+                                        <DialogTitle className="text-3xl font-black text-[#1A1A1A] tracking-tight">
+                                            {editingAddress ? 'Update' : 'Add'} <span className="text-[#F4D03F] italic">Location</span>
+                                        </DialogTitle>
+                                        <DialogDescription className="text-gray-500 font-medium">Specify your delivery coordinates for order fulfillment.</DialogDescription>
                                     </DialogHeader>
+                                    
                                     <form onSubmit={async (e) => {
                                         e.preventDefault();
                                         const formData = new FormData(e.currentTarget);
@@ -677,379 +713,379 @@ const ShopDashboard = () => {
                                             await saveAddress(addressData);
                                         }
                                         setIsAddressModalOpen(false);
-                                    }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="name">Location Name</Label>
-                                            <Input id="name" name="name" required placeholder="Home / Office" defaultValue={editingAddress?.name} />
+                                    }} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Label</Label>
+                                            <Input name="name" required placeholder="Home / Work / Shop" className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.name} />
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="email">Context Email</Label>
-                                            <Input id="email" name="email" type="email" placeholder="delivery@beeyield.com" defaultValue={editingAddress?.email} />
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Context Email</Label>
+                                            <Input name="email" type="email" placeholder="shipping@beeyield.com" className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.email} />
                                         </div>
-                                        <div className="grid gap-2 md:col-span-2">
-                                            <Label htmlFor="street">Street & Number</Label>
-                                            <Input id="street" name="street" required placeholder="123 Beevior St" defaultValue={editingAddress?.street} />
+                                        <div className="md:col-span-2 space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Street & House Number</Label>
+                                            <Input name="street" required placeholder="123 Bee Street" className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.street} />
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="building">Building / Estate</Label>
-                                            <Input id="building" name="building" placeholder="Honey Heights" defaultValue={editingAddress?.building} />
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Building/Estate</Label>
+                                            <Input name="building" placeholder="Honey Heights" className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.building} />
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="apartment">Apartment / Suite</Label>
-                                            <Input id="apartment" name="apartment" placeholder="Unit 402" defaultValue={editingAddress?.apartment} />
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">City</Label>
+                                            <Input name="city" required placeholder="Nairobi" className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.city} />
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="floor">Floor / Level</Label>
-                                            <Input id="floor" name="floor" placeholder="4th Floor" defaultValue={editingAddress?.floor} />
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">County</Label>
+                                            <Input name="county" required placeholder="Nairobi" className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.county} />
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="city">City</Label>
-                                            <Input id="city" name="city" required placeholder="Nairobi" defaultValue={editingAddress?.city} />
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Phone Number</Label>
+                                            <Input name="phone" required placeholder="+254..." className="bg-[#F9F7F2] border-[#F4D03F]/10 rounded-xl h-12 text-[13px] font-medium" defaultValue={editingAddress?.phone} />
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="county">County</Label>
-                                            <Input id="county" name="county" required placeholder="Nairobi" defaultValue={editingAddress?.county} />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="postal_code">Postal Code</Label>
-                                            <Input id="postal_code" name="postal_code" placeholder="00100" defaultValue={editingAddress?.postal_code} />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="phone">Phone Number</Label>
-                                            <Input id="phone" name="phone" required placeholder="+254..." defaultValue={editingAddress?.phone} />
-                                        </div>
-                                        <div className="md:col-span-2 flex items-center gap-2">
-                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4" title="Set this address as default" defaultChecked={editingAddress?.is_default} />
-                                            <Label htmlFor="is_default">Set as default address</Label>
+                                        <div className="md:col-span-2 flex items-center gap-2 py-2">
+                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4 rounded border-gray-300 text-[#F4D03F] focus:ring-[#F4D03F]" defaultChecked={editingAddress?.is_default} />
+                                            <Label htmlFor="is_default" className="text-[12px] font-bold text-gray-500">Set as my default shipping address</Label>
                                         </div>
                                         <div className="md:col-span-2 pt-4">
-                                            <Button type="submit" className="w-full">{editingAddress ? 'Update Location' : 'Save Location'}</Button>
+                                            <Button type="submit" className={cn(glass.btnPrimary, "w-full h-14 text-sm")}>
+                                                {editingAddress ? 'Update Location' : 'Register Location'}
+                                            </Button>
                                         </div>
                                     </form>
-
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {addresses.map((addr) => (
-                                <Card key={addr.id} className="relative">
-                                    <CardHeader>
-                                        <CardTitle className="text-base font-bold flex justify-between">
-                                            {addr.name}
-                                            {addr.is_default && <Badge variant="secondary">Default</Badge>}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="text-sm space-y-1 text-muted-foreground">
-                                        <p>{addr.street}</p>
-                                        <p>{addr.city}, {addr.county}</p>
-                                        <p>{addr.phone}</p>
-                                    </CardContent>
-                                    <CardFooter className="flex justify-end gap-2">
-                                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => handleDeleteAddress(addr.id)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="sm" onClick={() => {
-                                            setEditingAddress(addr);
-                                            setIsAddressModalOpen(true);
-                                        }}><Edit2 className="h-4 w-4" /></Button>
-                                    </CardFooter>
-
-                                </Card>
-                            ))}
-                            {addresses.length === 0 && <p className="text-muted-foreground col-span-2 text-center py-8">No addresses saved.</p>}
-                        </div>
-                    </div>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </motion.div>
                 );
             case 'payments':
                 return (
-                    <div className="space-y-6 animate-in fade-in duration-500">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-black tracking-tight">Payment Methods</h2>
-                            <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
-                                <DialogTrigger asChild>
-                                    <Button onClick={() => setIsPaymentModalOpen(true)} className="rounded-full px-8 h-12 shadow-xl shadow-beeyield-green/10">
-                                        <Plus className="w-5 h-4 mr-2" /> Add Payment Method
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-6"
+                    >
+                        <PageHeader
+                            icon={CreditCard}
+                            label="Financial Security"
+                            title={<>Payment <span className="text-[#F4D03F] italic">Methods</span></>}
+                            subtitle="Manage your encrypted billing methods and wallet balance."
+                            actions={
+                                <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
+                                    <Button onClick={() => setIsPaymentModalOpen(true)} className={glass.btnPrimary}>
+                                        <Plus className="h-4 w-4 mr-2" /> Link New Card
                                     </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-md rounded-[2.5rem] p-10 border-none shadow-premium bg-white overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-gold/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
-                                    <DialogHeader className="mb-6 relative z-10">
-                                        <DialogTitle className="text-3xl font-black">Link <span className="text-primary italic">Card</span></DialogTitle>
-                                        <DialogDescription className="text-muted-foreground font-medium">Add a credit or debit card for subscription and shop checkout.</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="bg-[#FFF9F0] p-6 rounded-3xl border border-beeyield-gold/20 mb-6 relative z-10">
-                                        <div className="flex items-center gap-3 mb-6">
-                                            <div className="w-10 h-10 rounded-2xl bg-[#1B9157]/10 flex items-center justify-center">
-                                                <Shield className="w-5 h-5 text-[#1B9157]" />
+                                    <DialogContent className="max-w-md rounded-3xl p-8 border-none shadow-premium">
+                                        <DialogHeader className="mb-6">
+                                            <DialogTitle className="text-2xl font-black text-[#1A1A1A]">Secure <span className="text-[#F4D03F] italic">Enclave</span></DialogTitle>
+                                            <DialogDescription className="text-gray-500 font-medium pt-1">Linking a card allows for 1-tap checkout next time.</DialogDescription>
+                                        </DialogHeader>
+                                        
+                                        <div className="space-y-6">
+                                            <div className="flex items-center gap-3 p-4 bg-[#F4D03F]/5 border border-[#F4D03F]/10 rounded-2xl">
+                                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-[#F4D03F]/10">
+                                                    <LockIcon className="w-5 h-5 text-[#F4D03F]" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[12px] font-bold text-[#1A1A1A]">End-to-End Encryption</p>
+                                                    <p className="text-[10px] text-gray-400 font-medium">Card data never reaches our servers</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[10px] font-black text-[#1B9157]">Bank-Grade Security</p>
-                                                <p className="text-[10px] font-bold text-muted-foreground">Encrypted by Stripe</p>
-                                            </div>
+                                            
+                                            <StripeCardForm
+                                                mode="save"
+                                                buttonText="Link Card Securely"
+                                                onSuccess={async (pm) => {
+                                                    try {
+                                                        await saveStripePaymentMethod(pm.id, pm);
+                                                        await loadUserData();
+                                                        setIsPaymentModalOpen(false);
+                                                        toast.success('Card linked successfully!');
+                                                    } catch (error) {
+                                                        toast.error('Failed to save card.');
+                                                    }
+                                                }}
+                                                onError={(error) => toast.error('Security verification failed.')}
+                                            />
                                         </div>
-                                        <StripeCardForm
-                                            mode="save"
-                                            buttonText="Link Card Securely"
-                                            onSuccess={async (pm) => {
-                                                try {
-                                                    await saveStripePaymentMethod(pm.id, pm);
-                                                    await loadUserData();
-                                                    setIsPaymentModalOpen(false);
-                                                } catch (error) {
-                                                    console.error('Failed to save card:', error);
-                                                    toast.error('Failed to save card. Please try again.');
-                                                }
-                                            }}
-                                            onError={(error) => {
-                                                console.error('Stripe error:', error);
-                                            }}
-                                        />
-                                    </div>
-                                    <p className="text-[10px] text-center text-muted-foreground font-bold leading-relaxed px-4 opacity-60">By linking your card, you authorize BeeYield to securely store this method for future transactions. You can remove it at any time.</p>
-                                </DialogContent>
-                            </Dialog>
+                                    </DialogContent>
+                                </Dialog>
+                            }
+                        />
+
+                        {/* Security Banner */}
+                        <div className={cn(glass.section, "p-5 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-blue-100 flex items-center gap-4")}>
+                            <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-200/20">
+                                <Shield className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="font-black text-[12px] text-blue-900 uppercase tracking-widest">Enterprise Security</p>
+                                <p className="text-[11px] text-blue-700 font-medium">All payment methods are tokenized and processed via Stripe's tier-1 PCI compliance protocols.</p>
+                            </div>
                         </div>
 
-                        {/* Info banner about Stripe security */}
-                        <Card className="border-none bg-gradient-to-r from-blue-50 to-indigo-50">
-                            <CardContent className="p-4 flex items-center gap-4">
-                                <div className="p-2 bg-blue-500/10 rounded-full">
-                                    <Shield className="h-6 w-6 text-blue-600" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-semibold text-blue-900">Secured by Stripe</p>
-                                    <p className="text-sm text-blue-700">Your payment information is encrypted and never stored on our servers.</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                             {paymentMethods.map((pm) => (
-                                <Card key={pm.id} className="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white border-none overflow-hidden relative shadow-2xl">
-                                    {/* Glassmorphism overlay */}
-                                    <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
-                                    {/* Card chip decoration */}
-                                    <div className="absolute top-6 left-6 w-12 h-10 rounded-lg bg-gradient-to-br from-beeyield-gold to-beeyield-orange/80 shadow-inner" />
-                                    <div className="absolute top-6 right-6 opacity-20 transform translate-x-1/2 -translate-y-1/2">
-                                        <div className="w-32 h-32 rounded-full bg-white/10 blur-3xl" />
-                                    </div>
-                                    <CardContent className="p-6 pt-16 relative">
-                                        <div className="absolute top-4 right-4">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="text-white/40 hover:text-white hover:bg-white/10"
+                                <div key={pm.id} className="relative group perspective-1000">
+                                    <div className="bg-[#1A1A1A] rounded-[24px] p-8 text-white shadow-2xl overflow-hidden relative border border-white/5 h-56 flex flex-col justify-between group-hover:scale-[1.02] transition-all duration-500">
+                                        {/* Abstract patterns */}
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                                        
+                                        <div className="flex justify-between items-start relative z-10">
+                                            <div className="w-12 h-9 rounded-lg bg-gradient-to-br from-[#F4D03F] to-[#E5C02F] shadow-inner" />
+                                            <button 
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
+                                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-all text-white/40"
                                             >
-                                                <XCircle className="h-5 w-5" />
-                                            </Button>
+                                                <XCircle className="w-4 h-4" />
+                                            </button>
                                         </div>
-                                        <div className="mb-6">
-                                            <p
-                                                className="text-2xl font-mono"
-                                                aria-label={`Card ending in ${pm.last4}`}
-                                            >
+
+                                        <div className="relative z-10 py-6">
+                                            <p className="text-2xl font-mono tracking-[4px] font-black text-white/90">
                                                 •••• •••• •••• {pm.last4}
                                             </p>
                                         </div>
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <p className="text-[10px] text-white/40 mb-1 font-black">Card Holder</p>
-                                                <p className="font-bold truncate max-w-[150px] tracking-tight">{pm.card_holder_name || profileForm.firstName + ' ' + profileForm.lastName}</p>
+
+                                        <div className="flex justify-between items-end relative z-10">
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] text-white/40 uppercase font-black tracking-widest leading-none">Card Holder</p>
+                                                <p className="font-bold text-[13px] tracking-tight truncate max-w-[150px]">{pm.card_holder_name || (profileForm.firstName + ' ' + (profileForm.lastName || ''))}</p>
+                                            </div>
+                                            <div className="text-right space-y-1">
+                                                <p className="text-[9px] text-white/40 uppercase font-black tracking-widest leading-none">Expires</p>
+                                                <p className="font-bold text-[13px] tracking-tight tabular-nums">{String(pm.expiry_month).padStart(2, '0')}/{String(pm.expiry_year).slice(-2)}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] text-white/40 mb-1 font-black">Valid Thru</p>
-                                                <p className="font-bold">{String(pm.expiry_month).padStart(2, '0')}/{String(pm.expiry_year).slice(-2)}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-xl font-black italic tracking-tighter opacity-80">{pm.provider || 'Visa'}</p>
+                                                <p className="text-xl font-black italic tracking-tighter text-white/30 uppercase">{pm.provider || 'VISA'}</p>
                                             </div>
                                         </div>
+
                                         {(pm.is_default || pm.isDefault) && (
-                                            <Badge className="absolute top-4 left-24 bg-beeyield-gold text-beeyield-green font-black text-[9px] px-2 py-0 border-none shadow-premium">
-                                                Active
-                                            </Badge>
+                                            <div className="absolute top-8 left-20">
+                                                <Badge className="bg-[#F4D03F] text-[#1A1A1A] font-black text-[9px] px-2 py-0.5 border-none shadow-lg tracking-wider">PRIMARY</Badge>
+                                            </div>
                                         )}
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             ))}
                             {paymentMethods.length === 0 && (
-                                <div className="col-span-2 text-center py-12 bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
-                                    <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
-                                    <h3 className="font-bold text-lg mb-2">No saved cards</h3>
-                                    <p className="text-muted-foreground mb-4">Add a card for faster checkout next time.</p>
+                                <div className={cn(glass.section, "col-span-1 md:col-span-2 py-16 text-center bg-white/40")}>
+                                    <CreditCard className="h-12 w-12 mx-auto text-gray-200 mb-4" />
+                                    <h3 className="font-bold text-[#1A1A1A] mb-1">No Saved Cards</h3>
+                                    <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">Link a card securely to enable 1-tap checkout for your honey orders.</p>
+                                    <Button onClick={() => setIsPaymentModalOpen(true)} className={glass.btnSecondary}>Add Card Securely</Button>
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 );
             case 'suggestions':
                 return (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                        <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Curated <span className="text-primary italic">Picks</span></h2>
-                            <p className="text-muted-foreground font-medium">Based on your interest in precision apiculture</p>
-                        </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-8"
+                    >
+                        <PageHeader
+                            icon={ShoppingBag}
+                            label="Discovery Hub"
+                            title={<>Curated <span className="text-[#F4D03F] italic">Picks</span></>}
+                            subtitle="Based on your interest in precision apiculture and sustainable honey."
+                        />
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {suggestions.map((product) => (
-                                <Card key={product.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group">
-                                    <div className="aspect-square bg-muted relative overflow-hidden">
+                                <div key={product.id} className={cn(glass.section, "p-0 overflow-hidden group hover:border-[#F4D03F]/30 transition-all")}>
+                                    <div className="aspect-square bg-[#F9F7F2] relative overflow-hidden flex items-center justify-center border-b border-[#F4D03F]/5">
                                         <img
                                             src={product.images[0]}
-                                            alt={product.name ? `${product.name} product image` : 'Honey product image'}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            alt={product.name}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                         />
-                                        <Badge className="absolute top-4 left-4 rounded-full">{product.badge || 'New'}</Badge>
-                                    </div>
-                                    <CardContent className="p-6">
-                                        <h3 className="font-black text-lg mb-1 truncate">{product.name}</h3>
-                                        <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                                        <div className="flex justify-between items-center">
-                                            <p className="font-black text-primary">KES {product.variants[0].price_kes.toLocaleString()}</p>
-                                            <Button size="icon" variant="ghost" className="rounded-full" onClick={() => navigate('/shop')}><ArrowRight className="w-4 h-4" /></Button>
+                                        <div className="absolute top-3 left-3">
+                                            <Badge className="bg-[#F4D03F] text-[#1A1A1A] font-black text-[9px] px-2 py-0 border-none rounded-lg">{product.badge || 'NEW'}</Badge>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                    <div className="p-5">
+                                        <h3 className="font-black text-[13px] text-[#1A1A1A] mb-1 truncate tracking-tight">{product.name}</h3>
+                                        <p className="text-[10px] text-gray-500 mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
+                                        <div className="flex justify-between items-center pt-2">
+                                            <p className="font-black text-[#1A1A1A] text-sm">KES {product.variants[0].price_kes.toLocaleString()}</p>
+                                            <button 
+                                                onClick={() => navigate('/shop')}
+                                                className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center text-[#F4D03F] group-hover:bg-[#F4D03F] group-hover:text-white transition-all shadow-sm"
+                                            >
+                                                <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
                 );
             case 'profile':
                 return (
-                    <div className="space-y-6 animate-in fade-in duration-500 max-w-2xl">
-                        <div>
-                            <h2 className="text-2xl font-black tracking-tight">Personal Details</h2>
-                            <p className="text-muted-foreground">Update your contact information.</p>
-                        </div>
-                        <Card>
-                            <CardContent className="p-6 space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="profile_first_name">First Name</Label>
-                                        <Input
-                                            id="profile_first_name"
-                                            name="profile_first_name"
-                                            value={profileForm.firstName}
-                                            onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="profile_last_name">Last Name</Label>
-                                        <Input
-                                            id="profile_last_name"
-                                            name="profile_last_name"
-                                            value={profileForm.lastName}
-                                            onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
-                                        />
-                                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-6 max-w-3xl"
+                    >
+                        <PageHeader
+                            icon={User}
+                            label="Account Preferences"
+                            title="Personal Identity"
+                            subtitle="Update your contact info and security credentials."
+                        />
+
+                        <div className={cn(glass.section, "p-8 space-y-8 bg-white/40")}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">First Name</Label>
+                                    <Input
+                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
+                                        value={profileForm.firstName}
+                                        onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="profile_email">Email Address</Label>
+                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Last Name</Label>
                                     <Input
-                                        id="profile_email"
-                                        name="profile_email"
+                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
+                                        value={profileForm.lastName}
+                                        onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Email Address</Label>
+                                    <Input
+                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium opacity-70 cursor-not-allowed"
                                         value={profileForm.email}
-                                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                                        disabled
                                         type="email"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="profile_phone">Phone Number</Label>
+                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Phone Number</Label>
                                     <Input
-                                        id="profile_phone"
-                                        name="profile_phone"
+                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                         value={profileForm.phone}
                                         onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
                                         type="tel"
                                     />
                                 </div>
-                                <div className="pt-4">
-                                    <Button onClick={updateProfile}>Save Changes</Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                            </div>
+                            
+                            <div className="pt-4 border-t border-[#F4D03F]/5 flex justify-end">
+                                <Button onClick={updateProfile} className={cn(glass.btnPrimary, "px-10 h-14")}>
+                                    Save Profile Changes
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Security Section (Optional addition) */}
+                        <div className={cn(glass.section, "p-8 opacity-60 pointer-events-none")}>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] mb-1">Security & Authentication</h3>
+                            <p className="text-[12px] text-gray-500 mb-6">Manage your password and multi-factor authentication.</p>
+                            <Button className={glass.btnSecondary}>Request Reset Token</Button>
+                        </div>
+                    </motion.div>
                 );
             case 'favorites':
                 return (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                        <div>
-                            <h2 className="text-4xl font-black tracking-tightest">My <span className="text-primary italic">Favorites</span></h2>
-                            <p className="text-muted-foreground font-medium">Items you've saved for later</p>
-                        </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-8"
+                    >
+                        <PageHeader
+                            icon={Heart}
+                            label="Saved Collections"
+                            title={<>My <span className="text-[#F4D03F] italic">Favorites</span></>}
+                            subtitle="Items you've added for later consideration."
+                        />
 
                         {wishlistItems.length === 0 ? (
-                            <Card className="border-none shadow-premium rounded-[2.5rem] p-20 text-center">
-                                <Heart className="w-16 h-16 mx-auto text-muted-foreground/20 mb-6" />
-                                <h3 className="text-xl font-bold mb-2">Your favorites list is empty</h3>
-                                <p className="text-muted-foreground mb-8">Start exploring our shop and save items you love!</p>
-                                <Button onClick={() => navigate('/shop')} className="rounded-full">Browse Shop</Button>
-                            </Card>
+                            <div className={cn(glass.section, "py-24 text-center bg-white/40")}>
+                                <Heart className="w-16 h-16 mx-auto text-gray-200 mb-6" />
+                                <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">Favorites List Empty</h3>
+                                <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">Save items you love and they will appear here for easy access.</p>
+                                <Button onClick={() => navigate('/shop')} className={glass.btnPrimary}>Start Exploring</Button>
+                            </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {wishlistItems.map((item) => (
-                                    <Card key={item.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group relative">
+                                    <div key={item.id} className={cn(glass.section, "p-0 overflow-hidden group relative hover:border-[#F4D03F]/30 transition-all shadow-sm")}>
                                         <button
                                             onClick={() => removeFromWishlist(item.id)}
-                                            aria-label={`Remove ${item.name} from favorites`}
-                                            className="absolute top-4 right-4 z-10 p-2 bg-[#FFF9F0]/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-red-50 hover:text-red-500 transition-colors"
+                                            className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:bg-red-50 hover:text-red-500 transition-all border border-gray-100"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 className="w-3.5 h-3.5" />
                                         </button>
-                                        <div className="aspect-square bg-muted relative overflow-hidden">
+                                        <div className="aspect-square bg-[#F9F7F2] relative overflow-hidden flex items-center justify-center border-b border-[#F4D03F]/5">
                                             <img
                                                 src={item.image}
-                                                alt={item.name ? `${item.name} product image` : 'Honey product image'}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                alt={item.name}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
-                                            {item.badge && <Badge className="absolute top-4 left-4 rounded-full">{item.badge}</Badge>}
                                         </div>
-                                        <CardContent className="p-6">
-                                            <h3 className="font-black text-lg mb-1 truncate">{item.name}</h3>
-                                            <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{item.description}</p>
-                                            <div className="flex justify-between items-center">
-                                                <p className="font-black text-primary font-mono">KES {item.price.toLocaleString()}</p>
+                                        <div className="p-6">
+                                            <h3 className="font-black text-[15px] text-[#1A1A1A] mb-1 truncate tracking-tight">{item.name}</h3>
+                                            <p className="text-[11px] text-gray-500 mb-5 line-clamp-2 leading-relaxed">{item.description}</p>
+                                            <div className="flex justify-between items-center pt-2">
+                                                <p className="font-black text-[#1A1A1A] text-lg">KES {item.price.toLocaleString()}</p>
                                                 <div className="flex gap-2">
-                                                    <Button size="sm" variant="ghost" className="rounded-xl border border-border" onClick={() => navigate('/shop')}>Details</Button>
-                                                    <Button size="sm" className="rounded-xl" onClick={() => {
-                                                        // Get the product from fallback or just add this item (simple version)
-                                                        toast.success("Item added to cart!");
-                                                        navigate('/shop'); // Go to shop to select size properly or just add direct
-                                                    }}>Buy Now</Button>
+                                                    <Button onClick={() => navigate('/shop')} className={cn(glass.btnSecondary, "h-9 text-[11px]")}>Details</Button>
+                                                    <Button onClick={() => { toast.success("Added to cart!"); navigate('/shop'); }} className={cn(glass.btnPrimary, "h-9 text-[11px]")}>Buy Now</Button>
                                                 </div>
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </motion.div>
                 );
             case 'help':
                 return (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                        <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Support <span className="text-primary italic">Center</span></h2>
-                            <p className="text-muted-foreground font-medium">How can we help you today?</p>
-                        </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-8"
+                    >
+                        <PageHeader
+                            icon={HelpCircle}
+                            label="Customer Support"
+                            title={<>Help <span className="text-[#F4D03F] italic">Center</span></>}
+                            subtitle="Expert assistance for your apiculture commerce journey."
+                        />
                         <div className="grid md:grid-cols-3 gap-6">
                             {[
                                 { title: 'Order Support', desc: 'Questions about delivery or returns', icon: Package },
                                 { title: 'Account Issues', desc: 'Can\'t log in or change details', icon: Shield },
                                 { title: 'Technical Help', desc: 'Trouble with the BeeYield platform', icon: Settings },
                             ].map((item, i) => (
-                                <Card key={i} className="border-none shadow-premium rounded-3xl p-8 hover:bg-primary/5 transition-all text-center group">
-                                    <div className="w-16 h-16 rounded-2xl bg-muted mx-auto mb-6 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                        <item.icon className="w-8 h-8 text-primary" />
+                                <div key={i} className={cn(glass.section, "p-10 text-center group hover:border-[#F4D03F]/30 transition-all bg-white/40 shadow-sm")}>
+                                    <div className="w-20 h-20 rounded-2xl bg-[#F4D03F]/5 mx-auto mb-8 flex items-center justify-center group-hover:bg-[#F4D03F]/10 transition-colors border border-[#F4D03F]/10">
+                                        <item.icon className="w-8 h-8 text-[#F4D03F]" />
                                     </div>
-                                    <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                                    <p className="text-sm text-muted-foreground mb-6">{item.desc}</p>
-                                    <Button variant="outline" className="rounded-full w-full">Contact Specialist</Button>
-                                </Card>
+                                    <h3 className="text-xl font-black text-[#1A1A1A] mb-3 tracking-tight">{item.title}</h3>
+                                    <p className="text-[12px] text-gray-500 mb-8 leading-relaxed px-2">{item.desc}</p>
+                                    <Button className={cn(glass.btnSecondary, "w-full py-6")}>Contact Specialist</Button>
+                                </div>
                             ))}
                         </div>
-                    </div>
+                        
+                        <div className={cn(glass.section, "p-10 flex flex-col md:flex-row items-center justify-between gap-8 bg-[#1A1A1A] text-white overflow-hidden relative")}>
+                             <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full -mr-32 -mt-32 blur-3xl opacity-20" />
+                             <div>
+                                <h3 className="text-xl font-black mb-1">Direct AI Assistance</h3>
+                                <p className="text-white/40 text-xs">Our Librarian agent is ready to analyze your shop queries instantly.</p>
+                             </div>
+                             <Button onClick={() => navigate('/assistant')} className={cn(glass.btnPrimary, "px-10 h-14 bg-[#F4D03F] text-[#1A1A1A] hover:bg-white")}>
+                                Launch BeeYield AI
+                             </Button>
+                        </div>
+                    </motion.div>
                 );
             case 'checkout': {
                 const totalPrice: number = getTotalPrice();
@@ -1096,251 +1132,289 @@ const ShopDashboard = () => {
 
                 if (items.length === 0 && checkoutStep !== 'confirmation') {
                     return (
-                        <div className="text-center py-20">
-                            <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                            <h2 className="text-2xl font-black">Your cart is empty</h2>
-                            <Button onClick={() => navigate('/shop')} className="mt-4 rounded-full">Browse Products</Button>
+                        <div className={cn(glass.section, "py-32 text-center bg-white/40")}>
+                            <ShoppingBag className="w-16 h-16 mx-auto text-gray-200 mb-6" />
+                            <h2 className="text-2xl font-black text-[#1A1A1A]">Cart Empty</h2>
+                            <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">Add premium honey products to your cart before checking out.</p>
+                            <Button onClick={() => navigate('/shop')} className={glass.btnPrimary}>Browse Products</Button>
                         </div>
                     );
                 }
 
                 return (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                        <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Secure <span className="text-primary italic">Checkout</span></h2>
-                            <p className="text-muted-foreground font-medium">Complete your premium order</p>
-                        </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-8"
+                    >
+                        <PageHeader
+                            icon={ShoppingBag}
+                            label="Express Checkout"
+                            title={<>Secure <span className="text-[#F4D03F] italic">Transaction</span></>}
+                            subtitle="Review your selection and finalize your premium order."
+                        />
 
                         {checkoutStep === 'confirmation' ? (
-                            <Card className="border-none shadow-premium rounded-[2.5rem] p-12 text-center">
-                                <div className="w-20 h-20 rounded-full bg-[#1B9157] flex items-center justify-center mx-auto mb-6 animate-bounce">
+                            <div className={cn(glass.section, "p-16 text-center bg-white relative overflow-hidden")}>
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157]/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-20" />
+                                <div className="w-24 h-24 rounded-full bg-[#1B9157]/10 flex items-center justify-center mx-auto mb-8 border border-[#1B9157]/20">
                                     <CheckCircle2 className="w-10 h-10 text-[#1B9157]" />
                                 </div>
-                                <h1 className="text-3xl font-black mb-4">Order Confirmed! 🎉</h1>
-                                <p className="text-muted-foreground mb-8 text-lg">Thank you for your purchase. We're preparing your honey.</p>
-                                <div className="bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50">
-                                    <p className="text-xs font-black text-muted-foreground mb-1">Order Identifier</p>
-                                    <p className="text-3xl font-black text-primary">{orderNumber}</p>
+                                <h1 className="text-4xl font-black mb-4 tracking-tighter text-[#1A1A1A]">Order Confirmed</h1>
+                                <p className="text-gray-500 mb-10 text-lg font-medium max-w-md mx-auto leading-relaxed">Thank you for your purchase. We've initiated the refinement process for your order.</p>
+                                
+                                <div className="bg-[#1A1A1A] rounded-[24px] p-8 inline-block mb-12 border border-white/5 shadow-2xl relative">
+                                    <p className="text-[10px] font-black text-white/40 mb-2 uppercase tracking-widest pl-1">Order Identifier</p>
+                                    <p className="text-4xl font-mono font-black text-[#F4D03F] tracking-tighter">{orderNumber}</p>
                                 </div>
+                                
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                    <Button onClick={() => navigate('/shop')} className="rounded-full px-8">Continue Shopping</Button>
-                                    <Button variant="outline" onClick={() => setActiveTab('orders')} className="rounded-full px-8">View My Orders</Button>
+                                    <Button onClick={() => navigate('/shop')} className={cn(glass.btnPrimary, "px-10 h-14")}>Explore More</Button>
+                                    <Button onClick={() => setActiveTab('orders')} className={cn(glass.btnSecondary, "px-10 h-14")}>Track My Assets</Button>
                                 </div>
-                            </Card>
+                            </div>
                         ) : (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <div className="lg:col-span-2 space-y-6">
-                                    {/* Steps Header */}
-                                    <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-2xl w-fit">
-                                        <button
-                                            onClick={() => setCheckoutStep('shipping')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
-                                        >
-                                            1. Shipping
-                                        </button>
-                                        <button
-                                            onClick={() => setCheckoutStep('payment')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${checkoutStep === 'payment' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
-                                        >
-                                            2. Payment
-                                        </button>
+                                <div className="lg:col-span-2 space-y-8">
+                                    {/* Steps Indicator */}
+                                    <div className="flex items-center gap-6 pb-2">
+                                        {[
+                                            { id: 'shipping', label: 'Identity & Logistics', icon: Truck },
+                                            { id: 'payment', label: 'Financial Enclave', icon: ShieldCheck }
+                                        ].map((step, idx) => (
+                                            <button
+                                                key={step.id}
+                                                onClick={() => setCheckoutStep(step.id as any)}
+                                                className="flex items-center gap-3 group transition-all"
+                                            >
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center font-black transition-all border",
+                                                    checkoutStep === step.id 
+                                                        ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-lg scale-110" 
+                                                        : "bg-white text-gray-400 border-gray-100 group-hover:border-[#F4D03F]/30"
+                                                )}>
+                                                    <step.icon className="w-5 h-5 shadow-sm" />
+                                                </div>
+                                                <div className="text-left">
+                                                    <p className={cn("text-[9px] font-black uppercase tracking-widest leading-none mb-1", checkoutStep === step.id ? "text-[#1A1A1A]" : "text-gray-400")}>Step 0{idx+1}</p>
+                                                    <p className={cn("text-[12px] font-black tracking-tight", checkoutStep === step.id ? "text-[#1A1A1A]" : "text-gray-400")}>{step.label}</p>
+                                                </div>
+                                            </button>
+                                        ))}
                                     </div>
 
                                     {checkoutStep === 'shipping' && (
-                                        <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-6">
+                                        <div className={cn(glass.section, "p-10 space-y-8 bg-white/40")}>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest pl-1">Shipping Protocol</h3>
+                                                {addresses.length > 0 && <p className="text-[10px] font-bold text-gray-400">SELECT SAVED LOCATION</p>}
+                                            </div>
+
                                             {addresses.length > 0 && (
-                                                <div className="space-y-4">
-                                                    <Label className="text-sm font-black opacity-60">Use a saved location</Label>
-                                                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                                                        {addresses.map(addr => (
-                                                            <button
-                                                                key={addr.id}
-                                                                onClick={() => {
-                                                                    setShippingDetails({
-                                                                        ...shippingDetails,
-                                                                        fullName: profileForm.firstName + " " + profileForm.lastName,
-                                                                        email: addr.email || profileForm.email,
-                                                                        phone: addr.phone,
-                                                                        street: addr.street,
-                                                                        city: addr.city,
-                                                                        county: addr.county,
-                                                                        apartment: addr.apartment || '',
-                                                                        building: addr.building || '',
-                                                                        floor: addr.floor || '',
-                                                                        postalCode: addr.postal_code || '',
-                                                                    });
-                                                                    toast.success(`Using ${addr.name}`);
-                                                                }}
-                                                                className="flex-shrink-0 p-4 border-2 border-border rounded-2xl text-left hover:border-primary transition-all group"
-                                                            >
-                                                                <p className="font-bold group-hover:text-primary">{addr.name}</p>
-                                                                <p className="text-[10px] text-muted-foreground">{addr.city}</p>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                    <Separator className="opacity-50" />
+                                                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-2 px-2">
+                                                    {addresses.map(addr => (
+                                                        <button
+                                                            key={addr.id}
+                                                            onClick={() => {
+                                                                setShippingDetails({
+                                                                    ...shippingDetails,
+                                                                    fullName: profileForm.firstName + " " + profileForm.lastName,
+                                                                    email: addr.email || profileForm.email,
+                                                                    phone: addr.phone,
+                                                                    street: addr.street,
+                                                                    city: addr.city,
+                                                                    county: addr.county,
+                                                                    apartment: addr.apartment || '',
+                                                                    building: addr.building || '',
+                                                                    floor: addr.floor || '',
+                                                                    postalCode: addr.postal_code || '',
+                                                                });
+                                                                toast.success(`Active Location: ${addr.name}`);
+                                                            }}
+                                                            className={cn(
+                                                                "flex-shrink-0 w-44 p-4 border-2 rounded-[20px] text-left transition-all relative group",
+                                                                shippingDetails.street === addr.street ? "border-[#F4D03F] bg-[#F4D03F]/5" : "border-gray-100 bg-white/50 hover:border-[#F4D03F]/20"
+                                                            )}
+                                                        >
+                                                            <div className="flex items-start justify-between mb-3">
+                                                                <div className={cn("p-1.5 rounded-lg", shippingDetails.street === addr.street ? "bg-[#F4D03F] text-white" : "bg-gray-100 text-gray-400")}>
+                                                                    <MapPin className="w-3.5 h-3.5" />
+                                                                </div>
+                                                                {shippingDetails.street === addr.street && <div className="w-2 h-2 rounded-full bg-[#F4D03F] animate-pulse" />}
+                                                            </div>
+                                                            <p className="font-black text-[13px] text-[#1A1A1A] truncate">{addr.name}</p>
+                                                            <p className="text-[10px] text-gray-500 font-medium truncate">{addr.city}</p>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             )}
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                                 <div className="md:col-span-2 space-y-2">
-                                                    <Label>Full Name / Recipient</Label>
+                                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Recipient Name</Label>
                                                     <Input
-                                                        id="checkout-full-name"
-                                                        name="fullName"
+                                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                                         value={shippingDetails.fullName}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
-                                                        placeholder="Timothy Nduva"
+                                                        placeholder="Full identity of receiver"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Contact Phone</Label>
+                                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Primary Phone</Label>
                                                     <Input
-                                                        id="checkout-phone"
-                                                        name="phone"
+                                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                                         value={shippingDetails.phone}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
                                                         placeholder="+254..."
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Contact Email</Label>
+                                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Secure Email</Label>
                                                     <Input
-                                                        id="checkout-email"
-                                                        name="email"
+                                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                                         value={shippingDetails.email}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, email: e.target.value })}
-                                                        placeholder="test@example.com"
+                                                        placeholder="logistics@vault.com"
                                                     />
                                                 </div>
                                                 <div className="md:col-span-2 space-y-2">
-                                                    <Label>Street & Number</Label>
+                                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Logistics Path (Street)</Label>
                                                     <Input
-                                                        id="checkout-street"
-                                                        name="street"
+                                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                                         value={shippingDetails.street}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, street: e.target.value })}
-                                                        placeholder="123 Beevior Road"
+                                                        placeholder="Exact street or road coordinate"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Building / Estate</Label>
+                                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Base Location (City)</Label>
                                                     <Input
-                                                        id="checkout-building"
-                                                        name="building"
-                                                        value={shippingDetails.building}
-                                                        onChange={e => setShippingDetails({ ...shippingDetails, building: e.target.value })}
-                                                        placeholder="Honey Heights"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Apt / Suite / Floor</Label>
-                                                    <div className="flex gap-2">
-                                                        <Input
-                                                            id="checkout-apartment"
-                                                            name="apartment"
-                                                            value={shippingDetails.apartment}
-                                                            onChange={e => setShippingDetails({ ...shippingDetails, apartment: e.target.value })}
-                                                            placeholder="Apt 2B"
-                                                        />
-                                                        <Input
-                                                            id="checkout-floor"
-                                                            name="floor"
-                                                            value={shippingDetails.floor}
-                                                            onChange={e => setShippingDetails({ ...shippingDetails, floor: e.target.value })}
-                                                            placeholder="4th"
-                                                            className="w-20"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>City</Label>
-                                                    <Input
-                                                        id="checkout-city"
-                                                        name="city"
+                                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                                         value={shippingDetails.city}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })}
-                                                        placeholder="Nairobi"
+                                                        placeholder="Nairobi Central"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>County</Label>
+                                                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Region (County)</Label>
                                                     <Input
-                                                        id="checkout-county"
-                                                        name="county"
+                                                        className="bg-white/50 border-[#F4D03F]/10 rounded-xl h-12 text-[14px] font-medium"
                                                         value={shippingDetails.county}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, county: e.target.value })}
                                                         placeholder="Nairobi"
                                                     />
                                                 </div>
                                             </div>
-                                            <Button onClick={() => setCheckoutStep('payment')} className="w-full rounded-full h-12 text-lg font-bold">
-                                                Continue to Payment <ArrowRight className="ml-2 w-5 h-5" />
-                                            </Button>
-                                        </Card>
+                                            
+                                            <div className="pt-6 border-t border-[#F4D03F]/5">
+                                                <Button onClick={() => setCheckoutStep('payment')} className={cn(glass.btnPrimary, "w-full h-14 text-lg")}>
+                                                    Initialize Payment Flow <ChevronRight className="ml-2 w-5 h-5" />
+                                                </Button>
+                                            </div>
+                                        </div>
                                     )}
 
 
                                     {checkoutStep === 'payment' && (
-                                        <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-8">
-                                            <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
-                                                <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('mpesa')}>
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/10 flex items-center justify-center">
-                                                            <Smartphone className="text-[#1B9157]" />
+                                        <div className={cn(glass.section, "p-10 space-y-8 bg-white/40")}>
+                                            <div className="mb-2">
+                                                <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest pl-1">Secure Settlement</h3>
+                                            </div>
+                                            
+                                            <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-6">
+                                                <div 
+                                                    onClick={() => setPaymentMethod('mpesa')}
+                                                    className={cn(
+                                                        "p-8 rounded-[24px] border-2 transition-all cursor-pointer flex items-center justify-between group",
+                                                        paymentMethod === 'mpesa' ? "border-[#1B9157] bg-[#1B9157]/5 shadow-lg" : "border-gray-100 bg-white/50 hover:border-gray-200"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center gap-6">
+                                                        <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all", paymentMethod === 'mpesa' ? "bg-[#1B9157] text-white" : "bg-gray-100 text-gray-400")}>
+                                                            <Smartphone className="w-7 h-7" />
                                                         </div>
-                                                        <span className="font-bold text-lg">M-Pesa</span>
+                                                        <div>
+                                                            <span className="font-black text-xl text-[#1A1A1A] block">M-PESA Express</span>
+                                                            <span className="text-[11px] text-gray-500 font-medium">Instant STK push notification</span>
+                                                        </div>
                                                     </div>
-                                                    <RadioGroupItem value="mpesa" />
+                                                    <div className={cn("w-6 h-6 rounded-full border-4 flex items-center justify-center transition-all", paymentMethod === 'mpesa' ? "border-[#1B9157] bg-[#1B9157]" : "border-gray-200")}>
+                                                        {paymentMethod === 'mpesa' && <div className="w-2 h-2 rounded-full bg-white" />}
+                                                    </div>
                                                 </div>
-                                                <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex flex-col gap-4 ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('card')}>
+
+                                                <div 
+                                                    onClick={() => setPaymentMethod('card')}
+                                                    className={cn(
+                                                        "p-8 rounded-[24px] border-2 transition-all cursor-pointer flex flex-col gap-8 group",
+                                                        paymentMethod === 'card' ? "border-[#F4D03F] bg-[#F4D03F]/5 shadow-lg" : "border-gray-100 bg-white/50 hover:border-gray-200"
+                                                    )}
+                                                >
                                                     <div className="flex items-center justify-between w-full">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                                                                <CreditCard className="text-blue-600" />
+                                                        <div className="flex items-center gap-6">
+                                                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all", paymentMethod === 'card' ? "bg-[#F4D03F] text-white" : "bg-gray-100 text-gray-400")}>
+                                                                <CreditCard className="w-7 h-7" />
                                                             </div>
-                                                            <span className="font-bold text-lg">Bank Card</span>
+                                                            <div>
+                                                                <span className="font-black text-xl text-[#1A1A1A] block">Premium Bank Card</span>
+                                                                <span className="text-[11px] text-gray-500 font-medium tracking-tight">Encrypted Settlement via Stripe</span>
+                                                            </div>
                                                         </div>
-                                                        <RadioGroupItem value="card" />
+                                                        <div className={cn("w-6 h-6 rounded-full border-4 flex items-center justify-center transition-all", paymentMethod === 'card' ? "border-[#F4D03F] bg-[#F4D03F]" : "border-gray-200")}>
+                                                            {paymentMethod === 'card' && <div className="w-2 h-2 rounded-full bg-white" />}
+                                                        </div>
                                                     </div>
 
                                                     {paymentMethod === 'card' && (
-                                                        <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                        <motion.div 
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            className="pt-2 space-y-6 overflow-hidden"
+                                                        >
                                                             {paymentMethods.length > 0 ? (
-                                                                <>
-                                                                    <p className="text-[10px] font-black text-muted-foreground ml-1">Use Saved Card</p>
-                                                                    <div className="grid gap-2">
+                                                                <div className="space-y-4">
+                                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Select Vault Method</p>
+                                                                    <div className="grid gap-3">
                                                                         {paymentMethods.map(pm => (
                                                                             <div
                                                                                 key={pm.id}
                                                                                 onClick={(e) => { e.stopPropagation(); setSelectedPaymentMethodId(pm.id); }}
-                                                                                className={`p-4 rounded-2xl border flex items-center justify-between group transition-all cursor-pointer ${selectedPaymentMethodId === pm.id ? 'border-primary bg-white shadow-sm' : 'border-border bg-white/50 hover:bg-white'}`}
+                                                                                className={cn(
+                                                                                    "p-5 rounded-2xl border-2 flex items-center justify-between group transition-all",
+                                                                                    selectedPaymentMethodId === pm.id ? "border-[#F4D03F] bg-white shadow-premium" : "border-gray-100 bg-white/50 hover:bg-white"
+                                                                                )}
                                                                             >
-                                                                                <div className="flex items-center gap-3">
-                                                                                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-bold text-[10px]">{pm.brand === 'Visa' ? 'V' : 'MC'}</div>
-                                                                                    <span className="font-bold text-sm">•••• {pm.last4}</span>
+                                                                                <div className="flex items-center gap-4">
+                                                                                    <div className="w-10 h-10 rounded-xl bg-[#1A1A1A] text-white flex items-center justify-center font-black text-[10px] tracking-widest">{pm.provider?.slice(0, 4) || 'CARD'}</div>
+                                                                                    <div>
+                                                                                        <span className="font-black text-sm text-[#1A1A1A] block">•••• {pm.last4}</span>
+                                                                                        <span className="text-[10px] text-gray-400 font-medium">Expires {pm.expiry_month}/{pm.expiry_year}</span>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div className={`w-4 h-4 rounded-full border-2 border-primary transition-all ${selectedPaymentMethodId === pm.id ? 'bg-primary' : 'bg-transparent'}`} />
+                                                                                <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", selectedPaymentMethodId === pm.id ? "border-[#F4D03F] bg-[#F4D03F]" : "border-gray-200")}>
+                                                                                    {selectedPaymentMethodId === pm.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                                </div>
                                                                             </div>
                                                                         ))}
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
+                                                                        <button
                                                                             onClick={(e) => { e.stopPropagation(); setSelectedPaymentMethodId(null); }}
-                                                                            className={`w-full justify-start font-bold text-xs h-10 px-4 rounded-xl ${!selectedPaymentMethodId ? 'bg-primary/10 text-primary' : ''}`}
+                                                                            className={cn(
+                                                                                "w-full h-14 flex items-center justify-center rounded-2xl border-2 border-dashed font-black text-xs tracking-widest transition-all",
+                                                                                !selectedPaymentMethodId ? "border-[#F4D03F] text-[#F4D03F] bg-[#F4D03F]/5" : "border-gray-200 text-gray-400 hover:border-[#F4D03F]/30 hover:text-[#F4D03F]"
+                                                                            )}
                                                                         >
-                                                                            + Use a new card
-                                                                        </Button>
+                                                                            <Plus className="w-4 h-4 mr-2" /> LINK NEW INSTRUMENT
+                                                                        </button>
                                                                     </div>
-                                                                </>
+                                                                </div>
                                                             ) : (
-                                                                <div className="p-4 bg-white/50 rounded-2xl border border-dashed text-center">
-                                                                    <p className="text-xs font-bold text-muted-foreground">No cards saved yet. You'll enter details next.</p>
+                                                                <div className="p-8 bg-white/50 rounded-3xl border-2 border-dashed border-gray-100 text-center">
+                                                                    <p className="text-xs font-black text-gray-400 tracking-widest">NO ASSETS DETECTED IN VAULT</p>
                                                                 </div>
                                                             )}
 
                                                             {!selectedPaymentMethodId && (
-                                                                <div className="p-4 bg-white rounded-2xl shadow-premium animate-in zoom-in-95 duration-300">
+                                                                <div className="p-8 bg-white rounded-3xl shadow-premium border border-[#F4D03F]/10">
                                                                     <StripeCardForm
                                                                         mode="save"
                                                                         buttonText="Verify & Pay"
@@ -1352,56 +1426,84 @@ const ShopDashboard = () => {
                                                                     />
                                                                 </div>
                                                             )}
-                                                        </div>
+                                                        </motion.div>
                                                     )}
                                                 </div>
                                             </RadioGroup>
-                                            <Button onClick={processDashboardPayment} disabled={isProcessing} className="w-full rounded-full h-14 text-xl font-black">
-                                                {isProcessing ? <Loader className="animate-spin mr-2" /> : `Pay KES ${checkoutTotalWithShipping.toLocaleString()}`}
-                                            </Button>
-                                        </Card>
+                                            
+                                            <div className="pt-4">
+                                                <Button onClick={processDashboardPayment} disabled={isProcessing} className={cn(glass.btnPrimary, "w-full h-16 text-xl tracking-tightest")}>
+                                                    {isProcessing ? <Loader className="animate-spin mr-3 w-6 h-6" /> : `Commit Settlement: KES ${checkoutTotalWithShipping.toLocaleString()}`}
+                                                </Button>
+                                                <p className="text-center text-[10px] text-gray-400 font-bold mt-4 uppercase tracking-[2px]">Encrypted Financial Pipeline Active</p>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
 
                                 <div className="space-y-6">
-                                    <Card className="border-none shadow-premium rounded-[2rem] p-8 bg-muted/20">
-                                        <h3 className="font-black text-xl mb-6">Order Summary</h3>
-                                        <div className="space-y-4">
+                                    <div className={cn(glass.section, "p-10 bg-[#1A1A1A] text-white overflow-hidden relative")}>
+                                        <div className="absolute top-0 right-0 w-48 h-48 bg-[#F4D03F]/10 rounded-full -mr-24 -mt-24 blur-3xl opacity-20" />
+                                        <h3 className="font-black text-xl mb-8 tracking-tighter">Order <span className="text-[#F4D03F]">Overview</span></h3>
+                                        <div className="space-y-6">
                                             {items.map(item => (
-                                                <div key={item.id} className="flex justify-between items-center text-sm">
-                                                    <span className="font-medium text-muted-foreground">{item.name} x{item.quantity}</span>
-                                                    <span className="font-bold">KES {(item.price * item.quantity).toLocaleString()}</span>
+                                                <div key={item.id} className="flex justify-between items-center text-sm border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="font-black text-[13px] tracking-tight truncate max-w-[120px]">{item.name}</span>
+                                                        <span className="text-[10px] text-white/40 font-bold">Qty: {item.quantity} units</span>
+                                                    </div>
+                                                    <span className="font-black text-white/90">KES {(item.price * item.quantity).toLocaleString()}</span>
                                                 </div>
                                             ))}
-                                            <Separator className="bg-border/50" />
-                                            <div className="flex justify-between">
-                                                <span className="text-muted-foreground">Shipping</span>
-                                                <span className="font-bold">{checkoutShippingCost === 0 ? 'Free' : `KES ${checkoutShippingCost}`}</span>
-                                            </div>
-                                            <div className="flex justify-between text-xl font-black pt-4 border-t border-border">
-                                                <span>Total</span>
-                                                <span className="text-primary">KES {checkoutTotalWithShipping.toLocaleString()}</span>
+                                            
+                                            <div className="space-y-3 pt-6 border-t border-white/10">
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-white/40 font-bold uppercase tracking-widest">Base Value</span>
+                                                    <span className="font-black">KES {totalPrice.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-white/40 font-bold uppercase tracking-widest">Logistics</span>
+                                                    <span className={cn("font-black", checkoutShippingCost === 0 ? "text-[#1B9157]" : "text-white/90")}>{checkoutShippingCost === 0 ? 'COMPLIMENTARY' : `KES ${checkoutShippingCost}`}</span>
+                                                </div>
+                                                <Separator className="bg-white/10 my-4" />
+                                                <div className="flex justify-between items-end pt-2">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-white/40 text-[9px] font-black uppercase tracking-widest">Final Commitment</span>
+                                                        <span className="text-[11px] text-[#F4D03F] font-black italic">VAT Inclusive</span>
+                                                    </div>
+                                                    <span className="text-3xl font-black text-white tracking-tighter leading-none">KES {checkoutTotalWithShipping.toLocaleString()}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </Card>
-                                    <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
-                                        <Shield className="w-5 h-5 text-primary" />
-                                        <p className="text-xs font-medium text-muted-foreground leading-tight">Your data is protected with encrypted connections.</p>
+                                    </div>
+                                    
+                                    <div className={cn(glass.section, "p-6 flex items-center gap-4 border-[#1B9157]/20 bg-[#1B9157]/5")}>
+                                        <div className="w-10 h-10 rounded-xl bg-[#1B9157] text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#1B9157]/20">
+                                            <ShieldCheck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest leading-none mb-1">Vault Protection</p>
+                                            <p className="text-[10px] font-medium text-gray-500 leading-tight">Your payment signals are encrypted with AES-256 logistics protocols.</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         )}
-                    </div>
+                    </motion.div>
                 );
             }
             default:
                 return (
-                    <div className="text-center py-32 bg-[#FFF9F0] rounded-[3rem] border-2 border-dashed border-muted">
-                        <Loader2 className="w-12 h-12 animate-spin text-primary/30 mx-auto mb-6" />
-                        <h2 className="text-2xl font-bold">In Development</h2>
-                        <p className="text-muted-foreground mt-2">This section is being custom built for your account.</p>
-                        <Button variant="link" onClick={() => setActiveTab('overview')} className="mt-4">Return Home</Button>
-                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className={cn(glass.section, "py-32 text-center bg-white/40")}
+                    >
+                        <Loader2 className="w-12 h-12 animate-spin text-[#F4D03F]/30 mx-auto mb-6" />
+                        <h2 className="text-2xl font-black text-[#1A1A1A]">Module in Assembly</h2>
+                        <p className="text-gray-500 mt-2 text-sm max-w-xs mx-auto">This neural segment is currently being optimized for your account.</p>
+                        <Button variant="link" onClick={() => setActiveTab('overview')} className="mt-8 text-[#F4D03F] font-black uppercase tracking-widest text-[10px]">Return to Identity Hub</Button>
+                    </motion.div>
                 );
         }
     };
@@ -1412,64 +1514,71 @@ const ShopDashboard = () => {
     }
 
     if (!user) {
-        // Show login/signup modal for Shop dashboard
         return (
-            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-beeyield-cream/50 relative overflow-hidden p-0">
-                {/* Background Decoration */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-gold/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-beeyield-orange/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-[#F9F7F2] relative overflow-hidden p-0">
+                {/* Visual Architecture */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#1B9157]/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-                <div className="max-w-md w-full p-8 rounded-[2.5rem] shadow-premium bg-[#FFF9F0] border border-beeyield-gold/20 relative z-10 mx-4">
-                    <div className="flex justify-center mb-8 relative">
-                        <div className="absolute inset-0 bg-beeyield-gold/20 blur-xl rounded-full scale-150 animate-pulse" />
-                        <img src="/logo.png" alt="BeeYield Logo" className="w-20 h-20 relative z-10" />
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={cn(glass.section, "max-w-md w-full p-10 bg-white/80 border-[#F4D03F]/20 relative z-10 mx-4")}
+                >
+                    <div className="flex justify-center mb-10 relative">
+                        <div className="absolute inset-0 bg-[#F4D03F]/20 blur-2xl rounded-full scale-150 animate-pulse opacity-50" />
+                        <img src="/logo.png" alt="BeeYield Logo" className="w-16 h-16 relative z-10" />
                     </div>
-                    <div className="mb-8 text-center space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-beeyield-gold/10 border border-beeyield-gold/20 mb-2">
-                            <LockIcon className="w-3 h-3 text-beeyield-gold" />
-                            <span className="text-[10px] font-black text-beeyield-gold">Secure Portal</span>
+                    
+                    <div className="mb-10 text-center space-y-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#1A1A1A] border border-white/10 mb-2">
+                            <LockIcon className="w-3 h-3 text-[#F4D03F]" />
+                            <span className="text-[9px] font-black text-white uppercase tracking-[2px]">Encrypted Portal</span>
                         </div>
-                        <h1 className="text-3xl font-black text-beeyield-green tracking-tightest">Shop <span className="text-beeyield-gold italic">Access</span></h1>
-                        <p className="text-sm font-medium text-beeyield-green/60 pb-6">Authenticate to view your orders, track deliveries, and manage your premium honey subscription.</p>
+                        <h1 className="text-4xl font-black text-[#1A1A1A] tracking-tightest leading-none">Shop <span className="text-[#F4D03F] italic">Identity</span></h1>
+                        <p className="text-[13px] font-medium text-gray-500 leading-relaxed px-4">Authenticate to access your curated honey collection and logistic maps.</p>
+                    </div>
 
+                    <div className="space-y-6">
                         {authMode === 'login' && (
-                            <div className="animate-fade-in-up">
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                 <ShopLoginForm
                                     onSuccess={() => window.location.reload()}
                                     onSwitchToRegister={() => setAuthMode('register')}
                                     onForgotPassword={() => setAuthMode('forgot-password')}
                                 />
-                            </div>
+                            </motion.div>
                         )}
 
                         {authMode === 'register' && (
-                            <div className="animate-fade-in-up">
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                 <ShopRegisterForm
                                     onSuccess={() => setAuthMode('login')}
                                     onSwitchToLogin={() => setAuthMode('login')}
                                 />
-                            </div>
+                            </motion.div>
                         )}
+                        
                         {authMode === 'forgot-password' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                 <ForgotPasswordForm
                                     variant="shop"
                                     onBackToLogin={() => setAuthMode('login')}
                                 />
-                            </div>
+                            </motion.div>
                         )}
-
-                        <div className="mt-8 pt-6 border-t border-beeyield-gold/10">
-                            <Button
-                                variant="ghost"
-                                onClick={() => navigate('/shop')}
-                                className="w-full text-beeyield-green/40 hover:text-beeyield-green group font-bold text-xs"
-                            >
-                                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Public Shop
-                            </Button>
-                        </div>
                     </div>
-                </div>
+
+                    <div className="mt-10 pt-8 border-t border-gray-100">
+                        <Button
+                            variant="ghost"
+                            onClick={() => navigate('/shop')}
+                            className="w-full text-gray-400 hover:text-[#1A1A1A] group font-black text-[10px] uppercase tracking-widest"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Exit to Discovery
+                        </Button>
+                    </div>
+                </motion.div>
             </BeeYieldPageShell>
         );
     }
@@ -1488,38 +1597,54 @@ const ShopDashboard = () => {
 
             {/* Tracking Modal */}
             <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
-                <DialogContent className="max-w-md rounded-3xl">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
-                        <DialogDescription>
-                            Order {trackingOrder?.order_number || trackingOrder?.id}
+                <DialogContent className="max-w-md rounded-[32px] p-8 border-none shadow-premium bg-white overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
+                    <DialogHeader className="mb-6">
+                        <div className="flex items-center gap-3 mb-2">
+                             <div className="p-2 bg-[#F4D03F]/10 rounded-xl">
+                                <Truck className="w-5 h-5 text-[#F4D03F]" />
+                             </div>
+                             <DialogTitle className="text-2xl font-black text-[#1A1A1A]">Logistic <span className="text-[#F4D03F] italic">Telemetry</span></DialogTitle>
+                        </div>
+                        <DialogDescription className="text-gray-400 font-medium tracking-tight">
+                            Identity: {trackingOrder?.order_number || trackingOrder?.id || 'UNIDENTIFIED'}
                         </DialogDescription>
                     </DialogHeader>
+                    
                     {loadingTracking ? (
-                        <div className="flex flex-col items-center justify-center py-10 space-y-4">
-                            <Loader className="w-10 h-10 text-primary animate-spin" />
-                            <p className="text-sm font-bold opacity-50">Syncing with logistics network...</p>
+                        <div className="flex flex-col items-center justify-center py-16 space-y-6">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-[#F4D03F]/20 blur-xl rounded-full scale-150 animate-pulse" />
+                                <Loader className="w-12 h-12 text-[#F4D03F] animate-spin relative z-10" />
+                            </div>
+                            <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[3px]">Syncing Logistics Network</p>
                         </div>
                     ) : trackingInfo ? (
-                        <div className="space-y-6 pt-4">
-                            <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
+                        <div className="space-y-8 pt-2">
+                            <div className="flex items-center justify-between p-6 bg-[#1A1A1A] rounded-2xl border border-white/5 shadow-premium">
                                 <div>
-                                    <p className="text-[10px] font-black opacity-60">Status</p>
-                                    <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
+                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-[2px] mb-1">Current Protocol</p>
+                                    <p className="text-xl font-black text-[#F4D03F] capitalize tracking-tighter">{trackingInfo.current_status}</p>
                                 </div>
-                                <Badge className="bg-primary text-[#1A1A1A]">{trackingInfo.estimated_delivery}</Badge>
+                                <div className="text-right">
+                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-[2px] mb-1">Estimated Drift</p>
+                                    <Badge className="bg-[#F4D03F] text-[#1A1A1A] border-none font-black text-[10px] px-3">{trackingInfo.estimated_delivery}</Badge>
+                                </div>
                             </div>
 
-                            <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
-                                {(trackingInfo.events || []).map((event: { status: string; description: string; created_at: string; location?: string }, i: number) => (
+                            <div className="relative pl-8 space-y-10 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+                                {(trackingInfo.events || []).map((event: any, i: number) => (
                                     <div key={i} className="relative group">
-                                        <div className={`absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${i === 0 ? 'bg-primary' : 'bg-muted'} shadow-sm group-hover:scale-125 transition-transform`} />
+                                        <div className={cn(
+                                            "absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-4 border-white shadow-premium transition-all z-10",
+                                            i === 0 ? 'bg-[#F4D03F] scale-125' : 'bg-gray-200'
+                                        )} />
                                         <div className="space-y-1">
-                                            <p className={`font-black tracking-tight ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{event.status.toUpperCase()}</p>
-                                            <p className="text-sm text-muted-foreground font-medium">{event.description}</p>
-                                            <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 tracking-tighter">
-                                                <span>{new Date(event.created_at).toLocaleString()}</span>
-                                                {event.location && <span>• {event.location}</span>}
+                                            <p className={cn("text-[11px] font-black tracking-widest uppercase mb-1", i === 0 ? 'text-[#1A1A1A]' : 'text-gray-400')}>{event.status}</p>
+                                            <p className="text-[13px] text-gray-500 font-medium leading-relaxed">{event.description}</p>
+                                            <div className="flex items-center gap-3 text-[10px] font-bold text-gray-300 tracking-tight pt-1">
+                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(event.created_at).toLocaleString()}</span>
+                                                {event.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {event.location}</span>}
                                             </div>
                                         </div>
                                     </div>
@@ -1527,8 +1652,10 @@ const ShopDashboard = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center py-10 opacity-50">
-                            <p>Tracking information not yet available for this order.</p>
+                        <div className="text-center py-20 bg-gray-50/50 rounded-3xl border border-dashed border-gray-100">
+                            <Package className="w-12 h-12 mx-auto text-gray-200 mb-4" />
+                            <p className="text-sm font-bold text-[#1A1A1A]">Telemetry Unavailable</p>
+                            <p className="text-[11px] text-gray-400 mt-1">Satellite sync pending for this shipment.</p>
                         </div>
                     )}
                 </DialogContent>

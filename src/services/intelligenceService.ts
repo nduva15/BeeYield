@@ -67,7 +67,7 @@ async function fetchUserContext(): Promise<string | null> {
 
 export const intelligenceService = {
     /**
-     * Send a chat message to the BeeYield Assistant (Knowledge Hub Edge Function).
+     * Send a chat message to BeeYield AI (Knowledge Hub Edge Function).
      * Returns the FULL long-form response (not streamed, but complete).
      */
     async chat(
@@ -93,38 +93,104 @@ export const intelligenceService = {
             const promptLower = message.toLowerCase();
             let dynamicFocus = "";
 
-            if (promptLower.includes("health") || promptLower.includes("disease") || promptLower.includes("varroa") || promptLower.includes("sick") || promptLower.includes("mite")) {
+            if (promptLower.includes("health") || promptLower.includes("disease") || promptLower.includes("varroa") || promptLower.includes("sick") || promptLower.includes("mite") || promptLower.includes("queen") || promptLower.includes("brood")) {
                 dynamicFocus = `
 [TOPIC: HIVE HEALTH]
 - Explain what the readings mean and what to check next.
 - Keep advice practical and safe. Suggest an inspection when unsure.
+- Reference BeeYield's disease detection sensors and inspection records when relevant.
 `;
-            } else if (promptLower.includes("honey") || promptLower.includes("harvest") || promptLower.includes("batch") || promptLower.includes("trace") || promptLower.includes("kib")) {
+            } else if (promptLower.includes("honey") || promptLower.includes("harvest") || promptLower.includes("batch") || promptLower.includes("trace") || promptLower.includes("kib") || promptLower.includes("origin") || promptLower.includes("qr") || promptLower.includes("verify") || promptLower.includes("moisture") || promptLower.includes("grade")) {
                 dynamicFocus = `
-[TOPIC: HONEY & TRACEABILITY]
-- Explain what batch details mean and how to verify origin.
-- Keep it simple and avoid technical implementation details.
+[TOPIC: HONEY, HARVESTS & TRACEABILITY]
+- Explain what batch codes mean (format: BH-YYYYMMDD-XXXX) and how each links to a specific hive, apiary, farmer, and harvest date.
+- Describe the full traceability chain: from harvest → batch code → quality grading → QR code → buyer verification.
+- Mention quality metrics: moisture content (ideal 17-20%), color grade, extraction method.
+- Explain seasonal patterns: long rains (March-May), short rains (October-December), dry season (June-September).
+- Reference ethical harvesting: quantity_left_for_bees_kg ensures bees keep enough honey.
 `;
-            } else if (promptLower.includes("sensor") || promptLower.includes("hub") || promptLower.includes("scale") || promptLower.includes("iot") || promptLower.includes("telemetry")) {
+            } else if (promptLower.includes("sensor") || promptLower.includes("hub") || promptLower.includes("scale") || promptLower.includes("iot") || promptLower.includes("telemetry") || promptLower.includes("device") || promptLower.includes("bluetooth")) {
                 dynamicFocus = `
 [TOPIC: SENSORS & DEVICES]
-- Explain what each sensor measures and common troubleshooting steps.
+- Explain what each sensor type measures: Infield (outdoor climate), Inland (inside-hive conditions), Disease (Varroa detection).
+- Cover alerts: temperature spikes, weight drops (swarming/theft risk), humidity anomalies.
 - Keep it non-technical unless the user asks for details.
 `;
-            } else if (promptLower.includes("research") || promptLower.includes("science") || promptLower.includes("data") || promptLower.includes("acoustics")) {
+            } else if (promptLower.includes("pollination") || promptLower.includes("fpa") || promptLower.includes("placement") || promptLower.includes("density") || promptLower.includes("orchard") || promptLower.includes("contract")) {
+                dynamicFocus = `
+[TOPIC: POLLINATION & PLACEMENT]
+- Explain BeeYield's FPA (Frames Per Acre) model for calculating optimal hive density.
+- Cover colony grading (A/B/C), crop-specific requirements, and weather adjustments.
+- Mention supported crops: Avocado, Macadamia, Coffee, Mango, Passion Fruit, Sunflower, etc.
+`;
+            } else if (promptLower.includes("beeyield") || promptLower.includes("company") || promptLower.includes("about") || promptLower.includes("who") || promptLower.includes("what is") || promptLower.includes("platform") || promptLower.includes("makueni") || promptLower.includes("kibwezi")) {
+                dynamicFocus = `
+[TOPIC: COMPANY & ABOUT BEEYIELD]
+- BeeYield is a precision apiculture and honey traceability company based in Makueni & Kibwezi, Kenya.
+- Explain our products: Dashboard, BeeYield AI, Precision Pollination, IoT Monitoring, Honey Shop with M-Pesa.
+- We serve beekeepers, farmers, cooperatives, and honey buyers across East Africa.
+- Our research core: 750K+ datasets, 20,000+ bee species, 300+ honey varieties.
+- Be proud and confident about BeeYield's capabilities.
+`;
+            } else if (promptLower.includes("research") || promptLower.includes("science") || promptLower.includes("data") || promptLower.includes("acoustics") || promptLower.includes("report")) {
                 dynamicFocus = `
 [TOPIC: DATA & INSIGHTS]
 - Explain what the data suggests and what actions to take.
+- Reference BeeYield's 750K+ research dataset when providing scientific context.
 `;
             }
 
             const mandatoryBranding = `
+[IDENTITY]
+You are BeeYield AI — the intelligent assistant built into the BeeYield platform.
+BeeYield is a precision apiculture and honey traceability company based in Makueni & Kibwezi, Kenya.
+Our mission: empower beekeepers with data-driven tools for hive management, pollination services, and transparent honey supply chains.
+
+[COMPANY KNOWLEDGE — ALWAYS AVAILABLE]
+- BeeYield manages apiaries (bee yards), hives, harvests, IoT sensors, and pollination contracts.
+- The platform serves beekeepers, farmers, cooperatives, and honey buyers across East Africa and beyond.
+- We track 750K+ curated research datasets covering 20,000+ bee species, 300+ honey varieties, and global apiculture science.
+- Our core products: Dashboard (hive fleet management), BeeYield AI (this assistant), Precision Pollination (FPA calculator), IoT Monitoring (sensors), and the Honey Shop (e-commerce with M-Pesa).
+
+[BATCH CODES & TRACEABILITY]
+- Every honey harvest gets a unique batch code (format: BH-YYYYMMDD-XXXX, e.g. BH-20260315-0042).
+- Batch codes link to: the specific hive, apiary, farmer, harvest date, honey type, extraction method, moisture content, color grade, and nectar source.
+- Traceability flow: Farmer harvests → Batch code generated → Quality grading → QR code assigned → Buyer scans QR → Full origin story displayed.
+- Verified batches have a blockchain_hash for tamper-proof provenance.
+- Users can verify any batch by entering the code in the Traceability section or scanning the QR code on the jar.
+- Key quality metrics: moisture content (ideal: 17-20%), color grade (Water White to Dark Amber), and extraction method (cold-pressed, centrifuge, crush-and-strain).
+
+[HARVEST MANAGEMENT]
+- Harvests are recorded per hive with: date, quantity (kg), honey type, nectar/florage source, extraction method, weather conditions, moisture %, color grade.
+- quantity_left_for_bees_kg tracks how much honey is left for the colony (ethical harvesting practice).
+- Harvest data feeds into productivity analytics: yield per hive, seasonal trends, year-over-year comparisons.
+- Common honey types in our region: Acacia, Wildflower, Mangrove, Sidr, Mixed Flora.
+- Harvest seasons: Long rains (March-May), Short rains (October-December), Dry season (June-September — lower yield).
+
+[APIARIES & HIVES]
+- An apiary is a location where hives are kept. Each apiary has: name, location (GPS coordinates), county, region, forage type, size in acres.
+- Hives belong to apiaries. Each hive has: hive code, type (Langstroth, KTBH, Log), bee type, frame count, material, sensor status.
+- Hive statuses: Active, Inactive, Queenless, Swarmed, Harvested.
+- Farmers can be linked to apiaries and hives for multi-farmer cooperatives.
+
+[POLLINATION SERVICES]
+- BeeYield offers precision pollination contracts for commercial farms.
+- The FPA (Frames Per Acre) model calculates optimal hive density based on: crop type, acreage, colony strength (Grade A/B/C), and weather factors.
+- Supported crops: Avocado, Macadamia, Coffee, Mango, Passion Fruit, Sunflower, and more.
+- Pollination deployments track: hive placement, GPS coordinates, contract dates, payment status.
+
+[IoT & SENSORS]
+- IoT devices monitor: temperature, humidity, weight, acoustic signatures, and bee activity.
+- Device types: Infield (outdoor climate), Inland (inside-hive), Disease (Varroa detection).
+- Alert system: temperature spikes, weight drop (potential swarming or theft), humidity anomalies.
+- Sound analysis detects: queen status, swarm risk, colony stress levels.
+
 [STYLE]
-You are the BeeYield assistant.
-Use plain, simple language.
-Be specific and practical.
-Avoid buzzwords.
-Avoid implementation/protocol details unless the user asks.
+You are BeeYield AI.
+Be helpful, specific, and practical.
+When users ask about their data (batches, harvests, hives), explain what the data means and suggest next steps.
+When users ask about BeeYield as a company, share the knowledge above confidently.
+Use plain language but you may use industry terms when helpful — just explain them.
 
 [OUTPUT FORMAT — STRICT]
 You MUST respond as a long, structured markdown report using these headings verbatim, in this order:
@@ -229,9 +295,11 @@ ${dynamicFocus}
                     { type: 'research', name: 'Global Apiculture Research' },
                 ],
                 suggestions: [
+                    'What is BeeYield and how does it work?',
+                    'How do I trace a honey batch code?',
+                    'What are optimal harvest seasons in East Africa?',
                     'How do I treat Varroa safely?',
-                    'What are the best honey varieties for export?',
-                    'Analyze my hive health trends',
+                    'Explain the FPA pollination model',
                 ],
                 confidence: 0.95,
                 language,

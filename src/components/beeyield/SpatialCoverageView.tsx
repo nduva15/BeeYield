@@ -19,7 +19,7 @@ const SaturationLegend = () => (
         </div>
         <div className="flex items-center gap-3">
             <div className="w-4 h-4 rounded-md bg-[#EF4444]/20 border border-red-500/30" />
-            <span className="text-[10px] font-bold text-gray-400">Warning (FPA < 10)</span>
+            <span className="text-[10px] font-bold text-gray-400">Warning (FPA &lt; 10)</span>
         </div>
     </div>
 );

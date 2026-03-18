@@ -56,7 +56,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                         <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-base font-bold text-[#1A1A1A] tracking-tight leading-none">BeeYield <span className="text-[#F4D03F]">Assistant</span></span>
+                        <span className="text-base font-bold text-[#1A1A1A] tracking-tight leading-none">BeeYield <span className="text-[#F4D03F]">AI</span></span>
                         <span className="text-[10px] text-gray-500 font-medium mt-0.5">Management Platform</span>
                     </div>
                 </button>

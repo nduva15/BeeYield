@@ -375,6 +375,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'development'
     environment:
       name: development
+      url: https://dev.beeyield.com
     
     steps:
       - name: Checkout Code
@@ -412,6 +413,7 @@ jobs:
     if: github.ref == 'refs/heads/staging' || github.event.inputs.environment == 'staging'
     environment:
       name: staging
+      url: https://staging.beeyield.com
     
     steps:
       - name: Checkout Code
@@ -550,6 +552,7 @@ jobs:
 
       - name: Update Deployment Status
         run: |
-          curl -X POST ${{ secrets.STATUS_PAGE_API }} \
+          curl -X POST ${{ secrets
+          .STATUS_PAGE_API }} \
             -H "Content-Type: application/json" \
             -d '{"status":"operational","message":"Deployment successful"}'

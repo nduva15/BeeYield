@@ -106,11 +106,11 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                     />
                 </div>
 
-                <Button type="submit" className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-md transition-all active:scale-95" disabled={loading || mfaCode.length !== 6}>
+                <Button type="submit" className="w-full h-12 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-bold rounded-xl shadow-md transition-all active:scale-95" disabled={loading || mfaCode.length !== 6}>
                     {loading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                        'Verify'
+                        'Verify Identity'
                     )}
                 </Button>
 
@@ -237,11 +237,11 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                className="w-full h-12 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-bold rounded-xl shadow-lg shadow-[#F4D03F]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
                 disabled={loading}
             >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
-                Log In
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />}
+                Log In to Dashboard
             </Button>
 
             {onSwitchToRegister && (
