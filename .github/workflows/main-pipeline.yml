@@ -510,13 +510,14 @@ jobs:
           # Check error rates, latency, etc.
           echo "Monitoring metrics..."
 
-      - name: Notify Deployment
+      - name: Send Slack Notification
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          text: 'Production deployment completed successfully! 🚀'
+          fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: always()
 
   # ============================================================
