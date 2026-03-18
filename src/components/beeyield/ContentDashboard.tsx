@@ -60,7 +60,7 @@ const KanbanColumn = ({
                     >
                         <CardContent className="p-4 space-y-3">
                             <div className="flex justify-between items-start gap-2">
-                                <Badge variant="outline" className="text-[10px] h-5 px-1.5 uppercase tracking-wider" style={{
+                                <Badge variant="outline" className="text-[10px] h-5 px-1.5 tracking-wider" style={{
                                     color: PILLAR_META[post.pillar || 'bee_biology_behavior']?.color,
                                     borderColor: PILLAR_META[post.pillar || 'bee_biology_behavior']?.color + '40',
                                     backgroundColor: PILLAR_META[post.pillar || 'bee_biology_behavior']?.color + '10'

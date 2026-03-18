@@ -69,7 +69,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             return (
                 <div key={item.title} className="mt-6 mb-2">
                     <div className="px-8 py-2">
-                        <span className="text-[9px] font-black uppercase text-[#064e3b]/30 tracking-[0.3em]">{item.title}</span>
+                        <span className="text-[9px] font-black text-[#064e3b]/30">{item.title}</span>
                     </div>
                     {item.items.map(subItem => renderNavItem(subItem, depth + 1))}
                 </div>
@@ -96,7 +96,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                     <div className="flex items-center gap-3">
                         <item.icon className={cn("w-4 h-4", isActive ? "text-[#F4D03F]" : "text-gray-400 group-hover:text-gray-600")} />
                         <span className={cn(
-                            "text-[10px] uppercase font-bold tracking-widest",
+                            "text-[10px] font-bold",
                             isActive ? "text-[#1A1A1A]" : "text-gray-500 group-hover:text-gray-700"
                         )}>
                             {item.label}
@@ -141,17 +141,17 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                         </div>
                         <div className="flex flex-col">
                             <span className="text-2xl font-bold text-[#1A1A1A] tracking-tighter leading-none">BeeYield</span>
-                            <span className="text-[9px] font-bold text-[#F4D03F] uppercase tracking-[0.2em] mt-1">Operational OS</span>
+                            <span className="text-[9px] font-bold text-[#F4D03F] mt-1">Operational OS</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-hidden flex flex-col">
                     <div className="h-10 flex items-center justify-between border-b border-gray-100 bg-gray-50/30 px-8">
-                        <span className="text-[8px] font-bold uppercase text-gray-400 tracking-widest">Workspace</span>
+                        <span className="text-[8px] font-bold text-gray-400">Workspace</span>
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                            <span className="text-[8px] font-bold tracking-widest text-[#1B9157]">SYNCHRONIZED</span>
+                            <span className="text-[8px] font-bold text-[#1B9157]">Synchronized</span>
                         </div>
                     </div>
                     <ScrollArea className="flex-1">
@@ -167,17 +167,17 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                         className="w-full h-11 rounded-xl border border-gray-100 bg-white flex items-center gap-3 px-6 hover:bg-gray-50 transition-all shadow-sm"
                     >
                         <Settings className="w-4 h-4 text-gray-400" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Preferences</span>
+                        <span className="text-[10px] font-bold text-gray-600">Preferences</span>
                     </button>
                     <button
                         onClick={onLogout}
                         className="w-full h-11 rounded-xl bg-[#1A1A1A] text-white flex items-center gap-3 px-6 hover:bg-red-600 transition-all shadow-md group"
                     >
                         <LogOut className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Sign Out</span>
+                        <span className="text-[10px] font-bold">Sign Out</span>
                     </button>
                     <div className="pt-2 flex justify-center">
-                        <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">© 2026 BeeYield Platform</span>
+                        <span className="text-[8px] font-bold text-gray-300">© 2026 BeeYield Platform</span>
                     </div>
                 </div>
             </aside>

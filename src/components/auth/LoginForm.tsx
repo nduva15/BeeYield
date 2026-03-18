@@ -254,7 +254,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-2xl tracking-[0.3em] font-bold h-14 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
+                        className="text-center text-2xl font-bold h-14 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
@@ -309,7 +309,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t border-gray-100" />
                         </div>
-                        <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
+                        <div className="relative flex justify-center text-xs font-bold">
                             <span className="bg-white px-4 text-gray-300">or</span>
                         </div>
                     </div>
@@ -390,7 +390,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             {isAdminVariant && (
                 <div className="pt-4 flex justify-center">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <p className="text-[10px] font-bold text-gray-400 flex items-center gap-2">
                         <Shield className="w-3 h-3 text-beeyield-green" /> 
                         Authorized Admin Access
                     </p>

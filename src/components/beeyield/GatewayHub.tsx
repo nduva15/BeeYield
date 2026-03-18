@@ -14,21 +14,21 @@ import { motion } from 'framer-motion';
 interface Gateway {
     mac: string;
     alias: string;
-    status: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE';
+    status: 'Online' | 'Offline' | 'Maintenance';
     battery: number;
     rssi: number; // dBm
     temp: number; // Celsius
     deploymentDate: string;
     lastPing: string;
-    type: 'PALLET_GATEWAY' | 'ORCHARD_STATION';
+    type: 'Pallet Gateway' | 'Orchard Station';
 }
 
 const gateways: Gateway[] = [
-    { mac: '00:0A:95:9D:68:16', alias: 'GW-Alpha-Kibwezi', status: 'ONLINE', battery: 92, rssi: -62, temp: 24.5, deploymentDate: '2023-04-12', lastPing: '2s ago', type: 'PALLET_GATEWAY' },
-    { mac: '00:0A:95:9D:68:17', alias: 'GW-Beta-Kibwezi', status: 'ONLINE', battery: 88, rssi: -58, temp: 25.2, deploymentDate: '2023-05-15', lastPing: '15s ago', type: 'PALLET_GATEWAY' },
-    { mac: '00:0A:95:9D:72:01', alias: 'Station-North-01', status: 'ONLINE', battery: 45, rssi: -78, temp: 22.1, deploymentDate: '2023-01-20', lastPing: '1m ago', type: 'ORCHARD_STATION' },
-    { mac: '00:0A:95:9D:88:F2', alias: 'GW-Gamma-South', status: 'OFFLINE', battery: 0, rssi: 0, temp: 0, deploymentDate: '2024-01-10', lastPing: '4h ago', type: 'PALLET_GATEWAY' },
-    { mac: '00:0A:95:8E:44:A3', alias: 'GW-Delta-East', status: 'MAINTENANCE', battery: 12, rssi: -82, temp: 28.4, deploymentDate: '2023-03-05', lastPing: '10m ago', type: 'PALLET_GATEWAY' },
+    { mac: '00:0A:95:9D:68:16', alias: 'GW-Alpha-Kibwezi', status: 'Online', battery: 92, rssi: -62, temp: 24.5, deploymentDate: '2023-04-12', lastPing: '2s ago', type: 'Pallet Gateway' },
+    { mac: '00:0A:95:9D:68:17', alias: 'GW-Beta-Kibwezi', status: 'Online', battery: 88, rssi: -58, temp: 25.2, deploymentDate: '2023-05-15', lastPing: '15s ago', type: 'Pallet Gateway' },
+    { mac: '00:0A:95:9D:72:01', alias: 'Station-North-01', status: 'Online', battery: 45, rssi: -78, temp: 22.1, deploymentDate: '2023-01-20', lastPing: '1m ago', type: 'Orchard Station' },
+    { mac: '00:0A:95:9D:88:F2', alias: 'GW-Gamma-South', status: 'Offline', battery: 0, rssi: 0, temp: 0, deploymentDate: '2024-01-10', lastPing: '4h ago', type: 'Pallet Gateway' },
+    { mac: '00:0A:95:8E:44:A3', alias: 'GW-Delta-East', status: 'Maintenance', battery: 12, rssi: -82, temp: 28.4, deploymentDate: '2023-03-05', lastPing: '10m ago', type: 'Pallet Gateway' },
 ];
 
 const GatewayHub: React.FC = () => {
@@ -52,7 +52,7 @@ const GatewayHub: React.FC = () => {
                 subtitle="Localized Orchard Mesh · Lifecycle Monitoring · Asset Integrity"
                 actions={
                     <div className={cn(glass.card, "px-4 py-2 bg-white flex flex-col items-end shadow-sm")}>
-                        <span className="text-[10px] font-bold uppercase text-gray-500 tracking-wider mb-0.5">Network Load</span>
+                        <span className="text-[10px] font-bold text-gray-500 tracking-wider mb-0.5">Network Load</span>
                         <span className="text-[16px] font-bold text-[#1A1A1A] tracking-tight">8.2 GB / Mo</span>
                     </div>
                 }
@@ -95,7 +95,7 @@ const GatewayHub: React.FC = () => {
                     <GatewayStatusCard
                         key={gw.mac}
                         gatewayId={gw.alias}
-                        status={gw.status === 'ONLINE' ? 'ONLINE' : 'OFFLINE'}
+                        status={gw.status === 'Online' ? 'Online' : 'Offline'}
                         battery={gw.battery}
                         signal={gw.rssi}
                         lastPing={gw.lastPing}
@@ -108,7 +108,7 @@ const GatewayHub: React.FC = () => {
                         <span className="text-2xl font-light text-gray-400">+</span>
                     </div>
                     <h3 className="text-sm font-bold text-[#1A1A1A]">Pair Gateway</h3>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mt-1">Provision via Bluetooth</p>
+                    <p className="text-[10px] font-bold tracking-wider text-gray-500 mt-1">Provision via Bluetooth</p>
                 </button>
             </div>
         </motion.div>

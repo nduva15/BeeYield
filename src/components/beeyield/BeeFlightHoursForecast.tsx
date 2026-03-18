@@ -59,7 +59,7 @@ const BeeFlightHoursForecast: React.FC = () => {
                         </div>
                         <div className="space-y-0.5">
                             <h3 className="text-sm font-bold text-[#1A1A1A]">Weekly Capacity</h3>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Predicted Work Windows</p>
+                            <p className="text-[10px] text-gray-500 text-[9px]">Predicted Work Windows</p>
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@ const BeeFlightHoursForecast: React.FC = () => {
                     <div className="flex-1 space-y-4">
                         <div className="space-y-1">
                             <h4 className="text-xl font-bold tracking-tight">Activity <span className="text-[#F4D03F]">Intelligence</span></h4>
-                            <p className="text-[10px] font-bold text-[#F4D03F]/60 uppercase tracking-widest">Weather & Foraging Cycles</p>
+                            <p className="text-[10px] font-bold text-[#F4D03F]/60">Weather & Foraging Cycles</p>
                         </div>
                         <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-[#F4D03F]/40">
                             We use precision local weather data to predict bee activity windows.

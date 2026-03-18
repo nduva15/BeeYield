@@ -224,8 +224,8 @@ const CropsWePollinate = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A2612]/90 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 space-y-1">
-                    <h3 className="text-[2.5rem] font-black text-[#1A1A1A] leading-none uppercase tracking-tighter">{crop.cropName}</h3>
-                    <Link to="/media" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A1A] text-xs font-black uppercase tracking-widest mt-2 transition-colors">
+                    <h3 className="text-[2.5rem] font-black text-[#1A1A1A] leading-none tracking-tighter">{crop.cropName}</h3>
+                    <Link to="/media" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A1A] text-xs font-black mt-2 transition-colors">
                       View Media <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>

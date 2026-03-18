@@ -74,7 +74,9 @@ const BeeYieldForgotPasswordForm: React.FC<BeeYieldForgotPasswordFormProps> = ({
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         id="by-reset-email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

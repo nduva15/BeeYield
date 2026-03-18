@@ -130,7 +130,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
       <BeeYieldPageShell>
         <BeeYieldPageHeader
           icon={Cpu}
-          label="DEVICE_VIEW"
+          label="Device View"
           title={<>Device <span className="text-[#F4D03F]">Not Found</span></>}
           subtitle="This device is not available in your current registry."
           actions={
@@ -157,7 +157,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
   }
 
   const lastPing = device.last_ping || device.last_ping;
-  const status = device.status === 'active' ? 'NOMINAL' : 'OFFLINE';
+  const status = device.status === 'active' ? 'Nominal' : 'Offline';
   const latest = deviceReadings[0] || null;
 
   const handleSave = async () => {
@@ -213,12 +213,12 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
     <BeeYieldPageShell>
       <BeeYieldPageHeader
         icon={Cpu}
-        label="DEVICE_VIEW"
+        label="Device View"
         title={
           <>
             {device.device_code}{' '}
             <span className="text-[#F4D03F]">
-              {device.device_type?.toUpperCase?.() || 'DEVICE'}
+              {device.device_type?.toUpperCase?.() || 'Device'}
             </span>
           </>
         }
@@ -246,7 +246,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
           <BeeYieldCard className="space-y-4">
             <div className="flex items-center justify-between">
               <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Status</p>
-              <Badge className={cn(glass.badge, status === 'NOMINAL' ? 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]' : 'border-red-500/20 bg-red-500/10 text-red-600')}>
+              <Badge className={cn(glass.badge, status === 'Nominal' ? 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]' : 'border-red-500/20 bg-red-500/10 text-red-600')}>
                 {status}
               </Badge>
             </div>
@@ -271,19 +271,19 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-[#1A1A1A]/70">
                 <MapPin className="w-4 h-4 text-[#F4D03F]" />
-                <span className="text-[11px] font-black uppercase tracking-widest">
+                <span className="text-[11px] font-black">
                   {apiary?.name || device.location_name || '—'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[#1A1A1A]/70">
                 <Hexagon className="w-4 h-4 text-[#1B9157]" />
-                <span className="text-[11px] font-black uppercase tracking-widest">
-                  {hive?.hive_code || 'NO_HIVE_LINK'}
+                <span className="text-[11px] font-black">
+                  {hive?.hive_code || 'No Hive Link'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[#1A1A1A]/70">
                 <Signal className="w-4 h-4 text-[#F4D03F]" />
-                <span className="text-[11px] font-black uppercase tracking-widest">
+                <span className="text-[11px] font-black">
                   FW {device.firmware_version || '—'}
                 </span>
               </div>
@@ -341,11 +341,11 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
                   <Activity className="w-4 h-4 text-[#F4D03F]" />
                 </div>
                 <div className="space-y-0.5">
-                  <h3 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Recent_Readings</h3>
-                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">LAST_50_EVENTS</p>
+                  <h3 className="text-[11px] font-black text-[#1A1A1A] leading-none">Recent_Readings</h3>
+                  <p className="text-[8px] font-black text-gray-400">Last 50 Events</p>
                 </div>
               </div>
-              <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] uppercase tracking-widest px-2 py-0.5">
+              <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] px-2 py-0.5">
                 {deviceReadings.length}
               </Badge>
             </div>
@@ -372,7 +372,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
                         <td className="px-6 py-4 text-[11px] font-bold text-gray-600 tabular-nums">
                           {new Date(r.timestamp).toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-[#1A1A1A]">
+                        <td className="px-6 py-4 text-[11px] font-black text-[#1A1A1A]">
                           {r.sensor_type || 'reading'}
                         </td>
                         <td className="px-6 py-4">

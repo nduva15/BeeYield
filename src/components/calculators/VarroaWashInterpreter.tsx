@@ -112,7 +112,7 @@ const VarroaWashInterpreter: React.FC = () => {
                                 <Zap className="w-5 h-5 text-[#F4D03F]" />
                             </div>
                             <div className="space-y-0.5">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-[#F4D03F]">AI Protocol Suggestion</h3>
+                                <h3 className="text-xs font-black uppercase tracking-widest text-[#F4D03F]">BeeYield Protocol Suggestion</h3>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
                                     <span className="text-[9px] font-black text-gray-400 tracking-widest uppercase">Recommendation Active</span>

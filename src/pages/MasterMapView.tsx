@@ -46,11 +46,11 @@ const MasterMapView: React.FC = () => {
                 subtitle="View locations, boundaries, and placements."
                 actions={
                     <div className="flex gap-3">
-                        <Button variant="outline" className="rounded-xl border border-gray-100 bg-white/50 text-gray-600 font-bold uppercase text-[10px] tracking-widest h-9 px-4 hover:bg-gray-50">
+                        <Button variant="outline" className="rounded-xl border border-gray-100 bg-white/50 text-gray-600 font-bold text-[10px] h-9 px-4 hover:bg-gray-50">
                             <Layers className="w-3.5 h-3.5 mr-2" />
                             Terrain Overlay
                         </Button>
-                        <Button className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-[#1B9157]/10")}>
+                        <Button className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold shadow-lg shadow-[#1B9157]/10")}>
                             <Save className="w-3.5 h-3.5 mr-2" />
                             Sync Changes
                         </Button>
@@ -63,9 +63,9 @@ const MasterMapView: React.FC = () => {
                 {/* Left Toolbar */}
                 <div className="w-14 flex flex-col gap-3">
                     {[
-                        { id: 'select', icon: MousePointer2, label: 'SELECT' },
-                        { id: 'draw', icon: Hexagon, label: 'BOUND' },
-                        { id: 'pallet', icon: MapIcon, label: 'PALLET' },
+                        { id: 'select', icon: MousePointer2, label: 'Select' },
+                        { id: 'draw', icon: Hexagon, label: 'Bound' },
+                        { id: 'pallet', icon: MapIcon, label: 'Pallet' },
                     ].map((tool) => (
                         <button
                             key={tool.id}
@@ -78,7 +78,7 @@ const MasterMapView: React.FC = () => {
                             )}
                         >
                             <tool.icon className="w-4 h-4" />
-                            <span className="text-[6px] font-bold mt-1 tracking-widest">{tool.label}</span>
+                            <span className="text-[6px] font-bold mt-1">{tool.label}</span>
                         </button>
                     ))}
                     <div className="mt-auto space-y-3">
@@ -110,14 +110,14 @@ const MasterMapView: React.FC = () => {
                         <div className="p-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm pointer-events-auto">
                             <div className="flex items-center gap-3 mb-3">
                                 <Compass className="w-4 h-4 text-gray-500" />
-                                <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Feed</span>
+                                <span className="text-[10px] font-bold text-gray-700">Feed</span>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-[9px] font-mono text-gray-400">LAT: —</p>
                                 <p className="text-[9px] font-mono text-gray-400">LON: —</p>
                                 <div className="flex items-center gap-2 mt-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">No fix</p>
+                                    <p className="text-[8px] font-bold text-gray-400">No fix</p>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@ const MasterMapView: React.FC = () => {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
                                         <Shield className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Fence Active</span>
+                                        <span className="text-[10px] font-bold text-[#F4D03F]">Fence Active</span>
                                     </div>
                                     <button
                                         onClick={() => setShowGeofences(false)}
@@ -148,10 +148,10 @@ const MasterMapView: React.FC = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/10">
-                                        <span className="text-[9px] font-bold uppercase tracking-wider">Main Orchard</span>
-                                        <Badge className="bg-[#1B9157] text-[8px] font-bold tracking-widest rounded-md h-5">SECURE</Badge>
+                                        <span className="text-[9px] font-bold tracking-wider">Main Orchard</span>
+                                        <Badge className="bg-[#1B9157] text-[8px] font-bold rounded-md h-5">Secure</Badge>
                                     </div>
-                                    <p className="text-[8px] font-bold text-white/50 uppercase leading-snug tracking-wider">
+                                    <p className="text-[8px] font-bold text-white/50 leading-snug tracking-wider">
                                         Tamper alert will trigger if pallet GPS drifts more than 5m outside polygon.
                                     </p>
                                 </div>
@@ -178,16 +178,16 @@ const MasterMapView: React.FC = () => {
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-bold uppercase text-gray-400 tracking-widest ml-1">Block Name</label>
+                                <label className="text-[9px] font-bold text-gray-400 ml-1">Block Name</label>
                                 <Input value="Honey Block Alpha" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-xs" readOnly />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold uppercase text-gray-400 tracking-widest ml-1">Acreage</label>
+                                    <label className="text-[9px] font-bold text-gray-400 ml-1">Acreage</label>
                                     <Input value="14.2 AC" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold uppercase text-gray-400 tracking-widest ml-1">Crop</label>
+                                    <label className="text-[9px] font-bold text-gray-400 ml-1">Crop</label>
                                     <Input value="Macadamia" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
                                 </div>
                             </div>
@@ -208,7 +208,7 @@ const MasterMapView: React.FC = () => {
                                 { label: 'Geofences', active: true },
                             ].map((row, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-3 border border-white/10 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/70 group-hover:text-white transition-colors">{row.label}</span>
+                                    <span className="text-[10px] font-bold text-white/70 group-hover:text-white transition-colors">{row.label}</span>
                                     <div className={cn("w-8 h-4 rounded-full border border-white/20 relative transition-all", row.active ? "bg-[#1B9157]" : "bg-transparent")}>
                                         <div className={cn("absolute top-[2px] w-2.5 h-2.5 rounded-full bg-white transition-all shadow-sm", row.active ? "right-[2px]" : "left-[2px]")} />
                                     </div>

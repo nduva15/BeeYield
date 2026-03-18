@@ -133,7 +133,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                         <div className="flex bg-[#F9F7F2] p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
                             <button
                                 onClick={() => setActiveView('dashboard')}
-                                className={cn('h-7 px-3 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-1.5',
+                                className={cn('h-7 px-3 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5',
                                     activeView === 'dashboard' ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F]'
                                 )}
                             >
@@ -142,7 +142,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             </button>
                             <button
                                 onClick={() => setActiveView('details')}
-                                className={cn('h-7 px-3 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-1.5',
+                                className={cn('h-7 px-3 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5',
                                     activeView === 'details' ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F]'
                                 )}
                             >
@@ -164,14 +164,14 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {[
                             { label: 'TOTAL UNITS', value: stats.total, icon: Hexagon, color: 'text-[#1A1A1A]' },
-                            { label: 'HEALTHY', value: stats.healthy, icon: ShieldCheck, color: 'text-[#1B9157]' },
-                            { label: 'ALERTS', value: stats.warnings, icon: Activity, color: 'text-[#FBBE24]' },
-                            { label: 'CRITICAL', value: stats.critical, icon: Box, color: 'text-red-500' },
+                            { label: 'Healthy', value: stats.healthy, icon: ShieldCheck, color: 'text-[#1B9157]' },
+                            { label: 'Alerts', value: stats.warnings, icon: Activity, color: 'text-[#FBBE24]' },
+                            { label: 'Critical', value: stats.critical, icon: Box, color: 'text-red-500' },
                             { label: 'AREA (AC)', value: apiary.size_acres || 0, icon: Sprout, color: 'text-[#1A1A1A]' }
                         ].map((s, i) => (
                             <div key={i} className="bg-white/40 border border-[#F4D03F]/10 p-3 rounded-xl flex flex-col gap-1 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all backdrop-blur-sm shadow-sm">
                                 <div className="flex items-center justify-between relative z-10">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">{s.label}</span>
+                                    <span className="text-[8px] font-black text-gray-400">{s.label}</span>
                                     <s.icon className={cn("w-3.5 h-3.5", s.color)} />
                                 </div>
                                 <span className={cn("text-xl font-black tracking-tight tabular-nums relative z-10", s.color)}>{s.value}</span>
@@ -181,8 +181,8 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
 
                     <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
                         <div className="space-y-1">
-                            <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Analytics</h3>
-                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                            <h3 className="text-[10px] font-black text-[#1A1A1A]">Analytics</h3>
+                            <p className="text-[9px] font-bold text-gray-400">
                                 No synthetic charts. Add real telemetry/harvest data to populate analytics.
                             </p>
                         </div>
@@ -199,8 +199,8 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             >
                                 <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
                                     <div className="space-y-0.5">
-                                        <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Asset Matrix</h3>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">High-Density Grid</p>
+                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Asset Matrix</h3>
+                                        <p className="text-[8px] font-bold text-gray-400">High-Density Grid</p>
                                     </div>
                                     <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg gap-1 border border-[#F4D03F]/10 shadow-inner">
                                         <button
@@ -302,7 +302,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                         </div>
                                         <div className="space-y-0.5">
                                             <h3 className="text-sm font-semibold text-[#1A1A1A]">Devices</h3>
-                                            <p className={cn(glass.microLabel, "opacity-40 uppercase tracking-widest")}>Device management</p>
+                                            <p className={cn(glass.microLabel, "opacity-40")}>Device management</p>
                                         </div>
                                     </div>
                                     <button
@@ -456,7 +456,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     <div className="space-y-1 relative z-10">
                         <div className="flex items-center gap-3">
                             <div className="px-3 py-1 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/20">
-                                <span className="uppercase tracking-widest font-black text-[9px] text-[#F4D03F]">{editingApiary ? 'Edit Location' : 'Add New Location'}</span>
+                                <span className=" font-black text-[9px] text-[#F4D03F]">{editingApiary ? 'Edit Location' : 'Add New Location'}</span>
                             </div>
                         </div>
                         <h1 className="text-lg font-bold text-[#1A1A1A] tracking-tight uppercase">
@@ -473,8 +473,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 <Layers className="w-4 h-4 text-[#F4D03F]" />
                             </div>
                             <div className="space-y-0.5">
-                                <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-[#1A1A1A]">Unit Parameters</h3>
-                                <p className="text-[8px] font-bold text-[#F4D03F] uppercase tracking-[0.1em]">Fill in the basics for this location.</p>
+                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Unit Parameters</h3>
+                                <p className="text-[8px] font-bold text-[#F4D03F]">Fill in the basics for this location.</p>
                             </div>
                         </div>
                     </div>
@@ -483,36 +483,36 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Site Identifier*</Label>
+                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Site Identifier*</Label>
                                     <Input
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="ACACIA_VALLEY_01"
-                                        className={cn(glass.input, "px-4 h-10 text-[11px] font-black uppercase tracking-wider")}
+                                        placeholder="Acacia Valley 01"
+                                        className={cn(glass.input, "px-4 h-10 text-[11px] font-black tracking-wider")}
                                     />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label className="text-xs font-semibold text-gray-500 ml-2">Placement</Label>
                                     <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
                                             <div className="flex items-center gap-3">
                                                 <Target className="w-3.5 h-3.5 text-[#F4D03F]" />
                                                 <SelectValue placeholder="Select type" />
                                             </div>
                                         </SelectTrigger>
                                         <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
-                                            <SelectItem value="permanent" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Permanent Site</SelectItem>
-                                            <SelectItem value="migratory" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Migratory Site</SelectItem>
-                                            <SelectItem value="breeding" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Breeding Site</SelectItem>
-                                            <SelectItem value="quarantine" className="text-[9px] font-black uppercase tracking-widest focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Isolation Site</SelectItem>
+                                            <SelectItem value="permanent" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Permanent Site</SelectItem>
+                                            <SelectItem value="migratory" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Migratory Site</SelectItem>
+                                            <SelectItem value="breeding" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Breeding Site</SelectItem>
+                                            <SelectItem value="quarantine" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Isolation Site</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Unit Capacity</Label>
+                                        <Label className="text-[9px] font-black text-gray-400 ml-2">Unit Capacity</Label>
                                         <div className="relative">
                                             <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                             <Input
@@ -520,12 +520,12 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                                 value={formData.expected_hives || ''}
                                                 onChange={(e) => setFormData({ ...formData, expected_hives: parseInt(e.target.value) || 0 })}
                                                 placeholder="0"
-                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums tracking-widest"
+                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Area (AC)</Label>
+                                        <Label className="text-[9px] font-black text-gray-400 ml-2">Area (AC)</Label>
                                         <div className="relative">
                                             <Sprout className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                                             <Input
@@ -534,7 +534,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                                 value={formData.size_acres || ''}
                                                 onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 0 })}
                                                 placeholder="0.0"
-                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums tracking-widest"
+                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums"
                                             />
                                         </div>
                                     </div>
@@ -543,14 +543,14 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
                             <div className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Geospatial Point</Label>
+                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Geospatial Point</Label>
                                     <div className="relative">
                                         <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                         <Input
                                             value={formData.location_name}
                                             onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
                                             placeholder="GPS / ADDRESS"
-                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl uppercase tracking-wider"
+                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl tracking-wider"
                                         />
                                     </div>
                                 </div>
@@ -562,14 +562,14 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         <Input
                                             value={formData.forage_type}
                                             onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
-                                            placeholder="LAVENDER_CLUSTER_PRO"
-                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl uppercase tracking-wider"
+                                            placeholder="Lavender Cluster Pro"
+                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl tracking-wider"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black tracking-[0.2em] text-gray-400 uppercase ml-2">Operational Log</Label>
+                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Operational Log</Label>
                                     <Textarea
                                         value={formData.notes}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -583,14 +583,14 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                         <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10">
                             <button
                                 onClick={resetForm}
-                                className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black uppercase tracking-[0.3em]")}
+                                className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black")}
                             >
                                 Discard_Draft
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={createApiary.isPending || updateApiary.isPending}
-                                className={cn(glass.btnPrimary, "h-11 px-10 text-[9px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#F4D03F]/10")}
+                                className={cn(glass.btnPrimary, "h-11 px-10 text-[9px] font-black shadow-xl shadow-[#F4D03F]/10")}
                             >
                                 {createApiary.isPending || updateApiary.isPending ? (
                                     <RefreshCw className="w-4 h-4 animate-spin mr-2" />
@@ -630,13 +630,13 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             />
             <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
                 <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Total Apiaries</span>
+                    <span className="text-[9px] font-black text-gray-400">Total Apiaries</span>
                     <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
                         <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
                     </div>
                 </div>
                 <div className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums mt-2">{apiaries.length}</div>
-                <p className="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Records</p>
+                <p className="text-[8px] font-bold text-gray-400 mt-1">Records</p>
             </div>
 
             {isLoading ? (
@@ -655,7 +655,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                         <SearchX className="w-6 h-6 text-[#F4D03F] opacity-40" />
                     </div>
                     <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight opacity-40">No Locations Found</h3>
-                    <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center uppercase tracking-widest mt-2">Add your first location to start tracking.</p>
+                    <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center mt-2">Add your first location to start tracking.</p>
                     <button onClick={() => setIsAddingPlace(true)} className={cn(glass.btnPrimary, "mt-6 px-6")}>
                         <Plus className="w-4 h-4 mr-2" /> Add location
                     </button>
@@ -713,22 +713,22 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
                                         <div className="grid grid-cols-2 gap-2 mt-auto">
                                             <div className="p-2 rounded-xl bg-gray-50/50 border border-gray-100 space-y-0.5">
-                                                <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Capacity</p>
+                                                <p className="text-[7px] font-black text-gray-400">Capacity</p>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-sm font-black text-[#1A1A1A] tabular-nums">{apiary.expected_hives || 0}</span>
-                                                    <span className="text-[8px] font-bold text-gray-300">FR</span>
+                                                    <span className="text-[8px] font-bold text-gray-300">Fr</span>
                                                 </div>
                                             </div>
                                             <div className={cn("p-2 rounded-xl border space-y-0.5", (apiary.hive_count || 0) > 0 ? "bg-[#1B9157]/5 border-[#1B9157]/10" : "bg-gray-50/50 border-gray-100")}>
-                                                <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Active_Units</p>
+                                                <p className="text-[7px] font-black text-gray-400">Active_Units</p>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className={cn("text-sm font-black tabular-nums", (apiary.hive_count || 0) > 0 ? "text-[#1B9157]" : "text-gray-300")}>{apiary.hive_count || 0}</span>
-                                                    <span className="text-[8px] font-bold text-gray-300">HUB</span>
+                                                    <span className="text-[8px] font-bold text-gray-300">Hub</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <button className="mt-4 w-full h-9 rounded-xl border border-dashed border-gray-200 text-[8px] font-black uppercase tracking-[0.2em] text-gray-300 group-hover:border-[#F4D03F]/30 group-hover:text-[#F4D03F] group-hover:bg-[#F4D03F]/5 transition-all flex items-center justify-center gap-2">
+                                        <button className="mt-4 w-full h-9 rounded-xl border border-dashed border-gray-200 text-[8px] font-black text-gray-300 group-hover:border-[#F4D03F]/30 group-hover:text-[#F4D03F] group-hover:bg-[#F4D03F]/5 transition-all flex items-center justify-center gap-2">
                                             Open_Network_Interface
                                             <ArrowRight className="w-3 h-3" />
                                         </button>

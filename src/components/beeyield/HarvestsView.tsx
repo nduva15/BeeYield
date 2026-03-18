@@ -220,26 +220,26 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     <FlaskConical className="w-4 h-4 text-white" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Harvest details</h3>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Record what you harvested</p>
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Harvest details</h3>
+                                    <p className="text-[8px] font-black text-gray-400">Record what you harvested</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className={cn(glass.card, "bg-white/40 border-white/20 p-5 shadow-xl")}>
                                 <div className="space-y-1 mb-4">
-                                    <h4 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Batch</h4>
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A]">Batch</h4>
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 border border-white/40 shadow-sm">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ID</span>
+                                        <span className="text-[10px] font-bold text-gray-400 tracking-wider">ID</span>
                                         <span className="text-xs font-bold text-[#F4D03F] tabular-nums">BTCH_{new Date().getTime().toString().slice(-6)}</span>
                                     </div>
                                     <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 border border-white/40 shadow-sm">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</span>
+                                        <span className="text-[10px] font-bold text-gray-400 tracking-wider">Status</span>
                                         <div className="flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                                            <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider">Saved</span>
+                                            <span className="text-[10px] font-bold text-[#1B9157] tracking-wider">Saved</span>
                                         </div>
                                     </div>
                                 </div>
@@ -259,8 +259,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         <Layers className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                    <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Harvest <span className="text-[#F4D03F]">form</span></h2>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Enter harvest details</p>
+                                    <h2 className="text-[11px] font-black text-[#1A1A1A]">Harvest <span className="text-[#F4D03F]">form</span></h2>
+                                        <p className="text-[8px] font-black text-gray-400">Enter harvest details</p>
                                     </div>
                                 </div>
                             </div>
@@ -285,7 +285,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                         {a.name}{a.location_name ? ` — ${a.location_name}` : ''}
                                                     </SelectItem>
                                                 )) : (
-                                                    <div className="p-2 text-center text-[10px] text-gray-400 font-black">NO_APIARIES</div>
+                                                    <div className="p-2 text-center text-[10px] text-gray-400 font-black">No Apiaries</div>
                                                 )}
                                             </SelectContent>
                                         </Select>
@@ -306,7 +306,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                     </SelectItem>
                                                 )) : (
                                                     <div className="p-2 text-center text-[10px] text-gray-400 font-black">
-                                                        {selectedApiaryId ? 'NO_HIVES_IN_APIARY' : 'SELECT_APIARY_FIRST'}
+                                                        {selectedApiaryId ? 'No Hives In Apiary' : 'Select Apiary First'}
                                                     </div>
                                                 )}
                                             </SelectContent>
@@ -395,7 +395,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 placeholder="e.g. Cold Centrifuge"
                                                 value={formData.extraction_method || ''}
                                                 onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
-                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight")}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight")}
                                             />
                                         </div>
                                     </div>
@@ -410,7 +410,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 placeholder="e.g. Sunny"
                                                 value={formData.weather_conditions || ''}
                                                 onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
-                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight")}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight")}
                                             />
                                         </div>
                                     </div>
@@ -420,14 +420,14 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     <button
                                         type="button"
                                         onClick={() => setIsAddingHarvest(false)}
-                                        className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}
+                                        className={cn(glass.btnSecondary, "h-9 px-6 font-black text-[10px] rounded-xl")}
                                     >
                                         Discard
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isCreating}
-                                        className={cn(glass.btnPrimary, "flex-1 h-9 font-black uppercase tracking-[0.2em] text-[10px]")}
+                                        className={cn(glass.btnPrimary, "flex-1 h-9 font-black text-[10px]")}
                                     >
                                         {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                         Save harvest
@@ -597,16 +597,16 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
                                                     <span className="text-sm font-bold text-[#1B9157] tabular-nums">
-                                                        {h.quantity_kg.toFixed(1)} <span className="text-[10px] font-medium opacity-50">KG</span>
+                                                        {h.quantity_kg.toFixed(1)} <span className="text-[10px] font-medium opacity-50">Kg</span>
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
-                                                    <Badge variant="outline" className="border-[#F4D03F]/20 text-[#F4D03F] font-bold text-[10px] uppercase tracking-wider bg-white">
+                                                    <Badge variant="outline" className="border-[#F4D03F]/20 text-[#F4D03F] font-bold text-[10px] tracking-wider bg-white">
                                                         {h.color_grade?.split(' ')[0] || 'A'}
                                                     </Badge>
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    <Badge variant="outline" className="border-[#1B9157]/20 text-[#1B9157] font-bold text-[10px] uppercase tracking-wider bg-white">
+                                                    <Badge variant="outline" className="border-[#1B9157]/20 text-[#1B9157] font-bold text-[10px] tracking-wider bg-white">
                                                         Archived
                                                     </Badge>
                                                 </td>

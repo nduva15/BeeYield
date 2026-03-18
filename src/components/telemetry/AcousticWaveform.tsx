@@ -98,7 +98,7 @@ const AcousticWaveform: React.FC = () => {
                     </div>
                 </div>
 
-                {/* AI Interpretation */}
+                {/* Interpretation */}
                 <div className="mt-6 space-y-4">
                     <div className="flex items-center justify-between border-b-2 border-[#064e3b]/5 pb-4">
                         <div className="flex items-center gap-2">

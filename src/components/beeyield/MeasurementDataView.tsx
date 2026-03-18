@@ -65,11 +65,11 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     <div className="flex flex-wrap gap-3">
                         <button className={cn(glass.btnSecondary, "h-9 px-6 rounded-xl flex items-center gap-2")}>
                             <FileText className="w-3.5 h-3.5 text-[#F4D03F]" />
-                            <span>EXPORT_REPORT</span>
+                            <span>Export Report</span>
                         </button>
                         <button className={cn(glass.btnSecondary, "h-9 px-6 rounded-xl flex items-center gap-2")}>
                             <Download className="w-3.5 h-3.5 text-[#F4D03F]" />
-                            <span>RAW_DATASET</span>
+                            <span>Raw Dataset</span>
                         </button>
                         <Select value={timeRange} onValueChange={setTimeRange}>
                             <SelectTrigger className={cn(glass.select, "w-[160px] h-9 rounded-xl")}>
@@ -79,9 +79,9 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                                 </div>
                             </SelectTrigger>
                             <SelectContent className={cn(glass.selectContent, "rounded-xl")}>
-                                <SelectItem value="24h" className="font-black uppercase text-[9px] tracking-[0.2em]">24H_CYCLE</SelectItem>
-                                <SelectItem value="7d" className="font-black uppercase text-[9px] tracking-[0.2em]">7D_CYCLE</SelectItem>
-                                <SelectItem value="30d" className="font-black uppercase text-[9px] tracking-[0.2em]">30D_CYCLE</SelectItem>
+                                <SelectItem value="24h" className="font-black text-[9px]">24h Cycle</SelectItem>
+                                <SelectItem value="7d" className="font-black text-[9px]">7d Cycle</SelectItem>
+                                <SelectItem value="30d" className="font-black text-[9px]">30d Cycle</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -91,10 +91,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'THERMAL_INTERNAL', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-amber-500' },
-                    { label: 'AMBIENT_SATURATION', value: `${latest.hum}%`, icon: Droplets, color: 'text-blue-500' },
-                    { label: 'COLONY_BIOMASS', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#1B9157]' },
-                    { label: 'ACOUSTIC_SIGNATURE', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]' },
+                    { label: 'Thermal Internal', value: `${latest.temp}°C`, icon: Thermometer, color: 'text-amber-500' },
+                    { label: 'Ambient Saturation', value: `${latest.hum}%`, icon: Droplets, color: 'text-blue-500' },
+                    { label: 'Colony Biomass', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#1B9157]' },
+                    { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]' },
                 ].map((stat, i) => (
                     <motion.div
                         key={stat.label}
@@ -119,13 +119,13 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                 <div className="relative z-10">
                     <div className="flex justify-between items-center mb-8">
                         <div className="space-y-1">
-                            <h3 className="text-[14px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">Thermal_Stability_Registry</h3>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">INTERNAL_ENVIRONMENTAL_CONTROL_AUDIT</p>
+                            <h3 className="text-[14px] font-black text-[#1A1A1A] italic">Thermal_Stability_Registry</h3>
+                            <p className="text-[9px] font-black text-gray-400">Internal Environmental Control Audit</p>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/50 border border-[#F4D03F]/20 shadow-sm">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] animate-pulse shadow-sm shadow-[#F4D03F]/50" />
-                                <span className="text-[9px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Active_Probe_01</span>
+                                <span className="text-[9px] font-black text-[#1A1A1A]">Active_Probe_01</span>
                             </div>
                         </div>
                     </div>
@@ -176,8 +176,8 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                 <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
                     <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1B9157 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                     <div className="flex justify-between items-center mb-8 relative z-10">
-                        <h3 className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">Mass_Variation_KG</h3>
-                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 font-black text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-xl shadow-sm">Active_Scale</Badge>
+                        <h3 className="text-[12px] font-black text-[#1A1A1A] italic">Mass_Variation_KG</h3>
+                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 font-black text-[9px] px-3 py-1 rounded-xl shadow-sm">Active_Scale</Badge>
                     </div>
                     <div className="h-[220px] w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
@@ -195,8 +195,8 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                 <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
                     <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1B9157 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                     <div className="flex justify-between items-center mb-8 relative z-10">
-                        <h3 className="text-[12px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] italic">Saturation_Profile_PCT</h3>
-                        <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 font-black text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-xl shadow-sm">Humidity_Sensor</Badge>
+                        <h3 className="text-[12px] font-black text-[#1A1A1A] italic">Saturation_Profile_PCT</h3>
+                        <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 font-black text-[9px] px-3 py-1 rounded-xl shadow-sm">Humidity_Sensor</Badge>
                     </div>
                     <div className="h-[220px] w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">

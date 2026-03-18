@@ -60,31 +60,56 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                background-color: #ffffff;
+                background-color: #FCFAF5;
                 z-index: 9999;
                 font-family: 'Outfit', sans-serif;
+                transition: opacity 0.5s ease-out;
             }
 
-            @keyframes pulse {
-                0% {
-                    opacity: 0.6;
-                    transform: scale(0.98);
-                }
+            .splash-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                animation: fadeIn 0.8s ease-out forwards;
+            }
 
-                50% {
-                    opacity: 1;
-                    transform: scale(1);
-                }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
 
-                100% {
-                    opacity: 0.6;
-                    transform: scale(0.98);
-                }
+            .loader-bar {
+                width: 120px;
+                height: 2px;
+                background: rgba(27, 145, 87, 0.1);
+                border-radius: 10px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .loader-progress {
+                width: 40%;
+                height: 100%;
+                background: #1B9157;
+                border-radius: 10px;
+                position: absolute;
+                animation: loading 1.5s ease-in-out infinite;
+            }
+
+            @keyframes loading {
+                0% { left: -40%; }
+                100% { left: 100%; }
             }
         </style>
         <div id="splash">
-            <img src="/logo.png" alt="BeeYield"
-                style="width: 160px; height: auto; animation: pulse 1.5s ease-in-out infinite;" />
+            <div class="splash-content">
+                <img src="/logo.png" alt="BeeYield" style="width: 80px; height: auto;" />
+                <h1 style="margin: 0; font-size: 24px; font-weight: 900; color: #1B9157; letter-spacing: -0.02em;">BeeYield</h1>
+                <div class="loader-bar">
+                    <div class="loader-progress"></div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Google Tag Manager (noscript) -->

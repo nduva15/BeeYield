@@ -100,7 +100,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         {alerts.length > 0 && (
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-xl">
                                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                                <span className="text-red-500 font-bold text-[9px] uppercase tracking-widest">{alerts.length} ALERT{alerts.length > 1 ? 'S' : ''}</span>
+                                <span className="text-red-500 font-bold text-[9px]">{alerts.length} ALERT{alerts.length > 1 ? 'S' : ''}</span>
                             </div>
                         )}
                         <button
@@ -133,7 +133,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                     >
                         <AlertTriangle className={cn("w-4 h-4 mt-0.5 shrink-0", hive.status === 'moved' ? "text-red-500" : "text-amber-500")} />
                         <div>
-                            <p className={cn("text-[10px] font-bold uppercase tracking-widest", hive.status === 'moved' ? "text-red-600" : "text-amber-600")}>
+                            <p className={cn("text-[10px] font-bold", hive.status === 'moved' ? "text-red-600" : "text-amber-600")}>
                                 {hive.status === 'moved' ? `Security protocols breached — ${hive.id}` : `Location variance alert — ${hive.id}`}
                             </p>
                             <p className="text-[10px] font-medium text-gray-500 mt-0.5">
@@ -214,7 +214,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         {Object.entries(statusConfig).map(([key, s]) => (
                             <div key={key} className="flex items-center gap-2">
                                 <div className={cn("w-2.5 h-2.5 rounded-full", s.dot.split(' ')[0])} />
-                                <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">{s.label}</span>
+                                <span className="text-[8px] font-black text-gray-400">{s.label}</span>
                             </div>
                         ))}
                     </div>
@@ -223,7 +223,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                 <div className="lg:col-span-4 space-y-4">
                     <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 shadow-xl space-y-4")}>
                         <div className="border-b border-[#F4D03F]/10 pb-3">
-                            <h3 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-[0.3em]">Node_Integrity</h3>
+                            <h3 className="text-[10px] font-black text-[#1A1A1A]">Node_Integrity</h3>
                         </div>
                         <div className="space-y-2 max-h-[440px] overflow-y-auto pr-1 custom-scrollbar">
                             {hives.map(h => {
@@ -245,18 +245,18 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2.5">
                                                 <div className={cn("w-2 h-2 rounded-full", s.dot.split(' ')[0])} />
-                                                <span className="text-[10px] font-black uppercase tracking-tight">{h.id}</span>
+                                                <span className="text-[10px] font-black tracking-tight">{h.id}</span>
                                             </div>
                                             <span className={cn(
-                                                "text-[8px] font-black uppercase px-2 py-0.5 rounded-lg tracking-widest",
+                                                "text-[8px] font-black px-2 py-0.5 rounded-lg",
                                                 isSelected ? "bg-white/10 text-white" :
                                                     h.status === 'nominal' ? "bg-emerald-50 text-emerald-600" : "bg-amber-100 text-amber-600"
                                             )}>{s.label}</span>
                                         </div>
                                         <div className="flex items-end justify-between">
-                                            <span className={cn("text-[8px] font-black uppercase tracking-widest", isSelected ? "text-white/40" : "text-gray-400")}>{h.block}</span>
+                                            <span className={cn("text-[8px] font-black", isSelected ? "text-white/40" : "text-gray-400")}>{h.block}</span>
                                             <div className="text-right">
-                                                <p className={cn("text-[7px] font-black uppercase mb-1 tracking-widest", isSelected ? "text-white/40" : "text-gray-400")}>DENSITY_{h.saturation}%</p>
+                                                <p className={cn("text-[7px] font-black mb-1", isSelected ? "text-white/40" : "text-gray-400")}>DENSITY_{h.saturation}%</p>
                                                 <div className={cn("h-1 w-16 rounded-full overflow-hidden", isSelected ? "bg-white/10" : "bg-gray-100")}>
                                                     <div
                                                         className={cn("h-full", h.saturation > 60 ? "bg-[#1B9157]" : h.saturation > 30 ? "bg-[#F4D03F]" : "bg-red-500")}

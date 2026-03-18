@@ -48,10 +48,10 @@ const MetersAlarms: React.FC = () => {
 
     const getSeverityStyles = (severity: string) => {
         switch (severity.toUpperCase()) {
-            case 'CRITICAL':
-            case 'ALERT':
+            case 'Critical':
+            case 'Alert':
                 return 'text-red-600 border-red-200 bg-red-50';
-            case 'WARNING':
+            case 'Warning':
                 return 'text-[#F4D03F] border-amber-200 bg-amber-50';
             default:
                 return 'text-blue-600 border-blue-200 bg-blue-50';
@@ -60,10 +60,10 @@ const MetersAlarms: React.FC = () => {
 
     const getBadgeStyles = (severity: string) => {
         switch (severity.toUpperCase()) {
-            case 'CRITICAL':
-            case 'ALERT':
+            case 'Critical':
+            case 'Alert':
                 return 'bg-red-100 text-red-700';
-            case 'WARNING':
+            case 'Warning':
                 return 'bg-amber-100 text-[#F4D03F]';
             default:
                 return 'bg-blue-100 text-blue-700';
@@ -86,14 +86,14 @@ const MetersAlarms: React.FC = () => {
                     <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                         <Bell className="w-4 h-4 text-[#F4D03F]" />
                     </div>
-                    <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">ACTIVE_INCIDENT_LOG</h3>
+                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Active Incident Log</h3>
                 </div>
                 <div className="p-0">
                     <div className="divide-y divide-white/10">
                         {loading ? (
                             <div className="p-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>
                         ) : events.length === 0 ? (
-                            <div className="p-12 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">NO_ACTIVE_ALARMS_FOUND</div>
+                            <div className="p-12 text-center text-[10px] font-black text-gray-400">No Active Alarms Found</div>
                         ) : (
                             events.map((event) => (
                                 <div key={event.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between hover:bg-white/50 transition-colors group">
@@ -108,35 +108,35 @@ const MetersAlarms: React.FC = () => {
                                                     <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
                                                 </div>
                                             )}
-                                            <h4 className="font-black text-[#1A1A1A] uppercase tracking-widest text-[11px]">{event.event_type}</h4>
+                                            <h4 className="font-black text-[#1A1A1A] text-[11px]">{event.event_type}</h4>
                                         </div>
-                                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{event.message || event.reason}</p>
+                                        <p className="text-[9px] font-bold text-gray-500">{event.message || event.reason}</p>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">{getMeterInfo(event.meter_id)}</span>
-                                            <span className="text-[8px] font-black text-[#1B9157] uppercase tracking-[0.2em]">ARCHIVE_TS: {new Date(event.timestamp).toLocaleString()}</span>
+                                            <span className="text-[8px] font-black text-gray-400">{getMeterInfo(event.meter_id)}</span>
+                                            <span className="text-[8px] font-black text-[#1B9157]">ARCHIVE_TS: {new Date(event.timestamp).toLocaleString()}</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <div className="flex flex-col items-end gap-2">
-                                            <span className={cn("px-2.5 py-1 rounded-md font-black text-[8px] uppercase tracking-[0.2em] shadow-sm",
-                                                event.severity.toUpperCase() === 'CRITICAL' ? "bg-red-500 text-white" :
-                                                    event.severity.toUpperCase() === 'WARNING' ? "bg-[#F4D03F] text-[#1A1A1A]" : "bg-blue-500 text-white"
+                                            <span className={cn("px-2.5 py-1 rounded-md font-black text-[8px] shadow-sm",
+                                                event.severity.toUpperCase() === 'Critical' ? "bg-red-500 text-white" :
+                                                    event.severity.toUpperCase() === 'Warning' ? "bg-[#F4D03F] text-[#1A1A1A]" : "bg-blue-500 text-white"
                                             )}>
                                                 {event.severity}
                                             </span>
-                                            <span className={cn("px-2.5 py-1 rounded-md font-black text-[8px] uppercase tracking-[0.2em] flex items-center gap-1.5",
+                                            <span className={cn("px-2.5 py-1 rounded-md font-black text-[8px] flex items-center gap-1.5",
                                                 event.is_resolved ? 'bg-green-500/10 text-[#1B9157] border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20 animate-pulse'
                                             )}>
-                                                {event.is_resolved ? 'RESOLVED' : 'ACTIVE_INCIDENT'}
+                                                {event.is_resolved ? 'Resolved' : 'Active Incident'}
                                             </span>
                                         </div>
-                                        <button className={cn(glass.btnSecondary, "hidden md:flex bg-white/50 border-white/40 font-black text-[8px] uppercase tracking-[0.2em] h-8 px-4")}>COMMAND_FIX</button>
+                                        <button className={cn(glass.btnSecondary, "hidden md:flex bg-white/50 border-white/40 font-black text-[8px] h-8 px-4")}>Command Fix</button>
                                     </div>
                                 </div>
                             ))
                         )}
                         <div className="p-5 bg-white/20 border-t border-white/10 text-center">
-                            <span className="text-[9px] font-black text-gray-400 hover:text-[#1A1A1A] uppercase tracking-[0.2em] cursor-pointer transition-colors border-b border-transparent hover:border-[#1A1A1A]">
+                            <span className="text-[9px] font-black text-gray-400 hover:text-[#1A1A1A] cursor-pointer transition-colors border-b border-transparent hover:border-[#1A1A1A]">
                                 RETRIEVE_LEGACY_ARCHIVES
                             </span>
                         </div>
@@ -148,8 +148,8 @@ const MetersAlarms: React.FC = () => {
                 {/* Stats Card */}
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-white/40 border-white/20")}>
                     <div className="p-5 border-b border-white/10 bg-white/20">
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">INCIDENT_METRICS</h3>
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">TELEMETRY_STRATIFICATION_BY_URGENCY</p>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Incident Metrics</h3>
+                        <p className="text-[9px] font-black text-gray-400 mt-1">Telemetry Stratification By Urgency</p>
                     </div>
                     <div className="p-5">
                         <div className="space-y-6">
@@ -160,7 +160,7 @@ const MetersAlarms: React.FC = () => {
                                 return (
                                     <div key={s} className="space-y-2">
                                         <div className="flex justify-between items-end">
-                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">URGENCY_{s.toUpperCase()}</span>
+                                            <span className="text-[9px] font-black text-gray-400">URGENCY_{s.toUpperCase()}</span>
                                             <span className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">{count}</span>
                                         </div>
                                         <div className="h-2 w-full bg-white/50 rounded-full overflow-hidden border border-white/40">
@@ -181,17 +181,17 @@ const MetersAlarms: React.FC = () => {
                 {/* Info Card */}
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-[#1B9157]/10 border-[#1B9157]/20 flex flex-col justify-between")}>
                     <div className="p-5">
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">SYSTEM_INTEGRITY</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">System Integrity</h3>
                     </div>
                     <div className="p-5 pt-0 space-y-6 flex-1 flex flex-col justify-end">
                         <div className="p-5 rounded-2xl bg-white/50 border border-white/40 flex items-center justify-between shadow-sm">
                             <div>
-                                <h4 className="text-[9px] font-black text-[#1A1A1A] uppercase tracking-widest">PROTOCOL_NOMINAL</h4>
-                                <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">RESOLUTION_BENCHMARKS_EXCEEDING_TARGETS</p>
+                                <h4 className="text-[9px] font-black text-[#1A1A1A]">Protocol Nominal</h4>
+                                <p className="text-[8px] font-bold text-gray-500 mt-1">Resolution Benchmarks Exceeding Targets</p>
                             </div>
                             <CheckCircle2 className="w-6 h-6 text-[#1B9157]" />
                         </div>
-                        <button className={cn(glass.btnPrimary, "w-full h-10 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-md")}>
+                        <button className={cn(glass.btnPrimary, "w-full h-10 rounded-xl font-black text-[9px] shadow-md")}>
                             INITIATE_SCAN
                         </button>
                     </div>

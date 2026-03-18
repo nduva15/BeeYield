@@ -116,7 +116,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                     return (
                                                         <div key={idx} className="space-y-0.5 pt-2 first:pt-0">
                                                             <div className="px-3 py-1.5">
-                                                                <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{sub.title}</span>
+                                                                <span className="text-[10px] font-semibold text-gray-400 tracking-wider">{sub.title}</span>
                                                             </div>
                                                             {sub.items.map((subItem: any) => (
                                                                 <button

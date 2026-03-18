@@ -22,7 +22,9 @@ import {
     Download,
     XCircle,
     Settings,
-    Truck
+    Truck,
+    ArrowLeft,
+    Lock as LockIcon
 } from 'lucide-react';
 
 import { useState, useEffect } from 'react';
@@ -53,7 +55,7 @@ import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
 import { adminService } from '@/services/adminService';
 
 // Toast utility import (adjust if needed)
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const ShopDashboard = () => {
@@ -150,6 +152,9 @@ const ShopDashboard = () => {
 
     // Local state
     const [addresses, setAddresses] = useState<Address[]>([]);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [suggestions, setSuggestions] = useState<Product[]>([]);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -159,6 +164,7 @@ const ShopDashboard = () => {
         email: '',
         phone: ''
     });
+    const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
     const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
 
     const loadSuggestions = async () => {
@@ -302,9 +308,15 @@ const ShopDashboard = () => {
         }
     };
 
-    const updateAddress = async (id: string, updatedAddr: unknown) => {
-        // For simplicity, we'll reuse saveAddress but backend should handle ID if present
-        await saveAddress(updatedAddr);
+    const updateAddress = async (id: string, updatedAddr: Partial<Address>) => {
+        try {
+            const { updateAddress: updateAddressApi } = await import('@/services/shopService');
+            const updated = await updateAddressApi(id, updatedAddr) as Address;
+            setAddresses(addresses.map(a => a.id === id ? updated : a));
+            toast.success("Address updated");
+        } catch (error) {
+            toast.error("Failed to update address");
+        }
     };
 
     const handleDeleteAddress = async (id: string) => {
@@ -430,7 +442,7 @@ const ShopDashboard = () => {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div>
                                 <h1 className="text-5xl font-black tracking-tightest text-beeyield-green">Dashboard <span className="text-beeyield-gold italic">Overview</span></h1>
-                                <p className="text-beeyield-green/40 font-bold uppercase tracking-widest text-xs mt-2">Welcome back to the hive, {profileForm.firstName || 'Customer'}</p>
+                                <p className="text-beeyield-green/40 font-bold text-xs mt-2">Welcome back to the hive, {profileForm.firstName || 'Customer'}</p>
                             </div>
                             <Button onClick={() => navigate('/shop')} className="rounded-full px-10 h-14 shadow-xl shadow-beeyield-green/20 text-sm">
                                 <ShoppingBag className="w-5 h-5 mr-2" /> Start Shopping
@@ -448,7 +460,7 @@ const ShopDashboard = () => {
                                     <CardContent className="p-8">
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30 mb-3">{stat.label}</p>
+                                                <p className="text-[10px] font-black text-beeyield-green/30 mb-3">{stat.label}</p>
                                                 <p className="text-3xl font-black text-beeyield-green">{stat.value}</p>
                                             </div>
                                             <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
@@ -478,7 +490,7 @@ const ShopDashboard = () => {
                                     <div className="space-y-6 pt-4">
                                         <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
+                                                <p className="text-[10px] font-black opacity-60">Status</p>
                                                 <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
                                             </div>
                                             <Badge className="bg-primary text-[#1A1A1A]">{trackingInfo.estimated_delivery}</Badge>
@@ -491,7 +503,7 @@ const ShopDashboard = () => {
                                                     <div className="space-y-1">
                                                         <p className={`font-black tracking-tight ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{event.status.toUpperCase()}</p>
                                                         <p className="text-sm text-muted-foreground font-medium">{event.description}</p>
-                                                        <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 uppercase tracking-tighter">
+                                                        <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 tracking-tighter">
                                                             <span>{new Date(event.created_at).toLocaleString()}</span>
                                                             {event.location && <span>• {event.location}</span>}
                                                         </div>
@@ -634,19 +646,19 @@ const ShopDashboard = () => {
                                 <h2 className="text-2xl font-black tracking-tight">Delivery Locations</h2>
                                 <p className="text-muted-foreground">Manage your shipping addresses.</p>
                             </div>
-                            <Dialog>
+                            <Dialog open={isAddressModalOpen} onOpenChange={setIsAddressModalOpen}>
                                 <DialogTrigger asChild>
-                                    <Button><Plus className="h-4 w-4 mr-2" /> Add Address</Button>
+                                    <Button onClick={() => { setEditingAddress(null); setIsAddressModalOpen(true); }}><Plus className="h-4 w-4 mr-2" /> Add Address</Button>
                                 </DialogTrigger>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Add New Address</DialogTitle>
-                                        <DialogDescription>Add a new delivery location for checkout.</DialogDescription>
+                                        <DialogTitle>{editingAddress ? 'Edit Address' : 'Add New Address'}</DialogTitle>
+                                        <DialogDescription>{editingAddress ? 'Update your delivery location details.' : 'Add a new delivery location for checkout.'}</DialogDescription>
                                     </DialogHeader>
                                     <form onSubmit={async (e) => {
                                         e.preventDefault();
                                         const formData = new FormData(e.currentTarget);
-                                        await saveAddress({
+                                        const addressData = {
                                             name: formData.get('name') as string,
                                             email: formData.get('email') as string,
                                             phone: formData.get('phone') as string,
@@ -658,56 +670,60 @@ const ShopDashboard = () => {
                                             county: formData.get('county') as string,
                                             postal_code: formData.get('postal_code') as string,
                                             is_default: (formData.get('is_default') === 'on')
-                                        });
-                                        // Auto-close dialog by mocking a click on the backdrop or just refresh
-                                        window.location.reload();
+                                        };
+                                        if (editingAddress) {
+                                            await updateAddress(editingAddress.id, addressData);
+                                        } else {
+                                            await saveAddress(addressData);
+                                        }
+                                        setIsAddressModalOpen(false);
                                     }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="grid gap-2">
                                             <Label htmlFor="name">Location Name</Label>
-                                            <Input id="name" name="name" required placeholder="Home / Office" />
+                                            <Input id="name" name="name" required placeholder="Home / Office" defaultValue={editingAddress?.name} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="email">Context Email</Label>
-                                            <Input id="email" name="email" type="email" placeholder="delivery@beeyield.com" />
+                                            <Input id="email" name="email" type="email" placeholder="delivery@beeyield.com" defaultValue={editingAddress?.email} />
                                         </div>
                                         <div className="grid gap-2 md:col-span-2">
                                             <Label htmlFor="street">Street & Number</Label>
-                                            <Input id="street" name="street" required placeholder="123 Beevior St" />
+                                            <Input id="street" name="street" required placeholder="123 Beevior St" defaultValue={editingAddress?.street} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="building">Building / Estate</Label>
-                                            <Input id="building" name="building" placeholder="Honey Heights" />
+                                            <Input id="building" name="building" placeholder="Honey Heights" defaultValue={editingAddress?.building} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="apartment">Apartment / Suite</Label>
-                                            <Input id="apartment" name="apartment" placeholder="Unit 402" />
+                                            <Input id="apartment" name="apartment" placeholder="Unit 402" defaultValue={editingAddress?.apartment} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="floor">Floor / Level</Label>
-                                            <Input id="floor" name="floor" placeholder="4th Floor" />
+                                            <Input id="floor" name="floor" placeholder="4th Floor" defaultValue={editingAddress?.floor} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="city">City</Label>
-                                            <Input id="city" name="city" required placeholder="Nairobi" />
+                                            <Input id="city" name="city" required placeholder="Nairobi" defaultValue={editingAddress?.city} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="county">County</Label>
-                                            <Input id="county" name="county" required placeholder="Nairobi" />
+                                            <Input id="county" name="county" required placeholder="Nairobi" defaultValue={editingAddress?.county} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="postal_code">Postal Code</Label>
-                                            <Input id="postal_code" name="postal_code" placeholder="00100" />
+                                            <Input id="postal_code" name="postal_code" placeholder="00100" defaultValue={editingAddress?.postal_code} />
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="phone">Phone Number</Label>
-                                            <Input id="phone" name="phone" required placeholder="+254..." />
+                                            <Input id="phone" name="phone" required placeholder="+254..." defaultValue={editingAddress?.phone} />
                                         </div>
                                         <div className="md:col-span-2 flex items-center gap-2">
-                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4" title="Set this address as default" />
+                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4" title="Set this address as default" defaultChecked={editingAddress?.is_default} />
                                             <Label htmlFor="is_default">Set as default address</Label>
                                         </div>
                                         <div className="md:col-span-2 pt-4">
-                                            <Button type="submit" className="w-full">Save Location</Button>
+                                            <Button type="submit" className="w-full">{editingAddress ? 'Update Location' : 'Save Location'}</Button>
                                         </div>
                                     </form>
 
@@ -733,7 +749,10 @@ const ShopDashboard = () => {
                                         <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => handleDeleteAddress(addr.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="sm" onClick={() => toast.info("Edit feature coming soon. Please delete and re-add for now.")}><Edit2 className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="sm" onClick={() => {
+                                            setEditingAddress(addr);
+                                            setIsAddressModalOpen(true);
+                                        }}><Edit2 className="h-4 w-4" /></Button>
                                     </CardFooter>
 
                                 </Card>
@@ -746,48 +765,48 @@ const ShopDashboard = () => {
                 return (
                     <div className="space-y-6 animate-in fade-in duration-500">
                         <div className="flex justify-between items-center">
-                            <div>
-                                <h2 className="text-2xl font-black tracking-tight">Payment Methods</h2>
-                                <p className="text-muted-foreground">Manage your saved cards and payment details securely with Stripe.</p>
-                            </div>
-                            <Dialog>
+                            <h2 className="text-2xl font-black tracking-tight">Payment Methods</h2>
+                            <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
                                 <DialogTrigger asChild>
-                                    <Button><Plus className="h-4 w-4 mr-2" /> Add Card</Button>
+                                    <Button onClick={() => setIsPaymentModalOpen(true)} className="rounded-full px-8 h-12 shadow-xl shadow-beeyield-green/10">
+                                        <Plus className="w-5 h-4 mr-2" /> Add Payment Method
+                                    </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                    <DialogHeader>
-                                        <DialogTitle className="flex items-center gap-2">
-                                            <CreditCard className="h-5 w-5 text-primary" />
-                                            Add Payment Card
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Your card information is encrypted and processed securely by Stripe.
-                                        </DialogDescription>
+                                <DialogContent className="max-w-md rounded-[2.5rem] p-10 border-none shadow-premium bg-white overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-gold/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
+                                    <DialogHeader className="mb-6 relative z-10">
+                                        <DialogTitle className="text-3xl font-black">Link <span className="text-primary italic">Card</span></DialogTitle>
+                                        <DialogDescription className="text-muted-foreground font-medium">Add a credit or debit card for subscription and shop checkout.</DialogDescription>
                                     </DialogHeader>
-                                    <div className="py-4">
+                                    <div className="bg-[#FFF9F0] p-6 rounded-3xl border border-beeyield-gold/20 mb-6 relative z-10">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="w-10 h-10 rounded-2xl bg-[#1B9157]/10 flex items-center justify-center">
+                                                <Shield className="w-5 h-5 text-[#1B9157]" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-[#1B9157]">Bank-Grade Security</p>
+                                                <p className="text-[10px] font-bold text-muted-foreground">Encrypted by Stripe</p>
+                                            </div>
+                                        </div>
                                         <StripeCardForm
                                             mode="save"
-                                            onSuccess={async (paymentMethod) => {
+                                            buttonText="Link Card Securely"
+                                            onSuccess={async (pm) => {
                                                 try {
-                                                    await saveStripePaymentMethod(paymentMethod.id, {
-                                                        last4: paymentMethod.last4,
-                                                        brand: paymentMethod.brand,
-                                                        exp_month: paymentMethod.exp_month,
-                                                        exp_year: paymentMethod.exp_year,
-                                                    });
-                                                    // Reload payment methods
-                                                    loadUserData();
+                                                    await saveStripePaymentMethod(pm.id, pm);
+                                                    await loadUserData();
+                                                    setIsPaymentModalOpen(false);
                                                 } catch (error) {
-                                                    console.error('Failed to save payment method:', error);
+                                                    console.error('Failed to save card:', error);
                                                     toast.error('Failed to save card. Please try again.');
                                                 }
                                             }}
                                             onError={(error) => {
                                                 console.error('Stripe error:', error);
                                             }}
-                                            buttonText="Save Card Securely"
                                         />
                                     </div>
+                                    <p className="text-[10px] text-center text-muted-foreground font-bold leading-relaxed px-4 opacity-60">By linking your card, you authorize BeeYield to securely store this method for future transactions. You can remove it at any time.</p>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -807,15 +826,20 @@ const ShopDashboard = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {paymentMethods.map((pm) => (
-                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-[#1A1A1A] border-none overflow-hidden relative">
+                                <Card key={pm.id} className="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white border-none overflow-hidden relative shadow-2xl">
+                                    {/* Glassmorphism overlay */}
+                                    <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
                                     {/* Card chip decoration */}
-                                    <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
+                                    <div className="absolute top-6 left-6 w-12 h-10 rounded-lg bg-gradient-to-br from-beeyield-gold to-beeyield-orange/80 shadow-inner" />
+                                    <div className="absolute top-6 right-6 opacity-20 transform translate-x-1/2 -translate-y-1/2">
+                                        <div className="w-32 h-32 rounded-full bg-white/10 blur-3xl" />
+                                    </div>
                                     <CardContent className="p-6 pt-16 relative">
                                         <div className="absolute top-4 right-4">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="text-gray-600 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/10"
+                                                className="text-white/40 hover:text-white hover:bg-white/10"
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
                                             >
                                                 <XCircle className="h-5 w-5" />
@@ -823,7 +847,7 @@ const ShopDashboard = () => {
                                         </div>
                                         <div className="mb-6">
                                             <p
-                                                className="text-2xl font-mono tracking-[0.3em]"
+                                                className="text-2xl font-mono"
                                                 aria-label={`Card ending in ${pm.last4}`}
                                             >
                                                 •••• •••• •••• {pm.last4}
@@ -831,20 +855,20 @@ const ShopDashboard = () => {
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <div>
-                                                <p className="text-[10px] uppercase text-gray-600 mb-1">Card Holder</p>
-                                                <p className="font-medium truncate max-w-[150px]">{pm.card_holder_name || 'Customer'}</p>
+                                                <p className="text-[10px] text-white/40 mb-1 font-black">Card Holder</p>
+                                                <p className="font-bold truncate max-w-[150px] tracking-tight">{pm.card_holder_name || profileForm.firstName + ' ' + profileForm.lastName}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] uppercase text-gray-600 mb-1">Valid Thru</p>
-                                                <p className="font-medium">{String(pm.expiry_month).padStart(2, '0')}/{pm.expiry_year}</p>
+                                                <p className="text-[10px] text-white/40 mb-1 font-black">Valid Thru</p>
+                                                <p className="font-bold">{String(pm.expiry_month).padStart(2, '0')}/{String(pm.expiry_year).slice(-2)}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-bold uppercase tracking-wider">{pm.provider || 'Card'}</p>
+                                                <p className="text-xl font-black italic tracking-tighter opacity-80">{pm.provider || 'Visa'}</p>
                                             </div>
                                         </div>
                                         {(pm.is_default || pm.isDefault) && (
-                                            <Badge className="absolute top-4 left-20 bg-primary text-primary-foreground text-[10px]">
-                                                Default
+                                            <Badge className="absolute top-4 left-24 bg-beeyield-gold text-beeyield-green font-black text-[9px] px-2 py-0 border-none shadow-premium">
+                                                Active
                                             </Badge>
                                         )}
                                     </CardContent>
@@ -1047,6 +1071,7 @@ const ShopDashboard = () => {
                                 postal_code: shippingDetails.postalCode,
                             },
                             payment_method: paymentMethod,
+                            payment_method_id: paymentMethod === 'card' ? (selectedPaymentMethodId || undefined) : undefined,
                             items: items.map(item => ({
                                 product_id: item.productId.toString(),
                                 variant_id: item.variantId,
@@ -1058,7 +1083,6 @@ const ShopDashboard = () => {
 
 
                         const response = await initializeCheckout(orderData, session?.access_token);
-                        await new Promise(r => setTimeout(r, 2000));
                         setOrderNumber(response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
                         clearCart();
                         setCheckoutStep('confirmation');
@@ -1095,7 +1119,7 @@ const ShopDashboard = () => {
                                 <h1 className="text-3xl font-black mb-4">Order Confirmed! 🎉</h1>
                                 <p className="text-muted-foreground mb-8 text-lg">Thank you for your purchase. We're preparing your honey.</p>
                                 <div className="bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50">
-                                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Order Identifier</p>
+                                    <p className="text-xs font-black text-muted-foreground mb-1">Order Identifier</p>
                                     <p className="text-3xl font-black text-primary">{orderNumber}</p>
                                 </div>
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1110,13 +1134,13 @@ const ShopDashboard = () => {
                                     <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-2xl w-fit">
                                         <button
                                             onClick={() => setCheckoutStep('shipping')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
                                         >
                                             1. Shipping
                                         </button>
                                         <button
                                             onClick={() => setCheckoutStep('payment')}
-                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'payment' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${checkoutStep === 'payment' ? 'bg-primary text-[#1A1A1A] shadow-sm' : 'text-muted-foreground'}`}
                                         >
                                             2. Payment
                                         </button>
@@ -1126,7 +1150,7 @@ const ShopDashboard = () => {
                                         <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-6">
                                             {addresses.length > 0 && (
                                                 <div className="space-y-4">
-                                                    <Label className="text-sm font-black uppercase tracking-widest opacity-60">Use a saved location</Label>
+                                                    <Label className="text-sm font-black opacity-60">Use a saved location</Label>
                                                     <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                                                         {addresses.map(addr => (
                                                             <button
@@ -1262,21 +1286,74 @@ const ShopDashboard = () => {
                                             <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
                                                 <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('mpesa')}>
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/ flex items-center justify-center">
+                                                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/10 flex items-center justify-center">
                                                             <Smartphone className="text-[#1B9157]" />
                                                         </div>
                                                         <span className="font-bold text-lg">M-Pesa</span>
                                                     </div>
                                                     <RadioGroupItem value="mpesa" />
                                                 </div>
-                                                <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('card')}>
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                                                            <CardIcon className="text-blue-600" />
+                                                <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex flex-col gap-4 ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('card')}>
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                                                                <CreditCard className="text-blue-600" />
+                                                            </div>
+                                                            <span className="font-bold text-lg">Bank Card</span>
                                                         </div>
-                                                        <span className="font-bold text-lg">Bank Card</span>
+                                                        <RadioGroupItem value="card" />
                                                     </div>
-                                                    <RadioGroupItem value="card" />
+
+                                                    {paymentMethod === 'card' && (
+                                                        <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                            {paymentMethods.length > 0 ? (
+                                                                <>
+                                                                    <p className="text-[10px] font-black text-muted-foreground ml-1">Use Saved Card</p>
+                                                                    <div className="grid gap-2">
+                                                                        {paymentMethods.map(pm => (
+                                                                            <div
+                                                                                key={pm.id}
+                                                                                onClick={(e) => { e.stopPropagation(); setSelectedPaymentMethodId(pm.id); }}
+                                                                                className={`p-4 rounded-2xl border flex items-center justify-between group transition-all cursor-pointer ${selectedPaymentMethodId === pm.id ? 'border-primary bg-white shadow-sm' : 'border-border bg-white/50 hover:bg-white'}`}
+                                                                            >
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-bold text-[10px]">{pm.brand === 'Visa' ? 'V' : 'MC'}</div>
+                                                                                    <span className="font-bold text-sm">•••• {pm.last4}</span>
+                                                                                </div>
+                                                                                <div className={`w-4 h-4 rounded-full border-2 border-primary transition-all ${selectedPaymentMethodId === pm.id ? 'bg-primary' : 'bg-transparent'}`} />
+                                                                            </div>
+                                                                        ))}
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={(e) => { e.stopPropagation(); setSelectedPaymentMethodId(null); }}
+                                                                            className={`w-full justify-start font-bold text-xs h-10 px-4 rounded-xl ${!selectedPaymentMethodId ? 'bg-primary/10 text-primary' : ''}`}
+                                                                        >
+                                                                            + Use a new card
+                                                                        </Button>
+                                                                    </div>
+                                                                </>
+                                                            ) : (
+                                                                <div className="p-4 bg-white/50 rounded-2xl border border-dashed text-center">
+                                                                    <p className="text-xs font-bold text-muted-foreground">No cards saved yet. You'll enter details next.</p>
+                                                                </div>
+                                                            )}
+
+                                                            {!selectedPaymentMethodId && (
+                                                                <div className="p-4 bg-white rounded-2xl shadow-premium animate-in zoom-in-95 duration-300">
+                                                                    <StripeCardForm
+                                                                        mode="save"
+                                                                        buttonText="Verify & Pay"
+                                                                        onSuccess={async (pm) => {
+                                                                            await saveStripePaymentMethod(pm.id, pm);
+                                                                            loadUserData();
+                                                                            setSelectedPaymentMethodId(pm.id);
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </RadioGroup>
                                             <Button onClick={processDashboardPayment} disabled={isProcessing} className="w-full rounded-full h-14 text-xl font-black">
@@ -1299,7 +1376,7 @@ const ShopDashboard = () => {
                                             <Separator className="bg-border/50" />
                                             <div className="flex justify-between">
                                                 <span className="text-muted-foreground">Shipping</span>
-                                                <span className="font-bold">{checkoutShippingCost === 0 ? 'FREE' : `KES ${checkoutShippingCost}`}</span>
+                                                <span className="font-bold">{checkoutShippingCost === 0 ? 'Free' : `KES ${checkoutShippingCost}`}</span>
                                             </div>
                                             <div className="flex justify-between text-xl font-black pt-4 border-t border-border">
                                                 <span>Total</span>
@@ -1349,8 +1426,8 @@ const ShopDashboard = () => {
                     </div>
                     <div className="mb-8 text-center space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-beeyield-gold/10 border border-beeyield-gold/20 mb-2">
-                            <Lock className="w-3 h-3 text-beeyield-gold" />
-                            <span className="text-[10px] font-black text-beeyield-gold tracking-widest uppercase">Secure Portal</span>
+                            <LockIcon className="w-3 h-3 text-beeyield-gold" />
+                            <span className="text-[10px] font-black text-beeyield-gold">Secure Portal</span>
                         </div>
                         <h1 className="text-3xl font-black text-beeyield-green tracking-tightest">Shop <span className="text-beeyield-gold italic">Access</span></h1>
                         <p className="text-sm font-medium text-beeyield-green/60 pb-6">Authenticate to view your orders, track deliveries, and manage your premium honey subscription.</p>
@@ -1386,7 +1463,7 @@ const ShopDashboard = () => {
                             <Button
                                 variant="ghost"
                                 onClick={() => navigate('/shop')}
-                                className="w-full text-beeyield-green/40 hover:text-beeyield-green group font-bold text-xs uppercase tracking-widest"
+                                className="w-full text-beeyield-green/40 hover:text-beeyield-green group font-bold text-xs"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Public Shop
                             </Button>
@@ -1427,7 +1504,7 @@ const ShopDashboard = () => {
                         <div className="space-y-6 pt-4">
                             <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
+                                    <p className="text-[10px] font-black opacity-60">Status</p>
                                     <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
                                 </div>
                                 <Badge className="bg-primary text-[#1A1A1A]">{trackingInfo.estimated_delivery}</Badge>
@@ -1440,7 +1517,7 @@ const ShopDashboard = () => {
                                         <div className="space-y-1">
                                             <p className={`font-black tracking-tight ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{event.status.toUpperCase()}</p>
                                             <p className="text-sm text-muted-foreground font-medium">{event.description}</p>
-                                            <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 uppercase tracking-tighter">
+                                            <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 tracking-tighter">
                                                 <span>{new Date(event.created_at).toLocaleString()}</span>
                                                 {event.location && <span>• {event.location}</span>}
                                             </div>

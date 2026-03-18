@@ -56,7 +56,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
             <div className="flex h-screen w-screen items-center justify-center bg-beeyield-cream/50 backdrop-blur-sm">
                 <div className="text-center">
                     <Loader2 className="mx-auto h-12 w-12 animate-spin text-beeyield-green" />
-                    <p className="mt-4 text-lg font-medium text-beeyield-green/80 font-mono tracking-widest uppercase text-xs">Loading...</p>
+                    <p className="mt-4 text-lg font-medium text-beeyield-green/80 font-mono text-xs">Loading...</p>
                 </div>
             </div>
         );

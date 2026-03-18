@@ -73,7 +73,7 @@ const MeasurementIntervalSelector = () => {
                     key={opt}
                     onClick={() => setSelected(opt)}
                     className={cn(
-                        "flex-1 py-2 text-[9px] font-black rounded-lg transition-all uppercase tracking-widest",
+                        "flex-1 py-2 text-[9px] font-black rounded-lg transition-all",
                         selected === opt
                             ? "bg-[#FFF9F0] text-[#F4D03F] shadow-xl scale-[1.02] z-10 border border-[#F4D03F]/20"
                             : "text-foreground/40 hover:text-foreground/60"
@@ -113,12 +113,12 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                             Bridge Configuration v5.1
                         </div>
                         <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Settings <span className="text-[#F4D03F]">options</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1 tracking-[0.1em]")}>Choose what data to share and how often to sync.</DialogDescription>
+                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1")}>Choose what data to share and how often to sync.</DialogDescription>
                     </div>
 
                     <div className="p-6 space-y-8 relative z-10">
                         <div className="space-y-3">
-                            <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>Measurement Sync Cadence</h4>
+                            <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>Measurement Sync Cadence</h4>
                             <MeasurementIntervalSelector />
                         </div>
 
@@ -134,23 +134,23 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                                         <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
                                             <item.icon className="w-3.5 h-3.5 text-[#F4D03F]" />
                                         </div>
-                                        <h4 className={cn(glass.microLabel, "opacity-80 font-black uppercase tracking-[0.15em]")}>{item.label}</h4>
+                                        <h4 className={cn(glass.microLabel, "opacity-80 font-black")}>{item.label}</h4>
                                     </div>
                                     <ToggleSwitch checked={item.checked} onCheckedChange={item.set} />
-                                    <p className="text-[9px] text-foreground/40 italic font-bold leading-tight uppercase tracking-tighter">{item.desc}</p>
+                                    <p className="text-[9px] text-foreground/40 italic font-bold leading-tight tracking-tighter">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
 
                         <div className="pt-6 flex gap-4 border-t border-border/50">
                             <button
-                                className={cn(glass.btnSecondary, "flex-1 h-10 text-[10px] font-black uppercase tracking-widest")}
+                                className={cn(glass.btnSecondary, "flex-1 h-10 text-[10px] font-black")}
                                 onClick={() => onOpenChange(false)}
                             >
                                 Discard
                             </button>
                             <button
-                                className={cn(glass.btnPrimary, "flex-1 h-10 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-honey/20")}
+                                className={cn(glass.btnPrimary, "flex-1 h-10 text-[10px] font-black shadow-xl shadow-honey/20")}
                                 onClick={() => onOpenChange(false)}
                             >
                                 Persist
@@ -191,30 +191,30 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                             Biosphere Alert Matrix v2.0
                         </div>
                         <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Notify <span className="text-destructive">Engine</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1 tracking-[0.1em]")}>Configuration of real-time sensor discrepancy triggers.</DialogDescription>
+                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1")}>Configuration of real-time sensor discrepancy triggers.</DialogDescription>
                     </div>
 
                     <div className="p-6 space-y-6 relative z-10">
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>Mobile OS Interface</h4>
+                                <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>Mobile OS Interface</h4>
                                 <ToggleSwitch checked={appNotif} onCheckedChange={setAppNotif} />
                             </div>
                             <div className="space-y-2">
-                                <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>SMS Gateway</h4>
+                                <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>SMS Gateway</h4>
                                 <ToggleSwitch checked={smsNotif} onCheckedChange={setSmsNotif} />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <h4 className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em]")}>Primary Email Endpoint</h4>
+                            <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>Primary Email Endpoint</h4>
                             <div className="flex gap-3">
                                 <Input
                                     type="email"
-                                    placeholder="TARGET@BEEYIELD.AI"
-                                    className={cn(glass.input, "h-10 text-[10px] font-black tracking-widest bg-[#F9F7F2]")}
+                                    placeholder="TARGET@BEEYIELD.COM"
+                                    className={cn(glass.input, "h-10 text-[10px] font-black bg-[#F9F7F2]")}
                                 />
-                                <button className={cn(glass.btnSecondary, "h-10 px-6 text-[10px] font-black tracking-widest border-border/50")}>VERIFY</button>
+                                <button className={cn(glass.btnSecondary, "h-10 px-6 text-[10px] font-black border-border/50")}>Verify</button>
                             </div>
                         </div>
 
@@ -227,7 +227,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                                         <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/10">
                                             <Thermometer className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
-                                        <span className={cn(glass.microLabel, "font-black text-[#F4D03F] tracking-widest text-[8px]")}>THERMAL</span>
+                                        <span className={cn(glass.microLabel, "font-black text-[#F4D03F] text-[8px]")}>Thermal</span>
                                     </div>
                                     <ToggleSwitch checked={tempAlerts} onCheckedChange={setTempAlerts} />
                                 </div>
@@ -237,7 +237,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                                         <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20 shadow-lg shadow-emerald-500/10">
                                             <Weight className="w-4 h-4 text-[#1B9157]" />
                                         </div>
-                                        <span className={cn(glass.microLabel, "font-black text-[#1B9157] tracking-widest text-[8px]")}>MASS</span>
+                                        <span className={cn(glass.microLabel, "font-black text-[#1B9157] text-[8px]")}>Mass</span>
                                     </div>
                                     <ToggleSwitch checked={weightAlerts} onCheckedChange={setWeightAlerts} />
                                 </div>
@@ -245,7 +245,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                         </div>
 
                         <button
-                            className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-honey/20 mt-2")}
+                            className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black shadow-xl shadow-honey/20 mt-2")}
                             onClick={() => onOpenChange(false)}
                         >
                             Sync_Matrix
@@ -383,7 +383,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                     </div>
 
                     <div className="space-y-3">
-                        <Label className={cn(glass.microLabel, "ml-2 opacity-40 font-black tracking-[0.2em]")}>ASSET_HANDSHAKE</Label>
+                        <Label className={cn(glass.microLabel, "ml-2 opacity-40 font-black")}>Asset Handshake</Label>
                         <Select value={selectedHive} onValueChange={setSelectedHive}>
                             <SelectTrigger className={glass.select}>
                                 <div className="flex items-center gap-2">
@@ -392,12 +392,12 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                 </div>
                             </SelectTrigger>
                             <SelectContent className={cn(glass.selectContent, "p-2")}>
-                                <SelectItem value="none" className="p-3 rounded-lg font-black tracking-widest text-[10px] text-foreground/40 italic">DESELECT</SelectItem>
+                                <SelectItem value="none" className="p-3 rounded-lg font-black text-[10px] text-foreground/40 italic">Deselect</SelectItem>
                                 {hives
                                     .filter(h => !selectedPlace || selectedPlace === 'none' || h.apiary_id === selectedPlace)
                                     .map(hive => (
-                                        <SelectItem key={hive.id} value={hive.id} className="p-3 rounded-lg font-black tracking-widest text-xs">
-                                            {hive.hive_code ? hive.hive_code.toUpperCase() : 'UID_ERR'}
+                                        <SelectItem key={hive.id} value={hive.id} className="p-3 rounded-lg font-black text-xs">
+                                            {hive.hive_code ? hive.hive_code.toUpperCase() : 'Uid Err'}
                                         </SelectItem>
                                     ))
                                 }
@@ -419,9 +419,9 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         className="grid grid-cols-1 md:grid-cols-3 gap-10"
                     >
                         {[
-                            { label: 'THERMAL_PROFILE', value: latestReading ? `${latestReading.temperature || 0}°C` : '--', icon: Thermometer, color: 'text-[#F4D03F]', sub: 'INTERNAL_BROOD_STATUS' },
-                            { label: 'AMBIENT_SATURATION', value: latestReading ? `${latestReading.humidity || 0}%` : '--', icon: Droplet, color: 'text-blue-500', sub: 'OPTIMAL_NECTAR_STRESS' },
-                            { label: 'COMPOSITE_MASS', value: latestReading ? `${latestReading.weight || 0}kg` : '--', icon: Weight, color: 'text-[#1B9157]', sub: 'YIELD_FLUX_STABILITY' }
+                            { label: 'Thermal Profile', value: latestReading ? `${latestReading.temperature || 0}°C` : '--', icon: Thermometer, color: 'text-[#F4D03F]', sub: 'Internal Brood Status' },
+                            { label: 'Ambient Saturation', value: latestReading ? `${latestReading.humidity || 0}%` : '--', icon: Droplet, color: 'text-blue-500', sub: 'Optimal Nectar Stress' },
+                            { label: 'Composite Mass', value: latestReading ? `${latestReading.weight || 0}kg` : '--', icon: Weight, color: 'text-[#1B9157]', sub: 'Yield Flux Stability' }
                         ].map((stat, i) => (
                             <GlassStatCard
                                 key={i}
@@ -449,8 +449,8 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             {/* Diagnostic Footer */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {[
-                    { label: 'DEVICE_INTEGRITY', icon: Zap, status: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'NOMINAL' : 'AWAITING', desc: 'Temporal bridge status.', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5' },
-                    { label: 'REGISTRY_BRIDGE', icon: Info, status: 'ENCRYPTED', desc: 'Security active.', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5' }
+                    { label: 'Device Integrity', icon: Zap, status: selectedHive && devices.find(d => d.hive_id === selectedHive) ? 'Nominal' : 'Awaiting', desc: 'Temporal bridge status.', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5' },
+                    { label: 'Registry Bridge', icon: Info, status: 'Encrypted', desc: 'Security active.', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5' }
                 ].map((panel, i) => (
                     <motion.div
                         key={i}
@@ -463,10 +463,10 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         </div>
                         <div className="flex-1 space-y-1">
                             <div className="flex items-center justify-between">
-                                <p className={cn(glass.microLabel, "opacity-40 font-black uppercase tracking-[0.2em] text-[8px]")}>{panel.label}</p>
-                                <span className={cn(glass.microLabel, "font-black italic tracking-widest text-[8px]", panel.color)}>{panel.status}</span>
+                                <p className={cn(glass.microLabel, "opacity-40 font-black text-[8px]")}>{panel.label}</p>
+                                <span className={cn(glass.microLabel, "font-black italic text-[8px]", panel.color)}>{panel.status}</span>
                             </div>
-                            <p className="text-[10px] font-black opacity-70 leading-relaxed italic uppercase tracking-tighter text-foreground/80">{panel.desc}</p>
+                            <p className="text-[10px] font-black opacity-70 leading-relaxed italic tracking-tighter text-foreground/80">{panel.desc}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -519,8 +519,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
 
             // Best-effort discovery via Web Bluetooth.
             // Note: requires HTTPS + user gesture; if blocked, we surface a clear error.
-            // @ts-expect-error - Web Bluetooth types may not be present in TS lib
-            const btDevice = await navigator.bluetooth.requestDevice({
+            const btDevice = await (navigator as any).bluetooth.requestDevice({
                 acceptAllDevices: true,
                 optionalServices: [],
             });
@@ -604,7 +603,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                                     </h4>
                                     <p className={glass.microLabel}>{device.device_uid}</p>
                                     
-                                    <div className="mt-6 pt-4 border-t border-[#F4D03F]/10 flex justify-between items-center text-[10px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">
+                                    <div className="mt-6 pt-4 border-t border-[#F4D03F]/10 flex justify-between items-center text-[10px] font-bold text-[#1A1A1A]/40">
                                         <span>Firmware v{device.firmware_version || '1.0'}</span>
                                         <span className="text-[#1B9157]">Encrypted</span>
                                     </div>
@@ -635,7 +634,7 @@ export const USBView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
             <BeeYieldPageHeader
                 icon={Usb}
                 label="Serial Terminal Dashboard v1.8"
-                title={<>USB <span className="text-[#F4D03F]">Architecture</span></>}
+                title={<>Usb<span className="text-[#F4D03F]">Architecture</span></>}
                 subtitle="Manage industrial hub firmware and monitor raw serial output directly via encrypted physical link."
             />
 

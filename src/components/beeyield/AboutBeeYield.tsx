@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Database, Image as ImageIcon, Globe, Shield, Microscope, Bug, Home, Zap, DollarSign, Award, Info } from 'lucide-react';
 import Logo from "@/assets/Logo.png";
 
-interface AboutBeeYieldAIProps {
+interface AboutBeeYieldProps {
     onClose: () => void;
 }
 
@@ -13,7 +13,7 @@ const StatCard = ({ icon: Icon, value, label }: { icon: any, value: string, labe
             <Icon className="w-5 h-5 text-[#F4D03F]" />
         </div>
         <div className="text-xl font-black text-[#1A1A1A] tracking-tight mb-0.5">{value}</div>
-        <div className="text-[8px] font-bold uppercase text-[#1A1A1A]/40 tracking-wider">{label}</div>
+        <div className="text-[8px] font-bold text-[#1A1A1A]/40 tracking-wider">{label}</div>
     </div>
 );
 
@@ -23,13 +23,13 @@ const CapabilityCard = ({ icon: Icon, title, description }: { icon: any, title: 
             <Icon className="w-5 h-5 text-[#F4D03F]" />
         </div>
         <div className="flex flex-col gap-0.5">
-            <h4 className="text-[11px] font-black uppercase tracking-wider text-[#1A1A1A]">{title}</h4>
+            <h4 className="text-[11px] font-black tracking-wider text-[#1A1A1A]">{title}</h4>
             <p className="text-[11px] text-[#1A1A1A]/60 leading-relaxed font-semibold">{description}</p>
         </div>
     </div>
 );
 
-export const AboutBeeYieldAI: React.FC<AboutBeeYieldAIProps> = ({ onClose }) => {
+export const AboutBeeYield: React.FC<AboutBeeYieldProps> = ({ onClose }) => {
     return (
         <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
@@ -49,12 +49,12 @@ export const AboutBeeYieldAI: React.FC<AboutBeeYieldAIProps> = ({ onClose }) => 
                 <div className="flex flex-col items-start gap-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 p-2 flex items-center justify-center">
-                            <img src={Logo} alt="BeeYield AI" className="w-full h-full object-contain" />
+                            <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                         </div>
-                        <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">About BeeYield <span className="text-[#F4D03F]">AI</span></h2>
+                        <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">About BeeYield</h2>
                     </div>
                     <p className="text-sm text-[#1A1A1A]/60 leading-relaxed font-semibold italic">
-                        BeeYield AI is a specialized synchronization layer for apiculture intelligence. Utilizing over 750,000 curated research datasets, we provide high-fidelity diagnostics, identifier protocols, and global economic metrics for the modern beekeeper.
+                        BeeYield is a specialized synchronization layer for apiculture intelligence. Utilizing over 750,000 curated research datasets, we provide high-fidelity diagnostics, identifier protocols, and global economic metrics for the modern beekeeper.
                     </p>
                 </div>
 
@@ -62,7 +62,7 @@ export const AboutBeeYieldAI: React.FC<AboutBeeYieldAIProps> = ({ onClose }) => 
                 <div className="space-y-6">
                     <div className="flex items-center gap-4">
                         <div className="h-px flex-1 bg-[#F4D03F]/10" />
-                        <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1A1A1A]/30 italic">Intelligence Core</h3>
+                        <h3 className="text-[9px] font-black text-[#1A1A1A]/30 italic">Intelligence Core</h3>
                         <div className="h-px flex-1 bg-[#F4D03F]/10" />
                     </div>
                     
@@ -80,7 +80,7 @@ export const AboutBeeYieldAI: React.FC<AboutBeeYieldAIProps> = ({ onClose }) => 
                 <div className="space-y-6">
                     <div className="flex items-center gap-4">
                         <div className="h-px flex-1 bg-[#F4D03F]/10" />
-                        <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1A1A1A]/30 italic">Capabilities</h3>
+                        <h3 className="text-[9px] font-black text-[#1A1A1A]/30 italic">Capabilities</h3>
                         <div className="h-px flex-1 bg-[#F4D03F]/10" />
                     </div>
 

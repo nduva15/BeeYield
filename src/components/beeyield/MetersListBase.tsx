@@ -303,13 +303,13 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 <div className={cn(glass.card, "p-4 border border-red-200 bg-red-50/60")}>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Offline mode</div>
+                            <div className="text-[10px] font-black text-red-600">Offline mode</div>
                             <div className="text-sm font-semibold text-slate-700 mt-1">{error}</div>
                         </div>
                         <button
                             type="button"
                             onClick={refreshMeters}
-                            className={cn(glass.btnSecondary, "h-10 px-4 text-[10px] font-black uppercase tracking-widest")}
+                            className={cn(glass.btnSecondary, "h-10 px-4 text-[10px] font-black")}
                         >
                             Refresh
                         </button>
@@ -321,12 +321,12 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 {!isAddingMeter ? (
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div>
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Add {meterType} meter</h3>
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">Enter the serial number and pick a location.</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Add {meterType} meter</h3>
+                            <p className="text-[9px] font-bold text-gray-500 mt-1">Enter the serial number and pick a location.</p>
                         </div>
                         <button
                             onClick={() => setIsAddingMeter(true)}
-                            className={cn(glass.btnPrimary, "h-9 px-6 font-black uppercase text-[9px] tracking-[0.2em]")}
+                            className={cn(glass.btnPrimary, "h-9 px-6 font-black text-[9px]")}
                         >
                             Add meter
                         </button>
@@ -334,7 +334,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 ) : (
                     <div className="animate-in slide-in-from-top duration-300 space-y-4">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">Meter details</h3>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Meter details</h3>
                             <button
                                 onClick={() => setIsAddingMeter(false)}
                                 className="text-gray-400 hover:bg-white/50 hover:text-[#1A1A1A] rounded-xl h-8 w-8 p-0 flex justify-center items-center transition-colors"
@@ -349,10 +349,10 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                 value={enrollMeterNumber}
                                 onChange={(e) => setEnrollMeterNumber(e.target.value)}
                                 placeholder="Serial number"
-                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] focus-visible:bg-white"
+                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black focus-visible:bg-white"
                             />
                             <Select value={enrollBuildingId} onValueChange={setEnrollBuildingId}>
-                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
                                     <SelectValue placeholder="Location" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -364,7 +364,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                 </SelectContent>
                             </Select>
                             <Select value={enrollApartmentId} onValueChange={setEnrollApartmentId}>
-                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]">
+                                <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
                                     <SelectValue placeholder="Hive (optional)" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -379,7 +379,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                             <button
                                 onClick={handleEnroll}
                                 disabled={enrolling}
-                                className={cn(glass.btnPrimary, "h-9 font-black uppercase text-[9px] tracking-[0.2em]")}
+                                className={cn(glass.btnPrimary, "h-9 font-black text-[9px]")}
                             >
                                 {enrolling ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                                 Add meter
@@ -396,11 +396,11 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                             <Building2 className="w-4 h-4 text-[#1B9157]" />
                         </div>
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] leading-none">INFRASTRUCTURE_<span className="text-[#1B9157]">STATUS</span></h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A] leading-none">Infrastructure <span className="text-[#1B9157]">Status</span></h3>
                     </div>
-                    <button onClick={() => setBuildingsOpen(!buildingsOpen)} className="text-gray-400 font-black uppercase text-[8px] tracking-[0.2em] gap-1.5 hover:bg-white/40 flex items-center px-2 py-1 rounded-lg">
+                    <button onClick={() => setBuildingsOpen(!buildingsOpen)} className="text-gray-400 font-black text-[8px] gap-1.5 hover:bg-white/40 flex items-center px-2 py-1 rounded-lg">
                         {buildingsOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        {buildingsOpen ? 'FOLD_VIEW' : 'EXPAND_VIEW'}
+                        {buildingsOpen ? 'Fold View' : 'Expand View'}
                     </button>
                 </div>
                 {buildingsOpen && (
@@ -408,11 +408,11 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         {buildings.map(b => (
                             <div key={b.id} className={cn(glass.card, "p-4 bg-white/40 backdrop-blur-xl border-white/20 shadow-xl hover:shadow-2xl transition-all group overflow-hidden border-l-[6px] border-l-[#1B9157] rounded-2xl flex flex-col justify-between")}>
                                 <div>
-                                    <h4 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] truncate">{b.name}</h4>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1 line-clamp-1">{b.address}</p>
+                                    <h4 className="text-[11px] font-black text-[#1A1A1A] truncate">{b.name}</h4>
+                                    <p className="text-[8px] font-black text-gray-400 mt-1 line-clamp-1">{b.address}</p>
                                 </div>
                                 <div className="mt-4 flex items-center justify-between">
-                                    <div className="bg-[#1B9157]/10 text-[#1B9157] px-2 py-0.5 border border-[#1B9157]/20 rounded-md text-[8px] font-black uppercase tracking-[0.2em]">
+                                    <div className="bg-[#1B9157]/10 text-[#1B9157] px-2 py-0.5 border border-[#1B9157]/20 rounded-md text-[8px] font-black">
                                         {meters.filter(m => m.building_id === b.id).length} DEVICES
                                     </div>
                                     <div className="w-6 h-6 rounded-lg bg-white/50 flex items-center justify-center border border-white/40">
@@ -429,44 +429,44 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
                 <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div className="space-y-2">
-                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">APIARY_AREA</label>
+                        <label className="text-[8px] font-black text-gray-500 ml-1">Apiary Area</label>
                         <Select value={buildingFilter} onValueChange={setBuildingFilter}>
-                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="ALL" /></SelectTrigger>
+                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black"><SelectValue placeholder="ALL" /></SelectTrigger>
                             <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
-                                <SelectItem value="all" className="uppercase font-black text-[8px] tracking-[0.2em]">ALL_APIARIES</SelectItem>
-                                {buildings.map(b => <SelectItem key={b.id} value={b.id} className="uppercase font-black text-[8px] tracking-[0.2em]">{b.name}</SelectItem>)}
+                                <SelectItem value="all" className=" font-black text-[8px]">All Apiaries</SelectItem>
+                                {buildings.map(b => <SelectItem key={b.id} value={b.id} className=" font-black text-[8px]">{b.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">HIVE_STATION</label>
+                        <label className="text-[8px] font-black text-gray-500 ml-1">Hive Station</label>
                         <Select value={apartmentFilter} onValueChange={setApartmentFilter}>
-                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="ALL" /></SelectTrigger>
+                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black"><SelectValue placeholder="ALL" /></SelectTrigger>
                             <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
-                                <SelectItem value="all" className="uppercase font-black text-[8px] tracking-[0.2em]">ALL_HIVES</SelectItem>
-                                {filteredUnits.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-black text-[8px] tracking-[0.2em]">{a.unit_number}</SelectItem>)}
+                                <SelectItem value="all" className=" font-black text-[8px]">All Hives</SelectItem>
+                                {filteredUnits.map(a => <SelectItem key={a.id} value={a.id} className=" font-black text-[8px]">{a.unit_number}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">STATUS</label>
+                        <label className="text-[8px] font-black text-gray-500 ml-1">Status</label>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black uppercase tracking-[0.2em]"><SelectValue placeholder="ALL" /></SelectTrigger>
+                            <SelectTrigger className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black"><SelectValue placeholder="ALL" /></SelectTrigger>
                             <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
-                                <SelectItem value="all" className="uppercase font-black text-[8px] tracking-[0.2em]">ALL</SelectItem>
-                                <SelectItem value="ok" className="uppercase font-black text-[8px] tracking-[0.2em]">OK</SelectItem>
-                                <SelectItem value="warning" className="uppercase font-black text-[8px] tracking-[0.2em]">WARNING</SelectItem>
-                                <SelectItem value="alert" className="uppercase font-black text-[8px] tracking-[0.2em]">ALERT</SelectItem>
+                                <SelectItem value="all" className=" font-black text-[8px]">All</SelectItem>
+                                <SelectItem value="ok" className=" font-black text-[8px]">Ok</SelectItem>
+                                <SelectItem value="warning" className=" font-black text-[8px]">Warning</SelectItem>
+                                <SelectItem value="alert" className=" font-black text-[8px]">Alert</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="lg:col-span-3 space-y-2">
-                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">SEARCH_IDENTIFIER</label>
+                        <label className="text-[8px] font-black text-gray-500 ml-1">Search Identifier</label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <Input
                                 placeholder="SEARCH BY SENSOR ID OR COORDINATES..."
-                                className="h-9 rounded-xl pl-9 bg-white/50 border-white/40 font-black text-[9px] uppercase focus-visible:bg-white tracking-[0.2em]"
+                                className="h-9 rounded-xl pl-9 bg-white/50 border-white/40 font-black text-[9px] focus-visible:bg-white"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -481,14 +481,14 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/20 bg-white/30">
-                                {['SENSOR_IDENTIFIER', 'DEPLOYMENT_LOCATION', 'TELEMETRY_LOAD', 'STATUS', 'ACTIONS'].map(h => (
-                                    <th key={h} className="text-left py-4 px-5 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">{h}</th>
+                                {['Sensor Identifier', 'Deployment Location', 'Telemetry Load', 'Status', 'Actions'].map(h => (
+                                    <th key={h} className="text-left py-4 px-5 text-[8px] font-black text-gray-400">{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
                             {filteredMeters.length === 0 ? (
-                                <tr><td colSpan={5} className="py-20 text-center text-[10px] font-black text-gray-500 uppercase tracking-widest">NO_MATCHING_METERS_FOUND</td></tr>
+                                <tr><td colSpan={5} className="py-20 text-center text-[10px] font-black text-gray-500">No Matching Meters Found</td></tr>
                             ) : (
                                 filteredMeters.map(meter => (
                                     <tr key={meter.id} className="group hover:bg-white/50 transition-colors">
@@ -501,26 +501,26 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                                     {meterType === 'Other' && <Box className="w-4 h-4 text-gray-500" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em]">{meter.meter_number}</p>
-                                                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{meter.meter_code}</p>
+                                                    <p className="text-[11px] font-black text-[#1A1A1A]">{meter.meter_number}</p>
+                                                    <p className="text-[8px] font-bold text-gray-500 mt-0.5">{meter.meter_code}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="py-4 px-5">
-                                            <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest">{getBuildingName(meter.building_id)}</p>
-                                            <p className="text-[8px] font-bold text-[#1B9157] uppercase tracking-widest mt-0.5">UNIT: {getApartmentNumber(meter.apartment_id)}</p>
+                                            <p className="text-[10px] font-black text-[#1A1A1A]">{getBuildingName(meter.building_id)}</p>
+                                            <p className="text-[8px] font-bold text-[#1B9157] mt-0.5">UNIT: {getApartmentNumber(meter.apartment_id)}</p>
                                         </td>
                                         <td className="py-4 px-5">
-                                            <p className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest">{meter.last_reading_value} {meter.last_reading_unit}</p>
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleDateString() : 'ARCHIVE_N/A'}</p>
+                                            <p className="text-[10px] font-black text-[#1A1A1A]">{meter.last_reading_value} {meter.last_reading_unit}</p>
+                                            <p className="text-[8px] font-bold text-gray-400 mt-0.5">{meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleDateString() : 'ARCHIVE_N/A'}</p>
                                         </td>
                                         <td className="py-4 px-5">
                                             <span className={cn(
-                                                "rounded-md border px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.2em] shadow-sm",
+                                                "rounded-md border px-2.5 py-1 text-[8px] font-black shadow-sm",
                                                 meter.status === 'OK' ? "bg-green-500/10 text-[#1B9157] border-green-500/20" :
-                                                    meter.status === 'WARNING' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : "bg-red-500/10 text-red-500 border-red-500/20"
+                                                    meter.status === 'Warning' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : "bg-red-500/10 text-red-500 border-red-500/20"
                                             )}>
-                                                {meter.status === 'OK' ? 'NOMINAL' : meter.status}
+                                                {meter.status === 'OK' ? 'Nominal' : meter.status}
                                             </span>
                                         </td>
                                         <td className="py-4 px-5">
@@ -554,17 +554,17 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             <div className={cn(glass.card, "p-6 shadow-xl bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">TELEMETRY_EXPORT</h3>
-                        <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] mt-1">ARCHIVE_SYSTEM_RECORDS</p>
+                        <h3 className="text-[9px] font-black text-gray-500">Telemetry Export</h3>
+                        <p className="text-[11px] font-black text-[#1A1A1A] mt-1">Archive System Records</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
-                        <button onClick={() => handleExport('CSV')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}>
+                        <button onClick={() => handleExport('CSV')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black gap-2")}>
                             <FileText className="w-3.5 h-3.5" /> CSV_BATCH
                         </button>
-                        <button onClick={() => handleExport('XLS')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}>
+                        <button onClick={() => handleExport('XLS')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black gap-2")}>
                             <FileSpreadsheet className="w-3.5 h-3.5" /> EXCEL_MATRIX
                         </button>
-                        <button onClick={() => handleExport('PDF')} className={cn(glass.btnPrimary, "h-9 px-6 text-[9px] font-black uppercase tracking-[0.2em] gap-2")}>
+                        <button onClick={() => handleExport('PDF')} className={cn(glass.btnPrimary, "h-9 px-6 text-[9px] font-black gap-2")}>
                             {downloading === 'PDF' ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
                             PDF_OPERATIONAL_REPORT
                         </button>

@@ -85,10 +85,10 @@ export const BeeSpeciesGallery: React.FC = () => {
             {/* Header Section */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter uppercase">
+                    <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter">
                         Species <span className="text-[#F4D03F]">Identification</span>
                     </h2>
-                    <p className="text-[#1A1A1A]/40 font-bold uppercase tracking-widest text-[9px]">
+                    <p className="text-[#1A1A1A]/40 font-bold text-[9px]">
                         Global Pollinator Taxonomy Database
                     </p>
                 </div>
@@ -130,7 +130,7 @@ export const BeeSpeciesGallery: React.FC = () => {
                     <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all shadow-sm border",
+                        className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black transition-all shadow-sm border",
                             selectedCategory === cat 
                             ? 'bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F]/20' 
                             : 'bg-[#FFF9F0] text-[#1A1A1A]/40 border-[#F4D03F]/5 hover:border-[#F4D03F]/20'
@@ -174,7 +174,7 @@ export const BeeSpeciesGallery: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="absolute bottom-2 left-2">
-                                    <div className="bg-[#1A1A1A]/80 backdrop-blur-md text-[#FFF9F0] font-black text-[7px] uppercase tracking-widest px-2 py-0.5 rounded-md">
+                                    <div className="bg-[#1A1A1A]/80 backdrop-blur-md text-[#FFF9F0] font-black text-[7px] px-2 py-0.5 rounded-md">
                                         {bee.category}
                                     </div>
                                 </div>
@@ -274,10 +274,10 @@ export const BeeSpeciesGallery: React.FC = () => {
                             {/* Modal Right - Info */}
                             <div className="md:w-7/12 p-6 md:p-10 flex flex-col gap-6 h-full overflow-y-auto custom-scroll">
                                 <div className="space-y-1">
-                                    <div className="inline-block bg-[#F4D03F] text-[#1A1A1A] font-black uppercase text-[8px] tracking-[0.2em] px-3 py-1 rounded-md mb-2 shadow-sm">
+                                    <div className="inline-block bg-[#F4D03F] text-[#1A1A1A] font-black text-[8px] px-3 py-1 rounded-md mb-2 shadow-sm">
                                         {selectedBee.category}
                                     </div>
-                                    <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter uppercase leading-none">{selectedBee.name}</h2>
+                                    <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter leading-none">{selectedBee.name}</h2>
                                     <p className="text-sm text-[#1A1A1A]/40 font-bold italic">{selectedBee.scientificName}</p>
                                 </div>
 
@@ -290,14 +290,14 @@ export const BeeSpeciesGallery: React.FC = () => {
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="p-3 bg-[#F9F7F2] rounded-xl border border-[#F4D03F]/5">
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-[#1A1A1A]/30 block mb-1">Conservation</span>
+                                            <span className="text-[8px] font-black text-[#1A1A1A]/30 block mb-1">Conservation</span>
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.5)]" />
                                                 <span className="text-xs font-black text-[#1A1A1A]">{selectedBee.conservationStatus}</span>
                                             </div>
                                         </div>
                                         <div className="p-3 bg-[#F9F7F2] rounded-xl border border-[#F4D03F]/5">
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-[#1A1A1A]/30 block mb-1">Distribution</span>
+                                            <span className="text-[8px] font-black text-[#1A1A1A]/30 block mb-1">Distribution</span>
                                             <div className="flex items-center gap-2 text-[#1A1A1A]">
                                                 <MapPin className="w-3 h-3 text-[#F4D03F]" />
                                                 <span className="text-xs font-black truncate">{selectedBee.range}</span>
@@ -306,10 +306,10 @@ export const BeeSpeciesGallery: React.FC = () => {
                                     </div>
 
                                     <div className="space-y-3">
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-[#1A1A1A]/30 italic">Diagnostic Characteristics</span>
+                                        <span className="text-[8px] font-black text-[#1A1A1A]/30 italic">Diagnostic Characteristics</span>
                                         <div className="flex flex-wrap gap-2">
                                             {selectedBee.traits.map((trait: string) => (
-                                                <span key={trait} className="px-3 py-1.5 bg-[#FFF9F0] text-[#1A1A1A] border border-[#F4D03F]/20 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm">
+                                                <span key={trait} className="px-3 py-1.5 bg-[#FFF9F0] text-[#1A1A1A] border border-[#F4D03F]/20 rounded-lg text-[9px] font-black shadow-sm">
                                                     {trait}
                                                 </span>
                                             ))}
@@ -318,7 +318,7 @@ export const BeeSpeciesGallery: React.FC = () => {
                                 </div>
 
                                 <div className="mt-auto flex gap-3 pt-6 border-t border-[#F4D03F]/10">
-                                    <Button className="flex-1 h-11 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-[#F4D03F]/20">
+                                    <Button className="flex-1 h-11 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-black rounded-xl shadow-lg shadow-[#F4D03F]/20">
                                         Open Research Case
                                     </Button>
                                     <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-[#F4D03F]/10 hover:bg-[#F4D03F]/5 text-[#1A1A1A]/40">
@@ -338,10 +338,10 @@ export const BeeSpeciesGallery: React.FC = () => {
                         <Bug className="w-8 h-8 text-[#1A1A1A]/20" />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-lg font-black uppercase tracking-tight text-[#1A1A1A]">No species found</h3>
+                        <h3 className="text-lg font-black tracking-tight text-[#1A1A1A]">No species found</h3>
                         <p className="text-[11px] font-semibold text-[#1A1A1A]/40 max-w-[200px] mx-auto">The requested taxonomy does not match the active database profiles.</p>
                     </div>
-                    <Button variant="outline" onClick={() => { setSearch(''); setSelectedCategory('All'); }} className="rounded-lg font-black uppercase tracking-widest text-[9px] h-9 border-[#F4D03F]/20 text-[#1A1A1A]/60">
+                    <Button variant="outline" onClick={() => { setSearch(''); setSelectedCategory('All'); }} className="rounded-lg font-black text-[9px] h-9 border-[#F4D03F]/20 text-[#1A1A1A]/60">
                         Reset Hive Intelligence
                     </Button>
                 </div>

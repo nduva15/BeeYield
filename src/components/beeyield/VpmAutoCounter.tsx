@@ -19,7 +19,7 @@ const VpmAutoCounter: React.FC = () => {
             <PageHeader
                 icon={Camera}
                 label="YOLOv11 Nano // Entrance Feed"
-                title={<>VPM <span className="text-[#F4D03F]">Auto-Counter</span></>}
+                title={<>VPM<span className="text-[#F4D03F]">Auto-Counter</span></>}
                 subtitle="Requires a real camera feed + inference pipeline."
                 actions={
                     <div className="flex gap-4">
@@ -29,7 +29,7 @@ const VpmAutoCounter: React.FC = () => {
                         >
                             {isActive ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                         </button>
-                        <button className={cn(glass.btnPrimary, "px-6 h-12 rounded-xl text-xs uppercase tracking-widest")}>
+                        <button className={cn(glass.btnPrimary, "px-6 h-12 rounded-xl text-xs")}>
                             Export Log
                         </button>
                     </div>
@@ -44,7 +44,7 @@ const VpmAutoCounter: React.FC = () => {
 
                     {/* Feed Info */}
                     <div className="absolute top-6 left-6 z-30 flex flex-col gap-2">
-                        <Badge className={cn(glass.badge, "bg-emerald-500 text-white border-none shadow-sm")}>LIVE</Badge>
+                        <Badge className={cn(glass.badge, "bg-emerald-500 text-white border-none shadow-sm")}>Live</Badge>
                         <Badge className={cn(glass.badge, "bg-white/60 text-foreground border-border backdrop-blur-md py-0.5 text-[8px]")}>FPS: 30.2</Badge>
                     </div>
 
@@ -62,8 +62,8 @@ const VpmAutoCounter: React.FC = () => {
                                     className="absolute inset-0 flex items-center justify-center p-10"
                                 >
                                     <div className="text-center space-y-2">
-                                        <p className="text-sm font-black uppercase tracking-tight">Waiting for camera feed…</p>
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                        <p className="text-sm font-black tracking-tight">Waiting for camera feed…</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground">
                                             Connect video + inference to enable detections
                                         </p>
                                     </div>
@@ -85,26 +85,26 @@ const VpmAutoCounter: React.FC = () => {
                     <section className="space-y-4">
                         <div className="flex items-center gap-3">
                             <Activity className="w-5 h-5 text-[#F4D03F]" />
-                            <h3 className="text-xl font-black uppercase tracking-tight">Pollination Pulse</h3>
+                            <h3 className="text-xl font-black tracking-tight">Pollination Pulse</h3>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className={cn(glass.card, "p-4 text-center bg-white/50 border-border shadow-sm")}>
                                 <p className="text-2xl font-black tabular-nums leading-none mb-1">—</p>
-                                <p className="text-[10px] font-bold uppercase opacity-40">Visits / Min</p>
+                                <p className="text-[10px] font-bold opacity-40">Visits / Min</p>
                             </div>
                             <div className={cn(glass.card, "p-4 text-center border-none bg-emerald-500 text-white shadow-sm")}>
                                 <p className="text-2xl font-black tabular-nums leading-none mb-1">—</p>
-                                <p className="text-[10px] font-bold uppercase opacity-80">PCR INDEX</p>
+                                <p className="text-[10px] font-bold opacity-80">Pcr Index</p>
                             </div>
                         </div>
                     </section>
 
                     <section className="space-y-4">
                         <div className="flex justify-between items-end">
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Capture Efficiency</p>
+                            <p className="text-[10px] font-black opacity-40">Capture Efficiency</p>
                             <span className={cn(
-                                "text-[8px] font-black uppercase px-2 py-0.5 rounded-full border",
+                                "text-[8px] font-black px-2 py-0.5 rounded-full border",
                                 "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20"
                             )}>
                                 NO DATA
@@ -114,7 +114,7 @@ const VpmAutoCounter: React.FC = () => {
                             value={0}
                             className={cn("h-2 rounded-full bg-black/5 overflow-hidden", "[&>div]:bg-[#F4D03F]")}
                         />
-                        <p className="text-[10px] font-bold text-muted-foreground opacity-80 leading-relaxed uppercase tracking-tight">
+                        <p className="text-[10px] font-bold text-muted-foreground opacity-80 leading-relaxed tracking-tight">
                             Metrics will populate once a real camera stream and detection pipeline are connected.
                         </p>
                     </section>
@@ -123,16 +123,16 @@ const VpmAutoCounter: React.FC = () => {
 
                     <section className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40">Cumulative Feed</h4>
+                            <h4 className="text-[10px] font-black opacity-40">Cumulative Feed</h4>
                             <History className="w-4 h-4 text-muted-foreground/20" />
                         </div>
                         <div className="grid grid-cols-1 gap-2">
                             <div className="flex justify-between items-center p-3 rounded-xl border border-border bg-black/5">
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase">Total Bees</span>
+                                <span className="text-[10px] font-bold text-muted-foreground">Total Bees</span>
                                 <span className="text-lg font-black tabular-nums">—</span>
                             </div>
                             <div className="flex justify-between items-center p-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5">
-                                <span className="text-[10px] font-bold text-emerald-600 uppercase">Pollen Load</span>
+                                <span className="text-[10px] font-bold text-emerald-600">Pollen Load</span>
                                 <span className="text-lg font-black tabular-nums text-emerald-600">—</span>
                             </div>
                         </div>
@@ -141,8 +141,8 @@ const VpmAutoCounter: React.FC = () => {
                     <div className="p-4 rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/5 flex items-start gap-3">
                         <AlertTriangle className="w-4 h-4 text-[#F4D03F] shrink-0 mt-0.5" />
                         <div>
-                            <h5 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest mb-1">No inference connected</h5>
-                            <p className="text-[10px] font-bold text-[#1A1A1A]/70 leading-relaxed uppercase tracking-tight">
+                            <h5 className="text-[10px] font-black text-[#1A1A1A] mb-1">No inference connected</h5>
+                            <p className="text-[10px] font-bold text-[#1A1A1A]/70 leading-relaxed tracking-tight">
                                 This page no longer simulates detections. Wire a backend/edge inference feed to populate results.
                             </p>
                         </div>

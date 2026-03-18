@@ -173,7 +173,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     { icon: MapPin, label: 'Hub', value: 'Kibwezi, Kenya' }
                                 ].map((item, idx) => (
                                     <div key={idx} className="space-y-1">
-                                        <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                        <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
                                             <item.icon className="w-3.5 h-3.5 text-[#F4D03F]" /> {item.label}
                                         </div>
                                         <p className="text-[#1A1A1A] font-bold text-sm truncate">{item.value}</p>
@@ -240,7 +240,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         ) : filteredRequests.length === 0 ? (
                             <div className={cn(glass.emptyState, "h-[400px] border-none bg-transparent")}>
                                 <Send className="w-12 h-12 text-[#F4D03F]/40" />
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-[#1A1A1A]">No Tickets Found</h3>
+                                <h3 className="text-sm font-bold text-[#1A1A1A]">No Tickets Found</h3>
                                 <p className="text-xs text-gray-500">All support channels are synchronized.</p>
                             </div>
                         ) : (
@@ -260,7 +260,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                 <td className="px-4 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-bold text-[#1A1A1A] truncate">{request.subject}</span>
-                                                        <span className="text-xs text-gray-500 mt-1 uppercase tracking-widest">{request.category}</span>
+                                                        <span className="text-xs text-gray-500 mt-1">{request.category}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-4">
@@ -279,7 +279,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                                                 request.status === 'in_progress' ? "bg-blue-500" :
                                                                     "bg-[#1B9157]"
                                                         )} />
-                                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{request.status.replace('_', ' ')}</span>
+                                                        <span className="text-xs font-bold text-gray-500">{request.status.replace('_', ' ')}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-4 text-xs font-bold text-gray-400 tabular-nums">

@@ -116,7 +116,7 @@ const SensorAlertsView: React.FC = () => {
                         {loading && alerts.length === 0 ? (
                             <div className="p-20 flex flex-col items-center justify-center gap-3">
                                 <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Syncing Matrix...</span>
+                                <span className="text-xs font-bold text-gray-400">Syncing Matrix...</span>
                             </div>
                         ) : alerts.length === 0 ? (
                             <div className="p-20 flex flex-col items-center justify-center gap-4 text-gray-200">
@@ -159,9 +159,9 @@ const SensorAlertsView: React.FC = () => {
                                             <div className="flex items-center gap-3 mt-2">
                                                 <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md">
                                                      <div className="w-1 h-1 rounded-full bg-gray-400" />
-                                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter sm:tracking-normal">{getHiveName(alert.hive_id)}</span>
+                                                     <span className="text-[10px] font-bold text-gray-400 tracking-tighter sm:tracking-normal">{getHiveName(alert.hive_id)}</span>
                                                 </div>
-                                                <span className="text-[10px] font-medium text-gray-300 uppercase">{new Date(alert.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+                                                <span className="text-[10px] font-medium text-gray-300">{new Date(alert.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -170,13 +170,13 @@ const SensorAlertsView: React.FC = () => {
                                         {!alert.resolved && (
                                             <button
                                                 onClick={() => handleResolve(alert.id)}
-                                                className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold uppercase rounded-lg bg-white border-gray-200 sm:opacity-0 sm:group-hover:opacity-100 transition-all")}
+                                                className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold rounded-lg bg-white border-gray-200 sm:opacity-0 sm:group-hover:opacity-100 transition-all")}
                                             >
                                                 Resolve
                                             </button>
                                         )}
                                         {alert.resolved && (
-                                            <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-none font-bold text-[10px] uppercase h-8 px-3 rounded-lg">RESOLVED</Badge>
+                                            <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-none font-bold text-[10px] h-8 px-3 rounded-lg">Resolved</Badge>
                                         )}
                                     </div>
                                 </motion.div>
@@ -202,7 +202,7 @@ const SensorAlertsView: React.FC = () => {
                                     <div className="flex justify-between items-end">
                                         <div className="flex items-center gap-2">
                                              <div className={cn("w-1.5 h-1.5 rounded-full", s === 'critical' ? 'bg-red-500' : s === 'warning' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} />
-                                             <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{s}</span>
+                                             <span className="text-[10px] font-bold tracking-wider text-gray-400">{s}</span>
                                         </div>
                                         <span className="text-sm font-bold text-[#1A1A1A]">{count} Nodes</span>
                                     </div>
@@ -236,7 +236,7 @@ const SensorAlertsView: React.FC = () => {
                     
                     <button
                         onClick={loadData}
-                        className="relative z-10 w-full mt-8 h-10 bg-white text-[#1A1A1A] border border-emerald-100 rounded-xl font-bold text-xs uppercase shadow-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-600 transition-all flex items-center justify-center gap-3"
+                        className="relative z-10 w-full mt-8 h-10 bg-white text-[#1A1A1A] border border-emerald-100 rounded-xl font-bold text-xs shadow-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-600 transition-all flex items-center justify-center gap-3"
                     >
                         <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
                         Run System Audit

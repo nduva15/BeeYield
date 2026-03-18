@@ -4,7 +4,7 @@ import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 const isDev = import.meta.env.DEV;
 
 
-// Python Backend (AI ONLY)
+// Python Backend (INTELLIGENCE HUB)
 export const AI_API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/v1` : "http://localhost:8000/api/v1";
 
 // Rust/Go Gateway (DATA & SHOP)

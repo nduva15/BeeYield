@@ -41,7 +41,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                 actions={
                     <button
                         onClick={() => setShowLogForm(true)}
-                        className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold flex items-center gap-2 uppercase tracking-widest")}
+                        className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold flex items-center gap-2")}
                     >
                         <Plus className="w-3.5 h-3.5" />
                         Log Bloom Data
@@ -102,11 +102,11 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                     <div className="flex items-center gap-4 bg-[#F9F7F2]/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-[#F4D03F]/10">
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157]/10 border border-[#1B9157]/40 shadow-sm" />
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Bloom %</span>
+                            <span className="text-[10px] font-bold text-gray-500 tracking-tighter">Bloom %</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-1 rounded-full bg-[#1B9157]/60" />
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Activity</span>
+                            <span className="text-[10px] font-bold text-gray-500 tracking-tighter">Activity</span>
                         </div>
                     </div>
                 </div>

@@ -302,8 +302,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <Target className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Unit_Config</h3>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">IDENTIFICATION_SYNTHESIS</p>
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Unit_Config</h3>
+                                    <p className="text-[8px] font-black text-gray-400">Identification Synthesis</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-4">
@@ -323,7 +323,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             </div>
                                         </SelectTrigger>
                                         <SelectContent className={glass.selectContent}>
-                                            {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-bold text-xs">{a.name.toUpperCase()}</SelectItem>)}
+                                            {apiaries.map(a => <SelectItem key={a.id} value={a.id} className=" font-bold text-xs">{a.name.toUpperCase()}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -341,7 +341,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             </div>
                                         </SelectTrigger>
                                         <SelectContent className={glass.selectContent}>
-                                            {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id} className="uppercase font-bold text-xs">UNIT #{h.hive_code}</SelectItem>)}
+                                            {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id} className=" font-bold text-xs">UNIT #{h.hive_code}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -370,10 +370,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             id="inspection-inspector-name"
                                             name="inspector_name"
                                             autoComplete="name"
-                                            placeholder="OFFICER_SIGNATURE"
+                                            placeholder="Officer Signature"
                                             value={formData.inspector_name}
                                             onChange={(e) => setFormData({ ...formData, inspector_name: e.target.value })}
-                                            className={cn(glass.input, "h-10 pl-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight")}
+                                            className={cn(glass.input, "h-10 pl-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight")}
                                         />
                                     </div>
                                 </div>
@@ -386,8 +386,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <Microscope className="w-5 h-5 text-[#1A1A1A]" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Neural_Analysis</h3>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-relaxed">
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Neural_Analysis</h3>
+                                    <p className="text-[8px] font-black text-gray-400 leading-relaxed">
                                         POWERING_COLLECTIVE_HIVE_INTELLIGENCE
                                     </p>
                                 </div>
@@ -408,8 +408,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         <HeartPulse className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.2em] uppercase">Biometric_Vitals</h2>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">STANDARD_ASSESSMENT_PROTOCOL</p>
+                                        <h2 className="text-[11px] font-black text-[#1A1A1A]">Biometric_Vitals</h2>
+                                        <p className="text-[8px] font-black text-gray-400">Standard Assessment Protocol</p>
                                     </div>
                                 </div>
                                 <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-full sm:w-auto overflow-x-auto shadow-sm">
@@ -418,7 +418,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             key={s}
                                             onClick={() => setFormData({ ...formData, health_status: s })}
                                             className={cn(
-                                                "h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap",
+                                                "h-8 px-4 rounded-lg text-[9px] font-black transition-all whitespace-nowrap",
                                                 formData.health_status === s
                                                     ? "bg-[#F4D03F] text-[#1A1A1A] shadow-md"
                                                     : "text-gray-400 hover:text-[#1A1A1A] hover:bg-white/50"
@@ -468,7 +468,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                          key={t}
                                                          onClick={() => setFormData({ ...formData, temperament: t })}
                                                          className={cn(
-                                                             "h-8 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                                                             "h-8 rounded-md text-[10px] font-bold tracking-wider transition-all",
                                                              formData.temperament === t
                                                                  ? "bg-[#F4D03F] text-[#1A1A1A] shadow-sm"
                                                                  : "text-gray-400 hover:text-[#F4D03F] hover:bg-white"
@@ -509,7 +509,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                     </SelectTrigger>
                                                     <SelectContent className={glass.selectContent}>
                                                         {['sunny', 'cloudy', 'rainy', 'windy'].map(w => (
-                                                            <SelectItem key={w} value={w} className="uppercase font-bold text-xs">{w.toUpperCase()}</SelectItem>
+                                                            <SelectItem key={w} value={w} className=" font-bold text-xs">{w.toUpperCase()}</SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
@@ -591,10 +591,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             id="inspection-findings"
                                             name="findings"
                                             autoComplete="off"
-                                            placeholder="RECORD_OBSERVATIONS"
+                                            placeholder="Record Observations"
                                             value={formData.findings}
                                             onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
-                                            className={cn(glass.input, "h-auto py-2.5 min-h-[100px] border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight resize-none")}
+                                            className={cn(glass.input, "h-auto py-2.5 min-h-[100px] border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight resize-none")}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -603,10 +603,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             id="inspection-actions-taken"
                                             name="actions_taken"
                                             autoComplete="off"
-                                            placeholder="RECORD_ACTIONS_PROTOCOLS"
+                                            placeholder="Record Actions Protocols"
                                             value={formData.actions_taken}
                                             onChange={(e) => setFormData({ ...formData, actions_taken: e.target.value })}
-                                            className={cn(glass.input, "h-auto py-2.5 min-h-[100px] border-white/40 bg-white/50 focus:bg-white text-[11px] font-black uppercase tracking-tight resize-none")}
+                                            className={cn(glass.input, "h-auto py-2.5 min-h-[100px] border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight resize-none")}
                                         />
                                     </div>
                                 </div>
@@ -615,19 +615,19 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                             <div className="p-5 border-t border-white/20 bg-white/20 flex flex-col sm:flex-row justify-between items-center gap-4">
                                 <div className="flex items-center gap-3">
                                     <Shield className="w-4 h-4 text-[#F4D03F]/40" />
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-gray-400">DATA_ENCRYPTION_ACTIVE</p>
+                                    <p className="text-[8px] font-black text-gray-400">Data Encryption Active</p>
                                 </div>
                                 <div className="flex gap-3 w-full sm:w-auto">
                                     <button
                                         onClick={() => { setIsAddingInspection(false); resetForm(); }}
-                                        className={cn(glass.btnSecondary, "h-9 px-6 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl")}
+                                        className={cn(glass.btnSecondary, "h-9 px-6 font-black text-[10px] rounded-xl")}
                                     >
                                         Discard
                                     </button>
                                     <button
                                         onClick={handleSave}
                                         disabled={isSaving}
-                                        className={cn(glass.btnPrimary, "flex-1 sm:flex-none h-9 px-8 font-black uppercase tracking-[0.2em] text-[10px]")}
+                                        className={cn(glass.btnPrimary, "flex-1 sm:flex-none h-9 px-8 font-black text-[10px]")}
                                     >
                                         {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                         {editingId ? 'Update_Report' : 'Archive_Log'}
@@ -684,32 +684,32 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         placeholder="Search reports..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-10 pl-12 bg-white/50 border border-white/40 rounded-xl text-[11px] font-black tracking-widest text-[#1A1A1A] uppercase placeholder:text-gray-400 focus:bg-white transition-colors"
+                        className="h-10 pl-12 bg-white/50 border border-white/40 rounded-xl text-[11px] font-black text-[#1A1A1A] placeholder:text-gray-400 focus:bg-white transition-colors"
                     />
                 </div>
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto p-1">
                     <Select value={selectedPlaceId} onValueChange={setSelectedPlaceId}>
-                        <SelectTrigger className={cn(glass.select, "w-full md:w-44 h-10 border-white/40 bg-white/50 text-[11px] font-black uppercase tracking-widest")}>
+                        <SelectTrigger className={cn(glass.select, "w-full md:w-44 h-10 border-white/40 bg-white/50 text-[11px] font-black")}>
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Location" />
                             </div>
                         </SelectTrigger>
                         <SelectContent className={glass.selectContent}>
-                            <SelectItem value="all_places" className="uppercase font-bold text-xs">All Locations</SelectItem>
-                            {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-bold text-xs">{a.name.toUpperCase()}</SelectItem>)}
+                            <SelectItem value="all_places" className=" font-bold text-xs">All Locations</SelectItem>
+                            {apiaries.map(a => <SelectItem key={a.id} value={a.id} className=" font-bold text-xs">{a.name.toUpperCase()}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                        <SelectTrigger className={cn(glass.select, "w-full md:w-40 h-10 border-white/40 bg-white/50 text-[11px] font-black uppercase tracking-widest")}>
+                        <SelectTrigger className={cn(glass.select, "w-full md:w-40 h-10 border-white/40 bg-white/50 text-[11px] font-black")}>
                             <div className="flex items-center gap-2">
                                 <Hexagon className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Unit" />
                             </div>
                         </SelectTrigger>
                         <SelectContent className={glass.selectContent}>
-                            <SelectItem value="all_hives" className="uppercase font-bold text-xs">All Hives</SelectItem>
-                            {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id} className="uppercase font-bold text-xs">{h.hive_code}</SelectItem>)}
+                            <SelectItem value="all_hives" className=" font-bold text-xs">All Hives</SelectItem>
+                            {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id} className=" font-bold text-xs">{h.hive_code}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -728,8 +728,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6">
                             <SearchX className="w-8 h-8 text-[#F4D03F] opacity-20" />
                         </div>
-                        <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight uppercase">Registry_Empty</h3>
-                        <p className="text-[10px] font-bold text-gray-400 mt-2 max-w-md text-center uppercase tracking-widest">
+                        <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight">Registry_Empty</h3>
+                        <p className="text-[10px] font-bold text-gray-400 mt-2 max-w-md text-center">
                             NO_AUDIT_LOGS_DETECTED_FOR_CURRENT_PARAMETERS
                         </p>
                         <button onClick={() => { resetForm(); setIsAddingInspection(true); }} className={cn(glass.btnPrimary, "mt-6")}>
@@ -739,11 +739,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                 ) : (
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 border-l-4 border-l-[#F4D03F] pl-4">
-                            <h2 className="text-[11px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase leading-none">Diagnostic_<span className="text-[#F4D03F]">Archive</span></h2>
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none">Diagnostic_<span className="text-[#F4D03F]">Archive</span></h2>
                             <div className="h-px flex-1 bg-gradient-to-r from-[#F4D03F]/10 to-transparent" />
                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/20 rounded-xl">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] animate-pulse" />
-                                <span className="text-[9px] font-black uppercase tracking-wider">{filteredInspections.length} Logs</span>
+                                <span className="text-[9px] font-black tracking-wider">{filteredInspections.length} Logs</span>
                             </div>
                         </div>
 
@@ -771,7 +771,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                     </div>
                                                     <div>
                                                         <h3 className="text-xs font-black text-[#1A1A1A] tracking-tight group-hover/item:text-[#F4D03F] transition-colors">{apiary?.name || 'Local'}</h3>
-                                                        <div className="flex items-center gap-1.5 text-[8px] text-gray-400 font-black uppercase tracking-widest">
+                                                        <div className="flex items-center gap-1.5 text-[8px] text-gray-400 font-black">
                                                             <Hash className="w-3 h-3 text-[#F4D03F]/40" />
                                                             <span>{hive?.hive_code || '---'}</span>
                                                         </div>
@@ -779,7 +779,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 </div>
 
                                                 <div className="flex gap-2 pt-3 border-t border-[#F4D03F]/10">
-                                                    <div className={cn("px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5",
+                                                    <div className={cn("px-2.5 py-1 rounded-lg text-[9px] font-black flex items-center gap-1.5",
                                                         health === 'healthy' ? "bg-[#1B9157]/10 text-[#1B9157]" :
                                                             health === 'weak' ? "bg-[#F4D03F]/10 text-[#F4D03F]" : "bg-red-500/10 text-red-500"
                                                     )}>
@@ -789,7 +789,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         )} />
                                                         {health}
                                                     </div>
-                                                    <div className="px-2.5 py-1 rounded-lg bg-white/50 text-[9px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 border border-white/40">
+                                                    <div className="px-2.5 py-1 rounded-lg bg-white/50 text-[9px] font-black text-gray-500 flex items-center gap-1.5 border border-white/40">
                                                         <Calendar className="w-3 h-3 text-[#F4D03F]/40" />
                                                         {new Date(inspection.inspection_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                                     </div>
@@ -808,9 +808,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         <div key={idx} className="bg-white/40 p-2.5 rounded-xl border border-white/40 shadow-sm">
                                                             <div className="flex items-center gap-2 mb-1">
                                                                 <s.i className={cn("w-3 h-3", s.c)} />
-                                                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">{s.l}</span>
+                                                                <span className="text-[8px] font-black text-gray-400">{s.l}</span>
                                                             </div>
-                                                            <p className="text-[11px] font-black text-[#1A1A1A] tabular-nums tracking-tight uppercase">{s.v}</p>
+                                                            <p className="text-[11px] font-black text-[#1A1A1A] tabular-nums tracking-tight">{s.v}</p>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -818,7 +818,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 <div className="bg-[#F9F7F2] p-4 rounded-xl border border-[#F4D03F]/10">
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <FileText className="w-3.5 h-3.5 text-[#F4D03F] opacity-40" />
-                                                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400">Findings</span>
+                                                        <span className="text-[9px] font-bold tracking-wider text-gray-400">Findings</span>
                                                     </div>
                                                     <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
                                                         {inspection.findings || 'No findings recorded for this inspection.'}

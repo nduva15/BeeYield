@@ -174,8 +174,8 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                         <td colSpan={7} className="h-48 text-center">
                                             <div className="flex flex-col items-center justify-center space-y-3 opacity-30">
                                                 <SearchCode className="w-8 h-8" />
-                                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">No devices found</h3>
-                                                <button onClick={() => setIsAddModalOpen(true)} className={cn(glass.btnSecondary, "h-9 px-6 text-[8px] font-black uppercase mt-4")}>
+                                                <h3 className="text-[10px] font-black">No devices found</h3>
+                                                <button onClick={() => setIsAddModalOpen(true)} className={cn(glass.btnSecondary, "h-9 px-6 text-[8px] font-black mt-4")}>
                                                     Add your first device
                                                 </button>
                                             </div>
@@ -193,7 +193,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-[#1B9157] shadow-sm shadow-[#1B9157]/40' : 'bg-red-500 shadow-sm shadow-red-500/40')} />
-                                                    <span className={cn("text-[9px] font-black uppercase tracking-widest", device.status === 'active' ? 'text-[#1B9157]' : 'text-red-500')}>{device.status === 'active' ? 'NOMINAL' : 'OFFLINE'}</span>
+                                                    <span className={cn("text-[9px] font-black", device.status === 'active' ? 'text-[#1B9157]' : 'text-red-500')}>{device.status === 'active' ? 'Nominal' : 'Offline'}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
@@ -202,21 +202,21 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                         <Cpu className="w-4 h-4" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[11px] font-black uppercase tracking-tight text-[#1A1A1A]">{device.device_code}</span>
-                                                        <span className="text-[7px] font-black text-[#F4D03F] uppercase italic tracking-[0.2em]">Node_v5.2</span>
+                                                        <span className="text-[11px] font-black tracking-tight text-[#1A1A1A]">{device.device_code}</span>
+                                                        <span className="text-[7px] font-black text-[#F4D03F] italic">Node_v5.2</span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <MapPin className="w-3 h-3 text-[#F4D03F] opacity-40" />
-                                                    <span className="text-[9px] font-bold text-[#1A1A1A]/60 uppercase tracking-wider">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</span>
+                                                    <span className="text-[9px] font-bold text-[#1A1A1A]/60 tracking-wider">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
                                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#1B9157]/5 border border-[#1B9157]/10 text-[#1B9157]">
                                                     <ShieldCheck className="w-3 h-3" />
-                                                    <span className="text-[9px] font-black uppercase tracking-widest">{getHiveName(device.hive_id)}</span>
+                                                    <span className="text-[9px] font-black">{getHiveName(device.hive_id)}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
@@ -235,7 +235,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <Activity className="w-3 h-3 text-[#F4D03F] opacity-40" />
-                                                    <span className="text-[9px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">{timeAgo(device.last_ping)}</span>
+                                                    <span className="text-[9px] font-bold text-[#1A1A1A]/40">{timeAgo(device.last_ping)}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-right">

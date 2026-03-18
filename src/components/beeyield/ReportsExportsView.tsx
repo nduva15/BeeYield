@@ -38,7 +38,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     const [reportScope, setReportScope] = React.useState('30');
     const [selectedFormat, setSelectedFormat] = React.useState<'PDF' | 'XLSX'>('PDF');
     const [isGenerating, setIsGenerating] = React.useState(false);
-    const [isAISynthesizing, setIsAISynthesizing] = React.useState(false);
+    const [isIntelligenceSynthesizing, setIsIntelligenceSynthesizing] = React.useState(false);
     const [genProgress, setGenProgress] = React.useState(0);
 
     const [isLoading, setIsLoading] = React.useState(true);
@@ -287,9 +287,9 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         }
     };
 
-    const handleGenerateAIInsights = async () => {
-        if (isAISynthesizing) return;
-        setIsAISynthesizing(true);
+    const handleGenerateInsights = async () => {
+        if (isIntelligenceSynthesizing) return;
+        setIsIntelligenceSynthesizing(true);
         const toastId = toast.loading("Creating insights…");
 
         try {
@@ -307,7 +307,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             } as any);
 
             if (error) {
-                toast.error('AI insights require the reports backend', { id: toastId });
+                toast.error('System insights require the reports backend', { id: toastId });
                 return;
             }
             toast.success('Insights queued', { id: toastId });
@@ -328,9 +328,9 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             loadData();
         } catch (error) {
             console.error('Report generation failed', error);
-            toast.error('AI insights require the reports backend', { id: toastId });
+            toast.error('System insights require the reports backend', { id: toastId });
         } finally {
-            setIsAISynthesizing(false);
+            setIsIntelligenceSynthesizing(false);
         }
     };
 
@@ -481,14 +481,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         index={2}
                         color="text-[#F4D03F]"
                     />
-                    <GlassStatCard label="AI Modules" value="04" icon={Sparkles} index={3} color="text-[#F4D03F]" />
+                    <GlassStatCard label="Analysis Modules" value="04" icon={Sparkles} index={3} color="text-[#F4D03F]" />
                 </div>
 
             {/* Insights banner */}
             <div className={cn(glass.card, "p-5 bg-emerald-600 border-none flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden group shadow-lg")}>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32" />
                 <div className="space-y-1.5 flex-1 relative z-10 text-center sm:text-left">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-white/20 text-[10px] font-bold tracking-wider text-white">
                         <Zap className="w-3 h-3 text-amber-300" />
                         Insights
                     </div>
@@ -496,11 +496,11 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     <p className="text-[11px] font-medium text-emerald-100/70 max-w-md">Summaries and patterns based on your recent data.</p>
                 </div>
                 <button
-                    onClick={handleGenerateAIInsights}
-                    disabled={isAISynthesizing}
+                    onClick={handleGenerateInsights}
+                    disabled={isIntelligenceSynthesizing}
                     className={cn(glass.btnSecondary, "h-9 px-6 bg-white text-emerald-700 border-none font-bold text-xs shadow-xl relative z-10 shrink-0")}
                 >
-                    {isAISynthesizing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                    {isIntelligenceSynthesizing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                     Create insights
                 </button>
             </div>
@@ -512,7 +512,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                             <div className="space-y-0.5">
                                 <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Extraction Parameters</h3>
-                                <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Configure audit trajectories</p>
+                                <p className="text-[10px] font-medium text-gray-400">Configure audit trajectories</p>
                             </div>
                             <Terminal className="w-4 h-4 text-gray-400" />
                         </div>
@@ -531,7 +531,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                             )}
                                         >
                                             <opt.icon className={cn("w-5 h-5 transition-colors", sections[opt.id as keyof typeof sections] ? "text-emerald-500" : "text-gray-300")} />
-                                            <span className="text-[10px] font-bold uppercase tracking-tighter sm:tracking-normal">{opt.label}</span>
+                                            <span className="text-[10px] font-bold tracking-tighter sm:tracking-normal">{opt.label}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -539,14 +539,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 border-t border-gray-100">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Temporal Audit</label>
+                                    <label className="text-[10px] font-bold tracking-wider text-gray-400 ml-1">Temporal Audit</label>
                                     <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1 overflow-x-auto">
                                         {['7', '30', '90', '365'].map((d) => (
                                             <button
                                                 key={d}
                                                 onClick={() => setReportScope(d)}
                                                 className={cn(
-                                                    "h-7 px-3 rounded-md text-[10px] uppercase font-bold tracking-wider transition-all whitespace-nowrap",
+                                                    "h-7 px-3 rounded-md text-[10px] font-bold tracking-wider transition-all whitespace-nowrap",
                                                     reportScope === d ? "bg-white text-[#1A1A1A] shadow-sm border border-gray-100" : "text-gray-400 hover:text-[#1A1A1A]"
                                                 )}
                                             >
@@ -556,14 +556,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Archive Format</label>
+                                    <label className="text-[10px] font-bold tracking-wider text-gray-400 ml-1">Archive Format</label>
                                     <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1">
                                         {['PDF', 'XLSX'].map((f) => (
                                             <button
                                                 key={f}
                                                 onClick={() => setSelectedFormat(f as any)}
                                                 className={cn(
-                                                    "flex-1 h-7 rounded-md text-[10px] uppercase font-bold tracking-wider transition-all",
+                                                    "flex-1 h-7 rounded-md text-[10px] font-bold tracking-wider transition-all",
                                                     selectedFormat === f ? "bg-white text-emerald-600 shadow-sm border border-emerald-100" : "text-gray-400 hover:text-emerald-600"
                                                 )}
                                             >
@@ -609,7 +609,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         </div>
                                         <div className="space-y-0.5">
                                             <p className="text-xs font-bold text-[#1A1A1A] truncate max-w-[140px] uppercase tracking-tighter">{r.report_type.replace('_', ' ')}</p>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase">{new Date(r.created_at).toLocaleDateString()}</p>
+                                            <p className="text-[10px] font-bold text-gray-400">{new Date(r.created_at).toLocaleDateString()}</p>
                                         </div>
                                      </div>
                                      <button 
@@ -717,13 +717,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                         <div className="p-4 bg-white rounded-xl border border-[#F4D03F]/10">
                                                             <div className="grid grid-cols-2 gap-3">
                                                                 <div>
-                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Scope</p>
+                                                                    <p className="text-[10px] font-bold text-gray-400">Scope</p>
                                                                     <p className="text-sm font-semibold text-[#1A1A1A]">
                                                                         {String((s as any)?.report_config?.scope_days ?? scheduleScopeDays)} days
                                                                     </p>
                                                                 </div>
                                                                 <div>
-                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Sections</p>
+                                                                    <p className="text-[10px] font-bold text-gray-400">Sections</p>
                                                                     <p className="text-sm font-semibold text-[#1A1A1A]">
                                                                         {Array.isArray((s as any)?.report_config?.sections) ? (s as any).report_config.sections.length : '—'}
                                                                     </p>
@@ -731,7 +731,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                             </div>
                                                             {Array.isArray(s.recipients) && s.recipients.length > 0 && (
                                                                 <div className="mt-3 pt-3 border-t border-gray-100">
-                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Recipients</p>
+                                                                    <p className="text-[10px] font-bold text-gray-400">Recipients</p>
                                                                     <p className="text-[12px] text-gray-600 break-words">{s.recipients.join(', ')}</p>
                                                                 </div>
                                                             )}
@@ -779,7 +779,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     <DialogTitle className={cn(glass.sectionTitle, "text-lg normal-case italic")}>
                                         Create <span className="text-[#1B9157]">Schedule</span>
                                     </DialogTitle>
-                                    <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-0.5 tracking-[0.1em]")}>
+                                    <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-0.5")}>
                                         Configure automatic report delivery (works offline too).
                                     </DialogDescription>
                                 </div>
@@ -798,7 +798,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                 className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
                                             >
                                                 <option value="full_summary">Full summary</option>
-                                                <option value="ai_analysis">AI analysis</option>
+                                                <option value="ai_analysis">Advanced analysis</option>
                                             </select>
                                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40 pointer-events-none" />
                                         </div>
@@ -812,7 +812,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                     type="button"
                                                     onClick={() => setScheduleScopeDays(d)}
                                                     className={cn(
-                                                        "h-8 px-3 rounded-lg text-[10px] uppercase font-black tracking-widest transition-all whitespace-nowrap",
+                                                        "h-8 px-3 rounded-lg text-[10px] font-black transition-all whitespace-nowrap",
                                                         scheduleScopeDays === d
                                                             ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40"
                                                             : "text-gray-500 hover:text-[#1A1A1A]"
@@ -853,7 +853,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                             placeholder="email1@site.com, email2@site.com"
                                         />
                                     </div>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <p className="text-[10px] font-bold text-gray-400">
                                         Comma, semicolon, or newline separated
                                     </p>
                                 </div>
@@ -880,7 +880,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                      <div className="space-y-2">
                                         <Label className={glass.microLabel} htmlFor="beeyield-schedule-active">Status</Label>
                                         <div className={cn(glass.input, "w-full flex items-center justify-between")}>
-                                            <span className="text-[10px] font-bold uppercase text-[#1A1A1A]/60">Active</span>
+                                            <span className="text-[10px] font-bold text-[#1A1A1A]/60">Active</span>
                                             <UISwitch 
                                                 id="beeyield-schedule-active"
                                                 checked={newSchedule.is_active}
@@ -906,7 +906,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                 )}
                                             >
                                                 <opt.icon className={cn("w-4 h-4", sections[opt.id as keyof typeof sections] ? "text-emerald-600" : "text-gray-400")} aria-hidden="true" focusable="false" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">{opt.label}</span>
+                                                <span className="text-[10px] font-black">{opt.label}</span>
                                             </button>
                                         ))}
                                     </div>

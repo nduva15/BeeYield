@@ -28,7 +28,7 @@ interface SettingsContextType {
     moduleFlags: ModuleFlags;
     updateModuleFlags: (flags: Partial<ModuleFlags>) => void;
 
-    // AI Alert Routes
+    // System Alert Routes
     alerts: AlertSettings;
     updateAlerts: (settings: Partial<AlertSettings>) => void;
 

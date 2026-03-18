@@ -60,7 +60,7 @@ const ShopAuth: React.FC = () => {
                     <div className="relative">
                         <div className="w-12 h-12 rounded-full border-4 border-honey/10 border-t-honey animate-spin" />
                     </div>
-                    <span className="text-honey font-bold text-sm tracking-widest uppercase">Opening Shop...</span>
+                    <span className="text-honey font-bold text-sm">Opening Shop...</span>
                 </div>
             </BeeYieldPageShell>
         );
@@ -82,7 +82,7 @@ const ShopAuth: React.FC = () => {
                             <span className="text-2xl font-black tracking-tight text-gray-900 leading-none">
                                 Bee<span className="text-honey">Yield</span>
                             </span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">Honey Shop</span>
+                            <span className="text-[10px] font-black text-gray-400 mt-1.5 ml-0.5">Honey Shop</span>
                         </div>
                     </Link>
 
@@ -157,7 +157,7 @@ const ShopAuth: React.FC = () => {
                             
                             <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl">
                                 <div className="w-2 h-2 rounded-full bg-beeyield-green" />
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
+                                <span className="text-[10px] font-black text-gray-500">
                                     Secure checkout
                                 </span>
                             </div>
@@ -166,11 +166,11 @@ const ShopAuth: React.FC = () => {
                 </main>
 
                 <footer className="py-12 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black text-gray-400">
                         <p>© 2026 BeeYield Honey Shop. All rights reserved.</p>
                         <p className="opacity-60">Pure honey, delivered</p>
                     </div>
-                    <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
+                    <div className="flex gap-8 text-[10px] font-black">
                         <a href="#" className="text-gray-400 hover:text-honey transition-colors">Privacy</a>
                         <a href="#" className="text-gray-400 hover:text-honey transition-colors">Terms</a>
                         <a href="#" className="text-gray-400 hover:text-honey transition-colors">Safety</a>

@@ -50,7 +50,7 @@ export function useNativeHive() {
 
     getStoreStats: () => wrap(() => bridge.getStoreStats()),
 
-    // ── AI Pipeline ──────────────────────────────────
+    // ── Intelligence Pipeline ──────────────────────────────────
     askBeeYield: (query: bridge.AIQuery) =>
       wrap(() => bridge.askBeeYield(query)),
 

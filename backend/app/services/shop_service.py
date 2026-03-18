@@ -402,6 +402,13 @@ async def delete_user_address(user_id: str, address_id: str, token: Optional[str
     from app.db.supabase_db import db_delete
     await db_delete("addresses", filters={"id": address_id, "user_id": user_id}, token=token)
 
+async def update_user_address(user_id: str, address_id: str, address_data: dict, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_update
+    res = await db_update("addresses", address_data, {"id": address_id, "user_id": user_id}, token=token)
+    if res.get("success") and res.get("data"):
+        return res["data"][0]
+    return {**address_data, "id": address_id}
+
 # ==========================================
 #  PAYMENT METHOD SERVICES
 # ==========================================

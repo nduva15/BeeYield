@@ -141,7 +141,7 @@ const UserDebugPanel: React.FC = () => {
                 </CardHeader>
                 <CardContent className="p-6">
                     {loading ? (
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center py-4">Loading Data...</p>
+                        <p className="text-xs font-bold text-slate-400 text-center py-4">Loading Data...</p>
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between p-4 bg-[#F9F7F2] border border-slate-100 rounded-xl">
@@ -160,12 +160,12 @@ const UserDebugPanel: React.FC = () => {
 
                             {apiaries.length > 0 && (
                                 <div className="mt-6 pt-6 border-t border-slate-100">
-                                    <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4">Linked Apiaries:</h4>
+                                    <h4 className="text-[10px] font-bold text-slate-400 tracking-wider mb-4">Linked Apiaries:</h4>
                                     <div className="grid gap-2">
                                         {apiaries.map((apiary) => (
                                             <div key={apiary.id} className="text-sm font-bold text-slate-700 flex items-center justify-between p-3 bg-[#FFF9F0] border border-slate-50 rounded-lg">
                                                 <span>{apiary.name}</span>
-                                                <span className="text-[10px] text-slate-400 uppercase">{apiary.hive_count || 0} Hives</span>
+                                                <span className="text-[10px] text-slate-400">{apiary.hive_count || 0} Hives</span>
                                             </div>
                                         ))}
                                     </div>
@@ -218,7 +218,7 @@ const UserDebugPanel: React.FC = () => {
                                                 setLoading(false);
                                             }
                                         }}
-                                        className="w-full bg-[#F4D03F] hover:bg-amber-600 text-[#1A1A1A] font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 uppercase tracking-wider text-[10px]"
+                                        className="w-full bg-[#F4D03F] hover:bg-amber-600 text-[#1A1A1A] font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 tracking-wider text-[10px]"
                                     >
                                         Claim Kibwezi Main Apiary
                                     </Button>

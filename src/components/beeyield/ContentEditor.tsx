@@ -40,7 +40,7 @@ const ContentEditor = () => {
     const [activeChapterId, setActiveChapterId] = React.useState<string | null>(null);
     const [editedContent, setEditedContent] = React.useState('');
 
-    // AI Generation State
+    // Generation State
     const [generating, setGenerating] = React.useState(false);
     const [publishing, setPublishing] = React.useState(false);
     const [aiContext, setAiContext] = React.useState('');

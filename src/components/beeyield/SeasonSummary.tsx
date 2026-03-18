@@ -45,7 +45,7 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; subla
                     <text x="60" y="56" textAnchor="middle" dominantBaseline="central" className="font-serif text-2xl font-black fill-foreground">
                         {Math.round(pct * 100)}<tspan fontSize="12">%</tspan>
                     </text>
-                    <text x="60" y="74" textAnchor="middle" className="text-[9px] font-semibold uppercase tracking-widest fill-muted-foreground/80">
+                    <text x="60" y="74" textAnchor="middle" className="text-[9px] font-semibold fill-muted-foreground/80">
                         {sublabel}
                     </text>
                 </svg>
@@ -169,7 +169,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                 <div className="space-y-4">
                     <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
                         <TrendingUp className="w-3.5 h-3.5" />
-                        <span className="uppercase tracking-[0.1em]">End-of-Season Pollination Report</span>
+                        <span className="">End-of-Season Pollination Report</span>
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
                         Season <span className="text-[#F4D03F]">Summary</span>
@@ -192,13 +192,13 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                 <div className={cn(glass.card, "p-4 border-red-200 bg-red-50 text-red-700 mb-8")}>
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-widest">Report load failed</div>
+                            <div className="text-[10px] font-black">Report load failed</div>
                             <div className="text-[11px] font-semibold mt-1 break-words">{error}</div>
                         </div>
                         <button
                             type="button"
                             onClick={load}
-                            className={cn(glass.btnSecondary, "h-10 px-5 text-[10px] font-black uppercase tracking-widest")}
+                            className={cn(glass.btnSecondary, "h-10 px-5 text-[10px] font-black")}
                             disabled={loading}
                         >
                             {loading ? 'Retrying…' : 'Retry'}

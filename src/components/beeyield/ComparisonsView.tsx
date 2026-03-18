@@ -205,13 +205,13 @@ const ComparisonsView: React.FC = () => {
                                 key={tab}
                                 onClick={() => setSelectedComparisonTab(tab)}
                                 className={cn(
-                                    "px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                                    "px-6 py-2.5 rounded-xl text-[10px] font-bold transition-all",
                                     selectedComparisonTab === tab
                                         ? "bg-[#FFF9F0] text-[#F4D03F] shadow-sm ring-1 ring-border"
                                         : "text-foreground/40 hover:text-foreground hover:bg-gray-400:bg-[#F4D03F]/10"
                                 )}
                             >
-                                {tab === 'apt12' ? 'APT_NODE_01' : tab === 'apt24' ? 'APT_NODE_02' : 'MAIN_REGISTRY'}
+                                {tab === 'apt12' ? 'Apt Node 01' : tab === 'apt24' ? 'Apt Node 02' : 'Main Registry'}
                             </button>
                         ))}
                     </div>
@@ -279,7 +279,7 @@ const ComparisonsView: React.FC = () => {
                                     <Line
                                         type="monotone"
                                         dataKey="primary_value"
-                                        name="PROTOCOL_ALPHA"
+                                        name="Protocol Alpha"
                                         stroke="hsl(var(--honey))"
                                         strokeWidth={4}
                                         dot={false}
@@ -289,7 +289,7 @@ const ComparisonsView: React.FC = () => {
                                     <Line
                                         type="monotone"
                                         dataKey="secondary_value"
-                                        name="PROTOCOL_BETA"
+                                        name="Protocol Beta"
                                         stroke="hsl(var(--foreground) / 0.3)"
                                         strokeWidth={2}
                                         strokeDasharray="8 6"
@@ -304,7 +304,7 @@ const ComparisonsView: React.FC = () => {
                 </div>
             </motion.div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

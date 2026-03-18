@@ -46,7 +46,7 @@ export function humanizeKeyLabel(input?: string) {
     DOSSIER: 'Profile',
     VECTOR: 'Trend',
     ORBITAL: 'Advanced',
-    NEURAL: 'AI',
+    NEURAL: 'Assistant',
     NOMINAL: 'OK',
 
     // Common UI token prefixes

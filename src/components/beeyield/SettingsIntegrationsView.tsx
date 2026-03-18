@@ -84,7 +84,7 @@ const SettingsIntegrationsView: React.FC = () => {
                 actions={
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-100 shadow-sm">
                         <div className={cn("w-2 h-2 rounded-full", isConnected('etims') ? "bg-[#1B9157] animate-pulse" : "bg-red-500")} />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-700">
+                        <span className="text-[10px] font-bold tracking-wider text-gray-700">
                             {isConnected('etims') ? "SECURE CONNECTION" : "ACTION REQUIRED"}
                         </span>
                     </div>
@@ -101,12 +101,12 @@ const SettingsIntegrationsView: React.FC = () => {
                                 </div>
                                 <div className="space-y-0.5">
                                     <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">eTIMS VSDC Terminal</h3>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Electronic Tax Invoice Generation Enforcement</p>
+                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider">Electronic Tax Invoice Generation Enforcement</p>
                                 </div>
                             </div>
                             <button
                                 onClick={handleConnectETIMS}
-                                className={cn(glass.btnPrimary, "h-9 px-6 font-bold text-xs uppercase")}
+                                className={cn(glass.btnPrimary, "h-9 px-6 font-bold text-xs")}
                                 disabled={loading}
                             >
                                 {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : isConnected('etims') ? "Sync Compliance Keys" : "Connect VSDC Gateway"}
@@ -117,21 +117,21 @@ const SettingsIntegrationsView: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Registered KRA PIN</label>
+                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Registered KRA PIN</label>
                                         <Input
                                             placeholder="P05XXXXXXXX"
                                             value={kraPin}
                                             onChange={(e) => setKraPin(e.target.value.toUpperCase())}
-                                            className="h-10 bg-gray-50 border-gray-100 text-sm font-bold tracking-[0.25em] focus:bg-white transition-colors text-center"
+                                            className="h-10 bg-gray-50 border-gray-100 text-sm font-bold focus:bg-white transition-colors text-center"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-1">Branch Code</label>
+                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Branch Code</label>
                                         <Input
                                             placeholder="00"
                                             value={branchCode}
                                             onChange={(e) => setBranchCode(e.target.value)}
-                                            className="h-10 bg-gray-50 border-gray-100 text-sm font-bold tracking-[0.1em] focus:bg-white transition-colors text-center"
+                                            className="h-10 bg-gray-50 border-gray-100 text-sm font-bold focus:bg-white transition-colors text-center"
                                         />
                                     </div>
                                 </div>
@@ -139,21 +139,21 @@ const SettingsIntegrationsView: React.FC = () => {
                                 <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 space-y-4 relative overflow-hidden">
                                     <div className="flex items-center gap-3">
                                         <Activity className="w-4 h-4 text-[#1B9157]" />
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Live Resilience Metrics</span>
+                                        <span className="text-[10px] font-bold tracking-wider text-gray-500">Live Resilience Metrics</span>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center bg-white px-4 py-2.5 rounded-lg border border-gray-100">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Authorized Hub</span>
+                                            <span className="text-[10px] font-bold text-gray-400 tracking-wider">Authorized Hub</span>
                                             <span className="text-xs font-bold text-[#1B9157]">BeeYield-VSDC-v4</span>
                                         </div>
                                         <div className="flex justify-between items-center bg-white px-4 py-2.5 rounded-lg border border-gray-100">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Last sync</span>
+                                            <span className="text-[10px] font-bold text-gray-400 tracking-wider">Last sync</span>
                                             <span className="text-xs font-bold text-gray-700">{getSyncDate('etims')}</span>
                                         </div>
                                         <div className="pt-3">
                                             <div className="flex justify-between items-center mb-1.5 px-1">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Uptime Stability</span>
-                                                <span className="text-[10px] font-bold uppercase text-[#1B9157]">99.9%</span>
+                                                <span className="text-[10px] font-bold text-gray-400 tracking-wider">Uptime Stability</span>
+                                                <span className="text-[10px] font-bold text-[#1B9157]">99.9%</span>
                                             </div>
                                             <div className="h-1.5 bg-gray-200/50 rounded-full overflow-hidden">
                                                 <div className="h-full bg-[#1B9157] w-[99.9%]" />
@@ -179,7 +179,7 @@ const SettingsIntegrationsView: React.FC = () => {
                         </p>
                     </div>
                 </div>
-                <button className={cn(glass.btnSecondary, "h-9 px-6 font-bold text-xs uppercase shrink-0")}>Download VSDC Log</button>
+                <button className={cn(glass.btnSecondary, "h-9 px-6 font-bold text-xs shrink-0")}>Download VSDC Log</button>
             </div>
         </motion.div>
     );

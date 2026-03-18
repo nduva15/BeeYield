@@ -111,17 +111,20 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
+                <div className="relative flex justify-center text-xs font-bold">
                     <span className="bg-white px-4 text-gray-300">or</span>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">First Name</Label>
+                    <Label htmlFor="shop-reg-firstName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">First Name</Label>
                     <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
+                            id="shop-reg-firstName"
+                            name="given-name"
+                            autoComplete="given-name"
                             placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
@@ -131,8 +134,11 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
+                    <Label htmlFor="shop-reg-lastName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
                     <Input
+                        id="shop-reg-lastName"
+                        name="family-name"
+                        autoComplete="family-name"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -143,11 +149,14 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
             </div>
 
             <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
+                <Label htmlFor="shop-reg-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
                 <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
+                        id="shop-reg-email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -159,11 +168,14 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
+                    <Label htmlFor="shop-reg-password" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
                     <div className="relative">
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
+                            id="shop-reg-password"
+                            name="new-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -173,11 +185,14 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
+                    <Label htmlFor="shop-reg-confirm" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
                     <div className="relative">
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
+                            id="shop-reg-confirm"
+                            name="confirm-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}

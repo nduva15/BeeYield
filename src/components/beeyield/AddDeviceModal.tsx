@@ -91,18 +91,18 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 <div className="flex items-center gap-6">
                                     <div className="inline-flex items-center gap-4 px-6 py-2 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/20 shadow-2xl skew-x-[-12deg]">
                                         <Cpu className="w-5 h-5 text-[#F4D03F]" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] skew-x-[12deg] italic">Add device</span>
+                                        <span className="text-[10px] font-black skew-x-[12deg] italic">Add device</span>
                                     </div>
                                     <div className="flex items-center gap-3 bg-[#1B9157]/ px-4 py-2 rounded-full border border-[#1B9157]/ shadow-inner">
                                         <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
-                                        <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest italic">Ready</span>
+                                        <span className="text-[10px] font-black text-[#1B9157] italic">Ready</span>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <h2 className="text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">
+                                    <h2 className="text-7xl font-black text-foreground tracking-tighter italic leading-[0.85]">
                                         Add <span className="text-[#F4D03F]">device</span>
                                     </h2>
-                                    <p className="text-gray-500 font-black text-[11px] uppercase tracking-[0.4em] mt-3 italic border-l-2 border-[#F4D03F]/20 pl-8 max-w-sm">
+                                    <p className="text-gray-500 font-black text-[11px] mt-3 italic border-l-2 border-[#F4D03F]/20 pl-8 max-w-sm">
                                         Link a sensor or gateway to a location (and optionally a hive).
                                     </p>
                                 </div>
@@ -121,7 +121,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                     <form onSubmit={handleSubmit} className="p-14 space-y-12 relative z-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="space-y-6 group">
-                                <Label htmlFor="add-device-code" className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Hardware Signature ID</Label>
+                                <Label htmlFor="add-device-code" className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black text-[10px]')}>Hardware Signature ID</Label>
                                 <div className="relative">
                                     <Network className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-[#F4D03F] transition-colors group-focus-within:text-foreground" />
                                     <Input
@@ -137,7 +137,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             </div>
 
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device type</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black text-[10px]')}>Device type</Label>
                                 <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
                                     <SelectTrigger id="add-device-type" aria-label="Device type" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
@@ -146,9 +146,9 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                         </div>
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
-                                        <SelectItem value="inland" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Gateway</SelectItem>
-                                        <SelectItem value="infield" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Sensor</SelectItem>
-                                        <SelectItem value="disease" className="p-5 font-black uppercase text-[11px] tracking-widest italic">Health monitor</SelectItem>
+                                        <SelectItem value="inland" className="p-5 font-black text-[11px] italic">Gateway</SelectItem>
+                                        <SelectItem value="infield" className="p-5 font-black text-[11px] italic">Sensor</SelectItem>
+                                        <SelectItem value="disease" className="p-5 font-black text-[11px] italic">Health monitor</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -156,7 +156,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Location</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black text-[10px]')}>Location</Label>
                                 <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
                                     <SelectTrigger id="add-device-apiary" aria-label="Location" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
@@ -166,7 +166,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {apiaries.map(apiary => (
-                                            <SelectItem key={apiary.id} value={apiary.id} className="p-5 font-black uppercase text-[11px] tracking-widest italic">
+                                            <SelectItem key={apiary.id} value={apiary.id} className="p-5 font-black text-[11px] italic">
                                                 {apiary.name.toUpperCase()}
                                             </SelectItem>
                                         ))}
@@ -175,7 +175,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             </div>
 
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#1B9157]/ pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Hive (optional)</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#1B9157]/ pl-6 opacity-40 font-black text-[10px]')}>Hive (optional)</Label>
                                 <Select
                                     value={selectedHiveId}
                                     onValueChange={setSelectedHiveId}
@@ -189,7 +189,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {filteredHives.map(hive => (
-                                            <SelectItem key={hive.id} value={hive.id} className="p-5 font-black uppercase text-[11px] tracking-widest italic">
+                                            <SelectItem key={hive.id} value={hive.id} className="p-5 font-black text-[11px] italic">
                                                 {hive.hive_code.toUpperCase()}
                                             </SelectItem>
                                         ))}
@@ -199,7 +199,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         </div>
 
                         <div className="space-y-6 group">
-                            <Label htmlFor="device-name" className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black tracking-widest uppercase text-[10px]')}>Device name (optional)</Label>
+                            <Label htmlFor="device-name" className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#F4D03F]/40 pl-6 opacity-40 font-black text-[10px]')}>Device name (optional)</Label>
                             <div className="relative">
                                 <Binary className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-[#F4D03F] opacity-20 group-hover:opacity-100 transition-opacity" />
                                 <Input
@@ -218,14 +218,14 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             <button
                                 type="button"
                                 onClick={() => onOpenChange(false)}
-                                className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic uppercase text-lg tracking-widest transition-all bg-gray-400")}
+                                className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic text-lg transition-all bg-gray-400")}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting || !deviceCode?.trim() || !selectedApiaryId}
-                                className={cn(glass.btnPrimary, "flex-[2] h-22 bg-[#FBBE24] text-[#1A1A1A] shadow-[0_45px_100px_-20px_rgba(251,191,36,0.6)] rounded-[2.5rem] px-14 font-black italic text-2xl transition-all uppercase flex items-center justify-center gap-6 group/commit pl-20")}
+                                className={cn(glass.btnPrimary, "flex-[2] h-22 bg-[#FBBE24] text-[#1A1A1A] shadow-[0_45px_100px_-20px_rgba(251,191,36,0.6)] rounded-[2.5rem] px-14 font-black italic text-2xl transition-all flex items-center justify-center gap-6 group/commit pl-20")}
                             >
                                 {isSubmitting ? (
                                     <RefreshCw className="w-10 h-10 animate-spin" />
@@ -249,7 +249,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 <Info className="w-8 h-8 text-[#F4D03F]" />
                             </div>
                             <div className="relative z-10 space-y-2">
-                                <p className="text-xl italic font-black text-foreground tracking-tighter uppercase">Tip</p>
+                                <p className="text-xl italic font-black text-foreground tracking-tighter">Tip</p>
                                 <p className="text-[13px] italic font-medium opacity-40 leading-relaxed text-foreground max-w-xl">
                                     Use the ID printed on the device. You can rename it later.
                                 </p>

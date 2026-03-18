@@ -88,7 +88,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                         className={cn(glass.section, "p-6 flex flex-col group")}
                     >
                         <div className="flex items-center justify-between mb-6">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{metric.label}</span>
+                            <span className="text-[10px] font-bold text-gray-400">{metric.label}</span>
                             <CheckCircle2 className="w-4 h-4 text-[#1B9157]" />
                         </div>
 
@@ -99,7 +99,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
 
                         <div className="flex items-center gap-2 mb-4">
                             <Activity className="w-3 h-3 text-[#1B9157]" />
-                            <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-widest">{metric.method}</span>
+                            <span className="text-[10px] font-bold text-[#1B9157]">{metric.method}</span>
                         </div>
 
                         <p className="text-[11px] text-gray-500 leading-relaxed flex-1 border-l-2 border-[#F4D03F]/30 pl-3">
@@ -107,7 +107,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                         </p>
 
                         <div className="mt-6 pt-4 border-t border-[#F4D03F]/10 flex items-center justify-between">
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Score</span>
+                            <span className="text-[9px] font-bold text-gray-400">Score</span>
                             <div className="flex items-center gap-3">
                                 <div className="h-1.5 w-16 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
                                     <div className="h-full bg-[#1B9157] rounded-full transition-all" style={{ width: `${metric.score}%` }} />
@@ -127,7 +127,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                     </div>
                     <div>
                         <h3 className="text-sm font-bold text-[#1A1A1A]">Critical Exceptions</h3>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Audit Level Alerts</p>
+                        <p className="text-[10px] text-gray-500 text-[9px]">Audit Level Alerts</p>
                     </div>
                 </div>
 
@@ -141,7 +141,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                             <p className="text-[11px] text-gray-500 leading-relaxed mb-4">
                                 {alert.detail}
                             </p>
-                            <button className="h-8 px-4 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2">
+                            <button className="h-8 px-4 bg-red-500 text-white text-[10px] font-bold rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2">
                                 {alert.action}
                             </button>
                         </div>
@@ -160,7 +160,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                     <div className="flex-1 space-y-4">
                         <div className="space-y-1">
                             <h3 className="text-xl font-bold tracking-tight">Welfare & Yield <span className="text-[#F4D03F]">Transparency</span></h3>
-                            <p className="text-[10px] font-bold text-[#F4D03F]/60 uppercase tracking-widest">BeeYield Certified · ESG Compliant</p>
+                            <p className="text-[10px] font-bold text-[#F4D03F]/60">BeeYield Certified · ESG Compliant</p>
                         </div>
                         <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-[#F4D03F]/40">
                             BeeYield certification proves your orchard provides a safe, pesticide-managed, and nutrient-rich environment for pollinators.
@@ -169,7 +169,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                             {['Contract Compliance', 'Bio-Security Verified'].map(tag => (
                                 <div key={tag} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/20 rounded-full">
                                     <CheckCircle2 className="w-3 h-3 text-[#F4D03F]" />
-                                    <span className="text-[10px] font-bold tracking-widest uppercase">{tag}</span>
+                                    <span className="text-[10px] font-bold">{tag}</span>
                                 </div>
                             ))}
                         </div>

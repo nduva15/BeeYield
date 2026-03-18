@@ -81,7 +81,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                         </button>
                         <div className={cn(glass.badge, "bg-[#1A1A1A] text-[#F4D03F] border-[#F4D03F]/30 px-3 py-1.5 flex items-center gap-2")}>
                             <Terminal className="w-3 h-3 animate-pulse" />
-                            <span className="text-[10px] tracking-widest">ORBIT_LINK</span>
+                            <span className="text-[10px]">Orbit Link</span>
                         </div>
                     </div>
                 }
@@ -130,7 +130,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-semibold text-[#1A1A1A]">Biosphere Topology</h3>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">Active Neural Engine</p>
+                                    <p className="text-[10px] text-gray-500">Active Neural Engine</p>
                                 </div>
                             </div>
 
@@ -177,7 +177,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                 <div key={btn.title} className="bg-[#FFF9F0] p-4 rounded-xl border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 transition-all cursor-pointer group">
                                     <btn.icon className="w-5 h-5 mb-2 transition-transform group-hover:scale-110" style={{ color: btn.color }} />
                                     <p className="text-xs font-bold text-[#1A1A1A] tracking-tight leading-none mb-1">{btn.title}</p>
-                                    <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest">Sector_Active</p>
+                                    <p className="text-[9px] text-gray-500 font-black">Sector_Active</p>
                                 </div>
                             ))}
                         </div>

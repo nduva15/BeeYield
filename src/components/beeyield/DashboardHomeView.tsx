@@ -19,7 +19,7 @@ interface DashboardHomeViewProps {
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
     return (
         <div className="flex items-center justify-between gap-4 py-2 border-b border-[#F4D03F]/10 last:border-b-0">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{label}</span>
+            <span className="text-[10px] font-black text-gray-400">{label}</span>
             <span className="text-[11px] font-bold text-[#1A1A1A] break-all text-right">{value}</span>
         </div>
     );

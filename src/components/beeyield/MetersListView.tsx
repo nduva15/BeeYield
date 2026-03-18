@@ -74,7 +74,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
             location: 'Lodz - Polesie',
             apartment: '1',
             medium: title,
-            status: 'ALERT',
+            status: 'Alert',
             alarm: true,
             readings: 'Wczoraj 23:11 - 214 kWh'
         },
@@ -98,7 +98,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
             location: 'Kalisz - Centrum',
             apartment: '4',
             medium: title,
-            status: 'ALERT',
+            status: 'Alert',
             alarm: true,
             readings: 'Wczoraj 22:10 - 585 kWh'
         },
@@ -217,11 +217,11 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h1 className="text-xl font-black uppercase tracking-tighter italic text-[#1A1A1A]">
+                <h1 className="text-xl font-black tracking-tighter italic text-[#1A1A1A]">
                     METER_REGISTRY <span style={{ color: colors.primary }} className="ml-2">— {title}</span>
                 </h1>
                 <div className="flex gap-2">
-                    <button className={cn(glass.btnPrimary, "h-8 px-5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] shadow-sm flex items-center gap-2")}>
+                    <button className={cn(glass.btnPrimary, "h-8 px-5 rounded-xl text-[9px] font-black shadow-sm flex items-center gap-2")}>
                         <Plus className="w-3.5 h-3.5" /> ADD_SENSOR
                     </button>
                 </div>
@@ -232,15 +232,15 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                 <div className={cn(glass.card, "p-0 bg-white/40 border-white/20 shadow-xl overflow-hidden")}>
                     <div className="p-5 flex items-center justify-between border-b border-white/10">
                         <div>
-                            <h2 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] flex items-center gap-2">
                                 <Building2 className="w-4 h-4 text-gray-400" />
                                 APIARIES
                             </h2>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">OVERVIEW_OF_ADDRESSES_WITH_SENSOR_COUNTS</p>
+                            <p className="text-[9px] font-black text-gray-400 mt-1">Overview Of Addresses With Sensor Counts</p>
                         </div>
                         <CollapsibleTrigger asChild>
-                            <button className={cn(glass.btnSecondary, "h-8 px-4 font-black uppercase tracking-[0.2em] text-[9px] rounded-xl border-white/40 flex items-center gap-2")}>
-                                {isBuildingsOpen ? <><ChevronUp className="w-3.5 h-3.5" /> COLLAPSE</> : <><ChevronDown className="w-3.5 h-3.5" /> EXPAND</>}
+                            <button className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[9px] rounded-xl border-white/40 flex items-center gap-2")}>
+                                {isBuildingsOpen ? <><ChevronUp className="w-3.5 h-3.5" />Collapse</> : <><ChevronDown className="w-3.5 h-3.5" />Expand</>}
                             </button>
                         </CollapsibleTrigger>
                     </div>
@@ -249,20 +249,20 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                                 {buildings.map((building, i) => (
                                     <div key={i} className="bg-white/50 border border-white/40 rounded-2xl p-4 shadow-sm hover:bg-white/80 transition-all group">
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A] mb-1">{building.name}</h4>
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase leading-tight mb-3 min-h-[2.5em]">{building.address}</p>
+                                        <h4 className="text-[10px] font-black text-[#1A1A1A] mb-1">{building.name}</h4>
+                                        <p className="text-[9px] font-bold text-gray-400 leading-tight mb-3 min-h-[2.5em]">{building.address}</p>
 
                                         <div className="flex gap-2 mb-3">
-                                            <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black uppercase tracking-widest border border-white/40 rounded-lg">
+                                            <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black border border-white/40 rounded-lg">
                                                 SENSORS_{building.meters}
                                             </Badge>
-                                            <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black uppercase tracking-widest border border-white/40 rounded-lg">
+                                            <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black border border-white/40 rounded-lg">
                                                 HIVES_{building.apartments}
                                             </Badge>
                                         </div>
 
                                         <div className="space-y-1 mt-4 pt-3 border-t border-white/40">
-                                            <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest">COORDS_{building.coords}</p>
+                                            <p className="text-[8px] text-gray-400 font-black">COORDS_{building.coords}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -277,15 +277,15 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                 <div className={cn(glass.card, "p-0 bg-white/40 border-white/20 shadow-xl overflow-hidden")}>
                     <div className="p-5 flex items-center justify-between border-b border-white/10">
                         <div>
-                            <h2 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] flex items-center gap-2">
                                 <Home className="w-4 h-4 text-gray-400" />
                                 HIVES_UNITS
                             </h2>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">HIVE_LIST_WITH_ASSIGNED_SENSORS</p>
+                            <p className="text-[9px] font-black text-gray-400 mt-1">Hive List With Assigned Sensors</p>
                         </div>
                         <CollapsibleTrigger asChild>
-                            <button className={cn(glass.btnSecondary, "h-8 px-4 font-black uppercase tracking-[0.2em] text-[9px] rounded-xl border-white/40 flex items-center gap-2")}>
-                                {isApartmentsOpen ? <><ChevronUp className="w-3.5 h-3.5" /> COLLAPSE</> : <><ChevronDown className="w-3.5 h-3.5" /> EXPAND</>}
+                            <button className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[9px] rounded-xl border-white/40 flex items-center gap-2")}>
+                                {isApartmentsOpen ? <><ChevronUp className="w-3.5 h-3.5" />Collapse</> : <><ChevronDown className="w-3.5 h-3.5" />Expand</>}
                             </button>
                         </CollapsibleTrigger>
                     </div>
@@ -295,10 +295,10 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                 {apartments.map((apt) => (
                                     <div key={apt.id} className="p-4 px-5 flex items-center justify-between hover:bg-white/40 transition-colors">
                                         <div>
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">{apt.name}</h4>
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">{apt.location}</p>
+                                            <h4 className="text-[10px] font-black text-[#1A1A1A]">{apt.name}</h4>
+                                            <p className="text-[9px] font-bold text-gray-400 mt-0.5">{apt.location}</p>
                                         </div>
-                                        <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black uppercase tracking-widest border border-white/40 rounded-lg">
+                                        <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black border border-white/40 rounded-lg">
                                             SENSORS_{apt.meters}
                                         </Badge>
                                     </div>
@@ -313,7 +313,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
             <div className={cn(glass.card, "p-5 bg-white/40 border-white/20 shadow-sm")}>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-[9px] text-[#1A1A1A]/50 font-black uppercase tracking-[0.2em]">TYPE</label>
+                        <label className="text-[9px] text-[#1A1A1A]/50 font-black">Type</label>
                         <div className="flex gap-2 p-1 bg-white/50 border border-white/40 rounded-xl h-9">
                             <button className={cn("rounded-lg h-7 w-8 flex items-center justify-center transition-all", type === 'heat' && "bg-white shadow-sm")} onClick={() => onTabChange('meters-heat')}>
                                 <Flame className={cn("w-3.5 h-3.5", type === 'heat' ? "text-orange-500" : "text-gray-400")} />
@@ -328,54 +328,54 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] text-[#1A1A1A]/50 font-black uppercase tracking-[0.2em]">APIARY</label>
+                        <label className="text-[9px] text-[#1A1A1A]/50 font-black">Apiary</label>
                         <div className="relative">
                             <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select id="filter-apiary" name="apiary" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] appearance-none cursor-pointer")}>
-                                <option value="">ALL_APIARIES</option>
+                            <select id="filter-apiary" name="apiary" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black appearance-none cursor-pointer")}>
+                                <option value="">All Apiaries</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] text-[#1A1A1A]/50 font-black uppercase tracking-[0.2em]">HIVE</label>
+                        <label className="text-[9px] text-[#1A1A1A]/50 font-black">Hive</label>
                         <div className="relative">
                             <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select id="filter-hive" name="hive" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] appearance-none cursor-pointer")}>
-                                <option value="">ALL_HIVES</option>
+                            <select id="filter-hive" name="hive" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black appearance-none cursor-pointer")}>
+                                <option value="">All Hives</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] text-[#1A1A1A]/50 font-black uppercase tracking-[0.2em]">HEALTH</label>
+                        <label className="text-[9px] text-[#1A1A1A]/50 font-black">Health</label>
                         <div className="relative">
                             <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select id="filter-status" name="status" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] appearance-none cursor-pointer")}>
-                                <option value="">ALL_STATUSES</option>
+                            <select id="filter-status" name="status" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black appearance-none cursor-pointer")}>
+                                <option value="">All Statuses</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] text-[#1A1A1A]/50 font-black uppercase tracking-[0.2em]">LEVEL</label>
+                        <label className="text-[9px] text-[#1A1A1A]/50 font-black">Level</label>
                         <div className="relative">
                             <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select id="filter-level" name="reading-level" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] appearance-none cursor-pointer")}>
-                                <option value="">ALL_LEVELS</option>
+                            <select id="filter-level" name="reading-level" className={cn(glass.select, "w-full h-9 pl-9 pr-4 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black appearance-none cursor-pointer")}>
+                                <option value="">All Levels</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] text-[#1A1A1A]/50 font-black uppercase tracking-[0.2em]">SEARCH</label>
+                        <label className="text-[9px] text-[#1A1A1A]/50 font-black">Search</label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <input
                                 id="meter-search"
                                 name="meter-search"
                                 placeholder="SENSOR_ID..."
-                                className={cn(glass.input, "w-full h-9 pl-9 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] placeholder:text-gray-400")}
+                                className={cn(glass.input, "w-full h-9 pl-9 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black placeholder:text-gray-400")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -389,15 +389,15 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                 <div className={cn(glass.card, "p-0 bg-white/40 border-white/20 shadow-xl overflow-hidden")}>
                     <div className="p-5 flex items-center justify-between border-b border-white/10">
                         <div>
-                            <h2 className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] flex items-center gap-2">
                                 <FileText className="w-4 h-4 text-gray-400" />
                                 EXPORT_LIST
                             </h2>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">DOWNLOAD_FILTERED_DATASET</p>
+                            <p className="text-[9px] font-black text-gray-400 mt-1">Download Filtered Dataset</p>
                         </div>
                         <CollapsibleTrigger asChild>
-                            <button className={cn(glass.btnSecondary, "h-8 px-4 font-black uppercase tracking-[0.2em] text-[9px] rounded-xl border-white/40 flex items-center gap-2")}>
-                                {isExportOpen ? <><ChevronUp className="w-3.5 h-3.5" /> COLLAPSE</> : <><ChevronDown className="w-3.5 h-3.5" /> EXPAND</>}
+                            <button className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[9px] rounded-xl border-white/40 flex items-center gap-2")}>
+                                {isExportOpen ? <><ChevronUp className="w-3.5 h-3.5" />Collapse</> : <><ChevronDown className="w-3.5 h-3.5" />Expand</>}
                             </button>
                         </CollapsibleTrigger>
                     </div>
@@ -405,7 +405,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div className="p-6 bg-white/30">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                 <div>
-                                    <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">DATA_COLUMNS</h4>
+                                    <h4 className="text-[9px] font-black text-gray-400 mb-4">Data Columns</h4>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-2">
                                         {columns.map(col => (
                                             <div key={col.id} className="flex items-center space-x-2">
@@ -415,7 +415,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                                     onCheckedChange={() => toggleColumn(col.id)}
                                                     className="data-[state=checked]:bg-[#1A1A1A] data-[state=checked]:border-[#1A1A1A] border-gray-300 pointer-events-auto"
                                                 />
-                                                <label htmlFor={col.id} className="text-[9px] font-black text-[#1A1A1A] uppercase tracking-widest leading-none cursor-pointer">
+                                                <label htmlFor={col.id} className="text-[9px] font-black text-[#1A1A1A] leading-none cursor-pointer">
                                                     {col.label}
                                                 </label>
                                             </div>
@@ -423,16 +423,16 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                     </div>
                                 </div>
                                 <div className="space-y-6">
-                                    <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">OUTPUT_FORMATS</h4>
+                                    <h4 className="text-[9px] font-black text-gray-400">Output Formats</h4>
                                     <div className="flex flex-wrap gap-4">
-                                        <button onClick={exportToPDF} className={cn(glass.btnPrimary, "h-10 flex-1 min-w-[150px] font-black uppercase tracking-[0.2em] text-[9px] rounded-xl")}>
+                                        <button onClick={exportToPDF} className={cn(glass.btnPrimary, "h-10 flex-1 min-w-[150px] font-black text-[9px] rounded-xl")}>
                                             <FileText className="w-3.5 h-3.5 mr-2" /> PORTABLE_DOCUMENT_FORMAT
                                         </button>
-                                        <button onClick={exportToXLS} className={cn(glass.btnSecondary, "h-10 flex-1 min-w-[150px] font-black uppercase tracking-[0.2em] text-[9px] rounded-xl border-white/40 bg-white/50 hover:bg-white")}>
+                                        <button onClick={exportToXLS} className={cn(glass.btnSecondary, "h-10 flex-1 min-w-[150px] font-black text-[9px] rounded-xl border-white/40 bg-white/50 hover:bg-white")}>
                                             <Layers className="w-3.5 h-3.5 mr-2 text-[#1B9157]" /> EXCEL_SPREADSHEET
                                         </button>
                                     </div>
-                                    <p className="text-[8px] font-bold uppercase text-slate-400 tracking-widest">* ALL_REPORTS_GENERATED_VIA_CLIENT_FILTER</p>
+                                    <p className="text-[8px] font-bold text-slate-400">* ALL_REPORTS_GENERATED_VIA_CLIENT_FILTER</p>
                                 </div>
                             </div>
                         </div>
@@ -446,14 +446,14 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b border-white/20 bg-white/30">
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">SENSOR_TYPE</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">APIARY_ZONE</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">HIVE_UNIT</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">SENSOR_ID</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">LAST_READING</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">HEALTH</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">ALERT</th>
-                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">ACTIONS</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Sensor Type</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Apiary Zone</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Hive Unit</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Sensor Id</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Last Reading</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Health</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400">Alert</th>
+                                <th className="px-5 py-4 text-[8px] font-black text-gray-400 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
@@ -461,29 +461,29 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                 <tr key={meter.id} className="hover:bg-white/50 transition-colors group">
                                     <td className="px-5 py-3">
                                         <Badge variant="outline" className={cn(
-                                            "border-0 rounded-lg gap-1.5 pl-1.5 pr-2.5 py-1 text-[8px] font-black uppercase tracking-widest",
+                                            "border-0 rounded-lg gap-1.5 pl-1.5 pr-2.5 py-1 text-[8px] font-black",
                                             colors.bg, colors.text
                                         )}>
                                             <Icon className="w-3 h-3" /> {title}
                                         </Badge>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-[#1A1A1A]">{meter.building}</p>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{meter.location}</p>
+                                        <p className="text-[10px] font-black tracking-wider text-[#1A1A1A]">{meter.building}</p>
+                                        <p className="text-[8px] font-bold text-gray-400 mt-0.5">{meter.location}</p>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">{meter.apartment}</p>
+                                        <p className="text-[10px] font-black tracking-wider text-gray-600">{meter.apartment}</p>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-gray-700">{meter.serial}</p>
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-[#1B9157] mt-0.5">{meter.code}</p>
+                                        <p className="text-[10px] font-black tracking-wider text-gray-700">{meter.serial}</p>
+                                        <p className="text-[8px] font-black text-[#1B9157] mt-0.5">{meter.code}</p>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <p className="text-[10px] font-black uppercase tracking-wider">{meter.readings}</p>
+                                        <p className="text-[10px] font-black tracking-wider">{meter.readings}</p>
                                     </td>
                                     <td className="px-5 py-3">
                                         <Badge className={cn(
-                                            "border-0 text-[8px] font-black uppercase tracking-widest px-2.5 rounded-full shadow-sm",
+                                            "border-0 text-[8px] font-black px-2.5 rounded-full shadow-sm",
                                             meter.status === 'OK' ? "bg-green-100 text-[#1B9157]" : "bg-red-100 text-red-700"
                                         )}>
                                             {meter.status}
@@ -493,24 +493,24 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                         {meter.alarm ? (
                                             <AlertTriangle className="w-4 h-4 text-red-500 animate-pulse" />
                                         ) : (
-                                            <span className="text-gray-300 uppercase font-black tracking-widest text-[9px]">-</span>
+                                            <span className="text-gray-300 font-black text-[9px]">-</span>
                                         )}
                                     </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="flex flex-col items-end gap-2">
                                             <div className="flex items-center gap-3">
-                                                <button className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <button className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-[#1B9157] transition-colors">
                                                     <Info className="w-3 h-3" /> DATA
                                                 </button>
-                                                <button className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <button className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-[#1B9157] transition-colors">
                                                     <BarChart3 className="w-3 h-3" /> CHARTS
                                                 </button>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <button className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <button className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-[#1B9157] transition-colors">
                                                     <FileText className="w-3 h-3" /> PDF
                                                 </button>
-                                                <button className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <button className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-[#1B9157] transition-colors">
                                                     <Settings className="w-3 h-3" /> CONFIG
                                                 </button>
                                             </div>

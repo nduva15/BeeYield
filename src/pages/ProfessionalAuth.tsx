@@ -45,7 +45,7 @@ const ProfessionalAuth: React.FC = () => {
                     <div className="relative">
                         <div className="w-12 h-12 rounded-full border-4 border-beeyield-green/10 border-t-beeyield-green animate-spin" />
                     </div>
-                    <span className="text-beeyield-green font-bold text-sm tracking-widest uppercase">Connecting...</span>
+                    <span className="text-beeyield-green font-bold text-sm">Connecting...</span>
                 </div>
             </div>
         );
@@ -67,7 +67,7 @@ const ProfessionalAuth: React.FC = () => {
                             <span className="text-2xl font-black tracking-tight text-gray-900 leading-none">
                                 Bee<span className="text-honey">Yield</span>
                             </span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 ml-0.5">BeeYield dashboard</span>
+                            <span className="text-[10px] font-black text-gray-400 mt-1.5 ml-0.5">BeeYield dashboard</span>
                         </div>
                     </Link>
 
@@ -145,7 +145,7 @@ const ProfessionalAuth: React.FC = () => {
                             
                             <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl">
                                 <div className="w-2 h-2 rounded-full bg-honey" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                <span className="text-[10px] font-black text-gray-400">
                                     Secure sign-in
                                 </span>
                             </div>
@@ -154,11 +154,11 @@ const ProfessionalAuth: React.FC = () => {
                 </main>
 
                 <footer className="py-12 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <div className="flex flex-col gap-1 items-center md:items-start text-[10px] font-black text-gray-400">
                         <p>© 2026 BeeYield. All rights reserved.</p>
                         <p className="opacity-60">For beekeepers and growers</p>
                     </div>
-                    <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
+                    <div className="flex gap-8 text-[10px] font-black">
                         <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Privacy</a>
                         <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Terms</a>
                         <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Support</a>

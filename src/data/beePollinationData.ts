@@ -1,4 +1,4 @@
-﻿export interface PollinationDetail {
+export interface PollinationDetail {
     cropName: string;
     beeDependence: string;
     optimalHivesPerAcre: string;
@@ -114,7 +114,7 @@ export const beePollinationData: Record<string, PollinationDetail> = {
 };
 
 export const globalPollinationTrends2026 = {
-    "Precision Pollinationâ„¢": "A market segment created by BeeYield, where IoT sensors and AI ensure exactly the right amount of pollination for every square meter of farm.",
+    "Precision Pollination™": "A market segment created by BeeYield, where IoT sensors and advanced algorithms ensure exactly the right amount of pollination for every square meter of farm.",
     "Pollinator Depletion Reserve": "BeeYield's initiative to create 'Safe Zones' around industrial farms, restoring 2,500+ trees per region to support wild bee populations.",
     "Pollination-as-a-Service (PaaS)": "By 2026, PaaS is the primary model for commercial beekeeping, with BeeYield's platform acting as the global marketplace for farmers and beekeepers."
 };

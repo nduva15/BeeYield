@@ -87,8 +87,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     const stats = React.useMemo(() => {
         return {
             total: hives.length,
-            active: hives.filter(h => h.status === 'ACTIVE').length,
-            critical: hives.filter(h => h.status !== 'ACTIVE').length,
+            active: hives.filter(h => h.status === 'Active').length,
+            critical: hives.filter(h => h.status !== 'Active').length,
         };
     }, [hives]);
 
@@ -258,7 +258,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                     <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg gap-1 border border-[#F4D03F]/10 w-full xl:w-auto shadow-inner">
                         <button
                             onClick={() => setViewMode('hives')}
-                            className={cn('flex-1 xl:flex-initial h-8 px-4 rounded-md text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 justify-center',
+                            className={cn('flex-1 xl:flex-initial h-8 px-4 rounded-md text-[9px] font-black transition-all flex items-center gap-2 justify-center',
                                 viewMode === 'hives' ? 'bg-white text-[#F4D03F] shadow-md border border-[#F4D03F]/10' : 'text-gray-400 hover:text-[#1A1A1A]'
                             )}
                         >
@@ -266,7 +266,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         </button>
                         <button
                             onClick={() => setViewMode('devices')}
-                            className={cn('flex-1 xl:flex-initial h-8 px-4 rounded-md text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 justify-center',
+                            className={cn('flex-1 xl:flex-initial h-8 px-4 rounded-md text-[9px] font-black transition-all flex items-center gap-2 justify-center',
                                 viewMode === 'devices' ? 'bg-white text-[#F4D03F] shadow-md border border-[#F4D03F]/10' : 'text-gray-400 hover:text-[#1A1A1A]'
                             )}
                         >
@@ -281,20 +281,20 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 placeholder="FILTER_UNITS..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-8 pl-9 bg-white/50 border-[#F4D03F]/10 rounded-lg text-[10px] font-black uppercase tracking-wider focus:border-[#F4D03F]/30"
+                                className="h-8 pl-9 bg-white/50 border-[#F4D03F]/10 rounded-lg text-[10px] font-black tracking-wider focus:border-[#F4D03F]/30"
                             />
                         </div>
                         <div className="w-full md:w-44">
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                <SelectTrigger className="h-8 px-3 rounded-lg bg-white/50 border-[#F4D03F]/10 text-[9px] font-black uppercase tracking-widest transition-all hover:border-[#F4D03F]/30 shadow-none">
+                                <SelectTrigger className="h-8 px-3 rounded-lg bg-white/50 border-[#F4D03F]/10 text-[9px] font-black transition-all hover:border-[#F4D03F]/30 shadow-none">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="w-3 h-3 text-[#F4D03F]" />
                                         <SelectValue placeholder="All" />
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
-                                    <SelectItem value="all" className="font-black uppercase text-[8px] tracking-[0.2em] focus:bg-[#F4D03F]/10">All_Sites</SelectItem>
-                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-black uppercase text-[8px] tracking-[0.2em] focus:bg-[#F4D03F]/10">{a.name.toUpperCase()}</SelectItem>)}
+                                    <SelectItem value="all" className="font-black text-[8px] focus:bg-[#F4D03F]/10">All_Sites</SelectItem>
+                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-black text-[8px] focus:bg-[#F4D03F]/10">{a.name.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -334,7 +334,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                             weight: hive.latest_weight || 0,
                                             temp: hive.latest_temp || 0,
                                             humidity: hive.latest_humidity || 0,
-                                            status: hive.status === 'ACTIVE' ? 'ok' : hive.status?.toUpperCase() === 'MAINTENANCE' ? 'warning' : 'critical'
+                                            status: hive.status === 'Active' ? 'ok' : hive.status?.toUpperCase() === 'Maintenance' ? 'warning' : 'critical'
                                         }}
                                         onViewHistory={() => handleOpenQuickDetails(hive)}
                                         onMarkInspection={() => handleRequestInspection(hive, {} as any)}
@@ -351,8 +351,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <Cpu className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[10px] font-black tracking-widest uppercase text-[#1A1A1A]">Equipment Fleet</h3>
-                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Hardware Telemetry Monitoring</p>
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Equipment Fleet</h3>
+                                    <p className="text-[8px] font-bold text-gray-400">Hardware Telemetry Monitoring</p>
                                 </div>
                             </div>
                         </div>
@@ -361,11 +361,11 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             <table className="w-full text-left border-separate border-spacing-0">
                                 <thead>
                                     <tr className="bg-[#1A1A1A]/[0.02]">
-                                        <th className={cn(glass.tableHead, "text-[9px] font-black uppercase tracking-[0.2em] py-4")}>ID CODE</th>
-                                        <th className={cn(glass.tableHead, "text-[9px] font-black uppercase tracking-[0.2em] py-4")}>DEPLOYMENT</th>
-                                        <th className={cn(glass.tableHead, "text-[9px] font-black uppercase tracking-[0.2em] py-4")}>STATUS</th>
-                                        <th className={cn(glass.tableHead, "text-[9px] font-black uppercase tracking-[0.2em] py-4")}>BATTERY</th>
-                                        <th className={cn(glass.tableHead, "text-right text-[9px] font-black uppercase tracking-[0.2em] py-4")}>LAST TEL</th>
+                                        <th className={cn(glass.tableHead, "text-[9px] font-black py-4")}>ID Code</th>
+                                        <th className={cn(glass.tableHead, "text-[9px] font-black py-4")}>Deployment</th>
+                                        <th className={cn(glass.tableHead, "text-[9px] font-black py-4")}>Status</th>
+                                        <th className={cn(glass.tableHead, "text-[9px] font-black py-4")}>Battery</th>
+                                        <th className={cn(glass.tableHead, "text-right text-[9px] font-black py-4")}>Last Tel</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -384,31 +384,31 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                                         <div className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center shadow-sm">
                                                             <Hash className="w-4 h-4 text-[#F4D03F] opacity-40" />
                                                         </div>
-                                                        <span className="text-xs font-black text-[#1A1A1A] tracking-tight uppercase tabular-nums">{device.device_code}</span>
+                                                        <span className="text-xs font-black text-[#1A1A1A] tracking-tight tabular-nums">{device.device_code}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-3">
                                                     {linkedHive ? (
                                                         <div className="bg-white/50 text-[#1A1A1A] border border-[#F4D03F]/10 px-3 py-1 rounded-md max-w-fit flex items-center gap-2 shadow-sm">
                                                             <ShieldCheck className="w-3.5 h-3.5 text-[#1B9157]" />
-                                                            <span className="font-black uppercase text-[8px] tracking-[0.2em]">HIVE: {linkedHive.hive_code}</span>
+                                                            <span className="font-black text-[8px]">HIVE: {linkedHive.hive_code}</span>
                                                         </div>
                                                     ) : (
-                                                        <span className="font-black text-[9px] text-gray-400 uppercase tracking-widest opacity-40">Dormant_Mode</span>
+                                                        <span className="font-black text-[9px] text-gray-400 opacity-40">Dormant_Mode</span>
                                                     )}
                                                 </td>
                                                 <td className="px-5 py-3">
                                                     <div className="flex items-center gap-2">
                                                         <div className={cn("w-1.5 h-1.5 rounded-full", device.status === 'active' ? 'bg-[#1B9157] animate-pulse shadow-[0_0_8px_rgba(27,145,87,0.3)]' : 'bg-gray-300')} />
-                                                        <span className={cn("text-[9px] font-black uppercase tracking-widest", device.status === 'active' ? "text-[#1B9157]" : "text-gray-400")}>
-                                                            {device.status === 'active' ? 'SYNCHRONIZED' : 'OFFLINE_VECTOR'}
+                                                        <span className={cn("text-[9px] font-black", device.status === 'active' ? "text-[#1B9157]" : "text-gray-400")}>
+                                                            {device.status === 'active' ? 'Synchronized' : 'Offline Vector'}
                                                         </span>
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-3">
                                                     <div className="flex items-center gap-4">
                                                         <div className="flex flex-col items-end gap-1 min-w-[80px]">
-                                                            <span className="text-[10px] font-black text-[#1A1A1A] tabular-nums tracking-widest">{device.battery_level}%</span>
+                                                            <span className="text-[10px] font-black text-[#1A1A1A] tabular-nums">{device.battery_level}%</span>
                                                             <div className="w-full h-1 bg-[#1A1A1A]/5 rounded-full overflow-hidden relative border border-transparent">
                                                                 <motion.div
                                                                     initial={{ width: 0 }}
@@ -420,7 +420,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-3 text-right">
-                                                    <span className="text-[9px] font-black text-gray-500 tabular-nums uppercase tracking-widest opacity-60">
+                                                    <span className="text-[9px] font-black text-gray-500 tabular-nums opacity-60">
                                                         {new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: '2-digit', day: '2-digit' })} 
                                                         <span className="ml-1 text-[#F4D03F]/60">[{new Date(device.last_ping || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}]</span>
                                                     </span>

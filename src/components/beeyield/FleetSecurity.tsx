@@ -107,12 +107,12 @@ const FleetSecurity: React.FC = () => {
                                 <AlertTriangle className="w-4 h-4 text-red-500" />
                             </div>
                             <div className="space-y-0.5">
-                                <h3 className="text-[10px] font-black tracking-[0.2em] text-[#1A1A1A] uppercase">Movement_Detected</h3>
-                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">PALLET_{pallets[1].id}_SECTOR_G4</p>
+                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Movement_Detected</h3>
+                                <p className="text-[8px] font-black text-gray-500">PALLET_{pallets[1].id}_SECTOR_G4</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 relative z-10">
-                            <button className="h-7 px-3 bg-white text-[#1A1A1A] border border-amber-200/40 shadow-sm rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-amber-50 transition-all">Suppress</button>
+                            <button className="h-7 px-3 bg-white text-[#1A1A1A] border border-amber-200/40 shadow-sm rounded-lg font-black text-[9px] hover:bg-amber-50 transition-all">Suppress</button>
                             <button
                                 onClick={() => setGlobalAlert(false)}
                                 className="w-8 h-8 flex items-center justify-center bg-transparent rounded-lg hover:bg-amber-200 transition-all text-gray-500 hover:text-[#1A1A1A]"
@@ -158,12 +158,12 @@ const FleetSecurity: React.FC = () => {
                                 <div className="w-8 h-8 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                     <MapPin className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                                <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Asset_Vector_Map</h3>
+                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Asset_Vector_Map</h3>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-2 px-3 py-1 bg-white/60 rounded-xl border border-white/40 shadow-sm">
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">GEO_SYNCED</span>
+                                    <span className="text-[8px] font-black text-gray-400">Geo Synced</span>
                                 </div>
                                 <RefreshCw className="w-4 h-4 text-gray-400 hover:text-[#1A1A1A] cursor-pointer transition-colors" />
                             </div>
@@ -215,21 +215,21 @@ const FleetSecurity: React.FC = () => {
                                 <div className="w-8 h-8 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                     <Activity className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                                <h3 className="text-[10px] font-black text-[#1A1A1A] tracking-[0.3em] uppercase">Unit_Matrix</h3>
+                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Unit_Matrix</h3>
                             </div>
-                            <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{pallets.length}_ASSETS</span>
+                            <span className="text-[8px] font-black text-gray-400">{pallets.length}_ASSETS</span>
                         </div>
 
                         <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar">
                             {pallets.map((p, i) => (
                                 <div key={i} className="bg-white/60 border border-white/40 p-3 rounded-2xl flex items-center justify-between hover:border-[#F4D03F]/40 transition-all group shadow-sm">
                                     <div className="flex flex-col gap-0.5">
-                                        <span className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tight">{p.id}</span>
-                                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{p.vibration.toFixed(2)}V_ECHO</span>
+                                        <span className="text-[10px] font-black text-[#1A1A1A] tracking-tight">{p.id}</span>
+                                        <span className="text-[8px] font-black text-gray-400">{p.vibration.toFixed(2)}V_ECHO</span>
                                     </div>
                                     <div className="text-right flex flex-col items-end gap-1.5 w-24">
                                         <span className={cn(
-                                            "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg",
+                                            "text-[8px] font-black px-2 py-0.5 rounded-lg",
                                             p.status === 'critical' ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20"
                                         )}>
                                             {p.status}
@@ -247,7 +247,7 @@ const FleetSecurity: React.FC = () => {
 
                         <div className="p-4 border-t border-[#F4D03F]/10 bg-white/20 flex flex-col gap-2">
                             <button className={cn(glass.btnSecondary, "w-full bg-white/60 border-white/40")}>Manual Override</button>
-                            <button className="w-full h-8 bg-transparent text-gray-400 font-bold text-xs uppercase tracking-wider rounded-lg hover:text-[#1A1A1A] transition-all">Diagnostics</button>
+                            <button className="w-full h-8 bg-transparent text-gray-400 font-bold text-xs tracking-wider rounded-lg hover:text-[#1A1A1A] transition-all">Diagnostics</button>
                         </div>
                     </motion.div>
                 </div>

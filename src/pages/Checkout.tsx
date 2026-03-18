@@ -367,15 +367,15 @@ const Checkout = () => {
                             {/* Meta Info */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-muted/40 rounded-[2rem] border border-border/50">
                                 <div>
-                                    <p className="text-xs font-black uppercase text-muted-foreground mb-1">Order Number</p>
+                                    <p className="text-xs font-black text-muted-foreground mb-1">Order Number</p>
                                     <p className="text-xl font-black text-primary">{orderNumber}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black uppercase text-muted-foreground mb-1">Date</p>
+                                    <p className="text-xs font-black text-muted-foreground mb-1">Date</p>
                                     <p className="text-lg font-bold">{new Date().toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black uppercase text-muted-foreground mb-1">Payment Method</p>
+                                    <p className="text-xs font-black text-muted-foreground mb-1">Payment Method</p>
                                     <p className="text-lg font-bold uppercase">{paymentMethod}</p>
                                 </div>
                             </div>
@@ -445,7 +445,7 @@ const Checkout = () => {
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-muted-foreground">Delivery</span>
-                                        <span className="font-bold">{orderedTotals.delivery === 0 ? 'FREE' : formatPrice(orderedTotals.delivery)}</span>
+                                        <span className="font-bold">{orderedTotals.delivery === 0 ? 'Free' : formatPrice(orderedTotals.delivery)}</span>
                                     </div>
                                     <Separator />
                                     <div className="flex justify-between items-center">
@@ -474,7 +474,7 @@ const Checkout = () => {
                                             <div className="flex flex-wrap gap-2">
                                                 {orderTraceabilityBatches.map((batch, idx) => (
                                                     <div key={idx} className="inline-flex items-center gap-3 px-4 py-2 bg-green-100 rounded-full border border-green-200">
-                                                        <span className="text-xs font-black text-[#1B9157] uppercase tracking-tighter">Trace ID:</span>
+                                                        <span className="text-xs font-black text-[#1B9157] tracking-tighter">Trace ID:</span>
                                                         <span className="font-mono font-bold text-[#1B9157]">{batch}</span>
                                                     </div>
                                                 ))}
@@ -699,7 +699,7 @@ const Checkout = () => {
                                         </CardHeader>
                                         <CardContent className="p-0">
                                             {/* Table Header for larger screens */}
-                                            <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-border text-xs font-black uppercase tracking-wider text-muted-foreground bg-muted/10">
+                                            <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-border text-xs font-black tracking-wider text-muted-foreground bg-muted/10">
                                                 <div className="col-span-6 pl-2">Product</div>
                                                 <div className="col-span-2">Price</div>
                                                 <div className="col-span-2">Stock Status</div>
@@ -796,8 +796,11 @@ const Checkout = () => {
 
                                         {paymentMethod === 'mpesa' && (
                                             <div className="pl-20 pr-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                <Label className="text-sm font-semibold mb-2 block">M-Pesa Phone Number</Label>
+                                                <Label htmlFor="checkout-mpesa" className="text-sm font-semibold mb-2 block">M-Pesa Phone Number</Label>
                                                 <Input
+                                                    id="checkout-mpesa"
+                                                    name="mpesa_phone"
+                                                    autoComplete="tel"
                                                     value={paymentDetails.mpesaNumber}
                                                     onChange={e => setPaymentDetails({ ...paymentDetails, mpesaNumber: e.target.value })}
                                                     placeholder="07XX XXX XXX"
@@ -884,57 +887,78 @@ const Checkout = () => {
                                 <CardContent className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="md:col-span-2 space-y-2">
-                                            <Label>Full Name</Label>
+                                            <Label htmlFor="checkout-fullName">Full Name</Label>
                                             <Input
+                                                id="checkout-fullName"
+                                                name="full_name"
+                                                autoComplete="name"
                                                 value={shippingDetails.fullName}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
                                                 placeholder="John Doe"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Email</Label>
+                                            <Label htmlFor="checkout-email">Email</Label>
                                             <Input
+                                                id="checkout-email"
+                                                name="email"
                                                 type="email"
+                                                autoComplete="email"
                                                 value={shippingDetails.email}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, email: e.target.value })}
                                                 placeholder="john@example.com"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Phone Number</Label>
+                                            <Label htmlFor="checkout-phone">Phone Number</Label>
                                             <Input
+                                                id="checkout-phone"
+                                                name="phone"
+                                                type="tel"
+                                                autoComplete="tel"
                                                 value={shippingDetails.phone}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
                                                 placeholder="+254 700 000 000"
                                             />
                                         </div>
                                         <div className="md:col-span-2 space-y-2">
-                                            <Label>Address</Label>
+                                            <Label htmlFor="checkout-address">Address</Label>
                                             <Input
+                                                id="checkout-address"
+                                                name="address"
+                                                autoComplete="street-address"
                                                 value={shippingDetails.address}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, address: e.target.value })}
                                                 placeholder="123 Bee Street, Building A"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>City</Label>
+                                            <Label htmlFor="checkout-city">City</Label>
                                             <Input
+                                                id="checkout-city"
+                                                name="city"
+                                                autoComplete="address-level2"
                                                 value={shippingDetails.city}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })}
                                                 placeholder="Nairobi"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>County</Label>
+                                            <Label htmlFor="checkout-county">County</Label>
                                             <Input
+                                                id="checkout-county"
+                                                name="county"
+                                                autoComplete="address-level1"
                                                 value={shippingDetails.county}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, county: e.target.value })}
                                                 placeholder="Nairobi County"
                                             />
                                         </div>
                                         <div className="md:col-span-2 space-y-2">
-                                            <Label>Order Notes (Optional)</Label>
+                                            <Label htmlFor="checkout-notes">Order Notes (Optional)</Label>
                                             <Textarea
+                                                id="checkout-notes"
+                                                name="order_notes"
                                                 value={shippingDetails.notes}
                                                 onChange={e => setShippingDetails({ ...shippingDetails, notes: e.target.value })}
                                                 placeholder="Special delivery instructions..."
@@ -972,7 +996,7 @@ const Checkout = () => {
                                     </p>
                                 </div>
                                 <div className="bg-muted/30 p-4 rounded-xl text-left">
-                                    <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Order Summary</p>
+                                    <p className="text-sm font-bold text-muted-foreground mb-2">Order Summary</p>
                                     <div className="space-y-1">
                                         <p className="text-sm flex justify-between"><span>Items:</span> <span>{getTotalItems()}</span></p>
                                         <p className="text-sm flex justify-between"><span>Method:</span> <span>{paymentMethod.toUpperCase()}</span></p>
@@ -1122,7 +1146,7 @@ const Checkout = () => {
                                                     Delivery
                                                 </Label>
                                             </div>
-                                            <span className="font-semibold">{deliveryCost === 0 ? 'FREE' : formatPrice(deliveryCost)}</span>
+                                            <span className="font-semibold">{deliveryCost === 0 ? 'Free' : formatPrice(deliveryCost)}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">

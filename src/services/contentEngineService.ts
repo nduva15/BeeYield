@@ -1,7 +1,7 @@
 /**
  * Content Engine Service
  * ======================
- * Powers the "Big 45" Content Engine: AI-assisted blog creation,
+ * Powers the "Big 45" Content Engine: assisted blog creation,
  * SEO/AEO/GEO optimization scoring, and CTA management.
  */
 import { supabase } from '@/lib/supabase';
@@ -323,7 +323,7 @@ export const contentEngine = {
     },
 
     async generateOutline(title: string): Promise<string[]> {
-        // Try backend AI first, then fall back to heuristic
+        // Try backend intelligence first, then fall back to heuristic
         try {
             const result = await apiPost<{ headings: string[] }>('/blog/generate-outline', { title });
             if (result.headings?.length) return result.headings;
@@ -362,7 +362,7 @@ export const contentEngine = {
         } catch {
             // Placeholder content for when backend is unavailable
             return `<h2>${request.chapter_heading}</h2>
-<p>This chapter section is pending AI generation. Please ensure the backend API is running with the <code>/blog/generate-chapter</code> endpoint configured.</p>
+<p>This chapter section is pending generation. Please ensure the backend API is running with the <code>/blog/generate-chapter</code> endpoint configured.</p>
 <p>To generate content, the system will use the following prompt context:</p>
 <ul>
 <li><strong>Post Title:</strong> ${request.title}</li>
@@ -602,25 +602,25 @@ export const contentEngine = {
         } else if (citations >= 2) {
             geoPoints += 15; geoIssues.push('⚠️ Add more authoritative citations (FAO, USDA, journals)');
         } else {
-            geoIssues.push('⚠️ AI summaries prioritize cited content. Add "According to..." citations');
+            geoIssues.push('⚠️ Summaries prioritize cited content. Add "According to..." citations');
         }
 
         // 2. Citation sources provided (20 pts)
         if (citationSources && citationSources.length >= 3) {
             geoPoints += 20; geoPasses.push(`✅ ${citationSources.length} citation source URLs provided`);
         } else {
-            geoIssues.push('⚠️ Add citation source URLs for AI engine verification');
+            geoIssues.push('⚠️ Add citation source URLs for engine verification');
         }
 
         // 3. Data-driven content (20 pts)
         const dataIndicators = /\d+%|\d+\.\d+|statistic|data shows|research indicates|figure \d|table \d/gi;
         const dataPoints = (lowerContent.match(dataIndicators) || []).length;
         if (dataPoints >= 5) {
-            geoPoints += 20; geoPasses.push(`✅ ${dataPoints} data points found (AI-summary friendly)`);
+            geoPoints += 20; geoPasses.push(`✅ ${dataPoints} data points found (summary friendly)`);
         } else if (dataPoints >= 2) {
             geoPoints += 10; geoIssues.push('⚠️ Add more statistics and data points');
         } else {
-            geoIssues.push('⚠️ No quantitative data found. AI summaries favor data-rich content');
+            geoIssues.push('⚠️ No quantitative data found. Summaries favor data-rich content');
         }
 
         // 4. Expertise signals (15 pts)
@@ -636,7 +636,7 @@ export const contentEngine = {
         if (wordCount >= 4000 && headingCount >= 8) {
             geoPoints += 15; geoPasses.push('✅ Comprehensive depth: high word count + structured headings');
         } else {
-            geoIssues.push('⚠️ AI engines favor comprehensive long-form content (4000+ words, 8+ sections)');
+            geoIssues.push('⚠️ Engines favor comprehensive long-form content (4000+ words, 8+ sections)');
         }
 
         const geoScore = Math.min(100, geoPoints);

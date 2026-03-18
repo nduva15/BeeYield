@@ -95,7 +95,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-[#1A1A1A]">Registered Hubs</h3>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">{apiaries.length} Connected</p>
+                                    <p className="text-[10px] text-gray-500">{apiaries.length} Connected</p>
                                 </div>
                             </div>
                         </div>
@@ -104,12 +104,12 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                             {loading ? (
                                 <div className="flex flex-col items-center justify-center py-12 gap-3">
                                     <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]/40" />
-                                    <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Scanning Nodes...</span>
+                                    <span className="text-[10px] font-bold text-gray-300">Scanning Nodes...</span>
                                 </div>
                             ) : apiaries.length === 0 ? (
                                 <div className="py-12 text-center border border-dashed border-[#F4D03F]/20 rounded-xl bg-[#F9F7F2]/50">
                                     <Building2 className="w-6 h-6 text-gray-200 mx-auto mb-2" />
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No hubs registered</p>
+                                    <p className="text-[10px] font-bold text-gray-400">No hubs registered</p>
                                 </div>
                             ) : apiaries.map((apiary) => (
                                 <button
@@ -128,7 +128,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                          </div>
                                          <div className="text-left">
                                              <p className="text-xs font-bold text-[#1A1A1A] truncate max-w-[140px] leading-tight mb-0.5">{apiary.name}</p>
-                                              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Site: {apiary.id.split('-')[0]}</p>
+                                              <p className="text-[9px] text-gray-400 font-bold">Site: {apiary.id.split('-')[0]}</p>
                                          </div>
                                      </div>
                                      <ChevronRight className={cn("w-4 h-4 transition-transform", activeHub === apiary.id ? "translate-x-0.5 text-[#F4D03F]" : "text-gray-200")} />
@@ -171,17 +171,17 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                 </div>
                                 <div className="space-y-0.5">
                                     <h3 className="text-sm font-bold text-[#1A1A1A]">Growth Dynamics</h3>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">Seasonal Pulse v4.2</p>
+                                    <p className="text-[10px] text-gray-500">Seasonal Pulse v4.2</p>
                                 </div>
                             </div>
                             <div className="hidden sm:flex items-center gap-4">
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Projected</span>
+                                    <span className="text-[10px] font-bold text-gray-500">Projected</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Current</span>
+                                    <span className="text-[10px] font-bold text-gray-500">Current</span>
                                 </div>
                             </div>
                         </div>
@@ -211,7 +211,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-bold text-[#1A1A1A]">Saturation Anomalies</h4>
-                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">Active Alerts</p>
+                                        <p className="text-[10px] text-gray-500">Active Alerts</p>
                                     </div>
                                 </div>
                             </div>
@@ -228,7 +228,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-bold text-[#1A1A1A]">Intelligence Sync</h4>
-                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">Validation Complete</p>
+                                        <p className="text-[10px] text-gray-500">Validation Complete</p>
                                     </div>
                                 </div>
                             </div>

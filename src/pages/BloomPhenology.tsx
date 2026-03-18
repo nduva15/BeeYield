@@ -68,18 +68,18 @@ const BloomPhenology: React.FC = () => {
 
                         <div className="text-center py-8 bg-[#F9F7F2]/50 rounded-2xl border border-[#F4D03F]/10">
                             <span className="text-5xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">65</span>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">BBCH: Full Bloom</p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-2">BBCH: Full Bloom</p>
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Stage Progression</label>
-                                <span className="text-[10px] font-bold text-[#1B9157] uppercase tracking-widest">65% Optimal</span>
+                                <label className="text-[10px] font-bold text-gray-500">Stage Progression</label>
+                                <span className="text-[10px] font-bold text-[#1B9157]">65% Optimal</span>
                             </div>
                             <div className="h-2 w-full bg-[#F9F7F2] rounded-full relative overflow-hidden border border-[#F4D03F]/10">
                                 <div className="absolute top-0 left-0 bottom-0 bg-[#1B9157] rounded-full transition-all duration-1000" style={{ width: '65%' }} />
                             </div>
-                            <div className="flex justify-between text-[9px] font-bold uppercase text-gray-400 tracking-widest">
+                            <div className="flex justify-between text-[9px] font-bold text-gray-400">
                                 <span>Bud (50)</span>
                                 <span className="text-[#F4D03F]">Peak (65)</span>
                                 <span>Fall (69)</span>
@@ -90,7 +90,7 @@ const BloomPhenology: React.FC = () => {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                             <div className="flex items-center gap-2 mb-3 relative z-10">
                                 <Flower2 className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Heads up</span>
+                                <span className="text-[10px] font-bold text-[#F4D03F]">Heads up</span>
                             </div>
                             <p className="text-[11px] font-medium leading-relaxed opacity-80 relative z-10 pl-3 border-l-2 border-[#F4D03F]/40">
                                 Current stage suggests a peak nectar window. If you’re moving hives or adding boxes, aim to do it in the next few days.
@@ -109,7 +109,7 @@ const BloomPhenology: React.FC = () => {
                                 </div>
                                 <div className="space-y-0.5">
                                     <h3 className="text-sm font-bold text-[#1A1A1A]">Intensity Curve</h3>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">Flowering Density Analysis</p>
+                                    <p className="text-[10px] text-gray-500">Flowering Density Analysis</p>
                                 </div>
                             </div>
                             <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#1A1A1A] border-[#F4D03F]/20")}>

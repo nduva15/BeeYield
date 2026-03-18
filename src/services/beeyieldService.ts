@@ -458,6 +458,7 @@ export interface HarvestCreateInput {
     color_grade?: string;
     is_verified?: boolean;
     florage_type?: string;
+    notes?: string;
 }
 
 export interface HarvestBatchInput {
@@ -1957,7 +1958,7 @@ export const beeyieldService = {
     async getSubscriptionPlans(): Promise<any[]> {
         return [
             { id: 'starter', name: 'Starter Hive', price: 0, currency: 'KES', features: ['1 Hive Monitor', 'Basic Alerts'] },
-            { id: 'pro', name: 'Pro Apiary', price: 2500, currency: 'KES', features: ['10 Hive Monitors', 'Acoustic AI', 'Satellite Forage Maps'] },
+            { id: 'pro', name: 'Pro Apiary', price: 2500, currency: 'KES', features: ['10 Hive Monitors', 'Acoustic Intelligence', 'Satellite Forage Maps'] },
             { id: 'enterprise', name: 'Commercial Fleet', price: 15000, currency: 'KES', features: ['Unlimited Monitors', 'Custom ML Models', 'White-label Reports'] }
         ];
     },
@@ -2417,7 +2418,7 @@ export const beeyieldService = {
         }
     },
 
-    // ========== AI GENERATION (Python backend — kept as-is) ==========
+    // ========== GENERATION (Python backend — kept as-is) ==========
     async generateLabelBlurb(input: {
         floral_type: string;
         location: string;
@@ -2489,7 +2490,7 @@ export const beeyieldService = {
         return response.json();
     },
 
-    // ========== AI MODELS (Python backend) ==========
+    // ========== MODELS (Python backend) ==========
     async getAIModels(): Promise<any[]> {
         try {
             const apiUrl = import.meta.env.VITE_API_URL || '';
@@ -2498,7 +2499,7 @@ export const beeyieldService = {
             if (!response.ok) return [];
             return response.json();
         } catch (error) {
-            console.error('Error fetching AI models:', error);
+            console.error('Error fetching intelligence models:', error);
             return [];
         }
     },

@@ -610,7 +610,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {apiaries.length > 0 ? apiaries.map(a => (
-                                            <SelectItem key={a.id} value={a.id} className="font-black uppercase text-[10px]">
+                                            <SelectItem key={a.id} value={a.id} className="font-black text-[10px]">
                                                 {a.name}{a.location_name ? ` — ${a.location_name}` : ''}
                                             </SelectItem>
                                         )) : (
@@ -629,7 +629,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {filteredHives.length > 0 ? filteredHives.map(h => (
-                                            <SelectItem key={h.id} value={h.id} className="font-black uppercase text-[10px]">
+                                            <SelectItem key={h.id} value={h.id} className="font-black text-[10px]">
                                                 {h.hive_code} {h.apiary_name ? `- ${h.apiary_name}` : ''}
                                             </SelectItem>
                                         )) : (
@@ -650,7 +650,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
                                         {batchOptions.length > 0 ? batchOptions.map((code) => (
-                                            <SelectItem key={code} value={code} className="font-black uppercase text-[10px]">
+                                            <SelectItem key={code} value={code} className="font-black text-[10px]">
                                                 {code}
                                             </SelectItem>
                                         )) : (
@@ -821,7 +821,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
                                                 <Sparkles className="w-4 h-4 text-[#F4D03F]/70" />
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]/70">
+                                                <p className="text-[10px] font-black text-[#1A1A1A]/70">
                                                     Label pack
                                                 </p>
                                             </div>
@@ -870,11 +870,11 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             <div className="grid grid-cols-1 gap-3">
                                                 <div className="rounded-xl border border-white/40 bg-white/60 p-3">
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]/60">Tasting notes</p>
+                                                        <p className="text-[9px] font-black text-[#1A1A1A]/60">Tasting notes</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Tasting notes", (labelPack.tasting_notes || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -889,11 +889,11 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                                                 <div className="rounded-xl border border-white/40 bg-white/60 p-3">
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]/60">Sustainability claims</p>
+                                                        <p className="text-[9px] font-black text-[#1A1A1A]/60">Sustainability claims</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Sustainability claims", (labelPack.sustainability_claims || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -908,11 +908,11 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                                                 <div className="rounded-xl border border-white/40 bg-white/60 p-3">
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]/60">Pairings</p>
+                                                        <p className="text-[9px] font-black text-[#1A1A1A]/60">Pairings</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Pairings", (labelPack.pairings || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -1051,7 +1051,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                                         <div className="shrink-0 text-right">
                                             <div className="inline-flex flex-col items-end rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 px-3 py-2 shadow-lg shadow-black/10">
-                                                <p className="text-[7px] opacity-50 font-black uppercase tracking-[0.22em]">NET WEIGHT</p>
+                                                <p className="text-[7px] opacity-50 font-black">Net Weight</p>
                                                 <p className="text-3xl font-black tabular-nums tracking-tighter leading-none">
                                                     {design.weight}
                                                     <span className="text-xs ml-0.5 font-bold">{design.weightUnit}</span>
@@ -1062,16 +1062,16 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 </div>
 
                                 <div className="mt-6 flex-1 relative z-10">
-                                    <p className="text-[10px] leading-relaxed max-w-[90%] opacity-80 font-bold tracking-tight uppercase">
+                                    <p className="text-[10px] leading-relaxed max-w-[90%] opacity-80 font-bold tracking-tight">
                                         {design.marketingNote || 'Add a short product story.'}
                                     </p>
                                 </div>
 
                                 <div className="mt-auto space-y-4 relative z-10">
                                     <div className="flex justify-between items-end border-t pt-4" style={{ borderColor: `${design.accentColor}20` }}>
-                                        <div className="text-[9px] space-y-1 font-bold leading-tight uppercase opacity-80">
-                                            {design.producer && <p className="font-black tracking-widest">{design.producer}</p>}
-                                            <div className="text-[7px] tracking-[0.2em] opacity-60">
+                                        <div className="text-[9px] space-y-1 font-bold leading-tight opacity-80">
+                                            {design.producer && <p className="font-black">{design.producer}</p>}
+                                            <div className="text-[7px] opacity-60">
                                                 {design.address && <p>{design.address}</p>}
                                                 {design.country && <p>{design.country}</p>}
                                             </div>
@@ -1080,7 +1080,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </div>
 
                                     {(design.showBatchNumber || design.showBestBefore) && (
-                                        <div className="flex gap-4 text-[7px] uppercase tracking-[0.2em] font-black opacity-30">
+                                        <div className="flex gap-4 text-[7px] font-black opacity-30">
                                             {design.showBatchNumber && <div>BATCH: {design.batchNumber}</div>}
                                             {design.showBestBefore && <div>EXP: {design.bestBeforeDate}</div>}
                                         </div>
@@ -1093,7 +1093,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 alt="BeeYield"
                                                 className="h-3 w-auto object-contain"
                                             />
-                                            <span className="text-[6px] font-black uppercase tracking-[0.35em]">
+                                            <span className="text-[6px] font-black">
                                                 GENERATED BY BEEYIELD • {design.harvestYear}
                                             </span>
                                         </div>
@@ -1123,7 +1123,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 )}
                                             </div>
                                             <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-                                                <div className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur border border-white/25 text-[7px] font-black uppercase tracking-[0.22em] opacity-80">
+                                                <div className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur border border-white/25 text-[7px] font-black opacity-80">
                                                     SCAN TO VERIFY
                                                 </div>
                                             </div>
@@ -1231,7 +1231,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <div className="w-full h-1 rounded-full opacity-20 bg-current" />
                                         <div className="w-2/3 h-1 rounded-full opacity-10 bg-current" />
                                     </div>
-                                    <p className="text-[9px] font-black text-center uppercase tracking-widest truncate">{tmp.name}</p>
+                                    <p className="text-[9px] font-black text-center truncate">{tmp.name}</p>
                                 </button>
                             ))}
                         </div>

@@ -1,6 +1,6 @@
 /**
- * BeeYield AI Service — Routes through the Knowledge Hub Edge Function (beegpt)
- * This is the AUTHORITATIVE AI service that provides long-form, detailed responses.
+ * BeeYield Intelligence Service — Routes through the Knowledge Hub Edge Function (beegpt)
+ * This is the AUTHORITATIVE Intelligence service that provides long-form, detailed responses.
  * It connects to the Supabase Knowledge Hub which has 750K+ curated datasets.
  */
 import { apiGet } from './api';
@@ -11,7 +11,7 @@ export interface ChatMessage {
     content: string;
 }
 
-export interface AIResponse {
+export interface IntelligenceResponse {
     response: string;
     sources?: Array<{ type: string; name: string }>;
     suggestions?: string[];
@@ -65,9 +65,9 @@ async function fetchUserContext(): Promise<string | null> {
     }
 }
 
-export const aiService = {
+export const intelligenceService = {
     /**
-     * Send a chat message to the BeeYield AI (Knowledge Hub Edge Function).
+     * Send a chat message to the BeeYield Assistant (Knowledge Hub Edge Function).
      * Returns the FULL long-form response (not streamed, but complete).
      */
     async chat(
@@ -82,7 +82,7 @@ export const aiService = {
             audioBase64?: string | null;
             audioType?: string | null;
         }
-    ): Promise<AIResponse> {
+    ): Promise<IntelligenceResponse> {
         try {
             // 1. Fetch Company Brain context with a strict timeout to prevent hangs
             const userContextPromise = fetchUserContext();
@@ -265,7 +265,7 @@ ${dynamicFocus}
     async analyzeHive(hiveId: string) {
         // Use the Intelligence Hub for hive analysis
         const context = await fetchUserContext();
-        return aiService.chat(
+        return intelligenceService.chat(
             `Provide a comprehensive health analysis for hive ${hiveId}. Include current status, recent inspections, disease risks, and recommended actions.`,
             [],
             'EN'
@@ -275,7 +275,7 @@ ${dynamicFocus}
     async getSessions(): Promise<ChatSession[]> {
         // Sessions are now managed client-side via localStorage
         try {
-            const stored = localStorage.getItem('beeyield_ai_sessions');
+            const stored = localStorage.getItem('beeyield_sessions');
             if (stored) return JSON.parse(stored);
         } catch {
             // Intentionally ignore localStorage failures (private mode / quota).
@@ -285,7 +285,7 @@ ${dynamicFocus}
 
     async getSessionMessages(sessionId: string): Promise<{ session: ChatSession; messages: ChatDBMessage[] } | null> {
         try {
-            const stored = localStorage.getItem(`beeyield_ai_session_${sessionId}`);
+            const stored = localStorage.getItem(`beeyield_session_${sessionId}`);
             if (stored) return JSON.parse(stored);
         } catch {
             // Intentionally ignore localStorage failures (private mode / quota).
@@ -295,7 +295,7 @@ ${dynamicFocus}
 
     saveSessions(sessions: ChatSession[]) {
         try {
-            localStorage.setItem('beeyield_ai_sessions', JSON.stringify(sessions));
+            localStorage.setItem('beeyield_sessions', JSON.stringify(sessions));
         } catch {
             // Intentionally ignore localStorage failures (private mode / quota).
         }
@@ -303,7 +303,7 @@ ${dynamicFocus}
 
     saveSessionMessages(sessionId: string, data: { session: ChatSession; messages: ChatDBMessage[] }) {
         try {
-            localStorage.setItem(`beeyield_ai_session_${sessionId}`, JSON.stringify(data));
+            localStorage.setItem(`beeyield_session_${sessionId}`, JSON.stringify(data));
         } catch {
             // Intentionally ignore localStorage failures (private mode / quota).
         }

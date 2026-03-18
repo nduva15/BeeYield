@@ -79,10 +79,10 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                     <Layers className="w-6 h-6 text-[#facc15]" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-black tracking-tighter uppercase leading-[0.9]">
+                    <h1 className="text-3xl font-black tracking-tighter leading-[0.9]">
                         PIP <span className="text-[#10b981]">Heatmap</span>
                     </h1>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
+                    <p className="text-[#10b981] font-black text-[10px]">
                         Live activity (VPM) from the last 7 days.
                     </p>
                 </div>
@@ -92,10 +92,10 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <Activity className="w-5 h-5 text-[#10b981]" />
-                        <h2 className="text-xl font-black uppercase tracking-tight">Live activity heatmap</h2>
+                        <h2 className="text-xl font-black tracking-tight">Live activity heatmap</h2>
                     </div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/60">
-                        {loading ? 'LOADING' : error ? 'ERROR' : 'READY'}
+                    <div className="text-[10px] font-black text-[#064e3b]/60">
+                        {loading ? 'Loading' : error ? 'Error' : 'Ready'}
                     </div>
                 </div>
 
@@ -116,13 +116,13 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                         <div className="grid" style={{ gridTemplateColumns: `80px repeat(24, 1fr)` }}>
                             <div />
                             {hours.map((h) => (
-                                <div key={h} className="text-center text-[9px] font-black text-[#064e3b]/50 uppercase py-2">
+                                <div key={h} className="text-center text-[9px] font-black text-[#064e3b]/50 py-2">
                                     {String(h).padStart(2, '0')}
                                 </div>
                             ))}
                             {days.map((d, di) => (
                                 <React.Fragment key={d}>
-                                    <div className="flex items-center justify-start text-[10px] font-black text-[#064e3b] uppercase tracking-widest pr-2">
+                                    <div className="flex items-center justify-start text-[10px] font-black text-[#064e3b] pr-2">
                                         {d}
                                     </div>
                                     {hours.map((h) => {

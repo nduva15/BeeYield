@@ -189,7 +189,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                 <span className="text-4xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">
                                     {loading ? '—' : (summary.lbsPerAcre ?? '—')}
                                 </span>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">LBS / ACRE</span>
+                                <span className="text-[10px] font-bold text-gray-400 mt-1">LBS / ACRE</span>
                             </div>
                             <svg className="w-full h-full" viewBox="0 0 100 50">
                                 <path 
@@ -214,13 +214,13 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
 
                         <div className="grid grid-cols-2 gap-3 w-full">
                             <div className="p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 text-center">
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Accuracy</p>
+                                <p className="text-[9px] font-bold text-gray-400 mb-1">Accuracy</p>
                                 <p className="text-sm font-bold text-[#1B9157]">
                                     {loading ? '—' : summary.accuracyPct !== null ? `± ${summary.accuracyPct}%` : '—'}
                                 </p>
                             </div>
                             <div className="p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 text-center">
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Growth</p>
+                                <p className="text-[9px] font-bold text-gray-400 mb-1">Growth</p>
                                 <p className="text-sm font-bold text-[#1A1A1A]">
                                     {loading ? '—' : summary.growthPct !== null ? `${summary.growthPct >= 0 ? '+' : ''}${summary.growthPct}%` : '—'}
                                 </p>
@@ -251,7 +251,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-[#1A1A1A]">Efficiency Curve</h3>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest text-[9px]">Sensors vs forecast</p>
+                                    <p className="text-[10px] text-gray-500 text-[9px]">Sensors vs forecast</p>
                                 </div>
                             </div>
                         </div>
@@ -329,9 +329,9 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-[#F9F7F2]/50">
-                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Factor</th>
-                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">Weight</th>
-                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Diagnostic</th>
+                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400">Factor</th>
+                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 text-center">Weight</th>
+                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 text-right">Diagnostic</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[#F4D03F]/5">
@@ -340,19 +340,19 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                             name: 'Flower Visits',
                                             val: typeof liveVpm === 'number' ? `${liveVpm.toFixed(1)}/min` : '—',
                                             weight: typeof liveVpm === 'number' ? `${Math.min(100, Math.max(0, (liveVpm / 20) * 100)).toFixed(0)}%` : '—',
-                                            status: typeof liveVpm === 'number' ? (liveVpm >= 12 ? 'HIGH' : liveVpm >= 6 ? 'MID' : 'LOW') : '—'
+                                            status: typeof liveVpm === 'number' ? (liveVpm >= 12 ? 'High' : liveVpm >= 6 ? 'MID' : 'LOW') : '—'
                                         },
                                         {
                                             name: 'Harvest Yield',
                                             val: summary.lbsPerAcre !== null ? `${summary.lbsPerAcre.toLocaleString()} lbs/acre` : '—',
                                             weight: summary.lbsPerAcre !== null ? `${Math.min(100, Math.max(0, (summary.lbsPerAcre / 2000) * 100)).toFixed(0)}%` : '—',
-                                            status: summary.lbsPerAcre !== null ? (summary.lbsPerAcre >= 1800 ? 'HIGH' : summary.lbsPerAcre >= 900 ? 'MID' : 'LOW') : '—'
+                                            status: summary.lbsPerAcre !== null ? (summary.lbsPerAcre >= 1800 ? 'High' : summary.lbsPerAcre >= 900 ? 'MID' : 'LOW') : '—'
                                         },
                                         {
                                             name: 'Model Confidence',
                                             val: summary.accuracyPct !== null ? `±${summary.accuracyPct}%` : '—',
                                             weight: summary.accuracyPct !== null ? `${Math.min(100, Math.max(0, (10 - summary.accuracyPct) * 10)).toFixed(0)}%` : '—',
-                                            status: summary.accuracyPct !== null ? (summary.accuracyPct <= 4 ? 'HIGH' : summary.accuracyPct <= 7 ? 'MID' : 'LOW') : '—'
+                                            status: summary.accuracyPct !== null ? (summary.accuracyPct <= 4 ? 'High' : summary.accuracyPct <= 7 ? 'MID' : 'LOW') : '—'
                                         },
                                     ].map((row, i) => (
                                         <tr key={i} className="hover:bg-[#F9F7F2] transition-colors">
@@ -372,8 +372,8 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <div className={cn(
-                                                    "inline-flex px-2 py-0.5 rounded-full text-[8px] font-black tracking-widest border",
-                                                    row.status === 'HIGH' ? "bg-emerald-50 text-[#1B9157] border-emerald-100" :
+                                                    "inline-flex px-2 py-0.5 rounded-full text-[8px] font-black border",
+                                                    row.status === 'High' ? "bg-emerald-50 text-[#1B9157] border-emerald-100" :
                                                         row.status === 'MID' ? "bg-[#F4D03F]/10 text-[#1A1A1A] border-[#F4D03F]/20" :
                                                             row.status === 'LOW' ? "bg-red-500/10 text-red-600 border-red-500/20" :
                                                                 "bg-[#F9F7F2] text-gray-500 border-[#F4D03F]/10"

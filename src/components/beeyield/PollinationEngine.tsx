@@ -54,7 +54,7 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; isPre
                     {Math.round(pct * 100)}%
                 </text>
             </svg>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{label}</p>
+            <p className="text-[10px] font-bold tracking-wider text-gray-400">{label}</p>
         </div>
     );
 };
@@ -209,7 +209,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="space-y-8">
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeA_hivesPerAcre" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Hives / Acre</label>
+                                <label htmlFor="schemeA_hivesPerAcre" className="text-[10px] font-bold text-gray-500">Hives / Acre</label>
                                 <span className="text-lg font-bold text-[#1B9157] tabular-nums">{schemeA.hivesPerAcre}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
@@ -226,7 +226,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeA_framesPerHive" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Frames / Hive</label>
+                                <label htmlFor="schemeA_framesPerHive" className="text-[10px] font-bold text-gray-500">Frames / Hive</label>
                                 <span className="text-lg font-bold text-[#1B9157] tabular-nums">{schemeA.framesPerHive}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
@@ -245,7 +245,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="grid grid-cols-2 gap-4 pt-6 mt-4 border-t border-[#F4D03F]/10">
                         <CircularGauge value={calcResultA?.coverage_health_pct || statsA.setProbability} max={100} label="Success Prob" />
                         <div className="p-4 bg-[#F9F7F2]/50 rounded-xl border border-[#F4D03F]/10 flex flex-col justify-center items-center">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Cost / Acre</p>
+                            <p className="text-[10px] font-bold text-gray-500 mb-1">Cost / Acre</p>
                             <span className="text-2xl font-bold text-[#1A1A1A]">${statsA.cost.toFixed(0)}</span>
                         </div>
                     </div>
@@ -263,7 +263,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="space-y-8">
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeB_hivesPerAcre" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Hives / Acre</label>
+                                <label htmlFor="schemeB_hivesPerAcre" className="text-[10px] font-bold text-gray-500">Hives / Acre</label>
                                 <span className="text-lg font-bold text-[#F4D03F] tabular-nums">{schemeB.hivesPerAcre}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
@@ -280,7 +280,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeB_framesPerHive" className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Frames / Hive</label>
+                                <label htmlFor="schemeB_framesPerHive" className="text-[10px] font-bold text-gray-500">Frames / Hive</label>
                                 <span className="text-lg font-bold text-[#F4D03F] tabular-nums">{schemeB.framesPerHive}</span>
                             </div>
                             <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
@@ -299,7 +299,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     <div className="grid grid-cols-2 gap-4 pt-6 mt-4 border-t border-[#F4D03F]/10">
                         <CircularGauge isPremium value={calcResultB?.coverage_health_pct || statsB.setProbability} max={100} label="Success Prob" />
                         <div className="p-4 bg-[#F9F7F2]/50 rounded-xl border border-[#F4D03F]/10 flex flex-col justify-center items-center">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Cost / Acre</p>
+                            <p className="text-[10px] font-bold text-gray-500 mb-1">Cost / Acre</p>
                             <span className="text-2xl font-bold text-[#1A1A1A]">${statsB.cost.toFixed(0)}</span>
                         </div>
                     </div>
@@ -336,11 +336,11 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
 
                 <div className="lg:col-span-4 p-8 flex flex-col justify-between bg-[#F4D03F]/[0.02]">
                     <div className="text-center">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Cost Delta</p>
+                        <p className="text-[10px] font-bold text-gray-500 mb-2">Cost Delta</p>
                         <div className="text-4xl font-black text-[#1A1A1A] tracking-tighter mb-1">
                             ${Math.abs(statsA.cost - statsB.cost).toFixed(0)}
                         </div>
-                        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Saving / Acre</p>
+                        <p className="text-[10px] text-gray-400 font-black">Saving / Acre</p>
                     </div>
 
                     <div className="flex flex-col gap-2 mt-8">

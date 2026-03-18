@@ -224,8 +224,8 @@ export function UsbHubDashboard() {
                                 "w-1.5 h-1.5 rounded-full",
                                 connectionStatus === 'connected' ? 'bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse' : 'bg-gray-400/50'
                             )} />
-                            <span className={cn("text-[9px] font-black uppercase tracking-[0.2em]", connectionStatus === 'connected' ? 'text-[#1B9157]' : 'text-gray-400')}>
-                                {connectionStatus === 'connected' ? 'HANDSHAKE_ESTABLISHED' : 'LINK_OFFLINE'}
+                            <span className={cn("text-[9px] font-black", connectionStatus === 'connected' ? 'text-[#1B9157]' : 'text-gray-400')}>
+                                {connectionStatus === 'connected' ? 'Handshake Established' : 'Link Offline'}
                             </span>
                         </div>
                     </div>
@@ -260,12 +260,12 @@ export function UsbHubDashboard() {
                         <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4">
                             <div className="flex items-start justify-between gap-4">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">USB Error</p>
+                                    <p className="text-[10px] font-black text-destructive">USB Error</p>
                                     <p className="text-sm font-semibold text-[#1A1A1A] break-words">{lastError}</p>
                                 </div>
                                 <button
                                     type="button"
-                                    className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black uppercase tracking-widest")}
+                                    className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black")}
                                     onClick={() => {
                                         setLastError(null);
                                         setConnectionStatus('disconnected');
@@ -279,7 +279,7 @@ export function UsbHubDashboard() {
                     <div className="bg-[#1A1A1A] rounded-xl p-6 font-mono text-[11px] relative overflow-hidden shadow-inner border border-black min-h-[300px] text-[#F4D03F]">
                         {logs.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full gap-4 py-20 opacity-30">
-                                <span className="text-xs font-bold uppercase tracking-widest animate-pulse">Awaiting Connection...</span>
+                                <span className="text-xs font-bold animate-pulse">Awaiting Connection...</span>
                             </div>
                         ) : (
                             <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar-terminal pr-4">
@@ -388,7 +388,7 @@ export function UsbHubDashboard() {
                                         className="space-y-4"
                                     >
                                         <div className="flex justify-between items-end">
-                                            <span className="text-[9px] font-black text-[#F4D03F] tracking-[0.3em] uppercase animate-pulse">Writing_Blocks...</span>
+                                            <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Writing_Blocks...</span>
                                             <span className="text-2xl font-black text-[#F4D03F] tracking-tighter tabular-nums">{syncProgress}%</span>
                                         </div>
                                         <div className="h-2 w-full bg-white/60 rounded-full overflow-hidden p-0.5 border border-[#F4D03F]/10 shadow-inner">
@@ -405,8 +405,8 @@ export function UsbHubDashboard() {
                                             <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
                                         </div>
                                         <div>
-                                            <span className="text-[9px] font-black text-[#1B9157] tracking-[0.2em] uppercase">System_Standby_Mode</span>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">VERIFIED_FOR_OVERWRITE</p>
+                                            <span className="text-[9px] font-black text-[#1B9157]">System_Standby_Mode</span>
+                                            <p className="text-[8px] font-black text-gray-400 mt-0.5">Verified For Overwrite</p>
                                         </div>
                                     </div>
                                 )}

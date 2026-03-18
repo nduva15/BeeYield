@@ -946,7 +946,7 @@ const Media = () => {
                                   <p className="text-xl md:text-2xl font-black text-primary mb-1">
                                     {stat.value}
                                   </p>
-                                  <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                                  <p className="text-[10px] sm:text-xs text-muted-foreground tracking-wider font-semibold">
                                     {stat.label}
                                   </p>
                                 </CardContent>

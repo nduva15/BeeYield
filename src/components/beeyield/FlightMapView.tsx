@@ -260,19 +260,19 @@ const FlightMapView: React.FC = () => {
                     {/* Live Weather Metrics */}
                     <div className={cn(glass.card, "p-0 overflow-hidden")}>
                         <div className="bg-[#1A1A1A] p-5 text-white">
-                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F] mb-4">Bee-Specific Meteo</h3>
+                            <h3 className="text-[10px] font-bold text-[#F4D03F] mb-4">Bee-Specific Meteo</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-sky-400">
                                         <Wind className="w-4 h-4" />
-                                        <span className="text-[10px] font-black uppercase">Density</span>
+                                        <span className="text-[10px] font-black">Density</span>
                                     </div>
                                     <p className="text-xl font-bold tabular-nums text-white">{weather?.humidity}%</p>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-yellow-500">
                                         <Sun className="w-4 h-4" />
-                                        <span className="text-[10px] font-black uppercase">Solar PSI</span>
+                                        <span className="text-[10px] font-black">Solar PSI</span>
                                     </div>
                                     <p className="text-xl font-bold tabular-nums text-white">{weather?.solar_pressure || 840} <span className="text-[10px] opacity-40">W/m²</span></p>
                                 </div>
@@ -282,7 +282,7 @@ const FlightMapView: React.FC = () => {
                             {weather && weather.temperature < 10 && (
                                 <Alert className="bg-red-50 border-red-100 text-red-700 rounded-2xl">
                                     <AlertTriangle className="h-4 w-4" />
-                                    <AlertTitle className="font-black uppercase text-xs">Flight Grounded</AlertTitle>
+                                    <AlertTitle className="font-black text-xs">Flight Grounded</AlertTitle>
                                     <AlertDescription className="text-[10px] font-medium opacity-80">
                                         Temp below 10°C. Foraging activity is dormant.
                                     </AlertDescription>
@@ -293,10 +293,10 @@ const FlightMapView: React.FC = () => {
                                 <div className="flex justify-between items-center">
                                 <span className={glass.microLabel}>Flight Status</span>
                                     <span className={cn(
-                                        "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider",
+                                        "px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider",
                                         weather?.bee_flight_status === 'Enabled' ? "bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20" : "bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/20"
                                     )}>
-                                        {weather?.bee_flight_status?.toUpperCase() || 'OPTIMAL'}
+                                        {weather?.bee_flight_status?.toUpperCase() || 'Optimal'}
                                     </span>
                                 </div>
                                 <div className="h-1.5 w-full bg-[#F4D03F]/10 rounded-full overflow-hidden">
@@ -356,7 +356,7 @@ const FlightMapView: React.FC = () => {
                                     variant={showHeatmap ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setShowHeatmap(!showHeatmap)}
-                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9 uppercase tracking-widest", showHeatmap && "bg-[#1A1A1A] text-white")}
+                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9", showHeatmap && "bg-[#1A1A1A] text-white")}
                                 >
                                     FLIGHT HEATMAP
                                 </Button>
@@ -364,7 +364,7 @@ const FlightMapView: React.FC = () => {
                                     variant={showUtility ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setShowUtility(!showUtility)}
-                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9 uppercase tracking-widest", showUtility && "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#ebd04c]")}
+                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9", showUtility && "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#ebd04c]")}
                                 >
                                     UTILITY POTENTIAL
                                 </Button>
@@ -383,7 +383,7 @@ const FlightMapView: React.FC = () => {
                                             {source.name[0]}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="font-bold text-xs uppercase tracking-tight text-[#1A1A1A]">{source.name}</p>
+                                            <p className="font-bold text-xs tracking-tight text-[#1A1A1A]">{source.name}</p>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <div className="h-1 flex-1 bg-[#F4D03F]/10 rounded-full">
                                                     <div className="h-full bg-[#F4D03F] rounded-full" style={{ width: `${source.potential * 100}%` }} />
@@ -420,7 +420,7 @@ const FlightMapView: React.FC = () => {
                             <Marker position={mapCenter}>
                                 <Popup className="font-bold">
                                     <div className="p-2 space-y-1">
-                                        <p className="text-xs font-black uppercase tracking-widest text-[#1B9157]">{selectedPlace?.name}</p>
+                                        <p className="text-xs font-black text-[#1B9157]">{selectedPlace?.name}</p>
                                         <p className="text-[9px] text-slate-400">COORDS: {mapCenter[0].toFixed(4)}, {mapCenter[1].toFixed(4)}</p>
                                     </div>
                                 </Popup>
@@ -442,23 +442,23 @@ const FlightMapView: React.FC = () => {
                                         <div className="p-4 space-y-3 min-w-[200px]">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hive Unit</p>
+                                                    <p className="text-[10px] font-black text-slate-400">Hive Unit</p>
                                                     <h4 className="text-lg font-black">{hive.hive_code}</h4>
                                                 </div>
                                                 <Badge className={cn(
-                                                    "font-black uppercase text-[8px]",
+                                                    "font-black text-[8px]",
                                                     hive.status?.toLowerCase().includes('healthy') ? "bg-green-100 text-[#1B9157]" : "bg-red-100 text-red-700"
                                                 )}>
-                                                    {hive.status || 'ACTIVE'}
+                                                    {hive.status || 'Active'}
                                                 </Badge>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
                                                 <div>
-                                                    <span className="text-[8px] font-black text-slate-300 block mb-1 uppercase">Health Index</span>
+                                                    <span className="text-[8px] font-black text-slate-300 block mb-1">Health Index</span>
                                                     <span className="text-xs font-bold">92.4%</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-[8px] font-black text-slate-300 block mb-1 uppercase">Trip Density</span>
+                                                    <span className="text-[8px] font-black text-slate-300 block mb-1">Trip Density</span>
                                                     <span className="text-xs font-bold">4.2/min</span>
                                                 </div>
                                             </div>
@@ -537,7 +537,7 @@ const FlightMapView: React.FC = () => {
                                 <div className="rounded-xl shadow-xl p-5 bg-[#1A1A1A] text-white border border-white/10">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Route className="w-5 h-5 text-blue-400" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#F4D03F]">Active route</span>
+                                        <span className="text-[10px] font-bold text-[#F4D03F]">Active route</span>
                                     </div>
                                     <div className="space-y-3">
                                         {route.slice(0, 3).map((stop, i) => (
@@ -545,7 +545,7 @@ const FlightMapView: React.FC = () => {
                                                 <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-bold text-white">
                                                     {i + 1}
                                                 </div>
-                                                <span className="text-[10px] font-bold uppercase opacity-80">{stop.name}</span>
+                                                <span className="text-[10px] font-bold opacity-80">{stop.name}</span>
                                             </div>
                                         ))}
                                         {route.length > 3 && <p className="text-[9px] font-bold opacity-40">+{route.length - 3} MORE STOPS</p>}

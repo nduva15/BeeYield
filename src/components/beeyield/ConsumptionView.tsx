@@ -215,7 +215,7 @@ const ConsumptionView: React.FC = () => {
                                 </div>
                                 <div>
                                     <p className={cn(glass.sectionTitle, "text-xl normal-case italic opacity-80 group-hover:opacity-100 transition-opacity")}>{item.label}</p>
-                                    <p className={cn(glass.microLabel, "opacity-40 font-bold")}>LAST_MONTH_BIN</p>
+                                    <p className={cn(glass.microLabel, "opacity-40 font-bold")}>Last Month Bin</p>
                                 </div>
                             </div>
                             <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-[#FFF9F0] text-[#F4D03F] border-[#F4D03F]/30 shadow-lg group-hover:scale-105 transition-transform")}>
@@ -226,7 +226,7 @@ const ConsumptionView: React.FC = () => {
                 </div>
             </motion.div>
 
-            {/* AI Summary Banner */}
+            {/* Summary Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

@@ -78,8 +78,11 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">First name</Label>
+                    <Label htmlFor="by-reg-firstName" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">First name</Label>
                     <Input
+                        id="by-reg-firstName"
+                        name="given-name"
+                        autoComplete="given-name"
                         placeholder="John"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
@@ -88,8 +91,11 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Last name</Label>
+                    <Label htmlFor="by-reg-lastName" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Last name</Label>
                     <Input
+                        id="by-reg-lastName"
+                        name="family-name"
+                        autoComplete="family-name"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -100,11 +106,14 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Email</Label>
+                <Label htmlFor="by-reg-email" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Email</Label>
                 <div className="relative group">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                     <Input
+                        id="by-reg-email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="name@beeyield.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -116,11 +125,14 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
+                    <Label htmlFor="by-reg-password" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
                     <div className="relative group">
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
+                            id="by-reg-password"
+                            name="new-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -130,11 +142,14 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                     </div>
                 </div>
                 <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
+                    <Label htmlFor="by-reg-confirm" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Confirm</Label>
                     <div className="relative group">
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
                         <Input
+                            id="by-reg-confirm"
+                            name="confirm-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -158,7 +173,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.3em]">
+                <div className="relative flex justify-center text-[9px] font-bold">
                     <span className="bg-white px-3 text-gray-300">or</span>
                 </div>
             </div>

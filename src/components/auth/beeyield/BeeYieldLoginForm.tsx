@@ -101,7 +101,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-xl font-bold h-12 bg-gray-50 border-gray-200 focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 tracking-[0.2em] rounded-xl"
+                        className="text-center text-xl font-bold h-12 bg-gray-50 border-gray-200 focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
@@ -118,7 +118,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         setShowMFAInput(false);
                         setMfaCode('');
                     }}
-                    className="w-full text-[10px] font-bold text-gray-400 hover:text-[#1A1A1A] transition-colors py-1 uppercase tracking-widest"
+                    className="w-full text-[10px] font-bold text-gray-400 hover:text-[#1A1A1A] transition-colors py-1"
                 >
                     Back to sign in
                 </button>
@@ -135,6 +135,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
                         <Input
                             id="by-email"
+                            name="email"
                             type="email"
                             placeholder="name@beeyield.com"
                             value={email}
@@ -163,6 +164,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
                         <Input
                             id="by-password"
+                            name="password"
                             type="password"
                             placeholder="••••••••"
                             value={password}
@@ -203,7 +205,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                 <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-100" />
                 </div>
-                <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.3em]">
+                <div className="relative flex justify-center text-[9px] font-bold">
                     <span className="bg-white px-3 text-gray-300">or</span>
                 </div>
             </div>
