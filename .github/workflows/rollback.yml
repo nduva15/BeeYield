@@ -45,6 +45,7 @@ jobs:
             NAMESPACE="beeyield-staging"
           fi
           echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
+          echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Rollback Deployment
         run: |
