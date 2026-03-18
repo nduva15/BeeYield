@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Shield, Crosshair, Hexagon, AlertCircle, Plus, Info, Zap, Trash2, ShieldAlert } from 'lucide-react';
+import { MapPin, Shield, Crosshair, Hexagon, AlertCircle, Plus, Info, Zap, Trash2, ShieldAlert, Search, Locate, Navigation } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents, useMap } from 'react-leaflet';
@@ -53,16 +53,26 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
         return null;
     };
 
-    const regions = [
-        { name: 'Kibwezi (Home)', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
-        { name: 'Lamu (Client)', coords: [-2.27, 40.90] as [number, number], zoom: 12 },
-        { name: 'Beijing (Client)', coords: [39.9, 116.4] as [number, number], zoom: 11 },
-        { name: 'Global Network', coords: [20, 0] as [number, number], zoom: 2 },
-    ];
+    const handleSearch = async (query: string) => {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const { lat, lon } = data[0];
+                setMapCenter([parseFloat(lat), parseFloat(lon)]);
+                setZoom(14);
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+        }
+    };
 
-    const handleJump = (coords: [number, number], z: number) => {
-        setMapCenter(coords);
-        setZoom(z);
+    const handleLocate = () => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition((pos) => {
+            setMapCenter([pos.coords.latitude, pos.coords.longitude]);
+            setZoom(15);
+        });
     };
 
     const MapEvents = () => {
@@ -135,27 +145,31 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                             )}
                             {zoom >= 8 && (
                                 <TileLayer
-                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                                    attribution='&copy; ESRI Satellite'
+                                    url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+                                    attribution="&copy; Google Maps Hybrid"
                                 />
                             )}
+
                             <MapController center={mapCenter} zoom={zoom} />
                             <MapEvents />
 
-                            {zoom >= 3 && zoom < 8 && regions.slice(1, 5).map((r, i) => (
-                                <Marker key={i} position={r.coords} />
-                            ))}
-
-                            {zoom >= 8 && regions.slice(5).map((r, i) => (
-                                <Marker key={i} position={r.coords}>
-                                    <Popup className="font-bold border-none shadow-xl rounded-xl">
-                                        <div className="p-2">
-                                            <p className="text-xs font-black text-[#1B9157]">{r.name}</p>
-                                            <p className="text-[9px] text-gray-400">Sector Point</p>
-                                        </div>
-                                    </Popup>
-                                </Marker>
-                            ))}
+                            <Marker 
+                                position={mapCenter} 
+                                draggable={true} 
+                                eventHandlers={{
+                                    dragend: (e) => {
+                                        const marker = e.target;
+                                        const position = marker.getLatLng();
+                                        setMapCenter([position.lat, position.lng]);
+                                    }
+                                }}
+                            >
+                                <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                    <div className="p-2">
+                                        <p className="text-xs font-black text-[#1B9157]">Editable Pivot</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
 
                             {pallets.map(p => (
                                 <React.Fragment key={p.id}>
@@ -182,6 +196,30 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                             ))}
                         </MapContainer>
 
+                        <div className="absolute top-6 left-6 flex flex-col gap-3 p-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl z-[1000] w-64">
+                            <h4 className="text-[9px] font-black text-[#1A1A1A] border-b border-[#F4D03F]/10 pb-2 uppercase tracking-widest">Location Manager</h4>
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                                <input 
+                                    className="w-full bg-white/50 border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold focus:outline-none focus:ring-1 focus:ring-[#1B9157]"
+                                    placeholder="Search lamu, beijing..."
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSearch(e.currentTarget.value);
+                                    }}
+                                />
+                            </div>
+                            <button 
+                                onClick={handleLocate}
+                                className="flex items-center justify-between px-3 py-1.5 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[8px] font-black hover:opacity-90 transition-all"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <MapPin className="w-2.5 h-2.5" />
+                                    <span>Sync Actual Location</span>
+                                </div>
+                                <Zap className="w-2.5 h-2.5" />
+                            </button>
+                        </div>
+
                         <div className="absolute bottom-6 left-6 p-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl">
                             <h4 className="text-[9px] font-black text-[#1A1A1A] mb-3 border-b border-[#F4D03F]/10 pb-2">Hive Stats</h4>
                             <div className="flex gap-8">
@@ -206,7 +244,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                 <div className="lg:col-span-4 space-y-5">
                     <div className={cn(glass.card, "p-5 space-y-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden group")}>
                         <div className="flex items-center justify-between mb-5 border-b border-[#F4D03F]/10 pb-4">
-                            <h3 className="text-[10px] font-black text-[#1A1A1A] leading-none">Live_History</h3>
+                            <h3 className="text-[10px] font-black text-[#1A1A1A] leading-none">Live History</h3>
                             <ShieldAlert className="w-4 h-4 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
@@ -234,7 +272,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                         <div className="flex items-center gap-4 mb-4 relative z-10">
                             <Crosshair className="w-5 h-5 text-[#F4D03F]" />
-                            <h3 className="text-[10px] font-black leading-none">Status_Summary</h3>
+                            <h3 className="text-[10px] font-black leading-none">Status Summary</h3>
                         </div>
                         <p className="text-[9px] font-black opacity-60 leading-relaxed tracking-tight relative z-10 pl-3 border-l-4 border-[#F4D03F]/40">
                             Adding hives will set up an **Automatic Alarm**. Any unexpected movement will send an alert.
