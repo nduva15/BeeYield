@@ -32,9 +32,9 @@ jobs:
       - uses: amondnet/vercel-action@v25
         with:
           vercel-version: latest
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
+          vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
+          vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
           vercel-args: --prod --force --yes
 
   deploy-staging:
@@ -60,9 +60,9 @@ jobs:
       - uses: amondnet/vercel-action@v25
         with:
           vercel-version: latest
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
+          vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
+          vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
           vercel-args: --force --yes
 
   deploy-preview:
@@ -88,9 +88,9 @@ jobs:
         id: vercel
         with:
           vercel-version: latest
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
+          vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
+          vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
           vercel-args: --force --yes
       - uses: actions/github-script@v7
         with:
