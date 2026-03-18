@@ -223,6 +223,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
+      actions: read
     
     steps:
       - name: Checkout Code
@@ -279,6 +281,9 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.ref_name }}
           format: 'sarif'
           output: 'trivy-frontend-image.sarif'
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
       - name: Upload Frontend Scan Results
@@ -294,6 +299,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
+      actions: read
     
     steps:
       - name: Checkout Code
@@ -346,6 +353,9 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.ref_name }}
           format: 'sarif'
           output: 'trivy-backend-image.sarif'
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
       - name: Upload Backend Scan Results
