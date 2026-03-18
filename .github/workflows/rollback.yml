@@ -76,5 +76,6 @@ jobs:
         with:
           status: ${{ job.status }}
           text: '⚠️ Emergency rollback to ${{ github.event.inputs.version }} completed for ${{ github.event.inputs.environment }}'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: always()
