@@ -24,10 +24,54 @@ import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { fadeInUp } from '@/lib/motion';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const MasterMapView: React.FC = () => {
     const [activeTool, setActiveTool] = React.useState<'select' | 'draw' | 'pallet'>('select');
     const [showGeofences, setShowGeofences] = React.useState(true);
+    const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Default to Kibwezi Hub
+    const [zoom, setZoom] = React.useState(13);
+
+    const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
+        const map = useMap();
+        React.useEffect(() => {
+            map.flyTo(center, zoom, { duration: 1.5 });
+        }, [center, zoom, map]);
+        return null;
+    };
+
+    const regions = [
+        { name: 'Kibwezi Sanctuary (Active)', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
+        { name: 'Makueni Sector', coords: [-2.3, 37.8] as [number, number], zoom: 9 },
+        { name: 'Lamu Hub (Client Area)', coords: [-2.27, 40.90] as [number, number], zoom: 12 },
+        { name: 'Beijing Hub (Client Area)', coords: [39.9, 116.4] as [number, number], zoom: 11 },
+        { name: 'Global Situation', coords: [20, 0] as [number, number], zoom: 2 },
+        { name: 'Africa Overview', coords: [0, 20] as [number, number], zoom: 3 },
+        { name: 'Asia Overview', coords: [30, 100] as [number, number], zoom: 3 },
+    ];
+
+    const handleJump = (coords: [number, number], z: number) => {
+        setMapCenter(coords);
+        setZoom(z);
+    };
 
     return (
         <motion.div
@@ -94,15 +138,47 @@ const MasterMapView: React.FC = () => {
 
                 {/* Map Interface */}
                 <div className={cn(glass.card, "flex-1 rounded-3xl bg-neutral-900 border-gray-200 shadow-sm relative overflow-hidden group")}>
-                    <div className="absolute inset-0 flex items-center justify-center p-12">
-                        <div className="text-center space-y-2">
-                            <MapIcon className="w-10 h-10 text-white/20 mx-auto" />
-                            <p className="text-sm font-bold text-white/80">No GIS layer connected</p>
-                            <p className="text-xs font-medium text-white/40 max-w-xl">
-                                This map previously used a mock satellite background and demo drawings. Connect a real map provider and backend GIS assets
-                                (boundaries, hive placements, geofences) to enable this view.
-                            </p>
-                        </div>
+                    <div className="absolute inset-0 z-0">
+                        <MapContainer
+                            center={mapCenter}
+                            zoom={zoom}
+                            style={{ height: '100%', width: '100%' }}
+                            // @ts-ignore
+                            scrollWheelZoom={false}
+                            zoomControl={false}
+                            className="z-0"
+                            worldCopyJump={true}
+                        >
+                            <TileLayer
+                                url="https://{s}.tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=ebbb30c6c06a4b16a445cb48dfc47683"
+                                attribution='&copy; Thunderforest &copy; OpenStreetMap'
+                            />
+                            {/* Overlay boundaries when zoomed out for better "World Map" look */}
+                            {zoom < 8 && (
+                                <TileLayer
+                                    url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png"
+                                    opacity={0.3}
+                                />
+                            )}
+                            {/* Satellite Layer for closer zoom levels */}
+                            {zoom >= 8 && (
+                                <TileLayer
+                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                                    attribution='&copy; ESRI Satellite'
+                                />
+                            )}
+                            <MapController center={mapCenter} zoom={zoom} />
+                            
+                            {/* Major Global Hubs */}
+                            {zoom > 2 && zoom < 8 && regions.slice(1, 5).map((r, i) => (
+                                <Marker key={i} position={r.coords} />
+                            ))}
+
+                            {/* Representative Markers for tactical hubs in Kenya if zoomed in */}
+                            {zoom >= 8 && regions.slice(5).map((r, i) => (
+                                <Marker key={i} position={r.coords} />
+                            ))}
+                        </MapContainer>
                     </div>
 
                     {/* Digital Hud */}
@@ -197,22 +273,22 @@ const MasterMapView: React.FC = () => {
                     <div className={cn(glass.card, "flex-1 p-6 space-y-6 bg-[#1A1A1A] text-white rounded-3xl border-white/5 relative overflow-hidden group")}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                            <Settings className="w-4 h-4 text-[#F4D03F]" />
-                            <h3 className="text-sm font-bold uppercase tracking-tight">Asset Overlay</h3>
+                            <Compass className="w-4 h-4 text-[#F4D03F]" />
+                            <h3 className="text-sm font-bold uppercase tracking-tight">Regional Drill-down</h3>
                         </div>
-                        <div className="space-y-3">
-                            {[
-                                { label: 'Hive Pallets', active: true },
-                                { label: 'Weather Stations', active: true },
-                                { label: 'Saturation Heatmap', active: false },
-                                { label: 'Geofences', active: true },
-                            ].map((row, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-3 border border-white/10 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group">
-                                    <span className="text-[10px] font-bold text-white/70 group-hover:text-white transition-colors">{row.label}</span>
-                                    <div className={cn("w-8 h-4 rounded-full border border-white/20 relative transition-all", row.active ? "bg-[#1B9157]" : "bg-transparent")}>
-                                        <div className={cn("absolute top-[2px] w-2.5 h-2.5 rounded-full bg-white transition-all shadow-sm", row.active ? "right-[2px]" : "left-[2px]")} />
+                        <div className="space-y-2 max-h-[400px] overflow-y-auto thin-scrollbar pr-2">
+                            {regions.map((r, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => handleJump(r.coords, r.zoom)}
+                                    className="w-full flex items-center justify-between p-3 border border-white/5 bg-white/5 rounded-xl hover:bg-white/10 transition-all group"
+                                >
+                                    <div className="flex flex-col items-start gap-1">
+                                        <span className="text-[10px] font-black text-white/80 group-hover:text-white transition-colors">{r.name}</span>
+                                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">{r.coords.join(', ')}</span>
                                     </div>
-                                </div>
+                                    <Navigation className="w-3 h-3 text-[#F4D03F] opacity-40 group-hover:opacity-100 transition-opacity" />
+                                </button>
                             ))}
                         </div>
                     </div>

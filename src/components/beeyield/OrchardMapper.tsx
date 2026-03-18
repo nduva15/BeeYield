@@ -3,6 +3,25 @@ import { Map, MapPin, MousePointer2, Calculator, Share2, Info, Zap, Layers, Acti
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
+import { MapContainer, TileLayer, Polygon, Marker, useMapEvents, useMap, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface OrchardMapperProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -14,29 +33,65 @@ interface Point {
 }
 
 const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
-    const [points, setPoints] = React.useState<Point[]>([]);
+    const [points, setPoints] = React.useState<[number, number][]>([]);
     const [isDrawing, setIsDrawing] = React.useState(false);
-    const svgRef = React.useRef<SVGSVGElement>(null);
+    const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Active Sector
+    const [zoom, setZoom] = React.useState(13);
+
+    const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
+        const map = useMap();
+        React.useEffect(() => {
+            map.flyTo(center, zoom, { duration: 1.5 });
+        }, [center, zoom, map]);
+        return null;
+    };
+
+    const regions = [
+        { name: 'Global Map', coords: [20, 0] as [number, number], zoom: 2 },
+        { name: 'Africa Hub', coords: [0, 20] as [number, number], zoom: 3 },
+        { name: 'Asia Hub', coords: [30, 100] as [number, number], zoom: 3 },
+        { name: 'Europe Hub', coords: [50, 10] as [number, number], zoom: 4 },
+        { name: 'Kenya (Full)', coords: [0.02, 37.9] as [number, number], zoom: 6 },
+        { name: 'Kibwezi', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
+    ];
+
+    const handleJump = (coords: [number, number], z: number) => {
+        setMapCenter(coords);
+        setZoom(z);
+    };
+
+    const MapEvents = () => {
+        useMapEvents({
+            click(e) {
+                if (!isDrawing) return;
+                setPoints(prev => [...prev, [e.latlng.lat, e.latlng.lng]]);
+            },
+        });
+        return null;
+    };
 
     const acreage = React.useMemo(() => {
         if (points.length < 3) return 0;
+        // Simple Shoelace formula for geodesic coordinates (approximate for small areas)
         let area = 0;
         for (let i = 0; i < points.length; i++) {
             const j = (i + 1) % points.length;
-            area += points[i].x * points[j].y;
-            area -= points[j].x * points[i].y;
+            // Scale by 111320 (meters per degree approximately)
+            const x1 = points[i][1] * 111320 * Math.cos(points[i][0] * Math.PI / 180);
+            const y1 = points[i][0] * 111320;
+            const x2 = points[j][1] * 111320 * Math.cos(points[j][0] * Math.PI / 180);
+            const y2 = points[j][0] * 111320;
+            area += x1 * y2;
+            area -= x2 * y1;
         }
-        return Math.abs(area) / (2 * 100);
+        const areaM2 = Math.abs(area) / 2;
+        return areaM2 / 4046.86; // Convert to acres
     }, [points]);
 
     const suggestedHives = Math.ceil(acreage * 2.5);
 
-    const handleSVGClick = (e: React.MouseEvent) => {
-        if (!isDrawing) return;
-        const rect = svgRef.current!.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        setPoints([...points, { x, y }]);
+    const handleReset = () => {
+        setPoints([]);
     };
 
     return (
@@ -62,9 +117,11 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             <MousePointer2 className="w-3 h-3" />
                             {isDrawing ? "Finish" : "DRAW AREA"}
                         </button>
-                        <button className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold flex items-center gap-2 bg-white")}>
+                        <button
+                            onClick={handleReset}
+                            className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold flex items-center gap-2 bg-white")}>
                             <Share2 className="w-3 h-3" />
-                            SAVE MAP
+                            RESET
                         </button>
                     </div>
                 }
@@ -76,29 +133,77 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                     <div className={cn(glass.card, "h-[400px] p-0 relative overflow-hidden bg-white border-gray-200")}>
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02),transparent)]" />
                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        <svg
-                            ref={svgRef}
-                            className="absolute inset-0 w-full h-full cursor-crosshair z-10"
-                            onClick={handleSVGClick}
+                        <MapContainer
+                            center={mapCenter}
+                            zoom={zoom}
+                            style={{ height: '100%', width: '100%' }}
+                            // @ts-ignore
+                            scrollWheelZoom={false}
+                            className={cn(isDrawing && "cursor-crosshair")}
+                            zoomControl={false}
+                            worldCopyJump={true}
                         >
+                            <TileLayer
+                                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png"
+                                attribution='&copy; CARTO'
+                            />
+                            {zoom < 8 && <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png" opacity={0.3} />}
+                            {zoom >= 8 && <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="&copy; ESRI" />}
+                            
+                            <MapController center={mapCenter} zoom={zoom} />
+                            <MapEvents />
+
+                            {zoom >= 3 && zoom < 8 && regions.slice(1, 4).map((r, i) => (
+                                <Marker key={i} position={r.coords} />
+                            ))}
+
+                            {zoom >= 8 && regions.slice(4).map((r, i) => (
+                                <Marker key={i} position={r.coords}>
+                                    <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                        <div className="p-2">
+                                            <p className="text-xs font-black text-[#1B9157]">{r.name}</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
+
                             {points.length > 0 && (
-                                <polygon
-                                    points={points.map(p => `${p.x},${p.y}`).join(' ')}
-                                    fill="rgba(27,145,87,0.15)"
-                                    stroke="#1B9157"
-                                    strokeWidth="2"
-                                    strokeDasharray="6 4"
+                                <Polygon
+                                    positions={points}
+                                    pathOptions={{
+                                        color: '#1B9157',
+                                        fillColor: '#1B9157',
+                                        fillOpacity: 0.15,
+                                        weight: 2,
+                                        dashArray: '6 4'
+                                    }}
                                 />
                             )}
                             {points.map((p, i) => (
-                                <circle key={i} cx={p.x} cy={p.y} r="5" fill="#1B9157" stroke="white" strokeWidth="2" className="shadow-sm" />
+                                <Marker key={i} position={p} icon={DefaultIcon} />
                             ))}
-                        </svg>
+                        </MapContainer>
+
+                        <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000]">
+                            {regions.map((r, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleJump(r.coords, r.zoom)}
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-lg text-[8px] font-black border backdrop-blur-md transition-all flex items-center justify-between min-w-[100px] group",
+                                        mapCenter[0] === r.coords[0] ? "bg-[#1B9157] text-white border-[#1B9157]/20" : "bg-white/90 text-gray-600 border-gray-100 hover:bg-white"
+                                    )}
+                                >
+                                    {r.name}
+                                    <MapPin className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
+                                </button>
+                            ))}
+                        </div>
 
                         {isDrawing && (
                             <div className="absolute top-4 left-4 px-3 py-1.5 bg-[#F9F7F2] border border-[#F4D03F]/30 rounded-lg flex items-center gap-2 z-20 shadow-sm">
                                 <Activity className="w-3.5 h-3.5 animate-pulse text-[#1B9157]" />
-                                <span className="text-xs font-bold text-[#1A1A1A] tracking-tight">Drawing Mode Active</span>
+                                <span className="text-xs font-bold text-[#1A1A1A] tracking-tight">Active</span>
                             </div>
                         )}
                     </div>
@@ -140,7 +245,7 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement notes</h4>
                         </div>
                         <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
-                            Optimal hive placement algorithm increases pollination coverage by <span className="text-[#1A1A1A] font-bold">18%</span> through geospatial saturation analysis.
+                            Optimal hive placement algorithm increases pollination coverage by <span className="text-[#1A1A1A] font-bold">18%</span>.
                         </p>
                     </div>
 

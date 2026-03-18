@@ -42,7 +42,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { jsPDF } from 'jspdf';
 
-import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -149,6 +149,28 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [deployments, setDeployments] = React.useState<any[]>([]);
     const [isSaving, setIsSaving] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
+    const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Active Sector
+    const [zoom, setZoom] = React.useState(13);
+
+    const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
+        const map = useMap();
+        React.useEffect(() => {
+            map.flyTo(center, zoom, { duration: 1.5 });
+        }, [center, zoom, map]);
+        return null;
+    };
+
+    const regions = [
+        { name: 'Kibwezi (Home)', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
+        { name: 'Lamu (Global Hub)', coords: [-2.27, 40.90] as [number, number], zoom: 12 },
+        { name: 'Beijing Hub', coords: [39.9, 116.4] as [number, number], zoom: 11 },
+        { name: 'Global Situation', coords: [20, 0] as [number, number], zoom: 2 },
+    ];
+
+    const handleJump = (coords: [number, number], z: number) => {
+        setMapCenter(coords);
+        setZoom(z);
+    };
 
     const [optimalPlacements, setOptimalPlacements] = React.useState<any[]>([]);
     const [isOptimizing, setIsOptimizing] = React.useState(false);
@@ -594,7 +616,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     autoComplete="off"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    placeholder="SEARCH_NODES..."
+                                    placeholder="Search nodes..."
                                     className={cn(glass.input, "h-11 pl-11 text-[10px] font-black bg-white/40")}
                                 />
                             </div>
@@ -726,7 +748,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center text-[9px] font-black ml-1">
-                                            <span className="text-[#1A1A1A]/40">Bloom_Saturation</span>
+                                            <span className="text-[#1A1A1A]/40">Bloom Saturation</span>
                                             <span className="text-[#1B9157]">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#1B9157]/10">
@@ -749,7 +771,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center text-[9px] font-black ml-1">
-                                            <span className="text-[#1A1A1A]/40">Competitor_Density</span>
+                                            <span className="text-[#1A1A1A]/40">Competitor Density</span>
                                             <span className="text-[#F4D03F]">{Math.round(calcInputs.forageCondition * 100)}%</span>
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#F4D03F]/10">
@@ -855,7 +877,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 </div>
                                 <div className="space-y-0.5">
                                     <h3 className={glass.sectionTitle}>Spatial Telemetry</h3>
-                                    <p className={glass.microLabel}>Sector_Alignment: Alpha_01</p>
+                                    <p className={glass.microLabel}>Sector Alignment: Alpha 01</p>
                                 </div>
                              </div>
                              <div className="flex gap-3">
@@ -865,24 +887,59 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 </button>
                                 {optimalPlacements.length > 0 && (
                                     <button onClick={handleCommitTasks} disabled={isSaving} className={cn(glass.btnPrimary, "h-9 px-5 text-[9px] font-black rounded-xl flex items-center gap-2 shadow-xl shadow-[#1B9157]/10")}>
-                                        DEPLOY_FLEET
+                                        Deploy Fleet
                                     </button>
                                 )}
                              </div>
                         </div>
                         <div className={cn(glass.card, "h-[600px] p-0 overflow-hidden relative border-white/40 shadow-2xl rounded-[3rem] z-0 bg-gray-50")}>
-                            <MapContainer center={[-1.285, 36.825] as any} zoom={15} style={{ height: '100%', width: '100%' }} zoomControl={false} className="z-0">
-                                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="&copy; ESRI" />
-                                <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 4, fillOpacity: 0.1, dashArray: '10, 10' }} stroke={false} />
+                            <MapContainer center={mapCenter} zoom={zoom} style={{ height: '100%', width: '100%' }} zoomControl={false} className="z-0" worldCopyJump={true}>
+                                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" attribution="&copy; CARTO" />
+                                {zoom < 8 && <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png" opacity={0.3} />}
+                                {zoom >= 8 && <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="&copy; ESRI" />}
+                                
+                                <MapController center={mapCenter} zoom={zoom} />
+                                
+                                {zoom > 10 && <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 4, fillOpacity: 0.1, dashArray: '10, 10' }} stroke={false} />}
+                                
+                                {zoom >= 3 && zoom < 8 && regions.slice(1, 5).map((r, i) => (
+                                    <Marker key={i} position={r.coords}>
+                                        <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">{r.name}</p></Popup>
+                                    </Marker>
+                                ))}
+
+                                {zoom >= 8 && regions.slice(5).map((r, i) => (
+                                    <Marker key={i} position={r.coords}>
+                                        <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">{r.name}</p></Popup>
+                                    </Marker>
+                                ))}
+
                                 {optimalPlacements.map((pos, idx) => (
                                     <React.Fragment key={idx}>
                                         <Marker position={[pos.lat, pos.lng] as any}>
-                                            <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1A1A1A]">TACTICAL_NODE_#{idx+1}</p></Popup>
+                                            <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1A1A1A]">Node #{idx+1}</p></Popup>
                                         </Marker>
                                         <Circle center={[pos.lat, pos.lng] as any} radius={pos.coverage_radius_km * 1000} pathOptions={{ color: '#F4D03F', weight: 1, fillOpacity: 0.1, dashArray: '5, 5' }} />
                                     </React.Fragment>
                                 ))}
                             </MapContainer>
+
+                            {/* Drill-down UI Overlay */}
+                            <div className="absolute top-6 left-6 flex flex-col gap-2 z-[1000]">
+                                {regions.map((r, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => handleJump(r.coords, r.zoom)}
+                                        className={cn(
+                                            "px-4 py-2 rounded-xl text-[8px] font-black border backdrop-blur-md transition-all flex items-center gap-2",
+                                            mapCenter[0] === r.coords[0] ? "bg-[#1B9157] text-white border-[#1B9157]/20 shadow-lg shadow-[#1B9157]/20" : "bg-white/80 text-[#1A1A1A] border-white/40 hover:bg-white"
+                                        )}
+                                    >
+                                        <Navigation className="w-2.5 h-2.5" />
+                                        {r.name}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -891,8 +948,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     <motion.div key="reports" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {[
-                                { title: 'Bloom_Saturation_Flux', icon: Terminal, color: 'text-[#1B9157]', val: '92.4%', label: 'Peak Index' },
-                                { title: 'Fleet_Efficiency_Audit', icon: Activity, color: 'text-[#1A1A1A]', val: '45', label: 'Nodes Deployed' }
+                                { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: '92.4%', label: 'Peak Index' },
+                                { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: '45', label: 'Nodes Deployed' }
                             ].map((r, i) => (
                                 <div key={i} className={cn(glass.card, "p-0 overflow-hidden border-white/40 shadow-sm")}>
                                     <div className="p-4 border-b border-[#1B9157]/5 flex justify-between items-center bg-white/50">
@@ -903,7 +960,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                     <div className="p-6 space-y-8">
                                         <div className="flex justify-between items-end border-b border-[#1B9157]/5 pb-4">
-                                            <span className={glass.microLabel}>Protocol_Consensus</span>
+                                            <span className={glass.microLabel}>Protocol Status</span>
                                             <div className="flex items-baseline gap-2">
                                                 <span className={cn("text-3xl font-black tracking-tighter", r.color)}>{r.val}</span>
                                                 <span className="text-[9px] font-black text-gray-400">{r.label}</span>
@@ -920,10 +977,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                         <div className={cn(glass.card, "p-0 bg-white/40 border-[#1B9157]/10 overflow-hidden shadow-xl")}>
                             <div className="p-5 border-b border-[#1B9157]/10 bg-[#1B9157][0.02] flex items-center justify-between">
-                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Deployment_History_Chain</h3>
+                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Deployment History</h3>
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                    <span className="text-[9px] font-black text-[#1B9157]">{deployments.length} BYTES_LOGGED</span>
+                                    <span className="text-[9px] font-black text-[#1B9157]">{deployments.length} Records logged</span>
                                 </div>
                             </div>
                             <div className="p-6 space-y-3 max-h-[400px] overflow-y-auto thin-scrollbar">
@@ -940,7 +997,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <span className="text-[10px] font-black text-[#1B9157] w-24 tabular-nums tracking-tighter">{new Date(d.created_at).toLocaleDateString()}</span>
                                             <div className="flex-1 flex items-baseline gap-3">
                                                 <span className="text-[11px] font-black text-[#1A1A1A] tracking-tight group-hover:text-[#1B9157] transition-colors">{d.field_name}</span>
-                                                <span className="text-[9px] font-bold text-gray-400 tabular-nums">{d.total_acres} AC_NET</span>
+                                                <span className="text-[9px] font-bold text-gray-400 tabular-nums">{d.total_acres} Acres</span>
                                             </div>
                                             <div className="w-2 h-2 rounded-full bg-[#1B9157]/10 group-hover:bg-[#1B9157] group-hover:shadow-sm group-hover:shadow-[#1B9157]/50 transition-all" />
                                         </div>

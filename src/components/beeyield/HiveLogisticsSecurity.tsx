@@ -3,6 +3,25 @@ import { motion } from 'framer-motion';
 import { MapPin, Shield, Crosshair, Hexagon, AlertCircle, Plus, Info, Zap, Trash2, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface HiveLogisticsSecurityProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -18,27 +37,50 @@ interface Pallet {
 
 const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChange }) => {
     const [pallets, setPallets] = React.useState<Pallet[]>([
-        { id: 'PAL-001', x: 200, y: 150, hives: 4, isSecure: true },
-        { id: 'PAL-002', x: 450, y: 300, hives: 4, isSecure: true },
+        { id: 'PAL-001', x: -2.4200, y: 37.9700, hives: 4, isSecure: true },
+        { id: 'PAL-002', x: -2.4230, y: 37.9750, hives: 4, isSecure: true },
     ]);
+    const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Active Hub (Kibwezi)
+    const [zoom, setZoom] = React.useState(13);
     const [addingHive, setAddingHive] = React.useState(false);
     const svgRef = React.useRef<SVGSVGElement>(null);
 
-    const handleSVGClick = (e: React.MouseEvent) => {
-        if (!addingHive) return;
-        const rect = svgRef.current!.getBoundingClientRect();
-        const x = Math.round(e.clientX - rect.left);
-        const y = Math.round(e.clientY - rect.top);
+    const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
+        const map = useMap();
+        React.useEffect(() => {
+            map.flyTo(center, zoom, { duration: 1.5 });
+        }, [center, zoom, map]);
+        return null;
+    };
 
-        const newPallet: Pallet = {
-            id: `PAL-${Date.now()}`,
-            x, y,
-            hives: 4,
-            isSecure: true
-        };
+    const regions = [
+        { name: 'Kibwezi (Home)', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
+        { name: 'Lamu (Client)', coords: [-2.27, 40.90] as [number, number], zoom: 12 },
+        { name: 'Beijing (Client)', coords: [39.9, 116.4] as [number, number], zoom: 11 },
+        { name: 'Global Network', coords: [20, 0] as [number, number], zoom: 2 },
+    ];
 
-        setPallets(prev => [...prev, newPallet]);
-        setAddingHive(false);
+    const handleJump = (coords: [number, number], z: number) => {
+        setMapCenter(coords);
+        setZoom(z);
+    };
+
+    const MapEvents = () => {
+        useMapEvents({
+            click(e) {
+                if (!addingHive) return;
+                const newPallet: Pallet = {
+                    id: `PAL-${Date.now()}`,
+                    x: e.latlng.lat,
+                    y: e.latlng.lng,
+                    hives: 4,
+                    isSecure: true
+                };
+                setPallets(prev => [...prev, newPallet]);
+                setAddingHive(false);
+            },
+        });
+        return null;
     };
 
     return (
@@ -62,7 +104,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                         )}
                     >
                         <Plus className="w-3.5 h-3.5" />
-                        {addingHive ? 'Click_Map' : 'Track_New_Hives'}
+                        {addingHive ? 'Click Map' : 'Track New Hives'}
                     </button>
                 }
             />
@@ -71,53 +113,77 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                 {/* 3D Map Interface */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
                     <div className={cn(glass.card, "bg-white/40 border-white/20 h-[500px] relative overflow-hidden shadow-xl p-0")}>
-                        {/* Satellite-style underlying grid effect */}
-                        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#064e3b 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-
-                        <svg
-                            ref={svgRef}
-                            className="absolute inset-0 w-full h-full cursor-crosshair"
-                            onClick={handleSVGClick}
+                        <MapContainer
+                            center={mapCenter}
+                            zoom={zoom}
+                            style={{ height: '100%', width: '100%' }}
+                            // @ts-ignore
+                            scrollWheelZoom={false}
+                            className={cn(addingHive && "cursor-crosshair")}
+                            zoomControl={false}
+                            worldCopyJump={true}
                         >
-                            {/* Security Geofence Rings */}
-                            {pallets.map(p => (
-                                <circle
-                                    key={`fence-${p.id}`}
-                                    cx={p.x} cy={p.y} r="60"
-                                    fill="rgba(16,185,129,0.03)"
-                                    stroke="rgba(16,185,129,0.15)"
-                                    strokeWidth="1"
-                                    strokeDasharray="4 4"
+                            <TileLayer
+                                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png"
+                                attribution='&copy; CARTO'
+                            />
+                            {zoom < 8 && (
+                                <TileLayer
+                                    url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png"
+                                    opacity={0.3}
                                 />
+                            )}
+                            {zoom >= 8 && (
+                                <TileLayer
+                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                                    attribution='&copy; ESRI Satellite'
+                                />
+                            )}
+                            <MapController center={mapCenter} zoom={zoom} />
+                            <MapEvents />
+
+                            {zoom >= 3 && zoom < 8 && regions.slice(1, 5).map((r, i) => (
+                                <Marker key={i} position={r.coords} />
                             ))}
 
-                            {/* Isometric Pallet Icons */}
+                            {zoom >= 8 && regions.slice(5).map((r, i) => (
+                                <Marker key={i} position={r.coords}>
+                                    <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                        <div className="p-2">
+                                            <p className="text-xs font-black text-[#1B9157]">{r.name}</p>
+                                            <p className="text-[9px] text-gray-400">Sector Point</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
+
                             {pallets.map(p => (
-                                <g key={p.id} transform={`translate(${p.x},${p.y})`} className="cursor-pointer group">
-                                    <ellipse cx="0" cy="8" rx="10" ry="4" fill="rgba(0,0,0,0.05)" />
-                                    <path
-                                        d="M -10,-6 L 0,-11 L 10,-6 L 10,3 L 0,8 L -10,3 Z"
-                                        fill="#064e3b"
-                                        stroke="white"
-                                        strokeWidth="1.5"
+                                <React.Fragment key={p.id}>
+                                    <Circle
+                                        center={[p.x, p.y]}
+                                        radius={200}
+                                        pathOptions={{
+                                            color: '#10b981',
+                                            fillColor: '#10b981',
+                                            fillOpacity: 0.1,
+                                            weight: 1,
+                                            dashArray: '4 4'
+                                        }}
                                     />
-                                    <text
-                                        y="-1"
-                                        textAnchor="middle"
-                                        fontSize="6"
-                                        fontWeight="900"
-                                        fill="white"
-                                    >{p.hives}</text>
-
-                                    {p.isSecure && (
-                                        <circle cx="8" cy="-8" r="3" fill="#10b981" className="animate-pulse" />
-                                    )}
-                                </g>
+                                    <Marker position={[p.x, p.y]}>
+                                        <Popup className="font-bold border-none shadow-2xl rounded-xl">
+                                            <div className="p-3 text-center">
+                                                <p className="text-xs font-black text-[#1A1A1A]">{p.id}</p>
+                                                <p className="text-[10px] font-bold text-[#10b981]">{p.hives} Hives Installed</p>
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                </React.Fragment>
                             ))}
-                        </svg>
+                        </MapContainer>
 
                         <div className="absolute bottom-6 left-6 p-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl">
-                            <h4 className="text-[9px] font-black text-[#1A1A1A] mb-3 border-b border-[#F4D03F]/10 pb-2">Hive_Stats</h4>
+                            <h4 className="text-[9px] font-black text-[#1A1A1A] mb-3 border-b border-[#F4D03F]/10 pb-2">Hive Stats</h4>
                             <div className="flex gap-8">
                                 <div className="space-y-0.5">
                                     <p className="text-[7px] font-black text-gray-400">Active</p>
