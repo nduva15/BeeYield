@@ -232,34 +232,56 @@ const BeeYieldDashboard: React.FC = () => {
 
     const lowBattery = devices.filter(d => d.battery_level < 20).length;
 
-    // Full navigation restored (all BeeYield pages). Individual pages must show real data or clean empty states.
+    // Navigation restored EXACTLY to previous historical arrangement
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield Assistant', icon: MessageSquare },
-            { id: 'devices', label: 'Devices', icon: Cpu },
+            { id: 'assistant', label: 'BeeYield Assistant', icon: Hexagon },
+            { id: 'agro-intelligence', label: 'Agro Intelligence', icon: LayoutGrid },
             {
                 id: 'precision-pollination-folder',
                 label: 'Precision Pollination',
-                icon: Crosshair,
+                icon: Calculator,
                 submenuItems: [
-                    { title: 'Core', items: [
-                        { id: 'precision-pollination-home', label: 'Overview', icon: LayoutGrid },
-                        { id: 'precision-pollination-grid', label: 'Grid', icon: LayoutList },
-                        { id: 'flight-mapping-tactical', label: 'Flight Map', icon: Map },
-                        { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
-                    ]},
-                    { title: 'Forecasts', items: [
-                        { id: 'yield-predict', label: 'Harvest Predictor', icon: Target },
-                        { id: 'bfh-forecast', label: 'Flight Hours', icon: Calendar },
-                        { id: 'vpm-counter', label: 'VPM Counter', icon: Camera },
-                    ]},
-                    { title: 'Ops', items: [
-                        { id: 'pollination-engine', label: 'Pollination Engine', icon: Zap },
-                        { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
-                        { id: 'fleet-security-active', label: 'Fleet Security', icon: ShieldCheck },
-                    ]},
-                ],
+                    {
+                        title: 'Field Info',
+                        items: [
+                            { id: 'intelligence', label: 'Info', icon: Brain },
+                            { id: 'logistics-setup', label: 'Farm Map', icon: Layers },
+                            { id: 'fleet-security-active', label: 'Asset Security', icon: ShieldCheck },
+                        ]
+                    },
+                    {
+                        title: 'Analysis',
+                        items: [
+                            { id: 'acoustic-transformer', label: 'Hive Sound', icon: Volume2 },
+                            { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
+                            { id: 'hpa-optimizer', label: 'Performance Planner', icon: Calculator },
+                            { id: 'foraging-optimizer', label: 'Flower Guide', icon: Crosshair },
+                            { id: 'vpm-counter', label: 'Visits Counter', icon: Camera },
+                            { id: 'bfh-forecast', label: 'Work Forecast', icon: Zap },
+                            { id: 'yield-predict', label: 'Yield Forecast', icon: Cpu },
+                        ]
+                    },
+                    {
+                        title: 'Checkups',
+                        items: [
+                            { id: 'digital-audit', label: 'Hive Check', icon: FileBarChart },
+                            { id: 'compliance-report', label: 'Report', icon: Award },
+                            { id: 'bloom-tracking', label: 'Status', icon: Zap },
+                            { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
+                        ]
+                    },
+                    {
+                        title: 'System View',
+                        items: [
+                            { id: 'sensor-vitals', label: 'Hive Health', icon: Zap },
+                            { id: 'continuous-monitor', label: 'Live View', icon: Activity },
+                            { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
+                            { id: 'gateway-hub', label: 'Gateway Hub', icon: Server },
+                        ]
+                    },
+                ]
             },
             { id: 'places', label: 'Apiaries', icon: MapPin },
             {
@@ -269,13 +291,15 @@ const BeeYieldDashboard: React.FC = () => {
                 submenuItems: [
                     { id: 'inspections', label: 'Inspections', icon: Search },
                     { id: 'harvests', label: 'Harvests', icon: Hand },
-                    { id: 'hive-telemetry', label: 'Hive Telemetry', icon: Gauge },
-                    { id: 'sensor-vitals', label: 'Sensor Health', icon: Activity },
-                    { id: 'sound', label: 'Sound Analysis', icon: Volume2 },
+                    { id: 'flight-map', label: 'Flight Map', icon: Map },
+                    { id: 'varroa', label: 'Varroa', icon: TrendingUp },
+                    { id: 'sound', label: 'Sound', icon: Volume2 },
                     { id: 'image-analysis', label: 'Image Analysis', icon: Camera },
-                    { id: 'digital-audit', label: 'Health Audit', icon: FileCheck },
+                    { id: 'health-guide', label: 'Health Guide', icon: BookOpen },
+                    { id: 'reports-exports', label: 'Reports & Exports', icon: FileText },
                     { id: 'label-generator', label: 'Label Generator', icon: Tag },
-                ],
+                    { id: 'global-hive-network', label: 'Global Hive Network', icon: Globe },
+                ]
             },
             {
                 id: 'data',
@@ -284,25 +308,27 @@ const BeeYieldDashboard: React.FC = () => {
                 submenuItems: [
                     { id: 'online', label: 'Online', icon: Signal },
                     { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
+                    { id: 'devices', label: 'My Devices', icon: Cpu },
                     { id: 'usb', label: 'USB', icon: Usb },
-                ],
+                ]
             },
+            { id: 'notes', label: 'My Notes', icon: FileText },
+            { id: 'requests', label: 'My Requests', icon: HelpCircle },
+            { id: 'task', label: 'My Tasks', icon: ClipboardList },
+            { id: 'buy', label: 'Buy BeeYield Hub', icon: Cpu },
             {
                 id: 'meters',
                 label: 'Meters',
                 icon: LayoutList,
                 submenuItems: [
                     { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
-                    { id: 'meters-list', label: 'List', icon: List },
+                    { id: 'meters-list', label: 'Meter List', icon: List },
+                    { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
                     { id: 'meters-payments', label: 'Payments', icon: Banknote },
                     { id: 'meters-reports', label: 'Reports', icon: FileText },
                     { id: 'meters-settings', label: 'Settings', icon: Settings },
-                ],
+                ]
             },
-            { id: 'notes', label: 'Notes', icon: FileText },
-            { id: 'task', label: 'Tasks', icon: ClipboardList },
-            { id: 'reports-exports', label: 'Reports & Exports', icon: FileBarChart },
-            { id: 'requests', label: 'Requests', icon: HelpCircle },
             { id: 'billing', label: 'Billing', icon: Receipt },
             { id: 'integrations', label: 'Integrations', icon: Puzzle },
             { id: 'support', label: 'Support', icon: LifeBuoy },
@@ -386,7 +412,7 @@ const BeeYieldDashboard: React.FC = () => {
                 return <DigitalHealthAudit onTabChange={handleTabChange} />;
 
             case 'compliance-report':
-                return <ComplianceReport />;
+                return <ComplianceReport onTabChange={handleTabChange} />;
 
             case 'sensor-alerts':
                 return <SensorAlertsView />;

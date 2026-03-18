@@ -400,7 +400,7 @@ export function UsbHubDashboard() {
                                         </div>
                                     </motion.div>
                                 ) : (
-                                    <div className="flex items-center gap-4 p-4 bg-[#1B9157]/[0.02] rounded-2xl border border-[#1B9157]/10">
+                                    <div className="flex items-center gap-4 p-4 bg-[#1B9157][0.02] rounded-2xl border border-[#1B9157]/10">
                                         <div className="w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                             <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
                                         </div>

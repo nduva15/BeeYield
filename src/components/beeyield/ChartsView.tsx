@@ -48,7 +48,7 @@ const ChartsView: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border/50 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ mb-2')}>
+                    <div className={cn(glass.badge, 'bg-[#1B9157] text-[#1B9157] border-[#1B9157] mb-2')}>
                         <BarChart3 className="w-4 h-4 mr-2" />
                         Telemetry Diagnostics v3.0
                     </div>
@@ -262,14 +262,14 @@ const ChartsView: React.FC = () => {
                     className="space-y-6"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-[#1B9157] flex items-center justify-center border border-[#1B9157] shadow-sm">
                             <Lightbulb className="w-6 h-6 text-[#1B9157]" />
                         </div>
                         <h3 className={cn(glass.sectionTitle, "text-2xl normal-case italic")}>Optimization Hub</h3>
                     </div>
                     <div className={cn(glass.card, "p-8 space-y-4 shadow-xl")}>
-                        <div className="p-6 rounded-2xl bg-[#1B9157]/ border border-[#1B9157]/ flex items-center justify-between group hover:bg-[#1B9157]/ transition-colors cursor-pointer shadow-sm relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#1B9157]/ rounded-full blur-xl pointer-events-none" />
+                        <div className="p-6 rounded-2xl bg-[#1B9157] border border-[#1B9157] flex items-center justify-between group hover:bg-[#1B9157] transition-colors cursor-pointer shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#1B9157] rounded-full blur-xl pointer-events-none" />
                             <div className="space-y-1 relative z-10">
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Efficiency Peak Phase</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>Optimized recursive window detected</p>

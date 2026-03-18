@@ -312,6 +312,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             <BeeYieldPageHeader
                 icon={CreditCard}
                 label="Billing"
+                onBack={() => onTabChange('home')}
                 title={<>Billing <span className="text-[#F4D03F]">overview</span></>}
                 subtitle="Track revenue, costs, and invoices."
                 actions={

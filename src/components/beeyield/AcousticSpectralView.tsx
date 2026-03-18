@@ -48,7 +48,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] bg-[#1B9157]/ rounded-full blur-[100px] pointer-events-none -z-10" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] bg-[#1B9157] rounded-full blur-[100px] pointer-events-none -z-10" />
 
                 {/* Sound View Card */}
                 <motion.div
@@ -63,7 +63,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                             <h3 className={glass.sectionTitle}>Sound <span className="text-[#F4D03F]">Waves</span></h3>
                             <p className={glass.microLabel}>Live frequency display from the hive.</p>
                         </div>
-                        <div className={cn(glass.badge, "bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ animate-pulse")}>
+                        <div className={cn(glass.badge, "bg-[#1B9157] text-[#1B9157] border-[#1B9157] animate-pulse")}>
                             Live Feed
                         </div>
                     </div>

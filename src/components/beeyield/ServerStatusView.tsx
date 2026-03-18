@@ -181,7 +181,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                 transition={{ delay: idx * 0.1 }}
                                 className={cn(glass.card, "p-12 shadow-4xl hover:border-[#F4D03F]/60 transition-all duration-1000 relative group overflow-hidden bg-[#FFF9F0]/60 backdrop-blur-3xl rounded-[4rem]")}
                             >
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/[0.04] rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none group-hover:bg-[#F4D03F]/[0.08] transition-all" />
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F][0.04] rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none group-hover:bg-[#F4D03F][0.08] transition-all" />
                                 
                                 <div className="flex justify-between items-start mb-10">
                                     <div className="space-y-4">
@@ -190,7 +190,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                         </div>
                                         <h3 className="text-4xl font-black italic text-foreground tracking-tighter leading-none group-hover:text-[#F4D03F] transition-colors">{api.name}</h3>
                                     </div>
-                                    <div className="flex items-center gap-4 bg-[#1B9157]/ px-6 py-2.5 rounded-full border border-[#1B9157]/ shadow-3xl">
+                                    <div className="flex items-center gap-4 bg-[#1B9157] px-6 py-2.5 rounded-full border border-[#1B9157] shadow-3xl">
                                         <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157] animate-pulse" />
                                         <span className="text-[10px] font-black text-[#1B9157] italic">Live</span>
                                     </div>

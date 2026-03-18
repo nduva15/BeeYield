@@ -62,7 +62,7 @@ const BeeCalculatorSuite: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Featured Economic Calculator */}
                         <Card className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
-                            <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
+                            <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02]">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
                                         <Wallet className="w-4 h-4 text-[#F4D03F]" />

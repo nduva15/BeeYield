@@ -201,7 +201,7 @@ const ContractVerificationModule: React.FC = () => {
                                         <div className={cn(
                                             glass.badge,
                                             "px-4 py-2 border-transparent font-bold",
-                                            p.grade === 'A' ? "bg-[#1B9157]/ text-[#1B9157]" : "bg-[#F4D03F]/ text-[#F4D03F]"
+                                            p.grade === 'A' ? "bg-[#1B9157] text-[#1B9157]" : "bg-[#F4D03F] text-[#F4D03F]"
                                         )}>
                                             {p.grade === 'A' ? <Award className="w-4 h-4 mr-2" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
                                             Grade {p.grade}
@@ -233,9 +233,9 @@ const ContractVerificationModule: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5 }}
                 >
-                    <Card className={cn(glass.card, "p-10 space-y-6 shadow-xl border-[#1B9157]/")}>
+                    <Card className={cn(glass.card, "p-10 space-y-6 shadow-xl border-[#1B9157]")}>
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/ flex items-center justify-center border border-[#1B9157]/ shadow-sm">
+                            <div className="w-12 h-12 rounded-2xl bg-[#1B9157] flex items-center justify-center border border-[#1B9157] shadow-sm">
                                 <ShieldCheck className="w-6 h-6 text-[#1B9157]" />
                             </div>
                             <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Cryptographic Evidence</h3>

@@ -48,7 +48,7 @@ const plans: Plan[] = [
             'Pollination contract management',
             'E-TIMS integration'
         ],
-        color: 'border-[#1B9157]/ text-[#1B9157] bg-[#1B9157]/ shadow-lg shadow-emerald-500/10',
+        color: 'border-[#1B9157] text-[#1B9157] bg-[#1B9157] shadow-lg shadow-emerald-500/10',
         icon: Zap
     },
     {
@@ -134,7 +134,7 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             <ul className="space-y-4 mb-10 flex-1">
                                 {plan.features.map((feature, i) => (
                                     <li key={i} className="flex items-start gap-4">
-                                        <div className="w-5 h-5 rounded-full bg-[#1B9157]/ flex items-center justify-center mt-0.5 shrink-0">
+                                        <div className="w-5 h-5 rounded-full bg-[#1B9157] flex items-center justify-center mt-0.5 shrink-0">
                                             <Check className="w-3 h-3 text-[#1B9157]" />
                                         </div>
                                         <span className={cn(glass.microLabel, "normal-case font-bold tracking-tight text-foreground/80")}>{feature}</span>

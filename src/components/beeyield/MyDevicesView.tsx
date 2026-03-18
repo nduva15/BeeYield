@@ -12,10 +12,11 @@ import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -85,15 +86,17 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const offlineCount = localDevices.filter(d => !readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 3))).length;
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
+        <BeeYieldPageShell className={glass.page}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
             {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={Cpu}
                 label="Devices"
+                onBack={() => onTabChange('home')}
                 title={<>Your <span className="text-[#F4D03F]">devices</span></>}
                 subtitle="Manage devices and view recent readings."
                 actions={
@@ -188,7 +191,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: i * 0.03 }}
-                                            className="group hover:bg-[#F4D03F]/[0.05] transition-all duration-300 cursor-default"
+                                            className="group hover:bg-[#F4D03F][0.05] transition-all duration-300 cursor-default"
                                         >
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
@@ -279,7 +282,8 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
             `}</style>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

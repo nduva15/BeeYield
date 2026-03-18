@@ -14,6 +14,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         <BeeYieldPageHeader
           icon={ClipboardList}
           label="Operations"
+          onBack={() => onTabChange?.('home')}
           title={
             <>
               My <span className="text-[#F4D03F]">Tasks</span>

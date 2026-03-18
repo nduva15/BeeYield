@@ -42,7 +42,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
             >
                 {/* ── Front Face ── */}
                 <div className="absolute inset-0 backface-hidden flex flex-col bg-white/40 border border-[#F4D03F]/20 rounded-[2rem] overflow-hidden shadow-xl backdrop-blur-md group-hover:border-[#F4D03F]/40 transition-all">
-                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between relative z-10">
+                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-2">
                             <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", cfg.dot)} />
                             <span className={cn("text-[8px] font-black", cfg.color)}>{cfg.label}</span>
@@ -75,7 +75,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                 <div 
                     className="absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-white/80 border border-[#F4D03F]/30 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl"
                 >
-                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#1A1A1A]/[0.02] flex items-center justify-between relative z-10">
+                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#1A1A1A][0.02] flex items-center justify-between relative z-10">
                         <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60">Biometric_Telemetry</h4>
                         <Activity className="w-3.5 h-3.5 text-[#F4D03F]" />
                     </div>

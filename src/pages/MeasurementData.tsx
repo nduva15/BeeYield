@@ -39,7 +39,7 @@ const StatCard = ({ title, value, unit, icon: Icon, color, trend }: StatCardProp
         </CardHeader>
         <CardContent>
             <div className="flex items-center gap-2">
-                <Badge variant="outline" className="bg-[#1B9157]/ text-[#1B9157] border-none px-1 py-0 h-5 text-[10px]">
+                <Badge variant="outline" className="bg-[#1B9157] text-[#1B9157] border-none px-1 py-0 h-5 text-[10px]">
                     {trend}
                 </Badge>
                 <span className="text-[10px] text-muted-foreground whitespace-nowrap">vs last period</span>

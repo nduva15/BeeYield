@@ -27,9 +27,9 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
     const getColorClasses = () => {
         const colors = {
             primary: 'bg-primary/5 hover:bg-primary/10 border-primary/20 text-primary',
-            green: 'bg-[#1B9157]/ hover:bg-[#1B9157]/ border-[#1B9157]/ text-[#1B9157]',
+            green: 'bg-[#1B9157] hover:bg-[#1B9157] border-[#1B9157] text-[#1B9157]',
             blue: 'bg-blue-500/5 hover:bg-blue-500/10 border-blue-500/20 text-blue-600',
-            amber: 'bg-[#F4D03F]/ hover:bg-[#F4D03F]/ border-amber-500/20 text-[#F4D03F]',
+            amber: 'bg-[#F4D03F] hover:bg-[#F4D03F] border-amber-500/20 text-[#F4D03F]',
             purple: 'bg-purple-500/5 hover:bg-purple-500/10 border-purple-500/20 text-purple-600',
             red: 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20 text-red-600'
         };
@@ -95,9 +95,9 @@ export const StatCard: React.FC<StatCardProps> = ({
     const getColorClasses = () => {
         const colors = {
             primary: 'border-l-primary bg-primary/5',
-            green: 'border-l-green-500 bg-[#1B9157]/',
+            green: 'border-l-green-500 bg-[#1B9157]',
             blue: 'border-l-blue-500 bg-blue-500/5',
-            amber: 'border-l-amber-500 bg-[#F4D03F]/',
+            amber: 'border-l-amber-500 bg-[#F4D03F]',
             purple: 'border-l-purple-500 bg-purple-500/5',
             red: 'border-l-red-500 bg-red-500/5'
         };

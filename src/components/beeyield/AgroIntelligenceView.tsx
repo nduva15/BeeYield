@@ -26,8 +26,9 @@ import {
 import beeyieldService from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface AgroIntelligenceViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -62,17 +63,19 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
     const carbonScore = satellite?.ndvi ? Math.round(satellite.ndvi * 1000) : null;
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
+        <BeeYieldPageShell className={glass.page}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
             {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={Satellite}
-                label="Orbital Intelligence"
+                label="Ecosystem Insights"
+                onBack={() => onTabChange('home')}
                 title={<>Agro <span className="text-[#F4D03F]">Intelligence</span></>}
-                subtitle="High-fidelity spectral telemetry and ecosystem biome analytics."
+                subtitle="Environmental monitoring and ecosystem health analysis."
                 actions={
                     <div className="flex items-center gap-2">
                         <button onClick={() => onTabChange('orchard-mapper')} className={glass.btnSecondary}>
@@ -81,7 +84,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                         </button>
                         <div className={cn(glass.badge, "bg-[#1A1A1A] text-[#F4D03F] border-[#F4D03F]/30 px-3 py-1.5 flex items-center gap-2")}>
                             <Terminal className="w-3 h-3 animate-pulse" />
-                            <span className="text-[10px]">Orbit Link</span>
+                            <span className="text-[10px]">Satellite Link</span>
                         </div>
                     </div>
                 }
@@ -90,7 +93,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             {/* Live Metrics Row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <GlassStatCard
-                    label="Air Scan"
+                    label="Air Clarity"
                     value={loading ? 'Scanning...' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable')}
                     icon={Sun}
                     index={0}
@@ -102,7 +105,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                     index={1}
                 />
                 <GlassStatCard
-                    label="NDVI Index"
+                    label="Plant Health"
                     value={loading ? 'Mapping...' : (vegetation != null ? vegetation.toString() : '0.64')}
                     icon={Sprout}
                     index={2}
@@ -129,18 +132,18 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                     <BrainCircuit className="w-5 h-5 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Biosphere Topology</h3>
-                                    <p className="text-[10px] text-gray-500">Active Neural Engine</p>
+                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Environment Overview</h3>
+                                    <p className="text-[10px] text-gray-500">Assistant Active</p>
                                 </div>
                             </div>
 
                             <h2 className="text-4xl font-bold text-[#1A1A1A] tracking-tight leading-[1.1]">
-                                Ecosystem <span className="text-[#F4D03F]">Synthesizer</span> Interface
+                                Site Health <span className="text-[#F4D03F]">Overview</span>
                             </h2>
 
                             <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
-                                Synthesizing orbital spectral telemetry to decode the rhythmic architecture of your terrain. 
-                                Nectar flux optimization and precision trajectory modeling active.
+                                Analyzing satellite data to monitor your local ecosystem health. 
+                                Flower monitoring and yield forecasting active.
                             </p>
 
                             <div className="flex gap-3">
@@ -149,7 +152,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                     className={glass.btnPrimary}
                                 >
                                     <Target className="w-4 h-4" />
-                                    Initialize Neural Mapping
+                                    Open Analysis
                                 </button>
                                 <button className={glass.btnSecondary}>
                                     <Download className="w-4 h-4" />
@@ -164,20 +167,20 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 <div className="xl:col-span-4 space-y-6">
                     <div className={cn(glass.section, "p-5")}>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Sector Dynamics</h3>
+                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Regional Data</h3>
                             <Layers className="w-4 h-4 text-gray-400" />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             {[
-                                { title: '3D Grid Scan', icon: MapIcon, color: '#F4D03F' },
-                                { title: 'Delta Analytics', icon: Share2, color: '#1B9157' },
-                                { title: 'Flux Protocol', icon: CloudRain, color: '#1B9157' },
+                                { title: 'Terrain Mapping', icon: MapIcon, color: '#F4D03F' },
+                                { title: 'Growth Analysis', icon: Share2, color: '#1B9157' },
+                                { title: 'Moisture Tracking', icon: CloudRain, color: '#1B9157' },
                                 { title: 'Yield ROI', icon: Sprout, color: '#F4D03F' }
                             ].map((btn) => (
                                 <div key={btn.title} className="bg-[#FFF9F0] p-4 rounded-xl border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 transition-all cursor-pointer group">
                                     <btn.icon className="w-5 h-5 mb-2 transition-transform group-hover:scale-110" style={{ color: btn.color }} />
                                     <p className="text-xs font-bold text-[#1A1A1A] tracking-tight leading-none mb-1">{btn.title}</p>
-                                    <p className="text-[9px] text-gray-500 font-black">Sector_Active</p>
+                                    <p className="text-[9px] text-gray-500 font-bold">Healthy</p>
                                 </div>
                             ))}
                         </div>
@@ -186,10 +189,10 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                     <div className={cn(glass.card, "p-6 bg-gradient-to-br from-[#F4D03F]/5 to-transparent border-[#F4D03F]/20")}>
                         <div className="flex items-center gap-3 mb-3">
                             <Info className="w-5 h-5 text-[#F4D03F]" />
-                            <h4 className="text-sm font-bold text-[#1A1A1A]">Intelligence Summary</h4>
+                            <h4 className="text-sm font-bold text-[#1A1A1A]">Summary</h4>
                         </div>
                         <p className="text-[11px] text-gray-500 leading-relaxed">
-                            Spectral telemetry indicates high vegetative health across forage sectors. Carbon sequestration increased by 4.2% in last cycle.
+                            Satellite data shows high plant health and growth across your area. Carbon capture increased by 4.2% in last cycle.
                         </p>
                     </div>
                 </div>
@@ -199,19 +202,19 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
                 {[
                     {
-                        title: 'Spatial Dynamics Core', icon: BarChart3, list: [
-                            "Boundary definition precision mapping",
-                            "High-resolution terrain topography scans",
-                            "Sector-specific yield targets initialized",
-                            "Historical state archive tracking engine"
+                        title: 'Field Mapping Tools', icon: BarChart3, list: [
+                            "Precise farm boundary mapping",
+                            "Detailed terrain and slope analysis",
+                            "Custom yield targets for your area",
+                            "History tracking and data archival"
                         ]
                     },
                     {
-                        title: 'Eco-Topology Engine', icon: Layers, list: [
-                            "Multi-spectral layer visualization interface",
-                            "Nectar flux and bloom index tracking",
-                            "Real-time vegetation (NDVI) telemetry",
-                            "Seasonal drift analysis neural models"
+                        title: 'Ecosystem Analysis', icon: Layers, list: [
+                            "Advanced visual layering tools",
+                            "Feeding source and bloom monitoring",
+                            "Real-time plant health monitoring",
+                            "Seasonal change analysis and forecasts"
                         ]
                     }
                 ].map((feature, idx) => (
@@ -236,7 +239,8 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                     </div>
                 ))}
             </div>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

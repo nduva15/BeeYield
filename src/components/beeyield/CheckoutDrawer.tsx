@@ -252,7 +252,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         </p>
                                     </div>
 
-                                    <div className="p-4 bg-[#1B9157]/ border border-[#1B9157]/ flex gap-3">
+                                    <div className="p-4 bg-[#1B9157] border border-[#1B9157] flex gap-3">
                                         <Shield size={16} className="text-[#1B9157] flex-shrink-0 mt-0.5" />
                                         <p className="text-[10px] text-[#1B9157]/80 leading-relaxed font-bold">
                                             Oxidized Security Enabled. This transaction is protected by memory-safe Rust cryptography and strict idempotency checks.

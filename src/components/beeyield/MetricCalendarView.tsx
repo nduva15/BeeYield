@@ -228,7 +228,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
             animate={{ opacity: 1, scale: 1 }}
             className={cn(glass.page, "p-8 -m-8 space-y-8 pb-20 min-h-screen")}
         >
-            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F]/[0.05] rounded-full blur-[160px] -mr-40 -mt-40 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-[#F4D03F][0.05] rounded-full blur-[160px] -mr-40 -mt-40 pointer-events-none" />
 
             {/* Header Area */}
             <PageHeader

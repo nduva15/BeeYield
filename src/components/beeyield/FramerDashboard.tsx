@@ -52,8 +52,8 @@ interface AnimatedStatCardProps {
 
 const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({ title, value, trend, icon: Icon, color }) => {
     const colors = {
-        amber: "text-[#F4D03F] bg-[#F4D03F]/ border-amber-500/20",
-        emerald: "text-[#1B9157] bg-[#1B9157]/ border-[#1B9157]/",
+        amber: "text-[#F4D03F] bg-[#F4D03F] border-amber-500/20",
+        emerald: "text-[#1B9157] bg-[#1B9157] border-[#1B9157]",
         blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
         red: "text-red-500 bg-red-500/10 border-red-500/20",
     };
@@ -70,7 +70,7 @@ const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({ title, value, trend
                 </div>
                 <motion.span
                     whileHover={{ scale: 1.1 }}
-                    className="flex items-center text-xs font-medium text-[#1B9157] bg-[#1B9157]/ px-2 py-1 rounded-full"
+                    className="flex items-center text-xs font-medium text-[#1B9157] bg-[#1B9157] px-2 py-1 rounded-full"
                 >
                     {trend} <ArrowUpRight size={12} className="ml-1" />
                 </motion.span>

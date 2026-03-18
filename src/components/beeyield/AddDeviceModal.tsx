@@ -84,7 +84,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                 >
                     <div className="bg-gradient-to-br from-[#121212] to-black px-14 py-16 text-[#1A1A1A] relative overflow-hidden border-b border-[#F4D03F]/20">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/10 rounded-full -mr-40 -mt-20 blur-[120px] animate-pulse pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#1B9157]/ rounded-full -ml-30 -mb-20 blur-[80px] pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#1B9157] rounded-full -ml-30 -mb-20 blur-[80px] pointer-events-none" />
 
                         <div className="relative z-10 flex justify-between items-start">
                             <div className="space-y-8">
@@ -93,7 +93,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                         <Cpu className="w-5 h-5 text-[#F4D03F]" />
                                         <span className="text-[10px] font-black skew-x-[12deg] italic">Add device</span>
                                     </div>
-                                    <div className="flex items-center gap-3 bg-[#1B9157]/ px-4 py-2 rounded-full border border-[#1B9157]/ shadow-inner">
+                                    <div className="flex items-center gap-3 bg-[#1B9157] px-4 py-2 rounded-full border border-[#1B9157] shadow-inner">
                                         <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
                                         <span className="text-[10px] font-black text-[#1B9157] italic">Ready</span>
                                     </div>
@@ -175,7 +175,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             </div>
 
                             <div className="space-y-6">
-                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#1B9157]/ pl-6 opacity-40 font-black text-[10px]')}>Hive (optional)</Label>
+                                <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-[#1B9157] pl-6 opacity-40 font-black text-[10px]')}>Hive (optional)</Label>
                                 <Select
                                     value={selectedHiveId}
                                     onValueChange={setSelectedHiveId}
@@ -242,7 +242,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className={cn(glass.card, "p-10 bg-[#F4D03F]/[0.03] border-[#F4D03F]/20 flex items-center gap-10 relative overflow-hidden group rounded-[3rem]")}
+                            className={cn(glass.card, "p-10 bg-[#F4D03F][0.03] border-[#F4D03F]/20 flex items-center gap-10 relative overflow-hidden group rounded-[3rem]")}
                         >
                             <div className="absolute top-0 right-0 w-40 h-40 bg-[#F4D03F]/10 blur-3xl pointer-events-none" />
                             <div className="w-16 h-16 rounded-2xl bg-gray-400 flex items-center justify-center shrink-0 border border-[#F4D03F]/20 shadow-4xl group-hover:rotate-[360deg] transition-transform duration-1000 relative z-10">

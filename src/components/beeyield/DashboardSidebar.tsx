@@ -53,7 +53,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     onLogout,
     navItems
 }) => {
-    const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['data', 'meters', 'beeyield']);
+    const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['precision-pollination-folder', 'beeyield', 'data', 'meters']);
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
     const toggleGroup = (id: string) => {

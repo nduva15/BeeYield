@@ -32,7 +32,7 @@ const VarroaWashInterpreter: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Input Form */}
                 <Card className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
-                    <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
+                    <CardHeader className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02]">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
                                 <History className="w-4 h-4 text-[#F4D03F]" />
@@ -89,7 +89,7 @@ const VarroaWashInterpreter: React.FC = () => {
                     <Card className={cn(
                         glass.card,
                         "flex flex-col items-center justify-center py-10 transition-all duration-500 border-2",
-                        isCritical ? "border-red-500/30 bg-red-50/40" : "border-[#1B9157]/30 bg-[#1B9157]/[0.02]"
+                        isCritical ? "border-red-500/30 bg-red-50/40" : "border-[#1B9157]/30 bg-[#1B9157][0.02]"
                     )}>
                         <h4 className={glass.microLabel}>Calculated Infestation</h4>
                         <div className="flex items-end gap-1 my-2">

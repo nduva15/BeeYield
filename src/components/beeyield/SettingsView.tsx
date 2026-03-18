@@ -271,7 +271,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 className={cn("p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
                             >
                                 <BeeYieldCard padded={false} className={cn("p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
-                                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between flex-wrap gap-4">
+                                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between flex-wrap gap-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                                                 <Globe className="w-4 h-4 text-[#F4D03F]" />
@@ -359,7 +359,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         animate={{ opacity: 1, y: 0 }}
                         className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
                     >
-                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Layers className="w-4 h-4 text-[#F4D03F]" />
@@ -427,7 +427,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Internal alerts */}
                         <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
-                            <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex flex-wrap items-center gap-3">
+                            <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex flex-wrap items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Bell className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
@@ -544,7 +544,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         animate={{ opacity: 1, y: 0 }}
                         className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
                     >
-                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between gap-4 flex-wrap">
+                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between gap-4 flex-wrap">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                                     <CreditCard className="w-4 h-4 text-[#F4D03F]" />

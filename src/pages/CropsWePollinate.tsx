@@ -30,7 +30,7 @@ const CropsWePollinate = () => {
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-[#1B9157]/ rounded-full blur-3xl animate-pulse delay-500" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-[#1B9157] rounded-full blur-3xl animate-pulse delay-500" />
           </div>
           {/* Honeycomb Pattern */}
           <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -58,7 +58,7 @@ const CropsWePollinate = () => {
                 <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-[#F9F7F2]0 font-bold h-14 px-8" asChild>
+                <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-[#F9F7F2] font-bold h-14 px-8" asChild>
                   <a href="#crops">Explore Crops</a>
                 </Button>
               </div>
@@ -66,8 +66,8 @@ const CropsWePollinate = () => {
 
             <div className="relative hidden lg:block">
               {/* Decorative grid of crop images */}
-              <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-[#1B9157]/ blur-3xl animate-pulse" />
-              <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[#F4D03F]/ blur-3xl animate-pulse delay-1000" />
+              <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-[#1B9157] blur-3xl animate-pulse" />
+              <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[#F4D03F] blur-3xl animate-pulse delay-1000" />
               <div className="grid grid-cols-2 gap-4">
                 <img src={pollinationCrops[0].image} alt={pollinationCrops[0].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-[#F4D03F]/100" />
                 <img src={pollinationCrops[2].image} alt={pollinationCrops[2].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-[#F4D03F]/100 mt-8" />
@@ -213,7 +213,7 @@ const CropsWePollinate = () => {
               <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-[#FFF9F0]">
                 <div className="relative h-64 overflow-hidden">
                   <div className="absolute top-4 right-4 z-20">
-                    <Badge className="bg-[#1B9157]/ text-white backdrop-blur-md border-none px-3 py-1 font-black">
+                    <Badge className="bg-[#1B9157] text-white backdrop-blur-md border-none px-3 py-1 font-black">
                       {crop.beeDependence}
                     </Badge>
                   </div>

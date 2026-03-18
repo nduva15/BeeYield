@@ -95,7 +95,7 @@ const VpmTicker: React.FC = () => {
                 </div>
             </div>
 
-            <div className={cn(glass.badge, "ml-auto bg-[#1B9157]/ text-[#1B9157] border-[#1B9157]/ whitespace-nowrap hidden sm:flex")}>
+            <div className={cn(glass.badge, "ml-auto bg-[#1B9157] text-[#1B9157] border-[#1B9157] whitespace-nowrap hidden sm:flex")}>
                 Optimal Flow
             </div>
         </div>

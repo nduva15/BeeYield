@@ -240,8 +240,8 @@ const OurStory = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="bg-[#0A2612] text-[#1A1A1A] border-none shadow-2xl rounded-[3rem] overflow-hidden">
             <CardContent className="p-8 sm:p-12 text-center relative">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157]/ rounded-full blur-3xl -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F]/ rounded-full blur-3xl -ml-32 -mb-32" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl -mr-32 -mt-32" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F] rounded-full blur-3xl -ml-32 -mb-32" />
 
               <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-[#1A1A1A]">
                 Join Us on Our <span className="text-[#1B9157]">Journey</span>

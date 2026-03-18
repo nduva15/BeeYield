@@ -17,14 +17,15 @@ import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface HarvestsViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string, action?: string } | null;
 }
 
-const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
+const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [filterYear, setFilterYear] = React.useState<string>('all');
     const [isAddingHarvest, setIsAddingHarvest] = React.useState(false);
@@ -134,8 +135,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
     const getColorGradeStyles = (grade?: string) => {
         const styles: Record<string, string> = {
-            'Extra Light Amber': 'bg-[#F4D03F]/ text-[#F4D03F] border-amber-500/20',
-            'Light Amber': 'bg-[#F4D03F]/ text-[#F4D03F] border-amber-500/40',
+            'Extra Light Amber': 'bg-[#F4D03F] text-[#F4D03F] border-amber-500/20',
+            'Light Amber': 'bg-[#F4D03F] text-[#F4D03F] border-amber-500/40',
             'Amber': 'bg-orange-500/10 text-orange-500 border-orange-500/20',
             'Dark Amber': 'bg-orange-500/20 text-orange-400 border-orange-500/40',
         };
@@ -193,19 +194,19 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                 className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
             >
                 {/* Header */}
-                <PageHeader
+                <BeeYieldPageHeader
                     icon={Activity}
                     label="Harvest"
+                    onBack={() => setIsAddingHarvest(false)}
                     title={<>Record <span className="text-[#F4D03F]">harvest</span></>}
                     subtitle="Save your harvest details."
                     actions={
                         <button
                             onClick={() => setIsAddingHarvest(false)}
+                            className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
                             aria-label="Back to harvest list"
                             title="Back"
-                            className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center")}
                         >
-                            <span className="sr-only">Back</span>
                             <ChevronLeft className="w-4 h-4" />
                         </button>
                     }
@@ -442,16 +443,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-        >
+        <BeeYieldPageShell className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-6"
+            >
             {/* Header */}
-            {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={Package}
                 label="Harvests"
+                onBack={() => onTabChange?.('home')}
                 title={<>Harvest <span className="text-[#F4D03F]">list</span></>}
                 subtitle="View and record your harvests."
                 actions={
@@ -618,7 +620,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                     </div>
                 </div>
             </div>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

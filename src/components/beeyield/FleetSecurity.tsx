@@ -153,7 +153,7 @@ const FleetSecurity: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className={cn(glass.card, "p-0 shadow-xl bg-white/40 border-white/20")}
                     >
-                        <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between">
+                        <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                     <MapPin className="w-4 h-4 text-[#F4D03F]" />
@@ -210,7 +210,7 @@ const FleetSecurity: React.FC = () => {
                         animate={{ opacity: 1, x: 0 }}
                         className={cn(glass.card, "p-0 shadow-xl bg-white/40 border-white/20")}
                     >
-                       <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between">
+                       <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                     <Activity className="w-4 h-4 text-[#F4D03F]" />

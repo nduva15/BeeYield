@@ -30,7 +30,7 @@ interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
 }
 
-const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
+const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) => {
     const { t } = useLanguage();
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
@@ -101,6 +101,21 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         tasks: false
     });
 
+    const REPORTS_CACHE_KEY = "beeyield_reports_cache_v1";
+
+    const readCache = React.useCallback(() => {
+        try {
+            const raw = localStorage.getItem(REPORTS_CACHE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+    }, []);
+
+    const writeCache = React.useCallback((data: any) => {
+        try {
+            localStorage.setItem(REPORTS_CACHE_KEY, JSON.stringify(data));
+        } catch { /* ignore */ }
+    }, []);
+
     const loadData = async () => {
         setIsLoading(true);
         try {
@@ -111,15 +126,17 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 beeyieldService.getScheduledReports()
             ]);
 
+            const filteredReports = reportsData.filter(r => !r.user_id || r.user_id === userId);
+            setReports(filteredReports);
+            writeCache({ reports: filteredReports, timestamp: Date.now() });
+
             if (userId) {
                 setApiaries(apiariesData.filter(a => !a.user_id || a.user_id === userId));
                 setHives(hivesData.filter(h => !h.user_id || h.user_id === userId));
-                setReports(reportsData.filter(r => !r.user_id || r.user_id === userId));
                 setSchedules(schedulesData.filter(s => s.is_active && (!s.user_id || s.user_id === userId)));
             } else {
                 setApiaries(apiariesData || []);
                 setHives(hivesData || []);
-                setReports(reportsData || []);
                 setSchedules(schedulesData || []);
             }
 
@@ -130,7 +147,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             }
         } catch (error) {
             console.error('Data sync failed', error);
-            toast.error('Couldn’t sync reports right now.');
+            const cached = readCache();
+            if (cached?.reports) {
+                setReports(cached.reports);
+                toast.info('Offline: Showing last known reports');
+            } else {
+                toast.error('Could not load reports archive');
+            }
             // In offline/no-backend scenarios, keep schedules functional from local store.
             const local = readLocalSchedules();
             if (local.length > 0) setSchedules(local.filter(s => s.is_active));
@@ -456,6 +479,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 <BeeYieldPageHeader
                     icon={FileBarChart}
                     label="Reports"
+                    onBack={() => onTabChange?.('home')}
                     title={<>Reports <span className="text-[#1B9157]">Archive</span></>}
                     subtitle="Create reports from your hive and apiary data."
                     actions={
@@ -511,20 +535,22 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     <div className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm")}>
                         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Extraction Parameters</h3>
-                                <p className="text-[10px] font-medium text-gray-400">Configure audit trajectories</p>
+                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Report Configuration</h3>
+                                <p className="text-[10px] font-medium text-gray-400">Configure your report data and format</p>
                             </div>
                             <Terminal className="w-4 h-4 text-gray-400" />
                         </div>
 
                         <div className="p-5 space-y-6">
                             <div className="space-y-3">
-                                <label className="text-sm font-semibold text-gray-600 ml-1">Choose a section</label>
+                                <label className="text-sm font-semibold text-gray-600 ml-1">Included Sections</label>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                     {sectionOptions.map((opt) => (
                                         <button
                                             key={opt.id}
+                                            id={`report-section-${opt.id}`}
                                             onClick={() => setSections({ ...sections, [opt.id]: !sections[opt.id as keyof typeof sections] })}
+                                            aria-pressed={sections[opt.id as keyof typeof sections]}
                                             className={cn(
                                                 "p-3 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all group",
                                                 sections[opt.id as keyof typeof sections] ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-gray-50 border-transparent text-gray-400 hover:border-gray-200"
@@ -539,11 +565,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 border-t border-gray-100">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-bold tracking-wider text-gray-400 ml-1">Temporal Audit</label>
-                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1 overflow-x-auto">
+                                    <label className="text-[10px] font-bold tracking-wider text-gray-400 ml-1" id="label-report-timeframe">Timeframe</label>
+                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1 overflow-x-auto" role="radiogroup" aria-labelledby="label-report-timeframe">
                                         {['7', '30', '90', '365'].map((d) => (
                                             <button
                                                 key={d}
+                                                id={`report-timeframe-${d}`}
+                                                role="radio"
+                                                aria-checked={reportScope === d}
                                                 onClick={() => setReportScope(d)}
                                                 className={cn(
                                                     "h-7 px-3 rounded-md text-[10px] font-bold tracking-wider transition-all whitespace-nowrap",
@@ -556,11 +585,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-bold tracking-wider text-gray-400 ml-1">Archive Format</label>
-                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1">
+                                    <label className="text-[10px] font-bold tracking-wider text-gray-400 ml-1" id="label-report-format">File Format</label>
+                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100 gap-1" role="radiogroup" aria-labelledby="label-report-format">
                                         {['PDF', 'XLSX'].map((f) => (
                                             <button
                                                 key={f}
+                                                id={`report-format-${f}`}
+                                                role="radio"
+                                                aria-checked={selectedFormat === f}
                                                 onClick={() => setSelectedFormat(f as any)}
                                                 className={cn(
                                                     "flex-1 h-7 rounded-md text-[10px] font-bold tracking-wider transition-all",
@@ -787,144 +819,134 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         </DialogHeader>
 
                         <form onSubmit={handleCreateSchedule} className="p-6 space-y-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Report type</Label>
-                                        <div className="relative">
-                                            <select
-                                                value={newSchedule.report_type}
-                                                onChange={(e) => setNewSchedule({ ...newSchedule, report_type: e.target.value })}
-                                                aria-label="Report type"
-                                                className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
-                                            >
-                                                <option value="full_summary">Full summary</option>
-                                                <option value="ai_analysis">Advanced analysis</option>
-                                            </select>
-                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40 pointer-events-none" />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Scope</Label>
-                                        <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 overflow-x-auto">
-                                            {[7, 30, 90, 365].map((d) => (
-                                                <button
-                                                    key={d}
-                                                    type="button"
-                                                    onClick={() => setScheduleScopeDays(d)}
-                                                    className={cn(
-                                                        "h-8 px-3 rounded-lg text-[10px] font-black transition-all whitespace-nowrap",
-                                                        scheduleScopeDays === d
-                                                            ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40"
-                                                            : "text-gray-500 hover:text-[#1A1A1A]"
-                                                    )}
-                                                >
-                                                    {d === 365 ? 'Annual' : `${d}D`}
-                                                </button>
-                                            ))}
-                                        </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="schedule-report-type" className={glass.microLabel}>Report Type</Label>
+                                    <div className="relative">
+                                        <select
+                                            id="schedule-report-type"
+                                            value={newSchedule.report_type}
+                                            onChange={(e) => setNewSchedule({ ...newSchedule, report_type: e.target.value })}
+                                            className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
+                                        >
+                                            <option value="full_summary">Full Summary</option>
+                                            <option value="ai_analysis">Deep Insights</option>
+                                            <option value="financial_audit">Audit Ledger</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel} htmlFor="beeyield-schedule-name">Schedule name</Label>
+                                    <Label htmlFor="schedule-frequency" className={glass.microLabel}>Interval</Label>
                                     <div className="relative">
-                                        <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
-                                        <input 
-                                            id="beeyield-schedule-name"
-                                            name="schedule_name"
-                                            autoComplete="off"
-                                            value={newSchedule.name}
-                                            onChange={(e) => setNewSchedule({ ...newSchedule, name: e.target.value })}
-                                            className={cn(glass.input, "w-full pl-9")}
-                                            placeholder="Weekly report"
-                                        />
+                                        <select
+                                            id="schedule-frequency"
+                                            value={newSchedule.frequency}
+                                            onChange={(e) => setNewSchedule({ ...newSchedule, frequency: e.target.value as any })}
+                                            className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
+                                        >
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                     </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="schedule-name" className={glass.microLabel}>Schedule Name</Label>
+                                <input
+                                    id="schedule-name"
+                                    placeholder="e.g. Weekly Production Audit"
+                                    value={newSchedule.name}
+                                    onChange={(e) => setNewSchedule({ ...newSchedule, name: e.target.value })}
+                                    className={cn(glass.input, "h-11 bg-white/50 w-full")}
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="schedule-recipients" className={glass.microLabel}>Recipient Emails</Label>
+                                <div className="relative">
+                                    <textarea
+                                        id="schedule-recipients"
+                                        placeholder="Enter emails (comma separated)"
+                                        value={recipientsDraft}
+                                        onChange={(e) => setRecipientsDraft(e.target.value)}
+                                        className={cn(glass.select, "w-full h-20 py-3 appearance-none resize-none bg-white/50")}
+                                        autoComplete="email"
+                                    ></textarea>
+                                    <Mail className="absolute right-3 bottom-3 w-4 h-4 text-gray-400 pointer-events-none" />
+                                </div>
+                                <p className="text-[10px] font-bold text-gray-400 ml-1">Comma, semicolon, or newline separated</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="schedule-scope" className={glass.microLabel}>Timeframe (Days)</Label>
+                                    <input
+                                        id="schedule-scope"
+                                        type="number"
+                                        min="1"
+                                        max="365"
+                                        value={scheduleScopeDays}
+                                        onChange={(e) => setScheduleScopeDays(parseInt(e.target.value) || 30)}
+                                        className={cn(glass.input, "h-11 bg-white/50 w-full")}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className={glass.microLabel} htmlFor="beeyield-schedule-recipients">Recipients</Label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
-                                        <input
-                                            id="beeyield-schedule-recipients"
-                                            name="recipients"
-                                            autoComplete="email"
-                                            value={recipientsDraft}
-                                            onChange={(e) => setRecipientsDraft(e.target.value)}
-                                            className={cn(glass.input, "w-full pl-9")}
-                                            placeholder="email1@site.com, email2@site.com"
+                                    <Label htmlFor="schedule-active" className={glass.microLabel}>Status</Label>
+                                    <div className={cn(glass.input, "h-11 bg-white/50 w-full flex items-center justify-between")}>
+                                        <span className="text-[10px] font-bold text-[#1A1A1A]/60">Active</span>
+                                        <UISwitch 
+                                            id="schedule-active"
+                                            checked={newSchedule.is_active}
+                                            onCheckedChange={(c) => setNewSchedule({ ...newSchedule, is_active: !!c })}
+                                            className="data-[state=checked]:bg-[#1B9157]"
                                         />
                                     </div>
-                                    <p className="text-[10px] font-bold text-gray-400">
-                                        Comma, semicolon, or newline separated
-                                    </p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel} htmlFor="beeyield-schedule-frequency">Frequency</Label>
-                                        <div className="relative">
-                                            <select
-                                                id="beeyield-schedule-frequency"
-                                                name="frequency"
-                                                autoComplete="off"
-                                                value={newSchedule.frequency}
-                                                onChange={(e) => setNewSchedule({ ...newSchedule, frequency: e.target.value as any })}
-                                                aria-label="Schedule frequency"
-                                                className={cn(glass.select, "w-full appearance-none pr-8 cursor-pointer")}
-                                            >
-                                                <option value="daily">Daily</option>
-                                                <option value="weekly">Weekly</option>
-                                                <option value="monthly">Monthly</option>
-                                            </select>
-                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40 pointer-events-none" />
-                                        </div>
-                                     </div>
-                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel} htmlFor="beeyield-schedule-active">Status</Label>
-                                        <div className={cn(glass.input, "w-full flex items-center justify-between")}>
-                                            <span className="text-[10px] font-bold text-[#1A1A1A]/60">Active</span>
-                                            <UISwitch 
-                                                id="beeyield-schedule-active"
-                                                checked={newSchedule.is_active}
-                                                onCheckedChange={(c) => setNewSchedule({ ...newSchedule, is_active: !!c })}
-                                                className="data-[state=checked]:bg-[#1B9157]"
-                                            />
-                                        </div>
-                                     </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className={glass.microLabel}>Included Sections</Label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {sectionOptions.map((opt) => (
+                                        <button
+                                            key={opt.id}
+                                            id={`schedule-section-${opt.id}`}
+                                            type="button"
+                                            onClick={() => setSections({ ...sections, [opt.id]: !sections[opt.id as keyof typeof sections] })}
+                                            aria-pressed={sections[opt.id as keyof typeof sections]}
+                                            className={cn(
+                                                "p-3 rounded-xl border flex items-center gap-2 transition-all",
+                                                sections[opt.id as keyof typeof sections]
+                                                    ? "bg-emerald-50 border-emerald-100 text-emerald-700 font-bold"
+                                                    : "bg-white/40 border-transparent text-gray-500 hover:border-gray-200"
+                                            )}
+                                        >
+                                            <opt.icon className={cn("w-4 h-4", sections[opt.id as keyof typeof sections] ? "text-emerald-600" : "text-gray-300")} />
+                                            <span className="text-[10px] font-bold">{opt.label}</span>
+                                        </button>
+                                    ))}
                                 </div>
-                                <div className="space-y-2 pt-2">
-                                    <Label className={glass.microLabel}>Include sections</Label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {sectionOptions.map((opt) => (
-                                            <button
-                                                key={opt.id}
-                                                type="button"
-                                                onClick={() => setSections({ ...sections, [opt.id]: !sections[opt.id as keyof typeof sections] })}
-                                                className={cn(
-                                                    "p-3 rounded-xl border flex items-center gap-2 transition-all",
-                                                    sections[opt.id as keyof typeof sections]
-                                                        ? "bg-emerald-50 border-emerald-100 text-emerald-700"
-                                                        : "bg-white/40 border-white/40 text-gray-500 hover:bg-white/60"
-                                                )}
-                                            >
-                                                <opt.icon className={cn("w-4 h-4", sections[opt.id as keyof typeof sections] ? "text-emerald-600" : "text-gray-400")} aria-hidden="true" focusable="false" />
-                                                <span className="text-[10px] font-black">{opt.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="pt-2 flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsScheduleModalOpen(false)}
-                                        className={cn(glass.btnSecondary, "flex-1")}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "flex-1")}>
-                                        {isSavingSchedule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        Save schedule
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
+
+                            <div className="pt-2 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsScheduleModalOpen(false)}
+                                    className={cn(glass.btnSecondary, "flex-1 h-11")}
+                                >
+                                    Cancel
+                                </button>
+                                <button type="submit" disabled={isSavingSchedule} className={cn(glass.btnPrimary, "flex-1 h-11")}>
+                                    {isSavingSchedule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                                    Save Schedule
+                                </button>
+                            </div>
+                        </form>
                     </motion.div>
                 </DialogContent>
             </Dialog>
