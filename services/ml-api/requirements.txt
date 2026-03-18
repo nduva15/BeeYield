@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+torch
+torchvision
+torchaudio
+ultralytics
+librosa
+numpy
+pandas
+scikit-learn
+pydantic
+python-dotenv
+aiohttp

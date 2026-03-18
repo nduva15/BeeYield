@@ -43,8 +43,10 @@ __pycache__/
 venv/
 ENV/
 env/
-requirements.txt
-!.github/workflows/requirements.txt
+# requirements.txt
+# (Allow requirements.txt within packages/services)
+!**/requirements.txt
+!requirements.txt
 
 # Build / Output
 dist/
@@ -69,6 +71,8 @@ release/
 
 # Internal Logs and Debugging
 *.txt
+!requirements.txt
+!**/requirements.txt
 *.log
 *.json
 !package*.json

@@ -1,0 +1,27 @@
+# BeeYield Backend Dependencies
+# FastAPI Core
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+pydantic>=2.5.0
+
+# Database
+supabase>=2.0.3
+asyncpg>=0.29.0
+
+# HTTP Client  
+httpx>=0.25.1
+
+# Audio Processing (BEE-SOUND-ANALYSIS dependencies)
+librosa>=0.10.1
+numpy>=1.26.4
+soundfile>=0.12.1
+scipy>=1.10.1
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Report Generation
+reportlab>=4.0.0
+openpyxl>=3.1.0
+
