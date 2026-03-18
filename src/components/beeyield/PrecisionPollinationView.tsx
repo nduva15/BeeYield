@@ -442,9 +442,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 relative z-10">
             <BeeYieldPageHeader
                 icon={Target}
-                label="Field tools"
-                title="Precision Pollination"
-                subtitle="Plan placement and estimate coverage."
+                label="BeeYield AI Field Ops"
+                title={<>Precision <span className="text-[#1B9157]">Pollination</span> Engine</>}
+                subtitle="Strategic spatial optimization and hive placement logistics."
                 actions={
                     !activeSubPageOverride && (
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -551,7 +551,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         <span className="text-[8px] font-black text-[#1B9157]">Live Updates</span>
                                     </div>
                                     <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">Fleet <span className="text-[#1B9157]">Optimizer</span></h2>
-                                    <p className="text-[10px] font-black text-gray-500 leading-relaxed max-w-xl border-l-2 border-[#1B9157]/10 pl-4 tracking-tighter">
+                                    <p className="text-[10px] font-black text-gray-500 leading-relaxed max-w-xl border-l-2 border-[#1B9157]/10 pl-4 tracking-tighter uppercase">
                                         Continuous spatial analysis and real-time fleet management. 
                                         Monitoring colony distribution and bloom health patterns.
                                     </p>

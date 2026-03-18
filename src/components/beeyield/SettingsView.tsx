@@ -1,7 +1,8 @@
 import React from 'react';
 import {
     User, Shield, Bell, Globe, Lock as LockIcon, MapPin, Activity, Save, Trash2, Key, Smartphone, Layers, Hexagon, Cpu, ShieldCheck, Check,
-    Settings, LogOut, ChevronRight, Palette, Fingerprint, CreditCard, Receipt, Plus, XCircle, ExternalLink, Clock, ArrowUpRight, ArrowDownRight
+    Settings, LogOut, ChevronRight, Palette, Fingerprint, CreditCard, Receipt, Plus, XCircle, ExternalLink, Clock, ArrowUpRight, ArrowDownRight,
+    Camera, Loader2
 } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -26,7 +27,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { deletePaymentMethod, getPaymentMethods, saveStripePaymentMethod } from '@/services/shopService';
-import beeyieldService from '@/services/beeyieldService';
+import beeyieldService, { uploadAvatar } from '@/services/beeyieldService';
 import {
     BeeYieldCard,
     BeeYieldFormField,
@@ -68,7 +69,7 @@ type BillingTx = {
 };
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
-    const { user, signOut } = useAuth();
+    const { user, signOut, updateUser } = useAuth();
     const { theme, setTheme } = useTheme();
     const { moduleFlags, updateModuleFlags, alerts, updateAlerts, resetWorkspace, syncToBackend, isSyncing } = useSettings();
     const [mounted, setMounted] = React.useState(false);
@@ -90,6 +91,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const [phone, setPhone] = React.useState(user?.user_metadata?.phone || '');
     const [locationName, setLocationName] = React.useState(user?.user_metadata?.location_name || '');
     const [profileLoading, setProfileLoading] = React.useState(false);
+    const [uploading, setUploading] = React.useState(false);
 
     React.useEffect(() => {
         if (user?.user_metadata) {
@@ -141,6 +143,33 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             loadBilling();
         }
     }, [activeTab, loadBilling]);
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !user) return;
+
+        // Size check (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            toast.error('Image size must be less than 2MB');
+            return;
+        }
+
+        try {
+            setUploading(true);
+            const { url, error } = await uploadAvatar(user.id, file);
+            if (error) throw error;
+            
+            const { error: updateError } = await updateUser({ avatar_url: url }, 'beeyield');
+            if (updateError) throw updateError;
+
+            toast.success('Profile photo updated successfully!');
+        } catch (error) {
+            console.error('Upload failed:', error);
+            toast.error('Failed to update profile photo.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleAtomicSave = async (section: string) => {
         setLoading(prev => ({ ...prev, [section]: true }));
@@ -221,7 +250,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             >
                 <TabsList className="bg-white/40 p-1 h-9 w-full grid grid-cols-5 rounded-xl border border-white/40 backdrop-blur-xl">
                     {[
-                        { value: 'identity', label: 'Identity', icon: User },
+                        { value: 'identity', label: 'Profile', icon: User },
                         { value: 'modules', label: 'Modules', icon: Layers },
                         { value: 'alerts', label: 'Alerting', icon: Bell },
                         { value: 'security', label: 'Security', icon: ShieldCheck },
@@ -251,19 +280,31 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <div className="absolute -top-6 -left-6 opacity-[0.03] pointer-events-none">
                                     <Fingerprint className="w-32 h-32" />
                                 </div>
-                                <div className="w-20 h-20 rounded-full border-4 border-white/40 bg-[#F4D03F]/10 p-1 flex items-center justify-center relative shadow-sm group">
-                                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center border border-gray-100 overflow-hidden">
-                                        <User className="w-8 h-8 text-[#1A1A1A] group-hover:scale-110 transition-transform" />
+                                <div className="w-20 h-20 rounded-[1.5rem] border-4 border-white/40 bg-white p-1 flex items-center justify-center relative shadow-sm group overflow-hidden">
+                                    <div className="w-full h-full rounded-[1.2rem] bg-gray-50 flex items-center justify-center border border-gray-100 overflow-hidden relative">
+                                        {user?.user_metadata?.avatar_url ? (
+                                            <img src={user.user_metadata.avatar_url} alt={fullName} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User className="w-8 h-8 text-[#1A1A1A] group-hover:scale-110 transition-transform" />
+                                        )}
+                                        {uploading && (
+                                            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
+                                                <Loader2 className="h-6 w-6 animate-spin text-[#F4D03F]" />
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="absolute bottom-0 right-0 bg-[#1B9157] text-white p-1 rounded-full border-2 border-white shadow-sm">
-                                        <ShieldCheck className="w-3.5 h-3.5" />
-                                    </div>
+                                    <label className="absolute bottom-1 right-1 w-7 h-7 bg-[#F4D03F] text-white p-1.5 rounded-lg border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform flex items-center justify-center">
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                                        <Camera className="w-3.5 h-3.5" />
+                                    </label>
                                 </div>
-                                <h3 className="text-sm font-bold text-[#1A1A1A] mt-6">Account</h3>
-                                <p className="text-xs font-semibold text-[#1B9157] mt-1">Verified</p>
-                                <button className={cn(glass.btnPrimary, "mt-6 w-full")}>
-                                    Update profile
-                                </button>
+                                <h3 className="text-sm font-bold text-[#1A1A1A] mt-6">{fullName}</h3>
+                                <p className="text-xs font-semibold text-[#1B9157] mt-1">Verified BeeYield Profile</p>
+                                <label className={cn(glass.btnPrimary, "mt-6 w-full cursor-pointer flex items-center justify-center gap-2")}>
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                                    Change photo
+                                </label>
                                 </BeeYieldCard>
                             </motion.div>
 

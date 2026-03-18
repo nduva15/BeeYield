@@ -40,6 +40,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
+    const userMetadata = user?.user_metadata || {};
+    const fullName = userMetadata.first_name || userMetadata.full_name || user?.email?.split('@')[0] || 'User';
+    const avatarUrl = userMetadata.avatar_url;
+
     const recentHarvests = [...harvests]
         .sort((a: any, b: any) => new Date(b.harvest_date).getTime() - new Date(a.harvest_date).getTime())
         .slice(0, 8);
@@ -53,9 +57,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             {/* Header */}
             <PageHeader
                 icon={LayoutGrid}
-                label="Dashboard"
-                title={<>{greeting}</>}
-                subtitle="Your BeeYield real-time records."
+                label="BeeYield AI Dashboard"
+                title={<>{greeting}, {fullName}</>}
+                subtitle="Your expert-level operational OS."
                 actions={
                     <div className="flex gap-2">
                         <button
@@ -81,19 +85,25 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "p-5")}>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
-                                <User className="w-4 h-4 text-[#F4D03F]" />
+                            <div className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center overflow-hidden shadow-sm">
+                                {avatarUrl ? (
+                                    <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-[#F9F7F2] text-[#F4D03F] font-bold text-sm">
+                                        {fullName.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-[#1A1A1A]">Account</h3>
+                                <h3 className="text-sm font-semibold text-[#1A1A1A]">{fullName}</h3>
                                 <p className="text-[11px] text-gray-500">Your signed-in details</p>
                             </div>
                         </div>
                         <div className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-4">
                             <Row label="Email" value={user?.email || '—'} />
                             <Row label="User ID" value={user?.id || '—'} />
-                            <Row label="BeeYield Profile" value={beeyieldUser ? 'Active' : '—'} />
-                            <Row label="Last sign-in" value={user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : '—'} />
+                            <Row label="Profile" value={beeyieldUser ? 'Active' : '—'} />
+                            <Row label="Last login" value={user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : '—'} />
                         </div>
                         <div className="mt-4 flex gap-2">
                             <button onClick={() => onTabChange('settings')} className={cn(glass.btnSecondary, "flex-1 justify-center gap-2")}>

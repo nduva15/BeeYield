@@ -137,11 +137,11 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 <div className="h-24 flex items-center px-8 border-b border-gray-100 bg-white group cursor-pointer" onClick={() => onTabChange('home')}>
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl border border-gray-100 bg-[#F9F7F2] flex items-center justify-center shadow-sm group-hover:border-[#F4D03F]/40 transition-all">
-                            <img src="/logo.png" alt="BeeYield" className="w-8 h-8 object-contain" />
+                            <img src="/logo.png" alt="BeeYield AI" className="w-8 h-8 object-contain" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-2xl font-bold text-[#1A1A1A] tracking-tighter leading-none">BeeYield</span>
-                            <span className="text-[9px] font-bold text-[#F4D03F] mt-1">Operational OS</span>
+                            <span className="text-2xl font-bold text-[#1A1A1A] tracking-tighter leading-none">BeeYield <span className="text-[#F4D03F]">AI</span></span>
+                            <span className="text-[9px] font-bold text-[#F4D03F] mt-1 uppercase tracking-widest">Operational OS</span>
                         </div>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                         <span className="text-[10px] font-bold">Sign Out</span>
                     </button>
                     <div className="pt-2 flex justify-center">
-                        <span className="text-[8px] font-bold text-gray-300">© 2026 BeeYield Platform</span>
+                        <span className="text-[8px] font-bold text-gray-300">© 2026 BeeYield AI Platform</span>
                     </div>
                 </div>
             </aside>

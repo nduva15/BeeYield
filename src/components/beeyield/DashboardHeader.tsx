@@ -67,6 +67,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
 
     const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
+    const avatarUrl = user?.user_metadata?.avatar_url;
 
     return (
         <header className={cn(
@@ -78,7 +79,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-3">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 border border-[#F4D03F]/20 rounded-lg">
-                            <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wider">Dashboard</span>
+                            <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wider uppercase">BeeYield AI</span>
                         </div>
                         <span className="text-gray-300">/</span>
                         <motion.span
@@ -172,8 +173,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button className="flex items-center gap-3 h-10 pl-1.5 pr-3 bg-[#F9F7F2] border border-[#F4D03F]/20 rounded-xl hover:border-[#F4D03F]/40 hover:bg-[#F4D03F]/10 transition-all group">
-                            <div className="w-7 h-7 rounded-lg bg-[#F4D03F] flex items-center justify-center flex-shrink-0 text-white font-bold text-xs group-hover:scale-105 transition-transform">
-                                {userName.charAt(0).toUpperCase()}
+                            <div className="w-7 h-7 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+                                {avatarUrl ? (
+                                    <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-[#F4D03F] text-white font-bold text-[10px]">
+                                        {userName.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
                             <span className="hidden md:block text-sm font-medium text-gray-700 group-hover:text-[#1A1A1A] transition-colors">
                                 {userName}
@@ -181,6 +188,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             <ChevronDown className="w-3 h-3 text-gray-500 group-data-[state=open]:rotate-180 transition-transform" />
                         </button>
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent
                         align="end"
                         sideOffset={8}

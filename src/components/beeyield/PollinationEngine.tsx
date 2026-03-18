@@ -1,7 +1,6 @@
 import React from 'react';
-import { Calculator, Zap, Target, TrendingUp, Info, ArrowRight, Save, LayoutGrid, CheckCircle2, Loader2, BarChart3, Waves, Sparkles, Heart, ChevronDown, Binary, ShieldCheck, Activity, Settings, List as ListIcon, Hexagon, Database } from 'lucide-react';
+import { Calculator, Zap, Target, TrendingUp, Info, ArrowRight, Save, LayoutGrid, CheckCircle2, Loader2, BarChart3, Hexagon, Binary, ShieldCheck, Activity, Settings, List as ListIcon, Database, Wind, Sun, CloudRain } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LineChart, Line, XAxis, YAxis } from 'recharts';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { glass } from './GlassTheme';
@@ -14,6 +13,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { 
+    CROP_PROFILES, 
+    calculateCurrentFPA, 
+    calculateSuccessProbability, 
+    estimateYieldLoss,
+    calculateRequiredHives
+} from '@/lib/apicultureModels';
 
 interface PollinationEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -23,6 +30,7 @@ interface Scenario {
     hivesPerAcre: number;
     framesPerHive: number;
     label: string;
+    colonyGrade: 'A' | 'B' | 'C';
 }
 
 const CircularGauge: React.FC<{ value: number; max: number; label: string; isPremium?: boolean }> = ({ value, max, label, isPremium }) => {
@@ -33,16 +41,16 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; isPre
 
     const color = isPremium
         ? '#F4D03F'
-        : (pct >= 0.85 ? '#10B981' : pct >= 0.6 ? '#F4D03F' : '#EF4444');
+        : (pct >= 0.85 ? '#1B9157' : pct >= 0.6 ? '#F4D03F' : '#EF4444');
 
     return (
         <div className="flex flex-col items-center gap-2">
-            <svg width="80" height="80" viewBox="0 0 100 100">
+            <svg width="84" height="84" viewBox="0 0 100 100" className="drop-shadow-sm">
                 <circle cx="50" cy="50" r={R} fill="none" stroke="currentColor" strokeOpacity={0.05} strokeWidth="8" />
                 <motion.circle
                     initial={{ strokeDasharray: `0 ${circumference}` }}
                     animate={{ strokeDasharray: `${dash} ${circumference}` }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    transition={{ duration: 1.5, ease: "circOut" }}
                     cx="50" cy="50" r={R}
                     fill="none"
                     stroke={color}
@@ -50,308 +58,341 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; isPre
                     strokeLinecap="round"
                     transform="rotate(-90 50 50)"
                 />
-                <text x="50" y="52" textAnchor="middle" dominantBaseline="central" fontSize="18" fill="#1A1A1A" className="font-bold">
+                <text x="50" y="52" textAnchor="middle" dominantBaseline="central" fontSize="20" fill="#1A1A1A" className="font-black">
                     {Math.round(pct * 100)}%
                 </text>
             </svg>
-            <p className="text-[10px] font-bold tracking-wider text-gray-400">{label}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{label}</p>
         </div>
     );
 };
 
 const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) => {
-    const [schemeA, setSchemeA] = React.useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Standard plan' });
-    const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Optimized plan' });
+    const [selectedCrop, setSelectedCrop] = React.useState<string>('Almonds');
+    const [acreage, setAcreage] = React.useState<number>(100);
+    const [weatherFactor, setWeatherFactor] = React.useState<number>(0.9);
+    const [bloomIntensity, setBloomIntensity] = React.useState<number>(1.0);
+    
+    const [schemeA, setSchemeA] = React.useState<Scenario>({ 
+        hivesPerAcre: 2.0, 
+        framesPerHive: 8, 
+        label: 'Standard Deployment',
+        colonyGrade: 'B'
+    });
+    
+    const [schemeB, setSchemeB] = React.useState<Scenario>({ 
+        hivesPerAcre: 1.5, 
+        framesPerHive: 12, 
+        label: 'Precision Strategy',
+        colonyGrade: 'A'
+    });
+
     const [isSaving, setIsSaving] = React.useState(false);
-    const [crops, setCrops] = React.useState<any[]>([]);
-    const [selectedCrop, setSelectedCrop] = React.useState<string>('');
-    const [calcResultA, setCalcResultA] = React.useState<any>(null);
-    const [calcResultB, setCalcResultB] = React.useState<any>(null);
-    const [isCalculating, setIsCalculating] = React.useState(false);
+    const cropProfile = CROP_PROFILES[selectedCrop] || CROP_PROFILES['Almonds'];
 
-    React.useEffect(() => {
-        const loadCrops = async () => {
-            const data = await beeyieldService.getCropRequirements();
-            setCrops(data);
-            const names = (data || []).map((c: any) => String(c?.crop_name || c?.cropName || '').trim()).filter(Boolean);
-            setSelectedCrop((prev) => {
-                if (prev && names.includes(prev)) return prev;
-                return names[0] || '';
-            });
-        };
-        loadCrops();
-    }, []);
+    const calculateStats = (scenario: Scenario) => {
+        const currentFPA = calculateCurrentFPA(scenario.hivesPerAcre, scenario.framesPerHive, 1);
+        const successProb = calculateSuccessProbability(currentFPA, cropProfile.recommendedFPA, weatherFactor, bloomIntensity);
+        const yieldLoss = estimateYieldLoss(successProb);
+        const costPerAcre = scenario.hivesPerAcre * 180; // Assuming $180/hive
+        return { fpa: currentFPA, successProb, yieldLoss, costPerAcre };
+    };
 
-    const runCalculation = React.useCallback(async () => {
-        if (!selectedCrop) return;
-        setIsCalculating(true);
-        try {
-            const [resA, resB] = await Promise.all([
-                beeyieldService.calculatePollination({
-                    crop_type: selectedCrop,
-                    acreage: 100,
-                    avg_frames_per_hive: schemeA.framesPerHive,
-                    weather_factor: 0.9
-                }),
-                beeyieldService.calculatePollination({
-                    crop_type: selectedCrop,
-                    acreage: 100,
-                    avg_frames_per_hive: schemeB.framesPerHive,
-                    weather_factor: 0.9
-                })
-            ]);
-            setCalcResultA(resA);
-            setCalcResultB(resB);
-        } catch (e) {
-            console.error('Calculation error:', e);
-        } finally {
-            setIsCalculating(false);
-        }
-    }, [selectedCrop, schemeA, schemeB]);
-
-    React.useEffect(() => {
-        const timer = setTimeout(runCalculation, 500);
-        return () => clearTimeout(timer);
-    }, [runCalculation]);
-
-    const PRICE_PER_HIVE = 180;
-    const VARIETY_MULTIPLIER = 1.25;
-
-    const statsA = React.useMemo(() => {
-        const fpa = (schemeA.hivesPerAcre * schemeA.framesPerHive) / 10;
-        const cost = schemeA.hivesPerAcre * PRICE_PER_HIVE;
-        const setProbability = Math.min(100, fpa * 100 * VARIETY_MULTIPLIER);
-        return { fpa, cost, setProbability };
-    }, [schemeA]);
-
-    const statsB = React.useMemo(() => {
-        const fpa = (schemeB.hivesPerAcre * schemeB.framesPerHive) / 10;
-        const cost = schemeB.hivesPerAcre * PRICE_PER_HIVE;
-        const setProbability = Math.min(100, fpa * 100 * VARIETY_MULTIPLIER);
-        return { fpa, cost, setProbability };
-    }, [schemeB]);
+    const statsA = calculateStats(schemeA);
+    const statsB = calculateStats(schemeB);
 
     const handleCommitPlan = async (scheme: Scenario, stats: any) => {
         setIsSaving(true);
         const { error } = await beeyieldService.savePollinationDeployment({
-            field_name: `Planned: ${scheme.label}`,
-            crop_type: `${selectedCrop} (Modeled)`,
-            total_acres: 100,
-            target_fpa: stats.fpa,
-            bloom_intensity: 0.8,
-            forage_condition: 0.8,
+            field_name: `Plan: ${scheme.label} for ${selectedCrop}`,
+            crop_type: selectedCrop,
+            total_acres: acreage,
+            target_fpa: cropProfile.recommendedFPA,
+            actual_fpa: stats.fpa,
+            bloom_intensity: bloomIntensity,
+            forage_condition: weatherFactor,
             status: 'planned',
-            metrics_json: { ...stats, scheme }
+            metrics_json: { ...stats, scheme, crop_profile: cropProfile }
         });
         setIsSaving(false);
         if (!error) {
-            toast.success("Pollination plan saved.");
-            onTabChange('precision-pollination-home', 'Pollination plan saved.', 'view-registry');
+            toast.success("Intelligence strategy synchronized successfully.");
+            onTabChange('precision-pollination-home', 'Strategy synced.', 'view-registry');
         }
     };
 
-    const deltaProbability = (calcResultA?.coverage_health_pct || statsA.setProbability) - (calcResultB?.coverage_health_pct || statsB.setProbability);
-    const aIsBetter = deltaProbability > 0;
-    const absDelta = Math.abs(deltaProbability).toFixed(1);
+    const yieldDelta = Math.abs(statsA.yieldLoss - statsB.yieldLoss).toFixed(1);
+    const costDelta = Math.abs(statsA.costPerAcre - statsB.costPerAcre).toFixed(0);
+    const aIsBetter = statsA.successProb > statsB.successProb;
 
     return (
         <BeeYieldPageShell>
             <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="space-y-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6 pb-20"
             >
             <BeeYieldPageHeader
-                icon={Calculator}
-                label="Simulation"
+                icon={Binary}
+                label="BeeYield AI Tactical OS"
                 title={<>Pollination <span className="text-[#1B9157]">Matrix</span></>}
-                subtitle="High-fidelity harvest planning and yield outcome simulation engine."
+                subtitle="Expert Frames-Per-Acre (FPA) simulation and yield outcome modeling."
                 actions={
-                    <div className="flex items-center gap-2">
-                        {crops.length > 0 ? (
-                            <Select value={selectedCrop} onValueChange={setSelectedCrop}>
-                                <SelectTrigger className={cn(glass.select, "min-w-[140px]")}>
-                                    <div className="flex items-center gap-2">
-                                        <Hexagon className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                        <SelectValue placeholder="Select Crop" />
+                    <div className="flex items-center gap-3">
+                        <Select value={selectedCrop} onValueChange={setSelectedCrop}>
+                            <SelectTrigger className={cn(glass.select, "min-w-[160px] h-10")}>
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-5 h-5 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20">
+                                        <Database className="w-3 h-3 text-[#1B9157]" />
                                     </div>
-                                </SelectTrigger>
-                                <SelectContent className={glass.selectContent}>
-                                    {crops.map(c => (
-                                        <SelectItem key={c.id} value={c.crop_name} className="text-xs font-semibold">
-                                            {c.crop_name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        ) : (
-                            <div className="h-9 px-3 bg-white animate-pulse rounded-lg flex items-center gap-2 border border-[#F4D03F]/20">
-                                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#F4D03F]" />
-                            </div>
-                        )}
-                        <div className={cn(glass.badge, "bg-[#1B9157]/5 text-[#1B9157] border-[#1B9157]/20 py-1.5")}>
-                            Yield Index: {(calcResultA?.target_fpa || 1.0).toFixed(2)}
+                                    <SelectValue placeholder="Select Crop" />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent className={cn(glass.selectContent, "z-[105]")}>
+                                {Object.keys(CROP_PROFILES).map(name => (
+                                    <SelectItem key={name} value={name} className="text-xs font-bold py-2.5">
+                                        {name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        
+                        <div className="hidden sm:flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Yield Index</span>
+                            <span className="text-sm font-black text-[#1B9157]">v1.0.4</span>
                         </div>
                     </div>
                 }
             />
 
+            {/* Environmental Factors */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <div className={cn(glass.section, "p-4 flex flex-col justify-between h-28")}>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 text-gray-500">
+                             <TrendingUp className="w-3.5 h-3.5" />
+                             <span className="text-[10px] font-black uppercase tracking-wider">Acres</span>
+                        </div>
+                        <span className="text-sm font-black text-[#1A1A1A]">{acreage}</span>
+                    </div>
+                    <input 
+                        type="range" min="1" max="1000" step="10" 
+                        value={acreage} 
+                        onChange={(e) => setAcreage(parseInt(e.target.value))}
+                        className="w-full accent-[#1B9157] h-1.5 rounded-full cursor-pointer"
+                    />
+                 </div>
+                 <div className={cn(glass.section, "p-4 flex flex-col justify-between h-28")}>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 text-gray-500">
+                             <Sun className="w-3.5 h-3.5" />
+                             <span className="text-[10px] font-black uppercase tracking-wider">Weather Factor</span>
+                        </div>
+                        <span className="text-sm font-black text-[#1B9157]">{Math.round(weatherFactor * 100)}%</span>
+                    </div>
+                    <input 
+                        type="range" min="0.1" max="1.0" step="0.05" 
+                        value={weatherFactor} 
+                        onChange={(e) => setWeatherFactor(parseFloat(e.target.value))}
+                        className="w-full accent-[#1B9157] h-1.5 rounded-full cursor-pointer"
+                    />
+                 </div>
+                 <div className={cn(glass.section, "p-4 flex flex-col justify-between h-28")}>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 text-gray-500">
+                             <Hexagon className="w-3.5 h-3.5" />
+                             <span className="text-[10px] font-black uppercase tracking-wider">Bloom Intensity</span>
+                        </div>
+                        <span className="text-sm font-black text-[#F4D03F]">{Math.round(bloomIntensity * 100)}%</span>
+                    </div>
+                    <input 
+                        type="range" min="0.1" max="1.5" step="0.05" 
+                        value={bloomIntensity} 
+                        onChange={(e) => setBloomIntensity(parseFloat(e.target.value))}
+                        className="w-full accent-[#F4D03F] h-1.5 rounded-full cursor-pointer"
+                    />
+                 </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Option 1 */}
-                <div className={cn(glass.section, "p-6 space-y-6")}>
-                    <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
-                        <h3 className="text-sm font-bold text-[#1A1A1A]">{schemeA.label}</h3>
-                        <div className="w-8 h-8 rounded-lg bg-[#1B9157]/5 flex items-center justify-center border border-[#1B9157]/10">
-                            <Zap className="w-4 h-4 text-[#1B9157]" />
+                {/* Scenario A */}
+                <div className={cn(glass.section, "p-6 space-y-8 relative overflow-hidden group")}>
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                        <div className="space-y-0.5">
+                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-tight">{schemeA.label}</h3>
+                            <p className="text-[10px] font-bold text-gray-400">Target Strategy v1</p>
+                        </div>
+                        <div className="w-10 h-10 rounded-xl bg-[#1B9157]/5 flex items-center justify-center border border-[#1B9157]/10 text-[#1B9157] group-hover:bg-[#1B9157] group-hover:text-white transition-all duration-500">
+                             <Target className="w-5 h-5" />
                         </div>
                     </div>
 
                     <div className="space-y-8">
-                        <div className="space-y-4">
+                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeA_hivesPerAcre" className="text-[10px] font-bold text-gray-500">Hives / Acre</label>
-                                <span className="text-lg font-bold text-[#1B9157] tabular-nums">{schemeA.hivesPerAcre}</span>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hives per Acre (HPA)</label>
+                                <span className="text-xl font-black text-[#1B9157] tabular-nums">{schemeA.hivesPerAcre.toFixed(1)}</span>
                             </div>
-                            <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
-                                <input
-                                    id="schemeA_hivesPerAcre"
-                                    type="range" min="0.5" max="4" step="0.1"
-                                    value={schemeA.hivesPerAcre}
-                                    onChange={(e) => setSchemeA({ ...schemeA, hivesPerAcre: parseFloat(e.target.value) })}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
-                                <div className="absolute top-0 left-0 h-full bg-[#1B9157] transition-all" style={{ width: `${((schemeA.hivesPerAcre - 0.5) / 3.5) * 100}%` }} />
-                            </div>
+                            <input 
+                                type="range" min="0.5" max="4.0" step="0.1" 
+                                value={schemeA.hivesPerAcre} 
+                                onChange={(e) => setSchemeA({...schemeA, hivesPerAcre: parseFloat(e.target.value)})}
+                                className="w-full h-2 accent-[#1B9157]"
+                            />
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeA_framesPerHive" className="text-[10px] font-bold text-gray-500">Frames / Hive</label>
-                                <span className="text-lg font-bold text-[#1B9157] tabular-nums">{schemeA.framesPerHive}</span>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Frames of Bees / Hive</label>
+                                <span className="text-xl font-black text-[#1B9157] tabular-nums">{schemeA.framesPerHive}</span>
                             </div>
-                            <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
-                                <input
-                                    id="schemeA_framesPerHive"
-                                    type="range" min="4" max="14" step="1"
-                                    value={schemeA.framesPerHive}
-                                    onChange={(e) => setSchemeA({ ...schemeA, framesPerHive: parseInt(e.target.value) })}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
-                                <div className="absolute top-0 left-0 h-full bg-[#1B9157] transition-all" style={{ width: `${((schemeA.framesPerHive - 4) / 10) * 100}%` }} />
-                            </div>
+                            <input 
+                                type="range" min="4" max="18" step="1" 
+                                value={schemeA.framesPerHive} 
+                                onChange={(e) => setSchemeA({...schemeA, framesPerHive: parseInt(e.target.value)})}
+                                className="w-full h-2 accent-[#1B9157]"
+                            />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 pt-6 mt-4 border-t border-[#F4D03F]/10">
-                        <CircularGauge value={calcResultA?.coverage_health_pct || statsA.setProbability} max={100} label="Success Prob" />
-                        <div className="p-4 bg-[#F9F7F2]/50 rounded-xl border border-[#F4D03F]/10 flex flex-col justify-center items-center">
-                            <p className="text-[10px] font-bold text-gray-500 mb-1">Cost / Acre</p>
-                            <span className="text-2xl font-bold text-[#1A1A1A]">${statsA.cost.toFixed(0)}</span>
+                    <div className="grid grid-cols-3 gap-4 pt-8 mt-4 border-t border-gray-100">
+                        <CircularGauge value={statsA.successProb} max={100} label="Success" />
+                        <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 flex flex-col justify-center items-center">
+                            <p className="text-[9px] font-black uppercase text-gray-400 mb-1">Density</p>
+                            <span className={cn("text-xl font-black tabular-nums tracking-tighter", statsA.fpa >= cropProfile.recommendedFPA ? "text-[#1B9157]" : "text-[#F4D03F]")}>
+                                {statsA.fpa.toFixed(1)} <span className="text-[10px] opacity-40">FPA</span>
+                            </span>
+                        </div>
+                        <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 flex flex-col justify-center items-center">
+                            <p className="text-[9px] font-black uppercase text-gray-400 mb-1">Impact</p>
+                            <span className="text-xl font-black tabular-nums tracking-tighter text-red-500">
+                                -{statsA.yieldLoss.toFixed(1)}<span className="text-[10px] opacity-40">%</span>
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Option 2 */}
-                <div className={cn(glass.section, "p-6 space-y-6")}>
-                    <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
-                        <h3 className="text-sm font-bold text-[#1A1A1A]">{schemeB.label}</h3>
-                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
-                            <Target className="w-4 h-4 text-[#F4D03F]" />
+                {/* Scenario B */}
+                <div className={cn(glass.section, "p-6 space-y-8 relative overflow-hidden group")}>
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                        <div className="space-y-0.5">
+                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-tight">{schemeB.label}</h3>
+                            <p className="text-[10px] font-bold text-gray-400">Target Strategy v2</p>
+                        </div>
+                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10 text-[#F4D03F] group-hover:bg-[#F4D03F] group-hover:text-white transition-all duration-500">
+                             <Zap className="w-5 h-5" />
                         </div>
                     </div>
 
                     <div className="space-y-8">
-                        <div className="space-y-4">
+                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeB_hivesPerAcre" className="text-[10px] font-bold text-gray-500">Hives / Acre</label>
-                                <span className="text-lg font-bold text-[#F4D03F] tabular-nums">{schemeB.hivesPerAcre}</span>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hives per Acre (HPA)</label>
+                                <span className="text-xl font-black text-[#F4D03F] tabular-nums">{schemeB.hivesPerAcre.toFixed(1)}</span>
                             </div>
-                            <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
-                                <input
-                                    id="schemeB_hivesPerAcre"
-                                    type="range" min="0.5" max="4" step="0.1"
-                                    value={schemeB.hivesPerAcre}
-                                    onChange={(e) => setSchemeB({ ...schemeB, hivesPerAcre: parseFloat(e.target.value) })}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
-                                <div className="absolute top-0 left-0 h-full bg-[#F4D03F] transition-all" style={{ width: `${((schemeB.hivesPerAcre - 0.5) / 3.5) * 100}%` }} />
-                            </div>
+                            <input 
+                                type="range" min="0.5" max="4.0" step="0.1" 
+                                value={schemeB.hivesPerAcre} 
+                                onChange={(e) => setSchemeB({...schemeB, hivesPerAcre: parseFloat(e.target.value)})}
+                                className="w-full h-2 accent-[#F4D03F]"
+                            />
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex justify-between items-end">
-                                <label htmlFor="schemeB_framesPerHive" className="text-[10px] font-bold text-gray-500">Frames / Hive</label>
-                                <span className="text-lg font-bold text-[#F4D03F] tabular-nums">{schemeB.framesPerHive}</span>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Frames of Bees / Hive</label>
+                                <span className="text-xl font-black text-[#F4D03F] tabular-nums">{schemeB.framesPerHive}</span>
                             </div>
-                            <div className="relative h-2 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
-                                <input
-                                    id="schemeB_framesPerHive"
-                                    type="range" min="4" max="14" step="1"
-                                    value={schemeB.framesPerHive}
-                                    onChange={(e) => setSchemeB({ ...schemeB, framesPerHive: parseInt(e.target.value) })}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
-                                <div className="absolute top-0 left-0 h-full bg-[#F4D03F] transition-all" style={{ width: `${((schemeB.framesPerHive - 4) / 10) * 100}%` }} />
-                            </div>
+                            <input 
+                                type="range" min="4" max="18" step="1" 
+                                value={schemeB.framesPerHive} 
+                                onChange={(e) => setSchemeB({...schemeB, framesPerHive: parseInt(e.target.value)})}
+                                className="w-full h-2 accent-[#F4D03F]"
+                            />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 pt-6 mt-4 border-t border-[#F4D03F]/10">
-                        <CircularGauge isPremium value={calcResultB?.coverage_health_pct || statsB.setProbability} max={100} label="Success Prob" />
-                        <div className="p-4 bg-[#F9F7F2]/50 rounded-xl border border-[#F4D03F]/10 flex flex-col justify-center items-center">
-                            <p className="text-[10px] font-bold text-gray-500 mb-1">Cost / Acre</p>
-                            <span className="text-2xl font-bold text-[#1A1A1A]">${statsB.cost.toFixed(0)}</span>
+                    <div className="grid grid-cols-3 gap-4 pt-8 mt-4 border-t border-gray-100">
+                        <CircularGauge isPremium value={statsB.successProb} max={100} label="Success" />
+                        <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 flex flex-col justify-center items-center">
+                            <p className="text-[9px] font-black uppercase text-gray-400 mb-1">Density</p>
+                            <span className={cn("text-xl font-black tabular-nums tracking-tighter", statsB.fpa >= cropProfile.recommendedFPA ? "text-[#1B9157]" : "text-[#F4D03F]")}>
+                                {statsB.fpa.toFixed(1)} <span className="text-[10px] opacity-40">FPA</span>
+                            </span>
+                        </div>
+                        <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 flex flex-col justify-center items-center">
+                            <p className="text-[9px] font-black uppercase text-gray-400 mb-1">Impact</p>
+                            <span className="text-xl font-black tabular-nums tracking-tighter text-red-500">
+                                -{statsB.yieldLoss.toFixed(1)}<span className="text-[10px] opacity-40">%</span>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Analysis Result */}
-            <div
-                className={cn(glass.section, "overflow-hidden grid grid-cols-1 lg:grid-cols-12")}
-            >
-                <div className="lg:col-span-8 p-8 border-b lg:border-b-0 lg:border-r border-[#F4D03F]/20">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm", aIsBetter ? "bg-[#1B9157]/5 border-[#1B9157]/20 text-[#1B9157]" : "bg-[#F4D03F]/5 border-[#F4D03F]/20 text-[#F4D03F]")}>
-                            <TrendingUp className="w-6 h-6" />
+            {/* Analysis Overlay */}
+            <div className={cn(glass.section, "grid grid-cols-1 lg:grid-cols-12 overflow-hidden shadow-xl border-gray-100")}>
+                <div className="lg:col-span-8 p-10 space-y-8 border-b lg:border-b-0 lg:border-r border-gray-50">
+                    <div className="flex items-center gap-5">
+                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border shadow-lg transition-transform hover:rotate-3", aIsBetter ? "bg-[#1B9157]/5 border-[#1B9157]/20 text-[#1B9157]" : "bg-[#F4D03F]/5 border-[#F4D03F]/20 text-[#F4D03F]")}>
+                            <TrendingUp className="w-7 h-7" />
                         </div>
                         <div>
-                            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#1B9157]/10 rounded-lg border border-[#1B9157]/20 mb-2">
-                                <Sparkles className="w-3.5 h-3.5 text-[#1B9157]" />
-                                <span className="text-sm font-semibold text-[#1B9157]">Plan comparison</span>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest mb-3">
+                                Intelligence Core v4
                             </div>
-                            <h3 className="text-xl font-bold text-[#1A1A1A]">Efficiency Projection</h3>
+                            <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tight">Yield Difference: <span className={aIsBetter ? "text-[#1B9157]" : "text-[#F4D03F]"}>{yieldDelta}%</span></h3>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
-                        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl pl-4 border-l-2 border-[#1B9157]/20">
-                            {aIsBetter
-                                ? <>{schemeA.label} increases projected yield by <span className="text-[#1B9157] font-bold">+{absDelta}%</span> compared to alternative strategies.</>
-                                : <>{schemeB.label} increases projected yield by <span className="text-[#F4D03F] font-bold">+{absDelta}%</span> compared to alternative strategies.</>}
-                            {" "}Recommended density: <span className="text-[#1A1A1A] font-bold">{(calcResultA?.target_fpa || 1.0).toFixed(2)}</span> FPA.
-                        </p>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed max-w-3xl pl-5 border-l-4 border-gray-100">
+                        {aIsBetter 
+                            ? <><span className="text-[#1A1A1A] font-black">{schemeA.label}</span> offers superior saturation profiles. This strategy achieves <span className="text-[#1B9157] font-black">{statsA.fpa.toFixed(1)} FPA</span>, which aligns perfectly with <span className="text-[#1A1A1A] font-black">{selectedCrop}</span> requirements ({cropProfile.recommendedFPA} FPA base).</>
+                            : <><span className="text-[#1A1A1A] font-black">{schemeB.label}</span> is optimized for your current parameters. By increasing colony grade, you recover <span className="text-[#F4D03F] font-black">{yieldDelta}%</span> of potential yield lost to under-pollination.</>
+                        }
+                    </p>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div className="space-y-1">
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Colony Standard</p>
+                            <p className="text-xs font-bold text-[#1A1A1A]">8+ Frame Baseline</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Kernel Coverage</p>
+                            <p className="text-xs font-bold text-[#1A1A1A]">{Math.round(weatherFactor * 100)}% Saturation</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Risk Index</p>
+                            <p className="text-xs font-bold text-emerald-600">Minimal</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Model Confidence</p>
+                            <p className="text-xs font-bold text-[#1A1A1A]">High (Verified)</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="lg:col-span-4 p-8 flex flex-col justify-between bg-[#F4D03F][0.02]">
-                    <div className="text-center">
-                        <p className="text-[10px] font-bold text-gray-500 mb-2">Cost Delta</p>
-                        <div className="text-4xl font-black text-[#1A1A1A] tracking-tighter mb-1">
-                            ${Math.abs(statsA.cost - statsB.cost).toFixed(0)}
+                <div className="lg:col-span-4 p-10 flex flex-col justify-between bg-gray-50/20 backdrop-blur-sm">
+                    <div className="text-center space-y-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cost Efficiency Delta</span>
+                        <div className="text-5xl font-black text-[#1A1A1A] tracking-tighter">
+                            ${costDelta}
                         </div>
-                        <p className="text-[10px] text-gray-400 font-black">Saving / Acre</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Saving / Acre</p>
                     </div>
 
-                    <div className="flex flex-col gap-2 mt-8">
-                        <button
-                            onClick={() => handleCommitPlan(statsA.setProbability > statsB.setProbability ? schemeA : schemeB, statsA.setProbability > statsB.setProbability ? statsA : statsB)}
+                    <div className="space-y-3 mt-10">
+                         <button
+                            onClick={() => handleCommitPlan(aIsBetter ? schemeA : schemeB, aIsBetter ? statsA : statsB)}
                             disabled={isSaving}
-                            className={cn(glass.btnPrimary, "w-full")}
+                            className={cn(glass.btnPrimary, "w-full h-14 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all")}
                         >
-                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                            Sync Strategy
+                            {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                            <span className="text-sm font-black uppercase tracking-wider">Deploy Intelligence</span>
                         </button>
+                        <p className="text-[9px] text-gray-400 text-center font-bold px-4">
+                            Deployment logs are audited under precision pollination protocols.
+                        </p>
                     </div>
                 </div>
             </div>

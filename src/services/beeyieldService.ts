@@ -1,5 +1,5 @@
 import { supabaseBeeYield } from '@/lib/supabase';
-import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPost } from './api';
+import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPost, apiPut } from './api';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -100,6 +100,37 @@ export interface ActivityLog {
     metadata?: any;
     created_at: string;
 }
+
+// ========== STORAGE & PROFILES ==========
+export const uploadAvatar = async (userId: string, file: File): Promise<{ url: string | null; error: any }> => {
+    try {
+        if (!sb) throw new Error('Supabase client not initialized');
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${userId}-${Date.now()}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+
+        // Attempt upload to 'profiles' bucket
+        const { error: uploadError } = await sb.storage
+            .from('profiles')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: true
+            });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data } = sb.storage
+            .from('profiles')
+            .getPublicUrl(filePath);
+
+        return { url: data.publicUrl, error: null };
+    } catch (error) {
+        console.error('Avatar upload error:', error);
+        return { url: null, error };
+    }
+};
+
 
 // ========== SENSOR ALERT TYPE ==========
 export interface SensorAlert {
@@ -960,154 +991,154 @@ export const beeyieldService = {
 
     // ========== APIARIES ==========
     async getApiaries(): Promise<Apiary[]> {
-        if (!sb) {
-            return _lsRead<Apiary[]>(LS_KEYS.apiaries, []);
-        }
-        const { data, error } = await sb.from('apiaries').select('*, farmer:farmers(*)').order('created_at', { ascending: false });
-        if (error) { console.error('getApiaries:', error); return []; }
-        return (data || []).map((a: any) => ({
+        try {
+            const data = await apiGet<Apiary[]>('beeyield/apiaries');
+            return data.map((a: any) => ({
                 ...a,
-            type: a.apiary_type || a.type || 'Permanent',
+                type: a.apiary_type || a.type || 'Permanent',
                 forage_type: a.primary_forage || a.forage_type || ''
-            })) as Apiary[];
+            }));
+        } catch (error) {
+            console.error('getApiaries:', error);
+            return [];
+        }
     },
 
     async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
-        if (!sb) {
-            const created: Apiary = {
-                id: _uuid(),
-                name: input?.name || 'New Apiary',
-                type: input?.type || input?.apiary_type || 'Permanent',
-                location_name: input?.location_name || null,
-                region: input?.region || null,
-                forage_type: input?.forage_type || '',
-                expected_hives: input?.expected_hives,
-                size_acres: input?.size_acres,
-                notes: input?.notes,
-                status: 'active',
-                hive_count: 0,
-                created_at: _nowIso(),
-                updated_at: _nowIso(),
-            } as any;
-            _lsUpsert<Apiary>(LS_KEYS.apiaries, created);
-            toast.success('Apiary deployed (local)');
-            return { data: created, error: null };
-        }
-        const payload = {
-                ...input,
-            apiary_type: input.type || input.apiary_type || 'Permanent',
-                primary_forage: input.forage_type || input.primary_forage,
-        };
-        delete payload.type;
-        delete payload.forage_type;
-        const { data, error } = await sb.from('apiaries').insert(payload).select('*, farmer:farmers(*)').single();
-        if (error) { console.error('createApiary:', error); toast.error('Failed to create apiary'); return { data: null, error }; }
-        const remapped = { ...data, type: data.apiary_type || 'Permanent', forage_type: data.primary_forage || '' };
+        try {
+            const data = await apiPost<any>('beeyield/apiaries', input);
+            const remapped = { 
+                ...data, 
+                type: data.apiary_type || 'Permanent', 
+                forage_type: data.primary_forage || '' 
+            };
             toast.success('Apiary deployed successfully!');
             return { data: remapped as Apiary, error: null };
+        } catch (error) {
+            console.error('createApiary:', error);
+            toast.error('Failed to create apiary');
+            return { data: null, error };
+        }
     },
 
     async updateApiary(id: string, input: Partial<ApiaryCreateInput>): Promise<{ data: Apiary | null; error: any }> {
-        if (!sb) {
-            const list = _lsRead<Apiary[]>(LS_KEYS.apiaries, []);
-            const existing = list.find((a) => a.id === id);
-            if (!existing) return { data: null, error: 'Not found' };
-            const updated = _lsUpsert<Apiary>(LS_KEYS.apiaries, { ...(existing as any), ...(input as any), id } as any);
-            toast.success('Apiary updated (local)');
-            return { data: updated, error: null };
-        }
-            const payload: any = { ...input };
-        if (input.forage_type) { payload.primary_forage = input.forage_type; delete payload.forage_type; }
-        if (input.type) { payload.apiary_type = input.type; delete payload.type; }
-        const { data, error } = await sb.from('apiaries').update(payload).eq('id', id).select('*, farmer:farmers(*)').single();
-        if (error) { console.error('updateApiary:', error); toast.error('Failed to update apiary'); return { data: null, error }; }
-        const remapped = { ...data, type: data.apiary_type || 'Permanent', forage_type: data.primary_forage || '' };
+        try {
+            const data = await apiPut<Apiary>(`beeyield/apiaries/${id}`, input);
             toast.success('Apiary updated!');
-            return { data: remapped as Apiary, error: null };
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateApiary:', error);
+            toast.error('Failed to update apiary');
+            return { data: null, error };
+        }
     },
 
     async deleteApiary(id: string): Promise<{ error: any }> {
-        if (!sb) {
-            _lsDelete(LS_KEYS.apiaries, id);
-            // Cascade delete local hives linked to this apiary
-            const hives = _lsRead<any[]>(LS_KEYS.hives, []);
-            _lsWrite(LS_KEYS.hives, hives.filter((h) => h?.apiary_id !== id));
-            toast.success('Apiary removed (local)');
-            return { error: null };
-        }
-        const { error } = await sb.from('apiaries').delete().eq('id', id);
-        if (error) { console.error('deleteApiary:', error); toast.error('Failed to delete apiary'); return { error }; }
+        try {
+            await apiDelete(`beeyield/apiaries/${id}`);
             toast.success('Apiary removed');
             return { error: null };
+        } catch (error) {
+            console.error('deleteApiary:', error);
+            toast.error('Failed to delete apiary');
+            return { error };
+        }
+    },
+
+    // ========== NOTES ==========
+    async getNotes(): Promise<Note[]> {
+        try {
+            return await apiGet<Note[]>('beeyield/notes');
+        } catch (error) {
+            console.error('getNotes:', error);
+            return [];
+        }
+    },
+
+    async createNote(input: NoteCreateInput): Promise<{ data: Note | null; error: any }> {
+        try {
+            const data = await apiPost<Note>('beeyield/notes', input);
+            toast.success('Note saved');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createNote:', error);
+            toast.error('Failed to save note');
+            return { data: null, error };
+        }
+    },
+
+    async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
+        try {
+            const data = await apiPut<Note>(`beeyield/notes/${id}`, updates);
+            toast.success('Note updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateNote:', error);
+            toast.error('Failed to update note');
+            return { data: null, error };
+        }
+    },
+
+    async deleteNote(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`beeyield/notes/${id}`);
+            toast.success('Note deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteNote:', error);
+            toast.error('Failed to delete note');
+            return { error };
+        }
     },
 
     // ========== HIVES ==========
     async getHives(apiaryId?: string): Promise<Hive[]> {
-        if (!sb) {
-            const all = _lsRead<Hive[]>(LS_KEYS.hives, []);
-            const filtered = apiaryId ? all.filter((h: any) => (h.apiary_id || h.apiary?.id) === apiaryId) : all;
-            return filtered;
+        try {
+            const data = await apiGet<Hive[]>('beeyield/hives', apiaryId ? { apiary_id: apiaryId } : undefined);
+            return data.map((h: any) => ({
+                ...h,
+                apiary_name: h.apiary?.name || h.apiary_name
+            }));
+        } catch (error) {
+            console.error('getHives:', error);
+            return [];
         }
-        let query = sb.from('hives').select('*, apiary:apiaries(id, name)').order('created_at', { ascending: false });
-        if (apiaryId) query = query.eq('apiary_id', apiaryId);
-        const { data, error } = await query;
-        if (error) { console.error('getHives:', error); return []; }
-        return (data || []).map((h: any) => ({ ...h, apiary_name: h.apiary?.name })) as Hive[];
     },
 
     async createHive(input: HiveCreateInput): Promise<{ data: Hive | null; error: any }> {
-        if (!sb) {
-            const created: Hive = {
-                id: _uuid(),
-                apiary_id: input.apiary_id || null,
-                hive_code: input.hive_code,
-                hive_type: input.hive_type,
-                bee_type: input.bee_type,
-                frame_count: input.frame_count,
-                material: input.material,
-                status: input.status || 'active',
-                installation_date: input.installation_date || new Date().toISOString().split('T')[0],
-                has_sensors: input.has_sensors,
-                notes: input.notes,
-                created_at: _nowIso(),
-                updated_at: _nowIso(),
-            } as any;
-            _lsUpsert<Hive>(LS_KEYS.hives, created);
-            toast.success('Hive added (local)');
-            return { data: created, error: null };
-        }
-        const payload = { ...input, installation_date: input.installation_date || new Date().toISOString().split('T')[0] };
-        const { data, error } = await sb.from('hives').insert(payload).select().single();
-        if (error) { console.error('createHive:', error); toast.error('Failed to create hive'); return { data: null, error }; }
+        try {
+            const data = await apiPost<Hive>('beeyield/hives', input);
             toast.success('Hive added successfully!');
-        return { data: data as Hive, error: null };
+            return { data, error: null };
+        } catch (error) {
+            console.error('createHive:', error);
+            toast.error('Failed to create hive');
+            return { data: null, error };
+        }
     },
 
     async updateHive(id: string, input: Partial<HiveCreateInput>): Promise<{ data: Hive | null; error: any }> {
-        if (!sb) {
-            const list = _lsRead<Hive[]>(LS_KEYS.hives, []);
-            const existing = list.find((h) => h.id === id);
-            if (!existing) return { data: null, error: 'Not found' };
-            const updated = _lsUpsert<Hive>(LS_KEYS.hives, { ...(existing as any), ...(input as any), id } as any);
-            toast.success('Hive updated (local)');
-            return { data: updated, error: null };
-        }
-        const { data, error } = await sb.from('hives').update(input).eq('id', id).select().single();
-        if (error) { console.error('updateHive:', error); toast.error('Failed to update hive'); return { data: null, error }; }
+        try {
+            const data = await apiPut<Hive>(`beeyield/hives/${id}`, input);
             toast.success('Hive updated!');
-        return { data: data as Hive, error: null };
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateHive:', error);
+            toast.error('Failed to update hive');
+            return { data: null, error };
+        }
     },
 
     async deleteHive(id: string): Promise<{ error: any }> {
-        if (!sb) {
-            _lsDelete(LS_KEYS.hives, id);
-            toast.success('Hive removed (local)');
-            return { error: null };
-        }
-        const { error } = await sb.from('hives').delete().eq('id', id);
-        if (error) { console.error('deleteHive:', error); toast.error('Failed to delete hive'); return { error }; }
+        try {
+            await apiDelete(`beeyield/hives/${id}`);
             toast.success('Hive removed');
             return { error: null };
+        } catch (error) {
+            console.error('deleteHive:', error);
+            toast.error('Failed to delete hive');
+            return { error };
+        }
     },
 
     // ========== HARVESTS ==========
@@ -1259,127 +1290,84 @@ export const beeyieldService = {
         // (kept in backend activity log / trigger; frontend no longer writes directly)
     },
 
-    async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const payload: any = { ...input };
-        if (input.harvest_date) { payload.date = input.harvest_date; delete payload.harvest_date; }
-        if (input.quantity_kg) { payload.quantity_kg = input.quantity_kg; delete payload.quantity_kg; }
-        if (input.nectar_source) { payload.floral_source = input.nectar_source; delete payload.nectar_source; }
-        const { data, error } = await sb.from('harvests').update(payload).eq('id', id).select().single();
-        if (error) { console.error('updateHarvest:', error); toast.error('Failed to update harvest'); return { data: null, error }; }
+    async updateHarvest(id: string, updates: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
+        try {
+            const data = await apiPut<Harvest>(`beeyield/harvests/${id}`, updates);
             toast.success('Harvest updated!');
-        return { data: data as any, error: null };
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateHarvest:', error);
+            toast.error('Failed to update harvest');
+            return { data: null, error };
+        }
     },
 
     async deleteHarvest(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
-        const { error } = await sb.from('harvests').delete().eq('id', id);
-        if (error) { console.error('deleteHarvest:', error); toast.error('Failed to delete harvest'); return { error }; }
+        try {
+            await apiDelete(`beeyield/harvests/${id}`);
             toast.success('Harvest removed');
             return { error: null };
+        } catch (error) {
+            console.error('deleteHarvest:', error);
+            toast.error('Failed to delete harvest');
+            return { error };
+        }
     },
 
     // ========== TASKS ==========
     async getTasks(): Promise<Task[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('tasks').select('*, apiary:apiaries(id, name), hive:hives(id, hive_code)').order('due_date', { ascending: true });
-        if (error) { console.error('getTasks:', error); return []; }
-        return (data || []) as Task[];
+        try {
+            return await apiGet<Task[]>('beeyield/tasks');
+        } catch (error) {
+            console.error('getTasks:', error);
+            return [];
+        }
     },
 
     async createTask(task: TaskCreateInput): Promise<{ data: Task | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('tasks').insert(task).select().single();
-        if (error) { console.error('createTask:', error); toast.error('Failed to create task'); return { data: null, error }; }
-
-        // F5: Activity Log
-        await this.logActivity({
-            event_type: 'task_created',
-            entity_type: 'task',
-            entity_id: data.id,
-            title: 'Task created',
-            subtitle: `Task: ${task.title}`,
-            metadata: { priority: task.priority }
-        });
-
-        toast.success('Task created successfully');
-        return { data: data as Task, error: null };
+        try {
+            const data = await apiPost<Task>('beeyield/tasks', task);
+            toast.success('Task created successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createTask:', error);
+            toast.error('Failed to create task');
+            return { data: null, error };
+        }
     },
 
     async updateTask(id: string, updates: Partial<TaskCreateInput>): Promise<{ data: Task | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-
-        // Fetch original task to check for recurrence
-        const { data: original } = await sb.from('tasks').select('*').eq('id', id).single();
-
-        const { data, error } = await sb.from('tasks').update(updates).eq('id', id).select().single();
-        if (error) { console.error('updateTask:', error); toast.error('Failed to update task'); return { data: null, error }; }
-
-        // F4: Task Automation & Recurrence Spawning
-        const task = data as Task;
-        if (task.status === 'completed' && task.is_recurring && task.recurrence_days && !task.has_spawned_next) {
-            const dueDate = new Date();
-            dueDate.setDate(dueDate.getDate() + task.recurrence_days);
-
-            const nextTask: TaskCreateInput = {
-                title: task.title,
-                description: task.description,
-                status: 'pending',
-                priority: task.priority,
-                type: task.type,
-                category: task.category,
-                due_date: dueDate.toISOString().split('T')[0],
-                apiary_id: task.apiary_id,
-                hive_id: task.hive_id,
-                is_recurring: true,
-                recurrence_days: task.recurrence_days,
-                parent_task_id: task.id
-            };
-
-            const { error: spawnError } = await sb.from('tasks').insert(nextTask);
-            if (!spawnError) {
-                await sb.from('tasks').update({ has_spawned_next: true }).eq('id', task.id);
-                toast.success('Next recurring task scheduled');
-            }
+        try {
+            const data = await apiPut<Task>(`beeyield/tasks/${id}`, updates);
+            toast.success('Task updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateTask:', error);
+            toast.error('Failed to update task');
+            return { data: null, error };
         }
-
-        // F5: Activity Log for Completion
-        if (updates.status === 'completed') {
-            await this.logActivity({
-                event_type: 'task_completed',
-                entity_type: 'task',
-                entity_id: task.id,
-                title: 'Task completed',
-                subtitle: `Completed: ${task.title}`,
-                metadata: { total_tasks: 1 }
-            });
-        }
-
-        toast.success('Task updated');
-        return { data: task, error: null };
     },
 
     async deleteTask(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
-        const { error } = await sb.from('tasks').delete().eq('id', id);
-        if (error) { console.error('deleteTask:', error); toast.error('Failed to delete task'); return { error }; }
-        toast.success('Task deleted');
-        return { error: null };
+        try {
+            await apiDelete(`beeyield/tasks/${id}`);
+            toast.success('Task deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteTask:', error);
+            toast.error('Failed to delete task');
+            return { error };
+        }
     },
 
     // ========== INSPECTIONS ==========
     async getInspections(hiveId?: string): Promise<Inspection[]> {
-        if (!sb) {
-            const all = _lsRead<Inspection[]>(LS_KEYS.inspections, []);
-            return hiveId ? all.filter((i: any) => i.hive_id === hiveId) : all;
+        try {
+            return await apiGet<Inspection[]>('inspections', hiveId ? { hive_id: hiveId } : undefined);
+        } catch (error) {
+            console.error('getInspections:', error);
+            return [];
         }
-        // Supabase schema uses `inspection_date` (older code used `date`).
-        // Ordering by a non-existent column causes PostgREST 400, so prefer `inspection_date`.
-        let query = sb.from('inspections').select('*').order('inspection_date', { ascending: false });
-        if (hiveId) query = query.eq('hive_id', hiveId);
-        const { data, error } = await query;
-        if (error) { console.error('getInspections:', error); return []; }
-        return (data || []) as Inspection[];
     },
 
     async getInspectionById(id: string): Promise<Inspection | null> {
@@ -1390,67 +1378,39 @@ export const beeyieldService = {
     },
 
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
-        if (!sb) {
-            const local: Inspection = {
-                id: _uuid(),
-                hive_id: inspection.hive_id,
-                inspection_date: inspection.inspection_date,
-                inspector_name: inspection.inspector_name,
-                findings: inspection.findings,
-                actions_taken: inspection.actions_taken,
-                health_status: inspection.health_status,
-                temperament: inspection.temperament,
-                honey_stores: inspection.honey_stores,
-                pollen_stores: inspection.pollen_stores,
-                brood_pattern: inspection.brood_pattern,
-                eggs_seen: inspection.eggs_seen,
-                queen_seen: inspection.queen_seen,
-                queen_cells_seen: inspection.queen_cells_seen,
-                varroa_mite_count: inspection.varroa_mite_count,
-                small_hive_beetles_seen: inspection.small_hive_beetles_seen,
-                weather_condition: inspection.weather_condition,
-                temperature_celsius: inspection.temperature_celsius,
-                notes: inspection.notes,
-                created_at: _nowIso(),
-                updated_at: _nowIso(),
-            } as any;
-            _lsUpsert<Inspection>(LS_KEYS.inspections, local);
-            toast.success('Inspection saved (local)');
-            return { data: local, error: null };
+        try {
+            const data = await apiPost<Inspection>('inspections', inspection);
+            toast.success('Inspection saved successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createInspection:', error);
+            toast.error('Failed to save inspection');
+            return { data: null, error };
         }
-        const payload: any = { ...inspection };
-        const { data, error } = await sb.from('inspections').insert(payload).select().single();
-        if (error) { console.error('createInspection:', error); toast.error('Failed to save inspection'); return { data: null, error }; }
-
-        // F5: Activity Log
-        await this.logActivity({
-            event_type: 'inspection_completed',
-            entity_type: 'hive',
-            entity_id: inspection.hive_id,
-            title: 'Site Check Completed',
-            subtitle: `Unit #${inspection.hive_id.slice(0, 4)}: Health ${inspection.health_status}`,
-            metadata: { status: inspection.health_status }
-        });
-
-        toast.success('Inspection saved successfully');
-        return { data: data as any, error: null };
     },
 
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const payload: any = { ...updates };
-        const { data, error } = await sb.from('inspections').update(payload).eq('id', id).select().single();
-        if (error) { console.error('updateInspection:', error); toast.error('Failed to update inspection'); return { data: null, error }; }
-        toast.success('Inspection updated successfully');
-        return { data: data as any, error: null };
+        try {
+            const data = await apiPut<Inspection>(`inspections/${id}`, updates);
+            toast.success('Inspection updated successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateInspection:', error);
+            toast.error('Failed to update inspection');
+            return { data: null, error };
+        }
     },
 
     async deleteInspection(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
-        const { error } = await sb.from('inspections').delete().eq('id', id);
-        if (error) { console.error('deleteInspection:', error); toast.error('Failed to delete inspection'); return { error }; }
-        toast.success('Inspection deleted');
-        return { error: null };
+        try {
+            await apiDelete(`inspections/${id}`);
+            toast.success('Inspection deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteInspection:', error);
+            toast.error('Failed to delete inspection');
+            return { error };
+        }
     },
 
     // ========== SETTINGS ==========
@@ -1536,40 +1496,6 @@ export const beeyieldService = {
         const { data, error } = await sb.from('user_settings').select('*').eq('user_id', user.id).single();
         if (error) { console.error('getIoTSettings:', error); return null; }
         return data as any;
-    },
-
-    // ========== REQUESTS ==========
-    async getRequests(): Promise<Request[]> {
-        if (!sb) return _lsRead<Request[]>(LS_KEYS.requests, []);
-        const { data, error } = await sb.from('requests').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getRequests:', error); return []; }
-        return (data || []) as Request[];
-    },
-
-    async createRequest(input: RequestCreateInput): Promise<{ data: Request | null; error: any }> {
-        if (!sb) {
-            const local: Request = {
-                id: _uuid(),
-                user_id: 'local',
-                subject: input.subject,
-                description: input.description,
-                status: 'new',
-                priority: (input.priority as any) || 'medium',
-                type: (input.type as any) || 'support',
-                apiary_id: input.apiary_id,
-                hive_id: input.hive_id,
-                category: input.category,
-                created_at: _nowIso(),
-                updated_at: _nowIso(),
-            };
-            _lsUpsert<Request>(LS_KEYS.requests, local);
-            toast.success('Request submitted (local)');
-            return { data: local, error: null };
-        }
-        const { data, error } = await sb.from('requests').insert(input).select().single();
-        if (error) { console.error('createRequest:', error); toast.error('Failed to submit request'); return { data: null, error }; }
-        toast.success('Request submitted successfully');
-        return { data: data as Request, error: null };
     },
 
     // ========== REPORTS ==========
@@ -2537,85 +2463,6 @@ export const beeyieldService = {
         }
     },
 
-    // ========== NOTES ==========
-    async getNotes(): Promise<Note[]> {
-        if (!sb) return _lsRead<Note[]>(LS_KEYS.notes, []);
-        const { data: { user } } = await sb.auth.getUser();
-        // If not authenticated, return empty to avoid leaking cross-user notes in shared environments.
-        if (!user) return [];
-
-        const { data, error } = await sb
-            .from('notes')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false });
-        if (error) { console.error('getNotes:', error); return []; }
-        return (data || []) as Note[];
-    },
-
-    async createNote(input: NoteCreateInput): Promise<{ data: Note | null; error: any }> {
-        if (!sb) {
-            const local: Note = {
-                id: _uuid(),
-                user_id: 'local',
-                apiary_id: input.apiary_id,
-                hive_id: input.hive_id,
-                title: input.title,
-                content: input.content,
-                category: input.category,
-                priority: (input.priority as any) || 'medium',
-                note_date: input.note_date || new Date().toISOString().split('T')[0],
-                created_at: _nowIso(),
-                updated_at: _nowIso(),
-            };
-            _lsUpsert<Note>(LS_KEYS.notes, local);
-            toast.success('Note added (local)');
-            return { data: local, error: null };
-        }
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) {
-            const err = 'Not authenticated';
-            toast.error(err);
-            return { data: null, error: err };
-        }
-
-        const { data, error } = await sb
-            .from('notes')
-            .insert({ ...input, user_id: user.id })
-            .select()
-            .single();
-        if (error) { console.error('createNote:', error); toast.error('Failed to create note'); return { data: null, error }; }
-        toast.success('Note added successfully');
-        return { data: data as Note, error: null };
-    },
-
-    async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-
-        const { data, error } = await sb
-            .from('notes')
-            .update(updates)
-            .eq('id', id)
-            .eq('user_id', user.id)
-            .select()
-            .single();
-        if (error) { console.error('updateNote:', error); toast.error('Failed to update note'); return { data: null, error }; }
-            toast.success('Note updated');
-        return { data: data as Note, error: null };
-    },
-
-    async deleteNote(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { error: 'Not authenticated' };
-
-        const { error } = await sb.from('notes').delete().eq('id', id).eq('user_id', user.id);
-        if (error) { console.error('deleteNote:', error); toast.error('Failed to delete note'); return { error }; }
-        toast.success('Note deleted');
-            return { error: null };
-    },
 
     // ========== STATS ==========
     async getStats(): Promise<{

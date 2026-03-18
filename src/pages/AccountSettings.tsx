@@ -12,17 +12,47 @@ import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { motion } from 'framer-motion';
+import { uploadAvatar } from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 type AuthMode = 'login' | 'register';
 
 const AccountSettings = () => {
-    const { user, loading, signOut } = useAuth();
+    const { user, loading, signOut, updateUser } = useAuth();
     const navigate = useNavigate();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
+    const [uploading, setUploading] = useState(false);
 
     const handleSignOut = async () => {
         await signOut('beeyield');
         navigate('/');
+    };
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !user) return;
+
+        // Size check (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            toast.error('Image size must be less than 2MB');
+            return;
+        }
+
+        try {
+            setUploading(true);
+            const { url, error } = await uploadAvatar(user.id, file);
+            if (error) throw error;
+            
+            const { error: updateError } = await updateUser({ avatar_url: url }, 'beeyield');
+            if (updateError) throw updateError;
+
+            toast.success('Profile photo updated successfully!');
+        } catch (error) {
+            console.error('Upload failed:', error);
+            toast.error('Failed to update profile photo. Ensure the "profiles" storage bucket exists.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     if (loading) {
@@ -146,25 +176,61 @@ const AccountSettings = () => {
                     </CardHeader>
                     <CardContent className="p-6 md:p-8 space-y-8">
                         <div className="flex flex-col md:flex-row items-center gap-6">
-                            <div className="w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm">
-                                {userMetadata.avatar_url ? (
-                                    <img
-                                        src={userMetadata.avatar_url}
-                                        alt={fullName}
-                                        className="w-full h-full object-cover"
+                            <div className="relative group">
+                                <div className="w-24 h-24 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm transition-transform group-hover:scale-105">
+                                    {userMetadata.avatar_url ? (
+                                        <img
+                                            src={userMetadata.avatar_url}
+                                            alt={fullName}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-4xl font-bold text-gray-400">
+                                            {fullName.charAt(0).toUpperCase()}
+                                        </span>
+                                    )}
+                                    {uploading && (
+                                        <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
+                                            <Loader2 className="h-6 w-6 animate-spin text-[#1B9157]" />
+                                        </div>
+                                    )}
+                                </div>
+                                <label className="absolute -bottom-2 -right-2 w-8 h-8 bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileUpload}
+                                        disabled={uploading}
                                     />
-                                ) : (
-                                    <span className="text-3xl font-bold text-gray-400">
-                                        {fullName.charAt(0).toUpperCase()}
-                                    </span>
-                                )}
+                                    <UserPlus className="w-4 h-4 text-[#F4D03F]" />
+                                </label>
                             </div>
-                            <div className="text-center md:text-left space-y-1">
-                                <p className="font-bold text-2xl tracking-tight text-[#1A1A1A]">{fullName}</p>
-                                <p className="text-sm text-gray-500 font-medium flex items-center justify-center md:justify-start gap-2">
-                                    <Mail className="h-4 w-4 opacity-50" />
-                                    {user.email}
-                                </p>
+                            <div className="text-center md:text-left space-y-2">
+                                <div className="space-y-0.5">
+                                    <p className="font-bold text-2xl tracking-tight text-[#1A1A1A]">{fullName}</p>
+                                    <p className="text-sm text-gray-500 font-medium flex items-center justify-center md:justify-start gap-2">
+                                        <Mail className="h-4 w-4 opacity-50" />
+                                        {user.email}
+                                    </p>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 text-[10px] font-bold border-gray-200 hover:bg-gray-50"
+                                    asChild
+                                >
+                                    <label className="cursor-pointer">
+                                        <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleFileUpload}
+                                            disabled={uploading}
+                                        />
+                                        Update Photo
+                                    </label>
+                                </Button>
                             </div>
                         </div>
 

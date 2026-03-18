@@ -101,7 +101,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     borderColor = "border-[#F4D03F]/20"
 }) => {
     const headerActions = actions || action;
-    const displayLabel = humanizeLabel(label || 'BeeYield');
+    const displayLabel = humanizeLabel(label || 'BeeYield AI');
 
     return (
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-[#F4D03F]/20 relative mb-6">

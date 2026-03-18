@@ -383,6 +383,10 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     const apiaries = apiariesQuery.data || [];
     const isLoading = apiariesQuery.isLoading;
 
+    // Search state
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [isSearching, setIsSearching] = React.useState(false);
+
     // Form state
     const [formData, setFormData] = React.useState<ApiaryCreateInput>({
         name: '',
@@ -398,11 +402,40 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     const resetForm = () => {
         setIsAddingPlace(false);
         setEditingApiary(null);
+        setSearchQuery('');
         setFormData({
             name: '', type: 'permanent', location_name: '', region: '',
             forage_type: '', expected_hives: 0, size_acres: 0, notes: '',
             latitude: -2.42, longitude: 37.97 // Default to Kibwezi Sanctuary
         });
+    };
+
+    const handleSearch = async () => {
+        if (!searchQuery.trim()) return;
+        setIsSearching(true);
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+            const data = await res.json();
+            if (data[0]) {
+                const lat = parseFloat(data[0].lat);
+                const lon = parseFloat(data[0].lon);
+                setFormData(prev => ({ 
+                    ...prev, 
+                    latitude: lat, 
+                    longitude: lon,
+                    location_name: data[0].display_name
+                }));
+                toast.success(`Found: ${data[0].display_name.split(',')[0]}`, {
+                    description: "Pivot moved to searched location."
+                });
+            } else {
+                toast.error('Location not found. Try a different name.');
+            }
+        } catch (e) {
+            toast.error('Search failed. Check your connection.');
+        } finally {
+            setIsSearching(false);
+        }
     };
 
     const handleSubmit = async () => {
@@ -611,44 +644,48 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
                                         {/* Map Overlays */}
                                         <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
-                                            <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                                                <input 
-                                                    className="w-full bg-white/90 backdrop-blur-md border-none rounded-xl py-2 pl-10 pr-4 text-[10px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#1B9157]/20"
-                                                    placeholder="Search exact location..."
-                                                    onKeyDown={async (e) => {
-                                                        if (e.key === 'Enter') {
-                                                            const query = e.currentTarget.value;
-                                                            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-                                                            const data = await res.json();
-                                                            if (data[0]) {
-                                                                setFormData(prev => ({ 
-                                                                    ...prev, 
-                                                                    latitude: parseFloat(data[0].lat), 
-                                                                    longitude: parseFloat(data[0].lon),
-                                                                    location_name: data[0].display_name
-                                                                }));
-                                                            }
-                                                        }
-                                                    }}
-                                                />
+                                            <div className="flex gap-2">
+                                                <div className="relative flex-1">
+                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                                    <input 
+                                                        className="w-full bg-white/90 backdrop-blur-md border border-[#F4D03F]/20 rounded-xl py-2 pl-10 pr-4 text-[10px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4D03F]/20 transition-all"
+                                                        placeholder="Search exact location (e.g. Kibwezi, Makueni)..."
+                                                        value={searchQuery}
+                                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') handleSearch();
+                                                        }}
+                                                    />
+                                                </div>
+                                                <button
+                                                    onClick={handleSearch}
+                                                    disabled={isSearching}
+                                                    className="px-4 bg-[#F4D03F] text-[#1A1A1A] rounded-xl text-[10px] font-black shadow-lg hover:bg-[#E5C335] transition-all disabled:opacity-50 flex items-center gap-2"
+                                                >
+                                                    {isSearching ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
+                                                    SEARCH
+                                                </button>
                                             </div>
                                             <button 
                                                 onClick={() => {
                                                     if (navigator.geolocation) {
+                                                        const tid = toast.loading("Acquiring GPS fix...");
                                                         navigator.geolocation.getCurrentPosition(pos => {
                                                             setFormData(prev => ({ 
                                                                 ...prev, 
                                                                 latitude: pos.coords.latitude, 
                                                                 longitude: pos.coords.longitude 
                                                             }));
+                                                            toast.success("GPS Location Synced", { id: tid });
+                                                        }, () => {
+                                                            toast.error("GPS access denied", { id: tid });
                                                         });
                                                     }
                                                 }}
-                                                className="self-start flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[8px] font-black shadow-lg hover:opacity-90 transition-all"
+                                                className="self-start flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md text-[#1A1A1A] border border-[#F4D03F]/20 rounded-lg text-[8px] font-black shadow-lg hover:bg-[#F4D03F]/10 transition-all"
                                             >
-                                                <MapPin className="w-2.5 h-2.5" />
-                                                Locate Current Position
+                                                <MapPin className="w-2.5 h-2.5 text-[#F4D03F]" />
+                                                USE MY CURRENT POSITION
                                             </button>
                                         </div>
                                     </div>
@@ -656,11 +693,23 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
                                             <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Latitude</Label>
-                                            <Input readOnly value={formData.latitude?.toFixed(6) || '-'} className="h-8 bg-gray-50/50 text-[10px] font-mono border-none rounded-lg" />
+                                            <Input 
+                                                type="number"
+                                                step="any"
+                                                value={formData.latitude || ''} 
+                                                onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
+                                                className="h-8 bg-white/50 text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20" 
+                                            />
                                         </div>
                                         <div className="space-y-1">
                                             <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Longitude</Label>
-                                            <Input readOnly value={formData.longitude?.toFixed(6) || '-'} className="h-8 bg-gray-50/50 text-[10px] font-mono border-none rounded-lg" />
+                                            <Input 
+                                                type="number"
+                                                step="any"
+                                                value={formData.longitude || ''} 
+                                                onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
+                                                className="h-8 bg-white/50 text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20" 
+                                            />
                                         </div>
                                     </div>
 
