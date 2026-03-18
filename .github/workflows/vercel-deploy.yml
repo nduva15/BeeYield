@@ -29,7 +29,7 @@ jobs:
           VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-      - uses: amondnet/vercel-action@v41
+      - uses: amondnet/vercel-action@v25
         with:
           vercel-version: latest
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -59,7 +59,7 @@ jobs:
           VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-      - uses: amondnet/vercel-action@v41
+      - uses: amondnet/vercel-action@v25
         with:
           vercel-version: latest
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -88,7 +88,7 @@ jobs:
           VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-      - uses: amondnet/vercel-action@v41
+      - uses: amondnet/vercel-action@v25
         id: vercel
         with:
           vercel-version: latest
