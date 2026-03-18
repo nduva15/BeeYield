@@ -315,4 +315,4 @@ const ChartsView: React.FC = () => {
     );
 };
 
-export default ChartsVi
+export default ChartsView;
