@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,8 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { adminService } from '@/services/adminService';
 import { toast } from "sonner";
-import { Loader2, Search, Filter, Briefcase, Users, Plus, Edit, Trash2, Download, ExternalLink, Calendar, CheckCircle2 } from "lucide-react";
+import { Loader2, Search, Filter, Briefcase, Users, Plus, Edit, Trash2, Download, ExternalLink, Calendar, CheckCircle2, RefreshCw, Globe, MapPin, Building2, UserCheck, ShieldCheck } from "lucide-react";
 import { format } from 'date-fns';
+import { glass, PageHeader, GlassStatCard } from '@/components/beeyield/GlassTheme';
+import { cn } from '@/lib/utils';
 
 export function RecruitmentTab() {
     const [loading, setLoading] = useState(true);
@@ -116,347 +117,358 @@ export function RecruitmentTab() {
     };
 
     const getStatusBadge = (status: string) => {
-        const statuses: Record<string, string> = {
-            applied: 'bg-blue-100 text-blue-800 border-blue-200',
-            reviewing: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            interviewed: 'bg-purple-100 text-purple-800 border-purple-200',
-            hired: 'bg-green-100 text-green-800 border-green-200',
-            rejected: 'bg-red-100 text-red-800 border-red-200',
+        const styles: Record<string, string> = {
+            applied: 'bg-primary/10 text-primary border-primary/20',
+            reviewing: 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20',
+            interviewed: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+            hired: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+            rejected: 'bg-destructive/10 text-destructive border-destructive/20',
         };
         return (
-            <Badge variant="outline" className={statuses[status] || 'bg-gray-100'}>
+            <Badge variant="outline" className={cn("font-black text-[9px] px-2 py-0.5 rounded-lg uppercase tracking-widest", styles[status] || 'bg-muted/50 text-muted-foreground')}>
                 {status}
             </Badge>
         );
     };
 
     return (
-        <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
-                        <Briefcase className="h-4 w-4 text-blue-600" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{jobs.filter(j => j.is_active).length}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            {jobs.length} total job listings
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">New Applications</CardTitle>
-                        <Users className="h-4 w-4 text-green-600" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{applications.filter(a => a.status === 'applied').length}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Await review
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-purple-50 to-white border-purple-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Hiring Success</CardTitle>
-                        <CheckCircle2 className="h-4 w-4 text-purple-600" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{applications.filter(a => a.status === 'hired').length}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Candidates hired this year
-                        </p>
-                    </CardContent>
-                </Card>
+        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+            <PageHeader
+                icon={Briefcase}
+                label="Talent"
+                title="Recruitment Portal"
+                subtitle="End-to-end management of organizational growth and talent acquisition."
+                actions={
+                    <div className="flex items-center gap-3">
+                        <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary/10 transition-all active:scale-95" onClick={loadData}>
+                            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+                        </Button>
+                        {activeSubTab === 'jobs' && (
+                            <Button
+                                onClick={() => {
+                                    setEditingJob(null);
+                                    setJobForm({ title: '', location: '', type: 'full_time', department: '', description_html: '', is_active: true });
+                                    setIsJobModalOpen(true);
+                                }}
+                                className="h-10 px-4 rounded-xl bg-primary text-black font-black text-[11px] tracking-widest uppercase hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20"
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Initiate Listing
+                            </Button>
+                        )}
+                    </div>
+                }
+            />
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <GlassStatCard
+                    label="Active Positions"
+                    value={jobs.filter(j => j.is_active).length}
+                    icon={Briefcase}
+                />
+                <GlassStatCard
+                    label="Inbound Talent"
+                    value={applications.filter(a => a.status === 'applied').length}
+                    icon={Users}
+                />
+                <GlassStatCard
+                    label="Successful Hires"
+                    value={applications.filter(a => a.status === 'hired').length}
+                    icon={ShieldCheck}
+                    color="text-emerald-500"
+                />
             </div>
 
             <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
-                <div className="flex items-center justify-between mb-4">
-                    <TabsList>
-                        <TabsTrigger value="applications" className="flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            Applications
-                        </TabsTrigger>
-                        <TabsTrigger value="jobs" className="flex items-center gap-2">
-                            <Briefcase className="h-4 w-4" />
-                            Job Board
-                        </TabsTrigger>
-                    </TabsList>
-
-                    {activeSubTab === 'jobs' && (
-                        <Button
-                            onClick={() => {
-                                setEditingJob(null);
-                                setJobForm({ title: '', location: '', type: 'full_time', department: '', description_html: '', is_active: true });
-                                setIsJobModalOpen(true);
-                            }}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Post New Job
-                        </Button>
-                    )}
-                </div>
+                <TabsList className="bg-muted/20 p-1 border border-[#F4D03F]/10 rounded-xl mb-8">
+                    <TabsTrigger value="applications" className="flex items-center gap-2 rounded-lg px-6 py-2 transition-all data-[state=active]:bg-primary data-[state=active]:text-black font-black text-[10px] tracking-widest uppercase">
+                        <Users className="h-4 w-4" />
+                        Applications
+                    </TabsTrigger>
+                    <TabsTrigger value="jobs" className="flex items-center gap-2 rounded-lg px-6 py-2 transition-all data-[state=active]:bg-primary data-[state=active]:text-black font-black text-[10px] tracking-widest uppercase">
+                        <Briefcase className="h-4 w-4" />
+                        Operations Board
+                    </TabsTrigger>
+                </TabsList>
 
                 <TabsContent value="applications">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Candidates & Applications</CardTitle>
-                            <CardDescription>Manage incoming applications and candidate progress</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {loading ? (
-                                <div className="flex justify-center p-8">
-                                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                                </div>
-                            ) : applications.length === 0 ? (
-                                <div className="text-center py-12 text-gray-500">
-                                    No applications received yet.
-                                </div>
-                            ) : (
-                                <div className="rounded-md border overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Candidate</TableHead>
-                                                <TableHead>Job Title</TableHead>
-                                                <TableHead>Applied Date</TableHead>
-                                                <TableHead>Status</TableHead>
-                                                <TableHead>Resume</TableHead>
-                                                <TableHead className="text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {applications.map((app) => (
-                                                <TableRow key={app.id}>
-                                                    <TableCell>
-                                                        <div className="flex flex-col">
-                                                            <span className="font-semibold text-blue-900">{app.full_name}</span>
-                                                            <span className="text-xs text-muted-foreground">{app.email}</span>
-                                                            <span className="text-xs text-muted-foreground">{app.phone}</span>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge variant="secondary" className="font-normal">
-                                                            {app.jobs?.title || 'Unknown Job'}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-sm">
-                                                        {format(new Date(app.created_at), 'MMM d, yyyy')}
-                                                    </TableCell>
-                                                    <TableCell>{getStatusBadge(app.status)}</TableCell>
-                                                    <TableCell>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="text-blue-600 hover:text-blue-700 p-0 h-auto font-normal"
-                                                            onClick={() => handleViewCV(app.resume_url)}
+                    <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                    <TableHead className="py-4 px-6 font-black text-[10px] tracking-widest uppercase">Identity</TableHead>
+                                    <TableHead className="py-4 px-6 font-black text-[10px] tracking-widest uppercase">Target Position</TableHead>
+                                    <TableHead className="py-4 px-6 font-black text-[10px] tracking-widest uppercase text-center">Protocol Class</TableHead>
+                                    <TableHead className="py-4 px-6 font-black text-[10px] tracking-widest uppercase text-center">Documents</TableHead>
+                                    <TableHead className="py-4 px-6 font-black text-[10px] tracking-widest uppercase text-right">Magnitude</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="py-24 text-center">
+                                            <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto opacity-50" />
+                                            <p className="mt-4 font-black text-[10px] tracking-widest text-muted-foreground uppercase">Accessing talent registry...</p>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : applications.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="py-24 text-center">
+                                            <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                                                <Users className="h-8 w-8 text-muted-foreground/30" />
+                                            </div>
+                                            <p className="font-black text-[10px] tracking-widest text-muted-foreground uppercase">No applications received yet</p>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    applications.map((app) => (
+                                        <TableRow key={app.id} className="hover:bg-muted/10 transition-all border-b border-[#F4D03F]/10 group">
+                                            <TableCell className="px-6 py-5">
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-[11px] tracking-tighter uppercase text-primary/80">{app.full_name}</span>
+                                                    <span className="font-mono text-[9px] opacity-40 uppercase tracking-widest">{app.email}</span>
+                                                    <span className="font-mono text-[8px] opacity-30 mt-0.5 tracking-tighter">{app.phone}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-5">
+                                                <div className="inline-flex items-center gap-2 rounded-lg px-2 py-1 bg-primary/5 border border-primary/20">
+                                                    <Building2 className="h-3 w-3 text-primary/60" />
+                                                    <span className="font-black text-[9px] uppercase tracking-widest">{app.jobs?.title || 'GENERAL_QUERY'}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-5 text-center">
+                                                {getStatusBadge(app.status)}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-5">
+                                                <div className="flex flex-col gap-1.5 items-center">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="h-7 px-3 rounded-lg border-border/50 font-black text-[8px] tracking-widest uppercase hover:bg-primary/10 transition-all"
+                                                        onClick={() => handleViewCV(app.resume_url)}
+                                                    >
+                                                        <Download className="h-3 w-3 mr-1.5" />
+                                                        RETRIEVE_CV
+                                                    </Button>
+                                                    {app.linkedin_url && (
+                                                        <a
+                                                            href={app.linkedin_url}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="flex items-center gap-1 font-black text-[7px] tracking-widest uppercase opacity-40 hover:opacity-100 transition-opacity"
                                                         >
-                                                            <Download className="h-4 w-4 mr-1 text-blue-400" />
-                                                            View CV
-                                                        </Button>
-                                                        {app.linkedin_url && (
-                                                            <div className="mt-1">
-                                                                <a
-                                                                    href={app.linkedin_url}
-                                                                    target="_blank"
-                                                                    rel="noreferrer"
-                                                                    className="text-xs text-muted-foreground hover:text-blue-600 flex items-center"
-                                                                >
-                                                                    <ExternalLink className="h-3 w-3 mr-1" />
-                                                                    LinkedIn
-                                                                </a>
-                                                            </div>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Select
-                                                            value={app.status}
-                                                            onValueChange={(val) => handleUpdateAppStatus(app.id, val)}
-                                                        >
-                                                            <SelectTrigger className="w-[130px] h-8 text-xs ml-auto">
-                                                                <SelectValue placeholder="Action" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="reviewing">Reviewing</SelectItem>
-                                                                <SelectItem value="interviewed">Interviewed</SelectItem>
-                                                                <SelectItem value="hired">Hire</SelectItem>
-                                                                <SelectItem value="rejected">Reject</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                                            <ExternalLink className="h-2.5 w-2.5" />
+                                                            SOCIAL_AUTH
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-5 text-right">
+                                                <Select
+                                                    value={app.status}
+                                                    onValueChange={(val) => handleUpdateAppStatus(app.id, val)}
+                                                >
+                                                    <SelectTrigger className="w-[120px] h-8 rounded-lg border-border/50 text-black font-black text-[9px] tracking-widest uppercase bg-primary hover:bg-primary/90 transition-all ml-auto">
+                                                        <SelectValue placeholder="ACTION" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="rounded-xl border border-[#F4D03F]/10">
+                                                        <SelectItem value="reviewing" className="font-black text-[9px] uppercase tracking-widest">Protocol Review</SelectItem>
+                                                        <SelectItem value="interviewed" className="font-black text-[9px] uppercase tracking-widest">Interview Gate</SelectItem>
+                                                        <SelectItem value="hired" className="font-black text-[9px] uppercase tracking-widest text-emerald-500">Authorize Hire</SelectItem>
+                                                        <SelectItem value="rejected" className="font-black text-[9px] uppercase tracking-widest text-destructive">Decline Asset</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="jobs">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Job Board Management</CardTitle>
-                            <CardDescription>Manage job listings displayed on the careers page</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {loading ? (
-                                <div className="flex justify-center p-8">
-                                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                    {loading ? (
+                        <div className="flex justify-center p-24">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" />
+                        </div>
+                    ) : (
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {jobs.map((job) => (
+                                <div key={job.id} className={cn(
+                                    glass.section,
+                                    "p-6 group relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 active:scale-[0.98]",
+                                    !job.is_active && "opacity-60 grayscale-[0.5]"
+                                )}>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <Badge variant="outline" className={cn(
+                                            "font-black text-[8px] tracking-widest px-2 py-0.5 rounded-lg uppercase",
+                                            job.is_active ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-muted/50 text-muted-foreground border-border/50"
+                                        )}>
+                                            {job.is_active ? 'DEPLOYED' : 'QUARANTINE'}
+                                        </Badge>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-lg border-border/50 hover:bg-primary/10 transition-all group-hover:border-primary/30"
+                                                onClick={() => {
+                                                    setEditingJob(job);
+                                                    setJobForm({
+                                                        title: job.title,
+                                                        location: job.location,
+                                                        type: job.type,
+                                                        department: job.department,
+                                                        description_html: job.description_html,
+                                                        is_active: job.is_active
+                                                    });
+                                                    setIsJobModalOpen(true);
+                                                }}
+                                            >
+                                                <Edit className="h-3.5 w-3.5" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-lg border-border/50 text-destructive hover:bg-destructive/10 transition-all"
+                                                onClick={() => handleDeleteJob(job.id)}
+                                            >
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <h3 className="font-black text-xl tracking-tighter uppercase mb-1 leading-tight">{job.title}</h3>
+                                    <div className="flex items-center gap-2 font-mono text-[9px] opacity-40 uppercase tracking-widest mb-6">
+                                        <Calendar className="h-3 w-3" />
+                                        <span>ESTD: {format(new Date(job.created_at), 'yyyy.MM.dd')}</span>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex flex-wrap gap-2">
+                                            <Badge variant="outline" className="font-black text-[8px] tracking-widest rounded-lg border-border/50 uppercase">{job.department}</Badge>
+                                            <Badge variant="outline" className="font-black text-[8px] tracking-widest rounded-lg border-border/50 uppercase">{job.type.replace('_', ' ')}</Badge>
+                                        </div>
+                                        <div className="flex items-center gap-2 pt-2 text-muted-foreground">
+                                            <MapPin className="h-3.5 w-3.5 opacity-40" />
+                                            <span className="font-black text-[9px] uppercase tracking-widest">{job.location}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none group-hover:bg-primary/10 transition-colors duration-500" />
                                 </div>
-                            ) : (
-                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    {jobs.map((job) => (
-                                        <Card key={job.id} className={`overflow-hidden border-l-4 ${job.is_active ? 'border-l-green-500' : 'border-l-gray-300'}`}>
-                                            <CardHeader className="pb-2">
-                                                <div className="flex justify-between items-start">
-                                                    <Badge variant={job.is_active ? "default" : "secondary"} className={job.is_active ? "bg-green-100 text-green-800" : ""}>
-                                                        {job.is_active ? 'Active' : 'Draft'}
-                                                    </Badge>
-                                                    <div className="flex gap-1">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 text-blue-600"
-                                                            onClick={() => {
-                                                                setEditingJob(job);
-                                                                setJobForm({
-                                                                    title: job.title,
-                                                                    location: job.location,
-                                                                    type: job.type,
-                                                                    department: job.department,
-                                                                    description_html: job.description_html,
-                                                                    is_active: job.is_active
-                                                                });
-                                                                setIsJobModalOpen(true);
-                                                            }}
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 text-red-600"
-                                                            onClick={() => handleDeleteJob(job.id)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                                <CardTitle className="text-lg mt-2">{job.title}</CardTitle>
-                                                <CardDescription className="flex items-center gap-1 mt-1">
-                                                    <Calendar className="h-3 w-3" />
-                                                    {format(new Date(job.created_at), 'MMM d, yyyy')}
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="text-sm">
-                                                <div className="space-y-1 text-muted-foreground">
-                                                    <div className="flex items-center gap-2">
-                                                        <Badge variant="outline" className="font-normal">{job.department}</Badge>
-                                                        <Badge variant="outline" className="font-normal">{job.type}</Badge>
-                                                    </div>
-                                                    <p className="pt-2">{job.location}</p>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                            ))}
+                        </div>
+                    )}
                 </TabsContent>
             </Tabs>
 
             {/* Job Form Modal */}
             <Dialog open={isJobModalOpen} onOpenChange={setIsJobModalOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>{editingJob ? 'Edit Job Posting' : 'Post New Career Opportunity'}</DialogTitle>
-                        <DialogDescription>
-                            Fill in the details for the job listing. Description supports basic HTML.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="job-title">Job Title</Label>
-                                <Input
-                                    id="job-title"
-                                    placeholder="e.g. Senior Beekeeper"
-                                    value={jobForm.title}
-                                    onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })}
+                <DialogContent className="max-w-2xl bg-background/80 backdrop-blur-2xl border-[#F4D03F]/20 rounded-2xl shadow-2xl p-0 overflow-hidden">
+                    <div className="p-8 space-y-8 max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4 mb-2">
+                                <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20">
+                                    <Plus className="h-6 w-6 text-primary" />
+                                </div>
+                                <div>
+                                    <div className="font-black text-[10px] uppercase tracking-widest text-[#F4D03F] mb-1 opacity-80">Operational Sync</div>
+                                    <DialogTitle className="font-black text-2xl tracking-tighter uppercase leading-none">
+                                        {editingJob ? 'Refactor Listing' : 'Initiate Opportunity'}
+                                    </DialogTitle>
+                                </div>
+                            </div>
+                            <DialogDescription className="font-bold text-xs uppercase tracking-widest opacity-60">
+                                Define the parameters for the talent acquisition protocol.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="grid gap-6">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-2.5">
+                                    <Label className="font-black text-[10px] uppercase tracking-widest opacity-50 ml-1">Protocol Title</Label>
+                                    <Input
+                                        placeholder="e.g. SENIOR BEEKEEPER"
+                                        className="h-12 bg-white/5 border-border/50 rounded-xl font-black text-xs uppercase focus:ring-primary focus:border-primary transition-all px-4"
+                                        value={jobForm.title}
+                                        onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2.5">
+                                    <Label className="font-black text-[10px] uppercase tracking-widest opacity-50 ml-1">Entity Department</Label>
+                                    <Input
+                                        placeholder="e.g. OPERATIONS"
+                                        className="h-12 bg-white/5 border-border/50 rounded-xl font-black text-xs uppercase focus:ring-primary focus:border-primary transition-all px-4"
+                                        value={jobForm.department}
+                                        onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-2.5">
+                                    <Label className="font-black text-[10px] uppercase tracking-widest opacity-50 ml-1">Geospatial Marker</Label>
+                                    <Input
+                                        placeholder="e.g. NAIROBI, KENYA"
+                                        className="h-12 bg-white/5 border-border/50 rounded-xl font-black text-xs uppercase focus:ring-primary focus:border-primary transition-all px-4"
+                                        value={jobForm.location}
+                                        onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2.5">
+                                    <Label className="font-black text-[10px] uppercase tracking-widest opacity-50 ml-1">Engagement Model</Label>
+                                    <Select
+                                        value={jobForm.type}
+                                        onValueChange={(val) => setJobForm({ ...jobForm, type: val })}
+                                    >
+                                        <SelectTrigger className="h-12 bg-white/5 border-border/50 rounded-xl font-black text-xs uppercase focus:ring-primary transition-all px-4">
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border border-[#F4D03F]/10">
+                                            <SelectItem value="full_time" className="font-black text-[10px] uppercase tracking-widest">Full-Spectrum</SelectItem>
+                                            <SelectItem value="part_time" className="font-black text-[10px] uppercase tracking-widest">Partial Sync</SelectItem>
+                                            <SelectItem value="contract" className="font-black text-[10px] uppercase tracking-widest">Fixed Protocol</SelectItem>
+                                            <SelectItem value="internship" className="font-black text-[10px] uppercase tracking-widest text-primary">Bridge Program</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2.5">
+                                <Label className="font-black text-[10px] uppercase tracking-widest opacity-50 ml-1">Mission briefing (RAW_HTML)</Label>
+                                <Textarea
+                                    placeholder="<h3>Requirements</h3><ul><li>3 years experience</li></ul>"
+                                    className="h-48 bg-white/5 border-border/50 rounded-xl font-mono text-[10px] focus:ring-primary focus:border-primary transition-all p-4 resize-none"
+                                    value={jobForm.description_html}
+                                    onChange={(e) => setJobForm({ ...jobForm, description_html: e.target.value })}
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="job-dept">Department</Label>
-                                <Input
-                                    id="job-dept"
-                                    placeholder="e.g. Operations"
-                                    value={jobForm.department}
-                                    onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
+
+                            <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/10 rounded-xl">
+                                <input
+                                    type="checkbox"
+                                    id="job-active-modal"
+                                    checked={jobForm.is_active}
+                                    onChange={(e) => setJobForm({ ...jobForm, is_active: e.target.checked })}
+                                    className="h-5 w-5 rounded-lg accent-primary cursor-pointer"
                                 />
+                                <Label htmlFor="job-active-modal" className="font-black text-[11px] uppercase tracking-widest cursor-pointer">Authorize Public Deployment</Label>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="job-loc">Location</Label>
-                                <Input
-                                    id="job-loc"
-                                    placeholder="e.g. Nairobi, Kenya"
-                                    value={jobForm.location}
-                                    onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="job-type">Employment Type</Label>
-                                <Select
-                                    value={jobForm.type}
-                                    onValueChange={(val) => setJobForm({ ...jobForm, type: val })}
-                                >
-                                    <SelectTrigger id="job-type">
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="full_time">Full-time</SelectItem>
-                                        <SelectItem value="part_time">Part-time</SelectItem>
-                                        <SelectItem value="contract">Contract</SelectItem>
-                                        <SelectItem value="internship">Internship</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="job-desc">Job Description (HTML)</Label>
-                            <Textarea
-                                id="job-desc"
-                                placeholder="<h3>Requirements</h3><ul><li>3 years experience</li></ul>"
-                                className="h-48 font-mono text-xs"
-                                value={jobForm.description_html}
-                                onChange={(e) => setJobForm({ ...jobForm, description_html: e.target.value })}
-                            />
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="checkbox"
-                                id="job-active"
-                                checked={jobForm.is_active}
-                                onChange={(e) => setJobForm({ ...jobForm, is_active: e.target.checked })}
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <Label htmlFor="job-active">Publicly Visible (Active)</Label>
-                        </div>
+
+                        <DialogFooter className="pt-4 gap-3 flex flex-row">
+                            <Button variant="outline" onClick={() => setIsJobModalOpen(false)} className="h-12 px-8 rounded-xl border-border/50 font-black text-[11px] tracking-widest uppercase transition-all flex-1">
+                                Abort
+                            </Button>
+                            <Button onClick={handleSaveJob} className="h-12 px-8 rounded-xl bg-primary text-black font-black text-[11px] tracking-widest uppercase hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex-1">
+                                {editingJob ? 'Update Protocol' : 'Finalize Deployment'}
+                            </Button>
+                        </DialogFooter>
                     </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsJobModalOpen(false)}>Cancel</Button>
-                        <Button onClick={handleSaveJob} className="bg-blue-600 hover:bg-blue-700 text-white">
-                            {editingJob ? 'Update Listing' : 'Publish Opportunity'}
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
     );
 }
+

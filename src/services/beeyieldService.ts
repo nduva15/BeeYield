@@ -105,19 +105,26 @@ export interface ActivityLog {
 export const uploadAvatar = async (userId: string, file: File): Promise<{ url: string | null; error: any }> => {
     try {
         if (!sb) throw new Error('Supabase client not initialized');
-        const fileExt = file.name.split('.').pop();
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
         const fileName = `${userId}-${Date.now()}.${fileExt}`;
         const filePath = `avatars/${fileName}`;
 
-        // Attempt upload to 'profiles' bucket
+        // Upload to 'profiles' bucket
         const { error: uploadError } = await sb.storage
             .from('profiles')
             .upload(filePath, file, {
                 cacheControl: '3600',
-                upsert: true
+                upsert: true,
             });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+            console.error('Storage upload error:', uploadError);
+            throw new Error(
+                uploadError.message?.includes('not found')
+                    ? 'The "profiles" storage bucket does not exist. Please create it in the Supabase dashboard → Storage.'
+                    : uploadError.message || 'Upload failed'
+            );
+        }
 
         // Get public URL
         const { data } = sb.storage
@@ -125,7 +132,7 @@ export const uploadAvatar = async (userId: string, file: File): Promise<{ url: s
             .getPublicUrl(filePath);
 
         return { url: data.publicUrl, error: null };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Avatar upload error:', error);
         return { url: null, error };
     }

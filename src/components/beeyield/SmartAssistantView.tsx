@@ -53,14 +53,14 @@ function isStructuredLongReport(text: string) {
 }
 
 const SUGGESTIONS = [
-    "What should I check during a hive inspection?",
+    "What is BeeYield and how does it work?",
+    "How do I trace a honey batch code?",
+    "What are optimal harvest seasons in East Africa?",
     "How do I spot Varroa signs and what are common treatment options?",
-    "What does high humidity in a hive usually mean?",
-    "How can I reduce swarming risk during peak season?",
     "Which crops benefit most from bee pollination in my area?",
     "How do I verify a jar’s harvest info with the QR code?",
     "What are common causes of low honey yield?",
-    "What’s a simple feeding plan during dearth?",
+    "How does the FPA engine calculate density?",
 ];
 
 function fileToBase64(file: File): Promise<string> {
@@ -302,7 +302,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 supabase.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", convId).then(() => loadConversations());
             }
         } catch {
-            toast.error("Failed to connect to BeeYield Assistant");
+            toast.error("Failed to connect to BeeYield AI");
             setIsLoading(false);
         }
     };
@@ -368,8 +368,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
             <div className="flex-shrink-0 px-4 pt-4">
                 <BeeYieldPageHeader
                     icon={Bot}
-                    label="Assistant"
-                    title={<>BeeYield <span className="text-[#F4D03F]">Assistant</span></>}
+                    label="BeeYield AI"
+                    title={<>BeeYield <span className="text-[#F4D03F]">AI</span></>}
                     subtitle="Ask about hive health, inspections, pollination, or traceability."
                     actions={
                         <div className="flex items-center gap-2">
@@ -413,7 +413,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         <div className="relative mb-4">
                             <img src={Logo} alt="Beeyield" className="h-12 w-auto relative z-10" />
                         </div>
-                        <h1 className="text-2xl font-black text-[#1A1A1A] mb-2 tracking-tighter">BeeYield Support</h1>
+                        <h1 className="text-2xl font-black text-[#1A1A1A] mb-2 tracking-tighter">BeeYield AI</h1>
                         <p className="text-[#1A1A1A]/50 max-w-2xl mb-6 text-sm font-semibold leading-relaxed">
                             Ask about hive health, inspections, pollination, or traceability. Start with one question—short is fine.
                         </p>
@@ -549,7 +549,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             </div>
 
                             <div className="flex-1 flex flex-col">
-                                <label htmlFor="assistant-chat-input" className="sr-only">Ask a question to the BeeYield Assistant</label>
+                                <label htmlFor="assistant-chat-input" className="sr-only">Ask a question to BeeYield AI</label>
                                 <textarea
                                     id="assistant-chat-input"
                                     ref={textareaRef}
@@ -598,7 +598,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
                     <p className="text-center text-[8px] text-[#1A1A1A]/30 font-bold mt-3 flex items-center justify-center gap-3">
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
-                        Powered by BeeYield knowledge — Support research engine
+                        Powered by BeeYield AI — 750K+ research datasets
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
                     </p>
                 </div>

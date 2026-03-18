@@ -58,12 +58,38 @@ export const CROP_PROFILES: Record<string, CropProfile> = {
     }
 };
 
+export type ColonyGrade = 'Grade A' | 'Grade B' | 'Grade C';
+
+export interface RequiredHivesInput {
+    cropType: string;
+    acreage: number;
+    colonyGrade: ColonyGrade;
+    treesPerAcre: number;
+}
+
+export interface RequiredHivesResult {
+    targetFPA: number;
+    requiredHives: number;
+    probability: number;
+}
+
 /**
  * Calculates the required hives for a target FPA.
  */
-export function calculateRequiredHives(acreage: number, targetFPA: number, avgFramesPerHive: number): number {
-    if (avgFramesPerHive <= 0) return 0;
-    return (acreage * targetFPA) / avgFramesPerHive;
+export function calculateRequiredHives(input: RequiredHivesInput): RequiredHivesResult {
+    const profile = CROP_PROFILES[input.cropType] || CROP_PROFILES['Almonds'];
+    const targetFPA = profile.recommendedFPA;
+    const framesPerHive = input.colonyGrade === 'Grade A' ? 12 : input.colonyGrade === 'Grade B' ? 8 : 6;
+    const requiredHives = Math.ceil((input.acreage * targetFPA) / framesPerHive);
+    
+    // Simple probability based on density
+    const probability = Math.min(0.98, (requiredHives / input.acreage) * 0.1);
+
+    return {
+        targetFPA,
+        requiredHives,
+        probability
+    };
 }
 
 /**

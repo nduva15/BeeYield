@@ -53,13 +53,13 @@ jobs:
           
           kubectl set image deployment/frontend \
             frontend=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${VERSION} \
-            -n ${{ env.NAMESPACE }}
+            -n $NAMESPACE
           kubectl set image deployment/backend \
             backend=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${VERSION} \
-            -n ${{ env.NAMESPACE }}
+            -n $NAMESPACE
           
-          kubectl rollout status deployment/frontend -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/backend -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/frontend -n $NAMESPACE
+          kubectl rollout status deployment/backend -n $NAMESPACE
 
       - name: Verify Rollback
         run: |

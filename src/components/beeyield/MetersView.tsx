@@ -143,7 +143,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         if (!msg) return;
         setChatMessages([...chatMessages, { role: 'user', content: msg }]);
         setAiMessage('');
-        toast.info('Opening BeeYield Assistant…');
+        toast.info('Opening BeeYield AI…');
         onTabChange('assistant', `Meters: ${msg}`);
     };
 
