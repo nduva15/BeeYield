@@ -26,16 +26,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
         env:
-          VITE_SUPABASE_URL: sb_secret_MZerTs797AxSfPwb0K68HA_5FYSQW3F
+          VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-      - uses: amondnet/vercel-action@v25
+      - uses: amondnet/vercel-action@v41
         with:
           vercel-version: latest
-          vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
-          vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
-          vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: --prod --force --yes
+          github-comment: true
+          github-deployment: false
 
   deploy-staging:
     name: Deploy to Vercel (Staging)
@@ -54,16 +56,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
         env:
-          VITE_SUPABASE_URL: sb_secret_MZerTs797AxSfPwb0K68HA_5FYSQW3F
+          VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-      - uses: amondnet/vercel-action@v25
+      - uses: amondnet/vercel-action@v41
         with:
           vercel-version: latest
-          vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
-          vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
-          vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: --force --yes
+          github-comment: true
+          github-deployment: false
 
   deploy-preview:
     name: Deploy Preview (PR)
@@ -81,17 +85,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
         env:
-          VITE_SUPABASE_URL: sb_secret_MZerTs797AxSfPwb0K68HA_5FYSQW3F
+          VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-      - uses: amondnet/vercel-action@v25
+      - uses: amondnet/vercel-action@v41
         id: vercel
         with:
           vercel-version: latest
-          vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
-          vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
-          vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: --force --yes
+          github-comment: true
+          github-deployment: false
       - uses: actions/github-script@v7
         with:
           script: |
