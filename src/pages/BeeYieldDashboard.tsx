@@ -14,7 +14,7 @@ import {
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock as LockIcon, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
-    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug, Calendar
+    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug, Calendar, Heart
 } from "lucide-react";
 import { Target } from "lucide-react";
 import { Award } from 'lucide-react';
@@ -244,41 +244,54 @@ const BeeYieldDashboard: React.FC = () => {
                 icon: Calculator,
                 submenuItems: [
                     {
-                        title: 'Field Info',
+                        title: 'Strategy & Ops',
                         items: [
-                            { id: 'intelligence', label: 'Info', icon: Brain },
-                            { id: 'logistics-setup', label: 'Farm Map', icon: Layers },
-                            { id: 'fleet-security-active', label: 'Asset Security', icon: ShieldCheck },
+                            { id: 'intelligence', label: 'Intelligence Hub', icon: Brain },
+                            { id: 'pollination-grid', label: 'Pollination Grid', icon: LayoutGrid },
+                            { id: 'pollination-engine', label: 'Pollination Engine', icon: Cpu },
+                            { id: 'saturation-math', label: 'Saturation Math', icon: Scale },
+                            { id: 'hpa-optimizer', label: 'Performance Planner', icon: Cpu },
                         ]
                     },
                     {
-                        title: 'Analysis',
+                        title: 'Field Logistics',
                         items: [
-                            { id: 'acoustic-transformer', label: 'Hive Sound', icon: Volume2 },
+                            { id: 'master-map', label: 'Master GIS Map', icon: Map },
+                            { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
+                            { id: 'fleet-security', label: 'Asset Security', icon: ShieldCheck },
+                            { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
+                            { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+                        ]
+                    },
+                    {
+                        title: 'Health & Compliance',
+                        items: [
+                            { id: 'digital-audit', label: 'Hive Health Audit', icon: FileCheck },
+                            { id: 'compliance-report', label: 'Compliance Report', icon: Award },
+                            { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
+                            { id: 'bloom-tracking', label: 'Bloom Phenology', icon: Zap },
+                        ]
+                    },
+                    {
+                        title: 'Analysis & Yield',
+                        items: [
+                            { id: 'acoustic-transformer', label: 'Acoustic Mood', icon: Volume2 },
                             { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
-                            { id: 'hpa-optimizer', label: 'Performance Planner', icon: Calculator },
                             { id: 'foraging-optimizer', label: 'Flower Guide', icon: Crosshair },
                             { id: 'vpm-counter', label: 'Visits Counter', icon: Camera },
                             { id: 'bfh-forecast', label: 'Work Forecast', icon: Zap },
-                            { id: 'yield-predict', label: 'Yield Forecast', icon: Cpu },
-                        ]
-                    },
-                    {
-                        title: 'Checkups',
-                        items: [
-                            { id: 'digital-audit', label: 'Hive Check', icon: FileBarChart },
-                            { id: 'compliance-report', label: 'Report', icon: Award },
-                            { id: 'bloom-tracking', label: 'Status', icon: Zap },
-                            { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
+                            { id: 'yield-predict', label: 'Yield Predictor', icon: BarChart3 },
                         ]
                     },
                     {
                         title: 'System View',
                         items: [
-                            { id: 'sensor-vitals', label: 'Hive Health', icon: Zap },
-                            { id: 'continuous-monitor', label: 'Live View', icon: Activity },
+                            { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
+                            { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
                             { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
                             { id: 'gateway-hub', label: 'Gateway Hub', icon: Server },
+                            { id: 'hive-telemetry', label: 'Deep Telemetry', icon: Signal },
+                            { id: 'contract-verification', label: 'Secure Contracts', icon: ShieldCheck },
                         ]
                     },
                 ]
@@ -373,9 +386,10 @@ const BeeYieldDashboard: React.FC = () => {
                 return <PollinationIntelligence onTabChange={handleTabChange} />;
 
             case 'logistics-setup':
-            case 'orchard-mapper':
             case 'master-map':
                 return <MasterMapView />;
+            case 'orchard-mapper':
+                return <OrchardMapper onTabChange={handleTabChange} />;
 
             case 'fleet-security':
             case 'geospatial-security':
@@ -428,10 +442,15 @@ const BeeYieldDashboard: React.FC = () => {
                 return <HiveTelemetryView />;
             case 'contract-verification':
                 return <ContractVerificationModule />;
+            case 'pollination-grid':
+            case 'precision-pollination-grid':
+                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
             case 'gateway-hub':
                 return <GatewayHub />;
             case 'saturation-math':
                 return <SpatialCoverageView />;
+            case 'yard-ops':
+                return <YardOperations onTabChange={handleTabChange} />;
 
             case 'places':
                 return <MyPlacesView onTabChange={handleTabChange} />;
