@@ -31,6 +31,7 @@ jobs:
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
       - uses: amondnet/vercel-action@v25
         with:
+          vercel-version: latest
           vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
           vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
           vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
@@ -58,6 +59,7 @@ jobs:
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
       - uses: amondnet/vercel-action@v25
         with:
+          vercel-version: latest
           vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
           vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
           vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf
@@ -85,6 +87,7 @@ jobs:
       - uses: amondnet/vercel-action@v25
         id: vercel
         with:
+          vercel-version: latest
           vercel-token: vcp_1rTeR1eYPWInOJVOaCUskLdJpfYBa6JwhBhGgOYWqSCAowvWpF3LDcb5
           vercel-org-id: yBiTeRff1U0TRb68OKDtZ17U
           vercel-project-id: prj_9kxElnTqTAqIh81Cd5YhQ0kX3TDf

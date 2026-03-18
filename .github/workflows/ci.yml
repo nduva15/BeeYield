@@ -8,8 +8,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  FRONTEND_IMAGE_NAME: ${{ github.repository }}-frontend
-  BACKEND_IMAGE_NAME: ${{ github.repository }}-backend
+  FRONTEND_IMAGE_NAME: nduva15/beeyield-frontend
+  BACKEND_IMAGE_NAME: nduva15/beeyield-backend
 
 jobs:
   frontend-test:
@@ -196,7 +196,7 @@ jobs:
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}-${{ matrix.image }}:${{ github.ref_name }}
+          image-ref: ${{ env.REGISTRY }}/nduva15/beeyield-${{ matrix.image }}:${{ github.ref_name }}
           format: 'sarif'
           output: 'trivy-results.sarif'
 
