@@ -14,7 +14,8 @@ try:
     _RUST_SHOP_AVAILABLE = True
     logger.info("Oxidized Shop Engine: Online")
 except ImportError:
-    _rust_calc = lambda items: 0
+    def _rust_calc(items):
+        return 0
     engine = None
     mpesa = None
     invoicer = None
@@ -54,7 +55,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     if token:
         try:
             # db_select automatically runs under the user's RLS context, so is_admin() works
-            admin_check = await db_select("profiles", columns="id", token=token, limit=1)
+            await db_select("profiles", columns="id", token=token, limit=1)
             # If we just need to know if they are an admin, we can rely on a custom RPC or just check if the backend allowed a certain operation,
             # but for a quick RBAC, it's better to fetch their profile role if available. 
             # Alternatively, since we created the SQL is_admin() function, we can execute an RPC call.
@@ -223,8 +224,6 @@ async def get_products(category: Optional[str] = None, token: Optional[str] = No
     return res
 
 async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Optional[dict]:
-    from app.db.supabase_db import db_get_by_id
-    columns = "*,product_variants(*)"
     # Note: db_get_by_id doesn't support complex columns in its simple form, using select instead
     from app.db.supabase_db import db_select
     res = await db_select("products", columns="*,variants:product_variants(*)", filters={"id": product_id}, token=token)
@@ -285,7 +284,7 @@ async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
 
         # 1. Update Ledger status
         status = "completed" if res_code == 0 else "failed"
-        ledger_res = await db_update("billing_ledger", 
+        await db_update("billing_ledger", 
             {"payment_status": status}, 
             {"checkout_request_id": checkout_id}
         )
@@ -369,7 +368,7 @@ async def get_wallet_transactions(user_id: str, token: Optional[str] = None) -> 
     return await db_select("wallet_transactions", filters={"user_id": user_id}, token=token)
 
 async def top_up_wallet(user_id: str, amount: float, reference: str, token: Optional[str] = None) -> dict:
-    from app.db.supabase_db import db_insert, db_select, db_update
+    from app.db.supabase_db import db_insert, db_update
     wallet = await get_user_wallet(user_id, token=token)
     new_balance = wallet.get("balance", 0) + amount
     await db_update("wallets", {"balance": new_balance}, {"user_id": user_id}, token=token)

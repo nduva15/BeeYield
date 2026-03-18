@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from typing import List, Optional
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_upsert
+from app.db.supabase_db import db_select, db_delete, db_upsert
 from app.core import security
 from app.services import label_studio_service
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from uuid import UUID
 import datetime
 

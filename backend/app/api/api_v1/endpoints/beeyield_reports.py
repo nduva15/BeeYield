@@ -13,11 +13,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request, Backgrou
 from fastapi.responses import StreamingResponse
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
 import io
 
 from app.core import security
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete
+from app.db.supabase_db import db_select, db_insert, db_delete
 
 # Reuse the same worker implementation as the core engine
 from app.api.api_v1.endpoints.reports import _run_report_generation

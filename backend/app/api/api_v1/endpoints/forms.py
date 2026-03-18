@@ -1,7 +1,7 @@
 """
 Forms Endpoints - Careers, Newsletter, Donations
 """
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Depends
+from fastapi import APIRouter, BackgroundTasks, Request, Depends
 from typing import Optional
 from app.schemas import forms as schemas
 from app.services import email

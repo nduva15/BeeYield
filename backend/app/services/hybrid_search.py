@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional
 from app.services.content_service import ContentService
 
 class HybridSearch:

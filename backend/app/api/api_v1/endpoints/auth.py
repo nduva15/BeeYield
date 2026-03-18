@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from app.db.supabase_db import get_supabase
-from app.core import security
 from typing import Optional
 
 router = APIRouter()
@@ -72,5 +71,5 @@ def login(user_in: UserLogin):
             "token_type": "bearer"
         }
         
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=401, detail="Incorrect email or password")

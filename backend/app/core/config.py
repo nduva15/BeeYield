@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import List, Optional, Union
-from pydantic import AnyHttpUrl, field_validator, Field
+from pydantic import field_validator, Field
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"

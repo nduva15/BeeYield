@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from typing import Optional, Any, List
+from typing import Optional, List
 from app.core import security
 from app.core.config import settings
 from app.schemas import iot as schemas
@@ -97,8 +97,8 @@ async def get_alerts(
 ):
     """Get active sensor alerts."""
     from app.db.supabase_db import db_select
-    user_id = current_user.get("sub")
-    email = current_user.get("email")
+    current_user.get("sub")
+    current_user.get("email")
     
     # Simple filtering: admins see all, farmers see theirs
     filters = {"resolved": resolved}

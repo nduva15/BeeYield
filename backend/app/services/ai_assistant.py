@@ -7,7 +7,7 @@ helpers consumed by the /assistant/* endpoint router.
 import httpx
 import json
 import os
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 
 RUST_SERVICE_URL = "http://127.0.0.1:9091"
 

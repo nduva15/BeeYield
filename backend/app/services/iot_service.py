@@ -89,7 +89,7 @@ async def check_sensor_health(token: Optional[str] = None) -> Dict[str, Any]:
     
     # Simple threshold logic
     for dev in devices:
-        dev_id = dev.get("id")
+        dev.get("id")
         # Check connectivity
         last_ping = dev.get("last_ping")
         if not last_ping or last_ping < since_24h:

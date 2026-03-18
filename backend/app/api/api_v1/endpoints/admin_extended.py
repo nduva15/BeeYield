@@ -2,9 +2,9 @@
 Admin Dashboard Extended API - Activity Logs, Documents, History, Payments
 """
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from typing import Any, Optional, List
+from typing import Optional, List
 from datetime import datetime, timedelta
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, get_supabase
+from app.db.supabase_db import db_select, db_insert
 from app.api.api_v1.endpoints.admin import check_admin_role
 from pydantic import BaseModel
 
@@ -156,7 +156,7 @@ async def get_activity_stats(
                 created_at = datetime.fromisoformat(log["created_at"].replace("Z", "+00:00"))
                 if created_at.replace(tzinfo=None) >= cutoff:
                     filtered_logs.append(log)
-            except:
+            except Exception:
                 filtered_logs.append(log) # Fallback
         
         # Count by type
@@ -198,9 +198,12 @@ async def get_generated_documents(
     Get all generated documents with optional filters.
     """
     filters = {}
-    if document_type: filters["document_type"] = document_type
-    if file_format: filters["file_format"] = file_format
-    if category: filters["category"] = category
+    if document_type:
+        filters["document_type"] = document_type
+    if file_format:
+        filters["file_format"] = file_format
+    if category:
+        filters["category"] = category
     
     try:
         result = await db_select(
@@ -294,8 +297,10 @@ async def get_history(
     Get all history with optional filters.
     """
     filters = {}
-    if trace_source: filters["trace_source"] = trace_source
-    if batch_code: filters["batch_code"] = batch_code
+    if trace_source:
+        filters["trace_source"] = trace_source
+    if batch_code:
+        filters["batch_code"] = batch_code
     
     try:
         result = await db_select(
@@ -388,7 +393,8 @@ async def get_top_traced_batches(
         batch_info = {}
         for trace in traces:
             code = trace.get("batch_code")
-            if not code: continue
+            if not code:
+                continue
             
             batch_counts[code] = batch_counts.get(code, 0) + 1
             if code not in batch_info:
@@ -432,8 +438,10 @@ async def get_payment_transactions(
     Get all payment transactions with optional filters.
     """
     filters = {}
-    if status: filters["status"] = status
-    if payment_method: filters["payment_method"] = payment_method
+    if status:
+        filters["status"] = status
+    if payment_method:
+        filters["payment_method"] = payment_method
     
     try:
         result = await db_select(
@@ -532,8 +540,10 @@ async def get_account_registry(
     Get all user accounts with optional filters.
     """
     filters = {}
-    if account_type: filters["account_type"] = account_type
-    if verification_status: filters["verification_status"] = verification_status
+    if account_type:
+        filters["account_type"] = account_type
+    if verification_status:
+        filters["verification_status"] = verification_status
     
     try:
         result = await db_select(
@@ -609,7 +619,8 @@ async def get_invoice_registry(
     Get all invoices with optional filters.
     """
     filters = {}
-    if status: filters["status"] = status
+    if status:
+        filters["status"] = status
     
     try:
         result = await db_select(

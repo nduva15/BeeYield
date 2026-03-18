@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from typing import List, Optional, Dict
+from typing import Optional
 from datetime import datetime
 from app.core import security
 from app.db.supabase_db import db_select
-import math
 
 router = APIRouter()
 
@@ -27,7 +26,7 @@ async def get_flight_potential(
     apiaries = await db_select("apiaries", filters={"id": apiary_id}, token=token)
     if not apiaries:
         raise HTTPException(status_code=404, detail="Apiary not found")
-    apiary = apiaries[0]
+    apiaries[0]
     
     # 2. Get Local Flower Sources (Bloom Schedule)
     # For now we fetch all and filter by current month
@@ -54,11 +53,15 @@ async def get_flight_potential(
     # Bees stop foraging below 10C or above 38C
     # Rain (high humidity + rainfall) washes out nectar
     weather_mod = 1.0
-    if temp < 10: weather_mod = 0.1
-    elif temp < 15: weather_mod = 0.5
-    elif temp > 35: weather_mod = 0.7
+    if temp < 10:
+        weather_mod = 0.1
+    elif temp < 15:
+        weather_mod = 0.5
+    elif temp > 35:
+        weather_mod = 0.7
     
-    if humidity > 80: weather_mod *= 0.4 # Rain/High moisture
+    if humidity > 80:
+        weather_mod *= 0.4 # Rain/High moisture
     
     for fs in flower_sources:
         is_blooming = False

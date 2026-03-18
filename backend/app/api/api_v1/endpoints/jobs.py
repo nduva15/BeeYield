@@ -47,7 +47,7 @@ async def apply_for_job(
         # Note: 'resumes' bucket must exist and be set to Private.
         # The clean path logic requested: JUST the structure inside the bucket.
         try:
-            res = supabase.storage.from_("resumes").upload(
+            supabase.storage.from_("resumes").upload(
                 path=file_path, 
                 file=file_content,
                 file_options={"content-type": resume.content_type}

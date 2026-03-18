@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from datetime import datetime
-from typing import Any, Optional, List
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id, db_upsert, get_supabase
+from typing import Any, Optional
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_upsert, get_supabase
 from app.services import traceability_service
 from app.core import security
 from pydantic import BaseModel
@@ -335,13 +335,18 @@ async def update_user_details(
          
     try:
         meta = {}
-        if "first_name" in data: meta["first_name"] = data["first_name"]
-        if "last_name" in data: meta["last_name"] = data["last_name"]
-        if "role" in data: meta["role"] = data["role"]
+        if "first_name" in data:
+            meta["first_name"] = data["first_name"]
+        if "last_name" in data:
+            meta["last_name"] = data["last_name"]
+        if "role" in data:
+            meta["role"] = data["role"]
         
         updates = {}
-        if meta: updates["user_metadata"] = meta
-        if "email" in data: updates["email"] = data["email"]
+        if meta:
+            updates["user_metadata"] = meta
+        if "email" in data:
+            updates["email"] = data["email"]
         
         if updates:
             supabase.auth.admin.update_user_by_id(user_id, attributes=updates)
@@ -740,7 +745,8 @@ async def get_all_apiaries(current_admin: dict = Depends(check_admin_role), toke
     data = []
     try:
         data = await db_select("apiaries", order_by="created_at", ascending=False, token=token)
-    except: pass
+    except Exception:
+        pass
     
     if not data:
         from app.blockchain.honey_chain import honey_blockchain
@@ -763,7 +769,7 @@ async def create_apiary_admin(
         try:
             apiary_obj = schemas.ApiaryCreate(**apiary_in)
             return await traceability_service.register_apiary(apiary_obj, token=token)
-        except Exception as e:
+        except Exception:
             return await traceability_service.register_apiary(apiary_in, token=token)
     
     return await traceability_service.register_apiary(apiary_in, token=token)
@@ -773,7 +779,8 @@ async def get_all_hives(current_admin: dict = Depends(check_admin_role), token: 
     data = []
     try:
         data = await db_select("hives", order_by="created_at", ascending=False, token=token)
-    except: pass
+    except Exception:
+        pass
     
     if not data:
         from app.blockchain.honey_chain import honey_blockchain

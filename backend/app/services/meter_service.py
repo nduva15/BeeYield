@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Any
-from app.db.supabase_db import db_select, db_insert, db_get_by_id, db_update
+from app.db.supabase_db import db_select, db_insert, db_update
 from datetime import datetime
 
 class MeterService:

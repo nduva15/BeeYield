@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Union, Any, Dict
+from typing import Optional, Any
 from datetime import datetime
 
 class IoTDeviceBase(BaseModel):

@@ -1,7 +1,7 @@
 """
 Jobs/Careers Schemas
 """
-from pydantic import BaseModel, EmailStr, HttpUrl
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import date, datetime
 

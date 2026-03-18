@@ -206,7 +206,6 @@ async def shopify_complete(
     if not hmaclib.compare_digest(digest, hmac_received):
         raise HTTPException(status_code=400, detail="Invalid Shopify signature")
 
-    redirect_uri = f"{settings.APP_URL}/integrations/callback/shopify"
     token_url = f"https://{shop}/admin/oauth/access_token"
     async with httpx.AsyncClient(timeout=20.0) as client:
         resp = await client.post(

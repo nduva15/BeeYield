@@ -7,7 +7,7 @@ Python layer handles async orchestration (asyncio.sleep).
 import asyncio
 import functools
 import time
-from typing import Callable, Any, Optional
+from typing import Callable, Any
 
 try:
     from beeyield_core import RateLimiter as _RustLimiter

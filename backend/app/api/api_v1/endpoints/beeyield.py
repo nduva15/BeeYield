@@ -3,7 +3,7 @@ BeeYield Dashboard API Endpoints
 User-specific management of apiaries, hives, harvests, tasks, and inspections
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
-from typing import Any, Optional, List
+from typing import Optional, List
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from pydantic import BaseModel, Field
@@ -205,7 +205,7 @@ async def get_user_and_farmer_ids(user_id: str, token: Optional[str] = None) -> 
         farmers = await db_select("farmers", filters={"user_id": user_id}, token=token)
         if farmers:
             ids.append(farmers[0]["id"])
-    except:
+    except Exception:
         pass
     return list(set(ids))
 
@@ -260,7 +260,7 @@ async def get_user_apiaries(
          # Try finding by farmer_id column if it exists in schema
          try:
              owned_apiaries = await db_select("apiaries", filters={"farmer_id": relevant_ids[1]}, order_by="created_at", ascending=False, token=token)
-         except:
+         except Exception:
              pass
     
     # Post-process for status filter and ensure 'status' field exists
@@ -432,7 +432,7 @@ async def get_user_hives(
     if not owned_hives and len(relevant_ids) > 1:
         try:
              owned_hives = await db_select("hives", filters={"farmer_id": relevant_ids[1]}, order_by="created_at", ascending=False, limit=1000, token=token)
-        except:
+        except Exception:
              pass
     
     
@@ -608,10 +608,12 @@ async def get_user_harvests(
     if not owned and len(relevant_ids) > 1:
         try:
             h_filters = {"farmer_id": relevant_ids[1]}
-            if apiary_id: h_filters["apiary_id"] = apiary_id
-            if hive_id: h_filters["hive_id"] = hive_id
+            if apiary_id:
+                h_filters["apiary_id"] = apiary_id
+            if hive_id:
+                h_filters["hive_id"] = hive_id
             owned = await db_select("harvests", filters=h_filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000, token=token)
-        except:
+        except Exception:
             pass
     
     
@@ -622,7 +624,8 @@ async def get_user_harvests(
         shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id}, token=token)
         if shares:
             h_filters = {"apiary_id": apiary_id}
-            if hive_id: h_filters["hive_id"] = hive_id
+            if hive_id:
+                h_filters["hive_id"] = hive_id
             shared = await db_select("harvests", filters=h_filters, columns=columns, limit=1000, token=token)
     elif not hive_id:
         # Fetch all shared apiaries, then harvests
@@ -640,9 +643,12 @@ async def get_user_harvests(
     # Process data to ensure consistency and defaults
     for harvest in all_harvests:
         # Defaults for missing data
-        if not harvest.get('honey_type'): harvest['honey_type'] = 'Multifloral'
-        if not harvest.get('color_grade'): harvest['color_grade'] = 'Amber'
-        if harvest.get('is_verified') is None: harvest['is_verified'] = False
+        if not harvest.get('honey_type'):
+            harvest['honey_type'] = 'Multifloral'
+        if not harvest.get('color_grade'):
+            harvest['color_grade'] = 'Amber'
+        if harvest.get('is_verified') is None:
+            harvest['is_verified'] = False
         
         # Consistent moisture field for frontend
         if harvest.get('moisture_content') is not None and harvest.get('moisture_content_percent') is None:
@@ -680,7 +686,7 @@ async def log_harvest_batch(
     from app.services.harvest_batch_service import log_harvest_batch as batch_service
     
     # Verify apiary access
-    apiary = await check_apiary_access(str(batch_in.apiary_id), user_id, "edit", token=token)
+    await check_apiary_access(str(batch_in.apiary_id), user_id, "edit", token=token)
     
     # Verify hive exists and get its name
     hives = await db_select("hives", filters={"id": str(batch_in.hive_id), "apiary_id": str(batch_in.apiary_id)}, token=token)
@@ -777,10 +783,14 @@ async def create_harvest(
         if enriched:
             h = enriched[0]
             # Ensure consistency
-            if h.get('hive') and h['hive'].get('apiary'): h['apiary'] = h['hive']['apiary']
-            if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
-            if h.get('hive'): h['hive_code'] = h['hive'].get('hive_code')
-            if h.get('moisture_content') is not None: h['moisture_content_percent'] = h['moisture_content']
+            if h.get('hive') and h['hive'].get('apiary'):
+                h['apiary'] = h['hive']['apiary']
+            if not h.get('honey_type'):
+                h['honey_type'] = 'Multifloral'
+            if h.get('hive'):
+                h['hive_code'] = h['hive'].get('hive_code')
+            if h.get('moisture_content') is not None:
+                h['moisture_content_percent'] = h['moisture_content']
             return h
             
     return result["data"][0] if result.get("data") else data
@@ -822,10 +832,14 @@ async def update_harvest(
     enriched = await db_select("harvests", filters={"id": harvest_id}, columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)", token=token)
     if enriched:
         h = enriched[0]
-        if h.get('hive') and h['hive'].get('apiary'): h['apiary'] = h['hive']['apiary']
-        if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
-        if h.get('hive'): h['hive_code'] = h['hive'].get('hive_code')
-        if h.get('moisture_content') is not None: h['moisture_content_percent'] = h['moisture_content']
+        if h.get('hive') and h['hive'].get('apiary'):
+            h['apiary'] = h['hive']['apiary']
+        if not h.get('honey_type'):
+            h['honey_type'] = 'Multifloral'
+        if h.get('hive'):
+            h['hive_code'] = h['hive'].get('hive_code')
+        if h.get('moisture_content') is not None:
+            h['moisture_content_percent'] = h['moisture_content']
         return h
 
     return result["data"][0] if result.get("data") else data
@@ -957,10 +971,12 @@ async def get_user_tasks(
         try:
              # Try fallback to farmer_id if column exists
              h_filters = {"farmer_id": relevant_ids[1]}
-             if status_filter: h_filters["status"] = status_filter
-             if apiary_id: h_filters["apiary_id"] = apiary_id
+             if status_filter:
+                 h_filters["status"] = status_filter
+             if apiary_id:
+                 h_filters["apiary_id"] = apiary_id
              owned_tasks = await db_select("tasks", filters=h_filters, limit=1000, token=token)
-        except:
+        except Exception:
              pass
 
     # 2. Shared tasks (tasks from shared apiaries)
@@ -969,13 +985,15 @@ async def get_user_tasks(
         shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id}, token=token)
         if shares:
             t_filters = {"apiary_id": apiary_id}
-            if status_filter: t_filters["status"] = status_filter
+            if status_filter:
+                t_filters["status"] = status_filter
             shared_tasks = await db_select("tasks", filters=t_filters, limit=1000, token=token)
     else:
         shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id}, token=token)
         for share in shares:
             t_filters = {"apiary_id": share["apiary_id"]}
-            if status_filter: t_filters["status"] = status_filter
+            if status_filter:
+                t_filters["status"] = status_filter
             tasks = await db_select("tasks", filters=t_filters, limit=1000, token=token)
             shared_tasks.extend(tasks)
             
@@ -1111,10 +1129,12 @@ async def get_user_inspections(
     if not owned and len(relevant_ids) > 1:
         try:
             h_filters = {"farmer_id": relevant_ids[1]}
-            if apiary_id: h_filters["apiary_id"] = apiary_id
-            if hive_id: h_filters["hive_id"] = hive_id
+            if apiary_id:
+                h_filters["apiary_id"] = apiary_id
+            if hive_id:
+                h_filters["hive_id"] = hive_id
             owned = await db_select("inspections", filters=h_filters, order_by="inspection_date", ascending=False, token=token)
-        except:
+        except Exception:
             pass
     
     # 2. Shared inspections
@@ -1123,7 +1143,8 @@ async def get_user_inspections(
         shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id}, token=token)
         if shares:
             i_filters = {"apiary_id": apiary_id}
-            if hive_id: i_filters["hive_id"] = hive_id
+            if hive_id:
+                i_filters["hive_id"] = hive_id
             shared = await db_select("inspections", filters=i_filters, token=token)
     elif not hive_id:
         shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id}, token=token)
@@ -1254,7 +1275,7 @@ async def get_user_stats(
         if not owned_apiaries and len(relevant_ids) > 1:
             try:
                 owned_apiaries = await db_select("apiaries", filters={"farmer_id": relevant_ids[1]}, token=token)
-            except:
+            except Exception:
                 pass
 
         shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id}, token=token)
@@ -1286,7 +1307,7 @@ async def get_user_stats(
         if all_apiary_ids:
             try:
                 tasks = await db_select("tasks", filters={"apiary_id": all_apiary_ids}, limit=2000, token=token)
-            except:
+            except Exception:
                 pass
 
         total_honey_kg = sum(float(h.get("quantity_kg", 0)) for h in harvests)
@@ -1325,7 +1346,6 @@ async def get_user_id_by_email(email: str) -> Optional[str]:
     Requires SERVICE_ROLE_KEY.
     """
     try:
-        from app.core.config import settings
         
         # Try fetching from profiles first if emails are synced there
         profiles = await db_select("profiles", filters={"email": email}, limit=1)

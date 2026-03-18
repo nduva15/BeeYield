@@ -2,7 +2,7 @@
 Blog/CMS Endpoints with AI Content Engine Integration
 """
 from fastapi import APIRouter, HTTPException, Query, Body, Depends, Request
-from typing import Optional, List, Dict, Any
+from typing import Optional
 from app.schemas import blog as schemas
 from app.db.supabase_db import db_select, db_insert, db_update, db_get_by_id, db_delete
 from app.services.blog_ai_service import BlogAiService

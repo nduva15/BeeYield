@@ -1,10 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Header, Request
-from typing import Optional, Any, List
-from jose import jwt
-from app.core.config import settings
+from fastapi import APIRouter, Depends, HTTPException, Request
+from typing import Optional
 from app.core import security
 from app.schemas import shop as schemas
-from app.services import payment, shop_service
+from app.services import shop_service
 
 
 router = APIRouter()
@@ -66,7 +64,7 @@ async def initialize_checkout(
              raise HTTPException(status_code=401, detail=order_result["message"])
         raise HTTPException(status_code=500, detail=order_result["message"])
 
-    order_id = order_result["order_id"]
+    order_result["order_id"]
     
 
 

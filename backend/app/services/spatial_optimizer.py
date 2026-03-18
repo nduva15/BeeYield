@@ -4,10 +4,9 @@ Spatial Optimization Engine for Precision Pollination
 Uses Shapely to compute optimal hive placement geometries maximizing FPI
 (Flower-Pollinator Interaction) and considering AHP weights for topology.
 """
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 import math
-import numpy as np
-from shapely.geometry import shape, Point, Polygon, MultiPolygon
+from shapely.geometry import shape, Point
 from pydantic import BaseModel
 
 class OptimizerConfig(BaseModel):

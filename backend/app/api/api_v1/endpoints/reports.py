@@ -6,16 +6,14 @@ and scheduled report management.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
 from fastapi.responses import StreamingResponse
-from typing import List, Optional, Any
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
-from uuid import UUID
 import io
-import os
 
 from app.core import security
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
-from app.services.report_worker import generate_report_async, DataAggregator, PDFReportGenerator, ExcelReportGenerator
+from app.services.report_worker import DataAggregator, PDFReportGenerator, ExcelReportGenerator
 
 router = APIRouter()
 

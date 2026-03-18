@@ -1,7 +1,7 @@
-from typing import Any, List, Optional
+from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from datetime import datetime, timedelta
-from app.db.supabase_db import db_select, db_insert
+from app.db.supabase_db import db_select
 from app.core import security
 
 router = APIRouter()

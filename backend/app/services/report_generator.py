@@ -50,7 +50,7 @@ class ReportGenerator:
         # --- PREMIUM DESIGN TOKENS ---
         gold = colors.HexColor("#FFB300")
         dark_blue = colors.HexColor("#0D47A1")
-        light_gray = colors.HexColor("#F5F5F5")
+        colors.HexColor("#F5F5F5")
 
         title_style = ParagraphStyle(
             'ReportTitle',

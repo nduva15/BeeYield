@@ -5,21 +5,19 @@ Generates high-fidelity PDF and Excel reports using real data.
 Uses ReportLab for PDF layout and openpyxl for Excel.
 """
 import io
-import os
 import uuid
-import math
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List, Any
 
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm, cm
-from reportlab.lib.colors import HexColor, white, black
+from reportlab.lib.units import mm
+from reportlab.lib.colors import HexColor, white
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    Image, PageBreak, HRFlowable
+    HRFlowable
 )
-from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.lib.enums import TA_CENTER
 
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side

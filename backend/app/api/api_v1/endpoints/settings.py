@@ -1,15 +1,11 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Body, Request
-from typing import Any, List, Optional
-from uuid import UUID
-from app.db.supabase_db import db_select, db_upsert, db_update, db_insert, get_client
+from typing import List, Optional
+from app.db.supabase_db import db_select, db_upsert, db_update, db_insert
 from app.core import security
 from app.schemas.user_settings import (
     FullSettingsResponse, 
-    ProfileSchema, 
-    UserPreferencesSchema, 
     ThresholdSchema,
-    AlertThresholdCreate,
     UserPreferencesUpdate,
     NotificationUpdate,
     UserNotificationSettingsSchema,

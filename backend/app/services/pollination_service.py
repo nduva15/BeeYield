@@ -4,22 +4,13 @@ Service layer for Precision Pollination — Rust-Accelerated (Post-Oxidize)
 Math logic and analytics aggregation moved to `beeyield_core.PollinationEngine`.
 Python handles asynchronous DB orchestration and schema validation.
 """
-from typing import List, Optional, Dict, Any
-from datetime import datetime, date
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id
+from typing import List, Optional
+from app.db.supabase_db import db_select
 from app.schemas.pollination import (
     CropPollinationRequirements,
     PollinationCalculatorInput,
     PollinationCalculatorResult,
     PollinationContract,
-    PollinationContractCreate,
-    PollinationContractUpdate,
-    HiveAssignment,
-    HiveAssignmentCreate,
-    HiveAssignmentUpdate,
-    PollinationApiary,
-    HiveSensorData,
-    HiveStatus,
     PollinationAnalytics,
 )
 
@@ -41,7 +32,8 @@ class PollinationService:
             filters = {"crop_name": crop_name} if crop_name else {}
             data = await db_select('crop_pollination_requirements', filters=filters, token=token)
             return [CropPollinationRequirements(**item) for item in data]
-        except Exception: return []
+        except Exception:
+            return []
     
     async def calculate_pollination_needs(self, input_data: PollinationCalculatorInput, token: Optional[str] = None) -> PollinationCalculatorResult:
         """Ported math to Rust."""
@@ -68,8 +60,10 @@ class PollinationService:
 
     async def get_contracts(self, user_id=None, status=None, token=None) -> List[PollinationContract]:
         filters = {}
-        if user_id: filters['user_id'] = user_id
-        if status: filters['status'] = status
+        if user_id:
+            filters['user_id'] = user_id
+        if status:
+            filters['status'] = status
         data = await db_select('pollination_contracts', filters=filters, order_by='created_at', ascending=False, token=token)
         return [PollinationContract(**item) for item in data]
 
