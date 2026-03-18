@@ -45,8 +45,8 @@ const BloomPhenology: React.FC = () => {
                 <BeeYieldPageHeader
                     icon={Flower2}
                     label="Phenology"
-                    title={<>Bloom <span className="text-[#F4D03F]">Synchronization</span></>}
-                    subtitle="BBCH Growth Stages · Pollination Window Tracking · Forage Opportunity Math"
+                    title={<>Bloom <span className="text-[#F4D03F]">synchronization</span></>}
+                    subtitle="Growth Stages · Pollination window tracking · Forage conditions"
                     actions={
                         <button className={cn(glass.btnSecondary, "h-9 px-4")}>
                             <History className="w-3.5 h-3.5 mr-2" />
@@ -68,7 +68,7 @@ const BloomPhenology: React.FC = () => {
 
                         <div className="text-center py-8 bg-[#F9F7F2]/50 rounded-2xl border border-[#F4D03F]/10">
                             <span className="text-5xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">65</span>
-                            <p className="text-[10px] font-bold text-gray-400 mt-2">BBCH: Full Bloom</p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-2">Growth Stage: Full Bloom</p>
                         </div>
 
                         <div className="space-y-4">

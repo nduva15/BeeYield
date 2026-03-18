@@ -10,17 +10,7 @@ import {
     Line
 } from 'recharts';
 
-const data = [
-    { date: '03.01', bloom: 10, activity: 5 },
-    { date: '03.04', bloom: 15, activity: 8 },
-    { date: '03.07', bloom: 25, activity: 12 },
-    { date: '03.10', bloom: 45, activity: 20 },
-    { date: '03.13', bloom: 72, activity: 65 },
-    { date: '03.16', bloom: 85, activity: 92 },
-    { date: '03.19', bloom: 95, activity: 98 },
-    { date: '03.22', bloom: 80, activity: 85 },
-    { date: '03.25', bloom: 50, activity: 40 },
-];
+const data: any[] = [];
 
 const BloomCorrelationGraph: React.FC = () => {
     return (

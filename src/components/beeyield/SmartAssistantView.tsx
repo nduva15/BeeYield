@@ -369,7 +369,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 <BeeYieldPageHeader
                     icon={Bot}
                     label="Assistant"
-                    title={<>BeeYield <span className="text-[#F4D03F]">Assistant</span></>}
+                    title={<>BeeYield <span className="text-[#F4D03F]">AI</span></>}
                     subtitle="Ask about hive health, inspections, pollination, or traceability."
                     actions={
                         <div className="flex items-center gap-2">
@@ -598,7 +598,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
                     <p className="text-center text-[8px] text-[#1A1A1A]/30 font-bold mt-3 flex items-center justify-center gap-3">
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
-                        Powered by BeeYield Intelligence — Specialist Research Engine
+                        Powered by BeeYield knowledge — Specialist research engine
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
                     </p>
                 </div>

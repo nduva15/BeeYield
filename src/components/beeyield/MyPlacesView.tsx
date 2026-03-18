@@ -66,6 +66,33 @@ import HiveFormModal from './HiveFormModal';
 import OrchardDashboardView from './OrchardDashboardView';
 import { glass, GlassStatCard } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+const MapController = ({ center, zoom }: { center: [number, number]; zoom: number }) => {
+    const map = useMap();
+    React.useEffect(() => {
+        map.flyTo(center, zoom, { duration: 1.5 });
+    }, [center, zoom, map]);
+    return null;
+};
 
 // --- Detail View Component ---
 const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: Apiary; setViewingApiary: (a: Apiary | null) => void; onTabChange?: (tab: string) => void }) => {
@@ -373,7 +400,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         setEditingApiary(null);
         setFormData({
             name: '', type: 'permanent', location_name: '', region: '',
-            forage_type: '', expected_hives: 0, size_acres: 0, notes: ''
+            forage_type: '', expected_hives: 0, size_acres: 0, notes: '',
+            latitude: -2.42, longitude: 37.97 // Default to Kibwezi Sanctuary
         });
     };
 
@@ -409,6 +437,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             expected_hives: apiary.expected_hives || 0,
             size_acres: apiary.size_acres || 0,
             notes: apiary.notes || '',
+            latitude: apiary.latitude || -2.42,
+            longitude: apiary.longitude || 37.97
         });
         setIsAddingPlace(true);
     };
@@ -535,16 +565,116 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                             </div>
 
                             <div className="space-y-5">
-                                <div className="space-y-2">
-                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Geospatial Point</Label>
-                                    <div className="relative">
-                                        <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
-                                        <Input
-                                            value={formData.location_name}
-                                            onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                                            placeholder="GPS / ADDRESS"
-                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl tracking-wider"
-                                        />
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between px-2">
+                                        <Label className="text-[9px] font-black text-gray-400">Tactical GIS Deployment</Label>
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1B9157]/10 rounded-lg">
+                                            <Shield className="w-2.5 h-2.5 text-[#1B9157]" />
+                                            <span className="text-[7px] font-black text-[#1B9157] tracking-widest uppercase">Precise Fix Enabled</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="relative h-64 rounded-2xl overflow-hidden border border-[#F4D03F]/20 shadow-inner group">
+                                        <MapContainer 
+                                            center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
+                                            zoom={13} 
+                                            style={{ height: '100%', width: '100%' }}
+                                            zoomControl={false}
+                                        >
+                                            <TileLayer
+                                                url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+                                                attribution="&copy; Google Maps Hybrid"
+                                            />
+                                            <MapController 
+                                                center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
+                                                zoom={15} 
+                                            />
+                                            <Marker 
+                                                position={[formData.latitude || -2.42, formData.longitude || 37.97]}
+                                                draggable={true}
+                                                eventHandlers={{
+                                                    dragend: (e) => {
+                                                        const marker = e.target;
+                                                        const pos = marker.getLatLng();
+                                                        setFormData(prev => ({ ...prev, latitude: pos.lat, longitude: pos.lng }));
+                                                    }
+                                                }}
+                                            >
+                                                <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                                    <div className="p-2 text-center">
+                                                        <p className="text-xs font-black text-[#1B9157]">Deployment Pivot</p>
+                                                        <p className="text-[9px] text-gray-400">Drag to exact hive site</p>
+                                                    </div>
+                                                </Popup>
+                                            </Marker>
+                                        </MapContainer>
+
+                                        {/* Map Overlays */}
+                                        <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                                <input 
+                                                    className="w-full bg-white/90 backdrop-blur-md border-none rounded-xl py-2 pl-10 pr-4 text-[10px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#1B9157]/20"
+                                                    placeholder="Search exact location..."
+                                                    onKeyDown={async (e) => {
+                                                        if (e.key === 'Enter') {
+                                                            const query = e.currentTarget.value;
+                                                            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                                                            const data = await res.json();
+                                                            if (data[0]) {
+                                                                setFormData(prev => ({ 
+                                                                    ...prev, 
+                                                                    latitude: parseFloat(data[0].lat), 
+                                                                    longitude: parseFloat(data[0].lon),
+                                                                    location_name: data[0].display_name
+                                                                }));
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    if (navigator.geolocation) {
+                                                        navigator.geolocation.getCurrentPosition(pos => {
+                                                            setFormData(prev => ({ 
+                                                                ...prev, 
+                                                                latitude: pos.coords.latitude, 
+                                                                longitude: pos.coords.longitude 
+                                                            }));
+                                                        });
+                                                    }
+                                                }}
+                                                className="self-start flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[8px] font-black shadow-lg hover:opacity-90 transition-all"
+                                            >
+                                                <MapPin className="w-2.5 h-2.5" />
+                                                Locate Current Position
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Latitude</Label>
+                                            <Input readOnly value={formData.latitude?.toFixed(6) || '-'} className="h-8 bg-gray-50/50 text-[10px] font-mono border-none rounded-lg" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Longitude</Label>
+                                            <Input readOnly value={formData.longitude?.toFixed(6) || '-'} className="h-8 bg-gray-50/50 text-[10px] font-mono border-none rounded-lg" />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-[9px] font-black text-gray-400 ml-2">Resolved Address</Label>
+                                        <div className="relative">
+                                            <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                            <Input
+                                                value={formData.location_name}
+                                                onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+                                                placeholder="Deployment Site Coordinates"
+                                                className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl tracking-wider"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -562,12 +692,12 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Operational Log</Label>
+                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Operational Notes</Label>
                                     <Textarea
                                         value={formData.notes}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                         className="h-20 p-4 text-[10px] font-bold bg-white/50 border-[#F4D03F]/10 rounded-xl resize-none italic leading-relaxed"
-                                        placeholder="MISSION_CRITICAL_NOTES..."
+                                        placeholder="Add important notes for this site..."
                                     />
                                 </div>
                             </div>
@@ -710,7 +840,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                                 </div>
                                             </div>
                                             <div className={cn("p-2 rounded-xl border space-y-0.5", (apiary.hive_count || 0) > 0 ? "bg-[#1B9157]/5 border-[#1B9157]/10" : "bg-gray-50/50 border-gray-100")}>
-                                                <p className="text-[7px] font-black text-gray-400">Active_Units</p>
+                                                <p className="text-[7px] font-black text-gray-400">Active Units</p>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className={cn("text-sm font-black tabular-nums", (apiary.hive_count || 0) > 0 ? "text-[#1B9157]" : "text-gray-300")}>{apiary.hive_count || 0}</span>
                                                     <span className="text-[8px] font-bold text-gray-300">Hub</span>

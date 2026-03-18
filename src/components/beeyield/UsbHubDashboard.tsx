@@ -211,7 +211,7 @@ export function UsbHubDashboard() {
         <BeeYieldPageShell>
             <BeeYieldPageHeader
                 icon={Cpu}
-                label="Hardware_Version_Alpha_Comm_Port"
+                label="Hardware Version Alpha Comm Port"
                 title={<>Architecture <span className="text-[#F4D03F]">Manager</span></>}
                 subtitle="High-fidelity physical link interface for BeeYield Hub Alpha."
                 actions={
@@ -388,7 +388,7 @@ export function UsbHubDashboard() {
                                         className="space-y-4"
                                     >
                                         <div className="flex justify-between items-end">
-                                            <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Writing_Blocks...</span>
+                                            <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Writing data...</span>
                                             <span className="text-2xl font-black text-[#F4D03F] tracking-tighter tabular-nums">{syncProgress}%</span>
                                         </div>
                                         <div className="h-2 w-full bg-white/60 rounded-full overflow-hidden p-0.5 border border-[#F4D03F]/10 shadow-inner">
@@ -405,7 +405,7 @@ export function UsbHubDashboard() {
                                             <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
                                         </div>
                                         <div>
-                                            <span className="text-[9px] font-black text-[#1B9157]">System_Standby_Mode</span>
+                                            <span className="text-[9px] font-black text-[#1B9157]">System Standby</span>
                                             <p className="text-[8px] font-black text-gray-400 mt-0.5">Verified For Overwrite</p>
                                         </div>
                                     </div>

@@ -5,9 +5,9 @@ import { glass } from '../beeyield/GlassTheme';
 
 const HiveMetrics: React.FC = () => {
     const metrics = [
-        { label: 'Active Colonies', value: '42', unit: 'UNITS', icon: Hexagon, color: 'text-[#1B9157]' },
-        { label: 'Avg Force Strength', value: '9.4', unit: 'FRAMES', icon: Activity, color: 'text-[#F4D03F]' },
-        { label: 'Forage Intensity', value: 'High', unit: 'STATUS', icon: Zap, color: 'text-[#1B9157]' },
+        { label: 'Active Colonies', value: '—', unit: 'UNITS', icon: Hexagon, color: 'text-[#1B9157]' },
+        { label: 'Avg Force Strength', value: '—', unit: 'FRAMES', icon: Activity, color: 'text-[#F4D03F]' },
+        { label: 'Forage Intensity', value: '—', unit: 'STATUS', icon: Zap, color: 'text-[#1B9157]' },
     ];
 
     return (

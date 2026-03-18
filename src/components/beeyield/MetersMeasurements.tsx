@@ -71,9 +71,9 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
         <div className={cn("p-8 -m-0 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}>
             <BeeYieldPageHeader
                 icon={TrendingUp}
-                label="Signal Load Analytics"
-                title={<>Diagnostic <span className="text-[#F4D03F]">Engine</span></>}
-                subtitle="Advanced Telemetry Processing And Anomaly Detection"
+                label="Data Analysis"
+                title={<>Sensor <span className="text-[#F4D03F]">Analytics</span></>}
+                subtitle="Analyze your sensor data and find unusual activity"
             />
 
             {/* Navigation Tabs (Cards) */}

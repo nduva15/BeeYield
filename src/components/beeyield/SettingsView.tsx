@@ -85,6 +85,20 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const [isAddCardOpen, setIsAddCardOpen] = React.useState(false);
     const [StripeCardFormComp, setStripeCardFormComp] = React.useState<React.ComponentType<any> | null>(null);
 
+    // Profile state
+    const [fullName, setFullName] = React.useState(user?.user_metadata?.full_name || '');
+    const [phone, setPhone] = React.useState(user?.user_metadata?.phone || '');
+    const [locationName, setLocationName] = React.useState(user?.user_metadata?.location_name || '');
+    const [profileLoading, setProfileLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        if (user?.user_metadata) {
+            setFullName(user.user_metadata.full_name || '');
+            setPhone(user.user_metadata.phone || '');
+            setLocationName(user.user_metadata.location_name || '');
+        }
+    }, [user]);
+
     React.useEffect(() => {
         setMounted(true);
     }, []);
@@ -130,9 +144,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     const handleAtomicSave = async (section: string) => {
         setLoading(prev => ({ ...prev, [section]: true }));
+        if (section === 'Profile') setProfileLoading(true);
         setPageError(null);
         try {
-            await syncToBackend();
+            if (section === 'Profile') {
+                const names = fullName.trim().split(/\s+/);
+                const firstName = names[0] || '';
+                const lastName = names.slice(1).join(' ') || '';
+                const { error } = await beeyieldService.updateUserProfile({
+                    first_name: firstName,
+                    last_name: lastName,
+                    phone: phone,
+                    location_name: locationName
+                });
+                if (error) throw error;
+            } else {
+                await syncToBackend();
+            }
+            
             toast.success(`${section} synced`, {
                 description: "Your settings are saved and up to date.",
                 icon: <Check className="w-4 h-4 text-[#1B9157]" />
@@ -144,6 +173,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             toast.error(msg);
         } finally {
             setLoading(prev => ({ ...prev, [section]: false }));
+            if (section === 'Profile') setProfileLoading(false);
         }
     };
 

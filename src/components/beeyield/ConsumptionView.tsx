@@ -8,18 +8,9 @@ import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
 
-const consumptionData = [
-    { name: 'Water', value: 320, color: 'var(--honey)' },
-    { name: 'Heat', value: 210, color: '#EA580C' },
-    { name: 'Energy', value: 410, color: '#10B981' },
-    { name: 'Other', value: 100, color: '#6366F1' },
-];
+const consumptionData: any[] = [];
 
-const summaryItems = [
-    { label: 'Water', value: '320 m3', icon: Droplets, color: 'text-blue-500' },
-    { label: 'Heat', value: '210 GJ', icon: Thermometer, color: 'text-orange-500' },
-    { label: 'Energy', value: '410 kWh', icon: Zap, color: 'text-[#1B9157]' },
-];
+const summaryItems: any[] = [];
 
 const ConsumptionView: React.FC = () => {
     return (
@@ -33,13 +24,13 @@ const ConsumptionView: React.FC = () => {
                 <div className="space-y-4">
                     <div className={cn(glass.badge, 'bg-[#1B9157] text-[#1B9157] border-[#1B9157] mb-2')}>
                         <Activity className="w-4 h-4 mr-2" />
-                        Usage Volumetric Engine v4.2
+                        Usage monitoring
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Consumption <span className="text-[#F4D03F]">Density</span>
+                        Usage <span className="text-[#F4D03F]">analysis</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
-                        Resource Utilization · Volumetric Analysis · Live Signal Processing
+                        Resource utilization · Data analysis · Live processing
                     </p>
                 </div>
             </div>
@@ -53,22 +44,22 @@ const ConsumptionView: React.FC = () => {
             >
                 <div className="flex items-center gap-3 mb-8">
                     <Settings2 className="w-5 h-5 text-[#F4D03F]" />
-                    <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Aggregate Parameters</h3>
+                    <h3 className={cn(glass.microLabel, "font-bold opacity-70")}>Filter Parameters</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Geospatial Zone</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Location</label>
                         <Input
-                            defaultValue="Kibwezi Main Area A"
+                            defaultValue="Local Apiary"
                             className={cn(glass.input, "h-12 text-sm font-semibold")}
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Logic_Type</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Metric</label>
                         <Select defaultValue="water">
                             <SelectTrigger className={cn(glass.input, "h-12 text-sm font-semibold")}>
-                                <SelectValue placeholder="Select type" />
+                                <SelectValue placeholder="Select metric" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-border bg-background shadow-xl">
                                 <SelectItem value="water">Water</SelectItem>
@@ -78,7 +69,7 @@ const ConsumptionView: React.FC = () => {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Temporal_Bin</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Time range</label>
                         <Select defaultValue="7days">
                             <SelectTrigger className={cn(glass.input, "h-12 text-sm font-semibold")}>
                                 <SelectValue placeholder="Select range" />
@@ -90,7 +81,7 @@ const ConsumptionView: React.FC = () => {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Recursive_Comp</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Compare with</label>
                         <Select defaultValue="main">
                             <SelectTrigger className={cn(glass.input, "h-12 text-sm font-semibold")}>
                                 <SelectValue placeholder="Select comparison" />
@@ -101,7 +92,7 @@ const ConsumptionView: React.FC = () => {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Archival Export</label>
+                        <label className={cn(glass.microLabel, "pl-1 opacity-70 text-[#F4D03F]")}>Export Data</label>
                         <div className="flex gap-2">
                             <button className={cn(glass.btnSecondary, "flex-1 h-12 justify-center text-[10px] font-bold")}>
                                 <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -131,19 +122,33 @@ const ConsumptionView: React.FC = () => {
                             <Search className="w-6 h-6 text-[#F4D03F]" />
                         </div>
                         <div>
-                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Volumetric <span className="text-[#F4D03F]">Density</span></h3>
-                            <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Live usage signal array benchmarking</p>
+                            <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage <span className="text-[#F4D03F]">Trends</span></h3>
+                            <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Live usage data analysis</p>
                         </div>
                     </div>
-                    <div className={cn(glass.badge, "bg-[#F4D03F] text-white border-transparent px-4 py-2 shadow-lg animate-pulse")}>
-                        LIVE_SIGNAL_ARRAY
+                    <div className={cn(glass.badge, "bg-[#F4D03F] text-white border-transparent px-4 py-2 shadow-lg")}>
+                        LIVE DATA
                     </div>
                 </div>
 
                 <div className="p-10 pb-12 relative z-10">
-                    <div className="h-[420px] w-full">
+                    <div className="h-[420px] w-full relative">
+                        {consumptionData.length === 0 && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-400:bg-black/5 backdrop-blur-sm z-20 rounded-3xl border border-dashed border-border">
+                                <motion.div
+                                    animate={{ opacity: [0.4, 1, 0.4] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="flex flex-col items-center gap-4"
+                                >
+                                    <div className="w-16 h-16 rounded-[1.5rem] bg-[#F4D03F]/10 flex items-center justify-center">
+                                        <Activity className="w-8 h-8 text-[#F4D03F]" />
+                                    </div>
+                                    <h5 className="text-sm font-black text-foreground/40 tracking-tighter uppercase">Awaiting Live Hub Signal...</h5>
+                                </motion.div>
+                            </div>
+                        )}
                         <ResponsiveContainer width="100%" height="100%" debounce={50}>
-                            <BarChart data={consumptionData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
+                            <BarChart data={consumptionData.length > 0 ? consumptionData : [{ name: '', value: 0 }]} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
                                 <XAxis
                                     dataKey="name"
@@ -197,7 +202,7 @@ const ConsumptionView: React.FC = () => {
                     <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                         <Activity className="w-5 h-5 text-[#F4D03F]" />
                     </div>
-                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Recursive Summary <span className="text-[#F4D03F]">Log</span></h3>
+                    <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage <span className="text-[#F4D03F]">Summary</span></h3>
                 </div>
 
                 <div className={cn(glass.card, "p-4 space-y-4 shadow-xl divide-y divide-border/30 overflow-hidden")}>
@@ -215,7 +220,7 @@ const ConsumptionView: React.FC = () => {
                                 </div>
                                 <div>
                                     <p className={cn(glass.sectionTitle, "text-xl normal-case italic opacity-80 group-hover:opacity-100 transition-opacity")}>{item.label}</p>
-                                    <p className={cn(glass.microLabel, "opacity-40 font-bold")}>Last Month Bin</p>
+                                    <p className={cn(glass.microLabel, "opacity-40 font-bold")}>Recent period</p>
                                 </div>
                             </div>
                             <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-[#FFF9F0] text-[#F4D03F] border-[#F4D03F]/30 shadow-lg group-hover:scale-105 transition-transform")}>
@@ -238,10 +243,10 @@ const ConsumptionView: React.FC = () => {
                     <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
-                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Volumetric Diagnostic Summary</h5>
+                    <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Usage Insights</h5>
                     <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground">
-                        Recursive volumetric analysis indicates balanced density across Water, Heat, and Energy sectors. The Energy sector shows
-                        a 12% peak increase compared to the previous bin, while Water remains within historical baseline thresholds.
+                        Data analysis indicates balanced resource usage across your monitored sectors. The current period shows 
+                        steady metrics within historical ranges.
                     </p>
                 </div>
             </motion.div>

@@ -100,18 +100,18 @@ const MasterMapView: React.FC = () => {
 
             <BeeYieldPageHeader
                 icon={MapIcon}
-                label="Map"
-                title={<>Master <span className="text-[#F4D03F]">Map</span></>}
-                subtitle="View locations, boundaries, and placements."
+                label="Maps"
+                title={<>Location <span className="text-[#F4D03F]">Overview</span></>}
+                subtitle="View your locations, boundaries, and site placements."
                 actions={
                     <div className="flex gap-3">
                         <Button variant="outline" className="rounded-xl border border-gray-100 bg-white/50 text-gray-600 font-bold text-[10px] h-9 px-4 hover:bg-gray-50">
                             <Layers className="w-3.5 h-3.5 mr-2" />
-                            Terrain Overlay
+                            Terrain view
                         </Button>
                         <Button className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-bold shadow-lg shadow-[#1B9157]/10")}>
                             <Save className="w-3.5 h-3.5 mr-2" />
-                            Sync Changes
+                            Update map
                         </Button>
                     </div>
                 }
@@ -123,8 +123,8 @@ const MasterMapView: React.FC = () => {
                 <div className="w-14 flex flex-col gap-3">
                     {[
                         { id: 'select', icon: MousePointer2, label: 'Select' },
-                        { id: 'draw', icon: Hexagon, label: 'Bound' },
-                        { id: 'pallet', icon: MapIcon, label: 'Pallet' },
+                        { id: 'draw', icon: Hexagon, label: 'Range' },
+                        { id: 'pallet', icon: MapIcon, label: 'Sensors' },
                     ].map((tool) => (
                         <button
                             key={tool.id}
@@ -137,7 +137,7 @@ const MasterMapView: React.FC = () => {
                             )}
                         >
                             <tool.icon className="w-4 h-4" />
-                            <span className="text-[6px] font-bold mt-1">{tool.label}</span>
+                            <span className="text-[6px] font-bold mt-1 uppercase tracking-tighter">{tool.label}</span>
                         </button>
                     ))}
                     <div className="mt-auto space-y-3">
@@ -190,27 +190,27 @@ const MasterMapView: React.FC = () => {
                             >
                                 <Popup className="font-bold border-none shadow-xl rounded-xl">
                                     <div className="p-2 text-center">
-                                        <p className="text-xs font-black text-[#1B9157]">Editable Site Pivot</p>
-                                        <p className="text-[9px] text-gray-400">Drag to Adjust</p>
+                                        <p className="text-xs font-black text-[#1B9157]">Center point</p>
+                                        <p className="text-[9px] text-gray-400">Drag to adjust</p>
                                     </div>
                                 </Popup>
                             </Marker>
                         </MapContainer>
                     </div>
 
-                    {/* Digital Hud */}
+                    {/* Location Details */}
                     <div className="absolute top-6 left-6 space-y-4 pointer-events-none">
                         <div className="p-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm pointer-events-auto">
                             <div className="flex items-center gap-3 mb-3">
                                 <Compass className="w-4 h-4 text-gray-500" />
-                                <span className="text-[10px] font-bold text-gray-700">Feed</span>
+                                <span className="text-[10px] font-bold text-gray-700">Coordinates</span>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[9px] font-mono text-gray-400">LAT: —</p>
-                                <p className="text-[9px] font-mono text-gray-400">LON: —</p>
+                                <p className="text-[9px] font-mono text-gray-400">Lat: —</p>
+                                <p className="text-[9px] font-mono text-gray-400">Lon: —</p>
                                 <div className="flex items-center gap-2 mt-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-                                    <p className="text-[8px] font-bold text-gray-400">No fix</p>
+                                    <p className="text-[8px] font-bold text-gray-400">Searching signal</p>
                                 </div>
                             </div>
                         </div>
@@ -228,24 +228,24 @@ const MasterMapView: React.FC = () => {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
                                         <Shield className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                        <span className="text-[10px] font-bold text-[#F4D03F]">Fence Active</span>
+                                        <span className="text-[10px] font-bold text-[#F4D03F]">Boundary active</span>
                                     </div>
                                     <button
                                         onClick={() => setShowGeofences(false)}
                                         className="text-white/40 hover:text-white"
                                         aria-label="Hide geofences"
-                                        title="Hide geofences"
+                                        title="Hide"
                                     >
                                         <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/10">
-                                        <span className="text-[9px] font-bold tracking-wider">Main Orchard</span>
+                                        <span className="text-[9px] font-semibold tracking-wider">Main orchard</span>
                                         <Badge className="bg-[#1B9157] text-[8px] font-bold rounded-md h-5">Secure</Badge>
                                     </div>
-                                    <p className="text-[8px] font-bold text-white/50 leading-snug tracking-wider">
-                                        Tamper alert will trigger if pallet GPS drifts more than 5m outside polygon.
+                                    <p className="text-[8px] font-semibold text-white/50 leading-snug tracking-wider">
+                                        Alerts will trigger if the sensor moves outside the defined boundary.
                                     </p>
                                 </div>
                             </motion.div>
@@ -267,16 +267,16 @@ const MasterMapView: React.FC = () => {
                 <div className="w-80 flex flex-col gap-6">
                     <div className={cn(glass.card, "p-6 space-y-6 bg-white/80 backdrop-blur-md rounded-3xl border-gray-100 shadow-sm")}>
                         <div className="border-b border-gray-100 pb-4">
-                            <h3 className="text-sm font-bold text-[#1A1A1A] uppercase tracking-tight">Active Selection</h3>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Site details</h3>
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-bold text-gray-400 ml-1">Block Name</label>
+                                <label className="text-[9px] font-bold text-gray-400 ml-1">Selection name</label>
                                 <Input value="—" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-xs" readOnly />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold text-gray-400 ml-1">Acreage</label>
+                                    <label className="text-[9px] font-bold text-gray-400 ml-1">Size</label>
                                     <Input value="—" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
                                 </div>
                                 <div className="space-y-1.5">
@@ -292,11 +292,11 @@ const MasterMapView: React.FC = () => {
                         <div className="flex items-center justify-between border-b border-white/10 pb-4">
                             <div className="flex items-center gap-3">
                                 <Search className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className="text-sm font-bold uppercase tracking-tight">Location Search</h3>
+                                <h3 className="text-sm font-bold tracking-tight">Find location</h3>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1B9157]/20 border border-[#1B9157]/30 rounded-lg">
                                 <Shield className="w-3 h-3 text-[#1B9157]" />
-                                <span className="text-[7px] font-black text-[#1B9157] tracking-widest uppercase">Client Secure View</span>
+                                <span className="text-[7px] font-bold text-[#1B9157] tracking-widest uppercase">Secure view</span>
                             </div>
                         </div>
                         <div className="space-y-4">
@@ -318,14 +318,14 @@ const MasterMapView: React.FC = () => {
                                 className="w-full bg-white/5 border-white/10 text-white/70 hover:bg-[#1B9157] hover:text-white text-[9px] font-black h-9 rounded-xl transition-all"
                             >
                                 <Locate className="w-3 h-3 mr-2" />
-                                Use Actual Location
+                                Use current location
                             </Button>
 
                             <div className="pt-4 border-t border-white/5 space-y-3">
-                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Active Layers</p>
+                                <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Map view</p>
                                 {[
-                                    { label: 'Satellite View', active: zoom >= 8 },
-                                    { label: 'Global Map', active: zoom < 8 },
+                                    { label: 'Satellite view', active: zoom >= 8 },
+                                    { label: 'Standard map', active: zoom < 8 },
                                 ].map((row, idx) => (
                                     <div key={idx} className="flex items-center justify-between group">
                                         <span className={cn("text-[9px] font-bold transition-colors", row.active ? "text-[#1B9157]" : "text-gray-500")}>{row.label}</span>

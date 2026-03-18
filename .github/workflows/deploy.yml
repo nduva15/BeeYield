@@ -34,7 +34,7 @@ jobs:
           VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-        run: pnpm run build:old
+        run: pnpm run build
 
       - name: Deploy to Hostinger via SSH
         uses: appleboy/scp-action@v0.1.7

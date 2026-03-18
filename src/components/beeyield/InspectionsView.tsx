@@ -267,8 +267,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                 {/* ── Header ── */}
                 <PageHeader
                     icon={Microscope}
-                    label="Inspection_Log"
-                    title={<>Hive <span className="text-[#F4D03F]">Diagnostic</span></>}
+                    label="Inspection"
+                    title={<>Hive <span className="text-[#F4D03F]">inspection</span></>}
                     subtitle="Record inspection notes and health status."
                     actions={
                         <div className="flex gap-2">
@@ -284,7 +284,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 className={glass.btnPrimary}
                             >
                                 {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                                {editingId ? 'Update_Report' : 'Archive_Log'}
+                                {editingId ? 'Update Report' : 'Archive Log'}
                             </button>
                         </div>
                     }
@@ -303,8 +303,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <Target className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Unit_Config</h3>
-                                    <p className="text-[8px] font-black text-gray-400">Identification Synthesis</p>
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Hive Details</h3>
+                                    <p className="text-[8px] font-black text-gray-400">Hive and Location</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-4">
@@ -330,15 +330,15 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label className={glass.microLabel}>Active Unit</Label>
+                                    <Label className={glass.microLabel}>Select Hive</Label>
                                     <Select
                                         value={formData.hive_id}
                                         onValueChange={(val) => setFormData({ ...formData, hive_id: val })}
                                     >
-                                        <SelectTrigger id="inspection-hive" aria-label="Active unit" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
+                                        <SelectTrigger id="inspection-hive" aria-label="Select hive" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
                                             <div className="flex items-center gap-3">
                                                 <Hexagon className="w-4 h-4 text-[#F4D03F]/40" />
-                                                <SelectValue placeholder="Unit Logic Core" />
+                                                <SelectValue placeholder="Select a hive…" />
                                             </div>
                                         </SelectTrigger>
                                         <SelectContent className={glass.selectContent}>
@@ -348,7 +348,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="inspection-date" className={glass.microLabel}>Diagnostic Date</Label>
+                                    <Label htmlFor="inspection-date" className={glass.microLabel}>Inspection Date</Label>
                                     <div className="relative group/input">
                                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F] opacity-40" />
                                         <Input
@@ -364,14 +364,14 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="inspection-inspector-name" className={glass.microLabel}>Inspector Signature</Label>
+                                    <Label htmlFor="inspection-inspector-name" className={glass.microLabel}>Inspector Name</Label>
                                     <div className="relative group/input">
                                         <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F] opacity-40" />
                                         <Input
                                             id="inspection-inspector-name"
                                             name="inspector_name"
                                             autoComplete="name"
-                                            placeholder="Officer Signature"
+                                            placeholder="Enter name"
                                             value={formData.inspector_name}
                                             onChange={(e) => setFormData({ ...formData, inspector_name: e.target.value })}
                                             className={cn(glass.input, "h-10 pl-10 border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight")}
@@ -387,9 +387,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <Microscope className="w-5 h-5 text-[#1A1A1A]" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Neural_Analysis</h3>
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Colony Analysis</h3>
                                     <p className="text-[8px] font-black text-gray-400 leading-relaxed">
-                                        POWERING_COLLECTIVE_HIVE_INTELLIGENCE
+                                        Powering Collective Hive Intelligence
                                     </p>
                                 </div>
                             </div>
@@ -409,8 +409,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         <HeartPulse className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-0.5">
-                                        <h2 className="text-[11px] font-black text-[#1A1A1A]">Biometric_Vitals</h2>
-                                        <p className="text-[8px] font-black text-gray-400">Standard Assessment Protocol</p>
+                                        <h2 className="text-[11px] font-black text-[#1A1A1A]">Colony Health Assessment</h2>
+                                        <p className="text-[8px] font-black text-gray-400">Basic metrics</p>
                                     </div>
                                 </div>
                                 <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-full sm:w-auto overflow-x-auto shadow-sm">
@@ -435,9 +435,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-4">
                                         {[
-                                             { id: 'queen_seen', label: 'Queen Verified', sub: 'Visual Confirmation', icon: ShieldCheck, color: 'text-[#F4D03F]' },
-                                             { id: 'eggs_seen', label: 'Matrix Presence', sub: 'Active Brood Core', icon: CheckCircle2, color: 'text-[#1B9157]' },
-                                             { id: 'queen_cells_seen', label: 'Swarm Vector', sub: 'Anomaly Detection', icon: AlertCircle, color: 'text-red-500' }
+                                             { id: 'queen_seen', label: 'Queen seen', sub: 'Visual verification', icon: ShieldCheck, color: 'text-[#F4D03F]' },
+                                             { id: 'eggs_seen', label: 'Eggs seen', sub: 'Active brood', icon: CheckCircle2, color: 'text-[#1B9157]' },
+                                             { id: 'queen_cells_seen', label: 'Queen cells seen', sub: 'Potential swarm', icon: AlertCircle, color: 'text-red-500' }
                                          ].map((item) => (
                                              <div
                                                  key={item.id}
@@ -485,7 +485,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="inspection-temperature-c" className={glass.microLabel}>Thermal Index (°C)</Label>
+                                                <Label htmlFor="inspection-temperature-c" className={glass.microLabel}>Temperature (°C)</Label>
                                                 <div className="relative group/input">
                                                     <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500 opacity-40" />
                                                 <Input
@@ -500,9 +500,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className={glass.microLabel}>Atmospheric State</Label>
+                                                <Label className={glass.microLabel}>Weather</Label>
                                                 <Select value={formData.weather_condition} onValueChange={(v) => setFormData({ ...formData, weather_condition: v })}>
-                                                    <SelectTrigger id="inspection-weather" aria-label="Atmospheric state" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
+                                                    <SelectTrigger id="inspection-weather" aria-label="Weather" className={cn(glass.select, "h-10 border-white/40 bg-white/50")}>
                                                         <div className="flex items-center gap-3">
                                                             <Sun className="w-4 h-4 text-[#F4D03F]/40" />
                                                             <SelectValue />
@@ -552,7 +552,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className={cn(glass.microLabel, 'text-red-500/60')}>Varroa Density</Label>
+                                                <Label className={cn(glass.microLabel, 'text-red-500/60')}>Varroa Count</Label>
                                                 <div className="relative group/input">
                                                     <Microscope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500 opacity-40" />
                                                     <Input
@@ -567,7 +567,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="inspection-beetle-count" className={glass.microLabel}>Beetle Threshold</Label>
+                                                <Label htmlFor="inspection-beetle-count" className={glass.microLabel}>Beetle Count</Label>
                                                 <div className="relative group/input">
                                                     <Bug className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground opacity-10" />
                                                     <Input
@@ -631,7 +631,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         className={cn(glass.btnPrimary, "flex-1 sm:flex-none h-9 px-8 font-black text-[10px]")}
                                     >
                                         {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        {editingId ? 'Update_Report' : 'Archive_Log'}
+                                        {editingId ? 'Update Report' : 'Archive Log'}
                                     </button>
                                 </div>
                             </div>
@@ -652,27 +652,27 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             {/* Header */}
             <BeeYieldPageHeader
                 icon={ClipboardList}
-                label="Health_Surveillance"
+                label="Inspections"
                 onBack={() => onTabChange('home')}
-                title={<>Diagnostic <span className="text-[#F4D03F]">Audit</span></>}
-                subtitle="High-fidelity inspection reports and autonomous health monitoring."
+                title={<>Inspection <span className="text-[#F4D03F]">history</span></>}
+                subtitle="View and record your inspection notes."
                 actions={
                     <button
                         onClick={() => { resetForm(); setIsAddingInspection(true); }}
                         className={glass.btnPrimary}
                     >
                         <Plus className="w-4 h-4" />
-                        Log_Diagnostic
+                        Log Diagnostic
                     </button>
                 }
             />
 
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
-                <GlassStatCard label="Total Audit Logs" value={stats.total} icon={ClipboardList} index={0} />
-                <GlassStatCard label="Optimal Health" value={stats.healthy} icon={CheckCircle2} index={1} color="text-[#1B9157]" />
-                <GlassStatCard label="Critical Alerts" value={stats.issues} icon={AlertCircle} index={2} color="text-red-500" />
-                <GlassStatCard label="Current Month" value={stats.thisMonth} icon={Activity} index={3} color="text-[#F4D03F]" />
+                <GlassStatCard label="Total inspections" value={stats.total} icon={ClipboardList} index={0} />
+                <GlassStatCard label="Healthy colonies" value={stats.healthy} icon={CheckCircle2} index={1} color="text-[#1B9157]" />
+                <GlassStatCard label="Colonies with issues" value={stats.issues} icon={AlertCircle} index={2} color="text-red-500" />
+                <GlassStatCard label="This month" value={stats.thisMonth} icon={Activity} index={3} color="text-[#F4D03F]" />
             </div>
 
             {/* Filter Bar */}
@@ -731,22 +731,22 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6">
                             <SearchX className="w-8 h-8 text-[#F4D03F] opacity-20" />
                         </div>
-                        <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight">Registry_Empty</h3>
+                        <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight">No inspections</h3>
                         <p className="text-[10px] font-bold text-gray-400 mt-2 max-w-md text-center">
-                            NO_AUDIT_LOGS_DETECTED_FOR_CURRENT_PARAMETERS
+                            No inspection reports found.
                         </p>
                         <button onClick={() => { resetForm(); setIsAddingInspection(true); }} className={cn(glass.btnPrimary, "mt-6")}>
-                            <Plus className="w-4 h-4" /> Log_Initial_Diagnostic
+                            <Plus className="w-4 h-4" /> Log first inspection
                         </button>
                     </motion.div>
                 ) : (
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 border-l-4 border-l-[#F4D03F] pl-4">
-                            <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none">Diagnostic_<span className="text-[#F4D03F]">Archive</span></h2>
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none">Recent <span className="text-[#F4D03F]">inspections</span></h2>
                             <div className="h-px flex-1 bg-gradient-to-r from-[#F4D03F]/10 to-transparent" />
                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/20 rounded-xl">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] animate-pulse" />
-                                <span className="text-[9px] font-black tracking-wider">{filteredInspections.length} Logs</span>
+                                <span className="text-[9px] font-black tracking-wider">{filteredInspections.length} logs</span>
                             </div>
                         </div>
 

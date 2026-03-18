@@ -102,7 +102,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
             {/* Header */}
             <PageHeader
                 icon={Shield}
-                label="Bee_Map_Virtual_Fence_Live_Log"
+                label="Bee Map Virtual Fence Live Log"
                 title={<>Hive <span className="text-[#F4D03F]">Tracking</span></>}
                 subtitle="Live geofenced hive placements and security monitoring."
                 actions={

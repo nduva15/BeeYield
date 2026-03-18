@@ -236,21 +236,21 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield Assistant', icon: Hexagon },
-            { id: 'agro-intelligence', label: 'Agro Intelligence', icon: LayoutGrid },
+            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
+            { id: 'agro-intelligence', label: 'Strategy Insights', icon: LayoutGrid },
             {
                 id: 'precision-pollination-folder',
-                label: 'Precision Pollination',
+                label: 'Pollination',
                 icon: Calculator,
                 submenuItems: [
                     {
                         title: 'Strategy & Ops',
                         items: [
-                            { id: 'intelligence', label: 'Intelligence Hub', icon: Brain },
-                            { id: 'pollination-grid', label: 'Pollination Grid', icon: LayoutGrid },
-                            { id: 'pollination-engine', label: 'Pollination Engine', icon: Cpu },
-                            { id: 'saturation-math', label: 'Coverage Analysis', icon: Scale },
-                            { id: 'hpa-optimizer', label: 'Performance Planner', icon: Cpu },
+                            { id: 'intelligence', label: 'Insights', icon: Brain },
+                            { id: 'pollination-grid', label: 'Pollination overview', icon: LayoutGrid },
+                            { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
+                            { id: 'saturation-math', label: 'Coverage area', icon: Scale },
+                            { id: 'hpa-optimizer', label: 'Performance planning', icon: Cpu },
                         ]
                     },
                     {
@@ -258,15 +258,15 @@ const BeeYieldDashboard: React.FC = () => {
                         items: [
                             { id: 'master-map', label: 'Master Map', icon: Map },
                             { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
-                            { id: 'fleet-security', label: 'Asset Security', icon: ShieldCheck },
+                            { id: 'fleet-security', label: 'Hive security', icon: ShieldCheck },
                             { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
-                            { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+                            { id: 'site-reports-tactical', label: 'Field reports', icon: FileBarChart },
                         ]
                     },
                     {
                         title: 'Health & Compliance',
                         items: [
-                            { id: 'digital-audit', label: 'Hive Health Audit', icon: FileCheck },
+                            { id: 'digital-audit', label: 'Health check', icon: FileCheck },
                             { id: 'compliance-report', label: 'Compliance Report', icon: Award },
                             { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
                             { id: 'bloom-tracking', label: 'Bloom Phenology', icon: Zap },
@@ -275,12 +275,12 @@ const BeeYieldDashboard: React.FC = () => {
                     {
                         title: 'Analysis & Yield',
                         items: [
-                            { id: 'acoustic-transformer', label: 'Acoustic Mood', icon: Volume2 },
+                            { id: 'acoustic-transformer', label: 'Sound analysis', icon: Volume2 },
                             { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
-                            { id: 'foraging-optimizer', label: 'Flower Guide', icon: Crosshair },
-                            { id: 'vpm-counter', label: 'Visits Counter', icon: Camera },
-                            { id: 'bfh-forecast', label: 'Work Forecast', icon: Zap },
-                            { id: 'yield-predict', label: 'Yield Predictor', icon: BarChart3 },
+                            { id: 'foraging-optimizer', label: 'Foraging guide', icon: Crosshair },
+                            { id: 'vpm-counter', label: 'Activity counter', icon: Camera },
+                            { id: 'bfh-forecast', label: 'Activity forecast', icon: Zap },
+                            { id: 'yield-predict', label: 'Production estimate', icon: BarChart3 },
                         ]
                     },
                     {
@@ -289,9 +289,9 @@ const BeeYieldDashboard: React.FC = () => {
                             { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
                             { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
                             { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
-                            { id: 'gateway-hub', label: 'Gateway Hub', icon: Server },
-                            { id: 'hive-telemetry', label: 'Deep Telemetry', icon: Signal },
-                            { id: 'contract-verification', label: 'Secure Contracts', icon: ShieldCheck },
+                            { id: 'gateway-hub', label: 'Device gateway', icon: Server },
+                            { id: 'hive-telemetry', label: 'Advanced sensor data', icon: Signal },
+                            { id: 'contract-verification', label: 'Verified contracts', icon: ShieldCheck },
                         ]
                     },
                 ]

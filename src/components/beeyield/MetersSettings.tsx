@@ -122,7 +122,7 @@ const MetersSettings: React.FC = () => {
                                     onClick={() => handleEdit('notification', item.id, item.value)}
                                     className={cn(glass.btnSecondary, "text-[9px] font-black h-8 px-4 w-full sm:w-auto opacity-0 group-hover:opacity-100 transition-opacity")}
                                 >
-                                    CONFIG
+                                    Edit
                                 </button>
                             </div>
                         ))}
@@ -135,7 +135,7 @@ const MetersSettings: React.FC = () => {
                         <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                             <Shield className="w-4 h-4 text-[#1B9157]" />
                         </div>
-                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Operational Bounds</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Threshold Alerts</h3>
                     </div>
                     <div className="p-6 space-y-2">
                         {thresholdSettings.map((item) => (
@@ -148,7 +148,7 @@ const MetersSettings: React.FC = () => {
                                     onClick={() => handleEdit('threshold', item.id, item.value)}
                                     className={cn(glass.btnSecondary, "text-[9px] font-black h-8 px-4 w-full sm:w-auto opacity-0 group-hover:opacity-100 transition-opacity")}
                                 >
-                                    TUNE
+                                    Change
                                 </button>
                             </div>
                         ))}
@@ -164,14 +164,14 @@ const MetersSettings: React.FC = () => {
                         <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center border border-white/40 shadow-sm">
                             <Plug className="w-5 h-5 text-[#F4D03F]" />
                         </div>
-                        <h3 className="text-[11px] font-black text-[#1A1A1A] leading-tight">External<br />System Interconnect</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A] leading-tight">Connect other systems</h3>
                     </div>
                     <button
                         type="button"
                         onClick={() => setIsIntegrationsOpen(true)}
                         className={cn(glass.btnPrimary, "w-full sm:w-auto h-8 px-5 font-black text-[9px] flex items-center justify-center gap-2")}
                     >
-                        BRIDGE_ARCHITECTURES <ArrowRight className="w-3.5 h-3.5" />
+                        Connect systems <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                 </div>
             </div>
@@ -183,7 +183,7 @@ const MetersSettings: React.FC = () => {
                             Integrations
                         </DialogTitle>
                         <DialogDescription className="text-[9px] font-bold text-[#1A1A1A]/50 text-center mt-1">
-                            LOCAL_CONFIGURATION_ONLY
+                            Local configuration only
                         </DialogDescription>
                     </DialogHeader>
                     <div className="p-5 space-y-3">
@@ -222,18 +222,18 @@ const MetersSettings: React.FC = () => {
                     <DialogHeader className="p-5 border-b border-white/20 bg-white/30">
                         <DialogTitle className="text-[11px] font-black text-[#1A1A1A] text-center">{getDialogTitle()}</DialogTitle>
                         <DialogDescription className="text-[9px] font-bold text-[#1A1A1A]/50 text-center mt-1">
-                            UPDATE_SYSTEM_PREFERENCES_BELOW
+                            Update your settings below
                         </DialogDescription>
                     </DialogHeader>
                     <div className="p-5 space-y-4">
                         <div className="space-y-2">
                             {activeDialog?.type === 'notification' ? (
                                 <Label className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
-                                    PROTOCOL_METHOD
+                                    Notification method
                                 </Label>
                             ) : (
                                 <Label htmlFor="setting-value" className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
-                                    TARGET_THRESHOLD
+                                    Alert threshold
                                 </Label>
                             )}
                             {activeDialog?.type === 'notification' ? (

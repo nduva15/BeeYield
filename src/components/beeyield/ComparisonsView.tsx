@@ -136,10 +136,10 @@ const ComparisonsView: React.FC = () => {
                 <div className="space-y-4">
                     <div className={cn(glass.badge, 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 mb-2')}>
                         <ArrowLeftRight className="w-4 h-4 mr-2" />
-                        Yield Comparison Engine
+                        Production comparison
                     </div>
                     <h1 className={cn(glass.sectionTitle, 'text-6xl')}>
-                        Yield <span className="text-[#F4D03F]">Trends</span>
+                        Production <span className="text-[#F4D03F]">Trends</span>
                     </h1>
                     <p className={cn(glass.microLabel, "normal-case italic font-semibold opacity-70")}>
                         Compare honey production and colony health across your apiaries.

@@ -12,18 +12,7 @@ import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
 
-const chartData = [
-    { name: '0.1', value: 0.15 },
-    { name: '0.2', value: 0.25 },
-    { name: '0.3', value: 0.2 },
-    { name: '0.4', value: 0.4 },
-    { name: '0.5', value: 0.35 },
-    { name: '0.6', value: 0.5 },
-    { name: '0.7', value: 0.45 },
-    { name: '0.8', value: 0.6 },
-    { name: '0.9', value: 0.55 },
-    { name: '1.0', value: 0.7 },
-];
+const chartData = [];
 
 const CustomDot = (props: any) => {
     const { cx, cy, value } = props;
@@ -142,25 +131,39 @@ const ChartsView: React.FC = () => {
 
                 <div className="p-10 pb-4 border-b border-border bg-gray-400 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div>
-                        <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage Trend <span className="text-[#F4D03F]">Analysis</span></h3>
-                        <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Telemetry patterns with recursive anomaly detection</p>
+                        <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage Trend <span className="text-[#F4D03F]">History</span></h3>
+                        <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Activity patterns and trend analysis</p>
                     </div>
                     <div className="flex items-center gap-6 bg-[#FFF9F0]/60 p-2 px-4 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full bg-[#F4D03F]" />
-                            <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Baseline_Sig</span>
+                            <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Normal range</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
-                            <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Anomaly_Sig</span>
+                            <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Detected anomaly</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="p-10 relative z-10">
-                    <div className="h-[420px] w-full">
+                    <div className="h-[430px] w-full relative">
+                        {chartData.length === 0 && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#FFF9F0]/50 backdrop-blur-sm z-20 rounded-2xl border border-dashed border-[#F4D03F]/30">
+                                <motion.div
+                                    animate={{ opacity: [0.4, 1, 0.4] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="flex flex-col items-center gap-4"
+                                >
+                                    <div className="w-16 h-16 rounded-full bg-[#F4D03F]/10 flex items-center justify-center">
+                                        <Activity className="w-8 h-8 text-[#F4D03F]" />
+                                    </div>
+                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter uppercase opacity-60">Awaiting signal…</h3>
+                                </motion.div>
+                            </div>
+                        )}
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={chartData} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
+                            <LineChart data={chartData.length > 0 ? chartData : [{ name: '', value: 0 }]} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
                                         <stop offset="0%" stopColor="hsl(var(--honey))" />

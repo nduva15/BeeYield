@@ -16,7 +16,7 @@ const OrchardStatus: React.FC = () => {
                         Lead <span className="text-[#1B9157]">Variety</span>
                     </h2>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        Nonpareil Almond // Sector 4B
+                        Variety Not Set // Sector Pending
                     </p>
                 </div>
                 <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F]">
@@ -28,26 +28,26 @@ const OrchardStatus: React.FC = () => {
                 <div className="space-y-1 p-3 rounded-xl bg-[#1A1A1A]/5 border border-[#1A1A1A]/5">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Bloom Stage</p>
                     <div className="flex items-end gap-1.5">
-                        <h3 className="text-xl font-bold tracking-tight leading-none text-[#1A1A1A]">72<span className="text-[10px]">%</span></h3>
-                        <div className="px-1.5 py-0.5 rounded-full bg-[#1B9157] text-white text-[8px] font-bold uppercase tracking-wider mb-0.5">BBCH 67</div>
+                        <h3 className="text-xl font-bold tracking-tight leading-none text-[#1A1A1A]">—<span className="text-[10px]">%</span></h3>
+                        <div className="px-1.5 py-0.5 rounded-full bg-gray-400 text-white text-[8px] font-bold uppercase tracking-wider mb-0.5">BBCH —</div>
                     </div>
                 </div>
 
                 <div className="space-y-1 p-3 rounded-xl bg-[#1A1A1A]/5 border border-[#1A1A1A]/5">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Pollination Window</p>
-                    <h3 className="text-xl font-bold tracking-tight leading-none text-[#F4D03F]">4.2<span className="text-[10px] font-bold text-[#1A1A1A]"> DAYS</span></h3>
+                    <h3 className="text-xl font-bold tracking-tight leading-none text-[#F4D03F]">—<span className="text-[10px] font-bold text-[#1A1A1A]"> DAYS</span></h3>
                 </div>
 
                 <div className="space-y-1 p-3 rounded-xl bg-[#1A1A1A]/5 border border-[#1A1A1A]/5">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">GDD Accumulation</p>
-                    <h3 className="text-xl font-bold tracking-tight leading-none text-[#1A1A1A]">342</h3>
+                    <h3 className="text-xl font-bold tracking-tight leading-none text-[#1A1A1A]">0</h3>
                 </div>
             </div>
 
             <div className="pt-4 border-t border-[#F4D03F]/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Timer className="w-4 h-4 text-[#1B9157]" />
-                    <p className="text-[9px] font-black uppercase italic">Estimated Peak Bloom: <span className="text-[#1B9157]">MAR 22</span></p>
+                    <p className="text-[9px] font-black uppercase italic">Estimated Peak Bloom: <span className="text-[#1B9157]">Pending Data</span></p>
                 </div>
                 <button className="flex items-center gap-1.5 text-[8px] font-black uppercase italic tracking-widest text-[#1A1A1A] hover:text-[#1B9157] transition-all group/btn">
                     Detailed Phenology <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />

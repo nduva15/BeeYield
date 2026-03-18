@@ -395,7 +395,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                                     priority === 'Medium' ? "bg-orange-500/10 text-orange-500" :
                                                                         "bg-blue-500/10 text-blue-500"
                                                             )}>
-                                                                {priority} PRIORITY
+                                                                {priority} Priority
                                                             </Badge>
                                                         </div>
                                                     </div>
@@ -541,7 +541,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                 <TableCell className="py-3.5">
                                                     <div className="flex items-center gap-1.5">
                                                         <Box className="w-3 h-3 text-gray-300" />
-                                                        <span className="text-[10px] font-bold text-gray-500 tracking-tight">UNIT_{req.id.slice(-4).toUpperCase()}</span>
+                                                        <span className="text-[10px] font-bold text-gray-500 tracking-tight">Unit: {req.id.slice(-4).toUpperCase()}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="py-3.5">

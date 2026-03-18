@@ -1,7 +1,8 @@
 import React from 'react';
 import { Activity, Volume2, Info, Zap, Cpu, CheckCircle2, Waves } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { motion } from 'framer-motion';
 
 interface AcousticSpectralViewProps {
@@ -26,15 +27,13 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
     }, []);
 
     return (
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={glass.page}>
+        <BeeYieldPageShell className={glass.page}>
             {/* Header */}
-            <PageHeader
+            <BeeYieldPageHeader
                 title="Hive Sound"
-                subtitle="Live Sound Check · Colony Health · Queen Status"
+                subtitle="Live status check and monitoring."
                 icon={Volume2}
-                color="text-[#1B9157]"
-                bg="bg-[#1B9157]/10"
-                borderColor="border-[#1B9157]/20"
+                label="Acoustic analysis"
                 action={
                     <div className={cn(glass.card, "p-1 overflow-hidden inline-flex bg-background/50 shadow-emerald-500/10 shadow-lg")}>
                         <div className="px-5 py-2 bg-white/40 flex items-center gap-3 backdrop-blur-md rounded-xl">
@@ -60,8 +59,8 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none w-full h-full" />
                     <div className="p-5 flex items-center justify-between border-b border-[#F4D03F]/10 bg-white/20 relative z-10">
                         <div>
-                            <h3 className={glass.sectionTitle}>Sound <span className="text-[#F4D03F]">Waves</span></h3>
-                            <p className={glass.microLabel}>Live frequency display from the hive.</p>
+                            <h3 className={glass.sectionTitle}>Sound <span className="text-[#F4D03F]">waves</span></h3>
+                            <p className={glass.microLabel}>Live sound display.</p>
                         </div>
                         <div className={cn(glass.badge, "bg-[#1B9157] text-[#1B9157] border-[#1B9157] animate-pulse")}>
                             Live Feed
@@ -80,15 +79,15 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
 
                     <div className="grid grid-cols-3 gap-5 p-5 border-t border-[#F4D03F]/10 bg-white/30 relative z-10">
                         <div className="space-y-1">
-                            <p className={glass.microLabel}>Low Sound</p>
+                            <p className={glass.microLabel}>Lower frequency</p>
                             <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">Stable</p>
                         </div>
                         <div className="space-y-1">
-                            <p className={glass.microLabel}>Mid Sound</p>
+                            <p className={glass.microLabel}>Middle frequency</p>
                             <p className="text-xl font-bold tracking-tight text-[#1B9157]">Healthy</p>
                         </div>
                         <div className="space-y-1">
-                            <p className={glass.microLabel}>High Sound</p>
+                            <p className={glass.microLabel}>Higher frequency</p>
                             <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">Normal</p>
                         </div>
                     </div>
@@ -107,7 +106,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                             <div className="w-10 h-10 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
                                 <Cpu className="w-5 h-5 text-[#F4D03F]" />
                             </div>
-                            <h4 className={glass.sectionTitle}>Smart Check</h4>
+                            <h4 className={glass.sectionTitle}>Smart analysis</h4>
                         </div>
                         <div className="space-y-6 relative z-10">
                             <div>
@@ -140,12 +139,12 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                             <div className="w-10 h-10 rounded-lg bg-white/60 flex items-center justify-center border border-white/40 shadow-sm">
                                 <Activity className="w-5 h-5 text-[#1A1A1A]" />
                             </div>
-                            <h4 className={glass.sectionTitle}>Health Check</h4>
+                            <h4 className={glass.sectionTitle}>Health check</h4>
                         </div>
                         <div className="space-y-6 relative z-10">
                             <div className="flex justify-between items-end border-b border-[#F4D03F]/10 pb-4">
                                 <div>
-                                    <p className={glass.microLabel}>Queen Score</p>
+                                    <p className={glass.microLabel}>Health score</p>
                                     <p className="text-xl font-bold tracking-tight tabular-nums text-[#1A1A1A]">98%</p>
                                 </div>
                                 <div className="w-10 h-10 rounded-full bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20 shadow-sm animate-pulse">
@@ -154,7 +153,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                             </div>
                             <div className="px-3 py-2 rounded-xl bg-[#1B9157]/5 border border-[#1B9157]/20 flex items-center gap-2">
                                 <Zap className="w-4 h-4 text-[#1B9157] shrink-0" />
-                                <span className={cn(glass.microLabel, "text-[#1B9157]")}>Good Sound Detected</span>
+                                <span className={cn(glass.microLabel, "text-[#1B9157]")}>Healthy sound detected</span>
                             </div>
                         </div>
                     </motion.div>
@@ -179,7 +178,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
                     </p>
                 </div>
             </motion.div>
-        </motion.div>
+            </BeeYieldPageShell>
     );
 };
 

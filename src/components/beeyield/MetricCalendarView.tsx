@@ -61,7 +61,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
         VPM: { label: 'Visits/Min', icon: Activity, color: '#F4D03F', unit: 'vpm' },
         YIELD: { label: 'Honey Yield', icon: TrendingUp, color: '#1B9157', unit: 'kg' },
         TEMP: { label: 'Temperature', icon: Thermometer, color: '#FF6B00', unit: '°C' },
-        VIBE: { label: 'Vibration', icon: Zap, color: '#6366F1', unit: 'Hz' },
+        VIBE: { label: 'Colony Health', icon: Zap, color: '#6366F1', unit: 'Hz' },
     };
 
     const days = generateCalendarDays();
@@ -238,15 +238,16 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                 subtitle="See how your hive metrics change over time."
                 actions={
                     <div className="flex gap-3 bg-white/30 p-1.5 rounded-2xl border border-white/40 shadow-inner backdrop-blur-xl relative z-10">
-                        {(['VPM', 'Yield', 'Temp', 'Vibe'] as MetricType[]).map((m) => {
-                            const Icon = metricConfig[m].icon;
+                        {(['Activity', 'Yield', 'Temp', 'Health'] as any[]).map((m) => {
+                            const map: any = { 'Activity': 'VPM', 'Yield': 'YIELD', 'Temp': 'TEMP', 'Health': 'VIBE' };
+                            const Icon = (metricConfig as any)[map[m]].icon;
                             return (
                                 <button
                                     key={m}
-                                    onClick={() => setActiveMetric(m)}
+                                    onClick={() => setActiveMetric(map[m] as MetricType)}
                                     className={cn(
                                         "px-4 py-2 rounded-xl flex items-center gap-2 transition-all",
-                                        activeMetric === m 
+                                        activeMetric === map[m] 
                                             ? "bg-white text-[#1A1A1A] shadow-lg scale-105" 
                                             : "text-gray-400 hover:text-gray-600"
                                     )}
@@ -270,7 +271,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
                                 <h3 className="text-sm font-black text-black tracking-tighter leading-none">
-                                    {format(currentDate, "Mmmm")} <span className="text-[#F4D03F]">{format(currentDate, "yyyy")}</span>
+                                    {format(currentDate, "MMMM")} <span className="text-[#F4D03F]">{format(currentDate, "yyyy")}</span>
                                 </h3>
                                 <p className="text-[6px] font-black text-black opacity-50 mt-0.5">Monthly view</p>
                             </div>
@@ -449,7 +450,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                             ))}
                         </div>
                         <p className="text-[9px] font-medium text-gray-400 italic leading-relaxed pt-4 border-t border-white/40">
-                            Metrics will populate here once real telemetry is ingested.
+                            Charts will populate here once sensor data is synchronized.
                         </p>
                     </div>
                 </div>

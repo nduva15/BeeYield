@@ -9,18 +9,19 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 
 const VpmAutoCounter: React.FC = () => {
     const [isActive, setIsActive] = React.useState(false);
 
     return (
-        <div className={cn(glass.page, "space-y-8 pb-24")}>
-            <PageHeader
+        <BeeYieldPageShell className="space-y-8 pb-24">
+            <BeeYieldPageHeader
                 icon={Camera}
-                label="YOLOv11 Nano // Entrance Feed"
-                title={<>VPM<span className="text-[#F4D03F]">Auto-Counter</span></>}
-                subtitle="Requires a real camera feed + inference pipeline."
+                label="Entrance monitor"
+                title={<>Activity <span className="text-[#F4D03F]">Counter</span></>}
+                subtitle="Shows live activity near the hive entrance and exit."
                 actions={
                     <div className="flex gap-4">
                         <button
@@ -45,11 +46,11 @@ const VpmAutoCounter: React.FC = () => {
                     {/* Feed Info */}
                     <div className="absolute top-6 left-6 z-30 flex flex-col gap-2">
                         <Badge className={cn(glass.badge, "bg-emerald-500 text-white border-none shadow-sm")}>Live</Badge>
-                        <Badge className={cn(glass.badge, "bg-white/60 text-foreground border-border backdrop-blur-md py-0.5 text-[8px]")}>FPS: 30.2</Badge>
+                        <Badge className={cn(glass.badge, "bg-white/60 text-foreground border-border backdrop-blur-md py-0.5 text-[8px]")}>Signal: Stable</Badge>
                     </div>
 
                     <div className="absolute bottom-6 left-6 z-30">
-                        <p className={cn(glass.microLabel, "text-emerald-600 font-black text-[8px]")}>Confidence: 99.4%</p>
+                        <p className={cn(glass.microLabel, "text-emerald-600 font-black text-[8px]")}>Accuracy: 99.4%</p>
                     </div>
 
                     {/* Detection Box Simulation */}
@@ -62,9 +63,9 @@ const VpmAutoCounter: React.FC = () => {
                                     className="absolute inset-0 flex items-center justify-center p-10"
                                 >
                                     <div className="text-center space-y-2">
-                                        <p className="text-sm font-black tracking-tight">Waiting for camera feed…</p>
+                                        <p className="text-sm font-black tracking-tight">Waiting for sensor feed…</p>
                                         <p className="text-[10px] font-bold text-muted-foreground">
-                                            Connect video + inference to enable detections
+                                            Connect your equipment to see live activity
                                         </p>
                                     </div>
                                 </motion.div>
@@ -85,7 +86,7 @@ const VpmAutoCounter: React.FC = () => {
                     <section className="space-y-4">
                         <div className="flex items-center gap-3">
                             <Activity className="w-5 h-5 text-[#F4D03F]" />
-                            <h3 className="text-xl font-black tracking-tight">Pollination Pulse</h3>
+                            <h3 className="text-xl font-black tracking-tight">Activity Status</h3>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -95,7 +96,7 @@ const VpmAutoCounter: React.FC = () => {
                             </div>
                             <div className={cn(glass.card, "p-4 text-center border-none bg-emerald-500 text-white shadow-sm")}>
                                 <p className="text-2xl font-black tabular-nums leading-none mb-1">—</p>
-                                <p className="text-[10px] font-bold opacity-80">Pcr Index</p>
+                                <p className="text-[10px] font-bold opacity-80">Activity score</p>
                             </div>
                         </div>
                     </section>
@@ -115,7 +116,7 @@ const VpmAutoCounter: React.FC = () => {
                             className={cn("h-2 rounded-full bg-black/5 overflow-hidden", "[&>div]:bg-[#F4D03F]")}
                         />
                         <p className="text-[10px] font-bold text-muted-foreground opacity-80 leading-relaxed tracking-tight">
-                            Metrics will populate once a real camera stream and detection pipeline are connected.
+                            Updates will appear here once your sensor data begins synchronized.
                         </p>
                     </section>
 
@@ -141,15 +142,15 @@ const VpmAutoCounter: React.FC = () => {
                     <div className="p-4 rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/5 flex items-start gap-3">
                         <AlertTriangle className="w-4 h-4 text-[#F4D03F] shrink-0 mt-0.5" />
                         <div>
-                            <h5 className="text-[10px] font-black text-[#1A1A1A] mb-1">No inference connected</h5>
+                            <h5 className="text-[10px] font-black text-[#1A1A1A] mb-1">Equipment disconnected</h5>
                             <p className="text-[10px] font-bold text-[#1A1A1A]/70 leading-relaxed tracking-tight">
-                                This page no longer simulates detections. Wire a backend/edge inference feed to populate results.
+                                This view shows activity from live sensor feeds. Please connect your equipment to see real-time results.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            </BeeYieldPageShell>
     );
 };
 

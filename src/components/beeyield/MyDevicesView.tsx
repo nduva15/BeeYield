@@ -23,7 +23,7 @@ interface MyDevicesViewProps {
     readings: SensorReading[];
     apiaries: Apiary[];
     hives: Hive[];
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
 const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange }) => {
@@ -206,7 +206,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                     </div>
                                                     <div className="flex flex-col">
                                                         <span className="text-[11px] font-black tracking-tight text-[#1A1A1A]">{device.device_code}</span>
-                                                        <span className="text-[7px] font-black text-[#F4D03F] italic">Node_v5.2</span>
+                                                        <span className="text-[7px] font-black text-[#F4D03F] italic">Node v5.2</span>
                                                     </div>
                                                 </div>
                                             </td>

@@ -12,7 +12,8 @@ import {
     Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { motion } from 'framer-motion';
 import { beeyieldService } from '@/services/beeyieldService';
 
@@ -65,16 +66,12 @@ const HpaOptimizer: React.FC = () => {
     const totalHives = Math.round(acreage * suggestedHPA);
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-        >
-            <PageHeader
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+            <BeeYieldPageHeader
                 icon={Calculator}
                 label="Site setup"
                 title={<>Placement <span className="text-[#1B9157]">Planner</span></>}
-                subtitle="Estimate hive placement density for a location."
+                subtitle="Estimate hive placement density for your location."
                 actions={
                     <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-gray-100 shadow-sm">
                         <Activity className="w-4 h-4 text-[#1B9157]" />
@@ -172,7 +169,7 @@ const HpaOptimizer: React.FC = () => {
                         </div>
                         <div className="bg-emerald-50/50 border border-emerald-100 px-4 py-2 rounded-2xl flex items-center gap-4 shadow-sm backdrop-blur-sm">
                             <Zap className="w-5 h-5 text-amber-500" />
-                            <span className="text-3xl font-bold tracking-tighter text-emerald-700 leading-none">{suggestedHPA.toFixed(1)} <span className="text-[10px] text-emerald-600/40 font-bold ml-1">HPA</span></span>
+                            <span className="text-3xl font-bold tracking-tighter text-emerald-700 leading-none">{suggestedHPA.toFixed(1)} <span className="text-[10px] text-emerald-600/40 font-bold ml-1">Density</span></span>
                         </div>
                     </div>
 
@@ -198,7 +195,7 @@ const HpaOptimizer: React.FC = () => {
 
                                 <div className="p-3.5 rounded-xl bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg flex items-center gap-3 animate-pulse border-l-4 border-l-red-500/50">
                                     <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                                    <p className="text-[10px] font-bold text-[#1A1A1A] tracking-tighter">Sector B12 Deficit Detected</p>
+                                    <p className="text-[10px] font-bold text-[#1A1A1A] tracking-tighter">Improve placement coverage</p>
                                 </div>
                             </div>
                         </div>
@@ -207,13 +204,13 @@ const HpaOptimizer: React.FC = () => {
                         <div className="space-y-4">
                             <div className={cn(glass.card, "bg-gray-50/50 border-gray-100 shadow-sm p-6 relative overflow-hidden")}>
                                 <div className="relative z-10">
-                                    <p className="text-[9px] font-bold text-gray-400 mb-4">Total Nodes Required</p>
+                                    <p className="text-[9px] font-bold text-gray-400 mb-4">Total hives recommended</p>
                                     <div className="flex items-baseline gap-2 mb-4">
                                         <p className="text-4xl font-bold tracking-tighter text-[#1A1A1A] leading-none">{totalHives}</p>
-                                        <p className="text-[10px] font-bold text-gray-300">Hectare Units</p>
+                                        <p className="text-[10px] font-bold text-gray-300">Recommended count</p>
                                     </div>
                                     <p className="text-[10px] font-bold text-gray-500 leading-relaxed pl-3 border-l-2 border-[#F4D03F]/50 tracking-tighter">
-                                        Suggested: <span className="text-[#1A1A1A]">12 per pallet</span> configuration for optimal foraging velocity.
+                                        Suggested: <span className="text-[#1A1A1A]">12 per grouping</span> configuration for optimal foraging activity.
                                     </p>
                                 </div>
                                 <div className="absolute -right-4 -bottom-4 opacity-[0.03] scale-150 rotate-12">
@@ -235,7 +232,7 @@ const HpaOptimizer: React.FC = () => {
                             </div>
 
                             <button className={cn(glass.btnPrimary, "w-full h-10 flex items-center justify-center gap-3 group/btn shadow-md mt-2")}>
-                                <span className="text-[10px] font-bold">Commit Matrix</span>
+                                <span className="text-[10px] font-bold">Apply plan</span>
                                 <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                             </button>
                         </div>
@@ -246,7 +243,7 @@ const HpaOptimizer: React.FC = () => {
                             <Info className="w-4 h-4 text-gray-300" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-[10px] font-bold text-[#1A1A1A]">Mapping notes</h4>
+                            <h4 className="text-[10px] font-bold text-[#1A1A1A]">Planner notes</h4>
                             <p className="text-[10px] font-medium text-gray-400 leading-relaxed border-l-2 border-emerald-500/30 pl-4 mt-2">
                                 Coverage is estimated from acreage and tree density. Use this as a starting point, then adjust based on bloom timing and access.
                             </p>
@@ -260,7 +257,7 @@ const HpaOptimizer: React.FC = () => {
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
             `}</style>
-        </motion.div>
+            </BeeYieldPageShell>
     );
 };
 

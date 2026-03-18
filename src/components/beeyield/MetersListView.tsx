@@ -218,11 +218,11 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="text-xl font-black tracking-tighter italic text-[#1A1A1A]">
-                    METER_REGISTRY <span style={{ color: colors.primary }} className="ml-2">— {title}</span>
+                    Meter Registry <span style={{ color: colors.primary }} className="ml-2">— {title}</span>
                 </h1>
                 <div className="flex gap-2">
                     <button className={cn(glass.btnPrimary, "h-8 px-5 rounded-xl text-[9px] font-black shadow-sm flex items-center gap-2")}>
-                        <Plus className="w-3.5 h-3.5" /> ADD_SENSOR
+                        <Plus className="w-3.5 h-3.5" /> Add Sensor
                     </button>
                 </div>
             </div>
@@ -234,7 +234,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div>
                             <h2 className="text-[11px] font-black text-[#1A1A1A] flex items-center gap-2">
                                 <Building2 className="w-4 h-4 text-gray-400" />
-                                APIARIES
+                                Apiaries
                             </h2>
                             <p className="text-[9px] font-black text-gray-400 mt-1">Overview Of Addresses With Sensor Counts</p>
                         </div>
@@ -254,15 +254,15 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
 
                                         <div className="flex gap-2 mb-3">
                                             <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black border border-white/40 rounded-lg">
-                                                SENSORS_{building.meters}
+                                                Sensors: {building.meters}
                                             </Badge>
                                             <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black border border-white/40 rounded-lg">
-                                                HIVES_{building.apartments}
+                                                Hives: {building.apartments}
                                             </Badge>
                                         </div>
 
                                         <div className="space-y-1 mt-4 pt-3 border-t border-white/40">
-                                            <p className="text-[8px] text-gray-400 font-black">COORDS_{building.coords}</p>
+                                            <p className="text-[8px] text-gray-400 font-black">Coordinates: {building.coords}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -279,7 +279,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div>
                             <h2 className="text-[11px] font-black text-[#1A1A1A] flex items-center gap-2">
                                 <Home className="w-4 h-4 text-gray-400" />
-                                HIVES_UNITS
+                                Hives & Units
                             </h2>
                             <p className="text-[9px] font-black text-gray-400 mt-1">Hive List With Assigned Sensors</p>
                         </div>
@@ -299,7 +299,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                             <p className="text-[9px] font-bold text-gray-400 mt-0.5">{apt.location}</p>
                                         </div>
                                         <Badge variant="secondary" className="bg-white/50 text-[#1A1A1A]/60 text-[8px] px-2 py-0.5 font-black border border-white/40 rounded-lg">
-                                            SENSORS_{apt.meters}
+                                            Sensors: {apt.meters}
                                         </Badge>
                                     </div>
                                 ))}
@@ -374,7 +374,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                             <input
                                 id="meter-search"
                                 name="meter-search"
-                                placeholder="SENSOR_ID..."
+                                placeholder="Sensor ID..."
                                 className={cn(glass.input, "w-full h-9 pl-9 bg-white/50 border-white/40 focus:bg-white rounded-xl text-[9px] font-black placeholder:text-gray-400")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -391,7 +391,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div>
                             <h2 className="text-[11px] font-black text-[#1A1A1A] flex items-center gap-2">
                                 <FileText className="w-4 h-4 text-gray-400" />
-                                EXPORT_LIST
+                                Export List
                             </h2>
                             <p className="text-[9px] font-black text-gray-400 mt-1">Download Filtered Dataset</p>
                         </div>
@@ -426,13 +426,13 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                     <h4 className="text-[9px] font-black text-gray-400">Output Formats</h4>
                                     <div className="flex flex-wrap gap-4">
                                         <button onClick={exportToPDF} className={cn(glass.btnPrimary, "h-10 flex-1 min-w-[150px] font-black text-[9px] rounded-xl")}>
-                                            <FileText className="w-3.5 h-3.5 mr-2" /> PORTABLE_DOCUMENT_FORMAT
+                                            <FileText className="w-3.5 h-3.5 mr-2" /> Portable Document Format
                                         </button>
                                         <button onClick={exportToXLS} className={cn(glass.btnSecondary, "h-10 flex-1 min-w-[150px] font-black text-[9px] rounded-xl border-white/40 bg-white/50 hover:bg-white")}>
-                                            <Layers className="w-3.5 h-3.5 mr-2 text-[#1B9157]" /> EXCEL_SPREADSHEET
+                                            <Layers className="w-3.5 h-3.5 mr-2 text-[#1B9157]" /> Excel Spreadsheet
                                         </button>
                                     </div>
-                                    <p className="text-[8px] font-bold text-slate-400">* ALL_REPORTS_GENERATED_VIA_CLIENT_FILTER</p>
+                                    <p className="text-[8px] font-bold text-slate-400">* All reports generated via client filter</p>
                                 </div>
                             </div>
                         </div>
