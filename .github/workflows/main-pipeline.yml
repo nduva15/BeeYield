@@ -203,9 +203,10 @@ jobs:
           output: 'trivy-fs-results.sarif'
 
       - name: Upload Trivy Results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-fs-results.sarif'
+        continue-on-error: true
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
@@ -280,6 +281,12 @@ jobs:
           output: 'trivy-frontend-image.sarif'
         continue-on-error: true
 
+      - name: Upload Frontend Scan Results
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-frontend-image.sarif'
+        continue-on-error: true
+
   build-backend:
     name: Build Backend Image
     runs-on: ubuntu-latest
@@ -339,6 +346,12 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.ref_name }}
           format: 'sarif'
           output: 'trivy-backend-image.sarif'
+        continue-on-error: true
+
+      - name: Upload Backend Scan Results
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-backend-image.sarif'
         continue-on-error: true
 
   # ============================================================
