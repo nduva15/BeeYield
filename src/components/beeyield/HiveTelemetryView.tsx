@@ -220,8 +220,8 @@ const HiveTelemetryView: React.FC = () => {
         });
 
         return () => {
-            if (weightSub) beeyieldService.supabaseBeeYield.removeChannel(weightSub);
-            if (gatewaySub) beeyieldService.supabaseBeeYield.removeChannel(gatewaySub);
+            if (weightSub && beeyieldService.supabaseBeeYield) beeyieldService.supabaseBeeYield.removeChannel(weightSub);
+            if (gatewaySub && beeyieldService.supabaseBeeYield) beeyieldService.supabaseBeeYield.removeChannel(gatewaySub);
         };
     }, []);
 
