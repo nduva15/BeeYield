@@ -373,7 +373,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-frontend, build-backend]
     if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'development'
-    environment: development
+    environment:
+      name: development
     
     steps:
       - name: Checkout Code
@@ -409,7 +410,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-frontend, build-backend]
     if: github.ref == 'refs/heads/staging' || github.event.inputs.environment == 'staging'
-    environment: staging
+    environment:
+      name: staging
     
     steps:
       - name: Checkout Code

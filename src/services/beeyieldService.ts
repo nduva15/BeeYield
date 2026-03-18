@@ -2939,25 +2939,6 @@ export const beeyieldService = {
             return { path: [] };
         }
     },
-
-    // Bluetooth Methods
-    async getBluetoothDevices(): Promise<any[]> {
-        return _lsRead('beeyield_bluetooth_devices_v1', []);
-    },
-
-    async registerBluetoothDevice(deviceData: any): Promise<any> {
-        return _lsUpsert('beeyield_bluetooth_devices_v1', {
-            ...deviceData,
-            id: deviceData.id || _uuid(),
-        });
-    },
-
-    async syncBluetoothReadings(payload: { readings: any[] }): Promise<any> {
-        // Log locally for demo/fallback
-        const list = _lsRead('beeyield_bluetooth_readings_v1', []);
-        const next = [...payload.readings, ...list].slice(0, 100);
-        _lsWrite('beeyield_bluetooth_readings_v1', next);
-        return { ok: true, count: payload.readings.length };
     }
 };
 
