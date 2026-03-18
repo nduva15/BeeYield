@@ -17,8 +17,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  FRONTEND_IMAGE: ${{ github.repository }}-frontend
-  BACKEND_IMAGE: ${{ github.repository }}-backend
+  FRONTEND_IMAGE: nduva15/beeyield-frontend
+  BACKEND_IMAGE: nduva15/beeyield-backend
 
 jobs:
   rollback:
