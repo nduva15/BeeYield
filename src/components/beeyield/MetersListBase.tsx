@@ -413,7 +413,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                 </div>
                                 <div className="mt-4 flex items-center justify-between">
                                     <div className="bg-[#1B9157]/10 text-[#1B9157] px-2 py-0.5 border border-[#1B9157]/20 rounded-md text-[8px] font-black">
-                                        {meters.filter(m => m.building_id === b.id).length} DEVICES
+                                        {meters.filter(m => m.building_id === b.id).length} devices
                                     </div>
                                     <div className="w-6 h-6 rounded-lg bg-white/50 flex items-center justify-center border border-white/40">
                                         <Activity className="w-3 h-3 text-[#1B9157]" />
@@ -461,11 +461,11 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         </Select>
                     </div>
                     <div className="lg:col-span-3 space-y-2">
-                        <label className="text-[8px] font-black text-gray-500 ml-1">Search Identifier</label>
+                        <label className="text-[8px] font-black text-gray-500 ml-1">Search by name or ID</label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <Input
-                                placeholder="SEARCH BY SENSOR ID OR COORDINATES..."
+                                placeholder="Search by sensor ID or coordinates..."
                                 className="h-9 rounded-xl pl-9 bg-white/50 border-white/40 font-black text-[9px] focus-visible:bg-white"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -481,14 +481,14 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/20 bg-white/30">
-                                {['Sensor Identifier', 'Deployment Location', 'Telemetry Load', 'Status', 'Actions'].map(h => (
+                                {['Sensor ID', 'Deployment Location', 'Current reading', 'Status', 'Actions'].map(h => (
                                     <th key={h} className="text-left py-4 px-5 text-[8px] font-black text-gray-400">{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
                             {filteredMeters.length === 0 ? (
-                                <tr><td colSpan={5} className="py-20 text-center text-[10px] font-black text-gray-500">No Matching Meters Found</td></tr>
+                                <tr><td colSpan={5} className="py-20 text-center text-[10px] font-black text-gray-500">No matching sensors found</td></tr>
                             ) : (
                                 filteredMeters.map(meter => (
                                     <tr key={meter.id} className="group hover:bg-white/50 transition-colors">
@@ -512,7 +512,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                         </td>
                                         <td className="py-4 px-5">
                                             <p className="text-[10px] font-black text-[#1A1A1A]">{meter.last_reading_value} {meter.last_reading_unit}</p>
-                                            <p className="text-[8px] font-bold text-gray-400 mt-0.5">{meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleDateString() : 'ARCHIVE_N/A'}</p>
+                                            <p className="text-[8px] font-bold text-gray-400 mt-0.5">{meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleDateString() : 'No data'}</p>
                                         </td>
                                         <td className="py-4 px-5">
                                             <span className={cn(
@@ -520,7 +520,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                                 meter.status === 'OK' ? "bg-green-500/10 text-[#1B9157] border-green-500/20" :
                                                     meter.status === 'Warning' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : "bg-red-500/10 text-red-500 border-red-500/20"
                                             )}>
-                                                {meter.status === 'OK' ? 'Nominal' : meter.status}
+                                                {meter.status === 'OK' ? 'Working' : meter.status}
                                             </span>
                                         </td>
                                         <td className="py-4 px-5">
@@ -554,19 +554,19 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             <div className={cn(glass.card, "p-6 shadow-xl bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-[9px] font-black text-gray-500">Telemetry Export</h3>
-                        <p className="text-[11px] font-black text-[#1A1A1A] mt-1">Archive System Records</p>
+                        <h3 className="text-[9px] font-black text-gray-500">Sensor data export</h3>
+                        <p className="text-[11px] font-black text-[#1A1A1A] mt-1">Export records for your sensors</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                         <button onClick={() => handleExport('CSV')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black gap-2")}>
-                            <FileText className="w-3.5 h-3.5" /> CSV_BATCH
+                            <FileText className="w-3.5 h-3.5" /> CSV report
                         </button>
                         <button onClick={() => handleExport('XLS')} className={cn(glass.btnSecondary, "h-9 px-5 bg-white/50 border-white/40 text-[9px] font-black gap-2")}>
-                            <FileSpreadsheet className="w-3.5 h-3.5" /> EXCEL_MATRIX
+                            <FileSpreadsheet className="w-3.5 h-3.5" /> Excel sheet
                         </button>
                         <button onClick={() => handleExport('PDF')} className={cn(glass.btnPrimary, "h-9 px-6 text-[9px] font-black gap-2")}>
                             {downloading === 'PDF' ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
-                            PDF_OPERATIONAL_REPORT
+                            Download PDF
                         </button>
                     </div>
                 </div>

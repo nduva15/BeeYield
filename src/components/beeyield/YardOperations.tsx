@@ -82,15 +82,15 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                         Yard <span className="text-[#F4D03F]">Operations</span>
                     </h1>
                     <p className={cn(glass.microLabel, 'opacity-70 normal-case italic font-bold')}>
-                        Digital FOB Audit Engine
+                        Colony Strength Audit
                     </p>
                 </div>
 
                 {/* FPA KPI */}
                 <div className={cn(glass.card, "p-6 sm:px-8 border-[#F4D03F]/20 shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10")}>
-                    <p className={cn(glass.microLabel, "text-muted-foreground mb-1 font-semibold")}>Current FPA</p>
+                    <p className={cn(glass.microLabel, "text-muted-foreground mb-1 font-semibold")}>Avg Strength</p>
                     <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-[#F4D03F] leading-none mb-2")}>{fpa}</p>
-                    <p className={cn(glass.microLabel, "text-muted-foreground/60 italic font-semibold normal-case")}>Frames Per Acre / {TOTAL_ACRES} ac</p>
+                    <p className={cn(glass.microLabel, "text-muted-foreground/60 italic font-semibold normal-case")}>Frames Per Colony / {TOTAL_ACRES} Area</p>
                 </div>
             </div>
 
@@ -166,11 +166,11 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                     <div className="flex flex-wrap items-center gap-4 gap-y-2">
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
                                             <Hexagon className="w-3 h-3 text-[#F4D03F]" />
-                                            <span className={cn(glass.microLabel, "opacity-80")}>FOB: {task.fob}</span>
+                                            <span className={cn(glass.microLabel, "opacity-80")}>Strength: {task.fob}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
                                             <Hexagon className="w-3 h-3 text-[#1B9157]" />
-                                            <span className={cn(glass.microLabel, "opacity-80")}>FOBr: {task.fobr}</span>
+                                            <span className={cn(glass.microLabel, "opacity-80")}>Brood: {task.fobr}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
                                             <Clock className="w-3 h-3 text-muted-foreground" />
@@ -214,13 +214,13 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                         <div className="p-6 border-b border-border bg-muted/30 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Activity className="w-5 h-5 text-[#F4D03F]" />
-                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>FOB Audit <span className="text-muted-foreground mr-1">—</span> {auditHive.hive}</h3>
+                                <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Colony Strength Audit <span className="text-muted-foreground mr-1">—</span> {auditHive.hive}</h3>
                             </div>
                             <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-[#F9F7F2]0 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-[#FFF9F0]:bg-[#F4D03F]/10 transition-all border border-border">✕</button>
                         </div>
                         <div className="p-8 space-y-8 pb-10">
                             <div className="space-y-4">
-                                <label className={cn(glass.microLabel, "text-muted-foreground font-semibold")}>Frames of Bees (FOB)</label>
+                                <label className={cn(glass.microLabel, "text-muted-foreground font-semibold")}>Frames of Bees (Strength)</label>
                                 <div className="flex items-center gap-6">
                                     <button onClick={() => setAuditFob(f => Math.max(0, f - 1))} className={cn(glass.btnSecondary, "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl pb-1")}>−</button>
                                     <span className={cn(glass.sectionTitle, "text-5xl tabular-nums w-16 text-center text-[#F4D03F] leading-none")}>{auditFob}</span>
@@ -231,7 +231,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                             <div className="h-px bg-border w-full" />
 
                             <div className="space-y-4">
-                                <label className={cn(glass.microLabel, "text-muted-foreground font-semibold")}>Frames of Brood (FOBr)</label>
+                                <label className={cn(glass.microLabel, "text-muted-foreground font-semibold")}>Frames of Brood</label>
                                 <div className="flex items-center gap-6">
                                     <button onClick={() => setAuditFobr(f => Math.max(0, f - 1))} className={cn(glass.btnSecondary, "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl pb-1")}>−</button>
                                     <span className={cn(glass.sectionTitle, "text-5xl tabular-nums w-16 text-center text-[#1B9157] leading-none")}>{auditFobr}</span>
@@ -241,7 +241,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
 
                             <div className="p-4 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20">
                                 <p className={cn(glass.microLabel, "normal-case italic font-semibold text-[#F4D03F]/80")}>
-                                    FPA contribution from this hive: <span className="text-[#F4D03F] font-black text-sm not-italic ml-1">{(auditFob / TOTAL_ACRES).toFixed(3)}</span> frames/acre
+                                    Strength contribution from this hive: <span className="text-[#F4D03F] font-black text-sm not-italic ml-1">{(auditFob / TOTAL_ACRES).toFixed(3)}</span> frames/colony
                                 </p>
                             </div>
 

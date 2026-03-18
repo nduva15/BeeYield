@@ -55,7 +55,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 icon={LayoutGrid}
                 label="Dashboard"
                 title={<>{greeting}</>}
-                subtitle="Your BeeYield records (no mock metrics)."
+                subtitle="Your BeeYield real-time records."
                 actions={
                     <div className="flex gap-2">
                         <button
@@ -120,10 +120,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {[
-                                { id: 'devices', label: 'Devices', icon: Cpu, sub: 'Sensors & telemetry' },
+                                { id: 'devices', label: 'Devices', icon: Cpu, sub: 'Sensors & activity' },
                                 { id: 'meters', label: 'Meters', icon: Activity, sub: 'Usage & alarms' },
                                 { id: 'precision-pollination-folder', label: 'Pollination', icon: FileBarChart, sub: 'Plans & exports' },
-                                { id: 'task', label: 'My Task', icon: ClipboardList, sub: 'To-dos & deployments' },
+                                { id: 'task', label: 'My Task', icon: ClipboardList, sub: 'Tasks & setup' },
                                 { id: 'requests', label: 'Requests', icon: HelpCircle, sub: 'Support tickets' },
                                 { id: 'integrations', label: 'Integrations', icon: Puzzle, sub: 'QuickBooks / Shopify' },
                             ].map((v) => (

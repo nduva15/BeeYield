@@ -314,7 +314,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Temporal Point</Label>
+                                        <Label className={glass.microLabel}>Harvest Date</Label>
                                         <div className="relative group/input">
                                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
                                             <Input
@@ -367,12 +367,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Grade Index</Label>
+                                        <Label className={glass.microLabel}>Honey Grade</Label>
                                         <Select
                                             value={formData.color_grade}
                                             onValueChange={(val) => setFormData({ ...formData, color_grade: val })}
                                         >
-                                            <SelectTrigger id="harvest-color-grade" aria-label="Grade index" className={glass.select}>
+                                            <SelectTrigger id="harvest-color-grade" aria-label="Honey grade" className={glass.select}>
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-2.5 h-2.5 rounded-full bg-[#F4D03F]" />
                                                     <SelectValue placeholder="Select grade" />
@@ -386,7 +386,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Process Vector</Label>
+                                        <Label className={glass.microLabel}>Extraction Method</Label>
                                         <div className="relative group/input">
                                             <Cpu className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                                             <Input
@@ -401,7 +401,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Climatic State</Label>
+                                        <Label className={glass.microLabel}>Weather</Label>
                                         <div className="relative group/input">
                                             <Wind className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
                                             <Input
@@ -480,10 +480,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 
             {/* Stats Matrix */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <GlassStatCard label="Gross Volume" value={`${stats.totalHoney}KG`} icon={Zap} index={0} />
-                <GlassStatCard label="Total Cycles" value={stats.totalHarvests} icon={History} index={1} color="text-[#1A1A1A]" />
-                <GlassStatCard label="Monthly Delta" value={stats.thisMonth} icon={Calendar} index={2} color="text-[#1A1A1A]" />
-                <GlassStatCard label="Yield / Cycle" value={`${stats.avgPerHarvest}KG`} icon={Activity} index={3} color="text-[#1B9157]" />
+                <GlassStatCard label="Total honey" value={`${stats.totalHoney}KG`} icon={Zap} index={0} />
+                <GlassStatCard label="Total harvests" value={stats.totalHarvests} icon={History} index={1} color="text-[#1A1A1A]" />
+                <GlassStatCard label="This month" value={stats.thisMonth} icon={Calendar} index={2} color="text-[#1A1A1A]" />
+                <GlassStatCard label="Average yield" value={`${stats.avgPerHarvest}KG`} icon={Activity} index={3} color="text-[#1B9157]" />
             </div>
 
             {/* Filter bar */}
@@ -513,7 +513,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             </div>
                         </SelectTrigger>
                         <SelectContent className={glass.selectContent}>
-                            <SelectItem value="all" className="font-bold text-xs">All Cycles</SelectItem>
+                            <SelectItem value="all" className="font-bold text-xs">All harvest cycles</SelectItem>
                             {Array.from({ length: 9 }, (_, i) => {
                                 const year = (new Date().getFullYear() - i).toString();
                                 return (

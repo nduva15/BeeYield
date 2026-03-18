@@ -1709,11 +1709,11 @@ export const beeyieldService = {
             active_contracts: contracts.filter(c => c.status === 'active').length,
             total_hives_deployed: deployments?.length || 0,
             total_acres_covered: contracts.reduce((s, c) => s + (c.farm_size_acres || 0), 0),
-            average_fpa: 8.2, // Mocked or calculated
-            coverage_health_percent: 94,
-            healthy_hives: 142,
-            warning_hives: 8,
-            critical_hives: 2,
+            average_fpa: 0,
+            coverage_health_percent: 0,
+            healthy_hives: deployments?.length || 0,
+            warning_hives: 0,
+            critical_hives: 0,
             total_revenue: contracts.reduce((s, c) => s + (c.payment_amount || 0), 0)
         };
     },
@@ -2938,6 +2938,26 @@ export const beeyieldService = {
             console.error('planRoute:', error);
             return { path: [] };
         }
+    },
+
+    // Bluetooth Methods
+    async getBluetoothDevices(): Promise<any[]> {
+        return _lsRead('beeyield_bluetooth_devices_v1', []);
+    },
+
+    async registerBluetoothDevice(deviceData: any): Promise<any> {
+        return _lsUpsert('beeyield_bluetooth_devices_v1', {
+            ...deviceData,
+            id: deviceData.id || _uuid(),
+        });
+    },
+
+    async syncBluetoothReadings(payload: { readings: any[] }): Promise<any> {
+        // Log locally for demo/fallback
+        const list = _lsRead('beeyield_bluetooth_readings_v1', []);
+        const next = [...payload.readings, ...list].slice(0, 100);
+        _lsWrite('beeyield_bluetooth_readings_v1', next);
+        return { ok: true, count: payload.readings.length };
     }
 };
 

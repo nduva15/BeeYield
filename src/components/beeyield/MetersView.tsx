@@ -89,7 +89,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     setBuildings(cached.buildings);
                     toast.info('Loaded meters dashboard from this device');
                 } else {
-                    setError('Meters backend unavailable. Data may be incomplete until you reconnect.');
+                    setError('Connecting to sensors... Data may be incomplete until you reconnect.');
                     toast.error('Failed to load dashboard data');
                 }
             } finally {
@@ -172,7 +172,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             <BeeYieldPageShell className="space-y-0">
                 <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Activity className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                <span className="text-sm font-semibold text-gray-600 italic">Syncing devices…</span>
+                <span className="text-sm font-semibold text-gray-600 italic">Updating data...</span>
                 </div>
             </BeeYieldPageShell>
         );
@@ -268,11 +268,11 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     <Icon className="w-4 h-4" />
                                 </div>
                                 <Badge className={cn("text-[8px] px-1.5 py-0.5 rounded-md border-none font-bold", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-[#1B9157]/10 text-[#1B9157]")}>
-                                    {alertCount > 0 ? `${alertCount} ALARMS` : 'Optimized'}
+                                    {alertCount > 0 ? `${alertCount} Alarms` : 'Optimized'}
                                 </Badge>
                             </div>
                             <div>
-                                <p className="text-[8px] font-black text-gray-400">{medium}_LOAD</p>
+                                <p className="text-[8px] font-black text-gray-400">{medium} LOAD</p>
                                 <p className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">
                                      {total} <span className="text-[9px] font-medium opacity-30 tracking-normal font-sans">{unit}</span>
                                 </p>
@@ -300,8 +300,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <div className={cn(glass.card, "lg:col-span-2 p-5 space-y-4 bg-white/40 border-white/20 shadow-xl")}>
                     <div className="flex justify-between items-center border-b border-white/20 pb-4">
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Resource_Flow</h3>
-                            <p className="text-[8px] font-black text-gray-400">Biomass Accumulation Delta</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Usage patterns</h3>
+                            <p className="text-[8px] font-black text-gray-400">Daily monitoring trend</p>
                         </div>
                         <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 backdrop-blur-sm">
                             {(['Water', 'Heat', 'Energy'] as const).map(m => (
@@ -355,8 +355,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <Bot className="w-5 h-5 text-[#1A1A1A]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Co_Pilot</h3>
-                            <p className="text-[8px] font-black text-gray-400">Acoustic Resonance Expert</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Assistant</h3>
+                            <p className="text-[8px] font-black text-gray-400">Colony health advisor</p>
                         </div>
                     </div>
 
@@ -375,7 +375,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
                     <div className="relative">
                         <input
-                            placeholder="QUERY_TELEMETRY..."
+                            placeholder="Search telemetry..."
                             value={aiMessage}
                             onChange={e => setAiMessage(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
@@ -398,10 +398,10 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <div className="p-4 border-b border-white/20 bg-white/20 flex justify-between items-center backdrop-blur-sm">
                     <div className="flex items-center gap-3">
                         <TrendingUp className="w-4 h-4 text-[#1B9157]" />
-                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Audit_Records</h3>
+                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Activity log</h3>
                     </div>
                     <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black text-gray-500 hover:text-[#1A1A1A] hover:bg-white/40 rounded-xl px-3 h-7">
-                        Historical_Log <ChevronRight className="w-3" />
+                        Full history <ChevronRight className="w-3" />
                     </Button>
                 </div>
                 <div className="divide-y divide-white/20">
@@ -429,7 +429,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     {events.length === 0 && (
                         <div className="p-20 text-center opacity-30 italic">
                             <Activity className="w-10 h-10 mx-auto mb-4 opacity-20" />
-                            <p className="text-[10px] font-black">Stable Nominal Baseline Detected</p>
+                            <p className="text-[10px] font-black">Everything is currently running smoothly</p>
                         </div>
                     )}
                 </div>

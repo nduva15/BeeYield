@@ -45,7 +45,7 @@ interface BluetoothDevice {
     battery_volts?: number;
 }
 
-export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
+export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, message?: string, action?: string) => void }> = ({ onTabChange }) => {
     const [connectedDevice, setConnectedDevice] = React.useState<any>(null);
     const [gattServer, setGattServer] = React.useState<any>(null);
     const [status, setStatus] = React.useState<'Idle' | 'Scanning' | 'Connecting' | 'Connected' | 'Error'>('Idle');
@@ -211,7 +211,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             }
 
             setSyncProgress(20);
-            addLog("Packaging readings…");
+            addLog("Preparing data...");
 
             const res = await beeyieldService.syncBluetoothReadings({ readings: [reading] });
             setSyncProgress(100);
@@ -257,9 +257,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
             {/* Header Section */}
             <PageHeader
                 icon={BluetoothIcon}
-                label="Wireless_Interface_Protocol"
+                label="Wireless connection"
                 title={<>Device <span className="text-[#F4D03F]">Link</span></>}
-                subtitle="Establish industrial Bluetooth bridge for real-time telemetry."
+                subtitle="Connect your sensors directly using Bluetooth."
                 actions={
                     <div className="flex gap-3">
                         <AnimatePresence mode="wait">
@@ -273,7 +273,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     className={cn(glass.btnSecondary, "h-8 px-4 text-red-500 border-red-500/10 hover:bg-red-500/10 font-black text-[9px] rounded-xl shadow-sm flex items-center gap-2")}
                                 >
                                     <X className="w-3.5 h-3.5" />
-                                    Disconnect_Link
+                                    Disconnect Link
                                 </motion.button>
                             ) : (
                                 <motion.button
@@ -405,7 +405,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-bold text-[#1A1A1A]">Cloud Synchronization</h3>
-                                        <p className="text-sm text-gray-500">Manual data ingest to BeeYield Cloud.</p>
+                                        <p className="text-sm text-gray-500">Synchronize sensor data with your account.</p>
                                     </div>
                                 </div>
                                 <button
@@ -430,8 +430,8 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                         </div>
                                     </div>
                                     <div className="text-center sm:text-right">
-                                        <p className="text-[7px] font-black text-gray-400">Ingest State</p>
-                                        <span className="text-[9px] font-black text-[#1B9157]">Ready For Egress</span>
+                                        <p className="text-[7px] font-black text-gray-400">Upload status</p>
+                                        <span className="text-[9px] font-black text-[#1B9157]">Synced</span>
                                     </div>
                                 </div>
 
@@ -444,7 +444,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                             className="space-y-3"
                                         >
                                             <div className="flex justify-between items-end px-1">
-                                                <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Sync_In_Progress...</span>
+                                                <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Sync in progress...</span>
                                                 <span className="text-lg font-black tabular-nums tracking-tighter text-[#1A1A1A]">{syncProgress}%</span>
                                             </div>
                                             <div className="h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 p-0.5">
@@ -480,7 +480,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                 {logs.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full opacity-20 gap-2">
                                         <Loader2 className="w-4 h-4 animate-spin-slow" />
-                                        <p className="text-[8px] font-black">Link Idle Await Frame</p>
+                                        <p className="text-[8px] font-black">No activity found</p>
                                     </div>
                                 ) : (
                                     logs.map((log, i) => (
@@ -517,7 +517,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
                         <div className="p-6 space-y-5 relative z-10">
                             <div className="space-y-2">
-                                <Label htmlFor="bluetooth-setup-name" className={glass.microLabel}>Sensor_Alias</Label>
+                                <Label htmlFor="bluetooth-setup-name" className={glass.microLabel}>Sensor Alias</Label>
                                 <Input
                                     id="bluetooth-setup-name"
                                     name="device_name"
@@ -525,7 +525,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
                                     value={setupName}
                                     onChange={(e) => setSetupName(e.target.value)}
                                     className={cn(glass.input, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}
-                                    placeholder="e.g. ALPHA_SCALE_01"
+                                    placeholder="e.g. Alpha Scale 01"
                                 />
                             </div>
                             <div className="space-y-2">

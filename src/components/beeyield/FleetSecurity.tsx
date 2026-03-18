@@ -130,7 +130,7 @@ const FleetSecurity: React.FC = () => {
             {/* Header Section */}
             <PageHeader
                 icon={ShieldCheck}
-                label="Security_Operations_Protocol"
+                label="Security Operations Protocol"
                 title={<>Fleet <span className="text-[#1B9157]">Security</span></>}
                 subtitle="High-fidelity telemetry of pallet movement, geo-fencing, and nodal integrity protocols."
                 actions={

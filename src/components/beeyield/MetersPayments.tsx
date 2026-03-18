@@ -218,9 +218,9 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn("p-8 -m-0 space-y-12 pb-12 min-h-screen")}>
             <BeeYieldPageHeader
                 icon={CreditCard}
-                label="Usage Settlement Registry"
+                label="Billing and Rates"
                 title={<>Financial <span className="text-[#F4D03F]">Logistics</span></>}
-                subtitle="Resource Valuation And Billing Metrics"
+                subtitle="Usage and billing rates"
             />
 
             {/* Consumption Summary */}
@@ -229,7 +229,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
                         <CreditCard className="w-4 h-4 text-[#1B9157]" />
                     </div>
-                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Consumption Matrix</h3>
+                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Resource usage summary</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
@@ -264,8 +264,8 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             <FileText className="w-6 h-6 text-[#1B9157]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Batch Settlement Export</h3>
-                            <p className="text-[9px] font-bold text-gray-500">Compile Payment Archives For External Processing</p>
+                            <h3 className="text-[11px] font-black text-[#1A1A1A]">All reports export</h3>
+                            <p className="text-[9px] font-bold text-gray-500">Export all billing data for your records</p>
                         </div>
                     </div>
 
@@ -273,7 +273,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                         onClick={exportRatesCsv}
                         className={cn(glass.btnPrimary, "w-full md:w-auto h-10 px-6 font-black text-[10px]")}
                     >
-                        EXECUTE_BATCH_EXPORT
+                        Export report
                     </button>
                 </div>
             </div>
@@ -281,15 +281,15 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             {/* Sample billing rates */}
             <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
                 <div className="p-5 border-b border-white/10 bg-white/20">
-                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Billing Parameterization</h3>
-                    <p className="text-[9px] font-bold text-gray-500 mt-1">Define Resource Specific Valuation Weights</p>
+                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Billing rates</h3>
+                    <p className="text-[9px] font-bold text-gray-500 mt-1">Set standard rates for your resources</p>
                 </div>
 
                 <div className="p-5 space-y-4">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]" />
-                            <p className="text-[9px] font-black text-gray-500 mt-4 animate-pulse">SYNCHING_PARAMETERS...</p>
+                            <p className="text-[9px] font-black text-gray-500 mt-4 animate-pulse">Updating rates...</p>
                         </div>
                     ) : error ? (
                         <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -300,7 +300,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     ) : rates.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <FileText className="w-8 h-8 text-gray-300 mb-4" />
-                            <p className="text-[9px] font-black text-gray-500">Zero Rate Configuration Detected</p>
+                            <p className="text-[9px] font-black text-gray-500">No billing rates found</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -319,8 +319,8 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                             {item.meter_type === 'Energy' && <Zap className="w-4 h-4 text-[#1B9157]" />}
                                         </div>
                                         <div>
-                                            <h4 className="text-[10px] font-black text-[#1A1A1A]">{item.meter_type}_RATE</h4>
-                                            <p className="text-[8px] font-bold text-gray-500 mt-0.5">{item.description || 'Global Standard Settlement'}</p>
+                                            <h4 className="text-[10px] font-black text-[#1A1A1A]">{item.meter_type} Rate</h4>
+                                            <p className="text-[8px] font-bold text-gray-500 mt-0.5">{item.description || 'Standard billing rate'}</p>
                                         </div>
                                     </div>
                                     <div className="text-left md:text-right">
@@ -328,7 +328,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                             {item.rate_per_unit.toFixed(2)} <span className="text-[9px] font-bold text-gray-400">{item.currency} / {item.unit}</span>
                                         </p>
                                         <div className="flex items-center md:justify-end gap-2 mt-1">
-                                            {item.is_active && <div className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 px-2 py-0.5 rounded-md text-[8px] font-black">Active Protocol</div>}
+                                            {item.is_active && <div className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 px-2 py-0.5 rounded-md text-[8px] font-black">Active</div>}
                                             <p className="text-[8px] font-bold text-gray-400">EFF: {new Date(item.effective_from).toLocaleDateString()}</p>
                                         </div>
                                     </div>
@@ -341,7 +341,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                 <div className="p-5 border-t border-white/10 bg-white/20 space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black text-gray-500 ml-1">Tele Type</label>
+                            <label className="text-[9px] font-black text-gray-500 ml-1">Sensor type</label>
                             <Select
                                 value={newRate.meter_type.toLowerCase()}
                                 onValueChange={(v) => {
@@ -396,15 +396,15 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             className={cn(glass.btnPrimary, "w-full h-9 rounded-xl inline-flex items-center justify-center text-[9px] font-black")}
                         >
                             {isCreating ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Plus className="w-3.5 h-3.5 mr-1" />}
-                            COMMIT_WEIGHT
+                            Save rate
                         </button>
                     </div>
 
                     {/* Drag and Drop Columns */}
                     <div className="pt-5 border-t border-white/10">
                         <div className="mb-4">
-                            <h4 className="text-[11px] font-black text-[#1A1A1A]">Recursive Dimensionality</h4>
-                            <p className="text-[9px] font-bold text-gray-500 mt-1">Configure Hierarchical Ordering For Batch Output</p>
+                            <h4 className="text-[11px] font-black text-[#1A1A1A]">Export columns</h4>
+                            <p className="text-[9px] font-bold text-gray-500 mt-1">Arrange columns for your export reports</p>
                         </div>
 
                         <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="grid grid-cols-1 sm:grid-cols-2 gap-3">

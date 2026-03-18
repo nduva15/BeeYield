@@ -72,19 +72,19 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             {/* Header */}
             <BeeYieldPageHeader
                 icon={Satellite}
-                label="Ecosystem Insights"
+                label="Site health"
                 onBack={() => onTabChange('home')}
-                title={<>Agro <span className="text-[#F4D03F]">Intelligence</span></>}
+                title={<>Strategy <span className="text-[#F4D03F]">Insights</span></>}
                 subtitle="Environmental monitoring and ecosystem health analysis."
                 actions={
                     <div className="flex items-center gap-2">
                         <button onClick={() => onTabChange('orchard-mapper')} className={glass.btnSecondary}>
                             <MapIcon className="w-4 h-4 text-[#F4D03F]" />
-                            View Map
+                            View map
                         </button>
                         <div className={cn(glass.badge, "bg-[#1A1A1A] text-[#F4D03F] border-[#F4D03F]/30 px-3 py-1.5 flex items-center gap-2")}>
                             <Terminal className="w-3 h-3 animate-pulse" />
-                            <span className="text-[10px]">Satellite Link</span>
+                            <span className="text-[10px]">Live status</span>
                         </div>
                     </div>
                 }
@@ -94,26 +94,26 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <GlassStatCard
                     label="Air Clarity"
-                    value={loading ? 'Scanning...' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable')}
+                    value={loading ? 'Checking…' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable')}
                     icon={Sun}
                     index={0}
                 />
                 <GlassStatCard
                     label="Soil Moisture"
-                    value={loading ? 'Syncing...' : (moisture != null ? `${moisture}%` : '42%')}
+                    value={loading ? 'Updating…' : (moisture != null ? `${moisture}%` : '—')}
                     icon={CloudRain}
                     index={1}
                 />
                 <GlassStatCard
                     label="Plant Health"
-                    value={loading ? 'Mapping...' : (vegetation != null ? vegetation.toString() : '0.64')}
+                    value={loading ? 'Checking…' : (vegetation != null ? vegetation.toString() : '—')}
                     icon={Sprout}
                     index={2}
                     color="text-[#1B9157]"
                 />
                 <GlassStatCard
                     label="Carbon Score"
-                    value={loading ? 'Calculating...' : (carbonScore != null ? carbonScore.toLocaleString() : '1,240')}
+                    value={loading ? 'Checking…' : (carbonScore != null ? carbonScore.toLocaleString() : '—')}
                     icon={Wind}
                     index={3}
                     color="text-[#1B9157]"

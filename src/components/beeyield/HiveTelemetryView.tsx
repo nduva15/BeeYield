@@ -39,6 +39,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import WeightDynamicsChart from '@/components/telemetry/WeightDynamicsChart';
 import AcousticWaveform from '@/components/telemetry/AcousticWaveform';
+import { glass } from './GlassTheme';
 
 interface WeightData {
     time: string;

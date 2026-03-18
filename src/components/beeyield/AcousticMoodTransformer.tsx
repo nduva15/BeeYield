@@ -11,13 +11,14 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
 
 const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
     const [mfccData, setMfccData] = React.useState<{ freq: number; db: number }[]>([]);
-    const [status, setStatus] = React.useState<'queen-right' | 'queenless-roar' | 'swarm-intent'>('queen-right');
+    const [status, setStatus] = React.useState<'healthy' | 'missing-queen' | 'swarm-risk'>('healthy');
     const [confidence, setConfidence] = React.useState<number | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [isOffline, setIsOffline] = React.useState(false);
@@ -92,25 +93,25 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
     }, [readCache, writeCache]);
 
     const STATUS_MAP = {
-        'queen-right': {
+        'healthy': {
             label: 'Healthy & Stable',
-            desc: 'The queen is active and the hive is calm. Normal acoustic profile.',
+            desc: 'The queen is active and the hive is calm. Normal sound profile.',
             color: '#1B9157',
             bg: 'bg-emerald-50',
             border: 'border-emerald-200',
             text: 'text-emerald-700',
             icon: Heart
         },
-        'queenless-roar': {
-            label: 'Queenless Warning',
-            desc: 'Potential queen loss. Low-frequency roar detected.',
+        'missing-queen': {
+            label: 'Queen Missing',
+            desc: 'Potential queen loss. Unusual distress sound detected.',
             color: '#F4D03F',
             bg: 'bg-amber-50',
             border: 'border-amber-200',
             text: 'text-amber-700',
             icon: AlertCircle
         },
-        'swarm-intent': {
+        'swarm-risk': {
             label: 'Swarm Warning',
             desc: 'High congestion. Swarm likely within 72 hours.',
             color: '#ef4444',
@@ -124,21 +125,17 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
     const StatusIcon = STATUS_MAP[status].icon;
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-        >
-            <PageHeader
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+            <BeeYieldPageHeader
                 icon={BrainCircuit}
-                label="Acoustic Analysis"
+                label="Sound Analysis"
                 title={<>Hive <span className="text-[#1B9157]">Mood</span></>}
                 subtitle="Sound-based check to identify colony status and potential risks."
                 actions={
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
                         <Activity className={cn("w-3 h-3", loading ? "text-[#F4D03F] animate-spin" : "text-[#1B9157] animate-pulse")} />
                         <span className="text-xs font-bold text-gray-500 tracking-tight">
-                            Status:{' '}
+                            Confidence:{' '}
                             <span className="text-[#1A1A1A]">
                                 {typeof confidence === 'number' ? `${confidence.toFixed(1)}%` : (loading ? 'Analyzing…' : '—')}
                             </span>
@@ -160,18 +157,18 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                 {/* Spectral View */}
                 <div className="flex-1 p-5 lg:p-6 space-y-6 border-b xl:border-b-0 xl:border-r border-gray-100 bg-gray-50/10">
                     <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                                <Waves className="w-5 h-5 text-gray-500" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-bold text-[#1A1A1A]">Acoustic Signature</h3>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Real-time Spectral Waveform</p>
-                            </div>
-                        </div>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+                        <Waves className="w-5 h-5 text-gray-500" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-[#1A1A1A]">Sound pattern</h3>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live sound display</p>
+                    </div>
+                </div>
                         <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm">
                             <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" />
-                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Active Link</span>
+                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Active</span>
                         </div>
                     </div>
 
@@ -270,9 +267,9 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
 
                         <div className="space-y-2">
                             {[
-                                { id: 'queen-right', label: 'Queen Vitality', icon: ShieldCheck, color: '#1B9157' },
-                                { id: 'queenless-roar', label: 'Stress Signals', icon: Zap, color: '#F4D03F' },
-                                { id: 'swarm-intent', label: 'Swarm Triggers', icon: Volume2, color: '#EF4444' }
+                                { id: 'healthy', label: 'Colony Vitals', icon: ShieldCheck, color: '#1B9157' },
+                                { id: 'missing-queen', label: 'Stress Signals', icon: Zap, color: '#F4D03F' },
+                                { id: 'swarm-risk', label: 'Swarm Triggers', icon: Volume2, color: '#EF4444' }
                             ].map((btn) => (
                                 <button
                                     key={btn.id}
@@ -302,8 +299,8 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                             <p className="text-[10px] font-bold uppercase tracking-widest text-[#1B9157]">Processing</p>
                         </div>
                         <div className="font-mono text-[9px] text-gray-400 leading-relaxed">
-                            <p className="flex gap-2 font-bold"><span>&gt;</span> Signal processed</p>
-                            <p className="text-[#1B9157] font-bold flex gap-2"><span>&gt;</span> Signature verified</p>
+                            <p className="flex gap-2 font-bold"><span>&gt;</span> Data verified</p>
+                            <p className="text-[#1B9157] font-bold flex gap-2"><span>&gt;</span> Health confirmed</p>
                         </div>
                     </div>
                 </div>
@@ -336,7 +333,7 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                     View report
                 </button>
             </motion.div>
-        </motion.div>
+            </BeeYieldPageShell>
     );
 };
 

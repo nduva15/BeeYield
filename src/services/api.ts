@@ -138,7 +138,7 @@ export function getBaseUrl(endpoint: string): string {
         "/shop/", "shop/",
         "/blog/", "blog/",
         "/meters/", "meters/",
-        "/reports/", "reports/",
+        "/reports/", "/reports", "reports/",
         "/intelligence/", "intelligence/", "intelligence"
     ];
 

@@ -32,23 +32,13 @@ const VarroaView: React.FC = () => {
                     }));
                     setHives(mapped);
                 } else {
-                    setHives([
-                        { id: 'H-001', infestation: 1.2, status: 'safe', trend: 'down', method: 'alcohol_wash', date: '-' },
-                        { id: 'H-002', infestation: 3.5, status: 'warning', trend: 'up', method: 'sticky_board', date: '-' },
-                        { id: 'H-003', infestation: 0.8, status: 'safe', trend: 'stable', method: 'sugar_roll', date: '-' },
-                        { id: 'H-004', infestation: 5.2, status: 'critical', trend: 'up', method: 'alcohol_wash', date: '-' },
-                    ]);
+                    setHives([]);
                 }
 
                 setTreatments(treatmentData || []);
             } catch (err) {
                 console.error('Error loading varroa data:', err);
-                setHives([
-                    { id: 'H-001', infestation: 1.2, status: 'safe', trend: 'down', method: 'alcohol_wash', date: '-' },
-                    { id: 'H-002', infestation: 3.5, status: 'warning', trend: 'up', method: 'sticky_board', date: '-' },
-                    { id: 'H-003', infestation: 0.8, status: 'safe', trend: 'stable', method: 'sugar_roll', date: '-' },
-                    { id: 'H-004', infestation: 5.2, status: 'critical', trend: 'up', method: 'alcohol_wash', date: '-' },
-                ]);
+                setHives([]);
             } finally {
                 setLoading(false);
             }
@@ -170,7 +160,7 @@ const VarroaView: React.FC = () => {
                     <div className="h-[200px] w-full bg-white/20 rounded-2xl flex flex-col items-center justify-center border border-dashed border-[#F4D03F]/20 relative group">
                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                         <BarChart3 className="w-10 h-10 text-[#F4D03F]/20 group-hover:scale-110 transition-transform duration-500" />
-                        <span className="text-[8px] font-black text-gray-400 mt-2">SYNCING_DATA_STREAM...</span>
+                        <span className="text-[8px] font-black text-gray-400 mt-2">Updating data stream...</span>
                     </div>
                 </div>
 

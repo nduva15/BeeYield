@@ -552,8 +552,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                     <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">Fleet <span className="text-[#1B9157]">Optimizer</span></h2>
                                     <p className="text-[10px] font-black text-gray-500 leading-relaxed max-w-xl border-l-2 border-[#1B9157]/10 pl-4 tracking-tighter">
-                                        Continuous spatial analysis and real-time fleet orchestration. 
-                                        Monitoring colony distribution and bloom saturation vectors.
+                                        Continuous spatial analysis and real-time fleet management. 
+                                        Monitoring colony distribution and bloom health patterns.
                                     </p>
                                 </div>
                                 <div className="mt-10 pt-6 border-t border-[#1B9157]/10 flex gap-12 relative z-10">
@@ -691,9 +691,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                              {selectedDevice && (
                                 <div className="grid grid-cols-3 gap-4">
                                     {[
-                                       { icon: Thermometer, label: 'Temperature', val: deviceReadings[0]?.temperature_c?.toFixed(1) || '—', unit: '°C', color: 'text-amber-500' },
-                                       { icon: Droplets, label: 'Humidity', val: deviceReadings[0]?.humidity_pct?.toFixed(0) || '—', unit: '%', color: 'text-blue-500' },
-                                       { icon: Signal, label: 'Signal', val: deviceReadings[0]?.signal_strength_dbm || '—', unit: 'dBm', color: 'text-[#1B9157]' }
+                                       { icon: Thermometer, label: 'Temperature', val: deviceReadings[0]?.temperature?.toFixed(1) || '—', unit: '°C', color: 'text-amber-500' },
+                                       { icon: Droplets, label: 'Humidity', val: deviceReadings[0]?.humidity?.toFixed(0) || '—', unit: '%', color: 'text-blue-500' },
+                                       { icon: Signal, label: 'Signal', val: deviceReadings[0]?.signal_strength || '—', unit: 'dBm', color: 'text-[#1B9157]' }
                                    ].map((s, idx) => (
                                        <div key={idx} className={cn(glass.card, "p-4 flex flex-col gap-3 border-white/40 shadow-sm")}>
                                           <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-gray-100 bg-white shadow-sm">
@@ -722,13 +722,13 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.05]">
                                     <div className="flex items-center gap-2">
                                         <Calculator className="w-4 h-4 text-[#F4D03F]" />
-                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Tactical Parameters</h3>
+                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Strategy settings</h3>
                                     </div>
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shadow-sm shadow-[#F4D03F]/50 animate-pulse" />
                                 </div>
                                 <div className="p-6 space-y-6">
                                     <div className="space-y-3">
-                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 ml-1">Total Deployment Area (AC)</label>
+                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 ml-1">Total deployment area (Acres)</label>
                                         <div className="flex bg-white/40 p-1.5 rounded-xl border border-[#F4D03F]/10 shadow-sm">
                                             <button
                                                 onClick={() => setCalcInputs(p => ({ ...p, totalAcres: Math.max(1, p.totalAcres - 5) }))}
