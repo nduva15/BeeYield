@@ -249,14 +249,14 @@ const BeeYieldDashboard: React.FC = () => {
                             { id: 'intelligence', label: 'Intelligence Hub', icon: Brain },
                             { id: 'pollination-grid', label: 'Pollination Grid', icon: LayoutGrid },
                             { id: 'pollination-engine', label: 'Pollination Engine', icon: Cpu },
-                            { id: 'saturation-math', label: 'Saturation Math', icon: Scale },
+                            { id: 'saturation-math', label: 'Coverage Analysis', icon: Scale },
                             { id: 'hpa-optimizer', label: 'Performance Planner', icon: Cpu },
                         ]
                     },
                     {
                         title: 'Field Logistics',
                         items: [
-                            { id: 'master-map', label: 'Master GIS Map', icon: Map },
+                            { id: 'master-map', label: 'Master Map', icon: Map },
                             { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
                             { id: 'fleet-security', label: 'Asset Security', icon: ShieldCheck },
                             { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
@@ -368,8 +368,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-folder':
             case 'precision-pollination-home':
                 return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
-            case 'precision-pollination-grid':
-                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
+
             case 'bloom-tracking':
             case 'bloom-phenology':
                 return <BloomPhenology />;

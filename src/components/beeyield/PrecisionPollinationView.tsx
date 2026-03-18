@@ -18,7 +18,10 @@ import {
     ChevronDown,
     Calculator,
     FileBarChart,
+    Locate,
+    Crosshair,
     Navigation,
+    Shield,
     Plus,
     Minus,
     AlertTriangle,
@@ -160,16 +163,26 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         return null;
     };
 
-    const regions = [
-        { name: 'Kibwezi (Home)', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
-        { name: 'Lamu (Global Hub)', coords: [-2.27, 40.90] as [number, number], zoom: 12 },
-        { name: 'Beijing Hub', coords: [39.9, 116.4] as [number, number], zoom: 11 },
-        { name: 'Global Situation', coords: [20, 0] as [number, number], zoom: 2 },
-    ];
+    const handleSearch = async (query: string) => {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const { lat, lon } = data[0];
+                setMapCenter([parseFloat(lat), parseFloat(lon)]);
+                setZoom(14);
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+        }
+    };
 
-    const handleJump = (coords: [number, number], z: number) => {
-        setMapCenter(coords);
-        setZoom(z);
+    const handleLocate = () => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition((pos) => {
+            setMapCenter([pos.coords.latitude, pos.coords.longitude]);
+            setZoom(15);
+        });
     };
 
     const [optimalPlacements, setOptimalPlacements] = React.useState<any[]>([]);
@@ -554,8 +567,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     <div className="space-y-1">
                                         <p className={glass.microLabel}>Saturation Index</p>
                                         <div className="flex items-baseline gap-1">
-                                            <p className="text-2xl font-black text-[#1B9157] tabular-nums tracking-tighter">98<span className="text-[14px]">%</span></p>
-                                            <span className="text-[8px] font-black text-[#1B9157]">Optimal</span>
+                                            <p className="text-2xl font-black text-[#1B9157] tabular-nums tracking-tighter">—<span className="text-[14px]">%</span></p>
+                                            <span className="text-[8px] font-black text-[#1B9157]">Status</span>
                                         </div>
                                     </div>
                                 </div>
@@ -563,8 +576,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                             <div className="space-y-4">
                                 {[
-                                    { label: 'Bloom Intensity', val: '72%', sub: 'Bloom Flux', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
-                                    { label: 'Activity Factor', val: '8.4', sub: 'High Capacity', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
+                                    { label: 'Bloom Intensity', val: '—%', sub: 'No Data', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
+                                    { label: 'Activity Factor', val: '0.0', sub: 'Baseline', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
                                 ].map((stat, i) => (
                                     <div key={i} className={cn(glass.card, "p-4 flex items-center justify-between border-white/40 shadow-sm", stat.bg, stat.border)}>
                                        <div className="space-y-1">
@@ -677,10 +690,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                              {selectedDevice && (
                                 <div className="grid grid-cols-3 gap-4">
-                                   {[
-                                       { icon: Thermometer, label: 'ThermexScale', val: '24.5', unit: '°C', color: 'text-amber-500' },
-                                       { icon: Droplets, label: 'HydroScale', val: '62', unit: '%', color: 'text-blue-500' },
-                                       { icon: Signal, label: 'PulseLink', val: '98', unit: '%', color: 'text-[#1B9157]' }
+                                    {[
+                                       { icon: Thermometer, label: 'Temperature', val: deviceReadings[0]?.temperature_c?.toFixed(1) || '—', unit: '°C', color: 'text-amber-500' },
+                                       { icon: Droplets, label: 'Humidity', val: deviceReadings[0]?.humidity_pct?.toFixed(0) || '—', unit: '%', color: 'text-blue-500' },
+                                       { icon: Signal, label: 'Signal', val: deviceReadings[0]?.signal_strength_dbm || '—', unit: 'dBm', color: 'text-[#1B9157]' }
                                    ].map((s, idx) => (
                                        <div key={idx} className={cn(glass.card, "p-4 flex flex-col gap-3 border-white/40 shadow-sm")}>
                                           <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-gray-100 bg-white shadow-sm">
@@ -709,13 +722,13 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.05]">
                                     <div className="flex items-center gap-2">
                                         <Calculator className="w-4 h-4 text-[#F4D03F]" />
-                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Tactical_Parameters</h3>
+                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Tactical Parameters</h3>
                                     </div>
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shadow-sm shadow-[#F4D03F]/50 animate-pulse" />
                                 </div>
                                 <div className="p-6 space-y-6">
                                     <div className="space-y-3">
-                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 ml-1">Total_Deployment_Area (AC)</label>
+                                        <label htmlFor="precision-pollination-total-acres" className="text-[9px] font-black text-[#1A1A1A]/40 ml-1">Total Deployment Area (AC)</label>
                                         <div className="flex bg-white/40 p-1.5 rounded-xl border border-[#F4D03F]/10 shadow-sm">
                                             <button
                                                 onClick={() => setCalcInputs(p => ({ ...p, totalAcres: Math.max(1, p.totalAcres - 5) }))}
@@ -797,14 +810,14 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                              <div className="lg:col-span-2 space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
                                    <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1A1A1A] space-y-2 shadow-sm border-white/40")}>
-                                      <p className={glass.microLabel}>Absolute_Capacity</p>
+                                      <p className={glass.microLabel}>Total Capacity</p>
                                       <div className="flex items-baseline gap-2">
                                         <p className="text-3xl font-black tracking-tighter text-[#1A1A1A] tabular-nums">{metrics.totalFrames}</p>
                                         <span className="text-[10px] font-black text-[#1A1A1A]/30">Frames</span>
                                       </div>
                                    </div>
                                    <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1B9157] space-y-2 shadow-sm border-white/40 bg-[#1B9157]/5")}>
-                                      <p className={glass.microLabel}>Target_Logic_Yield</p>
+                                      <p className={glass.microLabel}>Target Yield</p>
                                       <div className="flex items-baseline gap-2">
                                         <p className="text-3xl font-black tracking-tighter text-[#1B9157] tabular-nums">{metrics.effectiveFrames}</p>
                                         <span className="text-[10px] font-black text-[#1B9157]/40">E Frames</span>
@@ -834,11 +847,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl space-y-6")}>
                              <div className="flex items-center justify-between border-b border-[#1B9157]/5 pb-6">
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter">Deployment_Inventory</h3>
+                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter">Equipment Inventory</h3>
                                     <p className="text-[9px] font-black text-[#1B9157]/40">Hardware allocation</p>
                                 </div>
                                 <button onClick={() => setCalcInputs(p => ({ ...p, hives: [...p.hives, { frameCount: 8, isStrong: true, isLarge: false }] }))} className={cn(glass.btnSecondary, "h-9 px-5 rounded-xl text-[9px] font-black flex items-center gap-2 border-[#1B9157]/10")}>
-                                    <Plus className="w-3.5 h-3.5" /> Initialize_Unit
+                                    <Plus className="w-3.5 h-3.5" /> Add New Hive
                                 </button>
                              </div>
                              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -896,23 +909,25 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             <MapContainer center={mapCenter} zoom={zoom} style={{ height: '100%', width: '100%' }} zoomControl={false} className="z-0" worldCopyJump={true}>
                                 <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" attribution="&copy; CARTO" />
                                 {zoom < 8 && <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png" opacity={0.3} />}
-                                {zoom >= 8 && <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="&copy; ESRI" />}
+                                {zoom >= 8 && <TileLayer url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" attribution="&copy; Google Maps Hybrid" />}
                                 
                                 <MapController center={mapCenter} zoom={zoom} />
                                 
                                 {zoom > 10 && <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 4, fillOpacity: 0.1, dashArray: '10, 10' }} stroke={false} />}
                                 
-                                {zoom >= 3 && zoom < 8 && regions.slice(1, 5).map((r, i) => (
-                                    <Marker key={i} position={r.coords}>
-                                        <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">{r.name}</p></Popup>
-                                    </Marker>
-                                ))}
-
-                                {zoom >= 8 && regions.slice(5).map((r, i) => (
-                                    <Marker key={i} position={r.coords}>
-                                        <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">{r.name}</p></Popup>
-                                    </Marker>
-                                ))}
+                                <Marker 
+                                    position={mapCenter}
+                                    draggable={true}
+                                    eventHandlers={{
+                                        dragend: (e) => {
+                                            const marker = e.target;
+                                            const position = marker.getLatLng();
+                                            setMapCenter([position.lat, position.lng]);
+                                        }
+                                    }}
+                                >
+                                    <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">Editable Site Pivot</p></Popup>
+                                </Marker>
 
                                 {optimalPlacements.map((pos, idx) => (
                                     <React.Fragment key={idx}>
@@ -924,21 +939,42 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 ))}
                             </MapContainer>
 
-                            {/* Drill-down UI Overlay */}
-                            <div className="absolute top-6 left-6 flex flex-col gap-2 z-[1000]">
-                                {regions.map((r, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => handleJump(r.coords, r.zoom)}
-                                        className={cn(
-                                            "px-4 py-2 rounded-xl text-[8px] font-black border backdrop-blur-md transition-all flex items-center gap-2",
-                                            mapCenter[0] === r.coords[0] ? "bg-[#1B9157] text-white border-[#1B9157]/20 shadow-lg shadow-[#1B9157]/20" : "bg-white/80 text-[#1A1A1A] border-white/40 hover:bg-white"
-                                        )}
-                                    >
-                                        <Navigation className="w-2.5 h-2.5" />
-                                        {r.name}
-                                    </button>
-                                ))}
+                            {/* Location Manager UI Overlay */}
+                            <div className="absolute top-8 right-8 flex flex-col gap-3 p-5 bg-white/70 backdrop-blur-3xl border border-white/40 rounded-[2rem] shadow-2xl z-[1000] w-72">
+                                <div className="flex items-center justify-between border-b border-[#F4D03F]/20 pb-2 mb-1">
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest text-[#1B9157]">Client Secure View</h4>
+                                    <Shield className="w-3 h-3 text-[#1B9157]" />
+                                </div>
+                                <div className="flex items-center justify-between border-b border-[#F4D03F]/20 pb-2 mb-1">
+                                    <h4 className="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest">Vector Manager</h4>
+                                    <Crosshair className="w-3 h-3 text-[#1B9157]" />
+                                </div>
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                    <input 
+                                        className="w-full bg-white/50 border border-gray-100 rounded-2xl py-2 pl-10 pr-4 text-[10px] font-bold focus:outline-none focus:ring-2 focus:ring-[#1B9157]/20 transition-all"
+                                        placeholder="Search locations..."
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSearch(e.currentTarget.value);
+                                        }}
+                                    />
+                                </div>
+                                <button 
+                                    onClick={handleLocate}
+                                    className="flex items-center justify-between px-4 py-2 bg-[#1B9157] text-white rounded-2xl text-[9px] font-black hover:opacity-90 shadow-lg shadow-[#1B9157]/20 transition-all"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Locate className="w-3.5 h-3.5" />
+                                        <span>Sync Actual Position</span>
+                                    </div>
+                                    <Zap className="w-3 h-3 text-[#F4D03F]" />
+                                </button>
+                                <div className="pt-2 flex items-center justify-center gap-4 text-[8px] font-black text-gray-400">
+                                    <div className="flex items-center gap-1">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                                        <span>Active Client Data Only</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -948,8 +984,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     <motion.div key="reports" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {[
-                                { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: '92.4%', label: 'Peak Index' },
-                                { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: '45', label: 'Nodes Deployed' }
+                                { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: '—%', label: 'Registry' },
+                                { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: devices.length.toString(), label: 'Active Nodes' }
                             ].map((r, i) => (
                                 <div key={i} className={cn(glass.card, "p-0 overflow-hidden border-white/40 shadow-sm")}>
                                     <div className="p-4 border-b border-[#1B9157]/5 flex justify-between items-center bg-white/50">

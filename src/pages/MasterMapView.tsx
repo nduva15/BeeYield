@@ -47,8 +47,10 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const MasterMapView: React.FC = () => {
     const [activeTool, setActiveTool] = React.useState<'select' | 'draw' | 'pallet'>('select');
     const [showGeofences, setShowGeofences] = React.useState(true);
-    const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Default to Kibwezi Hub
+    const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Default Start
     const [zoom, setZoom] = React.useState(13);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [isSearching, setIsSearching] = React.useState(false);
 
     const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
         const map = useMap();
@@ -58,19 +60,32 @@ const MasterMapView: React.FC = () => {
         return null;
     };
 
-    const regions = [
-        { name: 'Kibwezi Sanctuary (Active)', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
-        { name: 'Makueni Sector', coords: [-2.3, 37.8] as [number, number], zoom: 9 },
-        { name: 'Lamu Hub (Client Area)', coords: [-2.27, 40.90] as [number, number], zoom: 12 },
-        { name: 'Beijing Hub (Client Area)', coords: [39.9, 116.4] as [number, number], zoom: 11 },
-        { name: 'Global Situation', coords: [20, 0] as [number, number], zoom: 2 },
-        { name: 'Africa Overview', coords: [0, 20] as [number, number], zoom: 3 },
-        { name: 'Asia Overview', coords: [30, 100] as [number, number], zoom: 3 },
-    ];
+    const handleSearch = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        if (!searchQuery.trim()) return;
+        
+        setIsSearching(true);
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const { lat, lon } = data[0];
+                setMapCenter([parseFloat(lat), parseFloat(lon)]);
+                setZoom(14);
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
 
-    const handleJump = (coords: [number, number], z: number) => {
-        setMapCenter(coords);
-        setZoom(z);
+    const handleLocate = () => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition((pos) => {
+            setMapCenter([pos.coords.latitude, pos.coords.longitude]);
+            setZoom(15);
+        });
     };
 
     return (
@@ -86,7 +101,7 @@ const MasterMapView: React.FC = () => {
             <BeeYieldPageHeader
                 icon={MapIcon}
                 label="Map"
-                title={<>Master <span className="text-[#F4D03F]">GIS Map</span></>}
+                title={<>Master <span className="text-[#F4D03F]">Map</span></>}
                 subtitle="View locations, boundaries, and placements."
                 actions={
                     <div className="flex gap-3">
@@ -150,34 +165,36 @@ const MasterMapView: React.FC = () => {
                             worldCopyJump={true}
                         >
                             <TileLayer
-                                url="https://{s}.tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=ebbb30c6c06a4b16a445cb48dfc47683"
-                                attribution='&copy; Thunderforest &copy; OpenStreetMap'
+                                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png"
+                                attribution='&copy; CARTO'
                             />
-                            {/* Overlay boundaries when zoomed out for better "World Map" look */}
-                            {zoom < 8 && (
-                                <TileLayer
-                                    url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png"
-                                    opacity={0.3}
-                                />
-                            )}
-                            {/* Satellite Layer for closer zoom levels */}
+                            {/* Hybrid Road/Satellite Layer (Google Style) for tactical visibility */}
                             {zoom >= 8 && (
                                 <TileLayer
-                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                                    attribution='&copy; ESRI Satellite'
+                                    url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+                                    attribution="&copy; Google Maps Hybrid"
                                 />
                             )}
                             <MapController center={mapCenter} zoom={zoom} />
                             
-                            {/* Major Global Hubs */}
-                            {zoom > 2 && zoom < 8 && regions.slice(1, 5).map((r, i) => (
-                                <Marker key={i} position={r.coords} />
-                            ))}
-
-                            {/* Representative Markers for tactical hubs in Kenya if zoomed in */}
-                            {zoom >= 8 && regions.slice(5).map((r, i) => (
-                                <Marker key={i} position={r.coords} />
-                            ))}
+                            <Marker 
+                                position={mapCenter}
+                                draggable={true}
+                                eventHandlers={{
+                                    dragend: (e) => {
+                                        const marker = e.target;
+                                        const position = marker.getLatLng();
+                                        setMapCenter([position.lat, position.lng]);
+                                    }
+                                }}
+                            >
+                                <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                    <div className="p-2 text-center">
+                                        <p className="text-xs font-black text-[#1B9157]">Editable Site Pivot</p>
+                                        <p className="text-[9px] text-gray-400">Drag to Adjust</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
                         </MapContainer>
                     </div>
 
@@ -255,16 +272,16 @@ const MasterMapView: React.FC = () => {
                         <div className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="text-[9px] font-bold text-gray-400 ml-1">Block Name</label>
-                                <Input value="Honey Block Alpha" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-xs" readOnly />
+                                <Input value="—" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-xs" readOnly />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] font-bold text-gray-400 ml-1">Acreage</label>
-                                    <Input value="14.2 AC" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
+                                    <Input value="—" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] font-bold text-gray-400 ml-1">Crop</label>
-                                    <Input value="Macadamia" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
+                                    <Input value="—" className="h-9 rounded-xl border-gray-100 bg-gray-50 font-bold text-[10px]" readOnly />
                                 </div>
                             </div>
                         </div>
@@ -272,24 +289,50 @@ const MasterMapView: React.FC = () => {
 
                     <div className={cn(glass.card, "flex-1 p-6 space-y-6 bg-[#1A1A1A] text-white rounded-3xl border-white/5 relative overflow-hidden group")}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-                        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                            <Compass className="w-4 h-4 text-[#F4D03F]" />
-                            <h3 className="text-sm font-bold uppercase tracking-tight">Regional Drill-down</h3>
+                        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                            <div className="flex items-center gap-3">
+                                <Search className="w-4 h-4 text-[#F4D03F]" />
+                                <h3 className="text-sm font-bold uppercase tracking-tight">Location Search</h3>
+                            </div>
+                            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1B9157]/20 border border-[#1B9157]/30 rounded-lg">
+                                <Shield className="w-3 h-3 text-[#1B9157]" />
+                                <span className="text-[7px] font-black text-[#1B9157] tracking-widest uppercase">Client Secure View</span>
+                            </div>
                         </div>
-                        <div className="space-y-2 max-h-[400px] overflow-y-auto thin-scrollbar pr-2">
-                            {regions.map((r, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => handleJump(r.coords, r.zoom)}
-                                    className="w-full flex items-center justify-between p-3 border border-white/5 bg-white/5 rounded-xl hover:bg-white/10 transition-all group"
-                                >
-                                    <div className="flex flex-col items-start gap-1">
-                                        <span className="text-[10px] font-black text-white/80 group-hover:text-white transition-colors">{r.name}</span>
-                                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">{r.coords.join(', ')}</span>
-                                    </div>
-                                    <Navigation className="w-3 h-3 text-[#F4D03F] opacity-40 group-hover:opacity-100 transition-opacity" />
+                        <div className="space-y-4">
+                            <form onSubmit={handleSearch} className="relative">
+                                <Input 
+                                    placeholder="Search location..." 
+                                    className="bg-white/5 border-white/10 text-[10px] h-9 pr-8"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-[#F4D03F] transition-colors">
+                                    <Search className="w-3 h-3 text-gray-400" />
                                 </button>
-                            ))}
+                            </form>
+                            
+                            <Button 
+                                onClick={handleLocate}
+                                variant="outline" 
+                                className="w-full bg-white/5 border-white/10 text-white/70 hover:bg-[#1B9157] hover:text-white text-[9px] font-black h-9 rounded-xl transition-all"
+                            >
+                                <Locate className="w-3 h-3 mr-2" />
+                                Use Actual Location
+                            </Button>
+
+                            <div className="pt-4 border-t border-white/5 space-y-3">
+                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Active Layers</p>
+                                {[
+                                    { label: 'Satellite View', active: zoom >= 8 },
+                                    { label: 'Global Map', active: zoom < 8 },
+                                ].map((row, idx) => (
+                                    <div key={idx} className="flex items-center justify-between group">
+                                        <span className={cn("text-[9px] font-bold transition-colors", row.active ? "text-[#1B9157]" : "text-gray-500")}>{row.label}</span>
+                                        {row.active && <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

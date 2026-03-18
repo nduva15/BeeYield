@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, MapPin, MousePointer2, Calculator, Share2, Info, Zap, Layers, Activity } from 'lucide-react';
+import { Map, MapPin, MousePointer2, Calculator, Share2, Info, Zap, Layers, Activity, Search, Locate, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
@@ -46,18 +46,26 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
         return null;
     };
 
-    const regions = [
-        { name: 'Global Map', coords: [20, 0] as [number, number], zoom: 2 },
-        { name: 'Africa Hub', coords: [0, 20] as [number, number], zoom: 3 },
-        { name: 'Asia Hub', coords: [30, 100] as [number, number], zoom: 3 },
-        { name: 'Europe Hub', coords: [50, 10] as [number, number], zoom: 4 },
-        { name: 'Kenya (Full)', coords: [0.02, 37.9] as [number, number], zoom: 6 },
-        { name: 'Kibwezi', coords: [-2.42, 37.97] as [number, number], zoom: 14 },
-    ];
+    const handleSearch = async (query: string) => {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const { lat, lon } = data[0];
+                setMapCenter([parseFloat(lat), parseFloat(lon)]);
+                setZoom(14);
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+        }
+    };
 
-    const handleJump = (coords: [number, number], z: number) => {
-        setMapCenter(coords);
-        setZoom(z);
+    const handleLocate = () => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition((pos) => {
+            setMapCenter([pos.coords.latitude, pos.coords.longitude]);
+            setZoom(15);
+        });
     };
 
     const MapEvents = () => {
@@ -115,13 +123,13 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             )}
                         >
                             <MousePointer2 className="w-3 h-3" />
-                            {isDrawing ? "Finish" : "DRAW AREA"}
+                            {isDrawing ? "Finish" : "Draw Area"}
                         </button>
                         <button
                             onClick={handleReset}
                             className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold flex items-center gap-2 bg-white")}>
                             <Share2 className="w-3 h-3" />
-                            RESET
+                            Reset
                         </button>
                     </div>
                 }
@@ -148,24 +156,18 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                                 attribution='&copy; CARTO'
                             />
                             {zoom < 8 && <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png" opacity={0.3} />}
-                            {zoom >= 8 && <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="&copy; ESRI" />}
+                            {zoom >= 8 && <TileLayer url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" attribution="&copy; Google Maps Hybrid" />}
                             
                             <MapController center={mapCenter} zoom={zoom} />
                             <MapEvents />
 
-                            {zoom >= 3 && zoom < 8 && regions.slice(1, 4).map((r, i) => (
-                                <Marker key={i} position={r.coords} />
-                            ))}
-
-                            {zoom >= 8 && regions.slice(4).map((r, i) => (
-                                <Marker key={i} position={r.coords}>
-                                    <Popup className="font-bold border-none shadow-xl rounded-xl">
-                                        <div className="p-2">
-                                            <p className="text-xs font-black text-[#1B9157]">{r.name}</p>
-                                        </div>
-                                    </Popup>
-                                </Marker>
-                            ))}
+                            <Marker position={mapCenter}>
+                                <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                    <div className="p-2">
+                                        <p className="text-xs font-black text-[#1B9157]">Setup Site</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
 
                             {points.length > 0 && (
                                 <Polygon
@@ -184,20 +186,28 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             ))}
                         </MapContainer>
 
-                        <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000]">
-                            {regions.map((r, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => handleJump(r.coords, r.zoom)}
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-lg text-[8px] font-black border backdrop-blur-md transition-all flex items-center justify-between min-w-[100px] group",
-                                        mapCenter[0] === r.coords[0] ? "bg-[#1B9157] text-white border-[#1B9157]/20" : "bg-white/90 text-gray-600 border-gray-100 hover:bg-white"
-                                    )}
-                                >
-                                    {r.name}
-                                    <MapPin className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
-                                </button>
-                            ))}
+                        <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000] w-64 bg-white/70 backdrop-blur-xl p-4 border border-white/40 rounded-2xl shadow-xl">
+                            <p className="text-[10px] font-black text-[#1A1A1A] mb-2 border-b border-[#F4D03F]/20 pb-1">Location Search</p>
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                                <input 
+                                    className="w-full bg-white/50 border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold focus:outline-none focus:ring-1 focus:ring-[#1B9157]"
+                                    placeholder="Search lamu, beijing..."
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSearch(e.currentTarget.value);
+                                    }}
+                                />
+                            </div>
+                            <button 
+                                onClick={handleLocate}
+                                className="flex items-center justify-between px-3 py-1.5 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[8px] font-black hover:opacity-90 transition-all mt-1"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <MapPin className="w-2.5 h-2.5" />
+                                    <span>Sync Actual Position</span>
+                                </div>
+                                <Zap className="w-2.5 h-2.5" />
+                            </button>
                         </div>
 
                         {isDrawing && (
@@ -242,7 +252,7 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                     <div className={cn(glass.card, "p-4 bg-[#F9F7F2] border-[#F4D03F]/20 space-y-2")}>
                         <div className="flex items-center gap-2 text-[#1B9157]">
                             <Zap className="w-4 h-4" />
-                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement notes</h4>
+                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement Notes</h4>
                         </div>
                         <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
                             Optimal hive placement algorithm increases pollination coverage by <span className="text-[#1A1A1A] font-bold">18%</span>.
