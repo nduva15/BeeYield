@@ -2940,7 +2940,6 @@ export const beeyieldService = {
             console.error('planRoute:', error);
             return { path: [] };
         }
-    },
     }
 };
 
