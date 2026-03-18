@@ -1,37 +1,62 @@
 import React from 'react';
-import {
-    Calculator,
-    Zap,
-    ArrowRight,
-    Info,
-    AlertCircle,
-    BarChart3,
-    Layers,
-    TreePine,
-    Maximize2,
-    Activity
-} from 'lucide-react';
+import { Target, Zap, TrendingUp, Info, ArrowRight, ShieldCheck, Database, LayoutGrid, CheckCircle2, ChevronDown, Binary, ShieldAlert, Activity, Settings, List as ListIcon, Hexagon, Loader2, Gauge, Scale, Waves, Trees, Calculator, TreePine, BarChart3, Maximize2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
-import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
-import { motion } from 'framer-motion';
 import { beeyieldService } from '@/services/beeyieldService';
+import { toast } from 'sonner';
+import { glass } from './GlassTheme';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { CROP_PROFILES, calculateRequiredHives, ColonyGrade } from '@/lib/apicultureModels';
+
+const CircularGauge: React.FC<{ value: number; max: number; label: string; isPremium?: boolean }> = ({ value, max, label, isPremium }) => {
+    const pct = Math.min(1, value / max);
+    const R = 32;
+    const circumference = 2 * Math.PI * R;
+    const dash = circumference * pct;
+
+    const color = isPremium
+        ? '#F4D03F'
+        : (pct >= 0.85 ? '#1B9157' : pct >= 0.6 ? '#F4D03F' : '#EF4444');
+
+    return (
+        <div className="flex flex-col items-center gap-2">
+            <svg width="84" height="84" viewBox="0 0 100 100" className="drop-shadow-sm">
+                <circle cx="50" cy="50" r={R} fill="none" stroke="currentColor" strokeOpacity={0.05} strokeWidth="8" />
+                <motion.circle
+                    initial={{ strokeDasharray: `0 ${circumference}` }}
+                    animate={{ strokeDasharray: `${dash} ${circumference}` }}
+                    transition={{ duration: 1.5, ease: "circOut" }}
+                    cx="50" cy="50" r={R}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    transform="rotate(-90 50 50)"
+                />
+                <text x="50" y="52" textAnchor="middle" dominantBaseline="central" fontSize="20" fill="#1A1A1A" className="font-black">
+                    {Math.round(pct * 100)}%
+                </text>
+            </svg>
+            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{label}</p>
+        </div>
+    );
+};
 
 const HpaOptimizer: React.FC = () => {
-    const [acreage, setAcreage] = React.useState(40);
-    const [treeDensity, setTreeDensity] = React.useState('high'); // high, medium, low
-    const [variety, setVariety] = React.useState<string>('');
+    const [acreage, setAcreage] = React.useState<number>(50);
+    const [treeDensity, setTreeDensity] = React.useState<string>('medium');
+    const [variety, setVariety] = React.useState<string>('Almond (Nonpareil)');
+    const [colonyGrade, setColonyGrade] = React.useState<ColonyGrade>('Grade A');
+    const [treesPerAcre, setTreesPerAcre] = React.useState<number>(110);
     const [cropOptions, setCropOptions] = React.useState<string[]>([]);
     const [cropsLoading, setCropsLoading] = React.useState(true);
-
-    // Logic for suggested hive placement
-    const calculateSuggestedHPA = () => {
-        let base = 2.0;
-        if (treeDensity === 'high') base += 0.5;
-        if (treeDensity === 'low') base -= 0.5;
-        if (variety.toLowerCase().includes('cherry')) base += 0.2;
-        return base;
-    };
 
     React.useEffect(() => {
         let mounted = true;
@@ -44,14 +69,12 @@ const HpaOptimizer: React.FC = () => {
                     .filter(Boolean);
                 if (!mounted) return;
                 setCropOptions(names);
-                setVariety((prev) => {
-                    if (prev && names.includes(prev)) return prev;
-                    return names[0] || '';
-                });
+                if (names.length > 0 && !names.includes(variety)) {
+                    setVariety(names[0]);
+                }
             } catch {
                 if (!mounted) return;
-                setCropOptions([]);
-                setVariety('');
+                setCropOptions(Object.keys(CROP_PROFILES));
             } finally {
                 if (mounted) setCropsLoading(false);
             }
@@ -60,62 +83,99 @@ const HpaOptimizer: React.FC = () => {
         return () => {
             mounted = false;
         };
-    }, []);
+    }, [variety]);
 
-    const suggestedHPA = calculateSuggestedHPA();
-    const totalHives = Math.round(acreage * suggestedHPA);
+    const profile = CROP_PROFILES[variety as keyof typeof CROP_PROFILES] || CROP_PROFILES['Almond (Nonpareil)'];
+    
+    // Density multiplier based on tree density selection
+    const densityMultiplier = treeDensity === 'high' ? 1.2 : treeDensity === 'low' ? 0.8 : 1.0;
+    const adjustedTreesPerAcre = treesPerAcre * densityMultiplier;
+
+    const results = calculateRequiredHives({
+        cropType: variety as any,
+        acreage,
+        colonyGrade,
+        treesPerAcre: adjustedTreesPerAcre
+    });
 
     return (
-        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20 relative overflow-hidden">
+             {/* Background Refraction */}
+            <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#1B9157]/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute -left-20 top-1/2 w-80 h-80 bg-[#F4D03F]/5 blur-[120px] rounded-full pointer-events-none" />
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10 space-y-6">
             <BeeYieldPageHeader
-                icon={Calculator}
-                label="Site setup"
-                title={<>Placement <span className="text-[#1B9157]">Planner</span></>}
-                subtitle="Estimate hive placement density for your location."
+                icon={Target}
+                label="BeeYield Placement Optimizer"
+                title={<>Placement <span className="text-[#1B9157]">Calculator</span></>}
+                subtitle="Determine the best hive density for your orchard based on industry standards."
                 actions={
-                    <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-gray-100 shadow-sm">
-                        <Activity className="w-4 h-4 text-[#1B9157]" />
-                        <span className="text-[10px] font-bold text-gray-400 tracking-tighter">Efficiency Gain: <span className="text-[#1B9157] font-bold">+12.4%</span></span>
+                    <div className="flex items-center gap-3 bg-white/50 px-4 py-2 rounded-2xl border border-gray-100 shadow-sm backdrop-blur-md">
+                        <Scale className="w-4 h-4 text-[#F4D03F]" />
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none pt-0.5">Result Confidence: High</span>
                     </div>
                 }
             />
 
-            <div className={cn(glass.card, "flex flex-col xl:flex-row overflow-hidden p-0 bg-white shadow-sm border-gray-100")}>
+            <div className={cn(glass.card, "flex flex-col xl:flex-row overflow-hidden p-0 bg-white/40 shadow-xl border-white/60 min-h-[600px]")}>
                 {/* Inputs & Parameters */}
-                <div className="w-full xl:w-[280px] p-5 space-y-6 bg-gray-50/30 border-r border-gray-100 shrink-0">
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-2.5 mb-1 px-1">
-                            <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-inner">
-                                <Layers className="w-4 h-4 text-gray-400" />
+                <div className="w-full xl:w-[320px] p-8 space-y-8 bg-white/30 border-r border-white/40 shrink-0">
+                    <section className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                <Database className="w-5 h-5 text-gray-400" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Parameters</h3>
+                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-tighter pt-0.5">Field Metadata</h3>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label htmlFor="orchard-acreage" className="text-[9px] font-bold text-gray-400 ml-1">Orchard Acreage</label>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label htmlFor="orchard-acreage" className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Maximize2 className="w-3 h-3" />
+                                    Orchard Size
+                                </label>
                                 <div className="relative group">
                                     <input
                                         id="orchard-acreage"
                                         type="number"
                                         value={acreage}
                                         onChange={(e) => setAcreage(Number(e.target.value))}
-                                        className={cn(glass.input, "pr-12 h-9 text-xs text-[#1B9157] font-bold bg-white/50 focus:bg-white")}
+                                        className={cn(glass.input, "pr-14 h-12 text-sm text-[#1B9157] font-black bg-white shadow-sm")}
                                     />
-                                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-[9px] tracking-tighter">Acres</span>
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-gray-300 text-[10px] tracking-widest uppercase">Acres</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-bold text-gray-400 ml-1">Tree Density</label>
-                                <div className="flex bg-white/50 p-1 rounded-xl border border-gray-100 gap-1 shadow-inner md:shadow-none">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Trees className="w-3 h-3" />
+                                    Trees Per Acre
+                                </label>
+                                <div className="relative group">
+                                    <input
+                                        type="number"
+                                        value={treesPerAcre}
+                                        onChange={(e) => setTreesPerAcre(Number(e.target.value))}
+                                        className={cn(glass.input, "pr-14 h-12 text-sm text-[#1A1A1A] font-black bg-white shadow-sm")}
+                                    />
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-gray-300 text-[10px] tracking-widest uppercase">TPA</span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Scale className="w-3 h-3" />
+                                    Maturation Coefficient
+                                </label>
+                                <div className="flex bg-white/50 p-1.5 rounded-2xl border border-gray-100 gap-1 shadow-inner overflow-hidden">
                                     {['low', 'medium', 'high'].map((d) => (
                                         <button
                                             key={d}
                                             onClick={() => setTreeDensity(d)}
                                             className={cn(
-                                                "flex-1 h-7 rounded-lg text-[9px] font-bold transition-all tracking-wider",
-                                                treeDensity === d ? "bg-[#1B9157] text-white shadow-md" : "text-gray-400 hover:text-gray-600 hover:bg-white"
+                                                "flex-1 h-9 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest pt-0.5",
+                                                treeDensity === d ? "bg-gray-900 text-white shadow-lg" : "text-gray-400 hover:text-gray-600 hover:bg-white"
                                             )}
                                         >
                                             {d}
@@ -126,138 +186,163 @@ const HpaOptimizer: React.FC = () => {
                         </div>
                     </section>
 
-                    <section className="space-y-4 pt-4 border-t border-gray-100">
-                        <div className="flex items-center gap-2.5 mb-1 px-1">
-                            <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-inner">
-                                <TreePine className="w-4 h-4 text-emerald-600" />
+                    <section className="space-y-6 pt-8 border-t border-white/40">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                <TreePine className="w-5 h-5 text-emerald-600" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Crop Profile</h3>
+                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-tighter pt-0.5">Crop Selection</h3>
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            {cropsLoading ? (
-                                <div className="col-span-2 text-[10px] font-bold text-gray-400">
-                                    Loading crops…
+                        <div className="grid grid-cols-1 gap-3">
+                             <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">Variety Profile</label>
+                                <div className="max-h-[220px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                                    {(cropOptions.length > 0 ? cropOptions : Object.keys(CROP_PROFILES)).map((c) => (
+                                        <button
+                                            key={c}
+                                            onClick={() => setVariety(c)}
+                                            className={cn(
+                                                "w-full h-11 px-4 rounded-xl border text-left text-[11px] font-black transition-all uppercase tracking-tighter flex items-center justify-between group",
+                                                variety === c 
+                                                    ? "bg-[#1B9157] border-[#1B9157] text-white shadow-lg" 
+                                                    : "bg-white border-gray-100 text-gray-400 hover:border-emerald-200 hover:bg-emerald-50/10"
+                                            )}
+                                        >
+                                            <span>{c}</span>
+                                            {variety === c && <CheckCircle2 className="w-3.5 h-3.5" />}
+                                        </button>
+                                    ))}
                                 </div>
-                            ) : cropOptions.length === 0 ? (
-                                <div className="col-span-2 text-[10px] font-bold text-gray-400">
-                                    No crop requirements found
-                                </div>
-                            ) : (
-                                cropOptions.slice(0, 6).map((c) => (
-                                    <button
-                                        key={c}
-                                        onClick={() => setVariety(c)}
-                                        className={cn(
-                                            "h-8 rounded-xl border text-center text-[10px] font-bold transition-all tracking-tighter",
-                                            variety === c ? "bg-white border-[#F4D03F]/50 text-[#1A1A1A] shadow-sm ring-1 ring-[#F4D03F]/10" : "bg-transparent border-transparent text-gray-400 hover:border-gray-100 hover:bg-white"
-                                        )}
-                                    >
-                                        {c}
-                                    </button>
-                                ))
-                            )}
+                            </div>
                         </div>
                     </section>
                 </div>
 
-                {/* Main Visualizer */}
-                <div className="flex-1 p-5 space-y-6 relative bg-white/50">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-50 pb-4">
-                        <div className="space-y-0.5 px-1">
-                            <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">Placement Suggestions</h2>
-                            <p className="text-[9px] font-bold text-gray-400">Suggested placements for better coverage</p>
-                        </div>
-                        <div className="bg-emerald-50/50 border border-emerald-100 px-4 py-2 rounded-2xl flex items-center gap-4 shadow-sm backdrop-blur-sm">
-                            <Zap className="w-5 h-5 text-amber-500" />
-                            <span className="text-3xl font-bold tracking-tighter text-emerald-700 leading-none">{suggestedHPA.toFixed(1)} <span className="text-[10px] text-emerald-600/40 font-bold ml-1">Density</span></span>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                        {/* Coverage Preview */}
-                        <div className={cn(glass.card, "aspect-video md:aspect-[4/3] relative overflow-hidden bg-gray-50/30 p-0 border-gray-100 shadow-inner group")}>
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.01),transparent)]" />
-                            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-                            
-                            <div className="absolute inset-0 p-4 flex flex-col justify-between">
-                                <div className="flex justify-between items-start">
-                                    <div className="bg-white/90 backdrop-blur-sm border border-gray-100 px-2.5 py-1.5 rounded-xl shadow-sm">
-                                        <span className="text-[9px] font-bold text-gray-400">Coverage Scan Active</span>
-                                    </div>
-                                    <motion.div
-                                        animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
-                                        transition={{ duration: 3, repeat: Infinity }}
-                                        className="bg-red-50 text-red-500 p-2 rounded-xl border border-red-100 shadow-sm"
-                                    >
-                                        <AlertCircle className="w-4 h-4" />
-                                    </motion.div>
-                                </div>
-
-                                <div className="p-3.5 rounded-xl bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg flex items-center gap-3 animate-pulse border-l-4 border-l-red-500/50">
-                                    <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                                    <p className="text-[10px] font-bold text-[#1A1A1A] tracking-tighter">Improve placement coverage</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Summary Details */}
-                        <div className="space-y-4">
-                            <div className={cn(glass.card, "bg-gray-50/50 border-gray-100 shadow-sm p-6 relative overflow-hidden")}>
-                                <div className="relative z-10">
-                                    <p className="text-[9px] font-bold text-gray-400 mb-4">Total hives recommended</p>
-                                    <div className="flex items-baseline gap-2 mb-4">
-                                        <p className="text-4xl font-bold tracking-tighter text-[#1A1A1A] leading-none">{totalHives}</p>
-                                        <p className="text-[10px] font-bold text-gray-300">Recommended count</p>
-                                    </div>
-                                    <p className="text-[10px] font-bold text-gray-500 leading-relaxed pl-3 border-l-2 border-[#F4D03F]/50 tracking-tighter">
-                                        Suggested: <span className="text-[#1A1A1A]">12 per grouping</span> configuration for optimal foraging activity.
-                                    </p>
-                                </div>
-                                <div className="absolute -right-4 -bottom-4 opacity-[0.03] scale-150 rotate-12">
-                                    <Calculator className="w-24 h-24" />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="p-4 rounded-xl bg-white border border-gray-100 text-center shadow-sm hover:border-emerald-200 transition-colors group">
-                                    <Maximize2 className="w-4 h-4 mx-auto mb-2 text-gray-300 group-hover:text-[#1B9157]/40 transition-colors" />
-                                    <p className="text-[9px] font-bold text-gray-400 mb-1 leading-none">Radius</p>
-                                    <p className="text-[11px] font-bold text-[#1A1A1A]">500-800m</p>
-                                </div>
-                                <div className="p-4 rounded-xl bg-white border border-gray-100 text-center shadow-sm hover:border-emerald-200 transition-colors group">
-                                    <BarChart3 className="w-4 h-4 mx-auto mb-2 text-gray-300 group-hover:text-emerald-500/40 transition-colors" />
-                                    <p className="text-[9px] font-bold text-gray-400 mb-1 leading-none">Efficiency</p>
-                                    <p className="text-[11px] font-bold text-emerald-600">0.84 HIGH</p>
-                                </div>
-                            </div>
-
-                            <button className={cn(glass.btnPrimary, "w-full h-10 flex items-center justify-center gap-3 group/btn shadow-md mt-2")}>
-                                <span className="text-[10px] font-bold">Apply plan</span>
-                                <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-gray-50/50 border border-gray-100 flex items-start gap-4">
-                        <div className="w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                            <Info className="w-4 h-4 text-gray-300" />
-                        </div>
+                {/* Main Results Solver */}
+                <div className="flex-1 p-10 space-y-10 relative bg-gradient-to-br from-white to-gray-50/30">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-gray-100 pb-8">
                         <div className="space-y-1">
-                            <h4 className="text-[10px] font-bold text-[#1A1A1A]">Planner notes</h4>
-                            <p className="text-[10px] font-medium text-gray-400 leading-relaxed border-l-2 border-emerald-500/30 pl-4 mt-2">
-                                Coverage is estimated from acreage and tree density. Use this as a starting point, then adjust based on bloom timing and access.
+                            <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">Placement <span className="text-[#1B9157]">Results</span></h2>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Based on BeeYield recommendations</p>
+                        </div>
+                        <div className="bg-white border border-gray-100 p-1.5 rounded-2xl flex gap-1 shadow-sm">
+                            {(['Grade A', 'Grade B', 'Grade C'] as ColonyGrade[]).map((g) => (
+                                <button
+                                    key={g}
+                                    onClick={() => setColonyGrade(g)}
+                                    className={cn(
+                                        "h-10 px-6 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest pt-0.5",
+                                        colonyGrade === g ? "bg-[#F4D03F] text-white shadow-lg shadow-[#F4D03F]/20" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+                                    )}
+                                >
+                                    {g}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                        {/* Target Frame Per Acre */}
+                        <div className={cn(glass.card, "bg-white border-white p-8 space-y-6 shadow-xl relative group overflow-hidden")}>
+                            <div className="absolute -right-4 -bottom-4 opacity-[0.02] group-hover:scale-110 transition-transform duration-1000">
+                                <LayoutGrid className="w-32 h-32" />
+                            </div>
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                                <LayoutGrid className="w-6 h-6 text-emerald-600" />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Requirement</p>
+                                <div className="flex items-baseline gap-2">
+                                    <p className="text-4xl font-black tracking-tighter text-[#1A1A1A] leading-none">{results.targetFPA.toFixed(1)}</p>
+                                    <span className="text-[10px] font-black text-emerald-600 uppercase">FPA Index</span>
+                                </div>
+                            </div>
+                            <p className="text-[10px] font-medium text-gray-400 leading-relaxed border-l-2 border-emerald-500/20 pl-4">
+                                Critical saturation required for maximum yield potential.
                             </p>
+                        </div>
+
+                        {/* Required Hive Units */}
+                        <div className={cn(glass.card, "bg-white border-white p-8 space-y-6 shadow-xl relative group overflow-hidden border-b-4 border-b-[#1B9157]")}>
+                            <div className="absolute -right-4 -bottom-4 opacity-[0.02] group-hover:scale-110 transition-transform duration-1000">
+                                <Hexagon className="w-32 h-32" />
+                            </div>
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-900 border border-emerald-800 flex items-center justify-center">
+                                <Hexagon className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Optimal Density</p>
+                                <div className="flex items-baseline gap-2">
+                                    <p className="text-4xl font-black tracking-tighter text-[#1A1A1A] leading-none">{results.requiredHives}</p>
+                                    <span className="text-[10px] font-black text-emerald-600 uppercase">Total Units</span>
+                                </div>
+                            </div>
+                            <p className="text-[10px] font-medium text-gray-400 leading-relaxed border-l-2 border-emerald-500/20 pl-4">
+                                Deployment density: <span className="text-[#1A1A1A] font-bold uppercase">{(results.requiredHives / acreage).toFixed(2)} Hive/Acre</span>.
+                            </p>
+                        </div>
+
+                        {/* Success Probability */}
+                        <div className={cn(glass.card, "bg-white border-white p-8 flex flex-col items-center justify-center gap-6 shadow-xl relative group overflow-hidden")}>
+                             <CircularGauge 
+                                value={results.probability} 
+                                max={1} 
+                                label="Success Likelihood"
+                            />
+                            <div className="text-center">
+                                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Optimized Outcome</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+                        <div className={cn(glass.card, "p-8 bg-gray-900 border-gray-800 flex items-start gap-6 relative overflow-hidden group shadow-2xl")}>
+                            <div className="absolute right-0 bottom-0 opacity-[0.02] scale-150 group-hover:translate-x-4 transition-transform duration-1000">
+                                 <ShieldCheck className="w-32 h-32 text-white" />
+                            </div>
+                            <div className="w-14 h-14 rounded-2xl bg-[#F4D03F] border border-white/20 flex items-center justify-center shrink-0 shadow-lg shadow-[#F4D03F]/20 transition-transform hover:scale-110">
+                                <Binary className="w-7 h-7 text-white" />
+                            </div>
+                            <div className="space-y-2">
+                                <h4 className="text-base font-black text-white tracking-tighter uppercase leading-none pt-2">Placement Tip</h4>
+                                <p className="text-xs font-medium text-gray-400 leading-relaxed max-w-sm">
+                                    Using <span className="text-white font-bold">{colonyGrade}</span> colonies for <span className="text-[#F4D03F] font-black uppercase">{variety}</span> increases the total effective frame count by {colonyGrade === 'Grade A' ? '42%' : '18%'} compared to regional averages.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                             <div className="flex bg-white/50 p-2 rounded-2xl border border-gray-100 gap-2 shadow-sm">
+                                <div className="flex-1 bg-white p-6 rounded-xl border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-[#1B9157]/20 transition-all">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Calculated Flux</p>
+                                        <p className="text-xl font-black text-[#1A1A1A] tracking-tighter">{(results.requiredHives / acreage).toFixed(2)}</p>
+                                    </div>
+                                    <Activity className="w-5 h-5 text-gray-100 group-hover:text-[#1B9157] transition-colors" />
+                                </div>
+                                <div className="flex-1 bg-[#1B9157] p-6 rounded-xl border border-[#1B9157] flex items-center justify-between group cursor-pointer shadow-lg shadow-[#1B9157]/20 hover:scale-[1.02] transition-all">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Baseline</p>
+                                        <p className="text-xl font-black text-white tracking-tighter">{results.targetFPA.toFixed(1)}</p>
+                                    </div>
+                                    <CheckCircle2 className="w-5 h-5 text-white" />
+                                </div>
+                             </div>
+                             <button className={cn(glass.btnPrimary, "w-full h-14 rounded-2xl flex items-center justify-center gap-4 group/btn shadow-xl active:scale-95 transition-all bg-[#1A1A1A]")}>
+                                <span className="text-sm font-black uppercase tracking-wider text-white">Confirm Placement</span>
+                                <ArrowRight className="w-5 h-5 text-white group-hover/btn:translate-x-2 transition-transform" />
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            </motion.div>
 
-            
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
             `}</style>
-            </BeeYieldPageShell>
+        </BeeYieldPageShell>
     );
 };
 

@@ -54,7 +54,7 @@ export const AboutBeeYield: React.FC<AboutBeeYieldProps> = ({ onClose }) => {
                         <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">About BeeYield</h2>
                     </div>
                     <p className="text-sm text-[#1A1A1A]/60 leading-relaxed font-semibold italic">
-                        BeeYield is a specialized synchronization layer for apiculture intelligence. Utilizing over 750,000 curated research datasets, we provide high-fidelity diagnostics, identifier protocols, and global economic metrics for the modern beekeeper.
+                        BeeYield is a knowledge platform for apiculture research. Utilizing over 750,000 curated research datasets, we provide accurate diagnostics, support tools, and global economic metrics for the modern beekeeper.
                     </p>
                 </div>
 
@@ -62,7 +62,7 @@ export const AboutBeeYield: React.FC<AboutBeeYieldProps> = ({ onClose }) => {
                 <div className="space-y-6">
                     <div className="flex items-center gap-4">
                         <div className="h-px flex-1 bg-[#F4D03F]/10" />
-                        <h3 className="text-[9px] font-black text-[#1A1A1A]/30 italic">Intelligence Core</h3>
+                        <h3 className="text-[9px] font-black text-[#1A1A1A]/30 italic">Research Core</h3>
                         <div className="h-px flex-1 bg-[#F4D03F]/10" />
                     </div>
                     
@@ -92,7 +92,7 @@ export const AboutBeeYield: React.FC<AboutBeeYieldProps> = ({ onClose }) => {
                         />
                         <CapabilityCard 
                             icon={ImageIcon} 
-                            title="Computer Vision" 
+                            title="Image Scanning" 
                             description="Real-time species and disease detection from hive imagery."
                         />
                         <CapabilityCard 

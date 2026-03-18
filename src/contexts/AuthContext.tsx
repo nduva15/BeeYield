@@ -36,6 +36,7 @@ interface AuthContextType {
     // Password Reset Methods
     resetPassword: (email: string, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
     updatePassword: (newPassword: string, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
+    updateUser: (metadata: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
 
     // MFA Methods
     mfaRequired: boolean;
@@ -268,6 +269,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error };
     };
 
+    const updateUser = async (metadata: Record<string, any>, backend?: AuthBackend) => {
+        const client = getClient(backend);
+        const { error } = await client.auth.updateUser({ data: metadata });
+        return { error };
+    };
+
     const enrollMFA = async (backend?: AuthBackend) => {
         const client = getClient(backend);
         try {
@@ -359,6 +366,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         signOut,
         resetPassword,
         updatePassword,
+        updateUser,
         enrollMFA,
         verifyMFAEnrollment,
         verifyMFAChallenge,

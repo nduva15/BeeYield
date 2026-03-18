@@ -236,8 +236,8 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => {
         const items: NavItem[] = [
             { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
-            { id: 'agro-intelligence', label: 'Strategy Insights', icon: LayoutGrid },
+            { id: 'assistant', label: 'BeeYield Assistant', icon: Hexagon },
+            { id: 'agro-intelligence', label: 'Strategic Insights', icon: LayoutGrid },
             {
                 id: 'precision-pollination-folder',
                 label: 'Pollination',
@@ -539,7 +539,7 @@ const BeeYieldDashboard: React.FC = () => {
                 return (
                     <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-[#FFF9F0] rounded-[2.5rem] border border-dashed border-[#F4D03F]/20">
                         <div className="w-16 h-16 bg-[#F9F7F2] rounded-2xl flex items-center justify-center mb-4">
-                            <Box className="w-8 h-8 text-gray-400" />
+                            <span className="text-[8px] font-bold text-gray-300">© 2026 BeeYield AI Platform</span>
                         </div>
                         <h3 className="text-lg font-medium text-[#1A1A1A]">
                             {navItems.find(i => i.id === activeTab)?.label || t('view_content')}
@@ -570,7 +570,10 @@ const BeeYieldDashboard: React.FC = () => {
             <BeeYieldPageShell className="bg-[#FFF9F0] flex flex-col items-center justify-center p-8 font-sans text-[#064e3b] antialiased">
                 <div className="max-w-lg w-full text-center space-y-8">
                     <div className="w-20 h-20 rounded-3xl bg-white border border-[#064e3b]/10 flex items-center justify-center mx-auto shadow-sm">
-                        <Hexagon className="h-10 w-10 text-[#064e3b]" />
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-bold text-[#1A1A1A] tracking-tighter leading-none">BeeYield <span className="text-[#F4D03F]">AI</span></span>
+                            <span className="text-[9px] font-bold text-[#F4D03F] mt-1 uppercase tracking-widest">Operational OS</span>
+                        </div>
                     </div>
 
                     <div className="space-y-3">
@@ -578,7 +581,7 @@ const BeeYieldDashboard: React.FC = () => {
                             Sign in to continue
                         </h1>
                         <p className="text-sm text-[#064e3b]/70 font-medium leading-relaxed">
-                            You need an account to access the BeeYield dashboard.
+                            You need an account to access the BeeYield AI dashboard.
                         </p>
                     </div>
 

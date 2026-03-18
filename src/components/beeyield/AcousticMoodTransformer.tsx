@@ -17,7 +17,7 @@ import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
 
 const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
-    const [mfccData, setMfccData] = React.useState<{ freq: number; db: number }[]>([]);
+    const [soundData, setSoundData] = React.useState<{ freq: number; db: number }[]>([]);
     const [status, setStatus] = React.useState<'healthy' | 'missing-queen' | 'swarm-risk'>('healthy');
     const [confidence, setConfidence] = React.useState<number | null>(null);
     const [loading, setLoading] = React.useState(true);
@@ -59,20 +59,20 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
 
                 if (points.length > 0) {
                     const data = points.map(({ freq, db }) => ({ freq, db: Number(db || 0) }));
-                    setMfccData(data);
+                    setSoundData(data);
                     const health = points.find((p) => typeof p.health === 'number')?.health as number | undefined;
                     const conf = typeof health === 'number' ? Math.max(0, Math.min(100, health)) : null;
                     setConfidence(conf);
-                    writeCache({ mfccData: data, confidence: conf, timestamp: Date.now() });
+                    writeCache({ soundData: data, confidence: conf, timestamp: Date.now() });
                 } else {
-                    setMfccData([]);
+                    setSoundData([]);
                     setConfidence(null);
                 }
             } catch (e: any) {
                 console.error(e);
                 const cached = readCache();
                 if (cached && mounted) {
-                    setMfccData(cached.mfccData);
+                    setSoundData(cached.soundData);
                     setConfidence(cached.confidence);
                     setIsOffline(true);
                     toast.info("Offline: Showing last recorded acoustic signature");
@@ -129,7 +129,7 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
             <BeeYieldPageHeader
                 icon={BrainCircuit}
                 label="Sound Analysis"
-                title={<>Hive <span className="text-[#1B9157]">Mood</span></>}
+                title={<>Hive <span className="text-[#1B9157]">Status</span></>}
                 subtitle="Sound-based check to identify colony status and potential risks."
                 actions={
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
@@ -175,7 +175,7 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                     <div className="h-[300px] w-full p-2 relative bg-white rounded-xl border border-gray-100 shadow-inner">
                          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={mfccData} margin={{ top: 10, right: 0, left: -40, bottom: 0 }}>
+                            <AreaChart data={soundData} margin={{ top: 10, right: 0, left: -40, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorDb" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor={STATUS_MAP[status].color} stopOpacity={0.2} />
