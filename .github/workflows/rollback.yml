@@ -71,11 +71,13 @@ jobs:
           curl -f ${URL}/health || exit 1
           curl -f ${URL}/api/health || exit 1
 
-      - name: Notify Team
+      - name: Notify Slack
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           text: '⚠️ Emergency rollback to ${{ github.event.inputs.version }} completed for ${{ github.event.inputs.environment }}'
+          fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: always()
