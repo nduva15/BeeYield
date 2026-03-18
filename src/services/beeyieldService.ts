@@ -678,7 +678,9 @@ export interface IoTSettings {
     updated_at: string;
 }
 
+
 export const beeyieldService = {
+    supabaseBeeYield: sb,
     // ========== IoT DEVICES & GATEWAYS ==========
     async getDevices(): Promise<IoTDevice[]> {
         if (!sb) return [];

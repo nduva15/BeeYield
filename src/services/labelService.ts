@@ -66,7 +66,7 @@ export const labelService = {
             const data = Array.isArray(response) ? response : (response.data || []);
             return data.map((item: any) => ({
                 ...item.design_json,
-                id: item.id // Ensure we use the database ID
+                id: (item.id || '').replace(/^"|"$/g, '') // Sanitize ID to prevent double-quotes issues
             }));
         } catch (e) {
             // If user is logged out, return empty list (dashboard shows empty tables)
