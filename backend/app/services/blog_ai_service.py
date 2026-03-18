@@ -1,8 +1,8 @@
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any
 import json
 import re
 from datetime import datetime
-from app.db.supabase_db import db_select, db_insert, db_update, db_get_by_id, db_upsert
+from app.db.supabase_db import db_delete, db_select, db_insert, db_update, db_get_by_id, db_upsert
 from app.services.ai_service import AIService
 from app.services.content_service import ContentService
 
@@ -127,7 +127,7 @@ class BlogAiService:
         """
         Analyzes the full post (all chapters) for SEO/AEO/GEO scores.
         """
-        post = await db_get_by_id("blog_posts", post_id)
+        await db_get_by_id("blog_posts", post_id)
         chapters = await db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order")
         
         full_content = "\n\n".join([c.get("content_markdown", "") for c in chapters])

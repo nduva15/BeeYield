@@ -1,6 +1,4 @@
-from typing import List, Dict, Any, Optional
-from datetime import datetime
-import json
+from typing import List, Dict, Any
 from app.blockchain.block import Block
 
 class Blockchain:

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 
 from app.db.supabase_db import db_select, db_insert

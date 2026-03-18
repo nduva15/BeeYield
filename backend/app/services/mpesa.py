@@ -1,11 +1,11 @@
 import warnings
-warnings.warn("MpesaService is DEPRECATED. Use the honey_rust.MpesaEngine instead.", DeprecationWarning)
-
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 import base64
 from app.core.config import settings
+
+warnings.warn("MpesaService is DEPRECATED. Use the honey_rust.MpesaEngine instead.", DeprecationWarning)
 
 class MpesaService:
     def __init__(self):

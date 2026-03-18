@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from uuid import UUID
-from datetime import datetime
 
 from app.core import security
-from app.db.supabase_db import db_insert, db_select, db_get_by_id
+from app.db.supabase_db import db_insert, db_select
 from app.services.email_service import email_service
 from app.core.config import settings
 

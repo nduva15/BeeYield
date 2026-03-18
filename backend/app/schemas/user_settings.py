@@ -1,7 +1,7 @@
 
-from pydantic import BaseModel, Field, EmailStr
-from typing import Optional, List, Dict, Any
-from uuid import UUID, uuid4
+from pydantic import BaseModel
+from typing import Optional
+from uuid import UUID
 from datetime import datetime
 from enum import Enum
 

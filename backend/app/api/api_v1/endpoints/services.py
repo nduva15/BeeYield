@@ -1,11 +1,10 @@
 """
 Services Endpoints - Pollination, Learning, ESG, Crops
 """
-from fastapi import APIRouter, HTTPException, Request, Depends, status
+from fastapi import APIRouter, Request, Depends
 from typing import Optional
 from app.schemas import services as schemas
-from app.db.supabase_db import db_select, db_get_by_id
-from app.core import security
+from app.db.supabase_db import db_select
 
 router = APIRouter()
 

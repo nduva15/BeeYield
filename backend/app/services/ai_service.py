@@ -2,12 +2,9 @@ from typing import Any, Optional, Dict, List
 import json
 import httpx
 import os
-import asyncio
 import re
 from google import genai
-from app.db.supabase_db import db_select
 from app.core.config import settings
-from app.services.content_service import ContentService
 from app.services.hybrid_search import HybridSearch
 from app.services.report_generator import ReportGenerator
 from app.services.rate_limit_manager import RateLimitManager

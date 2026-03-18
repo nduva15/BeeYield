@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional, Any
+from fastapi import APIRouter, HTTPException
+from typing import List, Optional
 from app.services.meter_service import MeterService
 from app.schemas import meter as schemas
 

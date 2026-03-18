@@ -4,8 +4,8 @@ Intelligence Hub Service
 The "Company Brain" for BeeYield AI.
 Aggregates user-specific data into high-fidelity context for the LLM.
 """
-from typing import List, Dict, Any, Optional
-from app.db.supabase_db import db_select, db_rpc, db_insert
+from typing import Dict, Any, Optional
+from app.db.supabase_db import db_select, db_insert
 from datetime import datetime, timedelta
 
 class IntelligenceHub:
@@ -20,7 +20,7 @@ class IntelligenceHub:
         hives = await db_select("hives", filters={"user_id": user_id}, token=token)
         
         # 2. Latest Inspections (last 14 days)
-        fourteen_days_ago = (datetime.now() - timedelta(days=14)).date().isoformat()
+        (datetime.now() - timedelta(days=14)).date().isoformat()
         inspections = await db_select(
             "inspections", 
             filters={"user_id": user_id}, 
@@ -90,7 +90,6 @@ class IntelligenceHub:
         """
         if action_type == "schedule_inspection":
             # Logic to create a task for inspection
-            from app.api.api_v1.endpoints.beeyield import TaskCreate
             task_data = {
                 "title": f"AI Suggested Inspection: {params.get('reason', 'General Check')}",
                 "description": f"Triggered by BeeYield AI based on: {params.get('context', 'User query')}",

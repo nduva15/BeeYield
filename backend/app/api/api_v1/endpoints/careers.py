@@ -7,7 +7,6 @@ from datetime import date
 from app.schemas import careers as schemas
 from app.db.supabase_db import db_select, db_insert, get_supabase
 from app.services import email
-from app.core import security
 
 router = APIRouter()
 

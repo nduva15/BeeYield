@@ -2,7 +2,6 @@ from datetime import datetime
 import json
 import hashlib
 from typing import Any, Dict, Optional
-from uuid import uuid4
 
 class Block:
     def __init__(

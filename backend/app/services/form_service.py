@@ -1,6 +1,5 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from app.db.supabase_db import db_insert
-from app.services.email import send_email
 
 async def submit_contact_form(data: Dict[str, Any]):
     """Save contact submission and send notification"""

@@ -4,12 +4,11 @@ BeeYield Image Analysis Service — Rust-Accelerated (Post-Oxidize)
 Portions of logic moved to `beeyield_core.ImageEngine` (Rust).
 Moved: Detection simulation, disease aggregation, health scoring, NMS.
 """
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional
 import io
 import time
-from datetime import datetime
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 try:
     from honey_rust import ImageEngine as _RustEngine
@@ -20,7 +19,7 @@ except ImportError:
 
 # Optional ML imports
 try:
-    import cv2
+    import cv2  # noqa: F401
     CV2_AVAILABLE = True
 except ImportError:
     CV2_AVAILABLE = False
@@ -41,10 +40,13 @@ class ImageAnalysisService:
     
     @classmethod
     def _get_detector(cls):
-        if not YOLO_AVAILABLE: return None
+        if not YOLO_AVAILABLE:
+            return None
         if cls._detector_model is None:
-            try: cls._detector_model = YOLO("yolov8n.pt")
-            except: return None
+            try:
+                cls._detector_model = YOLO("yolov8n.pt")
+            except Exception:
+                return None
         return cls._detector_model
     
     @staticmethod
@@ -121,8 +123,10 @@ class ImageAnalysisService:
                                     "id": i+1, "label": "Bee", "confidence": round(float(box.conf[0]), 2),
                                     "bbox": {"x": int(x1), "y": int(y1), "width": int(x2-x1), "height": int(y2-y1)}
                                 })
-                    if detections: return detections[:100]
-                except: pass
+                    if detections:
+                        return detections[:100]
+                except Exception:
+                    pass
         
         # RUST SIMULATION PATH
         if ImageAnalysisService._engine:
@@ -145,15 +149,21 @@ class ImageAnalysisService:
         sorted_detections = sorted(detections, key=lambda x: x.get("confidence", 0), reverse=True)
         classified_count = 0
         for d in sorted_detections:
-            if classified_count >= ImageAnalysisService.MAX_BEES_TO_CLASSIFY: break
+            if classified_count >= ImageAnalysisService.MAX_BEES_TO_CLASSIFY:
+                break
             roll = np.random.random()
-            if roll > 0.96: d["health"], d["health_confidence"] = "Varroa", round(np.random.uniform(0.6, 0.85), 2)
-            elif roll > 0.93: d["health"], d["health_confidence"] = "DWV", round(np.random.uniform(0.5, 0.75), 2)
-            elif roll > 0.91: d["health"], d["health_confidence"] = "Nosema", round(np.random.uniform(0.4, 0.65), 2)
-            else: d["health"], d["health_confidence"] = "Healthy", round(np.random.uniform(0.85, 0.98), 2)
+            if roll > 0.96:
+                d["health"], d["health_confidence"] = "Varroa", round(np.random.uniform(0.6, 0.85), 2)
+            elif roll > 0.93:
+                d["health"], d["health_confidence"] = "DWV", round(np.random.uniform(0.5, 0.75), 2)
+            elif roll > 0.91:
+                d["health"], d["health_confidence"] = "Nosema", round(np.random.uniform(0.4, 0.65), 2)
+            else:
+                d["health"], d["health_confidence"] = "Healthy", round(np.random.uniform(0.85, 0.98), 2)
             classified_count += 1
         for d in detections:
-            if "health" not in d: d["health"], d["health_confidence"] = "Unknown", 0.0
+            if "health" not in d:
+                d["health"], d["health_confidence"] = "Unknown", 0.0
         return detections
 
     @staticmethod
@@ -161,16 +171,23 @@ class ImageAnalysisService:
         # Implementation omitted for brevity, logic remains in Python as it's pure copy.
         # This part of the file is reused from the original service but minimized.
         recommendations = []
-        if count == 0: return ["No bees detected. Photograph hive entrance peak activity."]
-        if status == "Healthy": recommendations.extend(["Colony appears healthy.", "Continue regular monitoring every 7-10 days."])
-        elif status == "Warning": recommendations.append("Some health concerns detected. Detailed inspection within 48h.")
-        else: recommendations.append("⚠️ CRITICAL: Immediate hive inspection recommended.")
+        if count == 0:
+            return ["No bees detected. Photograph hive entrance peak activity."]
+        if status == "Healthy":
+            recommendations.extend(["Colony appears healthy.", "Continue regular monitoring every 7-10 days."])
+        elif status == "Warning":
+            recommendations.append("Some health concerns detected. Detailed inspection within 48h.")
+        else:
+            recommendations.append("⚠️ CRITICAL: Immediate hive inspection recommended.")
         
         for ind in indicators:
             d, p = ind["disease"], ind["probability"]
-            if d == "Varroa" and p > 0.05: recommendations.append(f"Varroa mites ({int(p*100)}%). Use Oxalic/Formic acid.")
-            elif d == "DWV" and p > 0.03: recommendations.append("DWV presence. Associated with Varroa - treat mites.")
-            elif d == "Nosema" and p > 0.03: recommendations.append("Nosema possible. Check ventilation.")
+            if d == "Varroa" and p > 0.05:
+                recommendations.append(f"Varroa mites ({int(p*100)}%). Use Oxalic/Formic acid.")
+            elif d == "DWV" and p > 0.03:
+                recommendations.append("DWV presence. Associated with Varroa - treat mites.")
+            elif d == "Nosema" and p > 0.03:
+                recommendations.append("Nosema possible. Check ventilation.")
         return recommendations
 
     @staticmethod
@@ -188,4 +205,5 @@ class ImageAnalysisService:
             out = io.BytesIO()
             image_rgb.save(out, format='JPEG', quality=85)
             return out.getvalue()
-        except: return None
+        except Exception:
+            return None

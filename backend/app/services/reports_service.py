@@ -4,8 +4,7 @@ Heavy work runs in background to avoid blocking the API.
 """
 import io
 import os
-from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Optional
 import pandas as pd
 from app.db.supabase_db import db_select, db_update
 
@@ -115,7 +114,7 @@ def _upload_to_storage(user_id: str, report_id: str, file_ext: str, file_bytes: 
             file_options={"content-type": content_type, "upsert": "true"}
         )
         return path
-    except Exception as e:
+    except Exception:
         # Fallback to local
         report_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../static/reports"))
         os.makedirs(report_dir, exist_ok=True)
@@ -135,7 +134,7 @@ def _generate_pollination_certificate_pdf(params: dict, harvests: list, inspecti
 
     doc = SimpleDocTemplate(output_buffer, pagesize=letter)
     styles = getSampleStyleSheet()
-    gold = colors.HexColor("#F4D03F")
+    colors.HexColor("#F4D03F")
     dark_green = colors.HexColor("#1B9157")
 
     title_style = ParagraphStyle(
@@ -257,6 +256,7 @@ def _generate_sensor_logs_pdf(df: pd.DataFrame, params: dict, output_buffer: io.
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
     from reportlab.lib import colors
 
     doc = SimpleDocTemplate(output_buffer, pagesize=letter)
@@ -355,6 +355,6 @@ def process_report_logic(report_id: str, user_id: str, params: dict) -> None:
 
         storage_path = _upload_to_storage(user_id, report_id, ext, file_bytes, content_type)
         db_update("generated_reports", {"status": "completed", "storage_path": storage_path}, {"id": report_id})
-    except Exception as e:
+    except Exception:
         db_update("generated_reports", {"status": "failed"}, {"id": report_id})
         raise

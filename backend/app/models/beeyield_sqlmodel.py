@@ -1,6 +1,6 @@
 from typing import Optional, List
 from uuid import UUID, uuid4
-from datetime import datetime, date
+from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import JSONB

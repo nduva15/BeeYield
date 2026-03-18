@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Depends
 from app.schemas import contact as schemas
 from app.services import email
-from app.db.supabase_db import db_insert, db_select, db_upsert, db_update
+from app.db.supabase_db import db_insert, db_select, db_update
 
 router = APIRouter()
 
@@ -91,7 +91,7 @@ async def submit_contact_form(
             raise HTTPException(status_code=429, detail="Too many submissions. Please wait a few seconds.")
     except HTTPException:
         raise
-    except:
+    except Exception:
         pass
 
     db_data = request_in.dict(exclude_unset=True)
@@ -124,7 +124,7 @@ async def submit_contact_form(
             f"New {request_in.inquiry_type.capitalize()} Inquiry",
             f"From: {request_in.first_name} {request_in.last_name}\nEmail: {request_in.email}\nTopic: {request_in.topic}\nMessage: {request_in.message or 'No message provided'}"
         )
-    except:
+    except Exception:
         pass
 
     return {"status": "success", "message": "Thank you for contacting us! We've received your inquiry and will get back to you shortly."}
@@ -146,7 +146,7 @@ async def request_pollination(
             raise HTTPException(status_code=429, detail="Rate limit exceeded. Please wait.")
     except HTTPException:
         raise
-    except:
+    except Exception:
         pass
 
     db_data = request_in.dict(exclude_unset=True)
@@ -173,7 +173,7 @@ async def request_pollination(
             "New Pollination Request",
             f"Farm: {request_in.farm_name}, Acres: {request_in.acres}, Crop: {request_in.crop_type}\nContact: {request_in.full_name} ({request_in.email})"
         )
-    except:
+    except Exception:
         pass
         
     return {"status": "success", "message": "Thank you for your interest in our pollination services! We've received your request and will contact you shortly to discuss your needs."}
@@ -193,7 +193,7 @@ async def submit_contact_message(
             raise HTTPException(status_code=429, detail="Too many messages. Please wait before sending another.")
     except HTTPException:
         raise
-    except:
+    except Exception:
         pass
 
     payload = {
@@ -293,7 +293,7 @@ async def subscribe_newsletter(
             raise HTTPException(status_code=429, detail="Rate limit exceeded. Please try again soon.")
     except HTTPException:
         raise
-    except:
+    except Exception:
         pass
 
     success = False

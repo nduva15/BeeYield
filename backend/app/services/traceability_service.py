@@ -4,7 +4,6 @@ Traceability Service — Rust-Accelerated (Post-Oxidize)
 Timeline construction and impact stats moved to `beeyield_core.TraceabilityEngine`.
 Data fetching and blockchain interaction remains in Python.
 """
-from datetime import datetime
 from typing import Any, Optional
 from app.db.supabase_db import db_select, db_get_by_id
 from app.schemas import traceability as schemas
@@ -122,8 +121,10 @@ class TraceabilityService:
         columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
         data = await db_select("harvests", columns=columns, order_by="harvest_date", ascending=False, limit=limit, token=token)
         for h in data:
-            if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
-            if h.get('hive') and h['hive'].get('apiary'): h['apiary'] = h['hive']['apiary']
+            if not h.get('honey_type'):
+                h['honey_type'] = 'Multifloral'
+            if h.get('hive') and h['hive'].get('apiary'):
+                h['apiary'] = h['hive']['apiary']
         return data
 
     @staticmethod

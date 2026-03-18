@@ -1,9 +1,9 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from app.schemas.inspections import Inspection, InspectionCreate, InspectionUpdate
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
-from datetime import date, datetime
+from datetime import date
 from uuid import UUID
 
 router = APIRouter()
@@ -26,7 +26,7 @@ async def get_user_and_farmer_ids(user_id: str, token: Optional[str] = None) -> 
         farmers = await db_select("farmers", filters={"user_id": user_id}, token=token)
         if farmers:
             ids.append(farmers[0]["id"])
-    except:
+    except Exception:
         pass
     return list(set(ids))
 
@@ -48,7 +48,7 @@ async def get_inspections(
     if not hives and len(relevant_ids) > 1:
         try:
             hives = await db_select("hives", filters={"farmer_id": relevant_ids[1]}, token=token)
-        except:
+        except Exception:
             pass
             
     if not hives:

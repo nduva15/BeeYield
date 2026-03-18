@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from typing import Any, List, Optional
+from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
 from datetime import datetime
 from app.db.supabase_db import db_select, db_update
 from app.services.etims_service import etims_service
@@ -56,7 +56,7 @@ async def sync_transaction_to_etims(
             }
         }
         
-        db_res = await db_update("billing_ledger", update_data, filters={"id": transaction_id})
+        await db_update("billing_ledger", update_data, filters={"id": transaction_id})
         
         return {
             "success": True,

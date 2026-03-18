@@ -3,7 +3,7 @@ import json
 import hashlib
 import hmac
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from app.core.config import settings
 
 class ETIMSService:

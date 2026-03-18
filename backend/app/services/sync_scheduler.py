@@ -3,7 +3,6 @@ KNOWLEDGE SYNC SCHEDULER (v4.0)
 Runs metadata_standardizer.py every 12 hours.
 """
 import asyncio
-import subprocess
 import sys
 import os
 from datetime import datetime, timedelta

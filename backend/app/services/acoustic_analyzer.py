@@ -79,7 +79,8 @@ class AcousticAnalyzer:
 
     def _aggregate_results_fallback(self, results: List[Dict]) -> Dict:
         # Minimal Python fallback for voting
-        if not results: return {'state': 'Unknown', 'confidence': 0.0}
+        if not results:
+            return {'state': 'Unknown', 'confidence': 0.0}
         states = [r['state'] for r in results]
         winner = max(set(states), key=states.count)
         conf = np.mean([r['confidence'] for r in results if r['state'] == winner])

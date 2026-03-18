@@ -133,7 +133,7 @@ class PolygonService:
             return False
         try:
             return self.web3.is_connected()
-        except:
+        except Exception:
             return False
     
     def get_network_status(self) -> dict[str, Any]:
@@ -151,7 +151,7 @@ class PolygonService:
             try:
                 status["latest_block"] = self.web3.eth.block_number
                 status["gas_price_gwei"] = self.web3.from_wei(self.web3.eth.gas_price, 'gwei')
-            except:
+            except Exception:
                 pass
         
         return status
@@ -303,7 +303,7 @@ class PolygonService:
                     result["block_number"] = receipt.get("blockNumber")
                     result["confirmations"] = self.web3.eth.block_number - receipt.get("blockNumber", 0)
                     result["on_chain_verified"] = True
-                except:
+                except Exception:
                     result["on_chain_verified"] = False
             
             return result

@@ -8,9 +8,7 @@ REWRITTEN: Now routes ALL database operations through the Rust + Go database gat
 ALL configuration comes from environment variables. ZERO hardcoded data.
 """
 import httpx
-import asyncio
-import os
-from typing import Optional, Any, List, Dict
+from typing import Optional, Any
 from app.core.config import settings
 from contextlib import contextmanager
 

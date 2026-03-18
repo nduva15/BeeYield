@@ -5,11 +5,9 @@ Production-ready endpoints for bee image analysis, detection, and health classif
 """
 
 from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, Query
-from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import Optional
 import uuid
 from datetime import datetime
-import io
 
 from app.core.auth import get_current_user_id
 from app.services.image_analysis_service import ImageAnalysisService
@@ -17,7 +15,6 @@ from app.db.supabase_db import get_supabase, db_insert, db_select
 from app.schemas.image_analysis import (
     ImageAnalysisResponse,
     AnalysisHistoryResponse,
-    AnalysisHistoryItem,
     AnalysisType
 )
 
@@ -309,7 +306,7 @@ async def delete_analysis(
         if not result or len(result) == 0:
             raise HTTPException(status_code=404, detail="Analysis not found")
         
-        analysis = result[0]
+        result[0]
         
         # Delete from storage
         supabase = get_supabase()
