@@ -27,7 +27,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = React.useState('');
 
-    const columns: ColumnDef<Hive>[] = [
+    const columns = React.useMemo<ColumnDef<Hive>[]>(() => [
         {
             accessorKey: 'hive_code',
             header: ({ column }) => {
@@ -154,7 +154,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                 )
             }
         }
-    ];
+    ], []);
 
     const table = useReactTable({
         data,
