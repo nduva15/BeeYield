@@ -16,7 +16,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No frontend tests specified\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
