@@ -11,6 +11,7 @@ export interface WishlistItem {
     category: string;
     badge: string | null;
     inStock: boolean;
+    added_at?: string;
 }
 
 interface WishlistContextType {

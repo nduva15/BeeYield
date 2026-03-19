@@ -1014,32 +1014,36 @@ const ShopDashboard = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {wishlistItems.map((item) => (
-                                    <div key={item.id} className={cn(glass.section, "p-0 overflow-hidden group relative hover:border-[#F4D03F]/30 transition-all shadow-sm")}>
-                                        <button
-                                            onClick={() => removeFromWishlist(item.id)}
-                                            className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:bg-red-50 hover:text-red-500 transition-all border border-gray-100"
-                                        >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                        <div className="aspect-square bg-[#F9F7F2] relative overflow-hidden flex items-center justify-center border-b border-[#F4D03F]/5">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                            />
-                                        </div>
-                                        <div className="p-6">
-                                            <h3 className="font-black text-[15px] text-[#1A1A1A] mb-1 truncate tracking-tight">{item.name}</h3>
-                                            <p className="text-[11px] text-gray-500 mb-5 line-clamp-2 leading-relaxed">{item.description}</p>
-                                            <div className="flex justify-between items-center pt-2">
-                                                <p className="font-black text-[#1A1A1A] text-lg">KES {item.price.toLocaleString()}</p>
-                                                <div className="flex gap-2">
-                                                    <Button onClick={() => navigate('/shop')} className={cn(glass.btnSecondary, "h-9 text-[11px]")}>Details</Button>
-                                                    <Button onClick={() => { toast.success("Added to cart!"); navigate('/shop'); }} className={cn(glass.btnPrimary, "h-9 text-[11px]")}>Buy Now</Button>
+                                    item && (
+                                        <div key={item.id} className={cn(glass.section, "p-0 overflow-hidden group relative hover:border-[#F4D03F]/30 transition-all shadow-sm")}>
+                                            <button
+                                                onClick={() => item.id && removeFromWishlist(item.id)}
+                                                className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:bg-red-50 hover:text-red-500 transition-all border border-gray-100"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                            <div className="aspect-square bg-[#F9F7F2] relative overflow-hidden flex items-center justify-center border-b border-[#F4D03F]/5">
+                                                {item.image && (
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name || 'Product'}
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="p-6">
+                                                <h3 className="font-black text-[15px] text-[#1A1A1A] mb-1 truncate tracking-tight">{item.name || 'Untitled Item'}</h3>
+                                                <p className="text-[11px] text-gray-500 mb-5 line-clamp-2 leading-relaxed">{item.description || 'No description available'}</p>
+                                                <div className="flex justify-between items-center pt-2">
+                                                    <p className="font-black text-[#1A1A1A] text-lg">KES {Number(item.price || 0).toLocaleString()}</p>
+                                                    <div className="flex gap-2">
+                                                        <Button onClick={() => navigate('/shop')} className={cn(glass.btnSecondary, "h-9 text-[11px]")}>Details</Button>
+                                                        <Button onClick={() => { toast.success("Added to cart!"); navigate('/shop'); }} className={cn(glass.btnPrimary, "h-9 text-[11px]")}>Buy Now</Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )
                                 ))}
                             </div>
                         )}
@@ -1433,7 +1437,7 @@ const ShopDashboard = () => {
                                             
                                             <div className="pt-4">
                                                 <Button onClick={processDashboardPayment} disabled={isProcessing} className={cn(glass.btnPrimary, "w-full h-16 text-xl tracking-tightest")}>
-                                                    {isProcessing ? <Loader className="animate-spin mr-3 w-6 h-6" /> : `Commit Settlement: KES ${checkoutTotalWithShipping.toLocaleString()}`}
+                                                    {isProcessing ? <Loader className="animate-spin mr-3 w-6 h-6" /> : `Commit Settlement: KES ${(checkoutTotalWithShipping ?? 0).toLocaleString()}`}
                                                 </Button>
                                                 <p className="text-center text-[10px] text-gray-400 font-bold mt-4 uppercase tracking-[2px]">Encrypted Financial Pipeline Active</p>
                                             </div>
@@ -1452,14 +1456,14 @@ const ShopDashboard = () => {
                                                         <span className="font-black text-[13px] tracking-tight truncate max-w-[120px]">{item.name}</span>
                                                         <span className="text-[10px] text-white/40 font-bold">Qty: {item.quantity} units</span>
                                                     </div>
-                                                    <span className="font-black text-white/90">KES {(item.price * item.quantity).toLocaleString()}</span>
+                                                    <span className="font-black text-white/90">KES {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}</span>
                                                 </div>
                                             ))}
                                             
                                             <div className="space-y-3 pt-6 border-t border-white/10">
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-white/40 font-bold uppercase tracking-widest">Base Value</span>
-                                                    <span className="font-black">KES {totalPrice.toLocaleString()}</span>
+                                                    <span className="font-black">KES {(totalPrice ?? 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-white/40 font-bold uppercase tracking-widest">Logistics</span>
@@ -1471,7 +1475,7 @@ const ShopDashboard = () => {
                                                         <span className="text-white/40 text-[9px] font-black uppercase tracking-widest">Final Commitment</span>
                                                         <span className="text-[11px] text-[#F4D03F] font-black italic">VAT Inclusive</span>
                                                     </div>
-                                                    <span className="text-3xl font-black text-white tracking-tighter leading-none">KES {checkoutTotalWithShipping.toLocaleString()}</span>
+                                                    <span className="text-3xl font-black text-white tracking-tighter leading-none">KES {(checkoutTotalWithShipping ?? 0).toLocaleString()}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1643,7 +1647,7 @@ const ShopDashboard = () => {
                                             <p className={cn("text-[11px] font-black tracking-widest uppercase mb-1", i === 0 ? 'text-[#1A1A1A]' : 'text-gray-400')}>{event.status}</p>
                                             <p className="text-[13px] text-gray-500 font-medium leading-relaxed">{event.description}</p>
                                             <div className="flex items-center gap-3 text-[10px] font-bold text-gray-300 tracking-tight pt-1">
-                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(event.created_at).toLocaleString()}</span>
+                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {event.created_at ? new Date(event.created_at).toLocaleString() : 'N/A'}</span>
                                                 {event.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {event.location}</span>}
                                             </div>
                                         </div>

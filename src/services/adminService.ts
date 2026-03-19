@@ -368,36 +368,129 @@ export const adminService = {
     // ============== APIARIES & HIVES ==============
     getApiaries: async () => {
         try { return await apiGet<any[]>('/admin/apiaries'); }
-        catch { return (await supabase?.from('apiaries').select('*'))?.data || []; }
+        catch { 
+            if (!supabase) return [];
+            const { data } = await supabase
+                .from('apiaries')
+                .select('*, farmer:farmers(name)')
+                .order('created_at', { ascending: false });
+            return data || [];
+        }
     },
 
     getHives: async () => {
         try { return await apiGet<any[]>('/admin/hives'); }
-        catch { return (await supabase?.from('hives').select('*'))?.data || []; }
+        catch { 
+            if (!supabase) return [];
+            const { data } = await supabase
+                .from('hives')
+                .select('*, apiary:apiaries(name), farmer:farmers(name)')
+                .order('created_at', { ascending: false });
+            return data || [];
+        }
     },
 
     createApiary: async (data: any) => {
-        return await apiPost<any>('/admin/apiaries', data);
+        try { return await apiPost<any>('/admin/apiaries', data); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data: res, error } = await supabase.from('apiaries').insert(data).select().single();
+            if (error) throw error;
+            return res;
+        }
     },
 
     updateApiary: async (id: string, data: any) => {
-        return await apiPut<any>(`/admin/apiaries/${id}`, data);
+        try { return await apiPut<any>(`/admin/apiaries/${id}`, data); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data: res, error } = await supabase.from('apiaries').update(data).eq('id', id).select().single();
+            if (error) throw error;
+            return res;
+        }
     },
 
     deleteApiary: async (id: string) => {
-        return await apiDelete<any>(`/admin/apiaries/${id}`);
+        try { return await apiDelete<any>(`/admin/apiaries/${id}`); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { error } = await supabase.from('apiaries').delete().eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     },
 
     createHive: async (data: any) => {
-        return await apiPost<any>('/admin/hives', data);
+        try { return await apiPost<any>('/admin/hives', data); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data: res, error } = await supabase.from('hives').insert(data).select().single();
+            if (error) throw error;
+            return res;
+        }
     },
 
     updateHive: async (id: string, data: any) => {
-        return await apiPut<any>(`/admin/hives/${id}`, data);
+        try { return await apiPut<any>(`/admin/hives/${id}`, data); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data: res, error } = await supabase.from('hives').update(data).eq('id', id).select().single();
+            if (error) throw error;
+            return res;
+        }
     },
 
     deleteHive: async (id: string) => {
-        return await apiDelete<any>(`/admin/hives/${id}`);
+        try { return await apiDelete<any>(`/admin/hives/${id}`); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { error } = await supabase.from('hives').delete().eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
+    },
+
+    // ============== HARVESTS ==============
+    getHarvests: async () => {
+        try { return await apiGet<any[]>('/admin/harvests'); }
+        catch {
+            if (!supabase) return [];
+            const { data } = await supabase
+                .from('harvests')
+                .select('*, hive:hives(hive_code), farmer:farmers(name)')
+                .order('harvest_date', { ascending: false });
+            return data || [];
+        }
+    },
+
+    createHarvest: async (data: any) => {
+        try { return await apiPost<any>('/admin/harvests', data); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data: res, error } = await supabase.from('harvests').insert(data).select().single();
+            if (error) throw error;
+            return res;
+        }
+    },
+
+    updateHarvest: async (id: string, data: any) => {
+        try { return await apiPut<any>(`/admin/harvests/${id}`, data); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data: res, error } = await supabase.from('harvests').update(data).eq('id', id).select().single();
+            if (error) throw error;
+            return res;
+        }
+    },
+
+    deleteHarvest: async (id: string) => {
+        try { return await apiDelete<any>(`/admin/harvests/${id}`); }
+        catch {
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { error } = await supabase.from('harvests').delete().eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     },
 
     // ============== POLLINATION ==============
@@ -448,8 +541,55 @@ export const adminService = {
         try {
             return await apiGet<any>('/admin/stats');
         } catch (error) {
-            console.error("Dashboard stats API failed:", error);
-            return null;
+            console.error("Dashboard stats API failed, calculating from Supabase", error);
+            if (!supabase) return null;
+
+            try {
+                const [
+                    { count: totalOrders },
+                    { count: pendingOrders },
+                    { count: totalProducts },
+                    { count: totalUsers },
+                    { count: totalApiaries },
+                    { count: totalHives },
+                    { count: totalFarmers },
+                    { count: totalHarvests },
+                    { data: revenueData },
+                    { data: weightData }
+                ] = await Promise.all([
+                    supabase.from('orders').select('*', { count: 'exact', head: true }),
+                    supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+                    supabase.from('products').select('*', { count: 'exact', head: true }),
+                    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+                    supabase.from('apiaries').select('*', { count: 'exact', head: true }),
+                    supabase.from('hives').select('*', { count: 'exact', head: true }),
+                    supabase.from('farmers').select('*', { count: 'exact', head: true }),
+                    supabase.from('harvests').select('*', { count: 'exact', head: true }),
+                    supabase.from('orders').select('total_amount').neq('status', 'cancelled'),
+                    supabase.from('harvests').select('quantity_kg')
+                ]);
+
+                const totalRevenue = revenueData?.reduce((sum, o) => sum + (o.total_amount || 0), 0) || 0;
+                const totalHoneyKg = weightData?.reduce((sum, h) => sum + (Number(h.quantity_kg) || 0), 0) || 0;
+
+                return {
+                    total_orders: totalOrders || 0,
+                    pending_orders: pendingOrders || 0,
+                    total_products: totalProducts || 0,
+                    total_users: totalUsers || 0,
+                    total_apiaries: totalApiaries || 0,
+                    total_hives: totalHives || 0,
+                    total_farmers: totalFarmers || 0,
+                    total_harvests: totalHarvests || 0,
+                    total_revenue_kes: totalRevenue,
+                    total_honey_kg: totalHoneyKg,
+                    total_acres: 0, // Placeholder
+                    category_counts: { honey: totalProducts || 0, learn: 0, sensors: 0, merch: 0 }
+                };
+            } catch (innerError) {
+                console.error("Deep stats calculation failed:", innerError);
+                return null;
+            }
         }
     },
 

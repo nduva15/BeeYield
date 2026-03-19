@@ -364,10 +364,10 @@ const BeeLearn = () => {
                   className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl shadow-lg text-xs"
                   asChild
                 >
-                  <a href="#courses">
+                  <Link to="#courses">
                     <BookOpen className="mr-2 h-5 w-5" />
                     Browse Course Catalog
-                  </a>
+                  </Link>
                 </Button>
                 <Button
                   variant="outline"

@@ -944,15 +944,20 @@ export const beeyieldService = {
         return this.getSensorReadings(undefined, 1);
     },
 
-    async getImpactStats(): Promise<any> {
-        if (!sb) return null;
-        const [apiaries, hives, harvests] = await Promise.all([
-            sb.from('apiaries').select('id', { count: 'exact', head: true }),
-            sb.from('hives').select('id', { count: 'exact', head: true }),
-            sb.from('harvests').select('quantity_kg'),
-        ]);
-        const totalHoney = (harvests.data || []).reduce((s, h) => s + (h.quantity_kg || 0), 0);
-        return { total_apiaries: apiaries.count || 0, total_hives: hives.count || 0, total_honey_kg: totalHoney };
+    async getImpactStats(): Promise<{ total_apiaries: number; total_hives: number; total_honey_kg: number }> {
+        try {
+            if (!sb) return { total_apiaries: 0, total_hives: 0, total_honey_kg: 0 };
+            const [apiaries, hives, harvests] = await Promise.all([
+                sb.from('apiaries').select('id', { count: 'exact', head: true }),
+                sb.from('hives').select('id', { count: 'exact', head: true }),
+                sb.from('harvests').select('quantity_kg'),
+            ]);
+            const totalHoney = (harvests.data || []).reduce((s, h) => s + (Number(h.quantity_kg) || 0), 0);
+            return { total_apiaries: apiaries.count || 0, total_hives: hives.count || 0, total_honey_kg: totalHoney };
+        } catch (e) {
+            console.error('[BeeYieldService] getImpactStats failed:', e);
+            return { total_apiaries: 0, total_hives: 0, total_honey_kg: 0 };
+        }
     },
 
     async updateUserMetadata(metadata: Record<string, any>): Promise<{ error: any }> {
@@ -1006,8 +1011,14 @@ export const beeyieldService = {
                 forage_type: a.primary_forage || a.forage_type || ''
             }));
         } catch (error) {
-            console.error('getApiaries:', error);
-            return [];
+            console.warn('Falling back to direct Supabase for apiaries', error);
+            if (!sb) return [];
+            const { data } = await sb.from('apiaries').select('*').order('created_at', { ascending: false });
+            return (data || []).map((a: any) => ({
+                ...a,
+                type: a.apiary_type || a.type || 'Permanent',
+                forage_type: a.primary_forage || a.forage_type || ''
+            }));
         }
     },
 
@@ -1107,8 +1118,15 @@ export const beeyieldService = {
                 apiary_name: h.apiary?.name || h.apiary_name
             }));
         } catch (error) {
-            console.error('getHives:', error);
-            return [];
+            console.warn('Falling back to direct Supabase for hives', error);
+            if (!sb) return [];
+            let query = sb.from('hives').select('*, apiary:apiaries(name)').order('hive_code', { ascending: true });
+            if (apiaryId) query = query.eq('apiary_id', apiaryId);
+            const { data } = await query;
+            return (data || []).map((h: any) => ({
+                ...h,
+                apiary_name: h.apiary?.name || h.apiary_name
+            }));
         }
     },
 
@@ -1150,31 +1168,38 @@ export const beeyieldService = {
 
     // ========== HARVESTS ==========
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
-        if (!sb) {
-            let list = _lsRead<Harvest[]>(LS_KEYS.harvests, []);
-            if (filters?.hive_id) list = list.filter((h: any) => (h.hive_id || h.hive?.id) === filters.hive_id);
-            if (filters?.apiary_id) list = list.filter((h: any) => (h.apiary?.id || (h as any).apiary_id) === filters.apiary_id);
-            if (filters?.year) list = list.filter((h) => new Date(h.harvest_date).getFullYear() === filters.year);
-            return list;
+        try {
+            // First try the backend API
+            const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
+            if (Array.isArray(data)) return data;
+        } catch (apiError) {
+            console.warn('[BeeYieldService] API getHarvests failed, trying direct Supabase:', apiError);
         }
-        // Backend writes `harvest_date` (not legacy `date`).
+
+        // Fallback or secondary try: Direct Supabase
+        if (!sb) return [];
         let query = sb
             .from('harvests')
             .select('*, hive:hives(id, hive_code), farmer:farmers(id, name), apiary:apiaries(id, name)')
             .order('harvest_date', { ascending: false });
+        
         if (filters?.hive_id) query = query.eq('hive_id', filters.hive_id);
         if (filters?.year) {
             const start = `${filters.year}-01-01`;
             const end = `${filters.year}-12-31`;
             query = query.gte('harvest_date', start).lte('harvest_date', end);
         }
+
         const { data, error } = await query;
-        if (error) { console.error('getHarvests:', error); return []; }
+        if (error) { 
+            console.error('[BeeYieldService] Direct Supabase getHarvests failed:', error); 
+            return []; 
+        }
+
         return (data || []).map((h: any) => ({
             ...h,
-            // Keep compatibility if some old rows used `date`
             harvest_date: h.harvest_date || h.date,
-            quantity_kg: h.quantity_kg,
+            quantity_kg: h.quantity_kg || h.weight_kg || 0,
         })) as Harvest[];
     },
 

@@ -98,17 +98,17 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                 }
 
                 const { error: profileError } = await supabaseCEBA
-                    .from('ceba_profiles')
+                    .from('profiles')
                     .select('id')
                     .eq('id', loggedInUser.id)
                     .single();
 
                 if (profileError) {
-                    await supabaseCEBA.from('ceba_profiles').upsert({
+                    await supabaseCEBA.from('profiles').upsert({
                         id: loggedInUser.id,
                         email: loggedInUser.email,
                         full_name: loggedInUser.user_metadata?.full_name || 'Admin User',
-                        admin_role: 'system_admin',
+                        role: 'admin',
                         updated_at: new Date().toISOString()
                     });
                 }

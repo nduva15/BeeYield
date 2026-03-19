@@ -159,9 +159,9 @@ const ProfessionalAuth: React.FC = () => {
                         <p className="opacity-60">For beekeepers and growers</p>
                     </div>
                     <div className="flex gap-8 text-[10px] font-black">
-                        <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Privacy</a>
-                        <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Terms</a>
-                        <a href="#" className="text-gray-400 hover:text-beeyield-green transition-colors">Support</a>
+                        <Link to="/privacy" className="text-gray-400 hover:text-beeyield-green transition-colors">Privacy</Link>
+                        <Link to="/terms" className="text-gray-400 hover:text-beeyield-green transition-colors">Terms</Link>
+                        <Link to="/contact" className="text-gray-400 hover:text-beeyield-green transition-colors">Support</Link>
                     </div>
                 </footer>
             </div>

@@ -41,7 +41,7 @@ jobs:
         with:
           host: 217.196.54.203
           username: u476083190
-          password: 123Arosniper.
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: 65002
           source: "dist/*"
           target: "public_html"
