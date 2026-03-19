@@ -57,7 +57,7 @@ const AuthCallback = () => {
                         try {
                             const profileTable = storedBackend === 'shop' ? 'shop_profiles' :
                                 storedBackend === 'beeyield' ? 'beeyield_profiles' :
-                                    'ceba_profiles';
+                                    'profiles';
 
                             // Check if profile exists
                             const { data: existingProfile } = await activeClient
@@ -76,7 +76,7 @@ const AuthCallback = () => {
                                         last_name: user.user_metadata?.family_name || (user.user_metadata?.full_name?.split(' ')[1]) || '',
                                         email: user.email,
                                         ...(storedBackend === 'beeyield' ? { is_professional: true } : {}),
-                                        ...(storedBackend === 'ceba' ? { admin_role: 'content_editor' } : {})
+                                        ...(storedBackend === 'ceba' ? { role: 'admin' } : {})
                                     });
                             }
                         } catch (profileErr) {

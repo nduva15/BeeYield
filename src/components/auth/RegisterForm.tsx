@@ -79,7 +79,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                 if (user) {
                     const profileTable = variant === 'shop' ? 'shop_profiles' :
                         variant === 'professional' ? 'beeyield_profiles' :
-                            'ceba_profiles';
+                            'profiles';
 
                     await supabaseInstance
                         .from(profileTable)
@@ -91,7 +91,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                             full_name: `${firstName} ${lastName}`.trim(),
                             role: defaultRole,
                             ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
-                            ...(activeBackend === 'ceba' ? { admin_role: 'content_editor' } : {}),
+                            ...(activeBackend === 'ceba' ? { role: 'admin' } : {}),
                             updated_at: new Date().toISOString()
                         });
                 }

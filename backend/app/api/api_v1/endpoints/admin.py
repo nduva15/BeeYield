@@ -19,7 +19,7 @@ def check_admin_role(current_user: dict = Depends(security.get_current_user)):
     
     role = user_metadata.get("role") or app_metadata.get("role")
     
-    if role not in ["admin", "superadmin"]:
+    if role not in ["admin", "superadmin", "super_admin"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You do not have administrative privileges."

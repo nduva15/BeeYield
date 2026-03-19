@@ -81,8 +81,8 @@ const Checkout = () => {
     // Stripe state
     const [stripeCardReady, setStripeCardReady] = useState(false);
     const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null);
-
-    const storeCredits = 0; // In real app, this would be fetched from API if user is logged in
+    const [savedCards, setSavedCards] = useState<any[]>([]);
+    const [loadCardsStatus, setLoadCardsStatus] = useState<'idle' | 'loading' | 'error'>('idle');
 
     // Wishlist state (Real)
     const { items: wishlistItems, removeFromWishlist } = useWishlist();
@@ -112,6 +112,21 @@ const Checkout = () => {
                 city: meta.city || prev.city,
                 county: meta.county || prev.county,
             }));
+
+            // Fetch saved cards
+            const fetchCards = async () => {
+                setLoadCardsStatus('loading');
+                try {
+                    const { getPaymentMethods } = await import('@/services/shopService');
+                    const methods = await getPaymentMethods();
+                    setSavedCards(methods.filter((m: any) => m.type === 'card'));
+                    setLoadCardsStatus('idle');
+                } catch (error) {
+                    console.error('Error fetching cards:', error);
+                    setLoadCardsStatus('error');
+                }
+            };
+            fetchCards();
         }
     }, [user]);
 
@@ -207,6 +222,7 @@ const Checkout = () => {
                     postal_code: shippingDetails.postalCode,
                 },
                 payment_method: paymentMethod,
+                payment_method_id: paymentMethod === 'card' ? (stripePaymentMethodId || undefined) : undefined,
                 items: items.map(item => ({
                     product_id: item.productId.toString(),
                     variant_id: item.variantId,
@@ -827,32 +843,78 @@ const Checkout = () => {
 
                                         {paymentMethod === 'card' && (
                                             <div className="pl-6 pr-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                <div className="p-4 bg-muted/30 rounded-xl border border-border">
-                                                    <StripeCardForm
-                                                        mode="save"
-                                                        onSuccess={(pm) => {
-                                                            setStripePaymentMethodId(pm.id);
-                                                            setStripeCardReady(true);
-                                                            setPaymentDetails({
-                                                                ...paymentDetails,
-                                                                cardHolder: '',
-                                                                cardNumber: `**** **** **** ${pm.last4}`,
-                                                                cardExpiry: `${pm.exp_month}/${pm.exp_year}`,
-                                                            });
-                                                            toast.success('Card verified successfully!');
-                                                        }}
-                                                        onError={(error) => {
-                                                            setStripeCardReady(false);
-                                                            toast.error(error);
-                                                        }}
-                                                        buttonText="Verify Card"
-                                                    />
-                                                </div>
+                                                {savedCards.length > 0 && (
+                                                    <div className="grid gap-2 mb-4">
+                                                        <Label className="text-sm font-bold mb-2">Select a Saved Card</Label>
+                                                        {savedCards.map(card => (
+                                                            <div 
+                                                                key={card.id}
+                                                                onClick={() => {
+                                                                    setStripePaymentMethodId(card.stripe_payment_method_id);
+                                                                    setStripeCardReady(true);
+                                                                    setPaymentDetails({
+                                                                        ...paymentDetails,
+                                                                        cardNumber: `**** **** **** ${card.last4}`,
+                                                                        cardExpiry: `${card.expiry_month}/${card.expiry_year}`,
+                                                                    });
+                                                                }}
+                                                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${stripePaymentMethodId === card.stripe_payment_method_id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                                                        <CreditCard className="w-5 h-5 text-primary" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-bold">{card.provider} card ending in {card.last4}</p>
+                                                                        <p className="text-xs text-muted-foreground">Expires {card.expiry_month}/{card.expiry_year}</p>
+                                                                    </div>
+                                                                </div>
+                                                                {stripePaymentMethodId === card.stripe_payment_method_id && <CheckCircle2 className="w-5 h-5 text-primary" />}
+                                                            </div>
+                                                        ))}
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            onClick={() => {
+                                                                setStripePaymentMethodId(null);
+                                                                setStripeCardReady(false);
+                                                            }}
+                                                            className="text-primary hover:text-primary hover:bg-primary/5 w-fit"
+                                                        >
+                                                            + Use a different card
+                                                        </Button>
+                                                    </div>
+                                                )}
+
+                                                {!stripePaymentMethodId && (
+                                                    <div className="p-4 bg-muted/30 rounded-xl border border-border">
+                                                        <StripeCardForm
+                                                            mode="save"
+                                                            onSuccess={(pm) => {
+                                                                setStripePaymentMethodId(pm.id);
+                                                                setStripeCardReady(true);
+                                                                setPaymentDetails({
+                                                                    ...paymentDetails,
+                                                                    cardHolder: '',
+                                                                    cardNumber: `**** **** **** ${pm.last4}`,
+                                                                    cardExpiry: `${pm.exp_month}/${pm.exp_year}`,
+                                                                });
+                                                                toast.success('Card verified successfully!');
+                                                            }}
+                                                            onError={(error) => {
+                                                                setStripeCardReady(false);
+                                                                toast.error(error);
+                                                            }}
+                                                            buttonText="Verify Card"
+                                                        />
+                                                    </div>
+                                                )}
+                                                
                                                 {stripeCardReady && (
                                                     <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
                                                         <CheckCircle2 className="w-5 h-5 text-[#1B9157]" />
                                                         <p className="text-sm text-[#1B9157] font-medium">
-                                                            Card ending in {paymentDetails.cardNumber.slice(-4)} verified
+                                                            Card ending in {paymentDetails.cardNumber.slice(-4)} selected
                                                         </p>
                                                     </div>
                                                 )}

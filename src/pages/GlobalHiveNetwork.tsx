@@ -28,10 +28,10 @@ const GlobalHiveNetwork = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
             <Button size="lg" asChild className="shadow-xl w-full sm:w-auto">
-              <a href="#support-african-farmers">Support the Cause Today</a>
+              <Link to="#support-african-farmers">Support the Cause Today</Link>
             </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              Read the Whitepaper
+            <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+              <Link to="/media">Read the Whitepaper</Link>
             </Button>
           </div>
 
@@ -107,8 +107,8 @@ const GlobalHiveNetwork = () => {
               <p className="text-background/80 leading-relaxed mb-8">
                 This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
               </p>
-              <Button variant="secondary" className="gap-2">
-                Learn More <ArrowRight className="h-4 w-4" />
+              <Button variant="secondary" className="gap-2" asChild>
+                <Link to="/about">Learn More <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           </div>
@@ -235,8 +235,8 @@ const GlobalHiveNetwork = () => {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   BeeYield is pioneering dual-benefit pollination models in sisal plantations. While supporting fiber production, our monitored bee colonies also produce high-quality honey, creating additional income streams for local beekeepers and farmers.
                 </p>
-                <Button variant="outline" className="gap-2">
-                  Learn About Our Impact <ArrowRight className="h-4 w-4" />
+                <Button variant="outline" className="gap-2" asChild>
+                  <Link to="/impact">Learn About Our Impact <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
               <div className="rounded-2xl overflow-hidden shadow-xl">
@@ -342,7 +342,9 @@ const GlobalHiveNetwork = () => {
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Receive impact reports</li>
                 </ul>
 
-                <Button className="w-full">Support</Button>
+                <Button className="w-full" asChild>
+                  <Link to="/contact">Support</Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -367,7 +369,9 @@ const GlobalHiveNetwork = () => {
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Exclusive network insights</li>
                 </ul>
 
-                <Button className="w-full">Support</Button>
+                <Button className="w-full" asChild>
+                  <Link to="/contact">Support</Link>
+                </Button>
               </CardContent>
             </Card>
           </div>

@@ -62,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             const profileTable = variant === 'shop' ? 'shop_profiles' :
                 variant === 'professional' ? 'beeyield_profiles' :
-                    'ceba_profiles';
+                    'profiles';
 
             const { data: profile, error: profileError } = await supabaseInstance
                 .from(profileTable)
@@ -83,7 +83,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         full_name: `${firstName} ${lastName}`.trim() || 'New User',
                         role: loggedInUser.user_metadata?.role || 'user',
                         ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
-                        ...(activeBackend === 'ceba' ? { admin_role: 'content_editor' } : {}),
+                        ...(activeBackend === 'ceba' ? { role: 'admin' } : {}),
                         updated_at: new Date().toISOString()
                     });
 

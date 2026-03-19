@@ -1,7 +1,7 @@
 /**
  * Shop Service - Connects to Supabase
  */
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseShop } from "@/lib/supabase";
 import { apiGet, apiPost } from "./api";
 
 export interface ProductVariant {
@@ -31,22 +31,39 @@ export const add_to_cart = async (item: any) => {
 
 export const getProducts = async (category_name?: string): Promise<Product[]> => {
     try {
-        const params: Record<string, string> = {};
-        if (category_name) params.category = category_name;
+        let query = supabaseShop.from('products').select(`
+            *,
+            variants:product_variants(*)
+        `).eq('is_active', true);
 
-        const products = await apiGet<Product[]>('/shop/products', params);
-        return products;
+        if (category_name) {
+            query = query.eq('category', category_name);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return (data || []) as Product[];
     } catch (error) {
-        console.error("Error fetching products from API:", error);
+        console.error("Error fetching products from Supabase:", error);
         return [];
     }
 };
 
 export const getProduct = async (productId: string): Promise<Product | null> => {
     try {
-        return await apiGet<Product>(`/shop/products/${productId}`);
+        const { data, error } = await supabaseShop
+            .from('products')
+            .select(`
+                *,
+                variants:product_variants(*)
+            `)
+            .eq('id', productId)
+            .single();
+
+        if (error) throw error;
+        return data as Product;
     } catch (error) {
-        console.error("Error fetching product from API:", error);
+        console.error("Error fetching product from Supabase:", error);
         return null;
     }
 };
@@ -85,26 +102,85 @@ export interface CheckoutResponse {
 
 export const initializeCheckout = async (orderData: CheckoutOrder, accessToken?: string): Promise<CheckoutResponse> => {
     try {
-        const options: RequestInit = {};
-        if (accessToken) {
-            options.headers = { Authorization: `Bearer ${accessToken}` };
+        const { data: { user } } = await supabaseShop.auth.getUser();
+
+        // 1. Create the order in Supabase
+        const { data: order, error: orderError } = await supabaseShop
+            .from('orders')
+            .insert({
+                user_id: user?.id || null, // Allow guest checkout
+                total_kes: orderData.total_kes,
+                status: 'pending',
+                shipping_address: orderData.shipping_address,
+                payment_method: orderData.payment_method,
+                notes: orderData.notes,
+                idempotency_key: orderData.idempotency_key
+            })
+            .select()
+            .single();
+
+        if (orderError) throw orderError;
+
+        // 2. Create order items
+        const orderItems = orderData.items.map(item => ({
+            order_id: order.id,
+            product_id: item.product_id,
+            variant_id: item.variant_id,
+            quantity: item.quantity
+        }));
+
+        const { error: itemsError } = await supabaseShop
+            .from('order_items')
+            .insert(orderItems);
+
+        if (itemsError) throw itemsError;
+
+        // 3. Process payment if card is used via Supabase Edge Function (the "Stripe Wrapper")
+        let paymentInfo: any = null;
+        if (orderData.payment_method === 'card' && orderData.payment_method_id) {
+            const { data, error: paymentError } = await supabaseShop.functions.invoke('process-payment', {
+                body: {
+                    order_id: order.id,
+                    payment_method_id: orderData.payment_method_id,
+                    amount: orderData.total_kes,
+                    currency: 'kes'
+                }
+            });
+
+            if (paymentError) throw paymentError;
+            paymentInfo = data;
         }
-        return await apiPost<CheckoutResponse>('/shop/checkout/init', orderData, options);
+
+        return {
+            order_id: order.id,
+            order_number: order.order_number || `BY-${order.id.slice(0, 8).toUpperCase()}`,
+            status: 'success',
+            message: 'Order placed successfully',
+            payment_info: paymentInfo
+        };
     } catch (error) {
-        console.error("Error initializing checkout via API:", error);
+        console.error("Error initializing checkout via Supabase:", error);
         throw error;
     }
 };
 
 export const getUserOrders = async (email: string): Promise<Record<string, unknown>[]> => {
     try {
-        const orders = await apiGet<unknown[]>('/shop/orders', { email });
-        return Array.isArray(orders) ? (orders as Record<string, unknown>[]).map(o => ({
-            ...o,
-            total_amount: (o.total_kes as number) || (o.total_amount as number)
-        })) : [];
+        const { data, error } = await supabaseShop
+            .from('orders')
+            .select(`
+                *,
+                items:order_items(
+                    *,
+                    product:products(*)
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return (data || []) as Record<string, unknown>[];
     } catch (error) {
-        console.error("Error fetching user orders via API:", error);
+        console.error("Error fetching user orders via Supabase:", error);
         return [];
     }
 };
@@ -113,77 +189,126 @@ export const getUserOrders = async (email: string): Promise<Record<string, unkno
 
 // Address Services
 export const getAddresses = async () => {
-    return await apiGet<unknown[]>('/shop/addresses', {});
+    const { data, error } = await supabaseShop.from('addresses').select('*').order('is_default', { ascending: false });
+    if (error) throw error;
+    return data;
 };
 
-export const addAddress = async (address: unknown) => {
-    return await apiPost<unknown>('/shop/addresses', address);
+export const addAddress = async (address: any) => {
+    const { data: { user } } = await supabaseShop.auth.getUser();
+    const { data, error } = await supabaseShop.from('addresses').insert({ ...address, user_id: user?.id }).select().single();
+    if (error) throw error;
+    return data;
 };
 
-export const updateAddress = async (addressId: string, address: unknown) => {
-    const { apiPut } = await import("./api");
-    return await apiPut<unknown>(`/shop/addresses/${addressId}`, address);
+export const updateAddress = async (addressId: string, address: any) => {
+    const { data, error } = await supabaseShop.from('addresses').update(address).eq('id', addressId).select().single();
+    if (error) throw error;
+    return data;
 };
 
 export const deleteAddress = async (addressId: string) => {
-    const { apiDelete } = await import("./api");
-    return await apiDelete<unknown>(`/shop/addresses/${addressId}`);
+    const { error } = await supabaseShop.from('addresses').delete().eq('id', addressId);
+    if (error) throw error;
+    return { success: true };
 };
 
 // Payment Method Services
 export const getPaymentMethods = async () => {
-    return await apiGet<unknown[]>('/shop/payment-methods', {});
+    const { data, error } = await supabaseShop.from('payment_methods').select('*').order('is_default', { ascending: false });
+    if (error) throw error;
+    return data;
 };
 
-export const addPaymentMethod = async (paymentMethod: unknown) => {
-    return await apiPost<unknown>('/shop/payment-methods', paymentMethod);
+export const addPaymentMethod = async (paymentMethod: any) => {
+    const { data: { user } } = await supabaseShop.auth.getUser();
+    const { data, error } = await supabaseShop.from('payment_methods').insert({ ...paymentMethod, user_id: user?.id }).select().single();
+    if (error) throw error;
+    return data;
 };
 
 export const deletePaymentMethod = async (paymentId: string) => {
-    const { apiDelete } = await import("./api");
-    return await apiDelete<unknown>(`/shop/payment-methods/${paymentId}`);
+    const { error } = await supabaseShop.from('payment_methods').delete().eq('id', paymentId);
+    if (error) throw error;
+    return { success: true };
 };
 
 // Tracking Services
 export const getOrderTracking = async (orderId: string) => {
-    return await apiGet<unknown>(`/shop/orders/${orderId}/tracking`, {});
+    const { data, error } = await supabaseShop.from('order_tracking').select('*').eq('order_id', orderId).single();
+    if (error) throw error;
+    return data;
 };
 
 // Order Detail Services
 export const getOrder = async (orderId: string): Promise<any> => {
-    return await apiGet<any>(`/shop/orders/${orderId}`, {});
+    const { data, error } = await supabaseShop.from('orders').select(`
+        *,
+        items:order_items(
+            *,
+            product:products(*)
+        ),
+        tracking:order_tracking(*)
+    `).eq('id', orderId).single();
+    if (error) throw error;
+    return data;
 };
-
-// Invoice Services
-export const downloadInvoice = async (orderId: string, orderNumber: string) => {
-    const { apiDownload } = await import("./api");
-    const fileName = `Invoice-${orderNumber || orderId}.pdf`;
-    try {
-        await apiDownload(`/shop/orders/${orderId}/invoice`, {}, fileName);
-    } catch (error) {
-        console.error("Invoice PDF Download Error:", error);
-        throw error;
-    }
-};
-
-// --- WISHLIST & CART SERVICES ---
 
 export interface WishlistItem {
-    id: string; // Product ID
-    added_at: string;
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    image?: string;
+    category: string;
+    badge: string | null;
+    inStock: boolean;
+    added_at?: string;
 }
 
+// Wishlist Services
 export const getWishlist = async (): Promise<WishlistItem[]> => {
     try {
-        return await apiGet<WishlistItem[]>('/shop/wishlist');
+        const data = await apiGet<any[]>('/shop/wishlist');
+        return Array.isArray(data) ? data.map(item => {
+            const product = item.product || {};
+            return {
+                id: item.product_id || product.id || item.id,
+                name: product.name || 'Unknown Product',
+                description: product.description || '',
+                price: Number(product.price_kes || product.price || 0),
+                image: Array.isArray(product.images) ? product.images[0] : (product.featured_image || ''),
+                category: product.category || 'honey',
+                badge: product.badge || null,
+                inStock: product.is_active !== false,
+                added_at: item.created_at || item.added_at
+            };
+        }) : [];
     } catch (error) {
         console.error("Error fetching wishlist:", error);
+        // Fallback or empty
         return [];
     }
 };
 
 export const toggleWishlist = async (productId: string): Promise<{ status: string; action: 'added' | 'removed' }> => {
-    return await apiPost<{ status: string; action: 'added' | 'removed' }>(`/shop/wishlist/${productId}`, {});
+    try {
+        return await apiPost<{ status: string; action: 'added' | 'removed' }>(`/shop/wishlist/${productId}`, {});
+    } catch (error) {
+        console.error("Error toggling wishlist:", error);
+        // Fallback to direct Supabase if needed (optional)
+        const { data: { user } } = await supabaseShop.auth.getUser();
+        if (!user) throw error;
+        
+        const { data: existing } = await supabaseShop.from('wishlists').select('*').eq('user_id', user.id).eq('product_id', productId).single();
+        if (existing) {
+            await supabaseShop.from('wishlists').delete().eq('user_id', user.id).eq('product_id', productId);
+            return { status: 'success', action: 'removed' };
+        } else {
+            await supabaseShop.from('wishlists').insert({ user_id: user.id, product_id: productId });
+            return { status: 'success', action: 'added' };
+        }
+    }
 };
 
 export const syncCart = async (items: any[]): Promise<any> => {
@@ -193,6 +318,8 @@ export const syncCart = async (items: any[]): Promise<any> => {
 };
 
 // --- STRIPE PAYMENT SERVICES ---
+
+// --- STRIPE PAYMENT SERVICES (SUPABASE WRAPPER READY) ---
 
 export interface StripePaymentIntent {
     client_secret: string;
@@ -204,20 +331,25 @@ export interface StripeSetupIntent {
     setup_intent_id: string;
 }
 
-// Create a PaymentIntent for checkout
+// Create a PaymentIntent for checkout using the Edge Function
 export const createStripePaymentIntent = async (amount: number, currency: string = 'kes'): Promise<StripePaymentIntent> => {
-    return await apiPost<StripePaymentIntent>('/payments/stripe/create-payment-intent', {
-        amount,
-        currency,
+    const { data, error } = await supabaseShop.functions.invoke('process-payment', {
+        body: { amount, currency, action: 'create_intent' }
     });
+    if (error) throw error;
+    return data;
 };
 
 // Create a SetupIntent for saving card without immediate payment
 export const createStripeSetupIntent = async (): Promise<StripeSetupIntent> => {
-    return await apiPost<StripeSetupIntent>('/payments/stripe/create-setup-intent', {});
+    const { data, error } = await supabaseShop.functions.invoke('process-payment', {
+        body: { action: 'create_setup_intent' }
+    });
+    if (error) throw error;
+    return data;
 };
 
-// Save a Stripe PaymentMethod to user's account
+// Save a Stripe PaymentMethod to user's account NATIVELY
 export const saveStripePaymentMethod = async (paymentMethodId: string, cardDetails: {
     last4: string;
     brand: string;
@@ -225,22 +357,46 @@ export const saveStripePaymentMethod = async (paymentMethodId: string, cardDetai
     exp_year: number;
     card_holder_name?: string;
 }): Promise<unknown> => {
-    return await apiPost<unknown>('/shop/payment-methods', {
-        type: 'card',
-        stripe_payment_method_id: paymentMethodId,
-        provider: cardDetails.brand.charAt(0).toUpperCase() + cardDetails.brand.slice(1),
-        last4: cardDetails.last4,
-        expiry_month: cardDetails.exp_month,
-        expiry_year: cardDetails.exp_year,
-        card_holder_name: cardDetails.card_holder_name || '',
-        is_default: true,
-    });
+    const { data: { user } } = await supabaseShop.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabaseShop
+        .from('payment_methods')
+        .insert({
+            user_id: user.id,
+            type: 'card',
+            stripe_payment_method_id: paymentMethodId,
+            provider: cardDetails.brand.charAt(0).toUpperCase() + cardDetails.brand.slice(1),
+            last4: cardDetails.last4,
+            expiry_month: cardDetails.exp_month,
+            expiry_year: cardDetails.exp_year,
+            card_holder_name: cardDetails.card_holder_name || '',
+            is_default: true,
+        })
+        .select()
+        .single();
+
+    if (error) throw error;
+    return data;
 };
 
-// Confirm payment was successful
+// Confirm payment was successful via Edge function
 export const confirmStripePayment = async (paymentIntentId: string, orderId: string): Promise<unknown> => {
-    return await apiPost<unknown>('/payments/stripe/confirm-payment', {
-        payment_intent_id: paymentIntentId,
-        order_id: orderId,
+    const { data, error } = await supabaseShop.functions.invoke('process-payment', {
+        body: { action: 'confirm', payment_intent_id: paymentIntentId, order_id: orderId }
     });
+    if (error) throw error;
+    return data;
+};
+
+// Download Invoice - Legacy support
+export const downloadInvoice = async (orderId: string, orderNumber: string) => {
+    const { apiDownload } = await import("./api");
+    const fileName = `Invoice-${orderNumber || orderId}.pdf`;
+    try {
+        await apiDownload(`/shop/orders/${orderId}/invoice`, {}, fileName);
+    } catch (error) {
+        console.error("Invoice PDF Download Error:", error);
+        throw error;
+    }
 };

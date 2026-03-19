@@ -46,11 +46,11 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
         } else {
             const { supabaseCEBA } = await import('@/lib/supabase');
             if (supabaseCEBA && signupData?.user) {
-                await supabaseCEBA.from('ceba_profiles').upsert({
+                await supabaseCEBA.from('profiles').upsert({
                     id: signupData.user.id,
                     email: signupData.user.email,
                     full_name: `${firstName} ${lastName}`.trim(),
-                    admin_role: 'system_admin',
+                    role: 'admin',
                     updated_at: new Date().toISOString()
                 });
             }

@@ -161,9 +161,9 @@ const AdminAuth = () => {
                         <p className="opacity-60">Admin access</p>
                     </div>
                     <div className="flex gap-8 text-[10px] font-black">
-                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Status</a>
-                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Privacy</a>
-                        <a href="#" className="text-gray-400 hover:text-honey transition-colors">Support</a>
+                        <Link to="/contact" className="text-gray-400 hover:text-honey transition-colors">Support</Link>
+                        <Link to="/privacy" className="text-gray-400 hover:text-honey transition-colors">Privacy</Link>
+                        <Link to="/terms" className="text-gray-400 hover:text-honey transition-colors">Terms</Link>
                     </div>
                 </footer>
             </div>

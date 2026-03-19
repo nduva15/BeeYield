@@ -24,7 +24,7 @@ const createNamedClient = (url: string, key: string, name: string) => {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
-        storageKey: `sb-${name}-auth-token` // Unique storage key for each backend
+        storageKey: 'sb-auth-token' // Use a unified storage key to share sessions across backends
       }
     });
   } catch (error) {

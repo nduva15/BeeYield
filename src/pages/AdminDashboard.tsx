@@ -70,6 +70,7 @@ const AdminDashboard: React.FC = () => {
     const [stockMovements, setStockMovements] = useState<any[]>([]);
     const [apiaries, setApiaries] = useState<any[]>([]);
     const [hives, setHives] = useState<any[]>([]);
+    const [harvests, setHarvests] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('overview');
 
     // Loading States
@@ -82,6 +83,7 @@ const AdminDashboard: React.FC = () => {
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
     const [isApiaryModalOpen, setIsApiaryModalOpen] = useState(false);
     const [isHiveModalOpen, setIsHiveModalOpen] = useState(false);
+    const [isHarvestModalOpen, setIsHarvestModalOpen] = useState(false);
 
     // Form States
     const [productForm, setProductForm] = useState({
@@ -125,6 +127,16 @@ const AdminDashboard: React.FC = () => {
         status: 'active', notes: ''
     });
 
+    const [editingHarvest, setEditingHarvest] = useState<any | null>(null);
+    const [harvestForm, setHarvestForm] = useState({
+        hive_id: '',
+        harvest_date: new Date().toISOString().split('T')[0],
+        quantity_kg: 0,
+        quality_score: 95,
+        notes: '',
+        farmer_id: ''
+    });
+
 
     const [dashboardStats, setDashboardStats] = useState({
         totalRevenue: 0,
@@ -135,6 +147,7 @@ const AdminDashboard: React.FC = () => {
         totalApiaries: 0,
         totalHives: 0,
         totalFarmers: 0,
+        totalHarvests: 0,
         categoryCounts: {
             honey: 0,
             learn: 0,
@@ -178,15 +191,28 @@ const AdminDashboard: React.FC = () => {
                 adminService.syncAll()
             ]);
 
-            // Also preload orders, products, and batches for Overview tab logic
-            const [ordersData, productsData, batchesData] = await Promise.all([
+            // Preload all critical data for automatic population on entry
+            const [
+                ordersData, productsData, batchesData,
+                apiariesData, hivesData, harvestsData, 
+                farmersData
+            ] = await Promise.all([
                 adminService.getOrders(),
                 adminService.getProducts(),
-                adminService.getBatches()
+                adminService.getBatches(),
+                adminService.getApiaries(),
+                adminService.getHives(),
+                adminService.getHarvests(),
+                adminService.getFarmers()
             ]);
+            
             setOrders(ordersData);
             setProducts(productsData);
             setBatches(batchesData.reverse());
+            setApiaries(apiariesData);
+            setHives(hivesData);
+            setHarvests(harvestsData);
+            setFarmers(farmersData);
 
             const stats = await adminService.getDashboardStats();
             if (stats) {
@@ -199,12 +225,18 @@ const AdminDashboard: React.FC = () => {
                     totalApiaries: stats.total_apiaries || 0,
                     totalHives: stats.total_hives || 0,
                     totalFarmers: (stats as any).total_farmers || 0,
+                    totalHarvests: (stats as any).total_harvests || 0,
                     categoryCounts: (stats as any).category_counts || {
                         honey: 0, learn: 0, sensors: 0, merch: 0
                     }
                 });
             }
-            setLoadedTabs(prev => new Set(prev).add('overview'));
+            
+            setLoadedTabs(prev => {
+                const next = new Set(prev);
+                ['overview', 'apiaries', 'hives', 'harvests', 'farmers', 'orders', 'products', 'batches'].forEach(t => next.add(t));
+                return next;
+            });
         } catch (error) {
             console.error("Failed to load initial stats:", error);
         } finally {
@@ -260,6 +292,26 @@ const AdminDashboard: React.FC = () => {
                         const next = new Set(prev);
                         next.add('apiaries');
                         next.add('hives');
+                        return next;
+                    });
+                    break;
+                }
+                case 'harvests': {
+                    const [harvestsData, hivesData, farmersData, batchesData] = await Promise.all([
+                        adminService.getHarvests(),
+                        adminService.getHives(),
+                        adminService.getFarmers(),
+                        adminService.getBatches()
+                    ]);
+                    setHarvests(harvestsData);
+                    setHives(hivesData);
+                    setFarmers(farmersData);
+                    setBatches(batchesData);
+                    setLoadedTabs(prev => {
+                        const next = new Set(prev);
+                        next.add('harvests');
+                        next.add('hives');
+                        next.add('farmers');
                         return next;
                     });
                     break;
@@ -892,6 +944,56 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
+    const handleSaveHarvest = async () => {
+        try {
+            if (editingHarvest) {
+                await adminService.updateHarvest(editingHarvest.id, harvestForm);
+                toast.success("Harvest record updated");
+            } else {
+                await adminService.createHarvest(harvestForm);
+                toast.success("New harvest recorded");
+            }
+            setIsHarvestModalOpen(false);
+            setEditingHarvest(null);
+            setHarvestForm({
+                hive_id: '',
+                harvest_date: new Date().toISOString().split('T')[0],
+                quantity_kg: 0,
+                quality_score: 95,
+                notes: '',
+                farmer_id: ''
+            });
+            loadAllData();
+        } catch (error) {
+            toast.error(editingHarvest ? "Failed to update harvest" : "Failed to record harvest");
+        }
+    };
+
+    const handleEditHarvest = (harvest: any) => {
+        setEditingHarvest(harvest);
+        setHarvestForm({
+            hive_id: harvest.hive_id || '',
+            harvest_date: harvest.harvest_date || harvest.date || new Date().toISOString().split('T')[0],
+            quantity_kg: harvest.quantity_kg || harvest.weight_kg || 0,
+            quality_score: harvest.quality_score || 95,
+            notes: harvest.notes || '',
+            farmer_id: harvest.farmer_id || ''
+        });
+        setIsHarvestModalOpen(true);
+    };
+
+    const handleDeleteHarvest = async (id: string) => {
+        if (confirm("Permanently delete this harvest record?")) {
+            try {
+                await adminService.deleteHarvest(id);
+                toast.success("Harvest record deleted");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to delete harvest record");
+            }
+        }
+    };
+
 
     if (authLoading || isLoading) {
         return (
@@ -956,6 +1058,7 @@ const AdminDashboard: React.FC = () => {
                 { id: 'farmers', label: 'Farmers', icon: Users },
                 { id: 'apiaries', label: 'Apiaries', icon: MapPin },
                 { id: 'hives', label: 'Hives', icon: Leaf },
+                { id: 'harvests', label: 'Harvests', icon: History },
                 { id: 'accounts', label: 'User Accounts', icon: Users },
             ]
         },
@@ -1041,7 +1144,7 @@ const AdminDashboard: React.FC = () => {
                         />
 
                         {/* KPIs */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             <GlassStatCard
                                 label="Total Revenue (KES)"
                                 value={dashboardStats.totalRevenue.toLocaleString()}
@@ -1068,6 +1171,13 @@ const AdminDashboard: React.FC = () => {
                                 icon={Database}
                                 color="text-blue-500"
                                 index={3}
+                            />
+                            <GlassStatCard
+                                label="Total Harvests"
+                                value={dashboardStats.totalHarvests}
+                                icon={History}
+                                color="text-purple-500"
+                                index={4}
                             />
                         </div>
 
@@ -1444,7 +1554,7 @@ const AdminDashboard: React.FC = () => {
                                 </DialogHeader>
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
-                                        <Label className=" text-[10px] font-black ml-1">Product Name</Label>
+                                        <Label htmlFor="product-name" className=" text-[10px] font-black ml-1">Product Name</Label>
                                         <Input
                                             id="product-name"
                                             name="product-name"
@@ -1455,7 +1565,7 @@ const AdminDashboard: React.FC = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className=" text-[10px] font-black ml-1">Description</Label>
+                                        <Label htmlFor="product-description" className=" text-[10px] font-black ml-1">Description</Label>
                                         <Textarea
                                             id="product-description"
                                             name="product-description"
@@ -1467,7 +1577,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Category</Label>
+                                            <Label htmlFor="product-category" className=" text-[10px] font-black ml-1">Category</Label>
                                             <Input
                                                 id="product-category"
                                                 name="product-category"
@@ -1477,7 +1587,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Price (KES)</Label>
+                                            <Label htmlFor="product-price" className=" text-[10px] font-black ml-1">Price (KES)</Label>
                                             <Input
                                                 id="product-price"
                                                 name="product-price"
@@ -1490,7 +1600,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Stock Quantity</Label>
+                                            <Label htmlFor="product-stock" className=" text-[10px] font-black ml-1">Stock Quantity</Label>
                                             <Input
                                                 id="product-stock"
                                                 name="product-stock"
@@ -1501,7 +1611,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Image URL</Label>
+                                            <Label htmlFor="product-images" className=" text-[10px] font-black ml-1">Image URL</Label>
                                             <Input
                                                 id="product-images"
                                                 name="product-images"
@@ -1581,9 +1691,9 @@ const AdminDashboard: React.FC = () => {
                                 </DialogHeader>
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
-                                        <Label className=" text-[10px] font-black ml-1">Product</Label>
+                                        <Label htmlFor="stock-product" className=" text-[10px] font-black ml-1">Product</Label>
                                         <Select value={stockForm.product_id} onValueChange={(val) => setStockForm({ ...stockForm, product_id: val })}>
-                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                            <SelectTrigger id="stock-product" className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Product" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl">
@@ -1595,9 +1705,9 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Movement Type</Label>
+                                            <Label htmlFor="stock-type" className=" text-[10px] font-black ml-1">Movement Type</Label>
                                             <Select value={stockForm.type} onValueChange={(val) => setStockForm({ ...stockForm, type: val })}>
-                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectTrigger id="stock-type" className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-xl">
@@ -1607,7 +1717,7 @@ const AdminDashboard: React.FC = () => {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Quantity</Label>
+                                            <Label htmlFor="stock-quantity" className=" text-[10px] font-black ml-1">Quantity</Label>
                                             <Input
                                                 id="stock-quantity"
                                                 name="stock-quantity"
@@ -1619,7 +1729,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className=" text-[10px] font-black ml-1">Reason</Label>
+                                        <Label htmlFor="stock-reason" className=" text-[10px] font-black ml-1">Reason</Label>
                                         <Input
                                             id="stock-reason"
                                             name="stock-reason"
@@ -2215,7 +2325,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="grid gap-6 py-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Full Name</Label>
+                                            <Label htmlFor="farmer-fullname" className=" text-[10px] font-black ml-1">Full Name</Label>
                                             <Input
                                                 id="farmer-fullname"
                                                 name="farmer-fullname"
@@ -2226,7 +2336,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Phone Number</Label>
+                                            <Label htmlFor="farmer-phone" className=" text-[10px] font-black ml-1">Phone Number</Label>
                                             <Input
                                                 id="farmer-phone"
                                                 name="farmer-phone"
@@ -2239,7 +2349,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Email Address</Label>
+                                            <Label htmlFor="farmer-email" className=" text-[10px] font-black ml-1">Email Address</Label>
                                             <Input
                                                 id="farmer-email"
                                                 name="farmer-email"
@@ -2251,7 +2361,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">ID Number</Label>
+                                            <Label htmlFor="farmer-id-number" className=" text-[10px] font-black ml-1">ID Number</Label>
                                             <Input
                                                 id="farmer-id-number"
                                                 name="farmer-id-number"
@@ -2264,7 +2374,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">County</Label>
+                                            <Label htmlFor="farmer-county" className=" text-[10px] font-black ml-1">County</Label>
                                             <Input
                                                 id="farmer-county"
                                                 name="farmer-county"
@@ -2275,7 +2385,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Region</Label>
+                                            <Label htmlFor="farmer-region" className=" text-[10px] font-black ml-1">Region</Label>
                                             <Input
                                                 id="farmer-region"
                                                 name="farmer-region"
@@ -2286,7 +2396,7 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className=" text-[10px] font-black ml-1">Years Experience</Label>
+                                            <Label htmlFor="farmer-experience" className=" text-[10px] font-black ml-1">Years Experience</Label>
                                             <Input
                                                 id="farmer-experience"
                                                 name="farmer-experience"
@@ -2298,7 +2408,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className=" text-[10px] font-black ml-1">Location Details / Ward</Label>
+                                        <Label htmlFor="farmer-location" className=" text-[10px] font-black ml-1">Location Details / Ward</Label>
                                         <Input
                                             id="farmer-location"
                                             name="farmer-location"
@@ -2309,7 +2419,7 @@ const AdminDashboard: React.FC = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className=" text-[10px] font-black ml-1">The Beekeeper's Story</Label>
+                                        <Label htmlFor="farmer-story" className=" text-[10px] font-black ml-1">The Beekeeper's Story</Label>
                                         <Textarea
                                             id="farmer-story"
                                             name="farmer-story"
@@ -2662,6 +2772,222 @@ const AdminDashboard: React.FC = () => {
                         </Dialog>
                     </TabsContent>
 
+                    {/* --- HARVESTS TAB --- */}
+                    <TabsContent value="harvests" className="space-y-6">
+                        <PageHeader
+                            icon={History}
+                            label="Production Yield"
+                            title="Honey Harvests"
+                            subtitle="Automated tracking of honey extraction across the network."
+                            actions={
+                                <Button
+                                    onClick={() => setIsHarvestModalOpen(true)}
+                                    className={glass.btnPrimary}
+                                >
+                                    <Plus className="mr-2 h-4 w-4" /> Record Harvest
+                                </Button>
+                            }
+                        />
+
+                        <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Hive</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Farmer</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Yield (KG)</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px]">Grade</TableHead>
+                                            <TableHead className="py-4 px-6 font-black text-[10px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {harvests.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No harvest records available.</TableCell></TableRow>
+                                        ) : (
+                                            harvests.map((harvest) => (
+                                                <TableRow key={harvest.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                    <TableCell className="px-6 font-mono font-black text-primary tabular-nums">{new Date(harvest.harvest_date || harvest.date).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6 font-semibold">{harvest.hive?.hive_code || 'N/A'}</TableCell>
+                                                    <TableCell className="px-6 font-medium opacity-80">{harvest.farmer?.name || harvest.harvester_name || 'N/A'}</TableCell>
+                                                    <TableCell className="px-6 text-right font-black text-primary">{harvest.quantity_kg || harvest.weight_kg} KG</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge className={cn(
+                                                            "rounded-lg border-none px-3 py-1 text-[10px] font-black",
+                                                            (harvest.quality_score || 0) >= 90 ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-[#F4D03F]/10 text-[#F4D03F]"
+                                                        )}>
+                                                            SCORE {harvest.quality_score || harvest.quality_grade || 'N/A'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditHarvest(harvest)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteHarvest(harvest.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
+
+                        {/* Traceability Batches Section */}
+                        <div className="mt-12 space-y-6">
+                            <PageHeader
+                                icon={Package}
+                                label="Traceability"
+                                title="Honey Batches"
+                                subtitle="Immutable traceability records per hive per harvest across all years."
+                            />
+                            
+                            <div className={cn(glass.section, "p-0 overflow-hidden")}>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Batch Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Harvest Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Honey Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity (KG)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Grade</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Blockchain Status</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {batches.length === 0 ? (
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No traceability batches available.</TableCell></TableRow>
+                                            ) : (
+                                                batches.map((batch) => (
+                                                    <TableRow key={batch.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
+                                                        <TableCell className="px-6 font-mono font-black text-primary tabular-nums">{batch.batch_code}</TableCell>
+                                                        <TableCell className="px-6 font-semibold">{new Date(batch.harvest_date).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6 font-medium opacity-80">{batch.honey_type || 'N/A'}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black text-primary">{batch.quantity_kg} KG</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Badge className={cn(
+                                                                "rounded-lg border-none px-3 py-1 text-[10px] font-black",
+                                                                batch.quality_grade === 'A' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-[#F4D03F]/10 text-[#F4D03F]"
+                                                            )}>
+                                                                GRADE {batch.quality_grade || 'N/A'}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                                                <span className="font-mono text-[9px] opacity-60 truncate max-w-[120px]" title={batch.block_hash}>{batch.block_hash || 'Pending...'}</span>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Harvest Modal */}
+                        <Dialog open={isHarvestModalOpen} onOpenChange={(open) => { setIsHarvestModalOpen(open); if (!open) setEditingHarvest(null); }}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHarvest ? 'Edit Harvest' : 'Record Harvest'}</DialogTitle>
+                                    <DialogDescription>Log honey yield from a specific hive.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-6 py-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className=" text-[10px] font-black ml-1">Target Hive</Label>
+                                            <Select value={harvestForm.hive_id} onValueChange={val => setHarvestForm({ ...harvestForm, hive_id: val })}>
+                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                    <SelectValue placeholder="Select Hive" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl border-border/50">
+                                                    {hives.map(h => (
+                                                        <SelectItem key={h.id} value={h.id}>{h.hive_code}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className=" text-[10px] font-black ml-1">Harvest Date</Label>
+                                            <Input
+                                                id="harvest-date"
+                                                name="harvest-date"
+                                                type="date"
+                                                value={harvestForm.harvest_date}
+                                                onChange={e => setHarvestForm({ ...harvestForm, harvest_date: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className=" text-[10px] font-black ml-1">Yield (KG)</Label>
+                                            <Input
+                                                id="harvest-weight"
+                                                name="harvest-weight"
+                                                type="number"
+                                                step="0.1"
+                                                value={harvestForm.quantity_kg}
+                                                onChange={e => setHarvestForm({ ...harvestForm, quantity_kg: parseFloat(e.target.value) || 0 })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className=" text-[10px] font-black ml-1">Quality Score</Label>
+                                            <Input
+                                                id="harvest-quality"
+                                                name="harvest-quality"
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                value={harvestForm.quality_score}
+                                                onChange={e => setHarvestForm({ ...harvestForm, quality_score: parseInt(e.target.value) || 0 })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className=" text-[10px] font-black ml-1">Assigned Partner / Farmer</Label>
+                                        <Select value={harvestForm.farmer_id} onValueChange={val => setHarvestForm({ ...harvestForm, farmer_id: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue placeholder="Select Farmer" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-border/50">
+                                                {farmers.map(f => (
+                                                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className=" text-[10px] font-black ml-1">Notes</Label>
+                                        <Textarea
+                                            id="harvest-notes"
+                                            name="harvest-notes"
+                                            placeholder="Specific observations during harvest..."
+                                            value={harvestForm.notes}
+                                            onChange={e => setHarvestForm({ ...harvestForm, notes: e.target.value })}
+                                            className="rounded-xl bg-muted/50 border-border/50"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveHarvest} className="w-full h-14 rounded-2xl shadow-glow font-black transition-all hover:scale-[1.02]">
+                                        {editingHarvest ? 'Update Yield Records' : 'Record Yield'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
                     {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */}
                     {
                         isSuperAdmin && (
@@ -2762,7 +3088,7 @@ const AdminDashboard: React.FC = () => {
                                         <div className="grid gap-5 py-4">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className=" text-[10px] font-black ml-1">First Name</Label>
+                                                    <Label htmlFor="user-firstname" className=" text-[10px] font-black ml-1">First Name</Label>
                                                     <Input
                                                         id="user-firstname"
                                                         name="user-firstname"
@@ -2773,7 +3099,7 @@ const AdminDashboard: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className=" text-[10px] font-black ml-1">Last Name</Label>
+                                                    <Label htmlFor="user-lastname" className=" text-[10px] font-black ml-1">Last Name</Label>
                                                     <Input
                                                         id="user-lastname"
                                                         name="user-lastname"
@@ -2785,7 +3111,7 @@ const AdminDashboard: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className=" text-[10px] font-black ml-1">Email Address</Label>
+                                                <Label htmlFor="user-email" className=" text-[10px] font-black ml-1">Email Address</Label>
                                                 <Input
                                                     id="user-email"
                                                     name="user-email"
@@ -2798,7 +3124,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                             {!editingUser && (
                                                 <div className="space-y-2">
-                                                    <Label className=" text-[10px] font-black ml-1">Access Password</Label>
+                                                    <Label htmlFor="user-password" className=" text-[10px] font-black ml-1">Access Password</Label>
                                                     <Input
                                                         id="user-password"
                                                         name="user-password"
