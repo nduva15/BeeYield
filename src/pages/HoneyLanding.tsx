@@ -44,7 +44,7 @@ import SEO from "@/components/SEO";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 // Reusing same product types and data from Shop.tsx for consistency
-import { initialHoneyProducts } from "@/data/honey-products";
+import { initialHoneyProducts } from "@/data/Honey-Products";
 import { type Product, type ProductVariant } from "@/services/shopService";
 
 // Hero Section matching reference design
@@ -60,6 +60,37 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-[#FFF9F0]">
+      <SEO 
+        title="Premium Pure Raw Honey | Traceable & Sustainable Origin"
+        description="Experience the purest raw honey from Kenya. Every jar is 100% traceable via HoneyChain™. Support our 50/50 promise to keep bees thriving in Makueni and Kibwezi."
+        keywords="raw honey Kenya, buy pure honey Nairobi, traceable honey jar, Kibwezi honey company, sustainable beekeeping Makueni, African honey export"
+        url="/honey"
+        image="/og-image.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "BeeYield Premium Raw Honey",
+          "description": "Unfiltered, nutrient-rich raw honey from Makueni County, Kenya. Traceable to the hive using IoT technology.",
+          "brand": {
+            "@type": "Brand",
+            "name": "BeeYield"
+          },
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "KES",
+            "availability": "https://schema.org/InStock",
+            "seller": {
+              "@type": "LocalBusiness",
+              "name": "BeeYield Kibwezi"
+            }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "128"
+          }
+        }}
+      />
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-beeyield-green/[0.02] -skew-x-12 translate-x-32 pointer-events-none" />
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-beeyield-gold/5 rounded-full blur-3xl pointer-events-none animate-pulse" />

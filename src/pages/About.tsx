@@ -2,10 +2,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, ArrowRight, Sprout, Globe, ShieldCheck, Heart, History, TrendingUp, Leaf, Hexagon, Terminal, Activity, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 const About = () => {
   return (
     <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased selection:bg-[#facc15] selection:text-[#064e3b]">
+      <SEO 
+        title="About BeeYield | Our Mission & Precision Beekeeping History"
+        description="Learn how BeeYield grew from 4 hives to 184 IoT-monitored colonies. Our mission is to restore bee biodiversity and provide transparent honey across Kenya and the World."
+        keywords="BeeYield history, Timothy Nduva, precision beekeeping mission, sustainable honey Kenya, Makueni beekeeping, African agritech story"
+        url="/about"
+        image="/og-image.png"
+      />
       {/* Hero Section - Swiss Brutalist */}
       <section className="relative flex items-center border-b-4 border-[#064e3b] py-32 bg-[#FFF9F0]">
         <div className="container mx-auto px-8 relative z-10">

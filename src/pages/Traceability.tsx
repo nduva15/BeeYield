@@ -28,6 +28,7 @@ import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
 import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
 import { adminService } from "@/services/adminService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -154,6 +155,33 @@ const Traceability = () => {
 
   return (
     <BeeYieldPageShell className="bg-background">
+      <SEO 
+        title="Honey Traceability & Origin Verification | HoneyChain™"
+        description="Verify the journey of your BeeYield honey jar. Use HoneyChain™ to trace origin, harvest dates, and hive health from Makueni County, Kenya."
+        keywords="honey traceability, verify honey purity, HoneyChain, Kenyan honey origin, food safety Kenya, blockchain honey, Kibwezi honey records"
+        url="/traceability"
+        image="/og-image.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": "How to Trace Your Honey Jar",
+          "description": "Follow these steps to verify the authenticity and origin of your BeeYield honey using our HoneyChain™ system.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "text": "Locate the unique batch code on your honey jar label."
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Enter the code into the search field on this page or scan the QR code."
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Review the verified harvest data, including hive location and moisture levels."
+            }
+          ]
+        }}
+      />
       <section className="relative min-h-[60vh] flex items-center overflow-hidden py-24 sm:py-32">
         <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />

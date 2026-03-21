@@ -131,7 +131,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             return {"status": "error", "message": f"Validation failed: {str(e)}"}
 
     # 5. Create Order Document
-    order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{str(uuid.uuid4())[:4].upper()}"
+    order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
     
     order_data = {
         "user_id": user_id if not is_bypass else None,

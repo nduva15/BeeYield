@@ -152,6 +152,18 @@ const BeeYieldDashboard: React.FC = () => {
     }, [user]);
 
     React.useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        const message = params.get('message');
+        if (tab) {
+            setActiveTab(tab);
+            if (message) {
+                setAiInitialMessage(message);
+            }
+        }
+    }, []);
+
+    React.useEffect(() => {
         const loadData = async () => {
             // Only load data if user is authenticated
             if (!user) return;

@@ -72,6 +72,8 @@ const AdminDashboard: React.FC = () => {
     const [hives, setHives] = useState<any[]>([]);
     const [harvests, setHarvests] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('overview');
+    const [batchYearFilter, setBatchYearFilter] = useState('all');
+    const [batchHiveFilter, setBatchHiveFilter] = useState('');
 
     // Loading States
     const [isLoading, setIsLoading] = useState(true);
@@ -137,6 +139,7 @@ const AdminDashboard: React.FC = () => {
         farmer_id: ''
     });
 
+    const [productVariantSizes, setProductVariantSizes] = useState<Record<string, string>>({});
 
     const [dashboardStats, setDashboardStats] = useState({
         totalRevenue: 0,
@@ -206,9 +209,24 @@ const AdminDashboard: React.FC = () => {
                 adminService.getFarmers()
             ]);
             
+            // Enrich batches with Hive info from harvests (linked by batch_code)
+            const enrichedBatches = batchesData.map((b: any) => {
+                const h = harvestsData.find((hv: any) => hv.batch_code === b.batch_code);
+                return {
+                    ...b,
+                    hive_code: h?.hive?.hive_code || 'N/A',
+                    harvest_year: h?.harvest_date ? new Date(h.harvest_date).getFullYear() : (b.harvest_date ? new Date(b.harvest_date).getFullYear() : null),
+                    // Ensure harvest_date is consistent for sorting
+                    h_date: h?.harvest_date || b.harvest_date
+                };
+            });
+
+            // Sort by harvest_date descending to show newest first
+            enrichedBatches.sort((a: any, b: any) => new Date(b.h_date).getTime() - new Date(a.h_date).getTime());
+
             setOrders(ordersData);
             setProducts(productsData);
-            setBatches(batchesData.reverse());
+            setBatches(enrichedBatches);
             setApiaries(apiariesData);
             setHives(hivesData);
             setHarvests(harvestsData);
@@ -1509,40 +1527,68 @@ const AdminDashboard: React.FC = () => {
                         />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {products.map((product) => (
-                                <div key={product.id} className={cn(glass.card, "group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 p-5 border border-transparent hover:border-[#F4D03F]/20")}>
-                                    <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-5 relative">
-                                        {product.images?.[0] ? (
-                                            <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                        ) : (
-                                            <div className="w-full h-full grid place-items-center text-muted-foreground/30"><ShoppingBag className="w-12 h-12" /></div>
-                                        )}
-                                        <div className="absolute top-3 right-3">
-                                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black">{product.category}</Badge>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-start gap-2">
-                                            <h3 className="font-black text-xl leading-none tracking-tight">{product.name}</h3>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed h-8">{product.description}</p>
-                                        <div className="flex justify-between items-end pt-2">
-                                            <div>
-                                                <p className="text-[10px] font-black tracking-tighter text-muted-foreground mb-1">Price</p>
-                                                <span className="text-xl font-bold text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
-                                            </div>
-                                            <div className="flex gap-1">
-                                                <Button size="icon" variant="outline" onClick={() => handleEditProduct(product)} className="rounded-xl w-9 h-9 border-border/50 hover:bg-primary/10 hover:text-primary"><Edit className="h-4 w-4" /></Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-9 h-9 border-border/50 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
+                            {products.map((product) => {
+                                const selectedSize = productVariantSizes[product.id] || product.variants?.[0]?.size;
+                                const selectedVariant = product.variants?.find(v => v.size === selectedSize) || product.variants?.[0];
+                                
+                                return (
+                                    <div key={product.id} className={cn(glass.card, "group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 p-5 border border-transparent hover:border-[#F4D03F]/20")}>
+                                        <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-5 relative">
+                                            {product.images?.[0] ? (
+                                                <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            ) : (
+                                                <div className="w-full h-full grid place-items-center text-muted-foreground/30"><ShoppingBag className="w-12 h-12" /></div>
+                                            )}
+                                            <div className="absolute top-3 right-3">
+                                                <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black">{product.category}</Badge>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 pt-2 text-[10px] font-bold text-muted-foreground border-t border-border/50 mt-2">
-                                            <Database className="w-3 h-3" />
-                                            <span>Stock: {product.variants?.[0]?.stock_quantity || 0} units</span>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-start gap-2">
+                                                <h3 className="font-black text-xl leading-none tracking-tight">{product.name}</h3>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed h-8">{product.description}</p>
+                                            
+                                            {/* Variant Selector */}
+                                            {product.variants && product.variants.length > 1 && (
+                                                <div className="pt-1">
+                                                    <Select 
+                                                        value={selectedSize} 
+                                                        onValueChange={(val) => setProductVariantSizes(prev => ({ ...prev, [product.id]: val }))}
+                                                    >
+                                                        <SelectTrigger className="w-full h-8 text-[10px] font-black rounded-lg bg-muted/30 border-none">
+                                                            <SelectValue placeholder="Select Size" />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="rounded-xl border-none shadow-glow">
+                                                            {product.variants.map(v => (
+                                                                <SelectItem key={v.id} value={v.size} className="text-[10px] font-bold">
+                                                                    {v.size} {v.batch_code ? `(${v.batch_code})` : ''}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            )}
+
+                                            <div className="flex justify-between items-end pt-2">
+                                                <div>
+                                                    <p className="text-[10px] font-black tracking-tighter text-muted-foreground mb-1">Price</p>
+                                                    <span className="text-xl font-bold text-primary">KES {selectedVariant?.price_kes?.toLocaleString() || 0}</span>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <Button size="icon" variant="outline" onClick={() => handleEditProduct(product)} className="rounded-xl w-9 h-9 border-border/50 hover:bg-primary/10 hover:text-primary"><Edit className="h-4 w-4" /></Button>
+                                                    <Button size="icon" variant="outline" className="rounded-xl w-9 h-9 border-border/50 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 pt-2 text-[10px] font-bold text-muted-foreground border-t border-border/50 mt-2">
+                                                <Database className="w-3 h-3" />
+                                                <span>Stock: {selectedVariant?.stock_quantity || 0} units</span>
+                                                {selectedSize && <Badge variant="outline" className="ml-auto text-[8px] h-4 py-0 leading-none">{selectedSize}</Badge>}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         {/* Product Dialog */}
@@ -2840,12 +2886,50 @@ const AdminDashboard: React.FC = () => {
 
                         {/* Traceability Batches Section */}
                         <div className="mt-12 space-y-6">
-                            <PageHeader
-                                icon={Package}
-                                label="Traceability"
-                                title="Honey Batches"
-                                subtitle="Immutable traceability records per hive per harvest across all years."
-                            />
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <PageHeader
+                                    icon={Package}
+                                    label="Traceability"
+                                    title="Honey Batches"
+                                    subtitle="Immutable traceability records per hive per harvest across all years."
+                                />
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <Label className="text-[10px] uppercase font-black opacity-50">Hive:</Label>
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                                            <Input 
+                                                className="w-[140px] pl-8 h-9 rounded-xl border-none glass text-xs font-bold" 
+                                                placeholder="Search Hive..." 
+                                                value={batchHiveFilter}
+                                                onChange={(e) => setBatchHiveFilter(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <Label className="text-[10px] uppercase font-black opacity-50">Year:</Label>
+                                        <Select 
+                                            defaultValue={batchYearFilter} 
+                                            onValueChange={setBatchYearFilter}
+                                        >
+                                            <SelectTrigger className="w-[110px] h-9 rounded-xl border-none glass text-xs font-bold">
+                                                <SelectValue placeholder="All Years" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-none glass shadow-2xl">
+                                                <SelectItem value="all">All Years</SelectItem>
+                                                <SelectItem value="2026">2026</SelectItem>
+                                                <SelectItem value="2025">2025</SelectItem>
+                                                <SelectItem value="2024">2024</SelectItem>
+                                                <SelectItem value="2023">2023</SelectItem>
+                                                <SelectItem value="2022">2022</SelectItem>
+                                                <SelectItem value="2021">2021</SelectItem>
+                                                <SelectItem value="2020">2020</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div className={cn(glass.section, "p-0 overflow-hidden")}>
                                 <div className="overflow-x-auto">
@@ -2853,6 +2937,7 @@ const AdminDashboard: React.FC = () => {
                                         <TableHeader>
                                             <TableRow className="border-b border-[#F4D03F]/10 bg-muted/20">
                                                 <TableHead className="py-4 px-6 font-black text-[10px]">Batch Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black text-[10px]">Hive</TableHead>
                                                 <TableHead className="py-4 px-6 font-black text-[10px]">Harvest Date</TableHead>
                                                 <TableHead className="py-4 px-6 font-black text-[10px]">Honey Type</TableHead>
                                                 <TableHead className="py-4 px-6 font-black text-[10px] text-right">Quantity (KG)</TableHead>
@@ -2861,12 +2946,19 @@ const AdminDashboard: React.FC = () => {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {batches.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No traceability batches available.</TableCell></TableRow>
+                                            {batches
+                                                .filter(b => batchYearFilter === 'all' || b.harvest_year?.toString() === batchYearFilter)
+                                                .filter(b => !batchHiveFilter || b.hive_code?.toLowerCase().includes(batchHiveFilter.toLowerCase()))
+                                                .length === 0 ? (
+                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No traceability batches found for this criteria.</TableCell></TableRow>
                                             ) : (
-                                                batches.map((batch) => (
+                                                batches
+                                                  .filter(b => batchYearFilter === 'all' || b.harvest_year?.toString() === batchYearFilter)
+                                                  .filter(b => !batchHiveFilter || b.hive_code?.toLowerCase().includes(batchHiveFilter.toLowerCase()))
+                                                  .map((batch) => (
                                                     <TableRow key={batch.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
                                                         <TableCell className="px-6 font-mono font-black text-primary tabular-nums">{batch.batch_code}</TableCell>
+                                                        <TableCell className="px-6 font-semibold text-primary/80">{batch.hive_code}</TableCell>
                                                         <TableCell className="px-6 font-semibold">{new Date(batch.harvest_date).toLocaleDateString()}</TableCell>
                                                         <TableCell className="px-6 font-medium opacity-80">{batch.honey_type || 'N/A'}</TableCell>
                                                         <TableCell className="px-6 text-right font-black text-primary">{batch.quantity_kg} KG</TableCell>

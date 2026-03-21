@@ -109,6 +109,31 @@ export function BeeYieldPageHeader(props: {
   );
 }
 
+export function BeeYieldSectionHeader(props: {
+  title: React.ReactNode;
+  subtitle?: string;
+  icon?: LucideIcon;
+  actions?: React.ReactNode;
+}) {
+  const { title, subtitle, icon: Icon, actions } = props;
+  return (
+    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-[#F4D03F]/10 mb-4">
+      <div className="flex items-center gap-3">
+        {Icon && (
+          <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
+            <Icon className="w-4 h-4 text-[#F4D03F]" />
+          </div>
+        )}
+        <div className="space-y-0.5">
+          <h3 className="text-sm font-black text-[#1A1A1A] tracking-tight">{title}</h3>
+          {subtitle && <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{subtitle}</p>}
+        </div>
+      </div>
+      {actions && <div className="flex items-center gap-2">{actions}</div>}
+    </div>
+  );
+}
+
 export function BeeYieldTabBar({
   tabs,
   activeTab,

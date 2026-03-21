@@ -28,6 +28,7 @@ import {
     ShieldCheck,
     Clock,
     ChevronRight,
+    Brain,
     Map
 } from 'lucide-react';
 
@@ -526,14 +527,20 @@ const ShopDashboard = () => {
                                     <h3 className="text-sm font-bold text-[#1A1A1A] mb-4">Quick Workflows</h3>
                                     <div className="grid grid-cols-1 gap-3">
                                         {[
-                                            { id: 'orders', label: 'Track Shipment', icon: Truck, sub: 'Logistics network' },
+                                            { id: 'assistant', label: 'AI Analytics', icon: Brain, sub: 'Neural insights' },
                                             { id: 'profile', label: 'Update Profile', icon: User, sub: 'Account settings' },
                                             { id: 'addresses', label: 'Manage Places', icon: MapPin, sub: 'Shipping locations' },
                                             { id: 'help', label: 'Support Center', icon: HelpCircle, sub: 'Get assistance' },
                                         ].map((v) => (
                                             <button
                                                 key={v.id}
-                                                onClick={() => setActiveTab(v.id)}
+                                                onClick={() => {
+                                                    if (v.id === 'assistant') {
+                                                        window.location.href = '/beeyield-dashboard?tab=assistant';
+                                                        return;
+                                                    }
+                                                    setActiveTab(v.id);
+                                                }}
                                                 className="w-full text-left bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 hover:bg-white/80 hover:border-[#F4D03F]/30 transition-all flex items-center gap-3 group"
                                             >
                                                 <div className="w-10 h-10 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 group-hover:scale-105 transition-transform">
@@ -1038,7 +1045,21 @@ const ShopDashboard = () => {
                                                     <p className="font-black text-[#1A1A1A] text-lg">KES {Number(item.price || 0).toLocaleString()}</p>
                                                     <div className="flex gap-2">
                                                         <Button onClick={() => navigate('/shop')} className={cn(glass.btnSecondary, "h-9 text-[11px]")}>Details</Button>
-                                                        <Button onClick={() => { toast.success("Added to cart!"); navigate('/shop'); }} className={cn(glass.btnPrimary, "h-9 text-[11px]")}>Buy Now</Button>
+                                                        <Button onClick={() => { 
+                                                            addToCartFromContext({
+                                                                productId: item.id,
+                                                                variantId: (item as any).variantId || 'default',
+                                                                name: item.name || 'Premium Honey',
+                                                                description: item.description || '',
+                                                                size: (item as any).size || 'Standard',
+                                                                price: Number(item.price || 0),
+                                                                quantity: 1,
+                                                                image: item.image,
+                                                                category: (item.category as any) || 'honey',
+                                                                badge: item.badge || null
+                                                            });
+                                                            setActiveTab('checkout');
+                                                        }} className={cn(glass.btnPrimary, "h-9 text-[11px]")}>Buy Now</Button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1074,7 +1095,12 @@ const ShopDashboard = () => {
                                     </div>
                                     <h3 className="text-xl font-black text-[#1A1A1A] mb-3 tracking-tight">{item.title}</h3>
                                     <p className="text-[12px] text-gray-500 mb-8 leading-relaxed px-2">{item.desc}</p>
-                                    <Button className={cn(glass.btnSecondary, "w-full py-6")}>Contact Specialist</Button>
+                                    <Button 
+                                        onClick={() => window.location.href = `/beeyield-dashboard?tab=assistant&message=${encodeURIComponent(`I need help with ${item.title.toLowerCase()}`)}`}
+                                        className={cn(glass.btnSecondary, "w-full py-6")}
+                                    >
+                                        Contact Specialist
+                                    </Button>
                                 </div>
                             ))}
                         </div>
@@ -1085,9 +1111,9 @@ const ShopDashboard = () => {
                                 <h3 className="text-xl font-black mb-1">Direct AI Assistance</h3>
                                 <p className="text-white/40 text-xs">Our Librarian agent is ready to analyze your shop queries instantly.</p>
                              </div>
-                             <Button onClick={() => navigate('/assistant')} className={cn(glass.btnPrimary, "px-10 h-14 bg-[#F4D03F] text-[#1A1A1A] hover:bg-white")}>
+                              <Button onClick={() => navigate('/beeyield-dashboard?tab=assistant')} className={cn(glass.btnPrimary, "px-10 h-14 bg-[#F4D03F] text-[#1A1A1A] hover:bg-white")}>
                                 Launch BeeYield AI
-                             </Button>
+                              </Button>
                         </div>
                     </motion.div>
                 );
@@ -1493,6 +1519,22 @@ const ShopDashboard = () => {
                                 </div>
                             </div>
                         )}
+                    </motion.div>
+                );
+            }
+            case 'assistant': {
+                // Return a placeholder that would navigate if someone somehow lands here 
+                // but window.location handles it for users clicking buttons
+                return (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className={cn(glass.section, "py-32 text-center bg-white/40")}
+                    >
+                        <Brain className="w-16 h-16 mx-auto text-[#F4D03F] mb-6 animate-pulse" />
+                        <h2 className="text-2xl font-black text-[#1A1A1A]">Connecting to <span className="text-[#F4D03F]">BeeYield AI</span></h2>
+                        <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">Initializing your neural session. Please wait...</p>
+                        <Button onClick={() => window.location.href = '/beeyield-dashboard?tab=assistant'} className={glass.btnPrimary}>Launch Now</Button>
                     </motion.div>
                 );
             }
