@@ -1203,6 +1203,41 @@ export const beeyieldService = {
         })) as Harvest[];
     },
 
+    async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<any[]> {
+        // Try backend API first (uses service role, bypasses RLS)
+        try {
+            const params: any = {};
+            if (filters?.honey_type) params.honey_type = filters.honey_type;
+            if (filters?.year) params.year = filters.year;
+            if (filters?.limit) params.limit = filters.limit;
+            const data = await apiGet<any[]>('beeyield/batches', params);
+            if (Array.isArray(data) && data.length > 0) return data;
+        } catch (_) {
+            // fall through to direct Supabase
+        }
+
+        if (!sb) return [];
+        let query = sb
+            .from('honey_batches' as any)
+            .select('*, farmer:farmer_name, apiary:apiary_name')
+            .order('harvest_date', { ascending: false });
+
+        if (filters?.honey_type) query = (query as any).eq('honey_type', filters.honey_type);
+        if (filters?.year) {
+            query = (query as any)
+                .gte('harvest_date', `${filters.year}-01-01`)
+                .lte('harvest_date', `${filters.year}-12-31`);
+        }
+        if (filters?.limit) query = (query as any).limit(filters.limit);
+
+        const { data, error } = await (query as any);
+        if (error) {
+            console.error('[BeeYieldService] getBatches failed:', error);
+            return [];
+        }
+        return data || [];
+    },
+
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
     subscribeToWeightAlerts(hiveId: string, callback: (payload: any) => void) {
         if (!sb) return null;

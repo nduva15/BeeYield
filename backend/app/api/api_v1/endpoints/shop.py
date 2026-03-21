@@ -64,10 +64,6 @@ async def initialize_checkout(
              raise HTTPException(status_code=401, detail=order_result["message"])
         raise HTTPException(status_code=500, detail=order_result["message"])
 
-    order_result["order_id"]
-    
-
-
     return {
         **order_result,
         "payment_info": order_result.get("payment_info", {})
@@ -249,7 +245,7 @@ async def get_suggestions(current_user: dict = Depends(security.get_current_user
     # Simple Shuffle for variety
     import random
     random.shuffle(all_products)
-    return all_products[:4]
+    return list(all_products)[:4]
 
 # --- Payment Methods ---
 @router.get("/payment-methods", response_model=list[schemas.PaymentMethod])

@@ -16,6 +16,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import SEO from "@/components/SEO";
 import { beePollinationData } from "@/data/beePollinationData";
 
 const PollinationServices = () => {
@@ -62,6 +63,50 @@ const PollinationServices = () => {
 
     return (
         <BeeYieldPageShell className="bg-background">
+            <SEO 
+                title="Precision Pollination Services & Bee Intelligence"
+                description="BeeYield provides world-class precision pollination services and IoT-enabled beekeeping in Kenya. Increase crop yield by up to 35% with verifiable data."
+                keywords="precision pollination Kenya, crop yield improvement, Kibwezi bees, Makueni pollination, sustainable beekeeping Africa, IoT agriculture"
+                url="/pollination-services"
+                image="/og-image.png"
+                schema={{
+                    "@context": "https://schema.org",
+                    "@type": "Service",
+                    "name": "BeeYield Precision Pollination",
+                    "description": "Professional pollination records and hive activity monitoring using IoT sensors for commercial farmers.",
+                    "provider": {
+                        "@type": "LocalBusiness",
+                        "name": "BeeYield Kibwezi HQ",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressLocality": "Kibwezi",
+                            "addressRegion": "Makueni",
+                            "addressCountry": "KE"
+                        }
+                    },
+                    "areaServed": ["Kenya", "Africa", "Global"],
+                    "hasOfferCatalog": {
+                        "@type": "OfferCatalog",
+                        "name": "Pollination Services",
+                        "itemListElement": [
+                            {
+                                "@type": "Offer",
+                                "itemOffered": {
+                                    "@type": "Service",
+                                    "name": "In-Hive Monitoring"
+                                }
+                            },
+                            {
+                                "@type": "Offer",
+                                "itemOffered": {
+                                    "@type": "Service",
+                                    "name": "Field Activity Mapping"
+                                }
+                            }
+                        ]
+                    }
+                }}
+            />
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden py-24 sm:py-32">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">

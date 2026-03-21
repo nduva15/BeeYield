@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useHarvests, useCreateHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
 import { useApiaries } from '@/hooks/useApiaries';
@@ -18,7 +19,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { glass, GlassStatCard } from './GlassTheme';
-import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSectionHeader } from '@/components/beeyield/BeeYieldUI';
+import { beeyieldService } from '@/services/beeyieldService';
 
 interface HarvestsViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -31,12 +33,29 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const [isAddingHarvest, setIsAddingHarvest] = React.useState(false);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
+    const [batches, setBatches] = React.useState<any[]>([]);
+    const [isBatchesLoading, setIsBatchesLoading] = React.useState(false);
+    const [batchYearFilter, setBatchYearFilter] = React.useState('all');
+    const [batchHiveFilter, setBatchHiveFilter] = React.useState('');
 
     React.useEffect(() => {
         if (initialParams?.action === 'open_add_new') {
             setIsAddingHarvest(true);
         }
+        fetchBatches();
     }, [initialParams]);
+
+    const fetchBatches = async () => {
+        setIsBatchesLoading(true);
+        try {
+            const data = await beeyieldService.getBatches();
+            setBatches(data);
+        } catch (error) {
+            console.error('Error fetching batches:', error);
+        } finally {
+            setIsBatchesLoading(false);
+        }
+    };
 
     const [formData, setFormData] = React.useState<Partial<Harvest>>({
         harvest_date: format(new Date(), 'yyyy-MM-dd'),
@@ -50,6 +69,18 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     });
 
     const { data: harvests = [], isLoading } = useHarvests();
+
+    // Enrich batches with Hive info from harvests
+    const enrichedBatches = React.useMemo(() => {
+        return batches.map(b => {
+            const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
+            return {
+                ...b,
+                hive_code: h?.hive?.hive_code || 'N/A',
+                harvest_year: h?.harvest_date ? new Date(h.harvest_date).getFullYear().toString() : (b.harvest_date ? new Date(b.harvest_date).getFullYear().toString() : 'all')
+            };
+        });
+    }, [batches, harvests]);
     const { mutate: createHarvest, isPending: isCreating } = useCreateHarvest();
     const { data: apiaries = [] } = useApiaries();
     const { data: hives = [] } = useHives(selectedApiaryId || undefined);
@@ -486,6 +517,19 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 <GlassStatCard label="Average yield" value={`${stats.avgPerHarvest}KG`} icon={Activity} index={3} color="text-[#1B9157]" />
             </div>
 
+            <Tabs defaultValue="harvests" className="w-full space-y-6">
+                <TabsList className={cn(glass.filterBar, "bg-white/40 backdrop-blur-xl border-white/20 p-1 rounded-xl w-full max-w-sm mx-auto h-auto flex gap-1")}>
+                    <TabsTrigger value="harvests" className="flex-1 rounded-lg text-[10px] font-black py-2 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm transition-all h-9 uppercase tracking-tighter">
+                        <History className="w-4 h-4 mr-2" />
+                        Harvest Logs
+                    </TabsTrigger>
+                    <TabsTrigger value="batches" className="flex-1 rounded-lg text-[10px] font-black py-2 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm transition-all h-9 uppercase tracking-tighter">
+                        <Binary className="w-4 h-4 mr-2" />
+                        Traceability Batches
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="harvests" className="space-y-6 mt-0">
             {/* Filter bar */}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -620,6 +664,118 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                     </div>
                 </div>
             </div>
+            </TabsContent>
+
+            <TabsContent value="batches" className="space-y-6 mt-0">
+            {/* Traceability Batches Section */}
+            <div className="mt-12 space-y-6 relative z-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <BeeYieldSectionHeader
+                        icon={ShieldCheck}
+                        title={<>Traceability <span className="text-[#F4D03F]">records</span></>}
+                        subtitle="Immutable digital twins of your honey production."
+                    />
+                    
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative group/search">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <Input 
+                                className="w-[150px] pl-9 h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all" 
+                                placeholder="Search Hive..." 
+                                value={batchHiveFilter}
+                                onChange={(e) => setBatchHiveFilter(e.target.value)}
+                            />
+                        </div>
+
+                        <Select value={batchYearFilter} onValueChange={setBatchYearFilter}>
+                            <SelectTrigger className="w-[110px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                                <SelectValue placeholder="Year" />
+                            </SelectTrigger>
+                            <SelectContent className={glass.selectContent}>
+                                <SelectItem value="all" className="font-bold text-xs uppercase tracking-tighter">All Production</SelectItem>
+                                {['2026', '2025', '2024', '2023', '2022', '2021', '2020'].map(y => (
+                                    <SelectItem key={y} value={y} className="font-bold text-xs">{y}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
+                                <tr>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Batch Code</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Hive</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Harvest Date</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Honey Type</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Net (KG)</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Grade</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-right">Blockchain Hash</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#F4D03F]/5">
+                                {isBatchesLoading ? (
+                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">Verifying records...</td></tr>
+                                ) : enrichedBatches
+                                    .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
+                                    .filter(b => !batchHiveFilter || b.hive_code?.toLowerCase().includes(batchHiveFilter.toLowerCase()))
+                                    .length === 0 ? (
+                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this year.</td></tr>
+                                ) : enrichedBatches
+                                    .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
+                                    .filter(b => !batchHiveFilter || b.hive_code?.toLowerCase().includes(batchHiveFilter.toLowerCase()))
+                                    .map((batch) => (
+                                    <tr key={batch.id} className="hover:bg-white/50 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <span className="text-[11px] font-black text-[#1A1A1A] tabular-nums font-mono text-primary/80 uppercase">
+                                                {batch.batch_code}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[10px] font-black text-[#1B9157] tracking-tighter">
+                                                {batch.hive_code}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                                {format(new Date(batch.harvest_date), 'MMM dd, yyyy')}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-[10px] font-semibold text-gray-600">
+                                            {batch.honey_type}
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className="text-[11px] font-black text-[#1A1A1A]">
+                                                {batch.quantity_kg} KG
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <Badge variant="outline" className={cn(
+                                                "border-none text-[9px] font-black px-2",
+                                                batch.quality_grade === 'A' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-[#F4D03F]/10 text-[#F4D03F]"
+                                            )}>
+                                                GRADE {batch.quality_grade}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
+                                                <code className="text-[8px] font-mono text-gray-400 opacity-60">
+                                                    {(batch.block_hash || '0x...').slice(0, 16)}...
+                                                </code>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </TabsContent>
+            </Tabs>
             </motion.div>
         </BeeYieldPageShell>
     );

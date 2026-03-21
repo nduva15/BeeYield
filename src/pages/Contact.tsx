@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { adminService } from "@/services/adminService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -203,6 +204,34 @@ const Contact = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen py-20 bg-background">
+      <SEO 
+        title="Contact BeeYield | Support, Sales & Partnership Inquiries"
+        description="Get in touch with BeeYield. Contact our Kibwezi headquarters for pollination services, honey wholesale, beekeeping technology, or bee health support across Kenya."
+        keywords="contact BeeYield, beekeeping support Kenya, pollination service inquiry, honey wholesale Makueni, Kibwezi agritech contact"
+        url="/contact"
+        image="/og-image.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "BeeYield Kibwezi HQ",
+          "image": "/og-image.png",
+          "telephone": "+254 700 000000",
+          "email": "info@beeyield.com",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Kibwezi Farm",
+            "addressLocality": "Kibwezi",
+            "addressRegion": "Makueni",
+            "addressCountry": "KE"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "-2.4167",
+            "longitude": "37.9667"
+          },
+          "url": "https://beeyield.care/contact"
+        }}
+      />
       <div className="container mx-auto px-4">
 
         {/* Header */}
