@@ -47,7 +47,7 @@ const Impact = () => {
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128);
       doc.text('Ecological Impact Report 2026', 50, 32);
-      doc.text('Provenance: Kibwezi Apiary, Kenya', 50, 38);
+      doc.text('Provenance: BeeYield Apiary, Makueni, Kenya', 50, 38);
 
       // Title
       doc.setFontSize(22);
@@ -232,7 +232,7 @@ const Impact = () => {
                 <img src={impactImage} alt="BeYield Sustainable Beekeeping" className="w-full aspect-[4/5] object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
                 <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
-                  <p className="text-sm font-semibold mb-2">Location: Kibwezi, Kenya</p>
+                  <p className="text-sm font-semibold mb-2">Location: Makueni, Kenya</p>
                   <h4 className="text-2xl font-bold">Resilient Landscapes</h4>
                 </div>
               </div>
@@ -283,7 +283,7 @@ const Impact = () => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#1A1A1A]">Live data sync</p>
-                  <p className="text-xs text-slate-400 font-medium">Data synced with Kibwezi Sensor Network</p>
+                  <p className="text-xs text-slate-400 font-medium">Data synced with BeeYield Sensor Network</p>
                 </div>
               </div>
             </motion.div>
