@@ -82,7 +82,7 @@
     "html5-qrcode": "^2.3.8",
     "idb": "^8.0.3",
     "input-otp": "^1.4.2",
-    "jspdf": "^4.1.0",
+    "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
@@ -146,7 +146,9 @@
   "pnpm": {
     "overrides": {
       "esbuild": ">=0.25.0",
-      "rollup": ">=4.59.0"
+      "rollup": ">=4.59.0",
+      "minimatch@>=9 <10": "9.0.9",
+      "minimatch@>=10 <11": "10.2.4"
     }
   }
 }

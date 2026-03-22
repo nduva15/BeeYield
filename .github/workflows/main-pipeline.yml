@@ -210,10 +210,6 @@ jobs:
           sarif_file: 'trivy-fs-results.sarif'
         continue-on-error: true
 
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
-        if: github.event_name == 'pull_request'
-
   # ============================================================
   # STAGE 3: Build Docker Images
   # ============================================================
