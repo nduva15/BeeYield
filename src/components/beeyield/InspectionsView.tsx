@@ -9,11 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import {
     Plus, Search, Loader2, ShieldCheck, AlertCircle, CheckCircle2, Calendar, ClipboardList, Trash2,
     Bot, ArrowRight, MapPin, Thermometer, Zap, Sun, HeartPulse, ChevronLeft, SearchX, Hexagon,
-    Terminal, Target, Box, FileText, Lock as LockIcon, Activity, Waves, Hash, Shield, Microscope, RefreshCw, Bug
+    Terminal, Target, Box, FileText, Lock as LockIcon, Activity, Waves, Hash, Shield, Microscope, RefreshCw, Bug, Layers
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import beeyieldService, { Apiary, Hive, Inspection } from '@/services/beeyieldService';
+import beeyieldService, { Apiary, Hive, Inspection, Harvest } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { glass, GlassStatCard } from './GlassTheme';
@@ -35,10 +35,12 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     const [inspections, setInspections] = React.useState<Inspection[]>([]);
     const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
     const [hives, setHives] = React.useState<Hive[]>([]);
+    const [harvests, setHarvests] = React.useState<Harvest[]>([]);
 
     // Filters
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>('all_places');
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>('all_hives');
+    const [selectedBatchCode, setSelectedBatchCode] = React.useState<string>('all_batches');
     const [searchQuery, setSearchQuery] = React.useState('');
 
     const { user, beeyieldUser } = useAuth();
@@ -94,9 +96,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const [apiariesData, hivesData, inspectionsData] = await Promise.all([
+                const [apiariesData, hivesData, harvestsData, inspectionsData] = await Promise.all([
                     beeyieldService.getApiaries(),
                     beeyieldService.getHives(),
+                    beeyieldService.getHarvests(),
                     beeyieldService.getInspections()
                 ]);
 
@@ -104,7 +107,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                     const filteredApiaries = apiariesData.filter(a => !a.user_id || a.user_id === userId);
                     const filteredHives = hivesData.filter(h => !h.user_id || h.user_id === userId);
                     const userHiveIds = new Set(filteredHives.map(h => h.id));
-                    const filteredInspections = inspectionsData.filter(i => userHiveIds.has(i.hive_id));
+                    const filteredHarvests = harvestsData.filter(h => h.hive_id && userHiveIds.has(h.hive_id as string));
+                    const filteredInspections = inspectionsData.filter(i => i.hive_id && userHiveIds.has(i.hive_id as string));
 
                     setApiaries(filteredApiaries);
                     setHives(filteredHives);
@@ -226,13 +230,21 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
     const filteredInspections = inspections.filter(i => {
         if (selectedHiveId !== 'all_hives' && i.hive_id !== selectedHiveId) return false;
+        
+        const hive = hives.find(h => h.id === i.hive_id);
+        const apiary = hive ? apiaries.find(a => a.id === hive.apiary_id) : null;
+
         if (selectedPlaceId !== 'all_places') {
-            const hive = hives.find(h => h.id === i.hive_id);
             if (!hive || hive.apiary_id !== selectedPlaceId) return false;
         }
+
+        if (selectedBatchCode !== 'all_batches') {
+            const hiveHarvests = harvests.filter(h => h.hive_id === i.hive_id);
+            const hasBatchMatch = hiveHarvests.some(h => (h as any).batch_code === selectedBatchCode);
+            if (!hasBatchMatch) return false;
+        }
+
         if (searchQuery) {
-            const hive = hives.find(h => h.id === i.hive_id);
-            const apiary = hive ? apiaries.find(a => a.id === hive.apiary_id) : null;
             const searchLower = searchQuery.toLowerCase();
             return (
                 i.inspector_name?.toLowerCase().includes(searchLower) ||
@@ -243,6 +255,15 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         }
         return true;
     });
+
+    const batchOptions = React.useMemo(() => {
+        const seen = new Set<string>();
+        harvests.forEach(h => {
+            const code = (h as any).batch_code;
+            if (code) seen.add(code);
+        });
+        return Array.from(seen).sort();
+    }, [harvests]);
 
     const stats = React.useMemo(() => {
         return {
@@ -265,7 +286,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                 className={glass.page}
             >
                 {/* ── Header ── */}
-                <PageHeader
+                <BeeYieldPageHeader
                     icon={Microscope}
                     label="Inspection"
                     title={<>Hive <span className="text-[#F4D03F]">inspection</span></>}
@@ -690,8 +711,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         className="h-10 pl-12 bg-white/50 border border-white/40 rounded-xl text-[11px] font-black text-[#1A1A1A] placeholder:text-gray-400 focus:bg-white transition-colors"
                     />
                 </div>
-                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto p-1">
-                    <Select value={selectedPlaceId} onValueChange={setSelectedPlaceId}>
+                <div className="flex flex-col md:flex-row gap-2 w-full xl:w-auto p-1">
+                    <Select value={selectedPlaceId} onValueChange={(val) => {
+                        setSelectedPlaceId(val);
+                        setSelectedHiveId('all_hives');
+                    }}>
                         <SelectTrigger className={cn(glass.select, "w-full md:w-44 h-10 border-white/40 bg-white/50 text-[11px] font-black")}>
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
@@ -703,8 +727,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                             {apiaries.map(a => <SelectItem key={a.id} value={a.id} className=" font-bold text-xs">{a.name.toUpperCase()}</SelectItem>)}
                         </SelectContent>
                     </Select>
+                    
                     <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                        <SelectTrigger className={cn(glass.select, "w-full md:w-40 h-10 border-white/40 bg-white/50 text-[11px] font-black")}>
+                        <SelectTrigger className={cn(glass.select, "w-full md:w-36 h-10 border-white/40 bg-white/50 text-[11px] font-black")}>
                             <div className="flex items-center gap-2">
                                 <Hexagon className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Unit" />
@@ -713,6 +738,19 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                         <SelectContent className={glass.selectContent}>
                             <SelectItem value="all_hives" className=" font-bold text-xs">All Hives</SelectItem>
                             {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id} className=" font-bold text-xs">{h.hive_code}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+
+                    <Select value={selectedBatchCode} onValueChange={setSelectedBatchCode}>
+                        <SelectTrigger className={cn(glass.select, "w-full md:w-36 h-10 border-white/40 bg-white/50 text-[11px] font-black")}>
+                            <div className="flex items-center gap-2">
+                                <Layers className="w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                <SelectValue placeholder="Batch" />
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className={glass.selectContent}>
+                            <SelectItem value="all_batches" className=" font-bold text-xs">All Batches</SelectItem>
+                            {batchOptions.map(code => <SelectItem key={code} value={code} className=" font-bold text-xs">{code}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -807,15 +845,18 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         { l: 'Honey', v: `${inspection.honey_stores}kg`, i: Zap, c: 'text-[#F4D03F]', b: 'bg-[#F4D03F]/10' },
                                                         { l: 'Brood', v: (inspection.brood_pattern || 'Solid'), i: Target, c: 'text-[#1B9157]', b: 'bg-[#1B9157]/10' },
                                                         { l: 'Weather', v: (inspection.weather_condition || 'Sunny'), i: Sun, c: 'text-[#F4D03F]', b: 'bg-orange-400/10' }
-                                                    ].map((s, idx) => (
-                                                        <div key={idx} className="bg-white/40 p-2.5 rounded-xl border border-white/40 shadow-sm">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <s.i className={cn("w-3 h-3", s.c)} />
-                                                                <span className="text-[8px] font-black text-gray-400">{s.l}</span>
+                                                    ].map((s, idx) => {
+                                                        const Icon = s.i;
+                                                        return (
+                                                            <div key={idx} className="bg-white/40 p-2.5 rounded-xl border border-white/40 shadow-sm">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <Icon className={cn("w-3 h-3", s.c)} />
+                                                                    <span className="text-[8px] font-black text-gray-400">{s.l}</span>
+                                                                </div>
+                                                                <p className="text-[11px] font-black text-[#1A1A1A] tabular-nums tracking-tight">{s.v}</p>
                                                             </div>
-                                                            <p className="text-[11px] font-black text-[#1A1A1A] tabular-nums tracking-tight">{s.v}</p>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
 
                                                 <div className="bg-[#F9F7F2] p-4 rounded-xl border border-[#F4D03F]/10">
