@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart, Cpu, Puzzle } from 'lucide-react';
 import { glass, PageHeader } from './GlassTheme';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 /* ─── Main View ─── */
 const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) => {
     const { user, beeyieldUser } = useAuth();
+    const [selectedHarvest, setSelectedHarvest] = React.useState<Harvest | null>(null);
     const apiariesQuery = useApiaries();
     const hivesQuery = useHives();
     const harvestsQuery = useHarvests();
@@ -198,12 +199,12 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onTabChange('beeyield')}>
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 group-hover:bg-[#F4D03F]/20 transition-all">
                                     <Hexagon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Hives</h3>
+                                    <h3 className="text-sm font-semibold text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors">Hives</h3>
                                     <p className="text-[11px] text-gray-500">{hives.length} records</p>
                                 </div>
                             </div>
@@ -218,9 +219,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 <div className="text-[11px] text-gray-500">No hives yet.</div>
                             ) : (
                                 hives.slice(0, 8).map((h: Hive) => (
-                                    <div key={h.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3">
-                                        <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{h.hive_code}</div>
-                                        <div className="text-[10px] text-gray-500 truncate">{h.status || '—'}</div>
+                                    <div 
+                                        key={h.id} 
+                                        onClick={() => onTabChange('beeyield')}
+                                        className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 cursor-pointer hover:border-[#F4D03F]/30 hover:bg-white transition-all group"
+                                    >
+                                        <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">{h.hive_code}</div>
+                                        <div className="text-[10px] text-gray-500 truncate">{h.status || 'Active'}</div>
                                     </div>
                                 ))
                             )}
@@ -252,9 +257,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         <div className="text-[11px] text-gray-500">No harvests yet.</div>
                     ) : (
                         recentHarvests.map((h: Harvest) => (
-                            <div key={h.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 flex items-center justify-between gap-4">
+                            <button 
+                                key={h.id} 
+                                onClick={() => setSelectedHarvest(h)}
+                                className="w-full text-left bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
+                            >
                                 <div className="min-w-0">
-                                    <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{h.batch_code || '—'}</div>
+                                    <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">{h.batch_code || `BAT-${h.id.slice(-6).toUpperCase()}`}</div>
                                     <div className="text-[10px] text-gray-500 truncate">{h.honey_type || '—'}</div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
@@ -264,11 +273,71 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         {h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : '—'}
                                     </div>
                                 </div>
-                            </div>
+                            </button>
                         ))
                     )}
                 </div>
             </div>
+
+            {/* Harvest Details Modal */}
+            <AnimatePresence>
+                {selectedHarvest && (
+                    <div className={glass.modalOverlay} onClick={() => setSelectedHarvest(null)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className={cn(glass.modalCard, "max-w-md")}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-[#F4D03F]/10">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <h2 className="text-xl font-bold text-foreground tracking-tight">Harvest <span className="text-[#F4D03F]">Details</span></h2>
+                                        <p className="text-xs text-gray-400 font-medium tracking-tight">Traceability record for {selectedHarvest.batch_code || 'this batch'}</p>
+                                    </div>
+                                    <button onClick={() => setSelectedHarvest(null)} className="w-8 h-8 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all">
+                                        <Activity className="w-4 h-4 text-gray-400" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Batch Code</span>
+                                        <div className="text-sm font-bold truncate tabular-nums">{selectedHarvest.batch_code || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Date</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.harvest_date ? new Date(selectedHarvest.harvest_date).toLocaleDateString() : '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Yield (KG)</span>
+                                        <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Honey Type</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.honey_type || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Extraction</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.extraction_method || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Color Grade</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.color_grade || '—'}</div>
+                                    </div>
+                                </div>
+                                <div className="pt-4 border-t border-[#F4D03F]/10">
+                                    <button onClick={() => setSelectedHarvest(null)} className={cn(glass.btnPrimary, "w-full")}>
+                                        Close Details
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

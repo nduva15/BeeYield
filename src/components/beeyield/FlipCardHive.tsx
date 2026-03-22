@@ -51,7 +51,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     </div>
                     
                     <div className="flex-1 p-6 flex flex-col justify-center gap-2 relative z-10">
-                        <p className="text-[9px] font-black text-gray-400 opacity-60">Unit_Registry</p>
+                        <p className="text-[9px] font-black text-gray-400 opacity-60 uppercase tracking-widest">Hive Registry</p>
                         <h3 className="text-5xl font-black text-[#1A1A1A] tracking-tighter leading-none group-hover:text-[#F4D03F] transition-colors">
                             {hive.name}
                         </h3>
@@ -59,7 +59,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
 
                     <div className="p-5 bg-white/30 border-t border-[#F4D03F]/10 flex items-center justify-between relative z-10">
                         <div className="space-y-0.5">
-                            <p className="text-[7px] font-black text-gray-400">Weight_Protocol</p>
+                            <p className="text-[7px] font-black text-gray-400 uppercase tracking-wider">Hive Weight</p>
                             <p className="text-2xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">{hive.weight}<span className="text-[10px] ml-1 text-gray-400">Kg</span></p>
                         </div>
                         <div className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center group-hover:bg-[#F4D03F] group-hover:text-white transition-all shadow-sm">
@@ -76,7 +76,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     className="absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-white/80 border border-[#F4D03F]/30 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl"
                 >
                     <div className="p-5 border-b border-[#F4D03F]/10 bg-[#1A1A1A][0.02] flex items-center justify-between relative z-10">
-                        <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60">Biometric_Telemetry</h4>
+                        <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60 uppercase tracking-widest">Hive Vitals</h4>
                         <Activity className="w-3.5 h-3.5 text-[#F4D03F]" />
                     </div>
 
@@ -100,15 +100,15 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     <div className="p-5 flex gap-2 relative z-10">
                         <button 
                             onClick={(e) => { e.stopPropagation(); onViewHistory(); }}
-                            className="flex-1 h-10 rounded-xl bg-white hover:bg-[#F4D03F]/5 text-[#1A1A1A] font-black text-[8px] transition-all border border-[#F4D03F]/10 shadow-sm"
+                            className="flex-1 h-10 rounded-xl bg-white hover:bg-[#F4D03F]/5 text-[#1A1A1A] font-black text-[10px] transition-all border border-[#F4D03F]/10 shadow-sm"
                         >
-                            History_Log
+                            History
                         </button>
                         <button 
                             onClick={(e) => { e.stopPropagation(); onMarkInspection(); }}
-                            className="flex-1 h-10 rounded-xl bg-[#F4D03F] hover:bg-[#F4D03F]/80 text-white font-black text-[8px] transition-all shadow-lg shadow-[#F4D03F]/20"
+                            className="flex-1 h-10 rounded-xl bg-[#F4D03F] hover:bg-[#F4D03F]/80 text-[#1A1A1A] font-black text-[10px] transition-all shadow-lg shadow-[#F4D03F]/20"
                         >
-                            Task_Initiate
+                            Inspect
                         </button>
                     </div>
                 </div>

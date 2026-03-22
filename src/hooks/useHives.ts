@@ -20,8 +20,7 @@ export function useHives(apiaryId?: string) {
         queryKey: [...hiveKeys.list(apiaryId), userId],
         queryFn: async () => {
             const data = await beeyieldService.getHives(apiaryId);
-            if (!userId) return data;
-            return data.filter(h => !h.user_id || h.user_id === userId);
+            return data;
         },
         staleTime: 1000 * 30,
         refetchInterval: 1000 * 30, // 30s poll
@@ -143,8 +142,7 @@ export function useApiaries() {
         queryKey: [...apiaryKeys.lists(), userId],
         queryFn: async () => {
             const data = await beeyieldService.getApiaries();
-            if (!userId) return data;
-            return data.filter(a => !a.user_id || a.user_id === userId);
+            return data;
         },
         staleTime: 1000 * 60, // 1 minute
     });

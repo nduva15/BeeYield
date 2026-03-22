@@ -423,54 +423,69 @@ async def get_user_hives(
     apiary_id: Optional[str] = Query(None, description="Filter by apiary"),
     status_filter: Optional[str] = Query(None, description="Filter by status")
 ):
-    # 1. Owned hives
+    # 1. Fetch available apiaries (owned + shared)
     relevant_ids = await get_user_and_farmer_ids(user_id, token)
     
-    # Filter by user_id or farmer_id
-    owned_hives = await db_select("hives", filters={"user_id": relevant_ids}, order_by="created_at", ascending=False, limit=1000, token=token)
-    
-    if not owned_hives and len(relevant_ids) > 1:
+    # Try finding apiaries by user_id or farmer_id
+    owned_apiaries = await db_select("apiaries", filters={"user_id": relevant_ids}, token=token)
+    if not owned_apiaries and len(relevant_ids) > 1:
         try:
-             owned_hives = await db_select("hives", filters={"farmer_id": relevant_ids[1]}, order_by="created_at", ascending=False, limit=1000, token=token)
+            owned_apiaries = await db_select("apiaries", filters={"farmer_id": relevant_ids[1]}, token=token)
         except Exception:
-             pass
+            pass
+            
+    # Shared apiary shares
+    shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id}, token=token)
+    shared_apiary_ids = [s["apiary_id"] for s in shares] if shares else []
     
+    # All accessible apiary IDs
+    accessible_apiary_ids = [a["id"] for a in owned_apiaries] + shared_apiary_ids
     
-    
-    # 2. Shared hives (via apiary shares)
-    shared_hives = []
-    # If filtered by apiary_id, check if that apiary is shared
+    # If a specific apiary_id was requested, check access
     if apiary_id:
-        # Check if apiary is shared with user
-        shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id}, token=token)
-        if shares:
-            # Fetch all hives for this apiary
-            h_filters = {"apiary_id": apiary_id}
-            if status_filter:
-                h_filters["status"] = status_filter
-            hives_in_shared = await db_select("hives", filters=h_filters, limit=1000, token=token)
-            shared_hives.extend(hives_in_shared)
+        if str(apiary_id) not in [str(aid) for aid in accessible_apiary_ids]:
+             return [] # No access to this apiary
+        h_filters = {"apiary_id": apiary_id}
     else:
-        # Get all shared apiaries, then all hives inside them
-        shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id}, token=token)
-        for share in shares:
-            h_filters = {"apiary_id": share["apiary_id"]}
-            if status_filter:
-                h_filters["status"] = status_filter
-            hives = await db_select("hives", filters=h_filters, limit=1000, token=token)
-            shared_hives.extend(hives)
+        # Default: Search all accessible apiaries
+        if accessible_apiary_ids:
+            h_filters = {"apiary_id": accessible_apiary_ids}
+        else:
+            # Fallback to direct user ownership if no apiaries
+            h_filters = {"user_id": relevant_ids}
 
-    all_hives = owned_hives + shared_hives
-
-    # Enrich with apiary details
-    for hive in all_hives:
-        if hive.get("apiary_id"):
-            apiaries = await db_select("apiaries", filters={"id": hive["apiary_id"]}, token=token)
-            if apiaries:
-                hive["apiary"] = apiaries[0]
-                hive["apiary_name"] = apiaries[0].get("name")
+    # 2. Fetch the hives
+    all_hives = await db_select("hives", filters=h_filters, order_by="created_at", ascending=False, limit=1000, token=token)
     
-    return all_hives
+    # Final processing/enrichment
+    final_hives = []
+    
+    # Pre-map apiaries for speed
+    apiary_map = {str(a["id"]): a for a in owned_apiaries}
+    
+    for h in all_hives:
+        if status_filter and h.get("status") != status_filter:
+            continue
+            
+        aid = str(h.get("apiary_id"))
+        if aid and aid != "None":
+            if aid in apiary_map:
+                h["apiary"] = _process_apiary_output(apiary_map[aid])
+            else:
+                # Fetch missing apiary (shared ones)
+                try:
+                    shared_apiary = await db_select("apiaries", filters={"id": h["apiary_id"]}, single=True, token=token)
+                    if shared_apiary:
+                        h["apiary"] = _process_apiary_output(shared_apiary)
+                        apiary_map[aid] = shared_apiary # Cache
+                except:
+                    h["apiary"] = None
+        else:
+            h["apiary"] = None
+
+        final_hives.append(h)
+
+    return final_hives
 
 @router.get("/hives/{hive_id}", response_model=dict)
 async def get_hive(

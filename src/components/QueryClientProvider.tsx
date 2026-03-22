@@ -44,7 +44,11 @@ export function BeeYieldQueryProvider({ children }: { children: React.ReactNode 
     return (
         <PersistQueryClientProvider
             client={queryClient}
-            persistOptions={{ persister: idbPersister, maxAge: 1000 * 60 * 60 * 24 }} // Persist for 24h
+            persistOptions={{ 
+                persister: idbPersister, 
+                maxAge: 1000 * 60 * 60 * 24,
+                buster: 'v2' // Force clear cache to eliminate soft-deleted db states
+            }} 
         >
             {children}
         </PersistQueryClientProvider>

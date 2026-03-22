@@ -263,7 +263,7 @@ const Traceability = () => {
                             name="qrCode"
                             value={qrCode}
                             onChange={(e) => setQrCode(e.target.value)}
-                            placeholder="e.g. KIB-ACACIAL-26"
+                            placeholder="e.g. BEE-ACACIAL-26"
                             className="h-16 pl-12 pr-4 rounded-2xl border-2 border-slate-100 focus:border-amber-500 focus:ring-amber-500 transition-all text-lg font-bold"
                             disabled={loading}
                           />
@@ -281,7 +281,7 @@ const Traceability = () => {
                       <div className="mt-8 pt-8 border-t border-slate-100">
                         <p className="text-xs font-black text-slate-400 mb-4">Try these example codes</p>
                         <div className="flex flex-wrap gap-2">
-                          {["KIB-ACACIAL-26", "KIB-SAV-2026", "KIB-GOLD-2026"].map(code => (
+                          {["BEE-ACACIAL-26", "BEE-SAV-2026", "BEE-GOLD-2026"].map(code => (
                             <Button
                               key={code}
                               variant="ghost"
@@ -479,7 +479,7 @@ const Traceability = () => {
 
                     <div className="space-y-4 text-lg text-neutral-800 leading-relaxed font-medium">
                       <p>
-                        In 2020, Timothy Nduva saw an opportunity in the quiet of rural Kibwezi. With just <span className="text-[#1B9157] font-black">4 beehives on half an acre</span>, BeeYield was born as a family mission for sustainable pollination.
+                        In 2020, Timothy Nduva saw an opportunity in the quiet of rural Makueni. With just <span className="text-[#1B9157] font-black">4 beehives on half an acre</span>, BeeYield was born as a family mission for sustainable pollination.
                       </p>
                       <p>
                         Today, we've grown to <span className="text-[#1B9157] font-black">184 hives across a thriving 5-acre apiary</span>. Our commitment remains radical: we only harvest 50% of the honey our bees produce.
@@ -606,8 +606,8 @@ const Traceability = () => {
                         {/* Apiary Site */}
                         <div className="col-span-2">
                           <p className="text-[10px] font-black text-slate-400 mb-1">Apiary Location</p>
-                          <p className="text-lg font-black text-[#1A1A1A] leading-tight mb-0.5">{traceData?.apiary?.name || "Kibwezi Sanctuary"}</p>
-                          <p className="text-xs font-semibold text-slate-500">{traceData?.apiary?.location_name || "Kibwezi West"}, {traceData?.apiary?.county || "Makueni"}</p>
+                          <p className="text-lg font-black text-[#1A1A1A] leading-tight mb-0.5">{traceData?.apiary?.name || "BeeYield Apiary"}</p>
+                          <p className="text-xs font-semibold text-slate-500">{traceData?.apiary?.location_name || "Makueni"}, Kenya</p>
                         </div>
 
                         {/* Flora Sources */}
@@ -888,7 +888,7 @@ const Traceability = () => {
                         <div className="space-y-1 pt-1">
                           <div className="flex items-center gap-2 text-[#1B9157]">
                             <MapPin className="h-3.5 w-3.5" />
-                            <span className="text-xs font-bold">{traceData?.farmer?.location_name || "Kibwezi"}, Kenya</span>
+                            <span className="text-xs font-bold">{traceData?.farmer?.location_name || "Makueni"}, Kenya</span>
                           </div>
                           <div className="flex items-center gap-2 text-[#1B9157]">
                             <div className="h-3.5 w-3.5 flex items-center justify-center font-serif font-black bg-[#1B9157] text-[#1B9157] rounded-full text-[9px]">E</div>

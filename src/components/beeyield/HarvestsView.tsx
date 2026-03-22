@@ -37,6 +37,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const [isBatchesLoading, setIsBatchesLoading] = React.useState(false);
     const [batchYearFilter, setBatchYearFilter] = React.useState('all');
     const [batchHiveFilter, setBatchHiveFilter] = React.useState('');
+    const [selectedHarvest, setSelectedHarvest] = React.useState<Harvest | null>(null);
 
     React.useEffect(() => {
         if (initialParams?.action === 'open_add_new') {
@@ -619,7 +620,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 key={h.id}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
-                                                className="hover:bg-white/50 transition-colors group"
+                                                onClick={() => setSelectedHarvest(h)}
+                                                className="hover:bg-white/50 transition-colors group cursor-pointer"
                                             >
                                                 <td className="px-6 py-4">
                                                     <span className="text-xs font-bold text-[#1A1A1A]">
@@ -776,6 +778,69 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
             </div>
             </TabsContent>
             </Tabs>
+            {/* Details Modal */}
+            <AnimatePresence>
+                {selectedHarvest && (
+                    <div className={glass.modalOverlay} onClick={() => setSelectedHarvest(null)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className={cn(glass.modalCard, "max-w-md")}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-[#F4D03F]/10">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <h2 className="text-xl font-bold text-foreground tracking-tight">Harvest <span className="text-[#F4D03F]">Details</span></h2>
+                                        <p className="text-xs text-gray-400 font-medium">Traceability record for {selectedHarvest.batch_code || 'this batch'}</p>
+                                    </div>
+                                    <button onClick={() => setSelectedHarvest(null)} className="w-8 h-8 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500/10 transition-all">
+                                        <Activity className="w-4 h-4 text-gray-400" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Batch Code</span>
+                                        <div className="text-sm font-bold truncate tabular-nums">{selectedHarvest.batch_code || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Date</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.harvest_date ? format(new Date(selectedHarvest.harvest_date), 'MMM dd, yyyy') : '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Yield (KG)</span>
+                                        <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Honey Type</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.honey_type || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Extraction</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.extraction_method || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Color Grade</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.color_grade || '—'}</div>
+                                    </div>
+                                    <div className="col-span-2 space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Weather</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.weather_conditions || '—'}</div>
+                                    </div>
+                                </div>
+                                <div className="pt-4 border-t border-[#F4D03F]/10">
+                                    <button onClick={() => setSelectedHarvest(null)} className={cn(glass.btnPrimary, "w-full")}>
+                                        Close Details
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
             </motion.div>
         </BeeYieldPageShell>
     );

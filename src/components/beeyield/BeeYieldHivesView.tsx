@@ -265,10 +265,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         </button>
                         <button
                             onClick={handleOpenAddHive}
-                            className={cn(glass.btnPrimary, "h-9 text-[10px]")}
+                            className={cn(glass.btnPrimary, "h-11 px-6 text-[11px] font-black uppercase tracking-widest")}
                         >
                             <Plus className="w-4 h-4" />
-                            Add hive
+                            Add hive unit
                         </button>
                     </div>
                 }
@@ -314,7 +314,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <Input
                                 id="hive-search-input"
-                                placeholder="Filter units..."
+                                placeholder="Search hives..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="h-8 pl-9 bg-white/50 border-[#F4D03F]/10 rounded-lg text-[10px] font-bold tracking-wider focus:border-[#F4D03F]/30"
@@ -358,8 +358,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             </div>
                             <h3 className="text-xl font-bold text-foreground/40 tracking-tight">No Hives Found</h3>
                             <p className="text-xs text-gray-400 font-medium mt-1 max-w-md text-center">Add your first hive to start monitoring your colonies.</p>
-                            <button onClick={handleOpenAddHive} className={cn(glass.btnPrimary, "mt-4 h-9 text-[10px]")}>
-                                <Plus className="w-3.5 h-3.5" /> Add Hive
+                            <button onClick={handleOpenAddHive} className={cn(glass.btnPrimary, "mt-4 h-11 px-6 text-[11px] font-black uppercase tracking-widest")}>
+                                <Plus className="w-3.5 h-3.5" /> Add Hive Unit
                             </button>
                         </motion.div>
                     ) : (
