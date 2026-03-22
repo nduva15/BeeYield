@@ -145,7 +145,9 @@
   },
   "pnpm": {
     "overrides": {
-      "esbuild": ">=0.25.0"
+      "esbuild": ">=0.25.0",
+      "minimatch@>=9 <10": "9.0.9",
+      "minimatch@>=10 <11": "10.2.4"
     }
   }
 }
