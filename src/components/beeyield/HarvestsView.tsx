@@ -121,9 +121,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
             const matchesYear = filterYear === 'all' ||
                 new Date(harvest.harvest_date).getFullYear().toString() === filterYear;
 
-            return matchesSearch && matchesYear;
+            const matchesApiary = !selectedApiaryId || selectedApiaryId === 'all' || 
+                                 (harvest as any).apiary_id === selectedApiaryId || 
+                                 (harvest as any).apiary?.id === selectedApiaryId;
+
+            const matchesHive = !selectedHiveId || selectedHiveId === 'all' || 
+                               harvest.hive_id === selectedHiveId || 
+                               (harvest as any).hive?.id === selectedHiveId;
+
+            return matchesSearch && matchesYear && matchesApiary && matchesHive;
         });
-    }, [harvests, searchQuery, filterYear]);
+    }, [harvests, searchQuery, filterYear, selectedApiaryId, selectedHiveId]);
 
     const exportHarvestsCsv = React.useCallback(() => {
         const rows = filteredHarvests.map((h) => ({
@@ -678,23 +686,42 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                         subtitle="Immutable digital twins of your honey production."
                     />
                     
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="relative group/search">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <Input 
-                                className="w-[150px] pl-9 h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all" 
-                                placeholder="Search Hive..." 
-                                value={batchHiveFilter}
-                                onChange={(e) => setBatchHiveFilter(e.target.value)}
-                            />
-                        </div>
-
-                        <Select value={batchYearFilter} onValueChange={setBatchYearFilter}>
-                            <SelectTrigger className="w-[110px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
-                                <SelectValue placeholder="Year" />
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Select value={selectedApiaryId || 'all'} onValueChange={setSelectedApiaryId}>
+                            <SelectTrigger className="w-[140px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                                <div className="flex items-center gap-2">
+                                    <MapPin className="w-3 h-3 text-[#F4D03F]/40" />
+                                    <SelectValue placeholder="Location" />
+                                </div>
                             </SelectTrigger>
                             <SelectContent className={glass.selectContent}>
-                                <SelectItem value="all" className="font-bold text-xs uppercase tracking-tighter">All Production</SelectItem>
+                                <SelectItem value="all" className="font-bold text-xs uppercase tracking-tighter">All Locations</SelectItem>
+                                {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-bold text-xs">{a.name.toUpperCase()}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={selectedHiveId || 'all'} onValueChange={setSelectedHiveId}>
+                            <SelectTrigger className="w-[120px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                                <div className="flex items-center gap-2">
+                                    <Hexagon className="w-3 h-3 text-[#F4D03F]/40" />
+                                    <SelectValue placeholder="Unit" />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent className={glass.selectContent}>
+                                <SelectItem value="all" className="font-bold text-xs uppercase tracking-tighter">All Units</SelectItem>
+                                {filteredHives.map(h => <SelectItem key={h.id} value={h.id} className="font-bold text-xs">{h.hive_code}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={batchYearFilter} onValueChange={setBatchYearFilter}>
+                            <SelectTrigger className="w-[100px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-3 h-3 text-[#F4D03F]/40" />
+                                    <SelectValue placeholder="Year" />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent className={glass.selectContent}>
+                                <SelectItem value="all" className="font-bold text-xs uppercase tracking-tighter">All Years</SelectItem>
                                 {['2026', '2025', '2024', '2023', '2022', '2021', '2020'].map(y => (
                                     <SelectItem key={y} value={y} className="font-bold text-xs">{y}</SelectItem>
                                 ))}
@@ -722,12 +749,30 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                     <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">Verifying records...</td></tr>
                                 ) : enrichedBatches
                                     .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
-                                    .filter(b => !batchHiveFilter || b.hive_code?.toLowerCase().includes(batchHiveFilter.toLowerCase()))
+                                    .filter(b => {
+                                        if (!selectedApiaryId || selectedApiaryId === 'all') return true;
+                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
+                                        return (h as any)?.apiary_id === selectedApiaryId || (h as any)?.apiary?.id === selectedApiaryId;
+                                    })
+                                    .filter(b => {
+                                        if (!selectedHiveId || selectedHiveId === 'all') return true;
+                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
+                                        return h?.hive_id === selectedHiveId || (h as any)?.hive?.id === selectedHiveId;
+                                    })
                                     .length === 0 ? (
-                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this year.</td></tr>
+                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this selection.</td></tr>
                                 ) : enrichedBatches
                                     .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
-                                    .filter(b => !batchHiveFilter || b.hive_code?.toLowerCase().includes(batchHiveFilter.toLowerCase()))
+                                    .filter(b => {
+                                        if (!selectedApiaryId || selectedApiaryId === 'all') return true;
+                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
+                                        return (h as any)?.apiary_id === selectedApiaryId || (h as any)?.apiary?.id === selectedApiaryId;
+                                    })
+                                    .filter(b => {
+                                        if (!selectedHiveId || selectedHiveId === 'all') return true;
+                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
+                                        return h?.hive_id === selectedHiveId || (h as any)?.hive?.id === selectedHiveId;
+                                    })
                                     .map((batch) => (
                                     <tr key={batch.id} className="hover:bg-white/50 transition-colors group">
                                         <td className="px-6 py-4">
