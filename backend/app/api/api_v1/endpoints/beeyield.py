@@ -1527,3 +1527,280 @@ async def get_apiary_shares(
                 
     return shares
 
+
+# ============================================
+# QUEEN SCHEMAS
+# ============================================
+
+class QueenCreate(BaseModel):
+    hive_id: Optional[UUID] = None
+    name: Optional[str] = None
+    breed: Optional[str] = None
+    origin: Optional[str] = Field(None, description="purchased, raised, swarm-caught")
+    marking_color: Optional[str] = Field(None, description="white, yellow, red, green, blue")
+    year_introduced: Optional[int] = None
+    status: Optional[str] = Field("active", description="active, failed, superseded, lost")
+    notes: Optional[str] = None
+
+class QueenUpdate(BaseModel):
+    hive_id: Optional[UUID] = None
+    name: Optional[str] = None
+    breed: Optional[str] = None
+    origin: Optional[str] = None
+    marking_color: Optional[str] = None
+    year_introduced: Optional[int] = None
+    status: Optional[str] = None
+    notes: Optional[str] = None
+
+class QueenRearingBatchCreate(BaseModel):
+    hive_id: UUID
+    batch_name: str
+    method: Optional[str] = Field("Grafting", description="Grafting, Walk-away, Miller, Jenter, OTS")
+    start_date: date
+    planned_units: Optional[int] = Field(20, description="Number of queen cells planned")
+    notebook: Optional[str] = None
+    generate_calendar: Optional[bool] = True
+    generate_units: Optional[bool] = True
+    generate_reminders: Optional[bool] = True
+
+class QueenRearingBatchUpdate(BaseModel):
+    batch_name: Optional[str] = None
+    method: Optional[str] = None
+    start_date: Optional[date] = None
+    planned_units: Optional[int] = None
+    notebook: Optional[str] = None
+    generate_calendar: Optional[bool] = None
+    generate_units: Optional[bool] = None
+    generate_reminders: Optional[bool] = None
+    status: Optional[str] = None
+
+
+# ============================================
+# QUEEN ENDPOINTS
+# ============================================
+
+@router.get("/queens", response_model=List[dict])
+async def get_queens(
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+    hive_id: Optional[str] = Query(None, description="Filter by hive")
+):
+    """Get queens for this user, optionally filtered by hive_id"""
+    try:
+        filters = {"user_id": user_id}
+        if hive_id:
+            filters["hive_id"] = hive_id
+        queens = await db_select("queens", filters=filters, order_by="created_at", ascending=False, token=token)
+        return queens
+    except Exception as e:
+        print(f"[ERROR] get_queens: {e}")
+        return []
+
+
+@router.post("/queens", response_model=dict, status_code=201)
+async def create_queen(
+    queen: QueenCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Create a new queen record"""
+    payload = {k: v for k, v in queen.model_dump().items() if v is not None}
+    payload["user_id"] = user_id
+
+    # Serialize UUIDs
+    if "hive_id" in payload:
+        payload["hive_id"] = str(payload["hive_id"])
+
+    result = await db_insert("queens", payload, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to create queen"))
+
+    data = result.get("data")
+    if isinstance(data, list) and data:
+        return data[0]
+    return data or payload
+
+
+@router.put("/queens/{queen_id}", response_model=dict)
+async def update_queen(
+    queen_id: str,
+    queen: QueenUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Update a queen record"""
+    payload = {k: v for k, v in queen.model_dump().items() if v is not None}
+    if "hive_id" in payload:
+        payload["hive_id"] = str(payload["hive_id"])
+
+    result = await db_update("queens", payload, {"id": queen_id, "user_id": user_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to update queen"))
+
+    data = result.get("data")
+    if isinstance(data, list) and data:
+        return data[0]
+    return data or payload
+
+
+@router.delete("/queens/{queen_id}", status_code=204)
+async def delete_queen(
+    queen_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Delete a queen record"""
+    result = await db_delete("queens", {"id": queen_id, "user_id": user_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to delete queen"))
+    return None
+
+
+# ============================================
+# QUEEN REARING BATCH ENDPOINTS
+# ============================================
+
+@router.get("/queen-rearing-batches", response_model=List[dict])
+async def get_queen_rearing_batches(
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+    hive_id: Optional[str] = Query(None, description="Filter by hive")
+):
+    """Get queen rearing batches for this user"""
+    try:
+        filters = {"user_id": user_id}
+        if hive_id:
+            filters["hive_id"] = hive_id
+        batches = await db_select("queen_rearing_batches", filters=filters, order_by="created_at", ascending=False, token=token)
+        return batches
+    except Exception as e:
+        print(f"[ERROR] get_queen_rearing_batches: {e}")
+        return []
+
+
+@router.post("/queen-rearing-batches", response_model=dict, status_code=201)
+async def create_queen_rearing_batch(
+    batch: QueenRearingBatchCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Create a new queen rearing batch"""
+    payload = {k: v for k, v in batch.model_dump().items() if v is not None}
+    payload["user_id"] = user_id
+
+    # Serialize UUIDs and dates
+    if "hive_id" in payload:
+        payload["hive_id"] = str(payload["hive_id"])
+    if "start_date" in payload:
+        payload["start_date"] = payload["start_date"].isoformat()
+
+    result = await db_insert("queen_rearing_batches", payload, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to create queen rearing batch"))
+
+    data = result.get("data")
+    if isinstance(data, list) and data:
+        return data[0]
+    return data or payload
+
+
+@router.put("/queen-rearing-batches/{batch_id}", response_model=dict)
+async def update_queen_rearing_batch(
+    batch_id: str,
+    batch: QueenRearingBatchUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Update a queen rearing batch"""
+    payload = {k: v for k, v in batch.model_dump().items() if v is not None}
+    if "start_date" in payload:
+        payload["start_date"] = payload["start_date"].isoformat()
+
+    result = await db_update("queen_rearing_batches", payload, {"id": batch_id, "user_id": user_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to update batch"))
+
+    data = result.get("data")
+    if isinstance(data, list) and data:
+        return data[0]
+    return data or payload
+
+
+@router.delete("/queen-rearing-batches/{batch_id}", status_code=204)
+async def delete_queen_rearing_batch(
+    batch_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Delete a queen rearing batch"""
+    result = await db_delete("queen_rearing_batches", {"id": batch_id, "user_id": user_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to delete batch"))
+    return None
+
+
+# ============================================
+# HIVE DETAIL AGGREGATE ENDPOINT
+# ============================================
+
+@router.get("/hives/{hive_id}/detail", response_model=dict)
+async def get_hive_detail(
+    hive_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """
+    Get comprehensive hive detail:
+    hive info, apiary, queen, last inspection, harvests, requests, queen rearing batches
+    """
+    try:
+        # Fetch hive
+        hives = await db_select("hives", filters={"id": hive_id}, token=token)
+        if not hives:
+            raise HTTPException(status_code=404, detail="Hive not found")
+        hive = hives[0]
+
+        # Fetch apiary
+        apiary = None
+        if hive.get("apiary_id"):
+            apiaries = await db_select("apiaries", filters={"id": hive["apiary_id"]}, token=token)
+            if apiaries:
+                apiary = apiaries[0]
+
+        # Fetch queen for this hive
+        queens = await db_select("queens", filters={"hive_id": hive_id}, order_by="created_at", ascending=False, limit=1, token=token)
+        queen = queens[0] if queens else None
+
+        # Fetch last inspection
+        inspections = await db_select("inspections", filters={"hive_id": hive_id}, order_by="inspection_date", ascending=False, limit=5, token=token)
+        last_inspection = inspections[0] if inspections else None
+
+        # Fetch harvests for this hive
+        harvests = await db_select("harvests", filters={"hive_id": hive_id}, order_by="harvest_date", ascending=False, limit=20, token=token)
+
+        # Fetch requests for this hive
+        requests_list = []
+        try:
+            requests_list = await db_select("requests", filters={"hive_id": hive_id}, order_by="created_at", ascending=False, limit=10, token=token)
+        except Exception:
+            pass  # requests table may not exist
+
+        # Fetch queen rearing batches for this hive
+        rearing_batches = await db_select("queen_rearing_batches", filters={"hive_id": hive_id}, order_by="created_at", ascending=False, token=token)
+
+        return {
+            "hive": hive,
+            "apiary": apiary,
+            "queen": queen,
+            "last_inspection": last_inspection,
+            "inspections": inspections,
+            "harvests": harvests,
+            "requests": requests_list,
+            "queen_rearing_batches": rearing_batches,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] get_hive_detail: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+

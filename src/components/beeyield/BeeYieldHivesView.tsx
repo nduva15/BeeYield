@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useHives, useDeleteHive, useUpdateHive, useApiaries } from '@/hooks/useHives';
 import HiveFormModal from './HiveFormModal';
 import FlipCardHive from './FlipCardHive';
+import HiveDetailView from './HiveDetailView';
 import { BeeYieldPageHeader } from './BeeYieldUI';
 import { glass, GlassStatCard } from './GlassTheme';
 
@@ -32,6 +33,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     const [searchQuery, setSearchQuery] = React.useState('');
     const [isExporting, setIsExporting] = React.useState(false);
     const [viewMode, setViewMode] = React.useState<'hives' | 'devices'>('hives');
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string | null>(null);
 
     // Modal states
     const [isHiveModalOpen, setIsHiveModalOpen] = React.useState(false);
@@ -238,6 +240,17 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         }
     };
 
+    // ── If a hive is selected, show the detail view ──
+    if (selectedHiveId) {
+        return (
+            <HiveDetailView
+                hiveId={selectedHiveId}
+                onBack={() => setSelectedHiveId(null)}
+                onTabChange={onTabChange}
+            />
+        );
+    }
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -378,6 +391,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                         }}
                                         onViewHistory={() => handleOpenQuickDetails(hive)}
                                         onMarkInspection={() => handleRequestInspection(hive, {} as any)}
+                                        onOpen={() => setSelectedHiveId(hive.id)}
                                     />
                                 ))}
                             </AnimatePresence>
