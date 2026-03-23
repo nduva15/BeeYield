@@ -182,13 +182,13 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* My Requests */}
-                    <div className={cn(glass.section)}>
+                    <div className={cn(glass.section, 'bg-[#FFFBEB] border border-amber-100')}>
                         <div className={glass.sectionHeader}>
                             <BeeYieldSectionHeader
                                 title="My Requests"
                                 icon={ClipboardList}
                                 actions={
-                                    <button className="text-xs font-bold text-[#F4D03F] hover:underline flex items-center gap-1">
+                                    <button className="text-xs font-bold text-[#D97706] hover:underline flex items-center gap-1 rounded-full px-3 py-1">
                                         <ExternalLink className="w-3 h-3" /> More
                                     </button>
                                 }
@@ -196,7 +196,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         </div>
                         <div className="p-5">
                             {requests.length === 0 ? (
-                                <p className="text-sm text-amber-600 text-center py-4 font-medium">No requests to display for selected hive.</p>
+                                <p className="text-sm text-red-500 text-center py-4 font-medium">No requests to display for selected hive.</p>
                             ) : (
                                 <div className="space-y-2">
                                     {requests.map((r: any) => (
@@ -242,7 +242,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                         className={cn(
                                             "text-center py-3 text-sm font-semibold rounded-lg transition-colors cursor-default",
                                             cell.current ? 'text-[#1A1A1A]' : 'text-gray-300',
-                                            cell.isToday && 'bg-[#F4D03F]/10 text-[#1A1A1A] font-black ring-2 ring-[#F4D03F]/30',
+                                            cell.isToday && 'bg-[#FEF3C7] text-[#1A1A1A] font-black outline-none ring-0',
                                             // Show inspection dates in red
                                             cell.current && detail?.inspections?.some(ins => {
                                                 const d = new Date(ins.inspection_date);
@@ -256,7 +256,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             </div>
 
                             <div className="mt-4 flex justify-end">
-                                <button className="h-9 px-4 rounded-lg bg-[#1A1A1A] text-white text-xs font-bold flex items-center gap-2 hover:bg-[#333] transition-colors shadow-sm">
+                                <button className="h-9 px-5 rounded-full bg-[#0F172A] text-white text-xs font-bold flex items-center gap-2 hover:bg-[#1E293B] transition-colors shadow-sm">
                                     Export .ics
                                 </button>
                             </div>
@@ -268,10 +268,10 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             <p className="text-sm text-gray-500 font-medium mb-5">Plan a batch, track milestones, and confirm progress directly from the hive view.</p>
 
                             <div className="flex items-center gap-3 mb-6">
-                                <button onClick={fetchDetail} className={cn(glass.btnPrimary, 'h-9 text-xs')}>
+                                <button onClick={fetchDetail} className="h-9 px-4 rounded-full bg-[#0F172A] text-white text-xs font-bold flex items-center gap-2 hover:bg-[#1E293B] transition-colors shadow-sm">
                                     <RefreshCw className="w-3.5 h-3.5" /> Refresh
                                 </button>
-                                <button onClick={() => setShowRearingForm(true)} className={cn(glass.btnSecondary, 'h-9 text-xs')}>
+                                <button onClick={() => setShowRearingForm(true)} className="h-9 px-4 rounded-full bg-white border border-gray-200 text-[#1E293B] text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
                                     <Plus className="w-3.5 h-3.5" /> New batch
                                 </button>
                             </div>
@@ -293,9 +293,9 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-8 text-center bg-white/10 rounded-2xl border border-dashed border-[#F4D03F]/20">
+                                <div className="py-8 text-center bg-emerald-50/50 rounded-2xl border border-dashed border-emerald-200">
                                     <p className="text-sm text-gray-500 font-medium mb-4">No queen rearing batches have been created for this hive yet.</p>
-                                    <button onClick={() => setShowRearingForm(true)} className="px-5 py-2.5 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/20 text-sm font-bold text-[#1A1A1A] hover:bg-white transition-colors shadow-sm">
+                                    <button onClick={() => setShowRearingForm(true)} className="px-5 py-2.5 rounded-full bg-white border border-gray-200 text-sm font-bold text-[#1E293B] hover:bg-gray-50 transition-colors shadow-sm">
                                         Create first batch
                                     </button>
                                 </div>
@@ -324,10 +324,10 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             )}
 
                             <div className="flex items-center gap-3 mt-5">
-                                <button className={cn(glass.btnSecondary, 'h-9 text-xs')}>
+                                <button className="h-9 px-4 rounded-full bg-white border border-gray-200 text-[#1E293B] text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
                                     <Plus className="w-3.5 h-3.5" /> Add harvest
                                 </button>
-                                <button onClick={() => onTabChange('harvests')} className={cn(glass.btnPrimary, 'h-9 text-xs')}>
+                                <button onClick={() => onTabChange('harvests')} className="h-9 px-4 rounded-full bg-[#D97706] text-white text-xs font-bold flex items-center gap-2 hover:bg-amber-600 transition-colors shadow-sm">
                                     <ExternalLink className="w-3.5 h-3.5" /> Go to harvests
                                 </button>
                             </div>
@@ -409,12 +409,12 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                     ) : (
                                         <div>
                                             <p className="text-sm font-bold text-[#1A1A1A]">Queen</p>
-                                            <p className="text-xs text-gray-400 font-medium">No queen assigned to this hive.</p>
+                                            <p className="text-xs text-gray-400 font-medium mb-2">No queen assigned to this hive.</p>
                                             <button
                                                 onClick={() => setShowQueenForm(true)}
-                                                className="text-xs font-black text-[#F4D03F] hover:underline mt-1 uppercase tracking-wider"
+                                                className="text-[11px] font-black text-red-500 hover:text-red-600 mt-1 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-full border border-red-100 transition-colors"
                                             >
-                                                Click to add
+                                                CLICK TO ADD
                                             </button>
                                         </div>
                                     )}
@@ -436,7 +436,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             className={cn(glass.modalCard, 'max-w-lg')}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between">
+                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-white flex items-center justify-between rounded-t-2xl">
                                 <div>
                                     <h2 className="text-lg font-black text-[#1A1A1A]">Assign Queen</h2>
                                     <p className="text-xs text-gray-500 font-medium">Add queen information for {hive?.hive_code}</p>
@@ -489,8 +489,8 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                     <Textarea id="queen-notes" className={cn(glass.input, 'min-h-[80px] resize-none')} placeholder="Optional observations..." value={queenForm.notes} onChange={e => setQueenForm({ ...queenForm, notes: e.target.value })} />
                                 </div>
                                 <div className="pt-3 flex gap-3">
-                                    <button className={glass.btnSecondary} onClick={() => setShowQueenForm(false)}>Cancel</button>
-                                    <button onClick={handleSaveQueen} disabled={savingQueen} className={cn(glass.btnPrimary, 'flex-1')}>
+                                    <button className="h-10 px-6 rounded-full bg-[#0F172A] text-white text-sm font-bold flex items-center justify-center hover:bg-[#1E293B] transition-colors" onClick={() => setShowQueenForm(false)}>Cancel</button>
+                                    <button onClick={handleSaveQueen} disabled={savingQueen} className="h-10 px-6 rounded-full bg-[#F8F9FA] border border-gray-200 text-[#1E293B] text-sm font-bold flex items-center justify-center gap-2 flex-1 hover:bg-white transition-colors">
                                         {savingQueen ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crown className="w-4 h-4" />}
                                         Assign Queen
                                     </button>
@@ -567,10 +567,10 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                 </div>
 
                                 <div className="pt-4 flex justify-end gap-3">
-                                    <button onClick={() => setShowRearingForm(false)} className="px-6 py-2.5 rounded-full bg-[#1A1A1A] text-white text-sm font-bold hover:bg-[#333] transition-colors">
+                                    <button onClick={() => setShowRearingForm(false)} className="px-6 py-2.5 rounded-full bg-[#0F172A] text-white text-sm font-bold hover:bg-[#1E293B] transition-colors shadow-sm">
                                         Cancel
                                     </button>
-                                    <button onClick={handleCreateRearingBatch} disabled={savingBatch || !rearingForm.batch_name} className="px-6 py-2.5 rounded-full bg-[#F9F7F2] border border-[#F4D03F]/30 text-[#1A1A1A] text-sm font-bold hover:bg-white transition-colors shadow-sm disabled:opacity-50">
+                                    <button onClick={handleCreateRearingBatch} disabled={savingBatch || !rearingForm.batch_name} className="px-6 py-2.5 rounded-full bg-[#F8F9FA] border border-gray-200 text-[#1E293B] text-sm font-bold hover:bg-white transition-colors shadow-sm disabled:opacity-50">
                                         {savingBatch ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
                                         Create batch
                                     </button>
