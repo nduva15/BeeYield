@@ -3,7 +3,7 @@ BeeYield Dashboard API Endpoints
 User-specific management of apiaries, hives, harvests, tasks, and inspections
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
-from typing import Optional, List
+from typing import Optional, List, Any
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from pydantic import BaseModel, Field
@@ -346,7 +346,7 @@ async def create_apiary(
     # Generate apiary code if not provided
     if "apiary_code" not in data or not data.get("apiary_code"):
         import uuid
-        data["apiary_code"] = f"APY-{str(uuid.uuid4())[:8].upper()}"
+        data["apiary_code"] = f"APY-{str(uuid.uuid4()).split('-')[0].upper()}"
     
     result = await db_insert("apiaries", data, token=token)
     
@@ -611,7 +611,7 @@ async def get_user_harvests(
     """Get all harvests (owned + shared) for the current user"""
     # 1. Owned harvests
     relevant_ids = await get_user_and_farmer_ids(user_id, token)
-    filters = {"user_id": relevant_ids}
+    filters: dict[str, Any] = {"user_id": relevant_ids}
     if apiary_id:
         filters["apiary_id"] = apiary_id
     if hive_id:
@@ -745,7 +745,7 @@ async def log_harvest_batch(
         raise HTTPException(status_code=404, detail="Hive not found in this apiary")
     
     hive = hives[0]
-    hive_name = hive.get("hive_code") or hive.get("hive_name") or str(batch_in.hive_id)[:8]
+    hive_name = hive.get("hive_code") or hive.get("hive_name") or str(batch_in.hive_id).split('-')[0]
     
     # Resolve farmer name from the user profile
     farmer_name = "Unknown"
@@ -817,7 +817,7 @@ async def create_harvest(
     # Generate harvest code
     if "harvest_code" not in data or not data.get("harvest_code"):
         import uuid
-        data["harvest_code"] = f"HRV-{str(uuid.uuid4())[:8].upper()}"
+        data["harvest_code"] = f"HRV-{str(uuid.uuid4()).split('-')[0].upper()}"
     
     result = await db_insert("harvests", data, token=token)
     
@@ -1010,7 +1010,7 @@ async def get_user_tasks(
     relevant_ids = await get_user_and_farmer_ids(user_id, token)
     
     # 1. Owned tasks
-    filters = {"user_id": relevant_ids}
+    filters: dict[str, Any] = {"user_id": relevant_ids}
     if status_filter:
         filters["status"] = status_filter
     if apiary_id:
@@ -1168,7 +1168,7 @@ async def get_user_inspections(
     """Get all inspections (owned + shared) for the current user"""
     relevant_ids = await get_user_and_farmer_ids(user_id, token)
     
-    filters = {"user_id": relevant_ids}
+    filters: dict[str, Any] = {"user_id": relevant_ids}
     if apiary_id:
         filters["apiary_id"] = apiary_id
     if hive_id:
@@ -1604,7 +1604,7 @@ async def create_queen(
     token: Optional[str] = Depends(get_token)
 ):
     """Create a new queen record"""
-    payload = {k: v for k, v in queen.model_dump().items() if v is not None}
+    payload: dict[str, Any] = {k: v for k, v in queen.model_dump().items() if v is not None}
     payload["user_id"] = user_id
 
     # Serialize UUIDs
@@ -1629,7 +1629,7 @@ async def update_queen(
     token: Optional[str] = Depends(get_token)
 ):
     """Update a queen record"""
-    payload = {k: v for k, v in queen.model_dump().items() if v is not None}
+    payload: dict[str, Any] = {k: v for k, v in queen.model_dump().items() if v is not None}
     if "hive_id" in payload:
         payload["hive_id"] = str(payload["hive_id"])
 
@@ -1685,14 +1685,12 @@ async def create_queen_rearing_batch(
     token: Optional[str] = Depends(get_token)
 ):
     """Create a new queen rearing batch"""
-    payload = {k: v for k, v in batch.model_dump().items() if v is not None}
+    payload: dict[str, Any] = {k: v for k, v in batch.model_dump(mode="json").items() if v is not None}
     payload["user_id"] = user_id
 
-    # Serialize UUIDs and dates
+    # Serialize UUIDs
     if "hive_id" in payload:
         payload["hive_id"] = str(payload["hive_id"])
-    if "start_date" in payload:
-        payload["start_date"] = payload["start_date"].isoformat()
 
     result = await db_insert("queen_rearing_batches", payload, token=token)
     if not result.get("success"):
@@ -1712,9 +1710,7 @@ async def update_queen_rearing_batch(
     token: Optional[str] = Depends(get_token)
 ):
     """Update a queen rearing batch"""
-    payload = {k: v for k, v in batch.model_dump().items() if v is not None}
-    if "start_date" in payload:
-        payload["start_date"] = payload["start_date"].isoformat()
+    payload: dict[str, Any] = {k: v for k, v in batch.model_dump(mode="json").items() if v is not None}
 
     result = await db_update("queen_rearing_batches", payload, {"id": batch_id, "user_id": user_id}, token=token)
     if not result.get("success"):
