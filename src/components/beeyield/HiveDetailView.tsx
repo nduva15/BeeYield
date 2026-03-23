@@ -263,9 +263,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         </div>
                     </div>
 
-                    {/* Queen's Rearing Calendar */}
-                    <div className={cn(glass.section, 'bg-amber-50/30 border-amber-200/40')}>
-                        <div className="p-5">
+                    <div className={cn(glass.section)}>\n                        <div className="p-5">
                             <h3 className="text-lg font-black text-[#1A1A1A] italic mb-1">The Queen's Rearing Calendar</h3>
                             <p className="text-sm text-gray-500 font-medium mb-5">Plan a batch, track milestones, and confirm progress directly from the hive view.</p>
 
@@ -282,7 +280,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             {rearingBatches.length > 0 ? (
                                 <div className="space-y-3">
                                     {rearingBatches.map(batch => (
-                                        <div key={batch.id} className="p-4 rounded-xl bg-white/80 border border-[#F4D03F]/20 shadow-sm">
+                                        <div key={batch.id} className="p-4 rounded-xl bg-white/50 border border-[#F4D03F]/10 shadow-sm">
                                             <div className="flex justify-between items-start">
                                                 <div>
                                                     <p className="font-bold text-sm text-[#1A1A1A]">{batch.batch_name}</p>
@@ -295,7 +293,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-8 text-center bg-white/40 rounded-2xl border border-dashed border-amber-200/60">
+                                <div className="py-8 text-center bg-white/10 rounded-2xl border border-dashed border-[#F4D03F]/20">
                                     <p className="text-sm text-gray-500 font-medium mb-4">No queen rearing batches have been created for this hive yet.</p>
                                     <button onClick={() => setShowRearingForm(true)} className="px-5 py-2.5 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/20 text-sm font-bold text-[#1A1A1A] hover:bg-white transition-colors shadow-sm">
                                         Create first batch
@@ -305,16 +303,14 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         </div>
                     </div>
 
-                    {/* Harvests */}
-                    <div className={cn(glass.section, 'bg-amber-50/20 border-amber-200/30')}>
-                        <div className="p-5">
+                    <div className={cn(glass.section)}>\n                        <div className="p-5">
                             <h3 className="text-lg font-black text-[#1A1A1A] mb-1">Harvests</h3>
                             <p className="text-sm text-gray-500 font-medium mb-5">Detailed harvest statistics for the selected hive.</p>
 
                             {harvests.length > 0 ? (
                                 <div className="space-y-2">
                                     {harvests.map((h: any) => (
-                                        <div key={h.id} className="flex justify-between items-center p-3 rounded-xl bg-white/70 border border-[#F4D03F]/10">
+                                        <div key={h.id} className="flex justify-between items-center p-3 rounded-xl bg-white/50 border border-[#F4D03F]/10">
                                             <div>
                                                 <p className="text-sm font-bold text-[#1A1A1A]">{h.quantity_kg} kg — {h.honey_type || 'Multi-flower'}</p>
                                                 <p className="text-xs text-gray-500">{new Date(h.harvest_date).toLocaleDateString()}{h.batch_code ? ` · ${h.batch_code}` : ''}</p>
@@ -400,7 +396,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         <div className="p-5">
                             <BeeYieldSectionHeader title="Queen" icon={Crown} />
                             <div className="mt-3 flex items-start gap-4">
-                                <div className="w-14 h-14 rounded-xl bg-amber-50 border border-amber-200/40 flex items-center justify-center text-2xl flex-shrink-0">
+                                <div className="w-14 h-14 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center text-2xl flex-shrink-0">
                                     🐝
                                 </div>
                                 <div className="flex-1">
@@ -413,7 +409,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                     ) : (
                                         <div>
                                             <p className="text-sm font-bold text-[#1A1A1A]">Queen</p>
-                                            <p className="text-xs text-amber-600 font-medium">No queen assigned to this hive.</p>
+                                            <p className="text-xs text-gray-400 font-medium">No queen assigned to this hive.</p>
                                             <button
                                                 onClick={() => setShowQueenForm(true)}
                                                 className="text-xs font-black text-[#F4D03F] hover:underline mt-1 uppercase tracking-wider"
@@ -440,7 +436,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             className={cn(glass.modalCard, 'max-w-lg')}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F9F7F2]/50 flex items-center justify-between">
+                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02] flex items-center justify-between">
                                 <div>
                                     <h2 className="text-lg font-black text-[#1A1A1A]">Assign Queen</h2>
                                     <p className="text-xs text-gray-500 font-medium">Add queen information for {hive?.hive_code}</p>
@@ -449,7 +445,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="p-5 space-y-4 bg-[#FFF9F0]">
+                            <div className="p-5 space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
                                         <Label htmlFor="queen-name" className={glass.microLabel}>Name</Label>
@@ -516,11 +512,11 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             className={cn(glass.modalCard, 'max-w-xl')}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F9F7F2]/50">
+                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
                                 <h2 className="text-lg font-black text-[#1A1A1A]">New Queen Rearing Batch</h2>
                                 <p className="text-xs text-gray-500 font-medium">Plan a batch for {hive?.hive_code}</p>
                             </div>
-                            <div className="p-5 space-y-4 bg-[#FFF9F0]">
+                            <div className="p-5 space-y-4">
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="space-y-1.5">
                                         <Label htmlFor="batch-name" className={glass.microLabel}>Batch name</Label>
@@ -557,15 +553,15 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
 
                                 <div className="flex items-center gap-6 pt-2">
                                     <label className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A] cursor-pointer">
-                                        <Checkbox checked={rearingForm.generate_calendar} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_calendar: !!c })} className="border-amber-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600" />
+                                        <Checkbox checked={rearingForm.generate_calendar} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_calendar: !!c })} />
                                         Generate calendar
                                     </label>
                                     <label className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A] cursor-pointer">
-                                        <Checkbox checked={rearingForm.generate_units} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_units: !!c })} className="border-amber-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600" />
+                                        <Checkbox checked={rearingForm.generate_units} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_units: !!c })} />
                                         Generate units
                                     </label>
                                     <label className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A] cursor-pointer">
-                                        <Checkbox checked={rearingForm.generate_reminders} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_reminders: !!c })} className="border-amber-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600" />
+                                        <Checkbox checked={rearingForm.generate_reminders} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_reminders: !!c })} />
                                         Generate reminders
                                     </label>
                                 </div>
