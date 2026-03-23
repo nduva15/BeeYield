@@ -138,14 +138,25 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     // Calc Engine State
     const [calcInputs, setCalcInputs] = React.useState<CalculationInputs>({
         totalAcres: 50,
-        hives: Array(10).fill(null).map((_, i) => ({
-            frameCount: 8,
-            isStrong: i % 3 !== 0,
-            isLarge: i % 2 === 0
-        })),
-        forageCondition: 0.8,
-        bloomIntensity: 0.9
+        targetFpa: 12,
+        averageFramesPerHive: 8
     });
+
+    React.useEffect(() => {
+        if (selectedCrop && crops.length > 0) {
+            const cropData = crops.find((c: any) => String(c?.crop_name || c?.cropName || '').trim() === selectedCrop);
+            if (cropData && cropData.target_fpa) {
+                setCalcInputs(prev => ({ ...prev, targetFpa: Number(cropData.target_fpa) }));
+            }
+        }
+    }, [selectedCrop, crops]);
+
+    React.useEffect(() => {
+        if (selectedApiary) {
+            const acres = selectedApiary.size_acres ?? 25;
+            setCalcInputs(prev => ({ ...prev, totalAcres: Number(acres) }));
+        }
+    }, [selectedApiary]);
 
     const metrics = React.useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
 
@@ -253,7 +264,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         try {
             const results = await beeyieldService.optimizePollinationPlacement2({
                 orchard_geojson: orchardGeoJSON,
-                hive_count: calcInputs.hives.length,
+                hive_count: metrics.hivesRequired,
                 target_crop: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
                 bee_flight_radius_km: 1.5,
                 ahp_weights: { bloom: 0.8, roads: 0.2, water: 0.1 }
@@ -325,8 +336,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 field_name: `Tactical Deployment ${new Date().toLocaleDateString()}`,
                 crop_type: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
                 total_acres: calcInputs.totalAcres,
-                bloom_intensity: calcInputs.bloomIntensity,
-                forage_condition: calcInputs.forageCondition,
+                bloom_intensity: 1.0, 
+                forage_condition: 1.0,
                 status: 'active',
                 metrics_json: metrics
             });
@@ -564,11 +575,22 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <span className="text-[8px] font-black text-[#1B9157]">Synced</span>
                                         </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className={glass.microLabel}>Saturation Index</p>
+                                    <div className="space-y-1 flex-1 max-w-[200px]">
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <p className={glass.microLabel}>Saturation Progress</p>
+                                            <span className="text-[9px] font-black text-[#1B9157]">
+                                                {metrics.totalFramesRequired > 0 ? Math.min(100, Math.round((deployments.reduce((sum, d) => sum + (d.hive_count_deployed || 0), 0) * calcInputs.averageFramesPerHive) / metrics.totalFramesRequired * 100)) : 0}%
+                                            </span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-[#1B9157]/10 rounded-full overflow-hidden mb-2">
+                                            <div 
+                                                className="h-full bg-[#1B9157] transition-all duration-500" 
+                                                style={{ width: `${Math.min(100, metrics.totalFramesRequired > 0 ? ((deployments.reduce((sum, d) => sum + (d.hive_count_deployed || 0), 0) * calcInputs.averageFramesPerHive) / metrics.totalFramesRequired) * 100 : 0)}%` }}
+                                            />
+                                        </div>
                                         <div className="flex items-baseline gap-1">
-                                            <p className="text-2xl font-black text-[#1B9157] tabular-nums tracking-tighter">—<span className="text-[14px]">%</span></p>
-                                            <span className="text-[8px] font-black text-[#1B9157]">Status</span>
+                                            <p className="text-xl font-black text-[#1B9157] tabular-nums tracking-tighter">{metrics.totalFramesRequired}</p>
+                                            <span className="text-[8px] font-black text-[#1A1A1A]/40">Target Frames</span>
                                         </div>
                                     </div>
                                 </div>
@@ -576,8 +598,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                             <div className="space-y-4">
                                 {[
-                                    { label: 'Bloom Intensity', val: '—%', sub: 'No Data', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
-                                    { label: 'Activity Factor', val: '0.0', sub: 'Baseline', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
+                                    { label: 'Deployed Strength', val: (deployments.reduce((sum, d) => sum + (d.hive_count_deployed || 0), 0) * calcInputs.averageFramesPerHive).toString(), sub: 'Frames', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
+                                    { label: 'Calculated Demand', val: metrics.totalFramesRequired.toString(), sub: 'Frames', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
                                 ].map((stat, i) => (
                                     <div key={i} className={cn(glass.card, "p-4 flex items-center justify-between border-white/40 shadow-sm", stat.bg, stat.border)}>
                                        <div className="space-y-1">
@@ -761,48 +783,48 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center text-[9px] font-black ml-1">
-                                            <span className="text-[#1A1A1A]/40">Bloom Saturation</span>
-                                            <span className="text-[#1B9157]">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
+                                            <span className="text-[#1A1A1A]/40">Target Frames Per Acre (FPA)</span>
+                                            <span className="text-[#1B9157]">{calcInputs.targetFpa} FPA</span>
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#1B9157]/10">
                                             <input
-                                                id="precision-pollination-bloom"
-                                                name="bloom_intensity"
+                                                id="precision-pollination-fpa"
+                                                name="target_fpa"
                                                 autoComplete="off"
                                                 type="range"
-                                                min="0.1"
-                                                max="1.0"
-                                                step="0.1"
-                                                value={calcInputs.bloomIntensity}
-                                                onChange={e => setCalcInputs(p => ({ ...p, bloomIntensity: parseFloat(e.target.value) }))}
+                                                min="4"
+                                                max="24"
+                                                step="0.5"
+                                                value={calcInputs.targetFpa}
+                                                onChange={e => setCalcInputs(p => ({ ...p, targetFpa: parseFloat(e.target.value) }))}
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                aria-label="Bloom saturation"
-                                                title="Bloom saturation"
+                                                aria-label="Target Frames Per Acre"
+                                                title="Target Frames Per Acre"
                                             />
-                                            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#1B9157]/40 to-[#1B9157] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${calcInputs.bloomIntensity * 100}%` }} />
+                                            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#1B9157]/40 to-[#1B9157] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${(calcInputs.targetFpa / 24) * 100}%` }} />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center text-[9px] font-black ml-1">
-                                            <span className="text-[#1A1A1A]/40">Competitor Density</span>
-                                            <span className="text-[#F4D03F]">{Math.round(calcInputs.forageCondition * 100)}%</span>
+                                            <span className="text-[#1A1A1A]/40">Supplier Average Frames/Hive</span>
+                                            <span className="text-[#F4D03F]">{calcInputs.averageFramesPerHive} Frames</span>
                                         </div>
                                         <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#F4D03F]/10">
                                             <input
-                                                id="precision-pollination-forage"
-                                                name="forage_condition"
+                                                id="precision-pollination-frames-per-hive"
+                                                name="frames_per_hive"
                                                 autoComplete="off"
                                                 type="range"
-                                                min="0.1"
-                                                max="1.0"
-                                                step="0.1"
-                                                value={calcInputs.forageCondition}
-                                                onChange={e => setCalcInputs(p => ({ ...p, forageCondition: parseFloat(e.target.value) }))}
+                                                min="4"
+                                                max="12"
+                                                step="1"
+                                                value={calcInputs.averageFramesPerHive}
+                                                onChange={e => setCalcInputs(p => ({ ...p, averageFramesPerHive: parseFloat(e.target.value) }))}
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                aria-label="Competitor density"
-                                                title="Competitor density"
+                                                aria-label="Average frames per hive"
+                                                title="Average frames per hive"
                                             />
-                                            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F4D03F]/40 to-[#F4D03F] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${calcInputs.forageCondition * 100}%` }} />
+                                            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F4D03F]/40 to-[#F4D03F] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${(calcInputs.averageFramesPerHive / 12) * 100}%` }} />
                                         </div>
                                     </div>
                                 </div>
@@ -810,25 +832,25 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                              <div className="lg:col-span-2 space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
                                    <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1A1A1A] space-y-2 shadow-sm border-white/40")}>
-                                      <p className={glass.microLabel}>Total Capacity</p>
+                                      <p className={glass.microLabel}>Guaranteed Strength</p>
                                       <div className="flex items-baseline gap-2">
-                                        <p className="text-3xl font-black tracking-tighter text-[#1A1A1A] tabular-nums">{metrics.totalFrames}</p>
-                                        <span className="text-[10px] font-black text-[#1A1A1A]/30">Frames</span>
+                                        <p className="text-3xl font-black tracking-tighter text-[#1A1A1A] tabular-nums">{metrics.totalFramesRequired}</p>
+                                        <span className="text-[10px] font-black text-[#1A1A1A]/30">Total Frames</span>
                                       </div>
                                    </div>
                                    <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1B9157] space-y-2 shadow-sm border-white/40 bg-[#1B9157]/5")}>
-                                      <p className={glass.microLabel}>Target Yield</p>
+                                      <p className={glass.microLabel}>Deployment Scale</p>
                                       <div className="flex items-baseline gap-2">
-                                        <p className="text-3xl font-black tracking-tighter text-[#1B9157] tabular-nums">{metrics.effectiveFrames}</p>
-                                        <span className="text-[10px] font-black text-[#1B9157]/40">E Frames</span>
+                                        <p className="text-3xl font-black tracking-tighter text-[#1B9157] tabular-nums">{metrics.hivesRequired}</p>
+                                        <span className="text-[10px] font-black text-[#1B9157]/40">Boxes Required</span>
                                       </div>
                                    </div>
                                 </div>
                                 <div className={cn(glass.card, "p-5 grid grid-cols-3 gap-6 shadow-sm border-white/40")}>
                                    {[
-                                       { l: 'Fpa Ratio', v: metrics.framesPerAcre, c: 'text-[#1A1A1A]' },
-                                       { l: 'Eff Fpa', v: metrics.effectiveFPA, c: 'text-[#1B9157]' },
-                                       { l: 'Efficacy', v: metrics.pollinationEfficacy + '%', c: 'text-[#1B9157]' }
+                                       { l: 'FPA Matrix', v: calcInputs.targetFpa, c: 'text-[#1A1A1A]' },
+                                       { l: 'Frame Avg', v: calcInputs.averageFramesPerHive, c: 'text-[#F4D03F]' },
+                                       { l: 'Orchard Size', v: calcInputs.totalAcres + ' ac', c: 'text-[#1B9157]' }
                                    ].map((m, i) => (
                                        <div key={i} className="text-center space-y-1">
                                           <p className={glass.microLabel}>{m.l}</p>
