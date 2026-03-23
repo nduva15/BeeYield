@@ -2854,7 +2854,166 @@ export const beeyieldService = {
             console.error('planRoute:', error);
             return { path: [] };
         }
-    }
+    },
+
+    // ========== QUEENS ==========
+    async getQueens(hiveId?: string): Promise<Queen[]> {
+        try {
+            return await apiGet<Queen[]>('beeyield/queens', hiveId ? { hive_id: hiveId } : undefined);
+        } catch (error) {
+            console.error('getQueens:', error);
+            return [];
+        }
+    },
+
+    async createQueen(input: QueenCreateInput): Promise<{ data: Queen | null; error: any }> {
+        try {
+            const data = await apiPost<Queen>('beeyield/queens', input);
+            toast.success('Queen added successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createQueen:', error);
+            toast.error('Failed to add queen');
+            return { data: null, error };
+        }
+    },
+
+    async updateQueen(id: string, input: Partial<QueenCreateInput>): Promise<{ data: Queen | null; error: any }> {
+        try {
+            const data = await apiPut<Queen>(`beeyield/queens/${id}`, input);
+            toast.success('Queen updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateQueen:', error);
+            toast.error('Failed to update queen');
+            return { data: null, error };
+        }
+    },
+
+    async deleteQueen(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`beeyield/queens/${id}`);
+            toast.success('Queen removed');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteQueen:', error);
+            toast.error('Failed to delete queen');
+            return { error };
+        }
+    },
+
+    // ========== QUEEN REARING BATCHES ==========
+    async getQueenRearingBatches(hiveId?: string): Promise<QueenRearingBatch[]> {
+        try {
+            return await apiGet<QueenRearingBatch[]>('beeyield/queen-rearing-batches', hiveId ? { hive_id: hiveId } : undefined);
+        } catch (error) {
+            console.error('getQueenRearingBatches:', error);
+            return [];
+        }
+    },
+
+    async createQueenRearingBatch(input: QueenRearingBatchCreateInput): Promise<{ data: QueenRearingBatch | null; error: any }> {
+        try {
+            const data = await apiPost<QueenRearingBatch>('beeyield/queen-rearing-batches', input);
+            toast.success('Queen rearing batch created');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createQueenRearingBatch:', error);
+            toast.error('Failed to create queen rearing batch');
+            return { data: null, error };
+        }
+    },
+
+    async deleteQueenRearingBatch(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`beeyield/queen-rearing-batches/${id}`);
+            toast.success('Batch deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteQueenRearingBatch:', error);
+            toast.error('Failed to delete batch');
+            return { error };
+        }
+    },
+
+    // ========== HIVE DETAIL (aggregate) ==========
+    async getHiveDetail(hiveId: string): Promise<HiveDetailData | null> {
+        try {
+            return await apiGet<HiveDetailData>(`beeyield/hives/${hiveId}/detail`);
+        } catch (error) {
+            console.error('getHiveDetail:', error);
+            return null;
+        }
+    },
 };
+
+// ========== QUEEN TYPES ==========
+export interface Queen {
+    id: string;
+    hive_id?: string | null;
+    user_id?: string;
+    name?: string;
+    breed?: string;
+    origin?: string;
+    marking_color?: string;
+    year_introduced?: number;
+    status?: string;
+    notes?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface QueenCreateInput {
+    hive_id?: string;
+    name?: string;
+    breed?: string;
+    origin?: string;
+    marking_color?: string;
+    year_introduced?: number;
+    status?: string;
+    notes?: string;
+}
+
+// ========== QUEEN REARING BATCH TYPES ==========
+export interface QueenRearingBatch {
+    id: string;
+    hive_id: string;
+    user_id?: string;
+    batch_name: string;
+    method?: string;
+    start_date: string;
+    planned_units?: number;
+    notebook?: string;
+    generate_calendar?: boolean;
+    generate_units?: boolean;
+    generate_reminders?: boolean;
+    status?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface QueenRearingBatchCreateInput {
+    hive_id: string;
+    batch_name: string;
+    method?: string;
+    start_date: string;
+    planned_units?: number;
+    notebook?: string;
+    generate_calendar?: boolean;
+    generate_units?: boolean;
+    generate_reminders?: boolean;
+}
+
+// ========== HIVE DETAIL AGGREGATE TYPE ==========
+export interface HiveDetailData {
+    hive: Hive;
+    apiary: Apiary | null;
+    queen: Queen | null;
+    last_inspection: Inspection | null;
+    inspections: Inspection[];
+    harvests: Harvest[];
+    requests: any[];
+    queen_rearing_batches: QueenRearingBatch[];
+}
 
 export default beeyieldService;

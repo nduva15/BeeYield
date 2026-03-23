@@ -17,9 +17,10 @@ interface FlipCardHiveProps {
     };
     onViewHistory: () => void;
     onMarkInspection: () => void;
+    onOpen?: () => void;
 }
 
-const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMarkInspection }) => {
+const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMarkInspection, onOpen }) => {
     const [isFlipped, setIsFlipped] = React.useState(false);
 
     const statusConfig = {
@@ -33,7 +34,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
     return (
         <div 
             className="group perspective-1000 h-[380px] w-full cursor-pointer"
-            onClick={() => setIsFlipped(!isFlipped)}
+            onClick={() => { if (!isFlipped && onOpen) { onOpen(); } else { setIsFlipped(!isFlipped); } }}
         >
             <motion.div
                 className="relative w-full h-full transition-all duration-700 preserve-3d"
