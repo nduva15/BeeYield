@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart, Cpu, Puzzle, Database, ArrowRight, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
 import { glass, PageHeader, GlassModal } from './GlassTheme';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useApiaries } from '@/hooks/useHives';
 import { useHives } from '@/hooks/useHives';
 import { useHarvests, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
@@ -29,7 +29,6 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
     );
 }
 
-/* ─── Main View ─── */
 const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) => {
     const { user, beeyieldUser } = useAuth();
     const [selectedHarvest, setSelectedHarvest] = React.useState<Harvest | null>(null);
@@ -89,7 +88,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             animate={{ opacity: 1 }}
             className={glass.page}
         >
-            {/* Header */}
             <PageHeader
                 icon={LayoutGrid}
                 label="BeeYield AI Dashboard"
@@ -116,7 +114,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Account */}
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "p-5")}>
                         <div className="flex items-center gap-3 mb-4">
@@ -153,7 +150,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
-                {/* Important views */}
                 <div className="lg:col-span-8">
                     <div className={cn(glass.section, "p-5")}>
                         <div className="flex items-center justify-between mb-4">
@@ -195,7 +191,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
-                {/* Apiaries */}
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
@@ -229,7 +224,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
-                {/* Hives */}
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
@@ -268,7 +262,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 </div>
             </div>
 
-            {/* Harvests */}
             <div className={cn(glass.section, "overflow-hidden mt-6")}>
                 <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -313,7 +306,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 </div>
             </div>
 
-            {/* Harvest Details Modal */}
             <GlassModal
                 isOpen={!!selectedHarvest}
                 onClose={() => { setSelectedHarvest(null); setIsEditing(false); }}

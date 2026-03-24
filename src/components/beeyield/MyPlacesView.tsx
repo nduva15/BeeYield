@@ -32,7 +32,8 @@ import {
     Binary,
     Shield,
     Database,
-    TrendingUp
+    TrendingUp,
+    ShieldCheck as ShieldCheckIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -64,8 +65,9 @@ import {
 import { HivesTable } from './HivesTable';
 import HiveFormModal from './HiveFormModal';
 import OrchardDashboardView from './OrchardDashboardView';
-import { glass, GlassStatCard } from './GlassTheme';
+import { glass, GlassStatCard, GlassConfirmModal, GlassModal } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { useAuth } from '@/hooks/useAuth';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -373,6 +375,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     const [isAddingPlace, setIsAddingPlace] = React.useState(false);
     const [editingApiary, setEditingApiary] = React.useState<Apiary | null>(null);
     const [viewingApiary, setViewingApiary] = React.useState<Apiary | null>(null);
+    const [deletingApiaryId, setDeletingApiaryId] = React.useState<string | null>(null);
 
     // Hooks
     const apiariesQuery = useApiaries();
@@ -476,13 +479,19 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         setIsAddingPlace(true);
     };
 
-    const handleDelete = async (id: string, e: React.MouseEvent) => {
+    const handleDelete = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!confirm('Are you sure you want to delete this location? All hive records for this place will be moved to the general registry.')) return;
+        setDeletingApiaryId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deletingApiaryId) return;
+        
         const toastId = toast.loading("Deleting location...");
         try {
-            await deleteApiary.mutateAsync(id);
+            await deleteApiary.mutateAsync(deletingApiaryId);
             toast.success('Location deleted.', { id: toastId });
+            setDeletingApiaryId(null);
         } catch (error) {
             toast.error("Could not delete. Please try again.", { id: toastId });
         }
@@ -490,292 +499,6 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
     if (viewingApiary) {
         return <ApiaryDetailView apiary={viewingApiary} setViewingApiary={setViewingApiary} onTabChange={onTabChange} />;
-    }
-
-    if (isAddingPlace) {
-        return (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-            >
-                {/* Header */}
-                <div className="flex items-center gap-4 border-b border-[#F4D03F]/10 pb-4 relative">
-                    <button
-                        onClick={resetForm}
-                        className={cn(glass.btnSecondary, "h-10 w-10 p-0 rounded-xl flex items-center justify-center bg-white shadow-sm border-[#F4D03F]/10")}
-                        aria-label="Back"
-                        title="Back"
-                    >
-                        <ChevronLeft className="w-6 h-6" />
-                    </button>
-                    <div className="space-y-1 relative z-10">
-                        <div className="flex items-center gap-3">
-                            <div className="px-3 py-1 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/20">
-                                <span className=" font-black text-[9px] text-[#F4D03F]">{editingApiary ? 'Edit Location' : 'Add New Location'}</span>
-                            </div>
-                        </div>
-                        <h1 className="text-lg font-bold text-[#1A1A1A] tracking-tight uppercase">
-                            Site <span className="text-[#F4D03F]">Deployment</span>
-                        </h1>
-                    </div>
-                </div>
-
-                {/* Form Card */}
-                <div className={cn(glass.card, 'max-w-4xl shadow-2xl p-0 overflow-hidden bg-white/70 border-[#F4D03F]/10 rounded-3xl mx-auto backdrop-blur-xl')}>
-                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] relative z-10 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                <Layers className="w-4 h-4 text-[#F4D03F]" />
-                            </div>
-                            <div className="space-y-0.5">
-                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Unit Parameters</h3>
-                                <p className="text-[8px] font-bold text-[#F4D03F]">Fill in the basics for this location.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="p-6 space-y-6 relative z-10">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-5">
-                                <div className="space-y-2">
-                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Site Identifier*</Label>
-                                    <Input
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="Acacia Valley 01"
-                                        className={cn(glass.input, "px-4 h-10 text-[11px] font-black tracking-wider")}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-gray-500 ml-2">Placement</Label>
-                                    <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
-                                        <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
-                                            <div className="flex items-center gap-3">
-                                                <Target className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                                <SelectValue placeholder="Select type" />
-                                            </div>
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
-                                            <SelectItem value="permanent" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Permanent Site</SelectItem>
-                                            <SelectItem value="migratory" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Migratory Site</SelectItem>
-                                            <SelectItem value="breeding" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Breeding Site</SelectItem>
-                                            <SelectItem value="quarantine" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Isolation Site</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black text-gray-400 ml-2">Unit Capacity</Label>
-                                        <div className="relative">
-                                            <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
-                                            <Input
-                                                type="number"
-                                                value={formData.expected_hives || ''}
-                                                onChange={(e) => setFormData({ ...formData, expected_hives: parseInt(e.target.value) || 0 })}
-                                                placeholder="0"
-                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black text-gray-400 ml-2">Area (AC)</Label>
-                                        <div className="relative">
-                                            <Sprout className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
-                                            <Input
-                                                type="number"
-                                                step="0.01"
-                                                value={formData.size_acres || ''}
-                                                onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 0 })}
-                                                placeholder="0.0"
-                                                className="h-10 pl-10 font-black text-[11px] bg-white/50 border-[#F4D03F]/10 rounded-xl tabular-nums"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-5">
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between px-2">
-                                        <Label className="text-[9px] font-black text-gray-400">Tactical GIS Deployment</Label>
-                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1B9157]/10 rounded-lg">
-                                            <Shield className="w-2.5 h-2.5 text-[#1B9157]" />
-                                            <span className="text-[7px] font-black text-[#1B9157] tracking-widest uppercase">Precise Fix Enabled</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="relative h-64 rounded-2xl overflow-hidden border border-[#F4D03F]/20 shadow-inner group">
-                                        <MapContainer 
-                                            center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
-                                            zoom={13} 
-                                            style={{ height: '100%', width: '100%' }}
-                                            zoomControl={false}
-                                        >
-                                            <TileLayer
-                                                url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
-                                                attribution="&copy; Google Maps Hybrid"
-                                            />
-                                            <MapController 
-                                                center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
-                                                zoom={15} 
-                                            />
-                                            <Marker 
-                                                position={[formData.latitude || -2.42, formData.longitude || 37.97]}
-                                                draggable={true}
-                                                eventHandlers={{
-                                                    dragend: (e) => {
-                                                        const marker = e.target;
-                                                        const pos = marker.getLatLng();
-                                                        setFormData(prev => ({ ...prev, latitude: pos.lat, longitude: pos.lng }));
-                                                    }
-                                                }}
-                                            >
-                                                <Popup className="font-bold border-none shadow-xl rounded-xl">
-                                                    <div className="p-2 text-center">
-                                                        <p className="text-xs font-black text-[#1B9157]">Deployment Pivot</p>
-                                                        <p className="text-[9px] text-gray-400">Drag to exact hive site</p>
-                                                    </div>
-                                                </Popup>
-                                            </Marker>
-                                        </MapContainer>
-
-                                        {/* Map Overlays */}
-                                        <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
-                                            <div className="flex gap-2">
-                                                <div className="relative flex-1">
-                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                                                    <input 
-                                                        className="w-full bg-white/90 backdrop-blur-md border border-[#F4D03F]/20 rounded-xl py-2 pl-10 pr-4 text-[10px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4D03F]/20 transition-all"
-                                                        placeholder="Search exact location (e.g. Kibwezi, Makueni)..."
-                                                        value={searchQuery}
-                                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') handleSearch();
-                                                        }}
-                                                    />
-                                                </div>
-                                                <button
-                                                    onClick={handleSearch}
-                                                    disabled={isSearching}
-                                                    className="px-4 bg-[#F4D03F] text-[#1A1A1A] rounded-xl text-[10px] font-black shadow-lg hover:bg-[#E5C335] transition-all disabled:opacity-50 flex items-center gap-2"
-                                                >
-                                                    {isSearching ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
-                                                    SEARCH
-                                                </button>
-                                            </div>
-                                            <button 
-                                                onClick={() => {
-                                                    if (navigator.geolocation) {
-                                                        const tid = toast.loading("Acquiring GPS fix...");
-                                                        navigator.geolocation.getCurrentPosition(pos => {
-                                                            setFormData(prev => ({ 
-                                                                ...prev, 
-                                                                latitude: pos.coords.latitude, 
-                                                                longitude: pos.coords.longitude 
-                                                            }));
-                                                            toast.success("GPS Location Synced", { id: tid });
-                                                        }, () => {
-                                                            toast.error("GPS access denied", { id: tid });
-                                                        });
-                                                    }
-                                                }}
-                                                className="self-start flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md text-[#1A1A1A] border border-[#F4D03F]/20 rounded-lg text-[8px] font-black shadow-lg hover:bg-[#F4D03F]/10 transition-all"
-                                            >
-                                                <MapPin className="w-2.5 h-2.5 text-[#F4D03F]" />
-                                                USE MY CURRENT POSITION
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Latitude</Label>
-                                            <Input 
-                                                type="number"
-                                                step="any"
-                                                value={formData.latitude || ''} 
-                                                onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
-                                                className="h-8 bg-white/50 text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20" 
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Longitude</Label>
-                                            <Input 
-                                                type="number"
-                                                step="any"
-                                                value={formData.longitude || ''} 
-                                                onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
-                                                className="h-8 bg-white/50 text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20" 
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black text-gray-400 ml-2">Resolved Address</Label>
-                                        <div className="relative">
-                                            <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
-                                            <Input
-                                                value={formData.location_name}
-                                                onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                                                placeholder="Deployment Site Coordinates"
-                                                className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl tracking-wider"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-gray-500 ml-2">Flora</Label>
-                                    <div className="relative">
-                                        <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
-                                        <Input
-                                            value={formData.forage_type}
-                                            onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
-                                            placeholder="Lavender Cluster Pro"
-                                            className="h-10 pl-10 font-black text-[10px] bg-white/50 border-[#F4D03F]/10 rounded-xl tracking-wider"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Operational Notes</Label>
-                                    <Textarea
-                                        value={formData.notes}
-                                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                        className="h-20 p-4 text-[10px] font-bold bg-white/50 border-[#F4D03F]/10 rounded-xl resize-none italic leading-relaxed"
-                                        placeholder="Add important notes for this site..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10">
-                            <button
-                                onClick={resetForm}
-                                className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black")}
-                            >
-                                Discard_Draft
-                            </button>
-                            <button
-                                onClick={handleSubmit}
-                                disabled={createApiary.isPending || updateApiary.isPending}
-                                className={cn(glass.btnPrimary, "h-11 px-10 text-[9px] font-black shadow-xl shadow-[#F4D03F]/10")}
-                            >
-                                {createApiary.isPending || updateApiary.isPending ? (
-                                    <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                                ) : (
-                                    <ShieldCheck className="w-4 h-4 mr-2" />
-                                )}
-                                {editingApiary ? 'Save changes' : 'Add location'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-        );
     }
 
     return (
@@ -914,6 +637,220 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                 .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
             `}</style>
+            <GlassConfirmModal
+                isOpen={!!deletingApiaryId}
+                onClose={() => setDeletingApiaryId(null)}
+                onConfirm={confirmDelete}
+                title="Delete Location"
+                message="Are you sure you want to delete this location? All hive records for this place will be moved to the general registry."
+                confirmLabel="Delete Location"
+                isLoading={deleteApiary.isPending}
+            />
+
+            {/* Addition/Edit Modal */}
+            <GlassModal
+                isOpen={isAddingPlace || !!editingApiary}
+                onClose={resetForm}
+                title={editingApiary ? 'Edit Location' : 'Add New Location'}
+                subtitle="Configure deployment site parameters and GIS coordinates."
+                maxWidth="max-w-4xl"
+            >
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-5">
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-gray-400 ml-2">Site Identifier*</Label>
+                                <Input
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    placeholder="Acacia Valley 01"
+                                    className={cn(glass.input, "px-4 h-10 text-[11px] font-black tracking-wider w-full")}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-gray-500 ml-2">Placement</Label>
+                                <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
+                                    <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0 w-full">
+                                        <div className="flex items-center gap-3">
+                                            <Target className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                            <SelectValue placeholder="Select type" />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                                        <SelectItem value="permanent" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Permanent Site</SelectItem>
+                                        <SelectItem value="migratory" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Migratory Site</SelectItem>
+                                        <SelectItem value="breeding" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Breeding Site</SelectItem>
+                                        <SelectItem value="quarantine" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Isolation Site</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Unit Capacity</Label>
+                                    <div className="relative">
+                                        <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
+                                        <Input
+                                            type="number"
+                                            value={formData.expected_hives || ''}
+                                            onChange={(e) => setFormData({ ...formData, expected_hives: parseInt(e.target.value) || 0 })}
+                                            placeholder="0"
+                                            className="h-10 pl-10 font-black text-[11px] bg-white border-[#F4D03F]/10 rounded-xl tabular-nums w-full"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-gray-400 ml-2">Area (AC)</Label>
+                                    <div className="relative">
+                                        <Sprout className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
+                                        <Input
+                                            type="number"
+                                            step="0.01"
+                                            value={formData.size_acres || ''}
+                                            onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 0 })}
+                                            placeholder="0.0"
+                                            className="h-10 pl-10 font-black text-[11px] bg-white border-[#F4D03F]/10 rounded-xl tabular-nums w-full"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-gray-500 ml-2">Flora</Label>
+                                <div className="relative">
+                                    <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
+                                    <Input
+                                        value={formData.forage_type}
+                                        onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
+                                        placeholder="Lavender Cluster Pro"
+                                        className="h-10 pl-10 font-black text-[10px] bg-white border-[#F4D03F]/10 rounded-xl tracking-wider w-full"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="space-y-4">
+                                <div className="relative h-64 rounded-2xl overflow-hidden border border-[#F4D03F]/20 shadow-inner group">
+                                    <MapContainer 
+                                        center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
+                                        zoom={13} 
+                                        style={{ height: '100%', width: '100%' }}
+                                        zoomControl={false}
+                                    >
+                                        <TileLayer
+                                            url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+                                            attribution="&copy; Google Maps Hybrid"
+                                        />
+                                        <MapController 
+                                            center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
+                                            zoom={15} 
+                                        />
+                                        <Marker 
+                                            position={[formData.latitude || -2.42, formData.longitude || 37.97]}
+                                            draggable={true}
+                                            eventHandlers={{
+                                                dragend: (e) => {
+                                                    const marker = e.target;
+                                                    const pos = marker.getLatLng();
+                                                    setFormData(prev => ({ ...prev, latitude: pos.lat, longitude: pos.lng }));
+                                                }
+                                            }}
+                                        >
+                                            <Popup className="font-bold border-none shadow-xl rounded-xl">
+                                                <div className="p-2 text-center">
+                                                    <p className="text-xs font-black text-[#1B9157]">Deployment Pivot</p>
+                                                    <p className="text-[9px] text-gray-400">Drag to exact hive site</p>
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                    </MapContainer>
+
+                                    <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                                                <input 
+                                                    className="w-full bg-white/90 backdrop-blur-md border border-[#F4D03F]/20 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4D03F]/20 transition-all"
+                                                    placeholder="Search exact location..."
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') handleSearch();
+                                                    }}
+                                                />
+                                            </div>
+                                            <button
+                                                onClick={handleSearch}
+                                                disabled={isSearching}
+                                                className="px-3 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[9px] font-black shadow-lg hover:bg-[#E5C335] transition-all disabled:opacity-50 flex items-center gap-1.5"
+                                            >
+                                                {isSearching ? <RefreshCw className="w-2.5 h-2.5 animate-spin" /> : <Search className="w-2.5 h-2.5" />}
+                                                SEARCH
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Latitude</Label>
+                                        <Input 
+                                            type="number"
+                                            step="any"
+                                            value={formData.latitude || ''} 
+                                            onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
+                                            className="h-8 bg-white text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20 w-full" 
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Longitude</Label>
+                                        <Input 
+                                            type="number"
+                                            step="any"
+                                            value={formData.longitude || ''} 
+                                            onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
+                                            className="h-8 bg-white text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20 w-full" 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-[9px] font-black text-gray-400 ml-2">Operational Notes</Label>
+                        <Textarea
+                            value={formData.notes}
+                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                            className="h-20 p-4 text-[10px] font-bold bg-white border-[#F4D03F]/10 rounded-xl resize-none italic leading-relaxed w-full"
+                            placeholder="Add important notes for this site..."
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10">
+                        <button
+                            onClick={resetForm}
+                            className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black")}
+                        >
+                            Discard_Draft
+                        </button>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={createApiary.isPending || updateApiary.isPending}
+                            className={cn(glass.btnPrimary, "h-11 px-10 text-[9px] font-black shadow-xl shadow-[#F4D03F]/10")}
+                        >
+                            {createApiary.isPending || updateApiary.isPending ? (
+                                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                            ) : (
+                                <ShieldCheck className="w-4 h-4 mr-2" />
+                            )}
+                            {editingApiary ? 'UPDATE_DEPLOYMENT' : 'INITIALIZE_DEPLOYMENT'}
+                        </button>
+                    </div>
+                </div>
+            </GlassModal>
         </BeeYieldPageShell>
     );
 };

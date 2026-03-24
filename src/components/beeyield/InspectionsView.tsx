@@ -21,6 +21,7 @@ import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/Bee
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useHarvests } from '@/hooks/useHarvests';
 import { useInspections, useCreateInspection, useUpdateInspection, useDeleteInspection } from '@/hooks/useInspections';
+import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -30,6 +31,8 @@ interface InspectionsViewProps {
 const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialParams }) => {
     // UI State
     const [isAddingInspection, setIsAddingInspection] = React.useState(false);
+    const [editingId, setEditingId] = React.useState<string | null>(null);
+    const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     // Data from Hooks
     const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
     const { data: hivesData, isLoading: hivesLoading } = useHives();
@@ -40,13 +43,16 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     const createInspectionMutation = useCreateInspection();
     const updateInspectionMutation = useUpdateInspection();
     const deleteInspectionMutation = useDeleteInspection();
+    const { data: tasksData, isLoading: tasksLoading } = useTasks();
+    const updateTaskMutation = useUpdateTask();
 
     const apiaries = apiariesData || [];
     const hives = hivesData || [];
     const harvests = harvestsData || [];
     const inspections = inspectionsData || [];
+    const tasks = tasksData || [];
 
-    const isLoading = apiariesLoading || hivesLoading || harvestsLoading || inspectionsLoading;
+    const isLoading = apiariesLoading || hivesLoading || harvestsLoading || inspectionsLoading || tasksLoading;
 
     // Filters
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>('all_places');
@@ -56,6 +62,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
+
+    // Task linked logic
+    const [linkedTaskId, setLinkedTaskId] = React.useState<string | null>(null);
 
     // Form State
     const [formData, setFormData] = React.useState({
@@ -132,9 +141,17 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             if (editingId) {
                 await updateInspectionMutation.mutateAsync({ id: editingId, data: formData });
             } else {
-                await createInspectionMutation.mutateAsync(formData);
+                const response = await createInspectionMutation.mutateAsync(formData);
+                // If this was linked to a task, mark task as complete
+                if (linkedTaskId && response?.data) {
+                    await updateTaskMutation.mutateAsync({ 
+                        id: linkedTaskId, 
+                        updates: { status: 'completed', completed_at: new Date().toISOString() } 
+                    });
+                }
             }
             setIsAddingInspection(false);
+            setLinkedTaskId(null);
             resetForm();
         } catch (error: any) {
             console.error('Error saving inspection:', error);
@@ -219,17 +236,19 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     }, [harvests]);
 
     const stats = React.useMemo(() => {
+        const pending = tasks.filter(t => t.category === 'inspection' && t.status === 'pending').length;
         return {
             total: inspections.length,
             healthy: inspections.filter(i => i.health_status === 'healthy').length,
             issues: inspections.filter(i => i.health_status !== 'healthy').length,
+            pendingCount: pending,
             thisMonth: inspections.filter(i => {
                 const date = new Date(i.inspection_date);
                 const now = new Date();
                 return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
             }).length
         };
-    }, [inspections]);
+    }, [inspections, tasks]);
 
     if (isAddingInspection) {
         return (
@@ -710,7 +729,60 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             </motion.div>
 
             {/* List */}
-            <div className="relative z-10">
+            <div className="relative z-10 space-y-8">
+                {/* Pending Inspections Section */}
+                {!isLoading && tasks.some(t => t.category === 'inspection' && t.status === 'pending') && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4 border-l-4 border-l-[#F4D03F] pl-4">
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none uppercase tracking-widest">Required <span className="text-[#F4D03F]">Inspections</span></h2>
+                            <div className="h-px flex-1 bg-gradient-to-r from-[#F4D03F]/10 to-transparent" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {tasks.filter(t => t.category === 'inspection' && t.status === 'pending').map(task => {
+                                const hive = hives.find(h => h.id === task.hive_id);
+                                const apiary = apiaries.find(a => a.id === task.apiary_id);
+                                return (
+                                    <motion.div
+                                        key={task.id}
+                                        whileHover={{ y: -2 }}
+                                        className="bg-white/40 border border-[#F4D03F]/20 rounded-xl p-4 flex items-start justify-between group/task shadow-sm"
+                                    >
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                                    <Activity className="w-3 h-3 text-[#F4D03F]" />
+                                                </div>
+                                                <span className="text-[10px] font-black text-[#1A1A1A]">{apiary?.name || 'Local'} - {hive?.hive_code || '---'}</span>
+                                            </div>
+                                            <p className="text-[11px] font-bold text-gray-500 line-clamp-1">{task.title}</p>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-3 h-3 text-gray-400" />
+                                                <span className="text-[9px] font-black text-gray-400">Due {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'ASAP'}</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                resetForm();
+                                                setFormData({
+                                                    ...formData,
+                                                    hive_id: task.hive_id || '',
+                                                    findings: `Required Inspection for: ${task.title}`
+                                                });
+                                                setLinkedTaskId(task.id);
+                                                setIsAddingInspection(true);
+                                            }}
+                                            className="w-8 h-8 rounded-lg bg-[#F4D03F] flex items-center justify-center text-[#1A1A1A] hover:scale-110 transition-transform shadow-md"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                        </button>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+
                 {isLoading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map(i => (
@@ -733,11 +805,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                 ) : (
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 border-l-4 border-l-[#F4D03F] pl-4">
-                            <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none">Recent <span className="text-[#F4D03F]">inspections</span></h2>
+                            <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none uppercase tracking-widest">Recent <span className="text-[#F4D03F]">Logs</span></h2>
                             <div className="h-px flex-1 bg-gradient-to-r from-[#F4D03F]/10 to-transparent" />
                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 text-[#F4D03F] border border-[#F4D03F]/20 rounded-xl">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] animate-pulse" />
-                                <span className="text-[9px] font-black tracking-wider">{filteredInspections.length} logs</span>
+                                <span className="text-[9px] font-black tracking-wider uppercase">{filteredInspections.length} logs</span>
                             </div>
                         </div>
 

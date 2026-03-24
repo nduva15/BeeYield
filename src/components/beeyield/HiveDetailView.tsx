@@ -560,202 +560,145 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
             </AnimatePresence>
 
             {/* ══════════ HARVEST FORM MODAL ══════════ */}
-            <AnimatePresence>
-                {showHarvestForm && (
-                    <div className={glass.modalOverlay} onClick={() => setShowHarvestForm(false)}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className={cn(glass.modalCard, 'max-w-lg')}
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-white flex items-center justify-between rounded-t-2xl">
-                                <div>
-                                    <h2 className="text-lg font-black text-[#1A1A1A]">Record Harvest</h2>
-                                    <p className="text-xs text-gray-500 font-medium">Log a new harvest for {hive?.hive_code}</p>
-                                </div>
-                                <button onClick={() => setShowHarvestForm(false)} className="w-8 h-8 rounded-lg border border-[#F4D03F]/20 flex items-center justify-center hover:bg-red-50 transition-colors">
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <div className="p-5 space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Harvest Date</Label>
-                                        <div className="relative group/input">
-                                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
-                                            <Input
-                                                id="harvest-date-modal"
-                                                type="date"
-                                                value={harvestForm.harvest_date}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, harvest_date: e.target.value })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200")}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Yield (KG)*</Label>
-                                        <div className="relative group/input">
-                                            <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1B9157]/40" />
-                                            <Input
-                                                id="harvest-quantity-kg-modal"
-                                                type="number"
-                                                step="0.1"
-                                                placeholder="0.0"
-                                                value={harvestForm.quantity_kg || ''}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, quantity_kg: parseFloat(e.target.value) || 0 })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200")}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Honey Type</Label>
-                                        <Select
-                                            value={harvestForm.honey_type}
-                                            onValueChange={(val) => setHarvestForm({ ...harvestForm, honey_type: val })}
-                                        >
-                                            <SelectTrigger className={cn(glass.select, "h-10 border-gray-200")}>
-                                                <div className="flex items-center gap-2">
-                                                    <Database className="w-3.5 h-3.5 text-[#F4D03F]/40" />
-                                                    <SelectValue placeholder="Select type" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                {['Acacia', 'Multifloral', 'Sunflower', 'Forest', 'Rapeseed'].map(v => (
-                                                    <SelectItem key={v} value={v} className="text-xs font-semibold">{v}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Honey Grade</Label>
-                                        <Select
-                                            value={harvestForm.color_grade}
-                                            onValueChange={(val) => setHarvestForm({ ...harvestForm, color_grade: val })}
-                                        >
-                                            <SelectTrigger className={cn(glass.select, "h-10 border-gray-200")}>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2.5 h-2.5 rounded-full bg-[#F4D03F]" />
-                                                    <SelectValue placeholder="Select grade" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                {['Extra Light Amber', 'Light Amber', 'Amber', 'Dark Amber'].map(g => (
-                                                    <SelectItem key={g} value={g} className="text-xs font-semibold">{g}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Extraction Method</Label>
-                                        <div className="relative group/input">
-                                            <Cpu className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
-                                            <Input
-                                                id="harvest-extraction-modal"
-                                                placeholder="e.g. Cold Centrifuge"
-                                                value={harvestForm.extraction_method || ''}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, extraction_method: e.target.value })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200 text-xs")}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Weather</Label>
-                                        <div className="relative group/input">
-                                            <Wind className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
-                                            <Input
-                                                id="harvest-weather-modal"
-                                                placeholder="e.g. Sunny"
-                                                value={harvestForm.weather_conditions || ''}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, weather_conditions: e.target.value })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200 text-xs")}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Left for Bees (KG)</Label>
-                                        <div className="relative group/input">
-                                            <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
-                                            <Input
-                                                type="number"
-                                                step="0.1"
-                                                placeholder="0.0"
-                                                value={harvestForm.quantity_left_for_bees_kg || ''}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, quantity_left_for_bees_kg: parseFloat(e.target.value) || 0 })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200")}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Moisture (%)</Label>
-                                        <div className="relative group/input">
-                                            <Wind className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A90E2]/40" />
-                                            <Input
-                                                type="number"
-                                                step="0.1"
-                                                placeholder="18.0"
-                                                value={harvestForm.moisture_content_percent || ''}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, moisture_content_percent: parseFloat(e.target.value) || 0 })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200")}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Florage Type</Label>
-                                        <div className="relative group/input">
-                                            <Database className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
-                                            <Input
-                                                placeholder="e.g. Wildflower"
-                                                value={harvestForm.florage_type || ''}
-                                                onChange={(e) => setHarvestForm({ ...harvestForm, florage_type: e.target.value })}
-                                                className={cn(glass.input, "pl-10 h-10 border-gray-200 text-xs")}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className={glass.microLabel}>Batch Code</Label>
-                                        <Input
-                                            placeholder="Auto-generated if empty"
-                                            value={harvestForm.batch_code || ''}
-                                            onChange={(e) => setHarvestForm({ ...harvestForm, batch_code: e.target.value })}
-                                            className={cn(glass.input, "h-10 border-gray-200 text-xs")}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-1.5 pt-2">
-                                    <Label className={glass.microLabel}>Notes</Label>
-                                    <Textarea
-                                        placeholder="Additional observations..."
-                                        value={harvestForm.notes || ''}
-                                        onChange={(e) => setHarvestForm({ ...harvestForm, notes: e.target.value })}
-                                        className={cn(glass.input, "min-h-[60px] resize-none border-gray-200 text-xs")}
-                                    />
-                                </div>
-                                <div className="flex items-center gap-2 pt-1 border border-gray-100 rounded-lg p-2 bg-gray-50/50">
-                                    <Checkbox
-                                        id="modal-harvest-verified"
-                                        checked={harvestForm.is_verified}
-                                        onCheckedChange={(c) => setHarvestForm({ ...harvestForm, is_verified: !!c })}
-                                    />
-                                    <label htmlFor="modal-harvest-verified" className="text-xs font-semibold text-gray-600 cursor-pointer">
-                                        Verified Record
-                                    </label>
-                                </div>
-                                <div className="pt-3 flex gap-3">
-                                    <button className="h-10 px-6 rounded-full bg-[#0F172A] text-white text-sm font-bold flex items-center justify-center hover:bg-[#1E293B] transition-colors" onClick={() => setShowHarvestForm(false)}>Cancel</button>
-                                    <button onClick={handleSaveHarvest} disabled={savingHarvest || !harvestForm.quantity_kg} className="h-10 px-6 rounded-full bg-[#F4D03F] text-[#1A1A1A] text-sm font-bold flex items-center justify-center gap-2 flex-1 hover:bg-[#E5C138] transition-colors">
-                                        {savingHarvest ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        Save Harvest
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
+            <GlassModal
+                isOpen={showHarvestForm}
+                onClose={() => setShowHarvestForm(false)}
+                title="Record Harvest"
+                subtitle={`Log a new honey batch for ${detail?.hive?.hive_code || 'this hive'}`}
+            >
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Harvest Date*</label>
+                            <input
+                                type="date"
+                                value={harvestForm.harvest_date}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, harvest_date: e.target.value })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Yield (KG)*</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                placeholder="0.0"
+                                value={harvestForm.quantity_kg || ''}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, quantity_kg: parseFloat(e.target.value) || 0 })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Honey Type</label>
+                            <select
+                                value={harvestForm.honey_type}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, honey_type: e.target.value })}
+                                className={cn(glass.select, "w-full h-9 text-sm font-bold")}
+                            >
+                                <option value="Acacia">Acacia</option>
+                                <option value="Wildflower">Wildflower</option>
+                                <option value="Lavender">Lavender</option>
+                                <option value="Multi-flower">Multi-flower</option>
+                                <option value="Buckwheat">Buckwheat</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Color Grade</label>
+                            <select
+                                value={harvestForm.color_grade}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, color_grade: e.target.value })}
+                                className={cn(glass.select, "w-full h-9 text-sm font-bold")}
+                            >
+                                <option value="Extra Light Amber">Extra Light Amber</option>
+                                <option value="Light Amber">Light Amber</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Dark Amber">Dark Amber</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Left for Bees (KG)</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                placeholder="0.0"
+                                value={harvestForm.quantity_left_for_bees_kg || ''}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, quantity_left_for_bees_kg: parseFloat(e.target.value) || 0 })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Moisture (%)</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                placeholder="18.0"
+                                value={harvestForm.moisture_content_percent || ''}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, moisture_content_percent: parseFloat(e.target.value) || 0 })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Florage Type</label>
+                            <input
+                                placeholder="e.g. Wildflower"
+                                value={harvestForm.florage_type || ''}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, florage_type: e.target.value })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Batch Code</label>
+                            <input
+                                placeholder="Auto-generated"
+                                value={harvestForm.batch_code || ''}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, batch_code: e.target.value })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-gray-400">Weather</label>
+                            <input
+                                placeholder="e.g. Sunny, 25°C"
+                                value={harvestForm.weather_conditions || ''}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, weather_conditions: e.target.value })}
+                                className={cn(glass.input, "w-full h-9 text-sm font-bold")}
+                            />
+                        </div>
+                        <div className="space-y-2 border border-[#F4D03F]/20 rounded-xl p-2 flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="modal-harvest-verified"
+                                checked={harvestForm.is_verified}
+                                onChange={(e) => setHarvestForm({ ...harvestForm, is_verified: e.target.checked })}
+                                className="rounded bg-black/40 border-[#F4D03F]/20 text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                            />
+                            <label htmlFor="modal-harvest-verified" className="text-[10px] font-black uppercase text-gray-400 cursor-pointer">
+                                Verified Record
+                            </label>
+                        </div>
                     </div>
-                )}
-            </AnimatePresence>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-gray-400">Notes</label>
+                        <textarea
+                            placeholder="Observations..."
+                            value={harvestForm.notes || ''}
+                            onChange={(e) => setHarvestForm({ ...harvestForm, notes: e.target.value })}
+                            className={cn(glass.input, "w-full min-h-[60px] text-sm font-bold p-2")}
+                        />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                        <button type="button" onClick={() => setShowHarvestForm(false)} className={cn(glass.btnSecondary, "flex-1")}>
+                            Cancel
+                        </button>
+                        <button onClick={handleSaveHarvest} disabled={savingHarvest || !harvestForm.quantity_kg} className={cn(glass.btnPrimary, "flex-1")}>
+                            {savingHarvest ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                            {savingHarvest ? 'Recording...' : 'Record Harvest'}
+                        </button>
+                    </div>
+                </div>
+            </GlassModal>
 
             {/* ══════════ QUEEN REARING BATCH FORM MODAL ══════════ */}
             <AnimatePresence>

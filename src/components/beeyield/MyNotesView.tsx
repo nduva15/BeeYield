@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, Plus, ChevronDown, ChevronLeft, Box, MapPin, Loader2, Check, Clock as ClockIcon, StickyNote, Trash2, Edit } from 'lucide-react';
+import { LayoutGrid, Plus, ChevronDown, ChevronLeft, Box, MapPin, Loader2, Check, Clock as ClockIcon, StickyNote, Trash2, Edit, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { spring } from '@/lib/motion';
 import { cn } from '@/lib/utils';
@@ -55,6 +55,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     const [selectedHiveId, setSelectedHiveId] = React.useState<string | null>(null);
     const [isAddingNote, setIsAddingNote] = React.useState(false);
     const [isEditingNote, setIsEditingNote] = React.useState<Note | null>(null);
+    const [searchQuery, setSearchQuery] = React.useState("");
 
     // Form States
     const [title, setTitle] = React.useState("");
@@ -152,6 +153,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     const filteredNotes = notes.filter(note => {
         if (selectedPlaceId && note.apiary_id !== selectedPlaceId) return false;
         if (selectedHiveId && note.hive_id !== selectedHiveId) return false;
+        if (searchQuery) {
+            const search = searchQuery.toLowerCase();
+            return (note.title?.toLowerCase().includes(search) || note.content?.toLowerCase().includes(search));
+        }
         return true;
     });
 
@@ -437,6 +442,17 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                 <option key={h.id} value={h.id}>{h.hive_code}</option>
                             ))}
                         </select>
+                    </div>
+
+                    <div className="relative flex-1 group/search w-full">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F] opacity-30 group-focus-within/search:opacity-100 transition-opacity" />
+                        <input
+                            type="text"
+                            placeholder="Search notes..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={cn(glass.input, "w-full pl-10 h-10 text-[12px] font-medium bg-white/20 border-white/20")}
+                        />
                     </div>
 
                     <div className="flex items-center gap-3 px-4 h-10 bg-white/40 rounded-xl border border-white/40 shadow-sm shrink-0">

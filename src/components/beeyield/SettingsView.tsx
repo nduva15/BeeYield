@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { deletePaymentMethod, getPaymentMethods, saveStripePaymentMethod } from '@/services/shopService';
-import beeyieldService, { uploadAvatar } from '@/services/beeyieldService';
+import { beeyieldService, uploadAvatar, BillingOverview, Transaction } from '@/services/beeyieldService';
 import {
     BeeYieldCard,
     BeeYieldFormField,
@@ -53,21 +53,6 @@ type SavedPaymentMethod = {
     created_at?: string;
 };
 
-type BillingTx = {
-    id?: string;
-    date?: string;
-    description?: string;
-    amount?: number;
-    currency?: string;
-    type?: 'income' | 'expense' | string;
-    category?: string;
-    status?: string;
-    payment_method?: string;
-    metadata?: any;
-    etims_status?: string;
-    etims_qr_url?: string | null;
-};
-
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const { user, signOut, updateUser } = useAuth();
     const { theme, setTheme } = useTheme();
@@ -80,9 +65,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     // Billing
     const [billingLoading, setBillingLoading] = React.useState(false);
     const [paymentMethods, setPaymentMethods] = React.useState<SavedPaymentMethod[]>([]);
-    const [billingOverview, setBillingOverview] = React.useState<any>(null);
-    const [transactions, setTransactions] = React.useState<BillingTx[]>([]);
-    const [selectedTx, setSelectedTx] = React.useState<BillingTx | null>(null);
+    const [billingOverview, setBillingOverview] = React.useState<BillingOverview | null>(null);
+    const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+    const [selectedTx, setSelectedTx] = React.useState<Transaction | null>(null);
     const [isAddCardOpen, setIsAddCardOpen] = React.useState(false);
     const [StripeCardFormComp, setStripeCardFormComp] = React.useState<React.ComponentType<any> | null>(null);
 
@@ -682,65 +667,58 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <p className="text-xs text-gray-500">Saved methods</p>
                                         </div>
 
-                                        <Dialog
-                                            open={isAddCardOpen}
-                                            onOpenChange={(open) => {
-                                                setIsAddCardOpen(open);
-                                                if (open) void ensureStripeCardForm();
+                                        <button 
+                                            className={cn(glass.btnPrimary, "h-9 px-4")}
+                                            onClick={() => {
+                                                setIsAddCardOpen(true);
+                                                void ensureStripeCardForm();
                                             }}
                                         >
-                                            <DialogTrigger asChild>
-                                                <button className={cn(glass.btnPrimary, "h-9 px-4")}>
-                                                    <Plus className="w-4 h-4" />
-                                                    Add Card
-                                                </button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-md">
-                                                <DialogHeader>
-                                                    <DialogTitle className="flex items-center gap-2">
-                                                        <CreditCard className="h-5 w-5 text-[#F4D03F]" />
-                                                        Add Payment Card
-                                                    </DialogTitle>
-                                                    <DialogDescription>
-                                                        Card data is encrypted and processed securely by Stripe.
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="pt-2">
-                                                    {StripeCardFormComp ? (
-                                                        <StripeCardFormComp
-                                                            mode="save"
-                                                            onSuccess={async (paymentMethod: any) => {
-                                                                try {
-                                                                    await saveStripePaymentMethod(paymentMethod.id, {
-                                                                        last4: paymentMethod.last4,
-                                                                        brand: paymentMethod.brand,
-                                                                        exp_month: paymentMethod.exp_month,
-                                                                        exp_year: paymentMethod.exp_year,
-                                                                    });
-                                                                    toast.success('Card saved');
-                                                                    setIsAddCardOpen(false);
-                                                                    await loadBilling();
-                                                                } catch (error) {
-                                                                    console.error(error);
-                                                                    toast.error('Failed to save card');
-                                                                }
-                                                            }}
-                                                            onError={(error: any) => {
-                                                                console.error('Stripe error:', error);
-                                                                const msg = error?.message || 'Stripe error';
-                                                                setPageError(msg);
-                                                                toast.error(msg);
-                                                            }}
-                                                            buttonText="Save Card Securely"
-                                                        />
-                                                    ) : (
-                                                        <div className="p-4 text-center text-sm text-muted-foreground">
-                                                            Loading secure card form…
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
+                                            <Plus className="w-4 h-4" />
+                                            Add Card
+                                        </button>
+
+                                        <GlassModal
+                                            isOpen={isAddCardOpen}
+                                            onClose={() => setIsAddCardOpen(false)}
+                                            title="Add Payment Card"
+                                            subtitle="Card data is encrypted and processed securely by Stripe."
+                                        >
+                                            <div className="pt-2">
+                                                {StripeCardFormComp ? (
+                                                    <StripeCardFormComp
+                                                        mode="save"
+                                                        onSuccess={async (paymentMethod: any) => {
+                                                            try {
+                                                                await saveStripePaymentMethod(paymentMethod.id, {
+                                                                    last4: paymentMethod.last4,
+                                                                    brand: paymentMethod.brand,
+                                                                    exp_month: paymentMethod.exp_month,
+                                                                    exp_year: paymentMethod.exp_year,
+                                                                });
+                                                                toast.success('Card saved');
+                                                                setIsAddCardOpen(false);
+                                                                await loadBilling();
+                                                            } catch (error) {
+                                                                console.error(error);
+                                                                toast.error('Failed to save card');
+                                                            }
+                                                        }}
+                                                        onError={(error: any) => {
+                                                            console.error('Stripe error:', error);
+                                                            const msg = error?.message || 'Stripe error';
+                                                            setPageError(msg);
+                                                            toast.error(msg);
+                                                        }}
+                                                        buttonText="Save Card Securely"
+                                                    />
+                                                ) : (
+                                                    <div className="p-4 text-center text-sm text-muted-foreground">
+                                                        Loading secure card form…
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </GlassModal>
                                     </div>
 
                                     <div className="space-y-3">
@@ -876,60 +854,53 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         </Table>
                                     </div>
 
-                                    <Dialog open={!!selectedTx} onOpenChange={(o) => !o && setSelectedTx(null)}>
-                                        <DialogContent className="sm:max-w-lg">
-                                            <DialogHeader>
-                                                <DialogTitle className="flex items-center gap-2">
-                                                    <Receipt className="w-5 h-5 text-[#F4D03F]" />
-                                                    Payment Details
-                                                </DialogTitle>
-                                                <DialogDescription>
-                                                    Ledger record with metadata and compliance status.
-                                                </DialogDescription>
-                                            </DialogHeader>
-
-                                            <div className="space-y-4">
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-xs font-semibold text-gray-500">Amount</p>
-                                                        <p className="text-sm font-black tabular-nums text-[#1A1A1A]">
-                                                            {(selectedTx?.currency || 'KES').toUpperCase()} {Number(selectedTx?.amount || 0).toLocaleString()}
-                                                        </p>
-                                                    </div>
-                                                    <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-xs font-semibold text-gray-500">Type</p>
-                                                        <p className="text-sm font-semibold text-[#1A1A1A]">
-                                                            {selectedTx?.type || '—'}
-                                                        </p>
-                                                    </div>
-                                                    <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-xs font-semibold text-gray-500">Status</p>
-                                                        <p className="text-sm font-semibold text-[#1A1A1A]">
-                                                            {selectedTx?.status || selectedTx?.etims_status || '—'}
-                                                        </p>
-                                                    </div>
-                                                    <div className="p-3 rounded-xl border border-white/40 bg-white/40">
-                                                        <p className="text-xs font-semibold text-gray-500">Date</p>
-                                                        <p className="text-sm font-black text-[#1A1A1A]">
-                                                            {selectedTx?.date ? new Date(selectedTx.date).toLocaleString() : '—'}
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="p-4 rounded-2xl border border-white/40 bg-white/30 space-y-2">
-                                                    <p className="text-xs font-semibold text-gray-500">Description</p>
-                                                    <p className="text-[10px] font-bold text-[#1A1A1A]">
-                                                        {selectedTx?.description || '—'}
+                                    <GlassModal 
+                                        isOpen={!!selectedTx} 
+                                        onClose={() => setSelectedTx(null)}
+                                        title="Payment Details"
+                                        subtitle="Ledger record with metadata and compliance status."
+                                    >
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
+                                                    <p className="text-xs font-semibold text-gray-500">Amount</p>
+                                                    <p className="text-sm font-black tabular-nums text-[#1A1A1A]">
+                                                        {(selectedTx?.currency || 'KES').toUpperCase()} {Number(selectedTx?.amount || 0).toLocaleString()}
                                                     </p>
-                                                    {selectedTx?.category && (
-                                                        <p className="text-xs font-semibold text-gray-500">
-                                                            Category: <span className="text-[#1A1A1A]">{selectedTx.category}</span>
-                                                        </p>
-                                                    )}
+                                                </div>
+                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
+                                                    <p className="text-xs font-semibold text-gray-500">Type</p>
+                                                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                                                        {selectedTx?.type || '—'}
+                                                    </p>
+                                                </div>
+                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
+                                                    <p className="text-xs font-semibold text-gray-500">Status</p>
+                                                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                                                        {selectedTx?.status || selectedTx?.etims_status || '—'}
+                                                    </p>
+                                                </div>
+                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
+                                                    <p className="text-xs font-semibold text-gray-500">Date</p>
+                                                    <p className="text-sm font-black text-[#1A1A1A]">
+                                                        {selectedTx?.date ? new Date(selectedTx.date).toLocaleString() : '—'}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        </DialogContent>
-                                    </Dialog>
+
+                                            <div className="p-4 rounded-xl border border-[#F4D03F]/20 bg-white/30 space-y-2">
+                                                <p className="text-xs font-semibold text-gray-500">Description</p>
+                                                <p className="text-[10px] font-bold text-[#1A1A1A]">
+                                                    {selectedTx?.description || '—'}
+                                                </p>
+                                                {selectedTx?.category && (
+                                                    <p className="text-xs font-semibold text-gray-500">
+                                                        Category: <span className="text-[#1A1A1A]">{selectedTx.category}</span>
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </GlassModal>
                                 </div>
                             </div>
                         </div>

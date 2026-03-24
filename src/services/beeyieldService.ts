@@ -475,6 +475,7 @@ export interface Harvest {
     is_verified?: boolean;
     blockchain_hash?: string;
     florage_type?: string;
+    notes?: string;
     created_at?: string;
     updated_at?: string;
     hive?: Hive | null;
@@ -483,7 +484,7 @@ export interface Harvest {
 }
 
 export interface HarvestCreateInput {
-    hive_id?: string;
+    hive_id?: string | null;
     apiary_id?: string;
     farmer_id?: string;
     harvest_date: string;
@@ -718,6 +719,31 @@ export interface IoTSettings {
     updated_at: string;
 }
 
+
+// ========== BILLING TYPES ==========
+export interface BillingOverview {
+    total_revenue: number;
+    total_costs: number;
+    net_result: number;
+    outstanding_invoices: number;
+}
+
+export interface Transaction {
+    id: string;
+    user_id: string;
+    date: string;
+    amount: number;
+    currency: string;
+    transaction_type: 'income' | 'expense';
+    type?: 'income' | 'expense'; // legacy ref
+    description: string;
+    module_type?: string;
+    category?: string; // legacy ref
+    etims_status: string;
+    status?: string; // legacy ref
+    metadata?: any;
+    etims_qr_url?: string | null;
+}
 
 export const beeyieldService = {
     supabaseBeeYield: sb,
@@ -1577,6 +1603,15 @@ export const beeyieldService = {
         }
     },
 
+    async getRequests(): Promise<SupportRequest[]> {
+        try {
+            return await apiGet<SupportRequest[]>('beeyield/requests');
+        } catch (error) {
+            console.error('getRequests:', error);
+            return [];
+        }
+    },
+
     // ========== ACTIVITY LOGS ==========
     async getActivityLogs(limit = 50): Promise<ActivityLog[]> {
         if (!sb) return [];
@@ -1938,7 +1973,7 @@ export const beeyieldService = {
     },
 
     // ========== BILLING & SUBSCRIPTIONS ==========
-    async getBillingOverview(): Promise<any> {
+    async getBillingOverview(): Promise<BillingOverview | null> {
         if (!sb) return null;
         const { data: txs } = await sb.from('billing_ledger').select('amount, transaction_type');
         const revenue = txs?.filter(t => t.transaction_type === 'income').reduce((s, t) => s + (t.amount || 0), 0) || 0;
@@ -1948,7 +1983,7 @@ export const beeyieldService = {
             total_revenue: revenue,
             total_costs: costs,
             net_result: revenue - costs,
-            outstanding_invoices: 0 // Logic for outstanding would go here
+            outstanding_invoices: 0
         };
     },
 
@@ -1991,17 +2026,17 @@ export const beeyieldService = {
         }
     },
 
-    async getTransactions(): Promise<any[]> {
+    async getTransactions(): Promise<Transaction[]> {
         if (!sb) return [];
         const { data, error } = await sb.from('billing_ledger').select('*').order('date', { ascending: false }).limit(50);
         if (error) { console.error('getTransactions:', error); return []; }
         return (data || []).map((t: any) => ({
             ...t,
-            type: t.transaction_type, // Map for UI expectation
+            type: t.transaction_type,
             category: t.module_type,
             status: t.etims_status === 'synced' ? 'completed' : 'pending',
             etims_qr_url: t.metadata?.etims_qr_url || null
-        }));
+        })) as Transaction[];
     },
 
     async createTransaction(input: {
