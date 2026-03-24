@@ -39,11 +39,14 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
         >
             {/* ── Front Face ── */}
             <motion.div 
-                className="absolute inset-0 flex flex-col bg-white/40 border border-[#F4D03F]/20 rounded-[2rem] overflow-hidden shadow-xl backdrop-blur-md group-hover:border-[#F4D03F]/40 transition-colors z-10"
-                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' } as React.CSSProperties}
+                className="absolute inset-0 flex flex-col bg-white/40 border border-[#F4D03F]/20 rounded-[2rem] overflow-hidden shadow-xl backdrop-blur-md group-hover:border-[#F4D03F]/40 transition-colors"
                 initial={false}
-                animate={{ rotateY: isFlipped ? -180 : 0 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                animate={{ 
+                    rotateY: isFlipped ? -180 : 0,
+                    opacity: isFlipped ? 0 : 1
+                }}
+                transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+                style={{ pointerEvents: isFlipped ? 'none' : 'auto' }}
             >
                 <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-2">
@@ -76,11 +79,14 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
 
             {/* ── Back Face ── */}
             <motion.div 
-                className="absolute inset-0 flex flex-col bg-white/80 border border-[#F4D03F]/30 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl z-20"
-                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' } as React.CSSProperties}
-                initial={{ rotateY: 180 }}
-                animate={{ rotateY: isFlipped ? 0 : 180 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="absolute inset-0 flex flex-col bg-white/80 border border-[#F4D03F]/30 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl"
+                initial={false}
+                animate={{ 
+                    rotateY: isFlipped ? 0 : 180,
+                    opacity: isFlipped ? 1 : 0
+                }}
+                transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+                style={{ pointerEvents: isFlipped ? 'auto' : 'none' }}
             >
                 <div className="p-5 border-b border-[#F4D03F]/10 bg-[#1A1A1A][0.02] flex items-center justify-between relative z-10">
                     <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60 uppercase tracking-widest">Hive Vitals</h4>
