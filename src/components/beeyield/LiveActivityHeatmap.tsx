@@ -1,6 +1,7 @@
 import React from 'react';
 import { Activity, Layers } from 'lucide-react';
 import beeyieldService, { SensorReading } from '@/services/beeyieldService';
+import { useSensorReadings } from '@/hooks/useSensorReadings';
 import { cn } from '@/lib/utils';
 
 interface LiveActivityHeatmapProps {
@@ -8,66 +9,46 @@ interface LiveActivityHeatmapProps {
 }
 
 const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }) => {
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
-    const [matrix, setMatrix] = React.useState<number[][]>(() => Array.from({ length: 7 }, () => Array(24).fill(0)));
-    const [maxVal, setMaxVal] = React.useState(1);
+    const { data: sensorData, isLoading, error: queryError } = useSensorReadings(undefined, 24 * 7);
 
-    React.useEffect(() => {
-        let mounted = true;
-        (async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const rows: SensorReading[] = await beeyieldService.getSensorReadings(undefined, 24 * 7);
-                if (!mounted) return;
+    const { matrix, maxVal } = React.useMemo(() => {
+        const buckets = Array.from({ length: 7 }, () => Array(24).fill(0));
+        const counts = Array.from({ length: 7 }, () => Array(24).fill(0));
+        let m = 1;
 
-                const buckets = Array.from({ length: 7 }, () => Array(24).fill(0));
-                const counts = Array.from({ length: 7 }, () => Array(24).fill(0));
+        if (!sensorData) return { matrix: buckets, maxVal: m };
 
-                (rows || []).forEach((r: any) => {
-                    const tsRaw = r?.recorded_at || r?.timestamp || r?.created_at;
-                    const d = tsRaw ? new Date(tsRaw) : null;
-                    if (!d || Number.isNaN(d.getTime())) return;
-                    const dow = (d.getDay() + 6) % 7; // make Monday=0
-                    const hour = d.getHours();
-                    const v =
-                        typeof r?.vpm === 'number'
-                            ? r.vpm
-                            : typeof r?.visits_per_minute === 'number'
-                                ? r.visits_per_minute
-                                : typeof r?.activity_vpm === 'number'
-                                    ? r.activity_vpm
-                                    : null;
-                    if (typeof v !== 'number' || !Number.isFinite(v)) return;
-                    buckets[dow][hour] += v;
-                    counts[dow][hour] += 1;
-                });
+        (sensorData || []).forEach((r: any) => {
+            const tsRaw = r?.recorded_at || r?.timestamp || r?.created_at;
+            const d = tsRaw ? new Date(tsRaw) : null;
+            if (!d || Number.isNaN(d.getTime())) return;
+            const dow = (d.getDay() + 6) % 7; // make Monday=0
+            const hour = d.getHours();
+            const v =
+                typeof r?.vpm === 'number'
+                    ? r.vpm
+                    : typeof r?.visits_per_minute === 'number'
+                        ? r.visits_per_minute
+                        : typeof r?.activity_vpm === 'number'
+                            ? r.activity_vpm
+                            : null;
+            if (typeof v !== 'number' || !Number.isFinite(v)) return;
+            buckets[dow][hour] += v;
+            counts[dow][hour] += 1;
+        });
 
-                let m = 1;
-                for (let d = 0; d < 7; d++) {
-                    for (let h = 0; h < 24; h++) {
-                        if (counts[d][h] > 0) buckets[d][h] = buckets[d][h] / counts[d][h];
-                        m = Math.max(m, buckets[d][h]);
-                    }
-                }
-
-                setMatrix(buckets);
-                setMaxVal(m);
-            } catch (e: any) {
-                if (!mounted) return;
-                setError(e?.message || 'Failed to load activity telemetry.');
-                setMatrix(Array.from({ length: 7 }, () => Array(24).fill(0)));
-                setMaxVal(1);
-            } finally {
-                if (mounted) setLoading(false);
+        for (let d = 0; d < 7; d++) {
+            for (let h = 0; h < 24; h++) {
+                if (counts[d][h] > 0) buckets[d][h] = buckets[d][h] / counts[d][h];
+                m = Math.max(m, buckets[d][h]);
             }
-        })();
+        }
 
-        return () => {
-            mounted = false;
-        };
-    }, []);
+        return { matrix: buckets, maxVal: m };
+    }, [sensorData]);
+
+    const loading = isLoading;
+    const error = queryError ? "Telemetry stream failure" : null;
 
     const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
     const hours = Array.from({ length: 24 }, (_, i) => i);

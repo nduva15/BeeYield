@@ -10,37 +10,30 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useSensorAlerts, useResolveAlert } from '@/hooks/useSensorAlerts';
 
 const SensorAlertsView: React.FC = () => {
-    const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
-    const [hives, setHives] = React.useState<Hive[]>([]);
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
-    const [loading, setLoading] = React.useState(true);
     const [filter, setFilter] = React.useState<'active' | 'resolved' | 'all'>('active');
+    
+    // Data Hooks
+    const resolvedFilter = filter === 'all' ? undefined : (filter === 'resolved');
+    const { data: alertsData, isLoading: alertsLoading, refetch: refetchAlerts } = useSensorAlerts(resolvedFilter);
+    const { data: hivesData, isLoading: hivesLoading } = useHives();
+    const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+    
+    // Mutations
+    const resolveMutation = useResolveAlert();
 
-    const loadData = async () => {
-        setLoading(true);
-        try {
-            const resolvedFilter = filter === 'all' ? undefined : (filter === 'resolved');
-            const [alertData, hiveData, apiaryData] = await Promise.all([
-                beeyieldService.getSensorAlerts(resolvedFilter),
-                beeyieldService.getHives(),
-                beeyieldService.getApiaries()
-            ]);
-            setAlerts(alertData);
-            setHives(hiveData);
-            setApiaries(apiaryData);
-        } catch (error) {
-            console.error('Failed to load sensor alerts', error);
-            toast.error('Could not load alerts.');
-        } finally {
-            setLoading(false);
-        }
+    const alerts = alertsData || [];
+    const hives = hivesData || [];
+    const apiaries = apiariesData || [];
+    
+    const loading = alertsLoading || hivesLoading || apiariesLoading;
+
+    const loadData = () => {
+        refetchAlerts();
     };
-
-    React.useEffect(() => {
-        loadData();
-    }, [filter]);
 
     const getHiveName = (hiveId: string) => {
         const hive = hives.find(h => h.id === hiveId);
@@ -53,12 +46,7 @@ const SensorAlertsView: React.FC = () => {
     };
 
     const handleResolve = async (alertId: string) => {
-        const { success } = await beeyieldService.resolveSensorAlert(alertId, 'Resolved from dashboard');
-        if (success) {
-            setAlerts(prev => prev.filter(a => a.id !== alertId));
-            toast.success("Alert resolved.");
-            loadData();
-        }
+        await resolveMutation.mutateAsync({ id: alertId, notes: 'Resolved from dashboard' });
     };
 
     return (

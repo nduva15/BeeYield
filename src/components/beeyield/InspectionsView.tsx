@@ -18,6 +18,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { glass, GlassStatCard } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useHarvests } from '@/hooks/useHarvests';
+import { useInspections, useCreateInspection, useUpdateInspection, useDeleteInspection } from '@/hooks/useInspections';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -27,15 +30,23 @@ interface InspectionsViewProps {
 const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialParams }) => {
     // UI State
     const [isAddingInspection, setIsAddingInspection] = React.useState(false);
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [isSaving, setIsSaving] = React.useState(false);
-    const [editingId, setEditingId] = React.useState<string | null>(null);
+    // Data from Hooks
+    const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+    const { data: hivesData, isLoading: hivesLoading } = useHives();
+    const { data: harvestsData, isLoading: harvestsLoading } = useHarvests();
+    const { data: inspectionsData, isLoading: inspectionsLoading } = useInspections();
 
-    // Data State
-    const [inspections, setInspections] = React.useState<Inspection[]>([]);
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
-    const [hives, setHives] = React.useState<Hive[]>([]);
-    const [harvests, setHarvests] = React.useState<Harvest[]>([]);
+    // Mutations
+    const createInspectionMutation = useCreateInspection();
+    const updateInspectionMutation = useUpdateInspection();
+    const deleteInspectionMutation = useDeleteInspection();
+
+    const apiaries = apiariesData || [];
+    const hives = hivesData || [];
+    const harvests = harvestsData || [];
+    const inspections = inspectionsData || [];
+
+    const isLoading = apiariesLoading || hivesLoading || harvestsLoading || inspectionsLoading;
 
     // Filters
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>('all_places');
@@ -92,42 +103,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         setEditingId(null);
     };
 
-    React.useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const [apiariesData, hivesData, harvestsData, inspectionsData] = await Promise.all([
-                    beeyieldService.getApiaries(),
-                    beeyieldService.getHives(),
-                    beeyieldService.getHarvests(),
-                    beeyieldService.getInspections()
-                ]);
-
-                if (userId) {
-                    const filteredApiaries = apiariesData.filter(a => !a.user_id || a.user_id === userId);
-                    const filteredHives = hivesData.filter(h => !h.user_id || h.user_id === userId);
-                    const userHiveIds = new Set(filteredHives.map(h => h.id));
-                    const filteredHarvests = harvestsData.filter(h => h.hive_id && userHiveIds.has(h.hive_id as string));
-                    const filteredInspections = inspectionsData.filter(i => i.hive_id && userHiveIds.has(i.hive_id as string));
-
-                    setApiaries(filteredApiaries);
-                    setHives(filteredHives);
-                    setInspections(filteredInspections);
-                } else {
-                    setApiaries(apiariesData);
-                    setHives(hivesData);
-                    setInspections(inspectionsData);
-                }
-            } catch (error) {
-                console.error("Error loading data", error);
-                toast.error("Failed to load dashboard data");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-    }, [userId]);
-
+    // Handle initial params for filtering or modals
     React.useEffect(() => {
         if (initialParams?.action === 'open_add_new') {
             setIsAddingInspection(true);
@@ -144,42 +120,24 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         }
     }, [initialParams, hives]);
 
+    const isSaving = createInspectionMutation.isPending || updateInspectionMutation.isPending;
+
     const handleSave = async () => {
         if (!formData.hive_id || formData.hive_id === 'all_hives') {
             toast.error("Please select a hive first.");
             return;
         }
 
-        setIsSaving(true);
-        const toastId = toast.loading('Saving inspection report...');
         try {
-            let result;
             if (editingId) {
-                result = await beeyieldService.updateInspection(editingId, formData);
+                await updateInspectionMutation.mutateAsync({ id: editingId, data: formData });
             } else {
-                result = await beeyieldService.createInspection(formData);
+                await createInspectionMutation.mutateAsync(formData);
             }
-
-            const { data, error } = result;
-            if (error) throw error;
-
-            if (data) {
-                if (editingId) {
-                    setInspections(inspections.map(i => i.id === editingId ? data : i));
-                    toast.success('Diagnostic report synthesized.', { id: toastId });
-                } else {
-                    setInspections([data, ...inspections]);
-                    toast.success('New health audit archived.', { id: toastId });
-                }
-            }
-
             setIsAddingInspection(false);
             resetForm();
         } catch (error: any) {
             console.error('Error saving inspection:', error);
-            toast.error("Could not save the record. Please try again.", { id: toastId });
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -212,15 +170,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         e.stopPropagation();
         if (!confirm("Are you sure you want to delete this inspection? This cannot be undone.")) return;
 
-        const toastId = toast.loading('Deleting record...');
         try {
-            const { error } = await beeyieldService.deleteInspection(id);
-            if (error) throw error;
-            setInspections(inspections.filter(i => i.id !== id));
-            toast.success("Record deleted successfully.", { id: toastId });
+            await deleteInspectionMutation.mutateAsync(id);
         } catch (error) {
             console.error("Error deleting record:", error);
-            toast.error("Failed to delete record.", { id: toastId });
         }
     };
 

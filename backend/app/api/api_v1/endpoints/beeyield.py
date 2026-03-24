@@ -818,7 +818,32 @@ async def create_harvest(
     if "harvest_code" not in data or not data.get("harvest_code"):
         import uuid
         data["harvest_code"] = f"HRV-{str(uuid.uuid4()).split('-')[0].upper()}"
-    
+
+    # ── Auto-generate batch_code from hive, flora, and date ──
+    if not data.get("batch_code"):
+        hive_code = hives[0].get("hive_code", "HIVE") if hives else "HIVE"
+        flora_raw = (
+            data.get("florage_type")
+            or data.get("honey_type")
+            or data.get("nectar_source")
+            or "MFL"
+        )
+        # Shorten flora to a 3-char tag (e.g. Acacia -> ACA, Multifloral -> MFL)
+        flora_tag = flora_raw.replace(" ", "")[:3].upper()
+        harvest_dt = data.get("harvest_date")
+        if harvest_dt:
+            try:
+                if isinstance(harvest_dt, str):
+                    harvest_dt_obj = datetime.fromisoformat(harvest_dt)
+                else:
+                    harvest_dt_obj = harvest_dt
+                date_tag = harvest_dt_obj.strftime("%y%m%d")
+            except Exception:
+                date_tag = datetime.utcnow().strftime("%y%m%d")
+        else:
+            date_tag = datetime.utcnow().strftime("%y%m%d")
+        data["batch_code"] = f"BTCH-{hive_code}-{flora_tag}-{date_tag}"
+
     result = await db_insert("harvests", data, token=token)
     
     if not result.get("success"):
@@ -1772,7 +1797,7 @@ async def get_hive_detail(
         last_inspection = inspections[0] if inspections else None
 
         # Fetch harvests for this hive
-        harvests = await db_select("harvests", filters={"hive_id": hive_id}, order_by="harvest_date", ascending=False, limit=20, token=token)
+        harvests = await db_select("harvests", filters={"hive_id": hive_id}, order_by="harvest_date", ascending=False, limit=1000, token=token)
 
         # Fetch requests for this hive
         requests_list = []

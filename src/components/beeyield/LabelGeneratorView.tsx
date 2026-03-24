@@ -21,8 +21,10 @@ import QRCode from 'qrcode';
 import beeyieldService from '@/services/beeyieldService';
 import { labelService, LabelDesign as ILabelDesign } from '@/services/labelService';
 import { Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { glass, GlassStatCard } from './GlassTheme';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useHarvests } from '@/hooks/useHarvests';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BeeYieldCard,
@@ -222,9 +224,15 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     const [design, setDesign] = React.useState<LabelDesign>(defaultDesign);
     const [savedDesigns, setSavedDesigns] = React.useState<LabelDesign[]>([]);
     const [isGenerating, setIsGenerating] = React.useState(false);
-    const [harvests, setHarvests] = React.useState<Harvest[]>([]);
-    const [hives, setHives] = React.useState<Hive[]>([]);
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const { data: apiariesData } = useApiaries();
+    const { data: hivesData } = useHives();
+    const { data: harvestsData } = useHarvests();
+
+    const apiaries = (apiariesData as any[]) || [];
+    const hives = hivesData || [];
+    const harvests = harvestsData || [];
+
+    const [honeyBatches, setHoneyBatches] = React.useState<any[]>([]);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
     const [selectedHarvestId, setSelectedHarvestId] = React.useState<string>('');
@@ -241,15 +249,10 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         const loadInitialData = async () => {
             setIsLoadingData(true);
             try {
-                // Load harvests & hives for autofill
-                const [apiaryData, harvestData, hiveData] = await Promise.all([
-                    beeyieldService.getApiaries(),
-                    beeyieldService.getHarvests(),
-                    beeyieldService.getHives()
-                ]);
-                setApiaries(apiaryData as any);
-                setHarvests(harvestData);
-                setHives(hiveData);
+                // Fetch traceability data not stored in standard react-query cache
+                const batchData = await beeyieldService.getBatches();
+                setHoneyBatches(batchData);
+                console.log('[LabelGen] Loaded:', batchData.length, 'traceability batches');
 
                 // Load saved designs
                 const labelData = await labelService.getLabels();
@@ -371,24 +374,47 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         return harvests.filter((h) => (h.hive_id || h.hive?.id) === selectedHiveId);
     }, [harvests, selectedHiveId]);
 
+    // Build batch options by merging harvest batch_codes with honey_batches.
+    // Link honey_batches to hives via matching batch_code in harvests.
     const batchOptions = React.useMemo(() => {
         const seen = new Set<string>();
-        const batches: string[] = [];
+        const result: string[] = [];
+
+        // 1. Batch codes from harvests for this hive (direct link)
         for (const h of filteredHarvests) {
             const code = (h.batch_code || '').trim();
-            if (!code) continue;
-            if (seen.has(code)) continue;
-            seen.add(code);
-            batches.push(code);
+            if (code && !seen.has(code)) {
+                seen.add(code);
+                result.push(code);
+            }
         }
-        return batches.sort((a, b) => a.localeCompare(b));
-    }, [filteredHarvests]);
+
+        // 2. Also include honey_batches that match any harvest for this hive
+        if (selectedHiveId) {
+            const hiveHarvestBatchCodes = new Set(
+                harvests
+                    .filter(h => (h.hive_id || h.hive?.id) === selectedHiveId)
+                    .map(h => (h.batch_code || '').trim())
+                    .filter(Boolean)
+            );
+            for (const b of honeyBatches) {
+                const code = (b.batch_code || '').trim();
+                if (code && !seen.has(code) && hiveHarvestBatchCodes.has(code)) {
+                    seen.add(code);
+                    result.push(code);
+                }
+            }
+        }
+
+        return result.sort((a, b) => a.localeCompare(b));
+    }, [filteredHarvests, honeyBatches, selectedHiveId, harvests]);
 
     const filteredHarvestsByBatch = React.useMemo(() => {
         const batch = (design.batchNumber || '').trim();
         if (!batch) return [];
-        return filteredHarvests.filter((h) => (h.batch_code || '').trim() === batch);
-    }, [filteredHarvests, design.batchNumber]);
+        // Search all harvests (not just filteredHarvests) since batch may have been selected from honey_batches
+        return harvests.filter((h) => (h.batch_code || '').trim() === batch);
+    }, [harvests, design.batchNumber]);
 
     const handleApiarySelect = (apiaryId: string) => {
         setSelectedApiaryId(apiaryId);
@@ -443,15 +469,33 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         });
         setSelectedHarvestId('');
 
+        // Auto-fill from honey_batches record (richer data)
+        const honeyBatch = honeyBatches.find(b => (b.batch_code || '').trim() === batch);
+        if (honeyBatch) {
+            const updates: Partial<LabelDesign> = {};
+            if (honeyBatch.honey_type) updates.honeyType = honeyBatch.honey_type;
+            if (honeyBatch.farmer_name) updates.producer = honeyBatch.farmer_name;
+            if (honeyBatch.location_county) updates.country = `${honeyBatch.location_region || ''}, ${honeyBatch.location_county}`.replace(/^, /, '');
+            if (honeyBatch.quantity_kg) updates.weight = String(honeyBatch.quantity_kg);
+            if (honeyBatch.harvest_date) {
+                updates.harvestYear = new Date(honeyBatch.harvest_date).getFullYear().toString();
+                updates.bestBeforeDate = new Date(new Date(honeyBatch.harvest_date).setFullYear(new Date(honeyBatch.harvest_date).getFullYear() + 2)).toISOString().split('T')[0];
+            }
+            if (honeyBatch.quality_grade) updates.marketingNote = `Grade ${honeyBatch.quality_grade} • ${honeyBatch.processing_method || 'Cold Extraction'} • ${honeyBatch.honey_type || 'Pure Honey'}`;
+            if (honeyBatch.apiary_name) updates.address = honeyBatch.apiary_name;
+            updateDesign(updates);
+        }
+
         // If this batch exists for the selected hive, auto-link the most recent harvest record.
-        const matching = filteredHarvests
+        const allMatchingHarvests = harvests
             .filter((h) => (h.batch_code || '').trim() === batch)
             .sort((a, b) => {
                 const da = a.harvest_date ? new Date(a.harvest_date).getTime() : 0;
                 const db = b.harvest_date ? new Date(b.harvest_date).getTime() : 0;
                 return db - da;
-            })[0];
+            });
 
+        const matching = allMatchingHarvests[0];
         if (matching) {
             setSelectedHarvestId(matching.id);
             updateDesign({ harvestId: matching.id });

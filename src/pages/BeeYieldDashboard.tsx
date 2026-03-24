@@ -2,6 +2,10 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useDevices } from '@/hooks/useDevices';
+import { useSensorReadings } from '@/hooks/useSensorReadings';
+import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -114,17 +118,44 @@ const BeeYieldDashboard: React.FC = () => {
     // Auth State
     const [authMode, setAuthMode] = React.useState<AuthMode>('login');
 
-    // Dashboard state
-    const [loading, setLoading] = React.useState(true);
-    const [devices, setDevices] = React.useState<IoTDevice[]>([]);
-    const [readings, setReadings] = React.useState<SensorReading[]>([]);
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
-    const [hives, setHives] = React.useState<Hive[]>([]);
+    // Dashboard state (UI only)
     const [activeTab, setActiveTab] = React.useState('home');
     const [aiInitialMessage, setAiInitialMessage] = React.useState<string | null>(null);
     const [showBanner, setShowBanner] = React.useState(true);
-
     const [viewParams, setViewParams] = React.useState<{ message?: string, action?: string } | null>(null);
+
+    // Data Hooks
+    const { data: rawApiaries, isLoading: apiariesLoading } = useApiaries();
+    const { data: rawHives, isLoading: hivesLoading } = useHives();
+    const { data: rawDevices, isLoading: devicesLoading } = useDevices();
+    const { data: rawReadings, isLoading: readingsLoading } = useSensorReadings(undefined, 24 * 7);
+    const { data: alertsData } = useSensorAlerts(false); // Get active alerts for global badge
+
+    const { apiaries, hives, devices, readings } = React.useMemo(() => {
+        const isTimothy = user?.email?.toLowerCase().includes('timothynduva');
+        const baseApiaries = rawApiaries || [];
+        const baseHives = rawHives || [];
+        const baseDevices = rawDevices || [];
+        const baseReadings = rawReadings || [];
+
+        const filteredApiaries = isTimothy
+            ? baseApiaries.filter(a => (a.name || '').toLowerCase() === 'kibwei sanctuary')
+            : baseApiaries;
+
+        const allowedApiaryIds = new Set(filteredApiaries.map(a => a.id));
+        const filteredHives = isTimothy
+            ? baseHives.filter(h => !h.apiary_id || allowedApiaryIds.has(h.apiary_id))
+            : baseHives;
+
+        return {
+            apiaries: filteredApiaries,
+            hives: filteredHives,
+            devices: baseDevices,
+            readings: baseReadings
+        };
+    }, [rawApiaries, rawHives, rawDevices, rawReadings, user]);
+
+    const loading = apiariesLoading || hivesLoading || devicesLoading || readingsLoading;
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
@@ -140,16 +171,10 @@ const BeeYieldDashboard: React.FC = () => {
         toast.success(t('disconnected_success'));
     };
 
-    // Data fetching
+    // Data fetching (keep refresh for legacy internal needs if any, but hooks handle most)
     const refreshTelemetryData = React.useCallback(async () => {
-        if (!user) return;
-        const [devicesData, readingsData] = await Promise.all([
-            beeyieldService.getDevices(),
-            beeyieldService.getSensorReadings(undefined, 24 * 7),
-        ]);
-        setDevices(devicesData);
-        setReadings(readingsData);
-    }, [user]);
+        // No-op or trigger refetch if needed
+    }, []);
 
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -162,58 +187,6 @@ const BeeYieldDashboard: React.FC = () => {
             }
         }
     }, []);
-
-    React.useEffect(() => {
-        const loadData = async () => {
-            // Only load data if user is authenticated
-            if (!user) return;
-
-            setLoading(true);
-            try {
-                const [devicesData, readingsData, apiariesData, hivesData] = await Promise.all([
-                    beeyieldService.getDevices(),
-                    beeyieldService.getSensorReadings(undefined, 24 * 7), // Get last 7 days for stats
-                    beeyieldService.getApiaries(),
-                    beeyieldService.getHives()
-                ]);
-
-                const userId = beeyieldUser?.id || user?.id;
-                const baseApiaries = userId ? apiariesData.filter(a => !a.user_id || a.user_id === userId) : apiariesData;
-                const baseHives = userId ? hivesData.filter(h => !h.user_id || h.user_id === userId) : hivesData;
-
-                // Timothy's production account: show only Kibwei Sanctuary and its hives.
-                const email = (user?.email || '').toLowerCase();
-                const isTimothy =
-                    email === 'timothynduva3492@gmail.com' ||
-                    email === 'timothynduva3492gmail.com' ||
-                    email === 'timothynduva349@gmail.com';
-
-                const filteredApiaries = isTimothy
-                    ? baseApiaries.filter(a => (a.name || '').toLowerCase() === 'kibwei sanctuary')
-                    : baseApiaries;
-
-                const allowedApiaryIds = new Set(filteredApiaries.map(a => a.id));
-                const filteredHives = isTimothy
-                    ? baseHives.filter(h => !h.apiary_id || allowedApiaryIds.has(h.apiary_id))
-                    : baseHives;
-
-                setDevices(devicesData);
-                setReadings(readingsData);
-                setApiaries(filteredApiaries);
-                setHives(filteredHives);
-            } catch (error) {
-                console.error('Failed to load dashboard data', error);
-                toast.error(t('error_load_dashboard'));
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (!authLoading && user) {
-            loadData();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, authLoading]);
 
     // Derived Stats
     const totalDevices = devices.length;

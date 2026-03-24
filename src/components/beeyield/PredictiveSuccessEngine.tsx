@@ -5,141 +5,121 @@ import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, ResponsiveConta
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
 import beeyieldService from '@/services/beeyieldService';
+import { useApiaries } from '@/hooks/useApiaries';
+import { useHarvests } from '@/hooks/useHarvests';
+import { useSensorReadings } from '@/hooks/useSensorReadings';
 
 interface PredictiveSuccessEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
 const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTabChange }) => {
-    const [liveVpm, setLiveVpm] = React.useState<number | null>(null);
-    const [vpmLoading, setVpmLoading] = React.useState(true);
-    const [vpmError, setVpmError] = React.useState<string | null>(null);
+    // Data Hooks
+    const { data: sensorData, isLoading: sensorLoading, error: sensorError } = useSensorReadings(undefined, 24 * 24);
+    const { data: harvestsData, isLoading: harvestsLoading, error: harvestError } = useHarvests();
+    const { data: apiariesData, isLoading: apiariesLoading, error: apiaryError } = useApiaries();
 
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
-    const [series, setSeries] = React.useState<{ month: string; yield_lbs: number; vpm: number | null }[]>([]);
-    const [summary, setSummary] = React.useState<{ lbsPerAcre: number | null; accuracyPct: number | null; growthPct: number | null }>({
-        lbsPerAcre: null,
-        accuracyPct: null,
-        growthPct: null,
-    });
+    const derivedData = React.useMemo(() => {
+        if (!sensorData || !harvestsData || !apiariesData) return null;
 
-    React.useEffect(() => {
-        let mounted = true;
-        const load = async () => {
-            try {
-                if (mounted) {
-                    setVpmLoading(true);
-                    setVpmError(null);
-                    setLoading(true);
-                    setError(null);
-                }
-                const [rows, harvests, apiaries] = await Promise.all([
-                    beeyieldService.getSensorReadings(undefined, 24 * 24), // ~24 days
-                    beeyieldService.getHarvests(),
-                    beeyieldService.getApiaries(),
-                ]);
+        try {
+            const rows = sensorData || [];
+            const harvests = harvestsData || [];
+            const apiaries = apiariesData || [];
 
-                const r: any = Array.isArray(rows) ? rows[0] : null;
-                const v =
-                    typeof r?.vpm === 'number'
-                        ? r.vpm
-                        : typeof r?.visits_per_minute === 'number'
-                            ? r.visits_per_minute
-                            : typeof r?.activity_vpm === 'number'
-                                ? r.activity_vpm
+            const r: any = rows.length > 0 ? rows[0] : null;
+            const liveVpm =
+                typeof r?.vpm === 'number'
+                    ? r.vpm
+                    : typeof r?.visits_per_minute === 'number'
+                        ? r.visits_per_minute
+                        : typeof r?.activity_vpm === 'number'
+                            ? r.activity_vpm
+                            : null;
+
+            // Build a 12-month series
+            const now = new Date();
+            const months: { key: string; label: string }[] = [];
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                const label = d.toLocaleString('default', { month: 'short' });
+                months.push({ key, label });
+            }
+
+            const kgToLbs = (kg: number) => kg * 2.2046226218;
+            const yieldByMonth = new Map<string, number>();
+            harvests.forEach((h: any) => {
+                const dt = h?.harvest_date ? new Date(h.harvest_date) : null;
+                if (!dt || Number.isNaN(dt.getTime())) return;
+                const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+                const kg = Number(h?.quantity_kg ?? 0);
+                if (!Number.isFinite(kg)) return;
+                yieldByMonth.set(key, (yieldByMonth.get(key) || 0) + kgToLbs(kg));
+            });
+
+            const vpmByMonth = new Map<string, { sum: number; n: number }>();
+            rows.forEach((sr: any) => {
+                const tsRaw = sr?.recorded_at || sr?.timestamp || sr?.created_at;
+                const dt = tsRaw ? new Date(tsRaw) : null;
+                if (!dt || Number.isNaN(dt.getTime())) return;
+                const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+                const vv =
+                    typeof sr?.vpm === 'number'
+                        ? sr.vpm
+                        : typeof sr?.visits_per_minute === 'number'
+                            ? sr.visits_per_minute
+                            : typeof sr?.activity_vpm === 'number'
+                                ? sr.activity_vpm
                                 : null;
-                if (!mounted) return;
-                if (typeof v === 'number') setLiveVpm(v);
-                else setLiveVpm(null);
+                if (typeof vv !== 'number' || !Number.isFinite(vv)) return;
+                const prev = vpmByMonth.get(key) || { sum: 0, n: 0 };
+                prev.sum += vv;
+                prev.n += 1;
+                vpmByMonth.set(key, prev);
+            });
 
-                // Build a 12-month series: harvest yield (lbs) + avg VPM where available.
-                const now = new Date();
-                const months: { key: string; label: string }[] = [];
-                for (let i = 11; i >= 0; i--) {
-                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    const label = d.toLocaleString('default', { month: 'short' });
-                    months.push({ key, label });
-                }
+            const series = months.map((mm) => {
+                const y = yieldByMonth.get(mm.key) || 0;
+                const vpmAgg = vpmByMonth.get(mm.key);
+                const vpm = vpmAgg && vpmAgg.n > 0 ? vpmAgg.sum / vpmAgg.n : null;
+                return { month: mm.label, yield_lbs: Number(y.toFixed(0)), vpm: vpm !== null ? Number(vpm.toFixed(1)) : null };
+            });
 
-                const kgToLbs = (kg: number) => kg * 2.2046226218;
-                const yieldByMonth = new Map<string, number>();
-                (harvests || []).forEach((h: any) => {
-                    const dt = h?.harvest_date ? new Date(h.harvest_date) : null;
-                    if (!dt || Number.isNaN(dt.getTime())) return;
-                    const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
-                    const kg = Number(h?.quantity_kg ?? 0);
-                    if (!Number.isFinite(kg)) return;
-                    yieldByMonth.set(key, (yieldByMonth.get(key) || 0) + kgToLbs(kg));
-                });
+            const acres = apiaries.reduce((s: number, a: any) => s + Number(a?.size_acres || 0), 0);
+            const totalLbs = series.reduce((s, x) => s + Number(x.yield_lbs || 0), 0);
+            const lbsPerAcre = acres > 0 ? totalLbs / acres : null;
 
-                const vpmByMonth = new Map<string, { sum: number; n: number }>();
-                (rows || []).forEach((sr: any) => {
-                    const tsRaw = sr?.recorded_at || sr?.timestamp || sr?.created_at;
-                    const dt = tsRaw ? new Date(tsRaw) : null;
-                    if (!dt || Number.isNaN(dt.getTime())) return;
-                    const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
-                    const vv =
-                        typeof sr?.vpm === 'number'
-                            ? sr.vpm
-                            : typeof sr?.visits_per_minute === 'number'
-                                ? sr.visits_per_minute
-                                : typeof sr?.activity_vpm === 'number'
-                                    ? sr.activity_vpm
-                                    : null;
-                    if (typeof vv !== 'number' || !Number.isFinite(vv)) return;
-                    const prev = vpmByMonth.get(key) || { sum: 0, n: 0 };
-                    prev.sum += vv;
-                    prev.n += 1;
-                    vpmByMonth.set(key, prev);
-                });
+            const sensorDensity = Math.min(1, rows.length / 500);
+            const accuracyPct = 2 + sensorDensity * 8;
 
-                const nextSeries = months.map((mm) => {
-                    const y = yieldByMonth.get(mm.key) || 0;
-                    const vpmAgg = vpmByMonth.get(mm.key);
-                    const vpm = vpmAgg && vpmAgg.n > 0 ? vpmAgg.sum / vpmAgg.n : null;
-                    return { month: mm.label, yield_lbs: Number(y.toFixed(0)), vpm: vpm !== null ? Number(vpm.toFixed(1)) : null };
-                });
-                setSeries(nextSeries);
+            const last3 = series.slice(-3).reduce((s, x) => s + x.yield_lbs, 0);
+            const prev3 = series.slice(-6, -3).reduce((s, x) => s + x.yield_lbs, 0);
+            const growthPct = prev3 > 0 ? ((last3 - prev3) / prev3) * 100 : null;
 
-                const acres = (apiaries || []).reduce((s: number, a: any) => s + Number(a?.size_acres || 0), 0);
-                const totalLbs = nextSeries.reduce((s, x) => s + Number(x.yield_lbs || 0), 0);
-                const lbsPerAcre = acres > 0 ? totalLbs / acres : null;
-
-                const sensorDensity = Math.min(1, (rows || []).length / 500);
-                const accuracyPct = 2 + sensorDensity * 8; // 2%..10%
-
-                const last3 = nextSeries.slice(-3).reduce((s, x) => s + x.yield_lbs, 0);
-                const prev3 = nextSeries.slice(-6, -3).reduce((s, x) => s + x.yield_lbs, 0);
-                const growthPct = prev3 > 0 ? ((last3 - prev3) / prev3) * 100 : null;
-
-                setSummary({
+            return {
+                liveVpm,
+                series,
+                summary: {
                     lbsPerAcre: lbsPerAcre !== null ? Number(lbsPerAcre.toFixed(0)) : null,
                     accuracyPct: Number(accuracyPct.toFixed(0)),
                     growthPct: growthPct !== null && Number.isFinite(growthPct) ? Number(growthPct.toFixed(0)) : null,
-                });
-            } catch (e: any) {
-                if (!mounted) return;
-                setLiveVpm(null);
-                setVpmError(e?.message || 'Live activity unavailable');
-                setError(e?.message || 'Predictor inputs unavailable');
-                setSeries([]);
-                setSummary({ lbsPerAcre: null, accuracyPct: null, growthPct: null });
-            } finally {
-                if (mounted) {
-                    setVpmLoading(false);
-                    setLoading(false);
                 }
-            }
-        };
-        load();
-        const t = setInterval(load, 30_000);
-        return () => {
-            mounted = false;
-            clearInterval(t);
-        };
-    }, []);
+            };
+        } catch (e) {
+            console.error("Predictive derive failed:", e);
+            return null;
+        }
+    }, [sensorData, harvestsData, apiariesData]);
+
+    const loading = sensorLoading || harvestsLoading || apiariesLoading;
+    const error = (sensorError || harvestError || apiaryError) ? "Data stream exception" : null;
+    const vpmLoading = sensorLoading;
+    const vpmError = sensorError ? "VPM stream disconnected" : null;
+
+    const liveVpm = derivedData?.liveVpm ?? null;
+    const series = derivedData?.series ?? [];
+    const summary = derivedData?.summary ?? { lbsPerAcre: null, accuracyPct: null, growthPct: null };
 
     return (
         <motion.div

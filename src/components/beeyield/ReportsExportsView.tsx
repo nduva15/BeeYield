@@ -25,6 +25,8 @@ import { glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GlassStatCard } from './GlassTheme';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useGeneratedReports, useScheduledReports, useCreateScheduledReport, useDeleteScheduledReport } from '@/hooks/useReports';
 
 interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
@@ -41,12 +43,21 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
     const [isIntelligenceSynthesizing, setIsIntelligenceSynthesizing] = React.useState(false);
     const [genProgress, setGenProgress] = React.useState(0);
 
-    const [isLoading, setIsLoading] = React.useState(true);
+    // Data Hooks
+    const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+    const { data: hivesData, isLoading: hivesLoading } = useHives();
+    const { data: reportsData, isLoading: reportsLoading } = useGeneratedReports();
+    const { data: schedulesData, isLoading: schedulesLoading } = useScheduledReports();
+
+    // Mutations
+    const createScheduleMutation = useCreateScheduledReport();
+    const deleteScheduleMutation = useDeleteScheduledReport();
 
     const [reports, setReports] = React.useState<GeneratedReport[]>([]);
     const [schedules, setSchedules] = React.useState<ScheduledReport[]>([]);
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
-    const [hives, setHives] = React.useState<Hive[]>([]);
+    
+    const apiaries = apiariesData || [];
+    const hives = hivesData || [];
 
     const [selectedPlace, setSelectedPlace] = React.useState<string>('');
     const [selectedHive, setSelectedHive] = React.useState<string>('');
@@ -116,55 +127,30 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
         } catch { /* ignore */ }
     }, []);
 
-    const loadData = async () => {
-        setIsLoading(true);
-        try {
-            const [apiariesData, hivesData, reportsData, schedulesData] = await Promise.all([
-                beeyieldService.getApiaries(),
-                beeyieldService.getHives(),
-                beeyieldService.getGeneratedReports(),
-                beeyieldService.getScheduledReports()
-            ]);
-
+    React.useEffect(() => {
+        if (reportsData) {
             const filteredReports = reportsData.filter(r => !r.user_id || r.user_id === userId);
             setReports(filteredReports);
             writeCache({ reports: filteredReports, timestamp: Date.now() });
+        }
+    }, [reportsData, userId, writeCache]);
 
-            if (userId) {
-                setApiaries(apiariesData.filter(a => !a.user_id || a.user_id === userId));
-                setHives(hivesData.filter(h => !h.user_id || h.user_id === userId));
-                setSchedules(schedulesData.filter(s => s.is_active && (!s.user_id || s.user_id === userId)));
+    React.useEffect(() => {
+        if (schedulesData) {
+            const activeSchedules = schedulesData.filter(s => s.is_active && (!s.user_id || s.user_id === userId));
+            if (activeSchedules.length > 0) {
+                setSchedules(activeSchedules);
             } else {
-                setApiaries(apiariesData || []);
-                setHives(hivesData || []);
-                setSchedules(schedulesData || []);
-            }
-
-            // No-backend fallback for schedules: if remote returns none, hydrate from local.
-            if (!schedulesData || schedulesData.length === 0) {
                 const local = readLocalSchedules();
                 if (local.length > 0) setSchedules(local.filter(s => s.is_active));
             }
-        } catch (error) {
-            console.error('Data sync failed', error);
-            const cached = readCache();
-            if (cached?.reports) {
-                setReports(cached.reports);
-                toast.info('Offline: Showing last known reports');
-            } else {
-                toast.error('Could not load reports archive');
-            }
-            // In offline/no-backend scenarios, keep schedules functional from local store.
+        } else if (!schedulesLoading) {
             const local = readLocalSchedules();
             if (local.length > 0) setSchedules(local.filter(s => s.is_active));
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [schedulesData, schedulesLoading, userId, readLocalSchedules]);
 
-    React.useEffect(() => {
-        loadData();
-    }, [userId]);
+    const isLoading = apiariesLoading || hivesLoading || reportsLoading || (schedulesLoading && schedules.length === 0);
 
     const downloadBlob = React.useCallback((blob: Blob, filename: string) => {
         const url = URL.createObjectURL(blob);
@@ -191,13 +177,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
         };
 
         const enabled = (id: keyof typeof sections) => !!sections[id];
-        const [apiariesData, hivesData] = await Promise.all([
-            enabled('apiaries') ? safe(beeyieldService.getApiaries(), [] as Apiary[]) : Promise.resolve([] as Apiary[]),
-            enabled('hives') ? safe(beeyieldService.getHives(), [] as Hive[]) : Promise.resolve([] as Hive[]),
-        ]);
-
-        const apiariesFiltered = selectedPlace ? (apiariesData || []).filter((a) => a.id === selectedPlace) : (apiariesData || []);
-        const hivesFiltered = (hivesData || []).filter((h) => {
+        const apiariesFiltered = selectedPlace ? apiaries.filter((a) => a.id === selectedPlace) : apiaries;
+        const hivesFiltered = hives.filter((h) => {
             if (selectedHive && String(h.id) !== String(selectedHive)) return false;
             if (selectedPlace && String((h as any).apiary_id) !== String(selectedPlace)) return false;
             return true;
@@ -372,7 +353,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                 .map(s => s.trim())
                 .filter(Boolean);
 
-            const { error } = await beeyieldService.createScheduledReport({
+            const { error } = await createScheduleMutation.mutateAsync({
                 ...newSchedule,
                 recipients,
                 user_id: userId || undefined,
@@ -387,7 +368,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
 
             if (error) {
                 // No backend? Persist locally so UX still works.
-                const isNoBackend = String(error).toLowerCase().includes('no client');
+                const isNoBackend = String(error).toLowerCase().includes('no client') || String(error).toLowerCase().includes('not found');
                 if (!isNoBackend) throw error;
 
                 const local = readLocalSchedules();
@@ -419,7 +400,6 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                 toast.success('Schedule saved (local)', { id: toastId });
             } else {
                 toast.success('Schedule saved', { id: toastId });
-                loadData();
             }
 
             setIsScheduleModalOpen(false);
@@ -443,9 +423,9 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
     const handleDeleteSchedule = async (id: string) => {
         const toastId = toast.loading('Deleting schedule…');
         try {
-            const { error } = await beeyieldService.deleteScheduledReport(id);
+            const { error } = await deleteScheduleMutation.mutateAsync(id);
             if (error) {
-                const isNoBackend = String(error).toLowerCase().includes('no client');
+                const isNoBackend = String(error).toLowerCase().includes('no client') || String(error).toLowerCase().includes('not found');
                 if (!isNoBackend) throw error;
 
                 const local = readLocalSchedules();
@@ -455,7 +435,6 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                 toast.success('Schedule deleted (local)', { id: toastId });
             } else {
                 toast.success('Schedule deleted', { id: toastId });
-                loadData();
             }
         } catch (error) {
             toast.error('Couldn’t delete schedule', { id: toastId });
