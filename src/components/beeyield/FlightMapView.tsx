@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -76,11 +77,13 @@ const HeatLayer = ({ points, visible }: { points: any[], visible: boolean }) => 
 };
 
 const FlightMapView: React.FC = () => {
-    const [loading, setLoading] = useState(true);
-    const [places, setPlaces] = useState<any[]>([]);
     const [selectedPlaceId, setSelectedPlaceId] = useState<string>("");
     const [selectedPlace, setSelectedPlace] = useState<any>(null);
-    const [hives, setHives] = useState<any[]>([]);
+    
+    // Data Hooks
+    const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+    const { data: hivesData, isLoading: hivesLoading } = useHives(selectedPlaceId || undefined);
+    
     const [weather, setWeather] = useState<any>(null);
     const [foragePotential, setForagePotential] = useState<any>(null);
     const [effectiveRadius, setEffectiveRadius] = useState(2);
@@ -90,20 +93,21 @@ const FlightMapView: React.FC = () => {
     const [route, setRoute] = useState<any[]>([]);
     const [planningRoute, setPlanningRoute] = useState(false);
 
+    const [places, setPlaces] = useState<any[]>([]);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+
     // Initial Data Fetch
     useEffect(() => {
         const init = async () => {
-            setLoading(true);
+            if (!apiariesData) return;
+            setIsInitialLoading(true);
             try {
-                // Fetch infrastructure registers (places)
+                // Fetch infrastructure registers
                 const infrastructure = await beeyieldService.getInfrastructureRegisters();
-                setPlaces(infrastructure || []);
-
+                
                 if (infrastructure && infrastructure.length > 0) {
-                    // Map infrastructure to ensure it has lat/lng from its apiary if missing
-                    const apiaries = await beeyieldService.getApiaries();
                     const enriched = infrastructure.map(inf => {
-                        const apiary = apiaries.find(a => a.id === inf.apiary_id);
+                        const apiary = apiariesData.find(a => a.id === inf.apiary_id);
                         return {
                             ...inf,
                             latitude: inf.latitude || apiary?.latitude || 0,
@@ -112,60 +116,56 @@ const FlightMapView: React.FC = () => {
                         };
                     });
                     setPlaces(enriched);
-                    setSelectedPlaceId(enriched[0].id);
-                    await loadPlaceData(enriched[0]);
-                } else {
-                    // Fallback to apiaries if registry is empty
-                    const apiaries = await beeyieldService.getApiaries();
-                    if (apiaries && apiaries.length > 0) {
-                        const mapped = apiaries.map(a => ({
-                            id: a.id,
-                            name: a.name,
-                            latitude: a.latitude,
-                            longitude: a.longitude,
-                            effective_radius: 2,
-                            max_radius: 5
-                        }));
-                        setPlaces(mapped);
+                    if (!selectedPlaceId) {
+                        setSelectedPlaceId(enriched[0].id);
+                        setSelectedPlace(enriched[0]);
+                    }
+                } else if (apiariesData.length > 0) {
+                    const mapped = apiariesData.map(a => ({
+                        id: a.id,
+                        name: a.name,
+                        latitude: a.latitude,
+                        longitude: a.longitude,
+                        effective_radius: 2,
+                        max_radius: 5
+                    }));
+                    setPlaces(mapped);
+                    if (!selectedPlaceId) {
                         setSelectedPlaceId(mapped[0].id);
-                        await loadPlaceData(mapped[0]);
+                        setSelectedPlace(mapped[0]);
                     }
                 }
             } catch (err) {
                 console.error("Initialization failed:", err);
                 toast.error("Failed to load map data");
             } finally {
-                setLoading(false);
+                setIsInitialLoading(false);
             }
         };
         init();
-    }, []);
+    }, [apiariesData]);
+
+    const hives = hivesData || [];
+    const loading = apiariesLoading || hivesLoading || isInitialLoading;
 
     const loadPlaceData = async (place: any) => {
-        setLoading(true);
         setSelectedPlace(place);
         setEffectiveRadius(place.radius_km || 2);
         setMaxRadius(place.max_radius_km || 5);
         setRoute([]);
 
         try {
-            // Parallel fetches
-            const [hivesRes, weatherRes, potentialRes] = await Promise.all([
-                beeyieldService.getHives(place.id),
+            // Fetch relative data
+            const [weatherRes, potentialRes] = await Promise.all([
                 beeyieldService.getWeatherData(place.latitude, place.longitude),
                 beeyieldService.getFlightPotential(place.id)
             ]);
 
-            setHives(hivesRes || []);
             setWeather(weatherRes);
             setForagePotential(potentialRes);
-
-            toast.success(`Data Loaded for ${place.name}`);
+            toast.success(`Tactical scan complete for ${place.name}`);
         } catch (err) {
             console.error("Load place data failed:", err);
-            toast.error("Error updating location data");
-        } finally {
-            setLoading(false);
         }
     };
 

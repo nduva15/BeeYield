@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useHarvests, useCreateHarvest } from '@/hooks/useHarvests';
+import { useHarvests, useCreateHarvest, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
 import { useApiaries } from '@/hooks/useApiaries';
 import { useHives } from '@/hooks/useHives';
@@ -39,6 +39,37 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const [batchHiveFilter, setBatchHiveFilter] = React.useState('');
     const [selectedHarvest, setSelectedHarvest] = React.useState<Harvest | null>(null);
 
+    const { mutate: updateHarvest, isPending: isUpdating } = useUpdateHarvest();
+    const { mutate: deleteHarvest, isPending: isDeleting } = useDeleteHarvest();
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [editForm, setEditForm] = React.useState<Partial<Harvest>>({});
+
+    const handleEdit = () => {
+        if (selectedHarvest) {
+            setEditForm(selectedHarvest);
+            setIsEditing(true);
+        }
+    };
+
+    const handleSaveEdit = () => {
+        if (!selectedHarvest) return;
+        updateHarvest({ id: selectedHarvest.id, data: editForm }, {
+            onSuccess: () => {
+                setIsEditing(false);
+                setSelectedHarvest({ ...selectedHarvest, ...editForm } as Harvest);
+            }
+        });
+    };
+
+    const handleDelete = () => {
+        if (!selectedHarvest) return;
+        if (window.confirm("Are you sure you want to delete this harvest record?")) {
+            deleteHarvest(selectedHarvest.id, {
+                onSuccess: () => setSelectedHarvest(null)
+            });
+        }
+    };
+
     React.useEffect(() => {
         if (initialParams?.action === 'open_add_new') {
             setIsAddingHarvest(true);
@@ -61,11 +92,16 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const [formData, setFormData] = React.useState<Partial<Harvest>>({
         harvest_date: format(new Date(), 'yyyy-MM-dd'),
         quantity_kg: 0,
+        quantity_left_for_bees_kg: 0,
         honey_type: 'Acacia',
         nectar_source: 'Floral',
+        florage_type: '',
         extraction_method: 'Cold Extraction',
         color_grade: 'Light Amber',
         weather_conditions: 'Sunny',
+        moisture_content_percent: 18.0,
+        notes: '',
+        batch_code: '',
         is_verified: true
     });
 
@@ -394,6 +430,52 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </div>
                                     </div>
                                     <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Left for Bees (KG)</Label>
+                                        <div className="relative group/input">
+                                            <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/40" />
+                                            <Input
+                                                type="number"
+                                                step="0.1"
+                                                placeholder="0.0"
+                                                value={formData.quantity_left_for_bees_kg || ''}
+                                                onChange={(e) => setFormData({ ...formData, quantity_left_for_bees_kg: parseFloat(e.target.value) || 0 })}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white")}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Moisture (%)</Label>
+                                        <div className="relative group/input">
+                                            <Wind className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A90E2]/40" />
+                                            <Input
+                                                type="number"
+                                                step="0.1"
+                                                placeholder="18.0"
+                                                value={formData.moisture_content_percent || ''}
+                                                onChange={(e) => setFormData({ ...formData, moisture_content_percent: parseFloat(e.target.value) || 0 })}
+                                                className={cn(glass.input, "pl-10 h-10 border-white/40 bg-white/50 focus:bg-white")}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Batch Override</Label>
+                                        <Input
+                                            placeholder="BTCH-XXXX"
+                                            value={formData.batch_code || ''}
+                                            onChange={(e) => setFormData({ ...formData, batch_code: e.target.value })}
+                                            className={cn(glass.input, "h-10 border-white/40 bg-white/50 focus:bg-white")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className={glass.microLabel}>Florage Type</Label>
+                                        <Input
+                                            placeholder="e.g. Wildflower"
+                                            value={formData.florage_type || ''}
+                                            onChange={(e) => setFormData({ ...formData, florage_type: e.target.value })}
+                                            className={cn(glass.input, "h-10 border-white/40 bg-white/50 focus:bg-white")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
                                         <Label className={glass.microLabel}>Honey Type</Label>
                                         <Select
                                             value={formData.honey_type}
@@ -461,6 +543,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                             />
                                         </div>
                                     </div>
+                                </div>
+                                <div className="space-y-2 pt-2">
+                                    <Label className={glass.microLabel}>Notes</Label>
+                                    <Textarea
+                                        placeholder="Additional observations..."
+                                        value={formData.notes || ''}
+                                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                        className={cn(glass.input, "min-h-[60px] resize-none border-white/40 bg-white/50 focus:bg-white text-[11px] font-black tracking-tight")}
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2 pt-2">
+                                    <Checkbox
+                                        id="harvest-is-verified"
+                                        checked={formData.is_verified}
+                                        onCheckedChange={(c) => setFormData({ ...formData, is_verified: !!c })}
+                                    />
+                                    <Label htmlFor="harvest-is-verified" className="text-xs font-black text-gray-600 cursor-pointer">
+                                        Verified Record
+                                    </Label>
                                 </div>
 
                                 <div className="pt-4 flex gap-3 border-t border-[#F4D03F]/10 mt-6">
@@ -603,9 +704,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                 <tr className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Batch ID</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Date</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Apiary</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Hive</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Farmer</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Type</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Source</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Florage</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Net Yield</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Left for Bees</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Grade</th>
@@ -618,7 +721,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             <tbody className="divide-y divide-[#F4D03F]/5">
                                     {isLoading ? (
                                         <tr>
-                                            <td colSpan={12} className="p-10 text-center h-40">
+                                            <td colSpan={14} className="p-10 text-center h-40">
                                                 <div className="flex flex-col items-center gap-3">
                                                     <RefreshCw className="w-6 h-6 text-[#F4D03F] animate-spin" />
                                                     <span className="text-xs font-medium text-gray-400">Loading entries...</span>
@@ -627,7 +730,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </tr>
                                     ) : filteredHarvests.length === 0 ? (
                                         <tr>
-                                            <td colSpan={12} className="p-10 text-center h-40">
+                                            <td colSpan={14} className="p-10 text-center h-40">
                                                 <div className="flex flex-col items-center gap-4">
                                                     <SearchX className="w-8 h-8 text-gray-300" />
                                                     <span className="text-sm font-medium text-gray-400">No harvests found</span>
@@ -654,20 +757,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-[11px] font-bold text-[#1A1A1A] truncate max-w-[120px]">
-                                                            {h.apiary?.name || 'Field Ops'}
-                                                        </span>
-                                                        <span className="text-[9px] font-medium text-gray-400">
-                                                            {h.hive?.hive_code || 'Unknown'}
-                                                        </span>
-                                                    </div>
+                                                    <span className="text-[11px] font-bold text-[#1A1A1A] truncate max-w-[120px]">
+                                                        {h.apiary?.name || '—'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-[#1A1A1A]">
+                                                        {h.hive?.hive_code || (h as any).hive_code || '—'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-gray-500">
+                                                        {(h as any).farmer?.name || (h as any).farmer?.full_name || '—'}
+                                                    </span>
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <span className="text-[10px] font-bold text-gray-600">{h.honey_type || '—'}</span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-500">{h.nectar_source || h.florage_type || '—'}</span>
+                                                    <span className="text-[10px] font-bold text-gray-500">{h.florage_type || h.nectar_source || '—'}</span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
                                                     <span className="text-[11px] font-black text-[#1B9157] tabular-nums">
@@ -884,68 +992,227 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                 </div>
                             </div>
                             <div className="p-6 space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Batch Code</span>
-                                        <div className="text-sm font-bold truncate tabular-nums">{selectedHarvest.batch_code || '—'}</div>
+                                {isEditing ? (
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Batch Code</label>
+                                                <input
+                                                    value={editForm.batch_code || ''}
+                                                    onChange={e => setEditForm({ ...editForm, batch_code: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                    placeholder="Auto-generated"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={editForm.harvest_date?.split('T')[0] || ''}
+                                                    onChange={e => setEditForm({ ...editForm, harvest_date: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Net Yield (KG)</label>
+                                                <input
+                                                    type="number"
+                                                    value={editForm.quantity_kg || ''}
+                                                    onChange={e => setEditForm({ ...editForm, quantity_kg: parseFloat(e.target.value) })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Left for Bees (KG)</label>
+                                                <input
+                                                    type="number"
+                                                    value={editForm.quantity_left_for_bees_kg || ''}
+                                                    onChange={e => setEditForm({ ...editForm, quantity_left_for_bees_kg: parseFloat(e.target.value) })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Honey Type</label>
+                                                <input
+                                                    value={editForm.honey_type || ''}
+                                                    onChange={e => setEditForm({ ...editForm, honey_type: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Nectar Source</label>
+                                                <input
+                                                    value={editForm.nectar_source || ''}
+                                                    onChange={e => setEditForm({ ...editForm, nectar_source: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Florage</label>
+                                                <input
+                                                    value={editForm.florage_type || ''}
+                                                    onChange={e => setEditForm({ ...editForm, florage_type: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Color Grade</label>
+                                                <select
+                                                    value={editForm.color_grade || ''}
+                                                    onChange={e => setEditForm({ ...editForm, color_grade: e.target.value })}
+                                                    className={cn(glass.select, "h-9 text-sm font-bold w-full")}
+                                                >
+                                                    <option value="Extra Light Amber">Extra Light Amber</option>
+                                                    <option value="Light Amber">Light Amber</option>
+                                                    <option value="Amber">Amber</option>
+                                                    <option value="Dark Amber">Dark Amber</option>
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Moisture (%)</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.1"
+                                                    value={editForm.moisture_content_percent || ''}
+                                                    onChange={e => setEditForm({ ...editForm, moisture_content_percent: parseFloat(e.target.value) })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Extraction</label>
+                                                <input
+                                                    value={editForm.extraction_method || ''}
+                                                    onChange={e => setEditForm({ ...editForm, extraction_method: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400">Weather</label>
+                                                <input
+                                                    value={editForm.weather_conditions || ''}
+                                                    onChange={e => setEditForm({ ...editForm, weather_conditions: e.target.value })}
+                                                    className={cn(glass.input, "h-9 text-sm font-bold")}
+                                                />
+                                            </div>
+                                            <div className="space-y-2 border border-[#F4D03F]/20 rounded-xl p-2 flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="edit_verified"
+                                                    checked={editForm.is_verified || false}
+                                                    onChange={e => setEditForm({ ...editForm, is_verified: e.target.checked })}
+                                                    className="rounded bg-black/40 border-[#F4D03F]/20 text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                                                />
+                                                <label htmlFor="edit_verified" className="text-[10px] font-black uppercase text-gray-400 cursor-pointer">Verified Record</label>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-gray-400">Notes</label>
+                                            <textarea
+                                                value={editForm.notes || ''}
+                                                onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
+                                                className={cn(glass.input, "w-full min-h-[60px] text-sm font-bold p-2")}
+                                                placeholder="Observations..."
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Date</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.harvest_date ? format(new Date(selectedHarvest.harvest_date), 'MMM dd, yyyy') : '—'}</div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Batch Code</span>
+                                            <div className="text-sm font-bold truncate tabular-nums">{selectedHarvest.batch_code || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Date</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.harvest_date ? format(new Date(selectedHarvest.harvest_date), 'MMM dd, yyyy') : '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Apiary</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.apiary?.name || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Hive</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.hive?.hive_code || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Net Yield</span>
+                                            <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Left for Bees</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.quantity_left_for_bees_kg != null ? `${selectedHarvest.quantity_left_for_bees_kg} KG` : '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Honey Type</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.honey_type || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Nectar Source</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.nectar_source || selectedHarvest.florage_type || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Florage</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.florage_type || selectedHarvest.nectar_source || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Farmer</span>
+                                            <div className="text-sm font-bold">{(selectedHarvest as any).farmer?.name || (selectedHarvest as any).farmer?.full_name || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Color Grade</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.color_grade || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Moisture</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.moisture_content_percent != null ? `${selectedHarvest.moisture_content_percent}%` : '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Extraction</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.extraction_method || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Weather</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.weather_conditions || '—'}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Verified</span>
+                                            <div className="text-sm font-bold">{selectedHarvest.is_verified ? <span className="text-[#1B9157]">✓ Verified</span> : <span className="text-gray-400">Pending</span>}</div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Blockchain Hash</span>
+                                            <div className="text-[10px] font-mono font-bold text-gray-400 truncate">{selectedHarvest.blockchain_hash || '—'}</div>
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Apiary</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.apiary?.name || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Hive</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.hive?.hive_code || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Net Yield</span>
-                                        <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Left for Bees</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.quantity_left_for_bees_kg != null ? `${selectedHarvest.quantity_left_for_bees_kg} KG` : '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Honey Type</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.honey_type || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Nectar Source</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.nectar_source || selectedHarvest.florage_type || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Color Grade</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.color_grade || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Moisture</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.moisture_content_percent != null ? `${selectedHarvest.moisture_content_percent}%` : '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Extraction</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.extraction_method || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Weather</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.weather_conditions || '—'}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Verified</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.is_verified ? <span className="text-[#1B9157]">✓ Verified</span> : <span className="text-gray-400">Pending</span>}</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Blockchain Hash</span>
-                                        <div className="text-[10px] font-mono font-bold text-gray-400 truncate">{selectedHarvest.blockchain_hash || '—'}</div>
-                                    </div>
-                                </div>
-                                <div className="pt-4 border-t border-[#F4D03F]/10">
-                                    <button onClick={() => setSelectedHarvest(null)} className={cn(glass.btnPrimary, "w-full")}>
-                                        Close Details
-                                    </button>
+                                    {selectedHarvest.notes && (
+                                        <div className="space-y-1 pt-2 border-t border-[#F4D03F]/10">
+                                            <span className="text-[9px] font-black uppercase text-gray-400">Notes</span>
+                                            <p className="text-xs font-medium text-gray-600 leading-relaxed">{selectedHarvest.notes}</p>
+                                        </div>
+                                    )}
+                                )}
+                                
+                                <div className="pt-4 border-t border-[#F4D03F]/10 flex gap-2">
+                                    {isEditing ? (
+                                        <>
+                                            <button onClick={() => setIsEditing(false)} className={cn(glass.btnSecondary, "flex-1")}>
+                                                Cancel
+                                            </button>
+                                            <button onClick={handleSaveEdit} disabled={isUpdating} className={cn(glass.btnPrimary, "flex-1")}>
+                                                {isUpdating ? 'Saving...' : 'Save Changes'}
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button onClick={handleDelete} disabled={isDeleting} className="px-4 py-2 rounded-xl text-[11px] font-bold text-red-500 bg-red-500/10 hover:bg-red-500/20 transition-colors">
+                                                {isDeleting ? 'Deleting...' : 'Delete'}
+                                            </button>
+                                            <button onClick={handleEdit} className={cn(glass.btnSecondary, "flex-1")}>
+                                                Edit
+                                            </button>
+                                            <button onClick={() => setSelectedHarvest(null)} className={cn(glass.btnPrimary, "flex-1")}>
+                                                Close
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>

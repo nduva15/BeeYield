@@ -6,6 +6,9 @@ import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import beeyieldService, { Apiary, Harvest } from '@/services/beeyieldService';
+import { useApiaries } from '@/hooks/useApiaries';
+import { useHarvests } from '@/hooks/useHarvests';
+import { useFlightPotential } from '@/hooks/useFlightPotential';
 
 interface ForagingOptimizerProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -16,10 +19,18 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
     const [shiftRecentlyCommitted, setShiftRecentlyCommitted] = React.useState(false);
     const shiftTimeoutRef = React.useRef<number | null>(null);
 
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
-    const [foragePotential, setForagePotential] = React.useState<any>(null);
-    const [harvests, setHarvests] = React.useState<Harvest[]>([]);
+    
+    // Data Hooks
+    const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+    const { data: harvestsData, isLoading: harvestsLoading } = useHarvests();
+    const { data: potentialData, isLoading: potentialLoading } = useFlightPotential(selectedApiaryId || undefined);
+
+    const apiaries = apiariesData || [];
+    const harvests = harvestsData || [];
+    const foragePotential = potentialData || null;
+
+    const loading = apiariesLoading || harvestsLoading || potentialLoading;
 
     const harvestSeries = React.useMemo(() => {
         // Build a simple monthly series from real harvest rows.
@@ -40,41 +51,10 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
     }, [harvests]);
 
     React.useEffect(() => {
-        let mounted = true;
-        const load = async () => {
-            try {
-                const [a, h] = await Promise.all([
-                    beeyieldService.getApiaries(),
-                    beeyieldService.getHarvests(),
-                ]);
-                if (!mounted) return;
-                setApiaries(a || []);
-                setHarvests(h || []);
-                if (!selectedApiaryId && (a || []).length > 0) setSelectedApiaryId(a[0].id);
-            } catch (e) {
-                console.error(e);
-            }
-        };
-        load();
-        return () => {
-            mounted = false;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedApiaryId]);
-
-    React.useEffect(() => {
-        let mounted = true;
-        const loadPotential = async () => {
-            if (!selectedApiaryId) return;
-            const res = await beeyieldService.getFlightPotential(selectedApiaryId);
-            if (!mounted) return;
-            setForagePotential(res);
-        };
-        loadPotential();
-        return () => {
-            mounted = false;
-        };
-    }, [selectedApiaryId]);
+        if (!selectedApiaryId && apiaries.length > 0) {
+            setSelectedApiaryId(apiaries[0].id);
+        }
+    }, [apiaries, selectedApiaryId]);
 
     const commitLocationShift = React.useCallback(() => {
         setShiftRecentlyCommitted(true);

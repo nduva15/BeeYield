@@ -436,6 +436,8 @@ export interface Hive {
     latest_temp?: number;
     latest_humidity?: number;
     latest_weight?: number;
+    latitude?: number;
+    longitude?: number;
     temp_threshold_high?: number;
     temp_threshold_low?: number;
     weight_drop_threshold?: number;
@@ -1120,7 +1122,7 @@ export const beeyieldService = {
         } catch (error) {
             console.warn('Falling back to direct Supabase for hives', error);
             if (!sb) return [];
-            let query = sb.from('hives').select('*, apiary:apiaries(name)').order('hive_code', { ascending: true });
+            let query = sb.from('hives').select('*, apiary:apiaries(id, name)').order('hive_code', { ascending: true });
             if (apiaryId) query = query.eq('apiary_id', apiaryId);
             const { data } = await query;
             return (data || []).map((h: any) => ({
