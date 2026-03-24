@@ -140,9 +140,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
             apiary: (h as any).apiary?.name || '',
             hive_code: (h as any).hive?.hive_code || '',
             quantity_kg: h.quantity_kg ?? '',
+            quantity_left_for_bees_kg: h.quantity_left_for_bees_kg ?? '',
             honey_type: h.honey_type || '',
+            nectar_source: h.nectar_source || '',
             color_grade: h.color_grade || '',
-            verified: (h as any).is_verified ?? '',
+            extraction_method: h.extraction_method || '',
+            moisture_pct: h.moisture_content_percent ?? '',
+            weather: h.weather_conditions || '',
+            verified: (h as any).is_verified ? 'Yes' : 'No',
+            blockchain_hash: h.blockchain_hash || '',
         }));
 
         if (rows.length === 0) {
@@ -595,18 +601,24 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
-                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500">Batch ID</th>
-                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500">Date</th>
-                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500">Hive</th>
-                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500 text-center">Net yield</th>
-                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500 text-center">Grade</th>
-                                    <th className="px-6 py-4 text-xs font-semibold text-gray-500 text-right">Status</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Batch ID</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Date</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Hive</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Type</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Source</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Net Yield</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Left for Bees</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Grade</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Moisture</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Extraction</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Weather</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Verified</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F4D03F]/5">
                                     {isLoading ? (
                                         <tr>
-                                            <td colSpan={6} className="p-10 text-center h-40">
+                                            <td colSpan={12} className="p-10 text-center h-40">
                                                 <div className="flex flex-col items-center gap-3">
                                                     <RefreshCw className="w-6 h-6 text-[#F4D03F] animate-spin" />
                                                     <span className="text-xs font-medium text-gray-400">Loading entries...</span>
@@ -615,7 +627,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </tr>
                                     ) : filteredHarvests.length === 0 ? (
                                         <tr>
-                                            <td colSpan={6} className="p-10 text-center h-40">
+                                            <td colSpan={12} className="p-10 text-center h-40">
                                                 <div className="flex flex-col items-center gap-4">
                                                     <SearchX className="w-8 h-8 text-gray-300" />
                                                     <span className="text-sm font-medium text-gray-400">No harvests found</span>
@@ -631,40 +643,66 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 onClick={() => setSelectedHarvest(h)}
                                                 className="hover:bg-white/50 transition-colors group cursor-pointer"
                                             >
-                                                <td className="px-6 py-4">
-                                                    <span className="text-xs font-bold text-[#1A1A1A]">
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-black text-[#1A1A1A] tabular-nums">
                                                         {h.batch_code || `BAT-${h.id.toString().slice(-6).toUpperCase()}`}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="text-xs font-medium text-gray-500 tabular-nums">
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
                                                         {format(new Date(h.harvest_date), 'MMM dd, yyyy')}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-4 py-3">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-[#1A1A1A] truncate max-w-[150px]">
+                                                        <span className="text-[11px] font-bold text-[#1A1A1A] truncate max-w-[120px]">
                                                             {h.apiary?.name || 'Field Ops'}
                                                         </span>
-                                                        <span className="text-[10px] font-medium text-gray-400">
-                                                            ID: {h.hive?.hive_code || 'Unknown'}
+                                                        <span className="text-[9px] font-medium text-gray-400">
+                                                            {h.hive?.hive_code || 'Unknown'}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span className="text-sm font-bold text-[#1B9157] tabular-nums">
-                                                        {h.quantity_kg.toFixed(1)} <span className="text-[10px] font-medium opacity-50">Kg</span>
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-gray-600">{h.honey_type || '—'}</span>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-gray-500">{h.nectar_source || h.florage_type || '—'}</span>
+                                                </td>
+                                                <td className="px-4 py-3 text-center">
+                                                    <span className="text-[11px] font-black text-[#1B9157] tabular-nums">
+                                                        {h.quantity_kg.toFixed(1)} <span className="text-[9px] font-medium opacity-50">Kg</span>
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <Badge variant="outline" className="border-[#F4D03F]/20 text-[#F4D03F] font-bold text-[10px] tracking-wider bg-white">
-                                                        {h.color_grade?.split(' ')[0] || 'A'}
+                                                <td className="px-4 py-3 text-center">
+                                                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                                        {h.quantity_left_for_bees_kg != null ? `${h.quantity_left_for_bees_kg} Kg` : '—'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-center">
+                                                    <Badge variant="outline" className="border-[#F4D03F]/20 text-[#F4D03F] font-bold text-[9px] tracking-wider bg-white">
+                                                        {h.color_grade || '—'}
                                                     </Badge>
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <Badge variant="outline" className="border-[#1B9157]/20 text-[#1B9157] font-bold text-[10px] tracking-wider bg-white">
-                                                        Archived
-                                                    </Badge>
+                                                <td className="px-4 py-3 text-center">
+                                                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                                        {h.moisture_content_percent != null ? `${h.moisture_content_percent}%` : '—'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-gray-500">{h.extraction_method || '—'}</span>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <span className="text-[10px] font-bold text-gray-400">{h.weather_conditions || '—'}</span>
+                                                </td>
+                                                <td className="px-4 py-3 text-center">
+                                                    {h.is_verified ? (
+                                                        <Badge variant="outline" className="border-[#1B9157]/20 text-[#1B9157] font-bold text-[9px] bg-[#1B9157]/5">
+                                                            <ShieldCheck className="w-3 h-3 mr-1" /> Verified
+                                                        </Badge>
+                                                    ) : (
+                                                        <span className="text-[9px] font-bold text-gray-400">Pending</span>
+                                                    )}
                                                 </td>
                                             </motion.tr>
                                         ))
@@ -856,24 +894,52 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         <div className="text-sm font-bold">{selectedHarvest.harvest_date ? format(new Date(selectedHarvest.harvest_date), 'MMM dd, yyyy') : '—'}</div>
                                     </div>
                                     <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Yield (KG)</span>
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Apiary</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.apiary?.name || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Hive</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.hive?.hive_code || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Net Yield</span>
                                         <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Left for Bees</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.quantity_left_for_bees_kg != null ? `${selectedHarvest.quantity_left_for_bees_kg} KG` : '—'}</div>
                                     </div>
                                     <div className="space-y-1">
                                         <span className="text-[9px] font-black uppercase text-gray-400">Honey Type</span>
                                         <div className="text-sm font-bold">{selectedHarvest.honey_type || '—'}</div>
                                     </div>
                                     <div className="space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-gray-400">Extraction</span>
-                                        <div className="text-sm font-bold">{selectedHarvest.extraction_method || '—'}</div>
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Nectar Source</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.nectar_source || selectedHarvest.florage_type || '—'}</div>
                                     </div>
                                     <div className="space-y-1">
                                         <span className="text-[9px] font-black uppercase text-gray-400">Color Grade</span>
                                         <div className="text-sm font-bold">{selectedHarvest.color_grade || '—'}</div>
                                     </div>
-                                    <div className="col-span-2 space-y-1">
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Moisture</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.moisture_content_percent != null ? `${selectedHarvest.moisture_content_percent}%` : '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Extraction</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.extraction_method || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
                                         <span className="text-[9px] font-black uppercase text-gray-400">Weather</span>
                                         <div className="text-sm font-bold">{selectedHarvest.weather_conditions || '—'}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Verified</span>
+                                        <div className="text-sm font-bold">{selectedHarvest.is_verified ? <span className="text-[#1B9157]">✓ Verified</span> : <span className="text-gray-400">Pending</span>}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-[9px] font-black uppercase text-gray-400">Blockchain Hash</span>
+                                        <div className="text-[10px] font-mono font-bold text-gray-400 truncate">{selectedHarvest.blockchain_hash || '—'}</div>
                                     </div>
                                 </div>
                                 <div className="pt-4 border-t border-[#F4D03F]/10">
