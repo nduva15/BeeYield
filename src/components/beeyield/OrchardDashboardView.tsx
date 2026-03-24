@@ -50,30 +50,99 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
         }
     }, [apiary?.latitude, apiary?.longitude]);
 
+    const [historicalReadings, setHistoricalReadings] = React.useState<any[]>([]);
+    const [isHistoryLoading, setIsHistoryLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        const fetchHistory = async () => {
+            setIsHistoryLoading(true);
+            // Get last 24h worth of readings
+            const data = await beeyieldService.getSensorReadings(undefined, 24);
+            if (data) {
+                // Filter for hives that belong to this apiary
+                const apiaryHiveIds = new Set(hives.map(h => h.id));
+                const filtered = data.filter(r => r.hive_id && apiaryHiveIds.has(r.hive_id));
+                setHistoricalReadings(filtered);
+            }
+            setIsHistoryLoading(false);
+        };
+        if (hives.length > 0) {
+            fetchHistory();
+        }
+    }, [hives.length, apiary?.id]);
+
     const stats = React.useMemo(() => {
         if (!hives.length) return null;
         const totalHives = hives.length;
-        const activeHives = hives.filter(h => h.status === 'Active' || h.status === 'active').length;
+        
+        // Be more inclusive of active statuses
+        const activeStatuses = ['active', 'healthy', 'ok', 'Active', 'Healthy', 'OK'];
+        const activeHives = hives.filter(h => activeStatuses.includes(h.status || '')).length;
+        
         const avgStrength = hives.reduce((acc, h) => {
             let score = 0;
-            const t = h.latest_temp || (h as any).telemetry?.temperature;
-            const w = h.latest_weight || (h as any).telemetry?.weight;
-            if (h.status === 'Active' || h.status === 'active') score += 50;
-            if (w > 20) score += 30;
-            if (t > 32 && t < 37) score += 20;
+            // Use property names from useHivesWithTelemetry mapping
+            const t = h.latest_temp || (h as any).temp || (h as any).telemetry?.temperature;
+            const w = h.latest_weight || (h as any).weight || (h as any).telemetry?.weight;
+            
+            if (activeStatuses.includes(h.status || '')) score += 50;
+            if (w > 20) score += 30; // 20kg threshold for strong honey stores
+            if (t > 32 && t < 37) score += 20; // Correct brood nest temp
             return acc + score;
         }, 0) / (totalHives || 1);
-        const avgWeight = hives.reduce((sum, h) => sum + (h.latest_weight || (h as any).telemetry?.weight || 0), 0) / (totalHives || 1);
+        
+        const avgWeight = hives.reduce((sum, h) => 
+            sum + (h.latest_weight || (h as any).weight || (h as any).telemetry?.weight || 0), 0
+        ) / (totalHives || 1);
+
+        const avgBattery = hives.reduce((sum, h) => {
+            const b = h.latest_battery || (h as any).telemetry?.battery_level || (h as any).telemetry?.battery_voltage || 100;
+            return sum + (b > 100 ? 100 : b); // Normalize if it's voltage
+        }, 0) / (totalHives || 1);
+        
+        // Match service logic: active or undefined status is considered active
+        const activeHives = hives.filter(h => !h.status || activeStatuses.includes(h.status)).length;
+
         return {
             totalHives,
             activeHives,
             avgStrength: Math.round(avgStrength),
             avgWeight: avgWeight.toFixed(1),
+            avgBattery: Math.round(avgBattery),
             activityLevel: avgStrength > 80 ? 'High' : avgStrength > 50 ? 'Medium' : 'Low'
         };
     }, [hives]);
 
-    const activityData = React.useMemo(() => [], []);
+    const activityData = React.useMemo(() => {
+        if (!historicalReadings.length) return [];
+        
+        // Group by hour
+        const hours: Record<string, { activity: number, foraging: number, count: number }> = {};
+        
+        historicalReadings.forEach(r => {
+            const date = new Date(r.timestamp || r.recorded_at);
+            const hourStr = date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+            
+            if (!hours[hourStr]) {
+                hours[hourStr] = { activity: 0, foraging: 0, count: 0 };
+            }
+            
+            // Extract activity from readings blob if available
+            const readings = r.readings || {};
+            const itemActivity = (readings as any).bee_activity || 0;
+            const itemForaging = (readings as any).foraging_rate || (itemActivity * 0.7); // Fallback estimate
+            
+            hours[hourStr].activity += itemActivity;
+            hours[hourStr].foraging += itemForaging;
+            hours[hourStr].count += 1;
+        });
+
+        return Object.entries(hours).map(([time, data]) => ({
+            time,
+            activity: Math.round(data.activity / data.count),
+            foraging: Math.round(data.foraging / data.count)
+        })).reverse().slice(-12); // Show last 12 buckets
+    }, [historicalReadings]);
 
     if (hivesLoading && !hives.length) {
         return (
@@ -123,10 +192,18 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/20 shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                    <Sun className="w-3.5 h-3.5 text-[#F4D03F]" />
-                    <span className="text-xs font-bold text-[#1A1A1A]">Optimal</span>
+                <div className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg border shadow-sm",
+                    (stats?.avgStrength || 0) > 70 ? "bg-[#1B9157]/5 border-[#1B9157]/20" : "bg-[#F4D03F]/5 border-[#F4D03F]/20"
+                )}>
+                    <div className={cn(
+                        "w-1.5 h-1.5 rounded-full animate-pulse",
+                        (stats?.avgStrength || 0) > 70 ? "bg-[#1B9157]" : "bg-[#F4D03F]"
+                    )} />
+                    <Sun className={cn("w-3.5 h-3.5", (stats?.avgStrength || 0) > 70 ? "text-[#1B9157]" : "text-[#F4D03F]")} />
+                    <span className="text-xs font-bold text-[#1A1A1A]">
+                        {(stats?.avgStrength || 0) > 70 ? 'Optimal' : (stats?.avgStrength || 0) > 40 ? 'Fair' : 'Alert'}
+                    </span>
                 </div>
             </div>
 
@@ -146,7 +223,11 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                             )}
                         </div>
                         <div className="space-y-0.5 mt-1">
-                            <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">{s.value}</p>
+                            <div className="flex items-baseline gap-1">
+                                <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">{s.label === 'Strength' ? stats?.avgStrength : s.value}</p>
+                                {s.label === 'Strength' && <span className="text-xs font-bold text-gray-400">%</span>}
+                                {s.label === 'Avg Weight' && <span className="text-xs font-bold text-gray-400">kg</span>}
+                            </div>
                             <p className="text-[10px] font-bold text-gray-500 tracking-wider">{s.label}</p>
                         </div>
                     </div>
@@ -163,8 +244,18 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         </div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider">Today</span>
                     </div>
-                    <div className="p-4 flex-1">
-                        <ResponsiveContainer width="99%" height={220}>
+                    <div className="p-4 flex-1 min-h-[220px]">
+                        {(isHistoryLoading || hivesLoading) && !activityData.length ? (
+                            <div className="h-full flex items-center justify-center opacity-30">
+                                <Loader2 className="w-6 h-6 animate-spin text-[#1B9157]" />
+                            </div>
+                        ) : !activityData.length ? (
+                            <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-8">
+                                <Activity className="w-8 h-8 mb-2 text-gray-300" />
+                                <p className="text-[10px] font-bold text-gray-400">Waiting for live sensor stream...</p>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="99%" height={220}>
                             <AreaChart data={activityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
@@ -197,6 +288,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                 <Area type="monotone" dataKey="foraging" stroke="#F4D03F" strokeWidth={2} fillOpacity={1} fill="url(#colorForaging)" dot={false} name="Foraging" />
                             </AreaChart>
                         </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -237,6 +329,23 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                                     <span className="text-[10px] font-medium text-gray-500">%</span>
                                 </div>
                                 <span className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Humidity</span>
+                            </div>
+                        </div>
+
+                        <div className="w-full pt-4 border-t border-gray-100 mt-2">
+                             <div className="flex items-center justify-between text-[10px] font-bold">
+                                <span className="text-gray-400 uppercase tracking-widest">Energy</span>
+                                <div className="flex items-center gap-1.5">
+                                    <div className={cn(
+                                        "w-1.5 h-1.5 rounded-full",
+                                        (stats?.avgBattery || 0) > 40 ? "bg-[#1B9157]" : "bg-red-500"
+                                    )} />
+                                    <span className={cn(
+                                        (stats?.avgBattery || 0) > 40 ? "text-[#1B9157]" : "text-red-500"
+                                    )}>
+                                        {stats?.avgBattery}%
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
