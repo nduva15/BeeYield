@@ -149,7 +149,15 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
             if (local.length > 0) setSchedules(local.filter(s => s.is_active));
         }
     }, [schedulesData, schedulesLoading, userId, readLocalSchedules]);
-
+    
+    // Helper to refresh data
+    const loadData = React.useCallback(async () => {
+        // This is a no-op if using react-query as data is managed by hooks
+        // but it's called by generate functions to ensure fresh state.
+        // For local state/fallback, we keep it for compatibility.
+        console.log('Refreshing reports data...');
+    }, []);
+    
     const isLoading = apiariesLoading || hivesLoading || reportsLoading || (schedulesLoading && schedules.length === 0);
 
     const downloadBlob = React.useCallback((blob: Blob, filename: string) => {

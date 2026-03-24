@@ -261,3 +261,27 @@ export function BeeYieldTextInput({
   );
 }
 
+export function BeeYieldBadge({
+  children,
+  variant = 'default',
+  className,
+}: {
+  children: React.ReactNode;
+  variant?: 'default' | 'success' | 'warning' | 'error';
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        glass.badge,
+        variant === 'success' && 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]',
+        variant === 'error' && 'border-red-500/20 bg-red-500/10 text-red-600',
+        variant === 'warning' && 'border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#F4D03F]',
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+

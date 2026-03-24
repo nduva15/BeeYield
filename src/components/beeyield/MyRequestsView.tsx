@@ -35,37 +35,11 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     // Data Fetching
     const { data: apiariesData } = useApiaries();
     const { data: hivesData } = useHives();
-    const { data: requests, isLoading: isLoadingRequests } = useRequests();
+    const { data: requests = [], isLoading: isLoadingRequests } = useRequests();
     const createRequest = useCreateRequest();
 
     const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>("");
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
-    const [localRequests, setLocalRequests] = React.useState<any[]>([]);
-
-    const LOCAL_REQUESTS_KEY = React.useMemo(() => 'beeyield_local_requests_v1', []);
-
-    const readLocalRequests = React.useCallback(() => {
-        try {
-            const raw = globalThis.localStorage?.getItem(LOCAL_REQUESTS_KEY);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
-    }, [LOCAL_REQUESTS_KEY]);
-
-    const writeLocalRequests = React.useCallback((next: any[]) => {
-        try {
-            globalThis.localStorage?.setItem(LOCAL_REQUESTS_KEY, JSON.stringify(next));
-        } catch {
-            // ignore
-        }
-    }, [LOCAL_REQUESTS_KEY]);
-
-    React.useEffect(() => {
-        setLocalRequests(readLocalRequests());
-    }, [readLocalRequests]);
 
     // Wizard State
     const [wizardStep, setWizardStep] = React.useState(0);
@@ -90,18 +64,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     }, [hivesData, selectedPlaceId]);
 
     const combinedRequests = React.useMemo(() => {
-        const remote = Array.isArray(requests) ? requests : [];
-        const local = Array.isArray(localRequests) ? localRequests : [];
-        const merged = [...local, ...remote];
-        const seen = new Set<string>();
-        return merged.filter((r: any) => {
-            const id = String(r?.id || '');
-            if (!id) return false;
-            if (seen.has(id)) return false;
-            seen.add(id);
-            return true;
-        });
-    }, [requests, localRequests]);
+        return Array.isArray(requests) ? requests : [];
+    }, [requests]);
 
     const filteredRequests = React.useMemo(() => {
         return combinedRequests.filter((req: any) => {
@@ -133,34 +97,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
             setCategory('');
             setSubject('');
             setDescription('');
-            toast.success("Request submitted successfully");
         } catch (error) {
-            // Offline/no-backend fallback: persist locally so the UX remains functional.
-            const createdAt = new Date().toISOString();
-            const localRow: any = {
-                id: `local-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                subject: subject.trim(),
-                description: description.trim(),
-                status: 'Open',
-                category,
-                type: category,
-                priority,
-                hive_id: selectedHiveId || null,
-                apiary_id: selectedPlaceId || null,
-                created_at: createdAt,
-                updated_at: createdAt,
-                _local: true,
-            };
-            const next = [localRow, ...readLocalRequests()];
-            setLocalRequests(next);
-            writeLocalRequests(next);
-
-            setShowWizard(false);
-            setWizardStep(0);
-            setCategory('');
-            setSubject('');
-            setDescription('');
-            toast.success("Saved locally (offline)");
+            console.error('Error submitting request:', error);
         }
     };
 

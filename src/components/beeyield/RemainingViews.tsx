@@ -30,13 +30,13 @@ import {
     CloudSync,
     Lock as LockIcon
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { UsbHubDashboard } from './UsbHubDashboard';
-import { glass, PageHeader, GlassStatCard } from './GlassTheme';
+import { glass, PageHeader, GlassStatCard, GlassModal } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 // --- Custom Components for Modals ---
@@ -47,15 +47,15 @@ const ToggleSwitch = ({ checked, onCheckedChange, label }: { checked: boolean, o
             {label && <span className={cn(glass.microLabel, "opacity-60 font-bold")}>{label}</span>}
             <div
                 className={cn(
-                    "relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F4D03F]/50",
-                    checked ? "bg-[#F4D03F]/80 shadow-lg shadow-honey/20" : "bg-[#F4D03F]/10"
+                    "relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F4D03F]/50",
+                    checked ? "bg-[#F4D03F] shadow-lg shadow-[#F4D03F]/20" : "bg-black/20"
                 )}
                 onClick={() => onCheckedChange(!checked)}
             >
                 <span
                     className={cn(
-                        "pointer-events-none inline-block h-6 w-6 transform rounded-full bg-[#FFF9F0] shadow-xl ring-0 transition duration-500 ease-in-out mt-0.5 ml-0.5",
-                        checked ? "translate-x-8" : "translate-x-0"
+                        "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xl ring-0 transition duration-300 ease-in-out mt-0.5 ml-0.5",
+                        checked ? "translate-x-5" : "translate-x-0"
                     )}
                 />
             </div>
@@ -98,68 +98,54 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
     const [searchWireless, setSearchWireless] = React.useState(false);
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl bg-transparent border-none p-0 shadow-none overflow-visible max-h-[85vh] overflow-y-auto">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-[#F4D03F]/10 bg-[#FFF9F0]/95 backdrop-blur-2xl")}
-                >
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
+        <GlassModal
+            isOpen={open}
+            onClose={() => onOpenChange(false)}
+            title="Bridge Configuration"
+            subtitle="v5.1 • Choose what data to share and how often to sync."
+        >
+            <div className="space-y-8">
+                <div className="space-y-3">
+                    <h4 className={glass.microLabel}>Measurement Sync Cadence</h4>
+                    <MeasurementIntervalSelector />
+                </div>
 
-                    <div className="bg-[#FFF9F0] px-6 py-6 border-b border-border/50 relative z-10">
-                        <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3')}>
-                            <Settings className="w-3 h-3 mr-2" />
-                            Bridge Configuration v5.1
-                        </div>
-                        <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Settings <span className="text-[#F4D03F]">options</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1")}>Choose what data to share and how often to sync.</DialogDescription>
-                    </div>
-
-                    <div className="p-6 space-y-8 relative z-10">
-                        <div className="space-y-3">
-                            <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>Measurement Sync Cadence</h4>
-                            <MeasurementIntervalSelector />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {[
-                                { checked: makePublic, set: setMakePublic, label: 'Public sharing', icon: LockIcon, desc: 'Share summary data publicly (optional).' },
-                                { checked: keepUpdate, set: setKeepUpdate, label: 'Live updates', icon: Activity, desc: 'Keep this page updated while it’s open.' },
-                                { checked: consent, set: setConsent, label: 'Research sharing', icon: CloudSync, desc: 'Help improve recommendations with anonymous stats.' },
-                                { checked: searchWireless, set: setSearchWireless, label: 'Bluetooth scan', icon: Wifi, desc: 'Look for nearby devices over Bluetooth.' }
-                            ].map((item, i) => (
-                                <div key={i} className="space-y-3">
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
-                                            <item.icon className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                        </div>
-                                        <h4 className={cn(glass.microLabel, "opacity-80 font-black")}>{item.label}</h4>
-                                    </div>
-                                    <ToggleSwitch checked={item.checked} onCheckedChange={item.set} />
-                                    <p className="text-[9px] text-foreground/40 italic font-bold leading-tight tracking-tighter">{item.desc}</p>
+                <div className="grid grid-cols-2 gap-6">
+                    {[
+                        { checked: makePublic, set: setMakePublic, label: 'Public sharing', icon: LockIcon, desc: 'Share summary data publicly.' },
+                        { checked: keepUpdate, set: setKeepUpdate, label: 'Live updates', icon: Activity, desc: 'Keep page updated live.' },
+                        { checked: consent, set: setConsent, label: 'Research sharing', icon: CloudSync, desc: 'Help improve anonymous stats.' },
+                        { checked: searchWireless, set: setSearchWireless, label: 'Bluetooth scan', icon: Wifi, desc: 'Nearby Bluetooth discovery.' }
+                    ].map((item, i) => (
+                        <div key={i} className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                    <item.icon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                            ))}
+                                <h4 className={cn(glass.microLabel, "opacity-80")}>{item.label}</h4>
+                            </div>
+                            <ToggleSwitch checked={item.checked} onCheckedChange={item.set} />
+                            <p className="text-[10px] text-gray-400 italic font-medium leading-tight">{item.desc}</p>
                         </div>
+                    ))}
+                </div>
 
-                        <div className="pt-6 flex gap-4 border-t border-border/50">
-                            <button
-                                className={cn(glass.btnSecondary, "flex-1 h-10 text-[10px] font-black")}
-                                onClick={() => onOpenChange(false)}
-                            >
-                                Discard
-                            </button>
-                            <button
-                                className={cn(glass.btnPrimary, "flex-1 h-10 text-[10px] font-black shadow-xl shadow-honey/20")}
-                                onClick={() => onOpenChange(false)}
-                            >
-                                Persist
-                            </button>
-                        </div>
-                    </div>
-                </motion.div>
-            </DialogContent>
-        </Dialog>
+                <div className="pt-6 flex gap-4 border-t border-[#F4D03F]/10">
+                    <button
+                        className={cn(glass.btnSecondary, "flex-1 h-10")}
+                        onClick={() => onOpenChange(false)}
+                    >
+                        Discard
+                    </button>
+                    <button
+                        className={cn(glass.btnPrimary, "flex-1 h-10")}
+                        onClick={() => onOpenChange(false)}
+                    >
+                        Persist Changes
+                    </button>
+                </div>
+            </div>
+        </GlassModal>
     );
 };
 
@@ -176,84 +162,68 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
     const [weightAlerts, setWeightAlerts] = React.useState(false);
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl bg-transparent border-none p-0 shadow-none overflow-visible max-h-[85vh] overflow-y-auto">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-destructive/10 bg-[#FFF9F0]/95 backdrop-blur-2xl")}
+        <GlassModal
+            isOpen={open}
+            onClose={() => onOpenChange(false)}
+            title="Notify Engine"
+            subtitle="Biosphere Alert Matrix v2.0 • Sensor discrepancy triggers."
+        >
+            <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <h4 className={glass.microLabel}>Mobile OS Interface</h4>
+                        <ToggleSwitch checked={appNotif} onCheckedChange={setAppNotif} />
+                    </div>
+                    <div className="space-y-2">
+                        <h4 className={glass.microLabel}>SMS Gateway</h4>
+                        <ToggleSwitch checked={smsNotif} onCheckedChange={setSmsNotif} />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <h4 className={glass.microLabel}>Primary Email Endpoint</h4>
+                    <div className="flex gap-3">
+                        <Input
+                            type="email"
+                            placeholder="target@beeyield.com"
+                            className={cn(glass.input, "h-10 text-[10px] font-black")}
+                        />
+                        <button className={cn(glass.btnSecondary, "h-10 px-6 text-[11px]")}>Verify</button>
+                    </div>
+                </div>
+
+                <div className="pt-6 border-t border-[#F4D03F]/10 space-y-4">
+                    <h4 className={glass.sectionTitle}>Diagnostic <span className="text-[#F4D03F]">Triggers</span></h4>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-[#F4D03F]/5 rounded-xl border border-[#F4D03F]/10 space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                                    <Thermometer className="w-4 h-4 text-[#F4D03F]" />
+                                </div>
+                                <span className={cn(glass.microLabel, "text-[#F4D03F]")}>Thermal</span>
+                            </div>
+                            <ToggleSwitch checked={tempAlerts} onCheckedChange={setTempAlerts} />
+                        </div>
+                        <div className="p-4 bg-[#1B9157]/5 rounded-xl border border-[#1B9157]/10 space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/10 shadow-sm">
+                                    <Weight className="w-4 h-4 text-[#1B9157]" />
+                                </div>
+                                <span className={cn(glass.microLabel, "text-[#1B9157]")}>Mass</span>
+                            </div>
+                            <ToggleSwitch checked={weightAlerts} onCheckedChange={setWeightAlerts} />
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    className={cn(glass.btnPrimary, "w-full h-10 shadow-xl shadow-[#F4D03F]/10 mt-2")}
+                    onClick={() => onOpenChange(false)}
                 >
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-destructive/5 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32" />
-
-                    <div className="bg-[#FFF9F0] px-6 py-6 border-b border-border/50 relative z-10">
-                        <div className={cn(glass.badge, 'bg-destructive/10 text-destructive border-destructive/20 mb-3')}>
-                            <Bell className="w-3 h-3 mr-2" />
-                            Biosphere Alert Matrix v2.0
-                        </div>
-                        <DialogTitle className={cn(glass.sectionTitle, 'text-xl normal-case italic')}>Notify <span className="text-destructive">Engine</span></DialogTitle>
-                        <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-1")}>Configuration of real-time sensor discrepancy triggers.</DialogDescription>
-                    </div>
-
-                    <div className="p-6 space-y-6 relative z-10">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>Mobile OS Interface</h4>
-                                <ToggleSwitch checked={appNotif} onCheckedChange={setAppNotif} />
-                            </div>
-                            <div className="space-y-2">
-                                <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>SMS Gateway</h4>
-                                <ToggleSwitch checked={smsNotif} onCheckedChange={setSmsNotif} />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h4 className={cn(glass.microLabel, "opacity-40 font-black")}>Primary Email Endpoint</h4>
-                            <div className="flex gap-3">
-                                <Input
-                                    type="email"
-                                    placeholder="TARGET@BEEYIELD.COM"
-                                    className={cn(glass.input, "h-10 text-[10px] font-black bg-[#F9F7F2]")}
-                                />
-                                <button className={cn(glass.btnSecondary, "h-10 px-6 text-[10px] font-black border-border/50")}>Verify</button>
-                            </div>
-                        </div>
-
-                        <div className="pt-6 border-t border-border/50 space-y-6">
-                            <h4 className={cn(glass.sectionTitle, "text-lg normal-case italic")}>Diagnostic <span className="text-[#F4D03F]">Triggers</span></h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-[#F4D03F]/5 rounded-xl border border-[#F4D03F]/10 space-y-4 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all">
-                                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#F4D03F]/10 rounded-full blur-xl group-hover:scale-150 transition-transform" />
-                                    <div className="flex items-center gap-3 relative z-10">
-                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-lg shadow-honey/10">
-                                            <Thermometer className="w-4 h-4 text-[#F4D03F]" />
-                                        </div>
-                                        <span className={cn(glass.microLabel, "font-black text-[#F4D03F] text-[8px]")}>Thermal</span>
-                                    </div>
-                                    <ToggleSwitch checked={tempAlerts} onCheckedChange={setTempAlerts} />
-                                </div>
-                                <div className="p-4 bg-[#1B9157]/5 rounded-xl border border-[#1B9157]/10 space-y-4 relative overflow-hidden group hover:border-[#1B9157]/30 transition-all">
-                                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#1B9157]/10 rounded-full blur-xl group-hover:scale-150 transition-transform" />
-                                    <div className="flex items-center gap-3 relative z-10">
-                                        <div className="w-8 h-8 rounded-lg bg-[#1B9157]/10 flex items-center justify-center border border-[#1B9157]/20 shadow-lg shadow-emerald-500/10">
-                                            <Weight className="w-4 h-4 text-[#1B9157]" />
-                                        </div>
-                                        <span className={cn(glass.microLabel, "font-black text-[#1B9157] text-[8px]")}>Mass</span>
-                                    </div>
-                                    <ToggleSwitch checked={weightAlerts} onCheckedChange={setWeightAlerts} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black shadow-xl shadow-honey/20 mt-2")}
-                            onClick={() => onOpenChange(false)}
-                        >
-                            Sync_Matrix
-                        </button>
-                    </div>
-                </motion.div>
-            </DialogContent>
-        </Dialog>
+                    Sync Alert Matrix
+                </button>
+            </div>
+        </GlassModal>
     );
 };
 

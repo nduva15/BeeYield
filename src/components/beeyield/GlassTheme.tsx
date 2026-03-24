@@ -4,8 +4,10 @@
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { LucideIcon, X, Trash2, AlertTriangle, Info, Check, RefreshCw, Hexagon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
 import { humanizeKeyLabel } from '@/lib/plainEnglish';
 
 function humanizeLabel(input?: string) {
@@ -170,41 +172,153 @@ interface GlassModalProps {
     subtitle?: string;
     children: React.ReactNode;
     maxWidth?: string;
+    hideClose?: boolean;
 }
 
-export const GlassModal: React.FC<GlassModalProps> = ({ isOpen, onClose, title, subtitle, children, maxWidth = "max-w-2xl" }) => {
-    if (!isOpen) return null;
+export const GlassModal: React.FC<GlassModalProps> = ({
+    isOpen,
+    onClose,
+    title,
+    subtitle,
+    children,
+    maxWidth = 'max-w-md',
+    hideClose = false
+}) => {
     return (
-        <div className={glass.modalOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <motion.div
-                initial={{ opacity: 0, scale: 0.97, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.97, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className={cn(glass.modalCard, maxWidth)}
-            >
-                <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F9F7F2]/50">
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                            <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">{title}</h2>
-                            {subtitle && <p className={glass.microLabel}>{subtitle}</p>}
+        <AnimatePresence>
+            {isOpen && (
+                <div className={cn(glass.modalOverlay)} onClick={(e) => e.target === e.currentTarget && onClose()}>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className={cn(glass.modalCard, maxWidth)}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* ── Header ── */}
+                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex justify-between items-center relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <div className="w-4 h-4 text-[#F4D03F]"><Hexagon className="w-full h-full" /></div>
+                                </div>
+                                <div className="space-y-0.5">
+                                    <h2 className="text-[10px] font-black text-[#1A1A1A]">{title}</h2>
+                                    {subtitle && <p className="text-[8px] font-bold text-[#F4D03F]">{subtitle}</p>}
+                                </div>
+                            </div>
+                            {!hideClose && (
+                                <button
+                                    onClick={onClose}
+                                    className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all"
+                                    aria-label="Close"
+                                    title="Close"
+                                >
+                                    <X className="w-4 h-4 text-gray-400" />
+                                </button>
+                            )}
                         </div>
-                        <button
-                            onClick={onClose}
-                            aria-label="Close"
-                            title="Close"
-                            className="w-8 h-8 rounded-md border border-[#F4D03F]/20 bg-[#FFF9F0] flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] hover:bg-[#F9F7F2] transition-all shadow-sm"
-                        >
-                            <span className="sr-only">Close</span>
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
+
+                        {/* ── Content ── */}
+                        <div className="p-6 relative z-10">
+                            {children}
+                        </div>
+                    </motion.div>
                 </div>
-                <div className="p-5 relative z-10 bg-[#FFF9F0]">
-                    {children}
-                </div>
-            </motion.div>
-        </div>
+            )}
+        </AnimatePresence>
     );
 };
 
+interface GlassConfirmModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    variant?: 'danger' | 'warning' | 'info';
+    isLoading?: boolean;
+}
+
+export const GlassConfirmModal: React.FC<GlassConfirmModalProps> = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    message,
+    confirmLabel = 'Confirm',
+    cancelLabel = 'Cancel',
+    variant = 'danger',
+    isLoading = false
+}) => {
+    const variantConfig = {
+        danger: {
+            icon: Trash2,
+            iconClass: 'text-red-500 bg-red-500/10 border-red-500/20',
+            btnClass: 'bg-red-500 text-white hover:bg-red-600 shadow-red-500/20'
+        },
+        warning: {
+            icon: AlertTriangle,
+            iconClass: 'text-[#F4D03F] bg-[#F4D03F]/10 border-[#F4D03F]/20',
+            btnClass: 'bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#E5C335] shadow-[#F4D03F]/20'
+        },
+        info: {
+            icon: Info,
+            iconClass: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+            btnClass: 'bg-blue-500 text-white hover:bg-blue-600 shadow-blue-500/20'
+        }
+    };
+
+    const config = variantConfig[variant];
+    const Icon = config.icon;
+
+    return (
+        <GlassModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={title}
+            maxWidth="max-w-md"
+            hideClose
+        >
+            <div className="space-y-6">
+                <div className="flex gap-4">
+                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 shadow-sm", config.iconClass)}>
+                        <Icon className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1 pt-1">
+                        <p className="text-[11px] font-bold text-gray-500 leading-relaxed">
+                            {message}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-[#F4D03F]/10">
+                    <button
+                        onClick={onClose}
+                        className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black")}
+                        disabled={isLoading}
+                    >
+                        {cancelLabel}
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        disabled={isLoading}
+                        className={cn(
+                            "h-11 px-8 rounded-xl font-black text-[9px] transition-all flex items-center gap-2 shadow-xl",
+                            config.btnClass,
+                            isLoading && "opacity-50 cursor-not-allowed"
+                        )}
+                    >
+                        {isLoading ? (
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                            <Check className="w-3.5 h-3.5" />
+                        )}
+                        {confirmLabel}
+                    </button>
+                </div>
+            </div>
+        </GlassModal>
+    );
+};
