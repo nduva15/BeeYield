@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 import { beeyieldService, Hive, IoTDevice, Apiary } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHives, useDeleteHive, useUpdateHive, useApiaries } from '@/hooks/useHives';
+import { useHarvests } from '@/hooks/useHarvests';
 import HiveFormModal from './HiveFormModal';
 import FlipCardHive from './FlipCardHive';
 import HiveDetailView from './HiveDetailView';
@@ -61,6 +62,24 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     // Data Hooks
     const { data: hivesData, isLoading: hivesLoading } = useHives();
     const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+    const { data: harvestsData } = useHarvests();
+    
+    // Aggregated harvest metrics per hive
+    const harvestMetrics = React.useMemo(() => {
+        if (!harvestsData) return {};
+        const metrics: Record<string, { totalKg: number, batches: number }> = {};
+        
+        harvestsData.forEach(h => {
+            if (!h.hive_id) return;
+            if (!metrics[h.hive_id]) {
+                metrics[h.hive_id] = { totalKg: 0, batches: 0 };
+            }
+            metrics[h.hive_id].totalKg += (h.quantity_kg || 0);
+            metrics[h.hive_id].batches += 1;
+        });
+        
+        return metrics;
+    }, [harvestsData]);
     
     // Local state for caching support
     const [hives, setHives] = React.useState<Hive[]>(() => {
@@ -387,7 +406,9 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                             weight: hive.latest_weight || 0,
                                             temp: hive.latest_temp || 0,
                                             humidity: hive.latest_humidity || 0,
-                                            status: hive.status === 'Active' ? 'ok' : hive.status?.toUpperCase() === 'Maintenance' ? 'warning' : 'critical'
+                                            status: hive.status === 'Active' ? 'ok' : hive.status?.toUpperCase() === 'Maintenance' ? 'warning' : 'critical',
+                                            totalHarvestedKg: harvestMetrics[hive.id]?.totalKg || 0,
+                                            batchCount: harvestMetrics[hive.id]?.batches || 0
                                         }}
                                         onViewHistory={() => handleOpenQuickDetails(hive)}
                                         onMarkInspection={() => handleRequestInspection(hive, {} as any)}

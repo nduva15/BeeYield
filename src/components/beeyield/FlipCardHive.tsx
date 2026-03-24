@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Hexagon, Zap, Droplet, ArrowRight, Settings, BarChart2, Activity, ShieldCheck, Thermometer, Binary } from 'lucide-react';
+import { Hexagon, Zap, Droplet, ArrowRight, Settings, BarChart2, Activity, ShieldCheck, Thermometer, Binary, Box, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { glass } from './GlassTheme';
@@ -14,6 +14,8 @@ interface FlipCardHiveProps {
         temp: number;
         humidity: number;
         status: 'ok' | 'warning' | 'critical';
+        totalHarvestedKg?: number;
+        batchCount?: number;
     };
     onViewHistory: () => void;
     onMarkInspection: () => void;
@@ -89,7 +91,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                 style={{ pointerEvents: isFlipped ? 'auto' : 'none' }}
             >
                 <div className="p-5 border-b border-[#F4D03F]/10 bg-[#1A1A1A][0.02] flex items-center justify-between relative z-10">
-                    <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60 uppercase tracking-widest">Hive Vitals</h4>
+                    <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60 uppercase tracking-widest">Hive Vitals & Yield</h4>
                     <Activity className="w-3.5 h-3.5 text-[#F4D03F]" />
                 </div>
 
@@ -97,14 +99,14 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     {[
                         { label: 'Temp', value: `${hive.temp}°C`, icon: Thermometer, color: 'text-[#1A1A1A]' },
                         { label: 'Humidity', value: `${hive.humidity}%`, icon: Droplet, color: 'text-[#1A1A1A]' },
-                        { label: 'Health', value: 'Nominal', icon: ShieldCheck, color: 'text-[#1B9157]' },
-                        { label: 'Signal', value: '-84dBm', icon: Binary, color: 'text-gray-400' },
+                        { label: 'Total Yield', value: `${hive.totalHarvestedKg || 0} Kg`, icon: Box, color: 'text-[#F4D03F]' },
+                        { label: 'Batches', value: `${hive.batchCount || 0}`, icon: Layers, color: 'text-[#1B9157]' },
                     ].map((s, i) => (
                         <div key={i} className="bg-white/50 p-3 rounded-xl border border-[#F4D03F]/5 flex flex-col justify-between group/item hover:border-[#F4D03F]/20 transition-all">
-                            <s.icon className="w-3 h-3 text-[#F4D03F] mb-2 opacity-60 group-hover/item:opacity-100 transition-opacity" />
+                            <s.icon className="w-3 h-3 text-[#F4D03F] mb-1.5 opacity-60 group-hover/item:opacity-100 transition-opacity" />
                             <div>
                                 <p className={cn("text-lg font-black tracking-tighter tabular-nums leading-none mb-0.5", s.color)}>{s.value}</p>
-                                <p className="text-[6px] font-black text-gray-400">{s.label}</p>
+                                <p className="text-[6px] font-black text-gray-400 uppercase">{s.label}</p>
                             </div>
                         </div>
                     ))}
