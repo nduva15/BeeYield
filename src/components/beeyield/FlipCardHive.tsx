@@ -33,16 +33,21 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
 
     return (
         <div 
-            className="group perspective-1000 h-[380px] w-full cursor-pointer"
+            className="group h-[380px] w-full cursor-pointer"
+            style={{ perspective: '1000px' }}
             onClick={() => { if (!isFlipped && onOpen) { onOpen(); } else { setIsFlipped(!isFlipped); } }}
         >
             <motion.div
-                className="relative w-full h-full transition-all duration-700 preserve-3d"
+                className="relative w-full h-full"
+                style={{ transformStyle: 'preserve-3d' }}
                 animate={{ rotateY: isFlipped ? 180 : 0 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
                 {/* ── Front Face ── */}
-                <div className="absolute inset-0 backface-hidden flex flex-col bg-white/40 border border-[#F4D03F]/20 rounded-[2rem] overflow-hidden shadow-xl backdrop-blur-md group-hover:border-[#F4D03F]/40 transition-all">
+                <div 
+                    className="absolute inset-0 flex flex-col bg-white/40 border border-[#F4D03F]/20 rounded-[2rem] overflow-hidden shadow-xl backdrop-blur-md group-hover:border-[#F4D03F]/40 transition-all"
+                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' } as React.CSSProperties}
+                >
                     <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-2">
                             <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", cfg.dot)} />
@@ -74,7 +79,8 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
 
                 {/* ── Back Face ── */}
                 <div 
-                    className="absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-white/80 border border-[#F4D03F]/30 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl"
+                    className="absolute inset-0 flex flex-col bg-white/80 border border-[#F4D03F]/30 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl"
+                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' } as React.CSSProperties}
                 >
                     <div className="p-5 border-b border-[#F4D03F]/10 bg-[#1A1A1A][0.02] flex items-center justify-between relative z-10">
                         <h4 className="text-[9px] font-black text-[#1A1A1A] opacity-60 uppercase tracking-widest">Hive Vitals</h4>
@@ -114,13 +120,6 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     </div>
                 </div>
             </motion.div>
-
-            <style>{`
-                .perspective-1000 { perspective: 1000px; }
-                .preserve-3d { transform-style: preserve-3d; }
-                .backface-hidden { backface-visibility: hidden; }
-                .rotate-y-180 { transform: rotateY(180deg); }
-            `}</style>
         </div>
     );
 };
