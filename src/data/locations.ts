@@ -1,4 +1,4 @@
-﻿export interface LocationData {
+export interface LocationData {
     slug: string;
     cityName: string;
     regionName: string;
@@ -61,7 +61,7 @@ export const locations: LocationData[] = [
         crops: ['Avocado', 'Coffee', 'Macadamia', 'Potatoes'],
         stats: [
             { label: 'Avocado Boost', value: '45%' },
-            { label: 'Intelligent Hives', value: '500+' },
+            { label: 'BeeHub', value: '500+' },
             { label: 'Co-ops Served', value: '8' }
         ],
         heroImage: 'https://images.unsplash.com/photo-1605000797499-95a51c521949?auto=format&fit=crop&q=80&w=1920'

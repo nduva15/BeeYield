@@ -1796,8 +1796,8 @@ async def get_hive_detail(
         inspections = await db_select("inspections", filters={"hive_id": hive_id}, order_by="inspection_date", ascending=False, limit=5, token=token)
         last_inspection = inspections[0] if inspections else None
 
-        # Fetch harvests for this hive
-        harvests = await db_select("harvests", filters={"hive_id": hive_id}, order_by="harvest_date", ascending=False, limit=1000, token=token)
+        # Fetch harvests for this hive (ensure we get history from 2020 onwards by increasing limit and removing tight date bounds if any exist)
+        harvests = await db_select("harvests", filters={"hive_id": hive_id}, order_by="harvest_date", ascending=False, limit=5000, token=token)
 
         # Fetch requests for this hive
         requests_list = []

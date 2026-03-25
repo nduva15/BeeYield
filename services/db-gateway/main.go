@@ -1,6 +1,6 @@
 // BeeYield Database Gateway — Go service.
 // Routes Supabase CRUD requests to the Rust service.
-// Handles ClickHouse analytics directly.
+// Routes Supabase CRUD requests to the Rust service.
 // ALL configuration from environment variables. ZERO hardcoded data.
 package main
 

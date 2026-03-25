@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    User, Shield, Bell, Globe, Lock as LockIcon, MapPin, Activity, Save, Trash2, Key, Smartphone, Layers, Hexagon, Cpu, ShieldCheck, Check,
+    User, Shield, Bell, Globe, Lock as LockIcon, MapPin, Activity, Save, Trash2, Key, Smartphone, Layers, Hexagon, Cpu, ShieldCheck, Check, Mail,
     Settings, LogOut, ChevronRight, Palette, Fingerprint, CreditCard, Receipt, Plus, XCircle, ExternalLink, Clock, ArrowUpRight, ArrowDownRight,
     Camera, Loader2
 } from "lucide-react";
@@ -75,14 +75,20 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const [fullName, setFullName] = React.useState(user?.user_metadata?.full_name || '');
     const [phone, setPhone] = React.useState(user?.user_metadata?.phone || '');
     const [locationName, setLocationName] = React.useState(user?.user_metadata?.location_name || '');
+    const [email, setEmail] = React.useState(user?.email || '');
     const [profileLoading, setProfileLoading] = React.useState(false);
     const [uploading, setUploading] = React.useState(false);
 
     React.useEffect(() => {
-        if (user?.user_metadata) {
-            setFullName(user.user_metadata.full_name || '');
-            setPhone(user.user_metadata.phone || '');
-            setLocationName(user.user_metadata.location_name || '');
+        if (user) {
+            if (user.user_metadata) {
+                setFullName(user.user_metadata.full_name || '');
+                setPhone(user.user_metadata.phone || '');
+                setLocationName(user.user_metadata.location_name || '');
+            }
+            if (user.email) {
+                setEmail(user.email);
+            }
         }
     }, [user]);
 
@@ -172,6 +178,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
         setPageError(null);
         try {
             if (section === 'Profile') {
+                if (email !== user?.email) {
+                    const { error: emailError } = await updateUser({ email }, 'beeyield');
+                    if (emailError) throw emailError;
+                    toast.info('Email update initiated', { 
+                        description: 'Please check your inbox to confirm the change.' 
+                    });
+                }
+
                 const names = fullName.trim().split(/\s+/);
                 const firstName = names[0] || '';
                 const lastName = names.slice(1).join(' ') || '';
@@ -366,13 +380,21 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </BeeYieldFormField>
 
                                             <BeeYieldFormField id="by_email" label="Verified Email">
-                                                <div className="relative">
-                                                    <Input id="by_email" className={cn(glass.input, "pl-4 pr-10 w-full font-bold text-gray-500 bg-gray-100 cursor-not-allowed")} defaultValue={user?.email || ""} disabled />
-                                                    <LockIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                </div>
+                                                <BeeYieldTextInput
+                                                    id="by_email"
+                                                    icon={Mail}
+                                                    placeholder="e.g. you@example.com"
+                                                    className="w-full"
+                                                    inputClassName="w-full font-bold bg-white/50"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    disabled={profileLoading}
+                                                    type="email"
+                                                />
                                             </BeeYieldFormField>
 
                                             <BeeYieldFormField id="by_phone" label="Phone Number">
+
                                                 <BeeYieldTextInput
                                                     id="by_phone"
                                                     icon={Smartphone}

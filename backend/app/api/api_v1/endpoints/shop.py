@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from typing import Optional
+import random
 from app.core import security
 from app.schemas import shop as schemas
 from app.services import shop_service
+from app.db.supabase_db import db_select
 
 
 router = APIRouter()
@@ -82,7 +85,6 @@ async def get_checkout_status(idempotency_key: str, token: Optional[str] = Depen
     """
     Poll point for frontend to check if M-Pesa callback landed.
     """
-    from app.db.supabase_db import db_select
     filters = {"idempotency_key": idempotency_key}
     results = await db_select("billing_ledger", filters=filters, token=token)
     if results:
@@ -238,14 +240,14 @@ async def track_order(
 @router.get("/suggestions", response_model=list[schemas.Product])
 async def get_suggestions(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     """
-    Get personalized suggestions.
     For MVP, we shuffle products or pick 'Featured'.
     """
     all_products = await shop_service.get_products(token=token)
     # Simple Shuffle for variety
-    import random
-    random.shuffle(all_products)
-    return list(all_products)[:4]
+    if all_products:
+        random.shuffle(all_products)
+        return all_products[:4]
+    return []
 
 # --- Payment Methods ---
 @router.get("/payment-methods", response_model=list[schemas.PaymentMethod])
@@ -280,7 +282,6 @@ async def download_invoice(
     token: Optional[str] = Depends(get_token)
 ):
     """Download PDF Invoice"""
-    from fastapi.responses import StreamingResponse
     
     # Security check
     user_id = current_user.get("sub") if current_user else None

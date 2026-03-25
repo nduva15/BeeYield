@@ -53,7 +53,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 
     const handleSaveEdit = () => {
         if (!selectedHarvest) return;
-        updateHarvest({ id: selectedHarvest.id, data: editForm }, {
+        // Strip null values: HarvestCreateInput uses `string | undefined`, not `string | null`
+        const sanitized = Object.fromEntries(
+            Object.entries(editForm).filter(([, v]) => v !== null)
+        ) as Partial<import('@/services/beeyieldService').HarvestCreateInput>;
+        updateHarvest({ id: selectedHarvest.id, data: sanitized }, {
             onSuccess: () => {
                 setIsEditing(false);
                 setSelectedHarvest({ ...selectedHarvest, ...editForm } as Harvest);

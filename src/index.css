@@ -178,7 +178,7 @@ All colors MUST be HSL.
   }
 }
 
-/* ===== "INTELLIGENT HIVE" DESIGN SYSTEM ===== */
+/* ===== "BEEHUB" DESIGN SYSTEM ===== */
 /* Glass & Gold Aesthetic with Framer Motion Physics */
 
 :root {
@@ -355,7 +355,7 @@ All colors MUST be HSL.
   }
 }
 
-/* === INTELLIGENT HIVE MICRO-INTERACTIONS === */
+/* === BEEHUB MICRO-INTERACTIONS === */
 
 /* Pulse effect for live IoT status */
 @keyframes pulse-gold {
@@ -496,7 +496,7 @@ All colors MUST be HSL.
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-diffuse;
   }
 
-  /* === INTELLIGENT HIVE COMPONENT STYLES === */
+  /* === BEEHUB COMPONENT STYLES === */
 
   /* 1. Interactive Button Physics */
   .btn-interactive {

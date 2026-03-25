@@ -25,6 +25,7 @@ import {
     Gift, Store, Package, Heart, ShieldCheck, FileText, Printer, User
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 type CheckoutStep = 'cart' | 'payment-info' | 'delivery' | 'payment' | 'shipment' | 'receipt';
@@ -44,6 +45,7 @@ const Checkout = () => {
         getTotalPrice,
         clearCart,
     } = useCart();
+    const { trackEvent, trackConversion } = useAnalytics();
 
     // Auth modal state
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -283,6 +285,11 @@ const Checkout = () => {
 
             // Simulate payment processing flow
             await new Promise(r => setTimeout(r, 2000));
+
+            // Track dynamic conversion
+            trackConversion('purchase', totalPayable, 'KES');
+            trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
+
             setCurrentStep('shipment');
             toast.success(isBypassActive ? 'Bypass Active: Order confirmed!' : 'Payment successful!');
         } catch (error: any) {

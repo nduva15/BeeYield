@@ -1,4 +1,3 @@
-import React, { useState, useMemo } from 'react';
 import { 
   ClipboardList, 
   ArrowRight, 
@@ -9,39 +8,76 @@ import {
   Clock, 
   AlertCircle,
   ChevronRight,
+  ChevronLeft,
   Filter,
-  Search
+  Search,
+  LayoutGrid,
+  Download,
+  MoreVertical,
+  Check
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
-  BeeYieldCard, 
-  BeeYieldPageHeader, 
-  BeeYieldPageShell,
+  glass, 
+  PageHeader, 
+  GlassModal 
+} from './GlassTheme';
+import { 
   BeeYieldBadge
 } from '@/components/beeyield/BeeYieldUI';
-import { useTasks, useUpdateTask } from '@/hooks/useTasks';
-import { useApiaries } from '@/hooks/useApiaries';
+import { useTasks, useUpdateTask, useCreateTask } from '@/hooks/useTasks';
+import { useApiaries } from '@/hooks/useHives';
 import { useHives } from '@/hooks/useHives';
-import { Calendar } from '@/components/ui/calendar';
-import { format, isSameDay, parseISO, startOfDay } from 'date-fns';
+import { 
+  format, 
+  isSameDay, 
+  parseISO, 
+  startOfDay, 
+  addMonths, 
+  subMonths, 
+  startOfMonth, 
+  endOfMonth, 
+  startOfWeek, 
+  endOfWeek, 
+  eachDayOfInterval,
+  isSameMonth,
+  isToday,
+  addDays,
+  subDays
+} from 'date-fns';
 import { Task } from '@/services/beeyieldService';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 type MyTaskViewProps = {
   onTabChange?: (tab: string, message?: string, action?: string) => void;
 };
 
 const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [viewMode, setViewMode] = useState<'day' | 'list' | 'week' | 'month'>('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'in_progress'>('all');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string>('all_places');
   const [selectedHiveId, setSelectedHiveId] = useState<string>('all_hives');
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const { data: tasks = [], isLoading: tasksLoading } = useTasks();
   const { data: apiaries = [] } = useApiaries();
   const { data: hives = [] } = useHives();
   const updateTask = useUpdateTask();
+  const createTask = useCreateTask();
+
+  const [newTaskForm, setNewTaskForm] = useState<Partial<Task>>({
+    status: 'pending',
+    priority: 'medium',
+    due_date: format(new Date(), 'yyyy-MM-dd')
+  });
 
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
@@ -52,25 +88,9 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
       const matchesPlace = selectedPlaceId === 'all_places' || task.apiary_id === selectedPlaceId;
       const matchesHive = selectedHiveId === 'all_hives' || task.hive_id === selectedHiveId;
       
-      if (viewMode === 'calendar' && selectedDate) {
-        if (!task.due_date) return false;
-        try {
-          const taskDate = parseISO(task.due_date);
-          return isSameDay(taskDate, selectedDate) && matchesSearch && matchesStatus && matchesPlace && matchesHive;
-        } catch {
-          return false;
-        }
-      }
-      
       return matchesSearch && matchesStatus && matchesPlace && matchesHive;
     });
-  }, [tasks, searchQuery, statusFilter, viewMode, selectedDate, selectedPlaceId, selectedHiveId]);
-
-  const taskDates = useMemo(() => {
-    return tasks
-      .filter(t => t.due_date && t.status !== 'completed')
-      .map(t => parseISO(t.due_date!));
-  }, [tasks]);
+  }, [tasks, searchQuery, statusFilter, selectedPlaceId, selectedHiveId]);
 
   const stats = useMemo(() => {
     const pending = tasks.filter(t => t.status === 'pending').length;
@@ -84,7 +104,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     return { pending, inProgress, completed, overdue };
   }, [tasks]);
 
-  const handleToggleStatus = (task: Task) => {
+  const handleToggleStatus = (task: Task, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const newStatus = task.status === 'completed' ? 'pending' : 'completed';
     updateTask.mutate({ id: task.id, updates: { status: newStatus, is_completed: newStatus === 'completed' } });
   };
@@ -98,27 +119,76 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     }
   };
 
-  const renderTaskItem = (task: Task) => (
+  const generateMonthDays = () => {
+    const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
+    const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
+    return eachDayOfInterval({ start, end });
+  };
+
+  const generateWeekDays = () => {
+    const start = startOfWeek(currentDate, { weekStartsOn: 1 });
+    const end = endOfWeek(currentDate, { weekStartsOn: 1 });
+    return eachDayOfInterval({ start, end });
+  };
+
+  const exportIcs = () => {
+    // Basic ICS generation placeholder
+    const calendarHeader = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BeeYield//NONSGML Tasks//EN\n";
+    const calendarFooter = "END:VCALENDAR";
+    const events = tasks.filter(t => t.due_date).map(t => {
+      const dateStr = format(parseISO(t.due_date!), "yyyyMMdd");
+      return `BEGIN:VEVENT\nSUMMARY:${t.title}\nDESCRIPTION:${t.description || ""}\nDTSTART:${dateStr}\nEND:VEVENT\n`;
+    }).join("");
+    
+    const blob = new Blob([calendarHeader + events + calendarFooter], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'beeyield-tasks.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleCreateTask = () => {
+    if (!newTaskForm.title) return;
+    createTask.mutate(newTaskForm as any, {
+      onSuccess: () => {
+        setIsTaskModalOpen(false);
+        setNewTaskForm({
+          status: 'pending',
+          priority: 'medium',
+          due_date: format(new Date(), 'yyyy-MM-dd')
+        });
+      }
+    });
+  };
+
+  const renderTaskCard = (task: Task) => (
     <div 
       key={task.id}
-      className="group flex items-start gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:border-[#F4D03F]/30 hover:shadow-sm transition-all"
+      onClick={() => {
+        setEditingTask(task);
+        setIsTaskModalOpen(true);
+      }}
+      className="group flex items-start gap-4 p-4 rounded-2xl border border-[#F4D03F]/10 bg-white/60 hover:bg-white hover:border-[#F4D03F]/30 hover:shadow-lg transition-all cursor-pointer"
     >
       <button 
-        onClick={() => handleToggleStatus(task)}
+        onClick={(e) => handleToggleStatus(task, e)}
         className={cn(
-          "mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
+          "mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
           task.status === 'completed' 
-            ? "bg-[#1B9157] border-[#1B9157] text-white" 
+            ? "bg-emerald-500 border-emerald-500 text-white" 
             : "border-gray-200 hover:border-[#F4D03F]"
         )}
       >
-        {task.status === 'completed' && <CheckCircle2 className="w-3.5 h-3.5" />}
+        {task.status === 'completed' && <Check className="w-3.5 h-3.5" />}
       </button>
 
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <h4 className={cn(
-            "text-[13px] font-bold tracking-tight",
+            "text-[13px] font-bold tracking-tight truncate",
             task.status === 'completed' ? "text-gray-400 line-through" : "text-[#1A1A1A]"
           )}>
             {task.title}
@@ -134,7 +204,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           </p>
         )}
 
-        <div className="flex items-center gap-3 pt-1">
+        <div className="flex items-center gap-3 pt-1 flex-wrap">
           {task.due_date && (
             <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
               <Clock className="w-3 h-3" />
@@ -149,248 +219,438 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           )}
         </div>
       </div>
-
-      <button className="opacity-0 group-hover:opacity-100 p-2 rounded-xl hover:bg-gray-50 text-gray-400 transition-all">
-        <ChevronRight className="w-4 h-4" />
-      </button>
     </div>
   );
 
   return (
-    <BeeYieldPageShell className={cn('p-0')}>
-      <div className="p-4 lg:p-6 space-y-6 pb-20 max-w-7xl mx-auto">
-        <BeeYieldPageHeader
-          icon={ClipboardList}
-          label="Operations"
-          onBack={() => onTabChange?.('home')}
-          title={
-            <>
-              My <span className="text-[#F4D03F]">Tasks</span>
-            </>
-          }
-          subtitle="Your operational queue (real tasks only; no mock data)."
-          actions={
-            <div className="flex items-center gap-2">
-              <div className="flex p-1 bg-gray-100 rounded-xl">
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2",
-                    viewMode === 'list' ? "bg-white text-[#1A1A1A] shadow-sm" : "text-gray-500 hover:text-gray-700"
-                  )}
-                >
-                  <List className="w-3.5 h-3.5" /> List
-                </button>
-                <button
-                  onClick={() => setViewMode('calendar')}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2",
-                    viewMode === 'calendar' ? "bg-white text-[#1A1A1A] shadow-sm" : "text-gray-500 hover:text-gray-700"
-                  )}
-                >
-                  <CalendarIcon className="w-3.5 h-3.5" /> Calendar
-                </button>
-              </div>
-              <button
-                className="h-9 px-4 rounded-xl bg-[#1A1A1A] text-white text-[10px] font-bold tracking-wider hover:bg-[#2A2A2A] transition-all flex items-center gap-2 shadow-lg shadow-black/5"
-              >
-                <Plus className="w-4 h-4" /> New Task
-              </button>
-            </div>
-          }
-        />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={cn(glass.page, "pb-24")}
+    >
+      <PageHeader
+        icon={ClipboardList}
+        label="Operational Control"
+        title={<>My <span className="text-[#F4D03F]">Tasks</span></>}
+        subtitle="Manage your apiary work plan and schedules."
+        actions={
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setEditingTask(null);
+                setIsTaskModalOpen(true);
+              }}
+              className={cn(glass.btnPrimary)}
+            >
+              <Plus className="w-4 h-4" />
+              New Task
+            </button>
+          </div>
+        }
+      />
 
-        {/* Stats Summary */}
+      <div className="space-y-6">
+        {/* Stats Strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Pending', value: stats.pending, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
             { label: 'Overdue', value: stats.overdue, icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50' },
             { label: 'In Progress', value: stats.inProgress, icon: Filter, color: 'text-blue-600', bg: 'bg-blue-50' },
-            { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'text-[#1B9157]', bg: 'bg-emerald-50' },
+            { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
           ].map((stat, i) => (
-            <BeeYieldCard key={i} className="p-4 bg-white border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center shrink-0", stat.bg)}>
-                  <stat.icon className={cn("w-5 h-5", stat.color)} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{stat.label}</p>
-                  <p className="text-xl font-black text-[#1A1A1A]">{stat.value}</p>
-                </div>
+            <div key={i} className={cn(glass.card, "p-4 flex items-center gap-4 bg-white/60")}>
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", stat.bg)}>
+                <stat.icon className={cn("w-5 h-5", stat.color)} />
               </div>
-            </BeeYieldCard>
+              <div className="min-w-0">
+                <p className="text-[10px] font-black text-gray-400 ml-1 uppercase tracking-wider">{stat.label}</p>
+                <div className="text-xl font-black text-[#1A1A1A] tabular-nums">{stat.value}</div>
+              </div>
+            </div>
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-6 items-start">
-          {/* Main Content Area */}
-          <div className={cn(
-            "space-y-4",
-            viewMode === 'list' ? "lg:col-span-8" : "lg:col-span-4"
-          )}>
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="relative flex-1 group w-full">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search tasks..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-gray-50 border-gray-100 text-[13px] font-medium placeholder:text-gray-400 focus:bg-white focus:border-[#F4D03F]/30 focus:ring-0 transition-all"
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                <select
-                  value={selectedPlaceId}
-                  onChange={(e) => {
-                    setSelectedPlaceId(e.target.value);
-                    setSelectedHiveId('all_hives');
-                  }}
-                  className="h-9 px-3 rounded-xl border-gray-100 bg-gray-50 text-[11px] font-bold outline-none focus:bg-white"
+        {/* Main Interface Card */}
+        <div className={cn(glass.section, "p-6 space-y-6")}>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            {/* View Switching */}
+            <div className="flex items-center gap-2 bg-[#F9F7F2] p-1.5 rounded-2xl border border-[#F4D03F]/10">
+              {(['day', 'list', 'week', 'month'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all",
+                    viewMode === mode 
+                      ? "bg-white text-[#1A1A1A] shadow-md scale-105" 
+                      : "text-gray-400 hover:text-gray-600"
+                  )}
                 >
-                  <option value="all_places">All Locations</option>
-                  {apiaries.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-
-                <select
-                  value={selectedHiveId}
-                  onChange={(e) => setSelectedHiveId(e.target.value)}
-                  className="h-9 px-3 rounded-xl border-gray-100 bg-gray-50 text-[11px] font-bold outline-none focus:bg-white"
-                >
-                  <option value="all_hives">All Hives</option>
-                  {hives.filter(h => selectedPlaceId === 'all_places' || h.apiary_id === selectedPlaceId).map(h => (
-                    <option key={h.id} value={h.id}>{h.hive_code}</option>
-                  ))}
-                </select>
-
-                <div className="flex shrink-0 p-1 bg-gray-100 rounded-xl">
-                  {(['all', 'pending', 'completed'] as const).map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setStatusFilter(s)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-[10px] font-bold capitalize transition-all",
-                        statusFilter === s ? "bg-white text-[#1A1A1A] shadow-sm" : "text-gray-500"
-                      )}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  {mode}
+                </button>
+              ))}
             </div>
 
-            <div className="space-y-3">
-              {tasksLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-24 bg-gray-50 animate-pulse rounded-2xl" />
-                ))
-              ) : filteredTasks.length > 0 ? (
-                filteredTasks.map(renderTaskItem)
-              ) : (
-                <BeeYieldCard className="p-12 bg-white">
-                  <div className="flex flex-col items-center justify-center text-center space-y-3">
-                    <div className="w-16 h-16 rounded-3xl bg-gray-50 flex items-center justify-center mb-2">
-                      <ClipboardList className="w-8 h-8 text-gray-300" />
-                    </div>
-                    <p className="text-sm font-bold text-[#1A1A1A]">No tasks found</p>
-                    <p className="text-[11px] font-medium text-gray-500 max-w-xs leading-relaxed">
-                      {searchQuery || statusFilter !== 'all' 
-                        ? "Try adjusting your filters or search terms." 
-                        : "Your operational queue is clear."}
-                    </p>
-                  </div>
-                </BeeYieldCard>
-              )}
+            {/* Navigation & Search */}
+            <div className="flex items-center gap-4 w-full lg:w-auto">
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setCurrentDate(viewMode === 'month' ? subMonths(currentDate, 1) : subDays(currentDate, 7))}
+                  className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-600"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <h3 className="text-sm font-black text-[#1A1A1A] min-w-[140px] text-center">
+                  {format(currentDate, viewMode === 'day' ? 'MMMM d, yyyy' : 'MMMM yyyy')}
+                </h3>
+                <button 
+                  onClick={() => setCurrentDate(viewMode === 'month' ? addMonths(currentDate, 1) : addDays(currentDate, 7))}
+                  className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-600"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="relative flex-1 lg:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input 
+                  type="text" 
+                  placeholder="Filter tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={cn(glass.input, "h-11 pl-10 text-[12px]")}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Calendar Pane */}
-          <div className={cn(
-            "lg:sticky lg:top-6 space-y-6",
-            viewMode === 'list' ? "lg:col-span-4" : "lg:col-span-8 h-full"
-          )}>
-            <BeeYieldCard className="p-6 bg-white overflow-hidden border-transparent shadow-xl shadow-black/[0.02]">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-widest">Schedule</h3>
-                  <p className="text-[10px] font-bold text-gray-400">Task distribution tracker</p>
-                </div>
-                <CalendarIcon className="w-5 h-5 text-[#F4D03F]" />
-              </div>
-              
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                modifiers={{
-                  hasTask: taskDates
-                }}
-                modifiersClassNames={{
-                  hasTask: "after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-[#F4D03F]"
-                }}
-                className={cn(
-                  "p-0 mx-auto",
-                  viewMode === 'calendar' ? "w-full max-w-2xl" : "w-full"
-                )}
-              />
+          <div className="relative min-h-[500px]">
+            {/* View Modes Rendering */}
+            <AnimatePresence mode="wait">
+              {viewMode === 'month' && (
+                <motion.div
+                  key="month"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="grid grid-cols-7 gap-px bg-[#F4D03F]/10 border border-[#F4D03F]/10 rounded-[2rem] overflow-hidden shadow-2xl shadow-black/[0.03]"
+                >
+                  {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(day => (
+                    <div key={day} className="bg-white/40 p-4 text-center">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{day}</span>
+                    </div>
+                  ))}
+                  {generateMonthDays().map((date, i) => {
+                    const dayTasks = tasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), date));
+                    const isOtherMonth = !isSameMonth(date, currentDate);
+                    const isTodayDate = isToday(date);
 
-              {viewMode === 'list' && selectedDate && (
-                <div className="mt-8 pt-8 border-t border-dashed border-gray-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                      {format(selectedDate, 'MMM d, yyyy')}
-                    </h4>
-                    <span className="text-[10px] font-black text-[#1A1A1A] bg-[#F4D03F] px-2 py-0.5 rounded-full">
-                      {tasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), selectedDate)).length} Tasks
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    {tasks
-                      .filter(t => t.due_date && isSameDay(parseISO(t.due_date), selectedDate))
-                      .map(t => (
-                        <div key={t.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 group transition-all cursor-default">
-                          <div className={cn("w-1.5 h-6 rounded-full", getPriorityColor(t.priority).split(' ')[0].replace('bg-', 'bg-'))} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-bold text-[#1A1A1A] truncate">{t.title}</p>
-                            <p className="text-[10px] font-medium text-gray-500">{t.status}</p>
-                          </div>
+                    return (
+                      <div 
+                        key={i} 
+                        onClick={() => setSelectedDate(date)}
+                        className={cn(
+                          "min-h-[120px] p-2 bg-white/60 relative group transition-all hover:bg-white",
+                          isOtherMonth && "bg-[#F9F7F2]/30 text-gray-300",
+                          isTodayDate && "ring-1 ring-inset ring-[#F4D03F]/40"
+                        )}
+                      >
+                        <div className={cn(
+                          "text-[12px] font-black mb-1 flex items-center justify-center w-6 h-6 rounded-lg",
+                          isTodayDate ? "bg-[#F4D03F] text-[#1A1A1A]" : "text-gray-400"
+                        )}>
+                          {format(date, 'd')}
                         </div>
-                      ))}
-                    {tasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), selectedDate)).length === 0 && (
-                      <div className="p-4 text-center rounded-2xl bg-gray-50/50 border border-dashed border-gray-100">
-                        <p className="text-[10px] font-bold text-gray-400 italic">No tasks scheduled for this day</p>
+                        
+                        <div className="space-y-1 mt-1">
+                          {dayTasks.slice(0, 3).map(t => (
+                            <div 
+                              key={t.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingTask(t);
+                                setIsTaskModalOpen(true);
+                              }}
+                              className={cn(
+                                "px-2 py-1 rounded-lg text-[10px] font-bold truncate border",
+                                t.status === 'completed' 
+                                  ? "bg-emerald-50 text-emerald-600 border-emerald-100 opacity-60" 
+                                  : "bg-[#F4D03F]/5 border-[#F4D03F]/10 text-gray-700 hover:border-[#F4D03F]/30"
+                              )}
+                            >
+                              {t.title}
+                            </div>
+                          ))}
+                          {dayTasks.length > 3 && (
+                            <div className="text-[9px] font-black text-gray-400 text-center uppercase py-0.5">
+                              + {dayTasks.length - 3} more
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              )}
+
+              {viewMode === 'week' && (
+                <motion.div
+                  key="week"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="grid grid-cols-7 gap-4"
+                >
+                  {generateWeekDays().map((date, i) => {
+                    const dayTasks = filteredTasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), date));
+                    return (
+                      <div key={i} className="space-y-3">
+                        <div className="p-4 bg-[#F9F7F2]/60 rounded-2xl border border-[#F4D03F]/10 text-center">
+                          <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{format(date, 'EEE')}</p>
+                          <p className={cn(
+                            "text-lg font-black",
+                            isToday(date) ? "text-[#F4D03F]" : "text-[#1A1A1A]"
+                          )}>{format(date, 'd')}</p>
+                        </div>
+                        <div className="space-y-2">
+                          {dayTasks.map(renderTaskCard)}
+                          {dayTasks.length === 0 && (
+                            <div className="p-8 text-center border-2 border-dashed border-gray-100 rounded-2xl">
+                              <p className="text-[10px] text-gray-300 font-bold italic">Clear</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              )}
+
+              {viewMode === 'list' && (
+                <motion.div
+                  key="list"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-4"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredTasks.length > 0 ? (
+                      filteredTasks.map(renderTaskCard)
+                    ) : (
+                      <div className="col-span-full p-20 text-center space-y-4 bg-white/40 rounded-[2.5rem] border border-dashed border-[#F4D03F]/20">
+                        <div className="w-20 h-20 rounded-[2rem] bg-[#F9F7F2] flex items-center justify-center mx-auto">
+                          <ClipboardList className="w-10 h-10 text-[#F4D03F]/40" />
+                        </div>
+                        <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No matching tasks found</p>
                       </div>
                     )}
                   </div>
-                </div>
+                </motion.div>
               )}
-            </BeeYieldCard>
 
-            {/* Quick Action Suggestion */}
-            <div className="p-6 rounded-3xl bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] text-white relative overflow-hidden group">
-              <div className="relative z-10 space-y-4">
-                <div className="flex items-center gap-2 text-[#F4D03F]">
-                  <AlertCircle className="w-5 h-5" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Efficiency Tip</span>
-                </div>
-                <p className="text-[13px] font-bold leading-tight">
-                  Regular inspections help prevent swarming and disease outbreaks.
-                </p>
-                <button 
-                  onClick={() => onTabChange?.('inspections')}
-                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#F4D03F] hover:gap-3 transition-all"
+              {viewMode === 'day' && (
+                <motion.div
+                  key="day"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="max-w-3xl mx-auto space-y-6"
                 >
-                  Schedule an Inspection <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                  <div className={cn(glass.card, "p-8 space-y-6 bg-white/60")}>
+                    <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-6">
+                      <div className="flex flex-col">
+                        <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter">
+                          Plan for {format(currentDate, 'EEEE')}
+                        </h2>
+                        <p className="text-[11px] font-bold text-gray-400">{format(currentDate, 'MMMM d, yyyy')}</p>
+                      </div>
+                      <BeeYieldBadge className="bg-emerald-50 text-emerald-600 border-emerald-100">
+                        {tasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), currentDate)).length} Tasks Scheduled
+                      </BeeYieldBadge>
+                    </div>
+
+                    <div className="space-y-4">
+                      {tasks
+                        .filter(t => t.due_date && isSameDay(parseISO(t.due_date), currentDate))
+                        .map(renderTaskCard)}
+                      {tasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), currentDate)).length === 0 && (
+                        <div className="py-20 text-center opacity-40">
+                          <p className="text-sm font-black text-gray-300 uppercase tracking-widest">No activities today</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Bottom Action Strip */}
+          <div className="pt-6 border-t border-[#F4D03F]/10 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#F4D03F]" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Standard Task</span>
               </div>
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#F4D03F]/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Completed</span>
+              </div>
             </div>
+            
+            <button 
+              onClick={exportIcs}
+              className={cn(glass.btnSecondary, "gap-2 h-10 px-6")}
+            >
+              <Download className="w-4 h-4" />
+              Export .ics
+            </button>
           </div>
         </div>
       </div>
-    </BeeYieldPageShell>
+
+      {/* Task Creation/Editing Modal */}
+      <GlassModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        title={editingTask ? "Update Task" : "Quick Task Entry"}
+        subtitle={editingTask ? `Refining ${editingTask.title}` : "Outline your next operational move."}
+      >
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className={cn(glass.microLabel)}>Task Title</Label>
+              <Input 
+                value={editingTask ? editingTask.title : newTaskForm.title || ''}
+                onChange={(e) => {
+                  if (editingTask) setEditingTask({...editingTask, title: e.target.value});
+                  else setNewTaskForm({...newTaskForm, title: e.target.value});
+                }}
+                placeholder="e.g., Varroa Treatment - Yard A"
+                className={cn(glass.input)} 
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className={cn(glass.microLabel)}>Plan Date</Label>
+                <Input 
+                  type="date"
+                  value={editingTask ? (editingTask.due_date?.split('T')[0] || '') : (newTaskForm.due_date || '')}
+                  onChange={(e) => {
+                    if (editingTask) setEditingTask({...editingTask, due_date: e.target.value});
+                    else setNewTaskForm({...newTaskForm, due_date: e.target.value});
+                  }}
+                  className={cn(glass.input)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className={cn(glass.microLabel)}>Priority</Label>
+                <Select
+                  value={editingTask ? editingTask.priority : newTaskForm.priority}
+                  onValueChange={(val: any) => {
+                    if (editingTask) setEditingTask({...editingTask, priority: val});
+                    else setNewTaskForm({...newTaskForm, priority: val});
+                  }}
+                >
+                  <SelectTrigger className={cn(glass.select)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={glass.selectContent}>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className={cn(glass.microLabel)}>Target Location</Label>
+                <Select
+                  value={editingTask ? editingTask.apiary_id : newTaskForm.apiary_id}
+                  onValueChange={(val) => {
+                    if (editingTask) setEditingTask({...editingTask, apiary_id: val});
+                    else setNewTaskForm({...newTaskForm, apiary_id: val});
+                  }}
+                >
+                  <SelectTrigger className={cn(glass.select)}>
+                    <SelectValue placeholder="All/General" />
+                  </SelectTrigger>
+                  <SelectContent className={glass.selectContent}>
+                    {apiaries.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className={cn(glass.microLabel)}>Status</Label>
+                <Select
+                  value={editingTask ? editingTask.status : newTaskForm.status}
+                  onValueChange={(val: any) => {
+                    if (editingTask) setEditingTask({...editingTask, status: val});
+                    else setNewTaskForm({...newTaskForm, status: val});
+                  }}
+                >
+                  <SelectTrigger className={cn(glass.select)}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={glass.selectContent}>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className={cn(glass.microLabel)}>Notes & Context</Label>
+              <Textarea 
+                value={editingTask ? editingTask.description : newTaskForm.description || ''}
+                onChange={(e) => {
+                  if (editingTask) setEditingTask({...editingTask, description: e.target.value});
+                  else setNewTaskForm({...newTaskForm, description: e.target.value});
+                }}
+                className={cn(glass.input, "min-h-[100px] text-[12px] py-3")}
+                placeholder="Specific instructions, tool list, or observation requirements..."
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button 
+              onClick={() => setIsTaskModalOpen(false)}
+              className={cn(glass.btnSecondary, "flex-1 h-12")}
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={editingTask ? () => {
+                updateTask.mutate({ id: editingTask.id, updates: editingTask as any }, { onSuccess: () => setIsTaskModalOpen(false) });
+              } : handleCreateTask}
+              className={cn(glass.btnPrimary, "flex-1 h-12 shadow-xl shadow-[#F4D03F]/20")}
+            >
+              <Check className="w-4 h-4" />
+              {editingTask ? 'Save Updates' : 'Schedule Move'}
+            </button>
+          </div>
+        </div>
+      </GlassModal>
+
+      {/* Floating Action Button for Mobile/Quick Access */}
+      <button 
+        onClick={() => {
+          setEditingTask(null);
+          setIsTaskModalOpen(true);
+        }}
+        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-[#F4D03F] text-[#1A1A1A] border-4 border-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 lg:hidden"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
+    </motion.div>
   );
 };
+
+export default MyTaskView;
 
 export default MyTaskView;

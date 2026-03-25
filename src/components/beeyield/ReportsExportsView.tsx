@@ -495,7 +495,56 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                     <GlassStatCard label="Analysis Modules" value="04" icon={Sparkles} index={3} color="text-[#F4D03F]" />
                 </div>
 
-            {/* Insights banner */}
+                {/* Selection Bar (My Places / Hive) */}
+                <div className={cn(glass.card, "p-4 sm:p-6 bg-white border-gray-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8")}>
+                    <div className="space-y-1 min-w-[140px]">
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-[#1B9157]">Select Hive</h4>
+                        <p className="text-[11px] font-medium text-gray-400">Search wireless BeeHUB</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row flex-1 w-full gap-3">
+                        <div className="flex-1 relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600 z-10">
+                                <LayoutGrid className="w-full h-full" />
+                            </div>
+                            <select
+                                value={selectedPlace}
+                                onChange={(e) => {
+                                    setSelectedPlace(e.target.value);
+                                    setSelectedHive(''); // Reset hive when apiary changes
+                                }}
+                                className={cn(glass.select, "pl-10 h-12 w-full font-bold text-xs uppercase tracking-tight pr-10 appearance-none")}
+                            >
+                                <option value="">My Places</option>
+                                {apiaries.map(a => (
+                                    <option key={a.id} value={a.id}>{a.name}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                        </div>
+
+                        <div className="flex-1 relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-600 z-10">
+                                <Box className="w-full h-full" />
+                            </div>
+                            <select
+                                value={selectedHive}
+                                onChange={(e) => setSelectedHive(e.target.value)}
+                                className={cn(glass.select, "pl-10 h-12 w-full font-bold text-xs uppercase tracking-tight pr-10 appearance-none")}
+                            >
+                                <option value="">Hive</option>
+                                {hives
+                                    .filter(h => !selectedPlace || String((h as any).apiary_id) === String(selectedPlace))
+                                    .map(h => (
+                                        <option key={h.id} value={h.id}>{h.hive_code}</option>
+                                    ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Insights banner */}
             <div className={cn(glass.card, "p-5 bg-emerald-600 border-none flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden group shadow-lg")}>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32" />
                 <div className="space-y-1.5 flex-1 relative z-10 text-center sm:text-left">

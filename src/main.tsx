@@ -12,7 +12,9 @@ if (typeof window !== 'undefined') {
 
 import ScrollToTop from './components/ScrollToTop'
 import { BeeYieldQueryProvider } from './components/QueryClientProvider'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { useEffect } from 'react'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -78,6 +80,18 @@ const PollinationReports = lazy(() => import('@/pages/pollination/PollinationRep
 import { PageLoader } from './components/PageLoader'
 
 
+const AnalyticsTracker = () => {
+    const location = useLocation();
+    const { trackPageView } = useAnalytics();
+
+    useEffect(() => {
+        trackPageView(location.pathname + location.search);
+    }, [location, trackPageView]);
+
+    return null;
+};
+
+
 const container = document.getElementById('root')!
 const anyGlobal = globalThis as any
 const root = anyGlobal.__honey_root ?? ReactDOM.createRoot(container)
@@ -88,6 +102,7 @@ root.render(
         <BeeYieldQueryProvider>
             <TooltipProvider>
                 <BrowserRouter>
+                    <AnalyticsTracker />
                     <AuthProvider>
                         <SettingsProvider>
                             <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
