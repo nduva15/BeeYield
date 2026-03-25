@@ -77,7 +77,6 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
         
         // Be more inclusive of active statuses
         const activeStatuses = ['active', 'healthy', 'ok', 'Active', 'Healthy', 'OK'];
-        const activeHives = hives.filter(h => activeStatuses.includes(h.status || '')).length;
         
         const avgStrength = hives.reduce((acc, h) => {
             let score = 0;
@@ -96,9 +95,10 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
         ) / (totalHives || 1);
 
         const avgBattery = hives.reduce((sum, h) => {
-            const b = h.latest_battery || (h as any).telemetry?.battery_level || (h as any).telemetry?.battery_voltage || 100;
+            const b = (h as any).latest_battery || (h as any).telemetry?.battery_level || (h as any).telemetry?.battery_voltage || 100;
             return sum + (b > 100 ? 100 : b); // Normalize if it's voltage
         }, 0) / (totalHives || 1);
+
         
         // Match service logic: active or undefined status is considered active
         const activeHives = hives.filter(h => !h.status || activeStatuses.includes(h.status)).length;

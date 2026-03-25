@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { beeyieldService, Hive, Apiary, Harvest, Inspection, Queen, QueenRearingBatch, HiveDetailData } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import QRCode from 'qrcode';
 
 interface HiveDetailViewProps {
     hiveId: string;
@@ -28,6 +29,7 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabChange }) => {
     const [loading, setLoading] = React.useState(true);
     const [detail, setDetail] = React.useState<HiveDetailData | null>(null);
+    const qrRef = React.useRef<HTMLCanvasElement>(null);
 
     // Calendar state
     const [calMonth, setCalMonth] = React.useState(new Date().getMonth());
@@ -67,6 +69,9 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
         is_verified: true
     });
     const [savingHarvest, setSavingHarvest] = React.useState(false);
+    
+    // View detailed harvest modal
+    const [selectedHarvest, setSelectedHarvest] = React.useState<any | null>(null);
 
     const fetchDetail = React.useCallback(async () => {
         setLoading(true);
@@ -118,6 +123,60 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
             toast.error(e?.message || 'Failed to save harvest');
         } finally {
             setSavingHarvest(false);
+        }
+    };
+
+    // ─── QR Code Handlers ───
+    React.useEffect(() => {
+        if (qrRef.current && detail?.hive) {
+            // Generate a trace URL or identifier for the QR code
+            const hiveUrl = `${window.location.origin}/trace?hive=${detail.hive.id}`;
+            QRCode.toCanvas(qrRef.current, hiveUrl, {
+                width: 256,
+                margin: 2,
+                color: {
+                    dark: '#1A1A1A',
+                    light: '#FFFFFF'
+                }
+            }, (error) => {
+                if (error) console.error('Failed to generate QR code', error);
+            });
+        }
+    }, [detail?.hive]);
+
+    const handleDownloadQR = () => {
+        if (!qrRef.current || !detail?.hive) return;
+        const url = qrRef.current.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `beeyield-qr-${detail.hive.hive_code}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        toast.success('QR Code downloaded successfully');
+    };
+
+    const handlePrintQR = () => {
+        if (!qrRef.current || !detail?.hive) return;
+        const dataUrl = qrRef.current.toDataURL('image/png');
+        const w = window.open('', '_blank');
+        if (w) {
+            w.document.write(`
+                <html>
+                    <head><title>Print QR Code - ${detail.hive.hive_code}</title></head>
+                    <body style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif;">
+                        <img src="${dataUrl}" style="width:256px; height:256px;" />
+                        <h2 style="margin-top:1rem; color:#1A1A1A;">Hive: ${detail.hive.hive_code}</h2>
+                        <p style="color:#666;">BeeHub Hive Tracker</p>
+                    </body>
+                </html>
+            `);
+            w.document.close();
+            w.focus();
+            setTimeout(() => {
+                w.print();
+                w.close();
+            }, 250);
         }
     };
 
@@ -361,34 +420,135 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         </div>
                     </div>
 
-                    <div className={cn(glass.section)}>\n                        <div className="p-5">
-                            <h3 className="text-lg font-black text-[#1A1A1A] mb-1">Harvests</h3>
-                            <p className="text-sm text-gray-500 font-medium mb-5">Detailed harvest statistics for the selected hive.</p>
-
-                            {harvests.length > 0 ? (
-                                <div className="space-y-2">
-                                    {harvests.map((h: any) => (
-                                        <div key={h.id} className="flex justify-between items-center p-3 rounded-xl bg-white/50 border border-[#F4D03F]/10">
-                                            <div>
-                                                <p className="text-sm font-bold text-[#1A1A1A]">{h.quantity_kg} kg — {h.honey_type || 'Multi-flower'}</p>
-                                                <p className="text-xs text-gray-500">{new Date(h.harvest_date).toLocaleDateString()}{h.batch_code ? ` · ${h.batch_code}` : ''}</p>
-                                            </div>
-                                            {h.is_verified && <ShieldCheck className="w-4 h-4 text-emerald-500" />}
+                    <div className={cn(glass.section)}>
+                        <div className={glass.sectionHeader}>
+                            <BeeYieldSectionHeader
+                                title="Harvest Records"
+                                icon={Wheat}
+                                actions={
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => setShowHarvestForm(true)} className={cn(glass.btnPrimary, 'h-8 px-3 text-[10px]')}>
+                                            <Plus className="w-3.5 h-3.5" /> Add harvest
+                                        </button>
+                                        <button onClick={() => onTabChange('harvests')} className={cn(glass.btnSecondary, 'h-8 px-3 text-[10px]')}>
+                                            <ExternalLink className="w-3 h-3" /> All harvests
+                                        </button>
+                                    </div>
+                                }
+                            />
+                        </div>
+                        <div className="p-5 space-y-5">
+                            {/* ── Summary strip ── */}
+                            {harvests.length > 0 && (() => {
+                                const totalKg = harvests.reduce((s: number, h: any) => s + (parseFloat(h.quantity_kg) || 0), 0);
+                                const latestDate = harvests.reduce((latest: string, h: any) => {
+                                    return !latest || h.harvest_date > latest ? h.harvest_date : latest;
+                                }, '');
+                                return (
+                                    <div className="grid grid-cols-3 gap-3">
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-center">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Total Yield</p>
+                                            <p className="text-lg font-black text-[#1A1A1A] tabular-nums">{totalKg.toFixed(1)}<span className="text-xs font-bold text-gray-400 ml-0.5">kg</span></p>
                                         </div>
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-center">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Batches</p>
+                                            <p className="text-lg font-black text-[#1A1A1A] tabular-nums">{harvests.length}</p>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-center">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Last Harvest</p>
+                                            <p className="text-sm font-black text-[#1A1A1A]">{latestDate ? new Date(latestDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—'}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
+                            {/* ── Hive type badge ── */}
+                            {hive?.hive_type && (
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1A1A1A]/3 border border-[#F4D03F]/10 w-fit">
+                                    <Hexagon className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                    <span className="text-[10px] font-black text-[#1A1A1A] tracking-wide uppercase">{hive.hive_type}</span>
+                                    <span className="text-[10px] text-gray-400 font-medium">hive type</span>
+                                </div>
+                            )}
+
+                            {/* ── Harvest cards ── */}
+                            {harvests.length > 0 ? (
+                                <div className="space-y-3">
+                                    {harvests.map((h: any, i: number) => (
+                                        <motion.div
+                                            key={h.id}
+                                            initial={{ opacity: 0, y: 8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: i * 0.04 }}
+                                            onClick={() => setSelectedHarvest(h)}
+                                            className="rounded-xl border border-[#F4D03F]/20 bg-white/60 overflow-hidden shadow-sm hover:border-[#F4D03F]/40 hover:shadow-md transition-all cursor-pointer group"
+                                        >
+                                            {/* Card header */}
+                                            <div className="flex items-center justify-between px-4 py-3 border-b border-[#F4D03F]/10 bg-[#F9F7F2]/60">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
+                                                        <Wheat className="w-3.5 h-3.5 text-[#D97706]" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-black text-[#1A1A1A] tabular-nums">
+                                                            {parseFloat(h.quantity_kg || 0).toFixed(1)} kg
+                                                            <span className="ml-2 text-[10px] font-bold text-[#D97706] bg-[#F4D03F]/10 px-2 py-0.5 rounded-md">{h.honey_type || 'Multi-flower'}</span>
+                                                        </p>
+                                                        <p className="text-[10px] font-semibold text-gray-400">
+                                                            {new Date(h.harvest_date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    {h.batch_code && (
+                                                        <span className="px-2.5 py-1 rounded-lg bg-[#1A1A1A]/5 border border-[#F4D03F]/10 text-[9px] font-black text-gray-500 tracking-widest font-mono">
+                                                            {h.batch_code}
+                                                        </span>
+                                                    )}
+                                                    {h.is_verified && (
+                                                        <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[9px] font-black text-emerald-600">
+                                                            <ShieldCheck className="w-3 h-3" /> Verified
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Card body: data grid */}
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 divide-x divide-[#F4D03F]/10">
+                                                {[
+                                                    { label: 'Color grade', value: h.color_grade || '—' },
+                                                    { label: 'Moisture', value: h.moisture_content_percent ? `${h.moisture_content_percent}%` : '—' },
+                                                    { label: 'Left for bees', value: h.quantity_left_for_bees_kg ? `${parseFloat(h.quantity_left_for_bees_kg).toFixed(1)} kg` : '—' },
+                                                    { label: 'Extraction', value: h.extraction_method || '—' },
+                                                ].map(({ label, value }) => (
+                                                    <div key={label} className="px-3 py-2.5 flex flex-col gap-0.5">
+                                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-wider">{label}</p>
+                                                        <p className="text-[11px] font-bold text-[#1A1A1A] truncate" title={value}>{value}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Notes row */}
+                                            {(h.notes || h.forage_type || h.weather_conditions) && (
+                                                <div className="px-4 py-2.5 border-t border-[#F4D03F]/10 bg-[#FFFBF0]/40 flex items-start gap-3 flex-wrap">
+                                                    {h.forage_type && <span className="text-[10px] text-gray-500"><span className="font-bold text-gray-400">Flora:</span> {h.forage_type}</span>}
+                                                    {h.weather_conditions && <span className="text-[10px] text-gray-500"><span className="font-bold text-gray-400">Weather:</span> {h.weather_conditions}</span>}
+                                                    {h.notes && <span className="text-[10px] text-gray-500 italic">{h.notes}</span>}
+                                                </div>
+                                            )}
+                                        </motion.div>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-sm text-gray-500 text-center py-6">No harvests to display.</p>
+                                <div className="py-10 text-center rounded-2xl border border-dashed border-[#F4D03F]/30 bg-[#FFFBF0]/30">
+                                    <Wheat className="w-8 h-8 mx-auto mb-3 text-[#F4D03F] opacity-30" />
+                                    <p className="text-sm font-bold text-gray-400">No harvests recorded yet</p>
+                                    <p className="text-[11px] text-gray-400 mt-1 mb-4">Log your first batch to start tracking production.</p>
+                                    <button onClick={() => setShowHarvestForm(true)} className={cn(glass.btnPrimary, 'mx-auto')}>
+                                        <Plus className="w-4 h-4" /> Add first harvest
+                                    </button>
+                                </div>
                             )}
-
-                            <div className="flex items-center gap-3 mt-5">
-                                <button onClick={() => setShowHarvestForm(true)} className="h-9 px-4 rounded-full bg-white border border-gray-200 text-[#1E293B] text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
-                                    <Plus className="w-3.5 h-3.5" /> Add harvest
-                                </button>
-                                <button onClick={() => onTabChange('harvests')} className="h-9 px-4 rounded-full bg-[#D97706] text-white text-xs font-bold flex items-center gap-2 hover:bg-amber-600 transition-colors shadow-sm">
-                                    <ExternalLink className="w-3.5 h-3.5" /> Go to harvests
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -433,18 +593,24 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         <div className="p-5">
                             <BeeYieldSectionHeader title="QR Code" icon={QrCode} />
                             <div className="mt-3 flex flex-col items-center">
-                                <div className="w-32 h-32 bg-white rounded-xl border-2 border-[#F4D03F]/20 flex items-center justify-center shadow-inner mb-3">
-                                    <QrCode className="w-20 h-20 text-[#1A1A1A] opacity-80" />
+                                <div className="w-32 h-32 bg-white rounded-xl border-2 border-[#F4D03F]/20 flex items-center justify-center shadow-inner mb-3 overflow-hidden">
+                                    <canvas ref={qrRef} className="w-full h-full" />
                                 </div>
                                 <div className="flex gap-2 mb-3">
-                                    <button className="h-8 px-3 rounded-lg border border-[#F4D03F]/20 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors">
+                                    <button 
+                                        onClick={handleDownloadQR}
+                                        className="h-8 px-3 rounded-lg border border-[#F4D03F]/20 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors"
+                                    >
                                         <Download className="w-3 h-3" /> Download
                                     </button>
-                                    <button className="h-8 px-3 rounded-lg border border-[#F4D03F]/20 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors">
+                                    <button 
+                                        onClick={handlePrintQR}
+                                        className="h-8 px-3 rounded-lg border border-[#F4D03F]/20 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors"
+                                    >
                                         <Printer className="w-3 h-3" /> Print
                                     </button>
                                 </div>
-                                <p className="text-[10px] text-gray-400 text-center leading-relaxed">Print and stick a QR code on the hive to quickly find the hive in the Intelligent Hive browser or mobile app.</p>
+                                <p className="text-[10px] text-gray-400 text-center leading-relaxed">Print and stick a QR code on the hive to quickly find the hive in the BeeYield webapp or app.</p>
                             </div>
                         </div>
                     </div>
@@ -558,6 +724,91 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* ══════════ VIEW HARVEST RECORD MODAL ══════════ */}
+            <GlassModal
+                isOpen={!!selectedHarvest}
+                onClose={() => setSelectedHarvest(null)}
+                title="Harvest Record"
+                subtitle={`Details for batch ${selectedHarvest?.batch_code || 'unspecified'}`}
+            >
+                {selectedHarvest && (
+                    <div className="space-y-6">
+                        {/* Highlights Strip */}
+                        <div className="flex bg-[#F9F7F2]/60 rounded-xl p-3 border border-[#F4D03F]/20 gap-4">
+                            <div className="flex-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Yield</p>
+                                <p className="text-xl font-black text-[#1A1A1A]">{parseFloat(selectedHarvest.quantity_kg || 0).toFixed(1)} <span className="text-sm text-gray-400">kg</span></p>
+                            </div>
+                            <div className="w-px bg-[#F4D03F]/20" />
+                            <div className="flex-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Date</p>
+                                <p className="text-sm font-bold text-[#1A1A1A] mt-1">{new Date(selectedHarvest.harvest_date).toLocaleDateString()}</p>
+                            </div>
+                            <div className="w-px bg-[#F4D03F]/20" />
+                            <div className="flex-1 text-right flex flex-col items-end justify-center">
+                                {selectedHarvest.is_verified ? (
+                                    <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] font-black text-emerald-600">
+                                        <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-[10px] font-black text-gray-500">
+                                        Unverified
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Data Grid */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Honey Type</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.honey_type || '—'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Color Grade</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.color_grade || '—'}</p>
+                            </div>
+                            
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Moisture Content</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.moisture_content_percent ? `${selectedHarvest.moisture_content_percent}%` : '—'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Extraction Method</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.extraction_method || '—'}</p>
+                            </div>
+
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Left for Bees</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.quantity_left_for_bees_kg ? `${selectedHarvest.quantity_left_for_bees_kg} kg` : '—'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Forage Type (Flora)</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.forage_type || selectedHarvest.florage_type || '—'}</p>
+                            </div>
+
+                            <div className="space-y-1 col-span-2">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Weather Conditions</p>
+                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.weather_conditions || '—'}</p>
+                            </div>
+
+                            {selectedHarvest.notes && (
+                                <div className="space-y-1 col-span-2 pt-3 border-t border-[#F4D03F]/10">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Notes</p>
+                                    <p className="text-sm text-gray-600 bg-[#FFFBF0]/50 p-3 rounded-lg border border-[#F4D03F]/10 leading-relaxed">{selectedHarvest.notes}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="pt-2 flex justify-end">
+                            <button onClick={() => setSelectedHarvest(null)} className={cn(glass.btnSecondary, "px-6")}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </GlassModal>
 
             {/* ══════════ HARVEST FORM MODAL ══════════ */}
             <GlassModal

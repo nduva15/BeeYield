@@ -90,9 +90,16 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                         </div>
                                         <div>
                                             <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter">{selectedItem.name}</h2>
-                                            <p className="text-sm font-bold text-[#1B9157]">
-                                                {activeTab === 'diseases' ? selectedItem.type : selectedItem.commonName}
-                                            </p>
+                                            <div className="flex items-center gap-3">
+                                                <p className="text-sm font-bold text-[#1B9157]">
+                                                    {activeTab === 'diseases' ? selectedItem.type : selectedItem.commonName}
+                                                </p>
+                                                {activeTab === 'species' && selectedItem.is_extinct && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-[10px] font-black text-red-600 uppercase tracking-wider">
+                                                        Extinct
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -109,11 +116,27 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                         <div className="space-y-4">
                                             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1 h-3 bg-[#1B9157]" />
-                                                Resolution
+                                                {activeTab === 'diseases' ? 'Resolution' : 'Quick Reference'}
                                             </h4>
-                                            <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
-                                                {activeTab === 'diseases' ? selectedItem.treatment : selectedItem.traits.join(', ')}
-                                            </p>
+                                            {activeTab === 'diseases' ? (
+                                                <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
+                                                    {selectedItem.treatment}
+                                                </p>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] font-bold text-gray-400 uppercase">Location:</span>
+                                                        <span className="text-xs font-bold text-[#1A1A1A]">{selectedItem.location || 'Unknown'}</span>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {selectedItem.traits.map((trait: string, i: number) => (
+                                                            <span key={i} className="px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-bold text-emerald-700">
+                                                                {trait}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     

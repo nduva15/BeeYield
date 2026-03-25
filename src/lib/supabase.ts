@@ -17,25 +17,25 @@ const beeyieldKey = import.meta.env.VITE_SUPABASE_ANON_KEY_BEEYIELD || defaultKe
 const cebaUrl = import.meta.env.VITE_SUPABASE_URL_CEBA || defaultUrl;
 const cebaKey = import.meta.env.VITE_SUPABASE_ANON_KEY_CEBA || defaultKey;
 
-const createNamedClient = (url: string, key: string, name: string) => {
+const createNamedClient = (url: string, key: string, storageKey: string) => {
   try {
     return createClient(url, key, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
-        storageKey: 'sb-auth-token' // Use a unified storage key to share sessions across backends
+        storageKey, // Unique per client to avoid multiple GoTrueClient instance warnings
       }
     });
   } catch (error) {
-    console.error(`Failed to initialize Supabase client for ${name}:`, error);
+    console.error(`Failed to initialize Supabase client (${storageKey}):`, error);
     return null;
   }
 };
 
-export const supabaseShop = createNamedClient(shopUrl, shopKey, 'shop');
-export const supabaseBeeYield = createNamedClient(beeyieldUrl, beeyieldKey, 'beeyield');
-export const supabaseCEBA = createNamedClient(cebaUrl, cebaKey, 'ceba');
+export const supabaseShop = createNamedClient(shopUrl, shopKey, 'sb-auth-token-shop');
+export const supabaseBeeYield = createNamedClient(beeyieldUrl, beeyieldKey, 'sb-auth-token-beeyield');
+export const supabaseCEBA = createNamedClient(cebaUrl, cebaKey, 'sb-auth-token-ceba');
 
 // Default export remains for backward compatibility, pointing to shop by default
 export const supabase = supabaseShop;
