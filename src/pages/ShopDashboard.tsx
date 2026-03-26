@@ -278,7 +278,6 @@ const ShopDashboard = () => {
         }
         try {
             const { error } = await supabase.auth.updateUser({
-                email: profileForm.email,
                 data: {
                     first_name: profileForm.firstName,
                     last_name: profileForm.lastName,

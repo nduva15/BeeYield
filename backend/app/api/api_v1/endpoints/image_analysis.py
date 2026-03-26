@@ -150,7 +150,7 @@ async def analyze_image(
         
         if supabase:
             try:
-                db_insert("image_analyses", db_record)
+                await db_insert("image_analyses", db_record)
             except Exception as db_error:
                 print(f"Database insert failed: {db_error}")
         
@@ -189,7 +189,7 @@ async def get_analysis(
     Retrieve a specific image analysis result by ID.
     """
     try:
-        result = db_select(
+        result = await db_select(
             "image_analyses",
             filters={"id": analysis_id, "user_id": user_id}
         )
@@ -249,7 +249,7 @@ async def list_analyses(
         # Note: Date filtering would need custom query logic
         # For now, basic filter support
         
-        results = db_select("image_analyses", filters=filters)
+        results = await db_select("image_analyses", filters=filters)
         
         if not results:
             results = []
@@ -298,7 +298,7 @@ async def delete_analysis(
     """
     try:
         # Verify ownership
-        result = db_select(
+        result = await db_select(
             "image_analyses",
             filters={"id": analysis_id, "user_id": user_id}
         )
@@ -367,7 +367,7 @@ async def get_health_trends(
     Returns data points for charting colony health progression.
     """
     try:
-        results = db_select(
+        results = await db_select(
             "image_analyses",
             filters={"hive_id": hive_id, "user_id": user_id}
         )

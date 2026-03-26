@@ -8,13 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ReTooltip, ResponsiveContainer } from 'recharts';
 
-const mockEcoData = [
-  { time: '06:00', ndvi: 0.65, moisture: 0.42 },
-  { time: '09:00', ndvi: 0.68, moisture: 0.40 },
-  { time: '12:00', ndvi: 0.72, moisture: 0.38 },
-  { time: '15:00', ndvi: 0.70, moisture: 0.36 },
-  { time: '18:00', ndvi: 0.67, moisture: 0.39 },
-];
+
 
 interface AgroIntelligenceViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -24,17 +18,28 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
     const [weather, setWeather] = React.useState<any>(null);
     const [satellite, setSatellite] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(true);
+    const [ecoHistory, setEcoHistory] = React.useState<{ time: string; ndvi: number; moisture: number }[]>([]);
 
     React.useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [weatherData, satelliteData] = await Promise.all([
+                const [weatherData, satelliteData, allSatelliteData] = await Promise.all([
                     beeyieldService.getWeatherHistory().then(res => res && res.length > 0 ? res[0] : null),
-                    beeyieldService.getSatelliteIndices().then(res => res && res.length > 0 ? res[0] : null)
+                    beeyieldService.getSatelliteIndices().then(res => res && res.length > 0 ? res[0] : null),
+                    beeyieldService.getSatelliteIndices().then(res => res || [])
                 ]);
                 setWeather(weatherData);
                 setSatellite(satelliteData);
+                // Derive eco history from real satellite readings if available
+                if (allSatelliteData.length > 0) {
+                    const history = allSatelliteData.slice(-8).map((s: any, i: number) => ({
+                        time: s.recorded_at ? new Date(s.recorded_at).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }) : `T-${allSatelliteData.length - i}`,
+                        ndvi: s.ndvi ?? 0,
+                        moisture: s.soil_moisture_index ?? 0,
+                    }));
+                    setEcoHistory(history);
+                }
             } catch (err) {
                 console.error('Error loading data:', err);
             } finally {
@@ -44,9 +49,9 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
         fetchData();
     }, []);
 
-    const moisture = satellite?.soil_moisture_index ? Math.round(satellite.soil_moisture_index * 100) : 44;
-    const vegetation = satellite?.ndvi ? Math.round(satellite.ndvi * 100) / 100 : 0.74;
-    const carbonScore = satellite?.ndvi ? Math.round(satellite.ndvi * 1000) : 865;
+    const moisture = satellite?.soil_moisture_index != null ? Math.round(satellite.soil_moisture_index * 100) : null;
+    const vegetation = satellite?.ndvi != null ? Math.round(satellite.ndvi * 100) / 100 : null;
+    const carbonScore = satellite?.ndvi != null ? Math.round(satellite.ndvi * 1000) : null;
 
     return (
         <BeeYieldPageShell className="relative overflow-hidden">
@@ -78,26 +83,26 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <GlassStatCard
                     label="Atmospheric Clarity"
-                    value={loading ? 'Scanning…' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}%` : '96%')}
+                    value={loading ? 'Scanning…' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}%` : '—')}
                     icon={Sun}
                     index={0}
                 />
                 <GlassStatCard
                     label="Soil Saturation"
-                    value={loading ? 'Analyzing…' : `${moisture}%`}
+                    value={loading ? 'Analyzing…' : (moisture != null ? `${moisture}%` : '—')}
                     icon={CloudRain}
                     index={1}
                 />
                 <GlassStatCard
                     label="Vegetative Flux"
-                    value={loading ? 'Scanning…' : vegetation.toString()}
+                    value={loading ? 'Scanning…' : (vegetation != null ? vegetation.toString() : '—')}
                     icon={Sprout}
                     index={2}
                     color="text-[#1B9157]"
                 />
                 <GlassStatCard
                     label="Biomass Density"
-                    value={loading ? 'Calculating…' : carbonScore.toLocaleString()}
+                    value={loading ? 'Calculating…' : (carbonScore != null ? carbonScore.toLocaleString() : '—')}
                     icon={Wind}
                     index={3}
                     color="text-[#1B9157]"
@@ -135,8 +140,9 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
                                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Real-time Telemetry</span>
                                 </div>
+                                {ecoHistory.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={mockEcoData}>
+                                    <AreaChart data={ecoHistory}>
                                         <defs>
                                             <linearGradient id="colorNDVI" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="#1B9157" stopOpacity={0.2}/>
@@ -153,6 +159,12 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                         <Area type="monotone" dataKey="ndvi" stroke="#1B9157" fillOpacity={1} fill="url(#colorNDVI)" strokeWidth={4} />
                                     </AreaChart>
                                 </ResponsiveContainer>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center h-full opacity-30 gap-2">
+                                        <Satellite className="w-8 h-8 text-gray-400" />
+                                        <p className="text-[10px] font-bold text-gray-400">No satellite telemetry yet — awaiting first reading.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

@@ -4,7 +4,7 @@ from app.db.supabase_db import db_insert
 async def submit_contact_form(data: Dict[str, Any]):
     """Save contact submission and send notification"""
     # 1. Save to DB
-    result = db_insert("contact_submissions", data)
+    result = await db_insert("contact_submissions", data)
     
     # 2. Send email notification (async)
     # await send_email(
@@ -18,12 +18,12 @@ async def submit_contact_form(data: Dict[str, Any]):
 
 async def submit_pollination_request(data: Dict[str, Any]):
     """Save pollination request"""
-    return db_insert("pollination_requests", data)
+    return await db_insert("pollination_requests", data)
 
 async def submit_job_application(data: Dict[str, Any]):
     """Save job application"""
-    return db_insert("job_applications", data)
+    return await db_insert("job_applications", data)
 
 async def subscribe_newsletter(email: str):
     """Add email to newsletter list"""
-    return db_insert("newsletter_subscribers", {"email": email})
+    return await db_insert("newsletter_subscribers", {"email": email})

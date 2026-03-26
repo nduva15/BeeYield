@@ -87,6 +87,9 @@ class HarvestCreate(BaseModel):
     color_grade: Optional[str] = Field("Light Amber", description="Water White, Extra White, Extra Light Amber, Light Amber, Dark Amber")
     is_verified: Optional[bool] = False
     notes: Optional[str] = None
+    extraction_method: Optional[str] = None
+    nectar_source: Optional[str] = None
+    weather_conditions: Optional[str] = None
 
 class HarvestBatchInput(BaseModel):
     """Smart Harvest Logging — creates an immutable batch with IoT & health snapshots."""
@@ -104,6 +107,7 @@ class HarvestUpdate(BaseModel):
     harvest_date: Optional[date] = None
     quantity_kg: Optional[float] = None
     honey_type: Optional[str] = None
+    florage_type: Optional[str] = None
     moisture_content: Optional[float] = None
     moisture_content_percent: Optional[float] = None # Added for consistency
     quantity_left_for_bees_kg: Optional[float] = None # 50/50 rule
@@ -111,6 +115,9 @@ class HarvestUpdate(BaseModel):
     color_grade: Optional[str] = None
     is_verified: Optional[bool] = None
     notes: Optional[str] = None
+    extraction_method: Optional[str] = None
+    nectar_source: Optional[str] = None
+    weather_conditions: Optional[str] = None
 
 class TaskCreate(BaseModel):
     title: str

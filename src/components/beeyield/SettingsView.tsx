@@ -15,7 +15,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { glass } from './GlassTheme';
+import { glass, GlassModal, GlassConfirmModal } from './GlassTheme';
 import { Input } from '@/components/ui/input';
 import {
     Dialog,
