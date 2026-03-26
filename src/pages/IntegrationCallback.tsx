@@ -58,9 +58,18 @@ const IntegrationCallback: React.FC = () => {
                     await beeyieldService.completeQuickBooksOAuth({ code, realmId, state });
                 } else {
                     // Send the raw query string to backend for proper HMAC validation.
-                    const query = window.location.search.startsWith('?')
-                        ? window.location.search.slice(1)
-                        : window.location.search;
+                    // Use a safe way to get the search string to avoid malformed URI issues
+                    let query = '';
+                    try {
+                        query = window.location.search.startsWith('?')
+                            ? window.location.search.slice(1)
+                            : window.location.search;
+                    } catch (e) {
+                        console.warn('[IntegrationCallback] Failed to parse raw search string:', e);
+                        // Fallback to a very safe but potentially incomplete query
+                        query = window.location.href.split('?')[1] || '';
+                    }
+
                     if (!query) throw new Error('Missing callback parameters');
                     await beeyieldService.completeShopifyOAuth({ query });
                 }

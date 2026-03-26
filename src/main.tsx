@@ -47,7 +47,7 @@ const Impact = lazy(() => import('@/pages/Impact'))
 const ESG = lazy(() => import('@/pages/ESG'))
 const Commitment = lazy(() => import('@/pages/Commitment'))
 const OurStory = lazy(() => import('@/pages/OurStory'))
-const GlobalHiveNetwork = lazy(() => import('@/pages/GlobalHiveNetwork'))
+
 const PrecisionPollination = lazy(() => import('@/pages/PrecisionPollination'))
 const PollinationSolutions = lazy(() => import('@/pages/PollinationSolutions'))
 const InLandPollination = lazy(() => import('@/pages/InLandPollinationPlatform'))
@@ -85,7 +85,25 @@ const AnalyticsTracker = () => {
     const { trackPageView } = useAnalytics();
 
     useEffect(() => {
-        trackPageView(location.pathname + location.search);
+        try {
+            // Sanitize the path and search params by manually handling the search string
+            // if it's potentially malformed (e.g. contains a stray %)
+            let safeSearch = '';
+            try {
+                // Testing if the search string is valid
+                decodeURIComponent(location.search);
+                safeSearch = location.search;
+            } catch (e) {
+                console.warn('[Analytics] Malformed search params detected, sanitizing:', location.search);
+                // If malformed, we just strip the search or use a safe version
+                // A simple way is to use URLSearchParams which is more lenient or just skip it
+                safeSearch = '?malformed_params_hidden=true';
+            }
+
+            trackPageView(location.pathname + safeSearch);
+        } catch (e) {
+            console.warn('[Analytics] Failed to track page view:', e);
+        }
     }, [location, trackPageView]);
 
     return null;
@@ -130,7 +148,7 @@ root.render(
                                                         <Route path="/esg" element={<ESG />} />
                                                         <Route path="/commitment" element={<Commitment />} />
                                                         <Route path="/ourstory" element={<OurStory />} />
-                                                        <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
+
                                                         <Route path="/traceability" element={<Traceability />} />
                                                         <Route path="/precision-pollination" element={<PrecisionPollination />} />
                                                         <Route path="/pollination-solutions" element={<PollinationSolutions />} />

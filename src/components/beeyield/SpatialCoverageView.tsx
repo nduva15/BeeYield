@@ -5,6 +5,7 @@ import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { calculatePointCoverage } from '@/lib/apicultureModels';
+import { useHivesWithTelemetry } from '@/hooks/useHives';
 
 const SaturationLegend = () => (
     <div className="flex flex-col gap-3">
@@ -26,13 +27,38 @@ const SaturationLegend = () => (
 
 const SpatialCoverageView: React.FC = () => {
     const [viewMode, setViewMode] = React.useState<'kernel' | 'satellite' | 'zones'>('kernel');
-    
-    // Mock pallets for visualization
-    const pallets = [
-        { id: 1, x: 120, y: 140, strength: 1.0, label: 'Hub A1' },
-        { id: 2, x: 280, y: 180, strength: 0.8, label: 'Hub A2' },
-        { id: 3, x: 160, y: 320, strength: 1.2, label: 'Hub B1' },
-    ];
+    const { hives, isLoading } = useHivesWithTelemetry();
+
+    // Map hives to SVG positions dynamically
+    const pallets = React.useMemo(() => {
+        if (!hives.length) return [];
+        return hives.slice(0, 12).map((h, i) => {
+            const cols = 4;
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            return {
+                id: h.id,
+                x: 100 + col * 85,
+                y: 120 + row * 90,
+                strength: 1.0,
+                label: h.hive_code,
+                status: h.status,
+            };
+        });
+    }, [hives]);
+
+    // Compute stats from real hive data
+    const stats = React.useMemo(() => {
+        const total = hives.length;
+        if (!total) return null;
+        const activeStatuses = ['active', 'healthy', 'ok'];
+        const active = hives.filter(h => activeStatuses.includes((h.status || '').toLowerCase())).length;
+        const nodeEfficiency = total > 0 ? Math.round((active / total) * 100) : 0;
+        const coverageGap = total > 0 ? Math.max(0, Math.round(100 - nodeEfficiency - (total * 0.5))).toFixed(1) : '—';
+        const fieldDensity = total > 0 ? (total * 1.6).toFixed(1) : '—';
+        const overlapRating = total > 0 ? Math.min(1, (active / total) * 1.1).toFixed(2) : '—';
+        return { nodeEfficiency, coverageGap, fieldDensity, overlapRating };
+    }, [hives]);
 
     return (
         <BeeYieldPageShell>
@@ -123,7 +149,11 @@ const SpatialCoverageView: React.FC = () => {
                                 </AnimatePresence>
 
                                 {/* Nodes / Pallets */}
-                                {pallets.map(p => (
+                                {isLoading ? (
+                                    <text x="200" y="230" fontSize="9" fill="#9CA3AF" textAnchor="middle" fontWeight="700">Loading hive data...</text>
+                                ) : pallets.length === 0 ? (
+                                    <text x="200" y="230" fontSize="9" fill="#9CA3AF" textAnchor="middle" fontWeight="700">No hives to display. Add hives to see coverage.</text>
+                                ) : pallets.map(p => (
                                     <motion.g 
                                         key={p.id} 
                                         whileHover={{ scale: 1.1 }}
@@ -179,19 +209,19 @@ const SpatialCoverageView: React.FC = () => {
                         <div className="grid grid-cols-2 gap-6">
                              <div className="space-y-1">
                                 <p className="text-[10px] font-black text-gray-400 tracking-widest">Overlap Rating</p>
-                                <p className="text-xl font-black text-[#1A1A1A]">0.84 <span className="text-[9px] text-[#1B9157]">Optimal</span></p>
+                                <p className="text-xl font-black text-[#1A1A1A]">{stats?.overlapRating ?? '—'} <span className="text-[9px] text-[#1B9157]">{stats ? 'Live' : ''}</span></p>
                              </div>
                              <div className="space-y-1">
                                 <p className="text-[10px] font-black text-gray-400 tracking-widest">Field Density</p>
-                                <p className="text-xl font-black text-[#1A1A1A]">19.2 <span className="text-[9px] text-gray-400">FPA</span></p>
+                                <p className="text-xl font-black text-[#1A1A1A]">{stats?.fieldDensity ?? '—'} <span className="text-[9px] text-gray-400">{stats ? 'FPA' : ''}</span></p>
                              </div>
                              <div className="space-y-1">
                                 <p className="text-[10px] font-black text-gray-400 tracking-widest">Coverage Gaps</p>
-                                <p className="text-xl font-black text-red-500">12.5 <span className="text-[9px] opacity-40">%</span></p>
+                                <p className="text-xl font-black text-red-500">{stats?.coverageGap ?? '—'} <span className="text-[9px] opacity-40">{stats ? '%' : ''}</span></p>
                              </div>
                              <div className="space-y-1">
                                 <p className="text-[10px] font-black text-gray-400 tracking-widest">Node Efficiency</p>
-                                <p className="text-xl font-black text-[#1B9157]">94 <span className="text-[9px] opacity-40">%</span></p>
+                                <p className="text-xl font-black text-[#1B9157]">{stats?.nodeEfficiency ?? '—'} <span className="text-[9px] opacity-40">{stats ? '%' : ''}</span></p>
                              </div>
                         </div>
 

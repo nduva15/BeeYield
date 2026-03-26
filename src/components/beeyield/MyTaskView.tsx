@@ -652,5 +652,3 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
 };
 
 export default MyTaskView;
-
-export default MyTaskView;

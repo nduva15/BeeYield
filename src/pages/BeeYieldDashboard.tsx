@@ -448,8 +448,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <FlightMapView />;
             case 'varroa':
                 return <VarroaView />;
-            case 'global-hive-network':
-                return <GlobalHiveNetwork />;
+            case 'pollination-solutions':
+                return <PollinationSolutions />;
             case 'data':
                 return <MeasurementDataView onTabChange={handleTabChange} />;
             case 'online':

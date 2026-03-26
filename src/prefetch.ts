@@ -16,7 +16,7 @@ export const routeMap: Record<string, () => Promise<any>> = {
     '/esg': () => import('@/pages/ESG'),
     '/commitment': () => import('@/pages/Commitment'),
     '/ourstory': () => import('@/pages/OurStory'),
-    '/global-hive-network': () => import('@/pages/GlobalHiveNetwork'),
+
     '/precision-pollination': () => import('@/pages/PrecisionPollination'),
     '/pollination-solutions': () => import('@/pages/PollinationSolutions'),
     '/in-land-pollination': () => import('@/pages/InLandPollinationPlatform'),
