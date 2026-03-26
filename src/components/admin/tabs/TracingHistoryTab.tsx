@@ -16,11 +16,7 @@ export function TracingHistoryTab() {
     const [stats, setStats] = useState<any>(null);
     const [filters, setFilters] = useState({ days: '30' });
 
-    useEffect(() => {
-        loadData();
-    }, [filters]);
-
-    const loadData = async () => {
+    const loadData = React.useCallback(async () => {
         setLoading(true);
         try {
             const [tracesData, statsData] = await Promise.all([
@@ -34,7 +30,11 @@ export function TracingHistoryTab() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters.days]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const getSourceIcon = (source: string) => {
         switch (source) {

@@ -39,12 +39,17 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
     const [isWeatherLoading, setIsWeatherLoading] = React.useState(false);
 
     React.useEffect(() => {
-        if (apiary?.latitude && apiary?.longitude) {
+        const lat = apiary?.latitude;
+        const lon = apiary?.longitude;
+        if (lat && lon) {
             const fetchWeather = async () => {
                 setIsWeatherLoading(true);
-                const data = await beeyieldService.getWeatherData(apiary.latitude!, apiary.longitude!);
-                if (data) setWeather(data);
-                setIsWeatherLoading(false);
+                try {
+                    const data = await beeyieldService.getWeatherData(lat, lon);
+                    if (data) setWeather(data);
+                } finally {
+                    setIsWeatherLoading(false);
+                }
             };
             fetchWeather();
         }
@@ -56,20 +61,23 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
     React.useEffect(() => {
         const fetchHistory = async () => {
             setIsHistoryLoading(true);
-            // Get last 24h worth of readings
-            const data = await beeyieldService.getSensorReadings(undefined, 24);
-            if (data) {
-                // Filter for hives that belong to this apiary
-                const apiaryHiveIds = new Set(hives.map(h => h.id));
-                const filtered = data.filter(r => r.hive_id && apiaryHiveIds.has(r.hive_id));
-                setHistoricalReadings(filtered);
+            try {
+                // Get last 24h worth of readings
+                const data = await beeyieldService.getSensorReadings(undefined, 24);
+                if (data) {
+                    // Filter for hives that belong to this apiary
+                    const apiaryHiveIds = new Set(hives.map(h => h.id));
+                    const filtered = data.filter(r => r.hive_id && apiaryHiveIds.has(r.hive_id));
+                    setHistoricalReadings(filtered);
+                }
+            } finally {
+                setIsHistoryLoading(false);
             }
-            setIsHistoryLoading(false);
         };
         if (hives.length > 0) {
             fetchHistory();
         }
-    }, [hives.length, apiary?.id]);
+    }, [hives, apiary?.id]);
 
     const stats = React.useMemo(() => {
         if (!hives.length) return null;

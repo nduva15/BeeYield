@@ -88,7 +88,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         notes: ''
     });
 
-    const resetForm = () => {
+    const resetForm = React.useCallback(() => {
         setFormData({
             hive_id: '',
             inspector_name: '',
@@ -110,7 +110,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             notes: ''
         });
         setEditingId(null);
-    };
+    }, []);
 
     // Handle initial params for filtering or modals
     React.useEffect(() => {
@@ -118,7 +118,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             setIsAddingInspection(true);
         } else if (initialParams?.action?.startsWith('filter_hive:')) {
             const hiveId = initialParams.action.split(':')[1];
-            if (hiveId && hives.some(h => h.id === hiveId)) {
+            if (hiveId && hives.length > 0 && hives.some(h => h.id === hiveId)) {
                 setSelectedHiveId(hiveId);
                 const hive = hives.find(h => h.id === hiveId);
                 if (hive && hive.apiary_id) {
@@ -131,7 +131,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
     const isSaving = createInspectionMutation.isPending || updateInspectionMutation.isPending;
 
-    const handleSave = async () => {
+    const handleSave = React.useCallback(async () => {
         if (!formData.hive_id || formData.hive_id === 'all_hives') {
             toast.error("Please select a hive first.");
             return;
@@ -156,9 +156,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         } catch (error: any) {
             console.error('Error saving inspection:', error);
         }
-    };
+    }, [formData, editingId, linkedTaskId, createInspectionMutation, updateInspectionMutation, updateTaskMutation, resetForm]);
 
-    const handleEdit = (inspection: Inspection) => {
+    const handleEdit = React.useCallback((inspection: Inspection) => {
         setEditingId(inspection.id);
         setFormData({
             hive_id: inspection.hive_id,
@@ -181,9 +181,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             notes: inspection.notes || ''
         });
         setIsAddingInspection(true);
-    };
+    }, []);
 
-    const handleDelete = async (id: string, e: React.MouseEvent) => {
+    const handleDelete = React.useCallback(async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (!confirm("Are you sure you want to delete this inspection? This cannot be undone.")) return;
 
@@ -192,7 +192,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         } catch (error) {
             console.error("Error deleting record:", error);
         }
-    };
+    }, [deleteInspectionMutation]);
 
     const filteredHivesForSelect = hives.filter(h =>
         selectedPlaceId === 'all_places' || h.apiary_id === selectedPlaceId
