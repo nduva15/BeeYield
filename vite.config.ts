@@ -3,22 +3,11 @@ import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import path from 'path'
 
-import tailwindcss from 'tailwindcss'
-import autoprefixer from 'autoprefixer'
-
 // Detect if running inside `tauri dev`
 const isTauri = !!process.env.TAURI_ENV_PLATFORM
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    css: {
-        postcss: {
-            plugins: [
-                tailwindcss,
-                autoprefixer,
-            ],
-        },
-    },
     plugins: [
         react(),
         tsconfigPaths(),
@@ -81,16 +70,19 @@ export default defineConfig({
         cssMinify: true,
         rollupOptions: {
             output: {
-                manualChunks: {
-                    'vendor-core': ['react', 'react-dom', 'react-router-dom'],
-                    'vendor-backend': ['@supabase/supabase-js', '@tanstack/react-query', 'axios'],
-                    'vendor-ui': ['framer-motion', 'clsx', 'tailwind-merge', 'sonner'],
-                    'vendor-icons': ['lucide-react'],
-                    'vendor-charts': ['recharts'],
-                    'vendor-utils': ['lodash', 'date-fns', 'uuid', 'zod'],
-                    'vendor-pdf': ['jspdf', 'jspdf-autotable', '@react-pdf/renderer'],
-                    'vendor-qrcode': ['html5-qrcode', 'qrcode'],
-                    'vendor-tf': ['@tensorflow/tfjs', '@tensorflow-models/mobilenet'],
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) return 'vendor-core';
+                        if (id.includes('@supabase') || id.includes('@tanstack/react-query') || id.includes('axios')) return 'vendor-backend';
+                        if (id.includes('framer-motion') || id.includes('clsx') || id.includes('tailwind-merge') || id.includes('sonner')) return 'vendor-ui';
+                        if (id.includes('lucide-react')) return 'vendor-icons';
+                        if (id.includes('recharts')) return 'vendor-charts';
+                        if (id.includes('lodash') || id.includes('date-fns') || id.includes('uuid') || id.includes('zod')) return 'vendor-utils';
+                        if (id.includes('jspdf') || id.includes('jspdf-autotable') || id.includes('@react-pdf/renderer')) return 'vendor-pdf';
+                        if (id.includes('html5-qrcode') || id.includes('qrcode')) return 'vendor-qrcode';
+                        if (id.includes('@tensorflow') || id.includes('mobilenet')) return 'vendor-tf';
+                        return 'vendor';
+                    }
                 },
             },
         },
