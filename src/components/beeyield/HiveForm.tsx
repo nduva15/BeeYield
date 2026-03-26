@@ -13,7 +13,7 @@ import { glass } from './GlassTheme';
 interface HiveFormProps {
     editingHive?: Hive | null;
     preselectedApiaryId?: string;
-    onSuccess: () => void;
+    onSuccess: (newHive?: Hive) => void;
     onCancel: () => void;
 }
 
@@ -87,15 +87,16 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
         const toastId = toast.loading("Saving hive data...");
         try {
             if (editingHive) {
-                await updateHive.mutateAsync({ id: editingHive.id, data: formData });
+                const updated = await updateHive.mutateAsync({ id: editingHive.id, data: formData });
                 trackEvent('hive_update', { hive_code: formData.hive_code, status: formData.status });
                 toast.success('Hive updated successfully', { id: toastId });
+                onSuccess(updated as unknown as Hive);
             } else {
-                await createHive.mutateAsync(formData);
+                const created = await createHive.mutateAsync(formData);
                 trackEvent('hive_create', { hive_code: formData.hive_code, type: formData.hive_type, apiary_id: formData.apiary_id });
                 toast.success('New hive added successfully', { id: toastId });
+                onSuccess(created as unknown as Hive);
             }
-            onSuccess();
         } catch (error) {
             toast.error("Could not save changes. Please try again.", { id: toastId });
         }

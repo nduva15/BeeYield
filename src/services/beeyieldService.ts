@@ -1387,12 +1387,30 @@ export const beeyieldService = {
 
     async updateHarvest(id: string, updates: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
         try {
-            const data = await apiPut<Harvest>(`beeyield/harvests/${id}`, updates);
+            const headers = await getAuthHeaders();
+            
+            // Map only the allowed fields to avoid sending nested objects (apiary, hive, farmer) 
+            // or computed fields that would cause a 422 Unprocessable Entity error.
+            const payload: any = {};
+            const allowedFields: (keyof HarvestCreateInput)[] = [
+                'hive_id', 'apiary_id', 'farmer_id', 'harvest_date', 'quantity_kg', 
+                'quantity_left_for_bees_kg', 'extraction_method', 'nectar_source',
+                'honey_type', 'color_grade', 'batch_code', 'weather_conditions', 
+                'moisture_content_percent', 'florage_type', 'notes', 'is_verified'
+            ];
+
+            allowedFields.forEach(field => {
+                if (updates[field] !== undefined) {
+                    payload[field] = updates[field];
+                }
+            });
+
+            const data = await apiPut<Harvest>(`beeyield/harvests/${id}`, payload, { headers });
             toast.success('Harvest updated!');
             return { data, error: null };
         } catch (error) {
             console.error('updateHarvest:', error);
-            toast.error('Failed to update harvest');
+            // toast.error is already handled by the hook usually, but keeping consistency
             return { data: null, error };
         }
     },
