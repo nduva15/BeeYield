@@ -53,11 +53,12 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="flex min-h-screen flex-col">
       <CartDrawer />
       <Header />
-      <PartnersMarquee />
 
       <main className="flex-1 overflow-x-hidden animate-in fade-in duration-500">
         {children}
       </main>
+      <PartnersMarquee />
+      <Footer />
       <Footer />
     </div>
   );

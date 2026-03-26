@@ -1,8 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif";
+  --font-display: "Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif";
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace";
+
+  --color-beeyield-gold: #F4D03F;
+  --color-beeyield-green: #1B9157;
+  --color-beeyield-black: #1A1A1A;
+  --color-beeyield-gold-light: #F7DC6F;
+  --color-beeyield-gold-dark: #D4AC0D;
+  --color-beeyield-green-light: #2ECC71;
+  --color-beeyield-green-dark: #145A32;
+  --color-beeyield-orange: #FF8C42;
+  --color-beeyield-orange-light: #FFAD73;
+  --color-beeyield-orange-dark: #E67A2E;
+  --color-beeyield-white: #FFFFFF;
+  --color-beeyield-cream: #FFF9F0;
+  --color-beeyield-sand: #F9F7F2;
+  --color-beeyield-forest: #1B4332;
+  --color-beeyield-forest-muted: #2D6A4F;
+  --color-beeyield-charcoal: #262626;
+
+  --breakpoint-2xl: 1400px;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
@@ -45,7 +88,7 @@ All colors MUST be HSL.
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   html {
@@ -61,7 +104,8 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: inherit;
     font-size: 1rem;
     line-height: 1.6;
@@ -80,7 +124,7 @@ All colors MUST be HSL.
     line-height: 1.2;
     margin-bottom: 0.75em;
     color: var(--foreground);
-    @apply scroll-m-20;
+    scroll-margin-top: 5rem;
   }
 
   h1 {
@@ -485,15 +529,24 @@ All colors MUST be HSL.
   }
 
   .glass-panel {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-diffuse;
+    background-color: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: var(--shadow-diffuse);
   }
 
   .glass-card {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-diffuse;
+    background-color: rgb(255 255 255 / 0.05);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    box-shadow: var(--shadow-diffuse);
   }
 
   .glass-morphism {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-diffuse;
+    background-color: rgb(255 255 255 / 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: var(--shadow-diffuse);
   }
 
   /* === BEEHUB COMPONENT STYLES === */

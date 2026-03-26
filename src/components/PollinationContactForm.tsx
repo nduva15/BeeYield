@@ -46,7 +46,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                 country: "N/A",
                 company: formData.company,
                 topic: type === "in_land" ? "In-Land Pollination Interest" : "In-Hive Pollination Interest",
-                message: formData.message,
+                message: (formData.hive_code ? `[Hive Code: ${formData.hive_code}]\n` : '') + formData.message,
             });
 
             toast({
