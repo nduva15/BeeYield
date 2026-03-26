@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { 
-  Linkedin,
   Globe, 
   Award, 
   Users, 
@@ -32,6 +31,23 @@ import {
   Lock as LockIcon,
   Phone
 } from "lucide-react";
+
+const LinkedinIcon = ({ className }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -613,7 +629,7 @@ const Team = () => {
                                      rel="noopener noreferrer"
                                      className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
                                    >
-                                      <Linkedin className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
+                                      <LinkedinIcon className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
                                       <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">LinkedIn Profile</span>
                                    </a>
                                    <a 

@@ -76,7 +76,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                 toast.error('Could not commit shift');
             }
         })();
-    }, []);
+    }, [selectedApiaryId]);
     
     React.useEffect(() => {
         return () => {

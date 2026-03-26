@@ -19,11 +19,7 @@ export function ActivityLogTab() {
     });
     const [stats, setStats] = useState<any>(null);
 
-    useEffect(() => {
-        loadData();
-    }, [filters]);
-
-    const loadData = async () => {
+    const loadData = React.useCallback(async () => {
         setLoading(true);
         setActivities([]); // Show skeleton/empty during load
         try {
@@ -44,7 +40,11 @@ export function ActivityLogTab() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters.days, filters.activity_type]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const getActivityIcon = (type: string) => {
         switch (type) {

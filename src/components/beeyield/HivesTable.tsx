@@ -156,6 +156,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
         }
     ], []);
 
+    // eslint-disable-next-line react-compiler/react-compiler
     const table = useReactTable({
         data,
         columns,

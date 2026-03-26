@@ -457,7 +457,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
-    const fetchDevices = async () => {
+    const fetchDevices = React.useCallback(async () => {
         setLoading(true);
         try {
             const data = await beeyieldService.getBluetoothDevices();
@@ -471,11 +471,11 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     React.useEffect(() => {
         fetchDevices();
-    }, [userId]);
+    }, [fetchDevices]);
 
     const handlePairing = async () => {
         if (isScanning) return;
