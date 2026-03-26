@@ -40,7 +40,7 @@ const MapController = ({ center, zoom }: { center: [number, number]; zoom: numbe
 
 interface ApiaryFormProps {
     apiary?: Apiary | null;
-    onSuccess: () => void;
+    onSuccess: (newApiary?: Apiary) => void;
     onCancel: () => void;
 }
 
@@ -102,15 +102,16 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
         const toastId = toast.loading("Saving location...");
         try {
             if (apiary) {
-                await updateApiary.mutateAsync({ id: apiary.id, data: formData });
+                const updated = await updateApiary.mutateAsync({ id: apiary.id, data: formData });
                 trackEvent('apiary_update', { name: formData.name, type: formData.type });
-                toast.success('Location updated.', { id: toastId });
+                toast.success('Location updated successfully', { id: toastId });
+                onSuccess(updated as unknown as Apiary);
             } else {
-                await createApiary.mutateAsync(formData);
+                const created = await createApiary.mutateAsync(formData);
                 trackEvent('apiary_create', { name: formData.name, type: formData.type, region: formData.region });
-                toast.success('Location saved.', { id: toastId });
+                toast.success('New location registered!', { id: toastId });
+                onSuccess(created as unknown as Apiary);
             }
-            onSuccess();
         } catch (error) {
             toast.error("Could not save. Please try again.", { id: toastId });
         }

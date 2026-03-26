@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useHarvests, useCreateHarvest, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
+import { ApiaryForm } from './ApiaryForm';
+import { HiveForm } from './HiveForm';
 import { useApiaries } from '@/hooks/useApiaries';
 import { useHives } from '@/hooks/useHives';
 import { toast } from 'sonner';
@@ -31,6 +33,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const [searchQuery, setSearchQuery] = React.useState('');
     const [filterYear, setFilterYear] = React.useState<string>('all');
     const [isAddingHarvest, setIsAddingHarvest] = React.useState(false);
+    const [showAddApiary, setShowAddApiary] = React.useState(false);
+    const [showAddHive, setShowAddHive] = React.useState(false);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
     const [batches, setBatches] = React.useState<any[]>([]);
@@ -866,7 +870,16 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className={glass.microLabel}>Select Apiary</Label>
+                            <div className="flex items-center justify-between">
+                                <Label className={glass.microLabel}>Select Apiary</Label>
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowAddApiary(true)}
+                                    className="text-[10px] font-bold text-[#F4D03F] hover:underline"
+                                >
+                                    + Add New
+                                </button>
+                            </div>
                             <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
                                 <SelectTrigger className={cn(glass.select, "h-10")}>
                                     <SelectValue placeholder="Select Apiary" />
@@ -879,7 +892,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label className={glass.microLabel}>Select Hive</Label>
+                            <div className="flex items-center justify-between">
+                                <Label className={glass.microLabel}>Select Hive</Label>
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowAddHive(true)}
+                                    disabled={!selectedApiaryId}
+                                    className="text-[10px] font-bold text-[#F4D03F] hover:underline disabled:opacity-50"
+                                >
+                                    + Add New
+                                </button>
+                            </div>
                             <Select value={selectedHiveId} onValueChange={setSelectedHiveId} disabled={!selectedApiaryId}>
                                 <SelectTrigger className={cn(glass.select, "h-10")}>
                                     <SelectValue placeholder="Select Hive" />
@@ -1028,6 +1051,43 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 </form>
             </GlassModal>
 
+
+            {/* Nested Add Apiary Modal */}
+            <GlassModal
+                isOpen={showAddApiary}
+                onClose={() => setShowAddApiary(false)}
+                title="Register New Apiary"
+                subtitle="Add a new production site"
+            >
+                <ApiaryForm 
+                    onSuccess={(newApiary) => {
+                        setShowAddApiary(false);
+                        if (newApiary?.id) {
+                            setSelectedApiaryId(newApiary.id);
+                        }
+                    }} 
+                    onCancel={() => setShowAddApiary(false)} 
+                />
+            </GlassModal>
+
+            {/* Nested Add Hive Modal */}
+            <GlassModal
+                isOpen={showAddHive}
+                onClose={() => setShowAddHive(false)}
+                title="Register New Hive"
+                subtitle="Add a new hive to this apiary"
+            >
+                <HiveForm 
+                    preselectedApiaryId={selectedApiaryId}
+                    onSuccess={(newHive) => {
+                        setShowAddHive(false);
+                        if (newHive?.id) {
+                            setSelectedHiveId(newHive.id);
+                        }
+                    }} 
+                    onCancel={() => setShowAddHive(false)} 
+                />
+            </GlassModal>
 
             </motion.div>
         </BeeYieldPageShell>

@@ -90,6 +90,7 @@ class HarvestCreate(BaseModel):
     extraction_method: Optional[str] = None
     nectar_source: Optional[str] = None
     weather_conditions: Optional[str] = None
+    farmer_id: Optional[UUID] = None
 
 class HarvestBatchInput(BaseModel):
     """Smart Harvest Logging — creates an immutable batch with IoT & health snapshots."""
@@ -118,6 +119,7 @@ class HarvestUpdate(BaseModel):
     extraction_method: Optional[str] = None
     nectar_source: Optional[str] = None
     weather_conditions: Optional[str] = None
+    farmer_id: Optional[UUID] = None
 
 class TaskCreate(BaseModel):
     title: str
