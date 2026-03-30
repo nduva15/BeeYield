@@ -35,7 +35,7 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
 import DeviceDetailView from '@/components/beeyield/DeviceDetailView';
-import SmartAssistantView from '@/components/beeyield/SmartAssistantView';
+import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
@@ -341,13 +341,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'home':
                 return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant':
-                return (
-                    <SmartAssistantView
-                        onTabChange={handleTabChange}
-                        initialMessage={aiInitialMessage || undefined}
-                        onInitialMessageConsumed={() => setAiInitialMessage(null)}
-                    />
-                );
+                return <LovableBeeYieldAI />;
             case 'agro-intelligence':
                 return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'precision-pollination-folder':

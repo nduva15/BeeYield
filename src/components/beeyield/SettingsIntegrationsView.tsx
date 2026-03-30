@@ -15,15 +15,19 @@ import beeyieldService from '@/services/beeyieldService';
 import { glass, PageHeader } from './GlassTheme';
 import { motion } from 'framer-motion';
 
-const SettingsIntegrationsView: React.FC = () => {
-    const [configs, setConfigs] = React.useState<any[]>([]);
-    const [loading, setLoading] = React.useState(true);
+const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initialConfigs }) => {
+    const [configs, setConfigs] = React.useState<any[]>(initialConfigs || []);
+    const [loading, setLoading] = React.useState(!initialConfigs);
 
     // State for inputs
     const [kraPin, setKraPin] = React.useState('');
     const [branchCode, setBranchCode] = React.useState('00');
 
-    const fetchConfigs = async () => {
+    const fetchConfigs = React.useCallback(async (force = false) => {
+        if (!force && configs.length > 0) {
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             const data = await beeyieldService.getIntegrationConfigs();
@@ -39,11 +43,21 @@ const SettingsIntegrationsView: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [configs.length]);
 
     React.useEffect(() => {
-        fetchConfigs();
-    }, []);
+        if (initialConfigs && initialConfigs.length > 0) {
+            const etims = initialConfigs.find((c: any) => c.platform === 'etims');
+            if (etims) {
+                setKraPin(etims.kra_pin || '');
+                setBranchCode(etims.branch_code || '00');
+            }
+            setConfigs(initialConfigs);
+            setLoading(false);
+        } else {
+            fetchConfigs();
+        }
+    }, [initialConfigs, fetchConfigs]);
 
     const handleConnectETIMS = async () => {
         if (!kraPin) return toast.error("KRA PIN is required for legal compliance");
@@ -68,7 +82,9 @@ const SettingsIntegrationsView: React.FC = () => {
         }
     };
 
-    const isConnected = (platform: string) => configs.some(c => c.platform === platform && c.is_active);
+    const isConnected = React.useMemo(() => (platform: string) => 
+        configs.some(c => c.platform === platform && c.is_active), 
+    [configs]);
     const getSyncDate = (platform: string) => {
         const c = configs.find(c => c.platform === platform);
         return c?.updated_at ? new Date(c.updated_at).toLocaleString() : 'Never synced';

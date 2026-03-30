@@ -246,7 +246,7 @@ async def get_suggestions(current_user: dict = Depends(security.get_current_user
     # Simple Shuffle for variety
     if all_products:
         random.shuffle(all_products)
-        return list(all_products)[:4]
+        return all_products[:4]
     return []
 
 # --- Payment Methods ---

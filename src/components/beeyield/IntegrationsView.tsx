@@ -20,41 +20,48 @@ const IntegrationsView: React.FC = () => {
     const [configs, setConfigs] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [activeTab, setActiveTab] = React.useState<'ecosystem' | 'quickbooks' | 'shopify' | 'etims'>('ecosystem');
-    const [auditLogs, setAuditLogs] = React.useState<any[]>([]);
+    const [auditLogs, setAuditLogs] = React.useState<Record<string, any[]>>({});
     const [activeConfig, setActiveConfig] = React.useState<any>(null);
 
     const [shopUrl, setShopUrl] = React.useState('');
     const [qboIncomeAccount, setQboIncomeAccount] = React.useState('Sales of Bee Products');
     const [qboExpenseAccount, setQboExpenseAccount] = React.useState('Apiary Operations');
 
-    const fetchConfigs = async () => {
+    const fetchConfigs = React.useCallback(async (force = false) => {
+        if (!force && configs.length > 0 && activeTab === 'ecosystem') return;
+        
         setLoading(true);
         try {
-            const data = await beeyieldService.getIntegrationConfigs();
-            setConfigs(data || []);
-            const platform = activeTab === 'ecosystem' ? '' : activeTab;
-            const current = data?.find((c: any) => c.platform === platform);
-            if (current) {
-                setActiveConfig(current.config_json || {});
-                if (platform === 'shopify') setShopUrl(current.store_url || '');
-                if (platform === 'quickbooks') {
-                    setQboIncomeAccount(current.config_json?.account_mapping?.revenue || 'Sales of Bee Products');
-                    setQboExpenseAccount(current.config_json?.account_mapping?.operating_costs || 'Apiary Operations');
-                }
+            // Only fetch general configs if not already present or forced
+            if (force || configs.length === 0) {
+                const data = await beeyieldService.getIntegrationConfigs();
+                setConfigs(data || []);
             }
 
-            if (platform && platform !== 'etims') {
-                const logs = await beeyieldService.getIntegrationAuditLogs(platform);
-                setAuditLogs(logs || []);
-            } else {
-                setAuditLogs([]);
+            const platform = activeTab === 'ecosystem' ? '' : activeTab;
+            if (platform) {
+                const current = configs?.find((c: any) => c.platform === platform);
+                if (current) {
+                    setActiveConfig(current.config_json || {});
+                    if (platform === 'shopify') setShopUrl(current.store_url || '');
+                    if (platform === 'quickbooks') {
+                        setQboIncomeAccount(current.config_json?.account_mapping?.revenue || 'Sales of Bee Products');
+                        setQboExpenseAccount(current.config_json?.account_mapping?.operating_costs || 'Apiary Operations');
+                    }
+                }
+
+                // Only fetch logs for the specific platform if not already cached
+                if (platform !== 'etims' && !auditLogs[platform]) {
+                    const logs = await beeyieldService.getIntegrationAuditLogs(platform);
+                    setAuditLogs(prev => ({ ...prev, [platform]: logs || [] }));
+                }
             }
         } catch (e) {
             console.error(e);
         } finally {
             setLoading(false);
         }
-    };
+    }, [activeTab, configs.length, auditLogs]);
 
     React.useEffect(() => {
         fetchConfigs();
@@ -135,7 +142,7 @@ const IntegrationsView: React.FC = () => {
         }
     };
 
-    const isConnected = (p: string) => (configs || []).some(c => c.platform === p && c.is_active);
+    const isConnected = React.useCallback((p: string) => (configs || []).some(c => c.platform === p && c.is_active), [configs]);
 
     const renderEcosystem = () => (
         <div className="space-y-6 animate-in fade-in duration-700">
@@ -252,7 +259,7 @@ const IntegrationsView: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {auditLogs.slice(0, 6).map((log, i) => (
+                                        {(auditLogs[p] || []).slice(0, 6).map((log, i) => (
                                             <tr key={i} className="hover:bg-gray-50 transition-colors">
                                                 <td className="px-4 py-3 text-[11px] font-medium text-gray-600 tabular-nums">{new Date(log.created_at).toLocaleString()}</td>
                                                 <td className="px-4 py-3 text-[11px] font-bold text-[#1A1A1A]">{log.event_type}</td>
@@ -261,7 +268,7 @@ const IntegrationsView: React.FC = () => {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {auditLogs.length === 0 && (
+                                        {(auditLogs[p] || []).length === 0 && (
                                             <tr>
                                                 <td colSpan={3} className="px-4 py-12 text-center text-[11px] font-medium text-gray-500">No sync events logged.</td>
                                             </tr>
@@ -426,9 +433,9 @@ const IntegrationsView: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    {/* Reuse the existing compliance settings view */}
+                                    {/* Reuse the existing compliance settings view, but pass configs down */}
                                     <div className="rounded-2xl overflow-hidden">
-                                        <SettingsIntegrationsView />
+                                        <SettingsIntegrationsView initialConfigs={configs} />
                                     </div>
                                 </div>
                             )}

@@ -131,7 +131,8 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             return {"status": "error", "message": f"Validation failed: {str(e)}"}
 
     # 5. Create Order Document
-    order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{str(uuid.uuid4().hex)[:4].upper()}"
+    hex_id: str = uuid.uuid4().hex
+    order_number = f"BY-{datetime.now().strftime('%y%m%d')}-{hex_id[:4].upper()}"
     
     order_data = {
         "user_id": user_id if not is_bypass else None,
@@ -174,9 +175,9 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     if is_bypass:
         payment_info = {"message": "Bypass active. Order confirmed.", "status": "completed"}
     elif order_in.payment_method == "mpesa":
-        phone = clean_phone
+        phone: str = clean_phone
         if phone.startswith("0"):
-            phone = "254" + str(phone)[1:]
+            phone = "254" + phone[1:]
         elif not phone.startswith("254"):
             phone = "254" + phone
         
@@ -217,7 +218,7 @@ async def apply_coupon_code(code: str, total_amount: float) -> dict:
     # TODO: Implement coupon lookup from database
     return {"valid": False, "message": "Invalid or expired coupon code."}
 
-async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[dict]:
+async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
     filters = {"category": category} if category else None
     res = await db_select("products", columns="*,variants:product_variants(*)", filters=filters, token=token)
@@ -229,7 +230,7 @@ async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Opt
     res = await db_select("products", columns="*,variants:product_variants(*)", filters={"id": product_id}, token=token)
     return res[0] if res else None
 
-async def get_user_orders(user_id: str, token: Optional[str] = None) -> List[dict]:
+async def get_user_orders(user_id: str, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
     columns = "*,items:order_items(*,product:products(*))"
     return await db_select("orders", columns=columns, filters={"user_id": user_id}, token=token)
@@ -412,7 +413,7 @@ async def update_user_address(user_id: str, address_id: str, address_data: dict,
 #  PAYMENT METHOD SERVICES
 # ==========================================
 
-async def get_user_payment_methods(user_id: str, token: Optional[str] = None) -> List[dict]:
+async def get_user_payment_methods(user_id: str, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
     return await db_select("payment_methods", filters={"user_id": user_id}, token=token)
 

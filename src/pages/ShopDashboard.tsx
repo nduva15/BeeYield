@@ -277,7 +277,8 @@ const ShopDashboard = () => {
             return;
         }
         try {
-            const { error } = await supabase.auth.updateUser({
+            // Step 1: Update auth.users metadata (fires the sync trigger)
+            const { error: authError } = await supabase.auth.updateUser({
                 data: {
                     first_name: profileForm.firstName,
                     last_name: profileForm.lastName,
@@ -285,7 +286,29 @@ const ShopDashboard = () => {
                 }
             });
 
-            if (error) throw error;
+            if (authError) {
+                console.warn("Auth metadata update failed, trying direct profile update:", authError.message);
+            }
+
+            // Step 2: Also update public.profiles directly for immediate effect
+            // The SECURITY DEFINER trigger handles this from the auth side,
+            // but a direct update ensures the profile row is always in sync.
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user?.id,
+                    first_name: profileForm.firstName,
+                    last_name: profileForm.lastName,
+                    full_name: `${profileForm.firstName} ${profileForm.lastName}`.trim(),
+                    phone: profileForm.phone,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+            if (profileError) {
+                console.warn("Direct profile update failed:", profileError.message);
+                // If both auth and profile updates failed, throw
+                if (authError) throw authError;
+            }
 
             // Log account update
             adminService.logActivity({
