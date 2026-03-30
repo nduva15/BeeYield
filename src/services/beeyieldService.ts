@@ -747,6 +747,9 @@ export interface Transaction {
 
 export const beeyieldService = {
     supabaseBeeYield: sb,
+    _configsCache: null as any[] | null,
+    _configsCacheTime: 0,
+
     // ========== IoT DEVICES & GATEWAYS ==========
     async getDevices(): Promise<IoTDevice[]> {
         if (!sb) return [];
@@ -766,24 +769,39 @@ export const beeyieldService = {
     // IMPORTANT: Integrations must work even when the "BeeYield" Supabase client lacks a session.
     // We therefore route reads/writes through FastAPI, authenticated via getAuthHeaders().
     async getIntegrationConfigs(): Promise<any[]> {
+        const CACHE_TTL = 30000; // 30 seconds
+        const now = Date.now();
+        if (this._configsCache && (now - this._configsCacheTime < CACHE_TTL)) {
+            return this._configsCache;
+        }
+
         try {
             const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/integrations/configs', undefined, { headers });
+            const data = await apiGet<any[]>('/integrations/configs', undefined, { headers });
+            this._configsCache = data;
+            this._configsCacheTime = now;
+            return data;
         } catch (e) {
             console.error('getIntegrationConfigs:', e);
-            return [];
+            return this._configsCache || [];
         }
     },
 
     async upsertIntegrationConfig(config: { platform: string; is_active: boolean; store_url?: string; kra_pin?: string; branch_code?: string; device_serial?: string; access_token?: string; config_json?: any }): Promise<any> {
         try {
             const headers = await getAuthHeaders();
-            return await apiPost<any>('/integrations/config', {
+            const res = await apiPost<any>('/integrations/config', {
                 platform: config.platform,
                 is_active: config.is_active,
                 store_url: config.store_url,
                 config_json: config.config_json,
             }, { headers });
+            
+            // Invalidate cache on update
+            this._configsCache = null;
+            this._configsCacheTime = 0;
+            
+            return res;
         } catch (e) {
             console.error('upsertIntegrationConfig:', e);
             return null;
