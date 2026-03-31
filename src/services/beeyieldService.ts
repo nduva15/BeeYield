@@ -749,6 +749,8 @@ export const beeyieldService = {
     supabaseBeeYield: sb,
     _configsCache: null as any[] | null,
     _configsCacheTime: 0,
+    _auditLogsCache: {} as Record<string, any[]>,
+    _auditLogsCacheTime: {} as Record<string, number>,
 
     // ========== IoT DEVICES & GATEWAYS ==========
     async getDevices(): Promise<IoTDevice[]> {
@@ -1099,13 +1101,27 @@ export const beeyieldService = {
 
     async deleteApiary(id: string): Promise<{ error: any }> {
         try {
+            console.log(`[BeeYieldService] Attempting to delete apiary: ${id}`);
             await apiDelete(`beeyield/apiaries/${id}`);
             toast.success('Apiary removed');
             return { error: null };
-        } catch (error) {
-            console.error('deleteApiary:', error);
-            toast.error('Failed to delete apiary');
-            return { error };
+        } catch (error: any) {
+            console.warn('[BeeYieldService] Backend unreachable for deleteApiary, falling back to Supabase:', error?.message);
+            // Fallback: delete directly via Supabase client
+            if (!sb) {
+                toast.error('Failed to delete apiary: no connection');
+                return { error };
+            }
+            try {
+                const { error: sbError } = await sb.from('apiaries').delete().eq('id', id);
+                if (sbError) throw sbError;
+                toast.success('Apiary removed');
+                return { error: null };
+            } catch (sbError: any) {
+                const msg = sbError?.message || 'Unknown error';
+                toast.error(`Failed to delete apiary: ${msg}`);
+                return { error: sbError };
+            }
         }
     },
 
@@ -1145,13 +1161,26 @@ export const beeyieldService = {
 
     async deleteNote(id: string): Promise<{ error: any }> {
         try {
+            console.log(`[BeeYieldService] Attempting to delete note: ${id}`);
             await apiDelete(`beeyield/notes/${id}`);
             toast.success('Note deleted');
             return { error: null };
-        } catch (error) {
-            console.error('deleteNote:', error);
-            toast.error('Failed to delete note');
-            return { error };
+        } catch (error: any) {
+            console.warn('[BeeYieldService] Backend unreachable for deleteNote, falling back to Supabase:', error?.message);
+            if (!sb) {
+                toast.error('Failed to delete note: no connection');
+                return { error };
+            }
+            try {
+                const { error: sbError } = await sb.from('notes').delete().eq('id', id);
+                if (sbError) throw sbError;
+                toast.success('Note deleted');
+                return { error: null };
+            } catch (sbError: any) {
+                const msg = sbError?.message || 'Unknown error';
+                toast.error(`Failed to delete note: ${msg}`);
+                return { error: sbError };
+            }
         }
     },
 
@@ -1202,13 +1231,26 @@ export const beeyieldService = {
 
     async deleteHive(id: string): Promise<{ error: any }> {
         try {
+            console.log(`[BeeYieldService] Attempting to delete hive: ${id}`);
             await apiDelete(`beeyield/hives/${id}`);
             toast.success('Hive removed');
             return { error: null };
-        } catch (error) {
-            console.error('deleteHive:', error);
-            toast.error('Failed to delete hive');
-            return { error };
+        } catch (error: any) {
+            console.warn('[BeeYieldService] Backend unreachable for deleteHive, falling back to Supabase:', error?.message);
+            if (!sb) {
+                toast.error('Failed to delete hive: no connection');
+                return { error };
+            }
+            try {
+                const { error: sbError } = await sb.from('hives').delete().eq('id', id);
+                if (sbError) throw sbError;
+                toast.success('Hive removed');
+                return { error: null };
+            } catch (sbError: any) {
+                const msg = sbError?.message || 'Unknown error';
+                toast.error(`Failed to delete hive: ${msg}`);
+                return { error: sbError };
+            }
         }
     },
 
@@ -2858,7 +2900,14 @@ export const beeyieldService = {
     },
 
     async getIntegrationAuditLogs(platform: string, limit: number = 25): Promise<any[]> {
+        const CACHE_TTL = 60000; // 60 seconds
+        const now = Date.now();
+        if (this._auditLogsCache[platform] && (now - (this._auditLogsCacheTime[platform] || 0) < CACHE_TTL)) {
+            return this._auditLogsCache[platform];
+        }
+
         if (!sb) return [];
+        let logs: any[] = [];
         try {
             // Primary: if a view/table exists, read it.
             const { data, error } = await sb
@@ -2867,22 +2916,27 @@ export const beeyieldService = {
                 .eq('platform', platform)
                 .order('created_at', { ascending: false })
                 .limit(limit);
-            if (!error) return data || [];
+            if (!error && data) logs = data;
         } catch {
             // ignore and fall through to RPC
         }
 
-        // Fallback: if only RPC exists (log_integration_event), try a paired fetch RPC.
-        try {
-            const { data, error } = await sb.rpc('get_integration_events', {
-                p_platform: platform,
-                p_limit: limit
-            });
-            if (error) return [];
-            return Array.isArray(data) ? data : [];
-        } catch {
-            return [];
+        if (logs.length === 0) {
+            // Fallback: if only RPC exists (log_integration_event), try a paired fetch RPC.
+            try {
+                const { data, error } = await sb.rpc('get_integration_events', {
+                    p_platform: platform,
+                    p_limit: limit
+                });
+                if (!error && data) logs = data;
+            } catch {
+                // ignore
+            }
         }
+
+        this._auditLogsCache[platform] = logs;
+        this._auditLogsCacheTime[platform] = now;
+        return logs;
     },
 
     // ========== FLIGHT & ROUTING (PRD v2) ==========

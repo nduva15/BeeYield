@@ -47,8 +47,32 @@ export const useDeleteNote = () => {
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
     return useMutation({
-        mutationFn: (id: string) => beeyieldService.deleteNote(id),
-        onSuccess: () => {
+        mutationFn: async (id: string) => {
+            const result = await beeyieldService.deleteNote(id);
+            if (result.error) throw result.error;
+            return id;
+        },
+        onMutate: async (id) => {
+            // Cancel any outgoing refetches so they don't overwrite the optimistic update
+            await queryClient.cancelQueries({ queryKey: ['notes', userId] });
+            // Snapshot previous value for rollback
+            const previousNotes = queryClient.getQueryData<Note[]>(['notes', userId]);
+            // Optimistically remove the note from the cache immediately
+            if (previousNotes) {
+                queryClient.setQueryData<Note[]>(
+                    ['notes', userId],
+                    previousNotes.filter(n => n.id !== id)
+                );
+            }
+            return { previousNotes };
+        },
+        onError: (_err, _id, context) => {
+            // Rollback to the previous notes if the mutation fails
+            if (context?.previousNotes) {
+                queryClient.setQueryData(['notes', userId], context.previousNotes);
+            }
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['notes', userId] });
         },
     });

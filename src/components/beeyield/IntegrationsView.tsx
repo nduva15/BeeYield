@@ -32,10 +32,17 @@ const IntegrationsView: React.FC = () => {
         
         setLoading(true);
         try {
-            // Only fetch general configs if not already present or forced
+            // Pre-fetch configs if missing
             if (force || configs.length === 0) {
                 const data = await beeyieldService.getIntegrationConfigs();
                 setConfigs(data || []);
+                
+                // PERFORMANCE: Pre-fetch logs for all known platforms in background
+                ['quickbooks', 'shopify'].forEach(p => {
+                    beeyieldService.getIntegrationAuditLogs(p).then(logs => {
+                        setAuditLogs(prev => ({ ...prev, [p]: logs || [] }));
+                    });
+                });
             }
 
             const platform = activeTab === 'ecosystem' ? '' : activeTab;
@@ -50,7 +57,7 @@ const IntegrationsView: React.FC = () => {
                     }
                 }
 
-                // Only fetch logs for the specific platform if not already cached
+                // If not in cache and not already fetching, get it
                 if (platform !== 'etims' && !auditLogs[platform]) {
                     const logs = await beeyieldService.getIntegrationAuditLogs(platform);
                     setAuditLogs(prev => ({ ...prev, [platform]: logs || [] }));
@@ -145,7 +152,7 @@ const IntegrationsView: React.FC = () => {
     const isConnected = React.useCallback((p: string) => (configs || []).some(c => c.platform === p && c.is_active), [configs]);
 
     const renderEcosystem = () => (
-        <div className="space-y-6 animate-in fade-in duration-700">
+        <div className="space-y-6 animate-in fade-in duration-300">
             <div className={cn(glass.card, "p-6 lg:p-8 bg-white border-gray-200 relative overflow-hidden group")}>
                 <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -210,7 +217,7 @@ const IntegrationsView: React.FC = () => {
         const Icon = p === 'quickbooks' ? Calculator : ShoppingBag;
 
         return (
-            <div className="space-y-6 animate-in slide-in-from-right-2 duration-500">
+            <div className="space-y-6 animate-in slide-in-from-right-1 duration-300">
                 <div className="flex flex-col lg:flex-row justify-between items-start gap-6 border-b border-gray-100 pb-6">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
@@ -400,10 +407,10 @@ const IntegrationsView: React.FC = () => {
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.25 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
                         >
                             {activeTab === 'ecosystem' && renderEcosystem()}
                             {activeTab === 'quickbooks' && renderPlatform('quickbooks')}
