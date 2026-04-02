@@ -59,7 +59,6 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       <PartnersMarquee />
       <Footer />
-      <Footer />
     </div>
   );
 };

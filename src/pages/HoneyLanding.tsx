@@ -198,7 +198,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
   products: Product[];
 }) => {
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const featuredProducts = (products.length > 0 ? products : initialHoneyProducts).slice(0, 4);
+  const featuredProducts = (products.length > 0 ? products : initialHoneyProducts);
 
   return (
     <section className="py-20 lg:py-32 bg-[#FFF9F0] overflow-hidden">

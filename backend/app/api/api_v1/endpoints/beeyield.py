@@ -627,7 +627,7 @@ async def get_user_harvests(
         filters["hive_id"] = hive_id
     
     columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
-    owned = await db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000, token=token)
+    owned = await db_select("harvests", filters=filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
     
     if not owned and len(relevant_ids) > 1:
         try:
@@ -636,7 +636,7 @@ async def get_user_harvests(
                 h_filters["apiary_id"] = apiary_id
             if hive_id:
                 h_filters["hive_id"] = hive_id
-            owned = await db_select("harvests", filters=h_filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000, token=token)
+            owned = await db_select("harvests", filters=h_filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
         except Exception:
             pass
     
@@ -666,6 +666,14 @@ async def get_user_harvests(
     
     # Process data to ensure consistency and defaults
     for harvest in all_harvests:
+        # Map database schema names back to frontend payload schema
+        if 'date' in harvest and 'harvest_date' not in harvest:
+            harvest['harvest_date'] = harvest['date']
+        if 'weight_kg' in harvest and 'quantity_kg' not in harvest:
+            harvest['quantity_kg'] = harvest['weight_kg']
+        if 'floral_source' in harvest and 'nectar_source' not in harvest:
+            harvest['nectar_source'] = harvest['floral_source']
+
         # Defaults for missing data
         if not harvest.get('honey_type'):
             harvest['honey_type'] = 'Multifloral'
@@ -819,9 +827,17 @@ async def create_harvest(
     data = harvest_in.dict(exclude_unset=True)
     data["user_id"] = apiary.get("user_id") or user_id
     
+    # Map fields for Supabase schema
+    if "harvest_date" in data:
+        data["date"] = data.pop("harvest_date")
+    if "quantity_kg" in data:
+        data["weight_kg"] = data.pop("quantity_kg")
+    if "nectar_source" in data:
+        data["floral_source"] = data.pop("nectar_source")
+
     # Map moisture_content_percent to moisture_content if needed for DB
     if "moisture_content_percent" in data and "moisture_content" not in data:
-        data["moisture_content"] = data["moisture_content_percent"]
+        data["moisture_content"] = data.pop("moisture_content_percent")
  
     # Generate harvest code
     if "harvest_code" not in data or not data.get("harvest_code"):
@@ -838,7 +854,8 @@ async def create_harvest(
             or "MFL"
         )
         # Shorten flora to a 3-char tag (e.g. Acacia -> ACA, Multifloral -> MFL)
-        flora_tag = flora_raw.replace(" ", "")[:3].upper()
+        flora_str = str(flora_raw) if flora_raw else "MFL"
+        flora_tag = flora_str.replace(" ", "")[:3].upper()
         harvest_dt = data.get("harvest_date")
         if harvest_dt:
             try:
@@ -868,6 +885,13 @@ async def create_harvest(
         if enriched:
             h = enriched[0]
             # Ensure consistency
+            if h.get('date'):
+                h['harvest_date'] = h['date']
+            if h.get('weight_kg'):
+                h['quantity_kg'] = h['weight_kg']
+            if h.get('floral_source'):
+                h['nectar_source'] = h['floral_source']
+
             if h.get('hive') and h['hive'].get('apiary'):
                 h['apiary'] = h['hive']['apiary']
             if not h.get('honey_type'):
@@ -901,9 +925,16 @@ async def update_harvest(
     if not data:
         raise HTTPException(status_code=400, detail="No data to update")
     
-    # Map moisture_content_percent to moisture_content if needed for DB
+    # Map fields for Supabase schema
+    if "harvest_date" in data:
+        data["date"] = data.pop("harvest_date")
+    if "quantity_kg" in data:
+        data["weight_kg"] = data.pop("quantity_kg")
+    if "nectar_source" in data:
+        data["floral_source"] = data.pop("nectar_source")
+
     if "moisture_content_percent" in data and "moisture_content" not in data:
-        data["moisture_content"] = data["moisture_content_percent"]
+        data["moisture_content"] = data.pop("moisture_content_percent")
 
     result = await db_update("harvests", data, {"id": harvest_id}, token=token)
     
@@ -917,6 +948,13 @@ async def update_harvest(
     enriched = await db_select("harvests", filters={"id": harvest_id}, columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)", token=token)
     if enriched:
         h = enriched[0]
+        if h.get('date'):
+            h['harvest_date'] = h['date']
+        if h.get('weight_kg'):
+            h['quantity_kg'] = h['weight_kg']
+        if h.get('floral_source'):
+            h['nectar_source'] = h['floral_source']
+            
         if h.get('hive') and h['hive'].get('apiary'):
             h['apiary'] = h['hive']['apiary']
         if not h.get('honey_type'):

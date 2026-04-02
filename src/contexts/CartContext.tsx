@@ -14,7 +14,7 @@ export interface CartItem {
     quantity: number;
     image?: string;
     badge: string | null;
-    category: 'honey' | 'merch' | 'education' | 'hardware';
+    category: string;
 }
 
 export interface CartContextType {

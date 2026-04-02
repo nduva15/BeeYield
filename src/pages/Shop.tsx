@@ -23,41 +23,20 @@ import {
   User,
   Cpu,
   Radio,
-  Activity
+  Activity,
+  Container,
+  BookOpen
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
-import { getProducts } from "@/services/shopService";
-
-// Define local types if not importing from service, or reuse
-interface ProductVariant {
-  id: string;
-  size: string;
-  price_kes: number;
-  stock_quantity: number;
-  is_available: boolean;
-  batch_code?: string; // For honey traceability
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  category: 'honey' | 'hardware' | 'merch' | 'education';
-  badge: string | null;
-  images: string[];
-  rating: number;
-  review_count: number;
-  is_active: boolean;
-  variants: ProductVariant[];
-}
+import { type Product, type ProductVariant } from "@/services/shopService";
 
 const STATIC_PRODUCTS: Product[] = [
-  // --- HONEY (Only 2 Items - Official Collection) ---
+  // --- HONEY (8 Items) ---
   {
     id: "h1",
-    name: "BeeYield Premium Acacia",
-    description: "Premium grade select Acacia honey. High enzyme content, smooth texture, and exceptional clarity. Harvested from the pristine northern plains.",
+    name: "Beeyield Premium Acacia",
+    description: "Premium grade select Acacia honey. High enzyme content and smooth texture.",
     category: "honey",
     badge: "Bestseller",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -65,15 +44,15 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 245,
     is_active: true,
     variants: [
-      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-PREM-250G" },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true, batch_code: "KIB-ACAC-PREM-500G" },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-PREM-1KG" }
+      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true },
+      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true },
+      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true }
     ]
   },
   {
     id: "h2",
-    name: "BeeYield Acacia",
-    description: "Pure organic Acacia honey. 100% natural, harvested from the pristine plains of Makueni. Light golden color with a mild, sweet flavour.",
+    name: "Beeyield Acacia",
+    description: "Pure organic Acacia honey. 100% natural, harvested from Makueni.",
     category: "honey",
     badge: "Classic",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -81,395 +60,416 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 182,
     is_active: true,
     variants: [
-      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-ACAC-STD-250G" },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-ACAC-STD-500G" },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true, batch_code: "KIB-ACAC-STD-1KG" }
-    ]
-  },
-  // --- HARDWARE (BeeHUB Precision IoT Ecosystem) ---
-  {
-    id: "hw1",
-    name: "BeeHUB Queen - Lora Pro",
-    description: "The primary gateway for your apiary. Manages multiple sensors and transmits data via Satellite or GSM. Includes solar charging capability.",
-    category: "hardware",
-    badge: "Gateway",
-    images: ["/images/products/beeyield_hub_sensor.jpg"],
-    rating: 5.0,
-    review_count: 84,
-    is_active: true,
-    variants: [
-      { id: "vhw1-1", size: "Unit Only", price_kes: 38500, stock_quantity: 15, is_available: true }
+      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true },
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true }
     ]
   },
   {
-    id: "hw2",
-    name: "BeeHUB Sense",
-    description: "Internal hive sensor. Tracks temperature and humidity. Connects wirelessly to the BeeHUB Queen gateway.",
-    category: "hardware",
-    badge: "Sensor",
-    images: ["/images/products/beehub_temp_humidity.png"],
+    id: "h3",
+    name: "Beeyield Premium Acacia",
+    description: "Raw, unfiltered honey straight from Kitui county. Rich in natural enzymes.",
+    category: "honey",
+    badge: "Raw",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
     rating: 4.8,
-    review_count: 56,
+    review_count: 115,
     is_active: true,
     variants: [
-      { id: "vhw2-1", size: "Sense V2", price_kes: 12500, stock_quantity: 50, is_available: true }
+      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 45, is_available: true },
+      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
+      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
     ]
   },
   {
-    id: "hw3",
-    name: "Precision Hive Scale",
-    description: "Industrial-grade scale for monitoring nectar flow and honey stores. Highly precise sensors for real-time weight tracking.",
-    category: "hardware",
-    badge: "Production",
-    images: ["/images/products/beehub_hive_scale.png"],
+    id: "h4",
+    name: "Beeyield Acacia",
+    description: "A beautiful blend of nectars from the diverse flora of Baringo.",
+    category: "honey",
+    badge: null,
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.7,
+    review_count: 92,
+    is_active: true,
+    variants: [
+      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 110, is_available: true },
+      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 90, is_available: true },
+      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 35, is_available: true }
+    ]
+  },
+  {
+    id: "h5",
+    name: "Beeyield Premium Acacia",
+    description: "Deep, dark, and intensely flavored honey from West Pokot forests.",
+    category: "honey",
+    badge: "Wild",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
     rating: 4.9,
+    review_count: 140,
+    is_active: true,
+    variants: [
+      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 65, is_available: true },
+      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 40, is_available: true },
+      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+    ]
+  },
+  {
+    id: "h6",
+    name: "Beeyield Acacia",
+    description: "A rare nectar collected by bees in the Taita Hills forests.",
+    category: "honey",
+    badge: "Rare",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 5.0,
+    review_count: 67,
+    is_active: true,
+    variants: [
+      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
+      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true },
+      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
+    ]
+  },
+  {
+    id: "h7",
+    name: "Beeyield Premium Acacia",
+    description: "Crystal clear honey from the alpine forage zones of Mt. Kenya.",
+    category: "honey",
+    badge: null,
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.8,
+    review_count: 89,
+    is_active: true,
+    variants: [
+      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 70, is_available: true },
+      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 50, is_available: true },
+      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
+    ]
+  },
+  {
+    id: "h8",
+    name: "Beeyield Acacia",
+    description: "A highly unique honey from coastal mangrove forests. Salty-sweet.",
+    category: "honey",
+    badge: "Unique",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.9,
+    review_count: 103,
+    is_active: true,
+    variants: [
+      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
+      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 35, is_available: true },
+      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+    ]
+  },
+
+  // --- SENSORS (8 Items) ---
+  {
+    id: "s1",
+    name: "BeeYield Smart Hive Monitor",
+    description: "Advanced acoustic and temperature monitoring for optimal hive health.",
+    category: "hardware",
+    badge: "Featured",
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 4.8,
     review_count: 42,
     is_active: true,
-    variants: [
-      { id: "vhw3-1", size: "150kg Max", price_kes: 24500, stock_quantity: 20, is_available: true }
-    ]
+    variants: [{ id: "vs1", size: "Standard", price_kes: 15000, stock_quantity: 50, is_available: true }]
   },
   {
-    id: "hw4",
-    name: "BeeHUB Tracker (GPS)",
-    description: "Anti-theft GPS tracking for your valuable colonies. Features movement alerts and geofencing via the BeeHUB dashboard.",
+    id: "s2",
+    name: "Hive Heat Sensor",
+    description: "Precise brood nest temperature tracking in any climate.",
     category: "hardware",
-    badge: "Security",
-    images: ["/images/products/beehub_sim_card.png"],
-    rating: 4.7,
-    review_count: 31,
-    is_active: true,
-    variants: [
-      { id: "vhw4-1", size: "GPS Unit", price_kes: 8500, stock_quantity: 15, is_available: true }
-    ]
-  },
-  {
-    id: "hw5",
-    name: "Temp & Humidity Probe",
-    description: "High-precision internal probe for monitoring brood nest climate. Essential for early disease detection and swarm prevention.",
-    category: "hardware",
-    badge: "Accessory",
-    images: ["/images/products/beehub_temp_humidity.png"],
+    badge: null,
+    images: ["/images/products/beeyield_sensor.png"],
     rating: 4.6,
-    review_count: 124,
-    is_active: true,
-    variants: [
-      { id: "vhw5-1", size: "Single Probe", price_kes: 4500, stock_quantity: 100, is_available: true }
-    ]
-  },
-  {
-    id: "hw6",
-    name: "BeeHUB Solar Panel",
-    description: "Weatherproof solar panel for BeeHUB Queen and Sense sensors. Helps keep devices running in remote locations.",
-    category: "hardware",
-    badge: "Power",
-    images: ["/images/products/beehub_solar_panel.png"],
-    rating: 4.9,
     review_count: 28,
     is_active: true,
-    variants: [
-      { id: "vhw6-1", size: "10W Panel", price_kes: 6500, stock_quantity: 40, is_available: true }
-    ]
+    variants: [{ id: "vs2", size: "Standard", price_kes: 4500, stock_quantity: 100, is_available: true }]
   },
   {
-    id: "hw7",
-    name: "Acoustic Analysis Module",
-    description: "Microphone sensor for analyzing hive sound signatures to detect queen presence and swarm behavior.",
+    id: "s3",
+    name: "Humidity Controller",
+    description: "Maintain optimal hive environment to prevent mold and moisture.",
     category: "hardware",
-    badge: "Technical",
-    images: ["/images/products/beehub_sound_sensor.png"],
-    rating: 4.8,
-    review_count: 19,
-    is_active: true,
-    variants: [
-      { id: "vhw7-1", size: "Pro Audio", price_kes: 11000, stock_quantity: 10, is_available: true }
-    ]
-  },
-  {
-    id: "hw8",
-    name: "Full BeeHUB Station Kit",
-    description: "Starter kit: 1 BeeHUB Queen, 2 Sense sensors, 1 Tracker, and 1 Solar panel for your apiary.",
-    category: "hardware",
-    badge: "Best Value",
-    images: ["/images/products/beeyield_hub_sensor.jpg"],
-    rating: 5.0,
+    badge: null,
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 4.7,
     review_count: 15,
     is_active: true,
-    variants: [
-      { id: "vhw8-1", size: "Station Kit", price_kes: 72000, stock_quantity: 5, is_available: true }
-    ]
+    variants: [{ id: "vs3", size: "Standard", price_kes: 6200, stock_quantity: 30, is_available: true }]
   },
-  // --- MERCH (8 Items - Lifestyle & Gear) ---
+  {
+    id: "s4",
+    name: "Activity Monitor",
+    description: "Track bee flight patterns and traffic in real-time.",
+    category: "hardware",
+    badge: "New",
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 4.9,
+    review_count: 12,
+    is_active: true,
+    variants: [{ id: "vs4", size: "Standard", price_kes: 8500, stock_quantity: 25, is_available: true }]
+  },
+  {
+    id: "s5",
+    name: "Queen Cell Sensor",
+    description: "Early detection of swarming or supersedure cells.",
+    category: "hardware",
+    badge: null,
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 4.5,
+    review_count: 9,
+    is_active: true,
+    variants: [{ id: "vs5", size: "Standard", price_kes: 5800, stock_quantity: 40, is_available: true }]
+  },
+  {
+    id: "s6",
+    name: "Propolis Weight Sensor",
+    description: "Monitor hive productivity by tracking weight changes.",
+    category: "hardware",
+    badge: null,
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 4.4,
+    review_count: 21,
+    is_active: true,
+    variants: [{ id: "vs6", size: "Standard", price_kes: 12500, stock_quantity: 15, is_available: true }]
+  },
+  {
+    id: "s7",
+    name: "Smart Hive Battery Pack",
+    description: "Extended power for remote honey production sites.",
+    category: "hardware",
+    badge: null,
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 4.7,
+    review_count: 34,
+    is_active: true,
+    variants: [{ id: "vs7", size: "Standard", price_kes: 3500, stock_quantity: 60, is_available: true }]
+  },
+  {
+    id: "s8",
+    name: "Apiary Solar Station",
+    description: "Renewable energy for all your sensors and connectivity.",
+    category: "hardware",
+    badge: "Eco",
+    images: ["/images/products/beeyield_sensor.png"],
+    rating: 5.0,
+    review_count: 7,
+    is_active: true,
+    variants: [{ id: "vs8", size: "Standard", price_kes: 22000, stock_quantity: 10, is_available: true }]
+  },
+
+  // --- MERCH (8 Items) ---
   {
     id: "m1",
-    name: "BeeYield Premium Hoodie",
-    description: "Heavyweight organic cotton hoodie with embroidered BeeYield logo. Stylish, warm, and built to last.",
+    name: "BeeYield Signature Cap",
+    description: "Premium embroidered cotton cap with adjustable strap.",
     category: "merch",
-    badge: "Premium Gear",
-    images: ["/images/products/beeyield_hoodie.png"],
+    badge: "Bestseller",
+    images: ["/images/products/beeyield_merch.png"],
     rating: 4.9,
-    review_count: 86,
+    review_count: 156,
     is_active: true,
-    variants: [
-      { id: "vm1-1", size: "M", price_kes: 3800, stock_quantity: 20, is_available: true },
-      { id: "vm1-2", size: "L", price_kes: 3800, stock_quantity: 25, is_available: true }
-    ]
+    variants: [{ id: "vm1", size: "Adjustable", price_kes: 1200, stock_quantity: 80, is_available: true }]
   },
   {
     id: "m2",
-    name: "BeeYield Trucker Cap",
-    description: "Classic ventilated trucker cap with embroidered logo. Perfect for sunny days in the apiary.",
+    name: "Beekeeping Master T-Shirt",
+    description: "100% organic cotton, breathable and comfortable.",
     category: "merch",
     badge: null,
-    images: ["/images/products/beeyield_cap.png"],
-    rating: 4.5,
-    review_count: 42,
+    images: ["/images/products/beeyield_merch.png"],
+    rating: 4.8,
+    review_count: 89,
     is_active: true,
-    variants: [
-      { id: "vm2-1", size: "Standard", price_kes: 1200, stock_quantity: 60, is_available: true }
-    ]
+    variants: [{ id: "vm2", size: "M, L, XL", price_kes: 2500, stock_quantity: 120, is_available: true }]
   },
   {
     id: "m3",
-    name: "Sustainability Tote Bag",
-    description: "Eco-friendly heavy canvas tote. Features stunning botanical bee artwork.",
+    name: "Waggle Dance Hoodie",
+    description: "Stay warm during early morning hive inspections.",
     category: "merch",
-    badge: "Eco-Choice",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.7,
-    review_count: 42,
+    badge: null,
+    images: ["/images/products/beeyield_merch.png"],
+    rating: 5.0,
+    review_count: 45,
     is_active: true,
-    variants: [
-      { id: "vm3-1", size: "Large", price_kes: 1200, stock_quantity: 100, is_available: true }
-    ]
+    variants: [{ id: "vm3", size: "M, L, XL", price_kes: 4800, stock_quantity: 35, is_available: true }]
   },
   {
     id: "m4",
-    name: "Signature Beekeeper Tee",
-    description: "Soft, breathable 100% organic cotton. A minimalist design that makes a statement.",
+    name: "BeeYield Branded Honey Jar",
+    description: "Elegant glass jar for your own local harvest.",
     category: "merch",
     badge: null,
-    images: ["/images/products/beekeeper_tshirt.png"],
-    rating: 4.8,
-    review_count: 124,
+    images: ["/images/products/beeyield_merch.png"],
+    rating: 4.7,
+    review_count: 62,
     is_active: true,
-    variants: [
-      { id: "vm4-1", size: "M", price_kes: 2200, stock_quantity: 30, is_available: true },
-      { id: "vm4-2", size: "L", price_kes: 2200, stock_quantity: 40, is_available: true }
-    ]
+    variants: [{ id: "vm4", size: "500ml", price_kes: 800, stock_quantity: 200, is_available: true }]
   },
   {
     id: "m5",
-    name: "BeeYield Ceramic Mug",
-    description: "A high-fire ceramic mug in matte charcoal. Ergonomic design for that perfect morning coffee.",
+    name: "Professional Smoke Bellows",
+    description: "Durable stainless steel with premium leather bellows.",
     category: "merch",
-    badge: "Lifestyle",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.6,
-    review_count: 34,
+    badge: "Essential",
+    images: ["/images/products/beeyield_merch.png"],
+    rating: 4.9,
+    review_count: 112,
     is_active: true,
-    variants: [
-      { id: "vm5-1", size: "12oz", price_kes: 950, stock_quantity: 60, is_available: true }
-    ]
+    variants: [{ id: "vm5", size: "Standard", price_kes: 3200, stock_quantity: 55, is_available: true }]
   },
   {
     id: "m6",
-    name: "Beekeeping Enamel Pin",
-    description: "Limited edition enamel pins featuring different bee species. Perfect for your jacket.",
+    name: "Ultra-Breeze Bee Suit",
+    description: "Three-layer ventilated mesh for maximum comfort and protection.",
     category: "merch",
-    badge: "Collectible",
-    images: ["/images/products/beeyield_cap.png"],
+    badge: "Pro",
+    images: ["/images/products/beeyield_merch.png"],
     rating: 5.0,
-    review_count: 48,
+    review_count: 73,
     is_active: true,
-    variants: [
-      { id: "vm6-1", size: "Set", price_kes: 1500, stock_quantity: 200, is_available: true }
-    ]
+    variants: [{ id: "vm6", size: "M, L", price_kes: 12000, stock_quantity: 20, is_available: true }]
   },
   {
     id: "m7",
-    name: "Bamboo Bee Hotel",
-    description: "Support solitary bees in your garden with this sustainably sourced bamboo bee hotel.",
+    name: "Sheepskin Beekeeping Gloves",
+    description: "Soft sheepskin with long canvas gauntlets for sting-proof protection.",
     category: "merch",
-    badge: "Garden",
-    images: ["/images/products/beeyield_tote_bag.png"],
+    badge: null,
+    images: ["/images/products/beeyield_merch.png"],
     rating: 4.8,
-    review_count: 29,
+    review_count: 94,
     is_active: true,
-    variants: [
-      { id: "vm7-1", size: "Standard", price_kes: 3200, stock_quantity: 15, is_available: true }
-    ]
+    variants: [{ id: "vm7", size: "M, L", price_kes: 1800, stock_quantity: 85, is_available: true }]
   },
   {
     id: "m8",
-    name: "Wildflower Seed Mix",
-    description: "A curated blend of 25 native wildflower species designed to provide forage for bees.",
+    name: "BeeYield Coffee Mug",
+    description: "Start your morning with a sweet brew in this ceramic mug.",
     category: "merch",
-    badge: "Impact",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.7,
-    review_count: 156,
+    badge: null,
+    images: ["/images/products/beeyield_merch.png"],
+    rating: 4.6,
+    review_count: 51,
     is_active: true,
-    variants: [
-      { id: "vm8-1", size: "50g Pack", price_kes: 450, stock_quantity: 500, is_available: true }
-    ]
+    variants: [{ id: "vm8", size: "350ml", price_kes: 1100, stock_quantity: 150, is_available: true }]
   },
-  // --- EDUCATION (8 Items - From BeeLearn.tsx) ---
+
+  // --- LEARN (8 Items) ---
   {
-    id: "edu-1",
-    name: "BEEKEEPING STARTER GUIDE",
-    description: "Entry-level handbook: hive setup, bee care, and your first honey harvest.",
+    id: "l1",
+    name: "Introduction to Apiculture",
+    description: "Complete guide for beginners to start their first hive.",
     category: "education",
-    badge: "Digital",
-    images: ["/images/products/beekeeping_guide.png"],
+    badge: "Free Extract",
+    images: ["/images/products/beeyield_course.png"],
     rating: 4.9,
-    review_count: 215,
+    review_count: 320,
     is_active: true,
-    variants: [
-      { id: "ve1-1", size: "PDF Download", price_kes: 1500, stock_quantity: 9999, is_available: true }
-    ]
+    variants: [{ id: "vl1", size: "E-Book", price_kes: 1500, stock_quantity: 999, is_available: true }]
   },
   {
-    id: "edu-2",
-    name: "PRECISION POLLINATION HANDBOOK",
-    description: "Data-driven techniques for crop yields. For commercial farmers and professional beekeepers.",
-    category: "education",
-    badge: "Professional",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 5.0,
-    review_count: 48,
-    is_active: true,
-    variants: [
-      { id: "ve2-1", size: "PDF Download", price_kes: 3500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-3",
-    name: "QUEEN REARING MASTERCLASS",
-    description: "Video course with 12 hours of expert instruction on queen breeding, grafting, and colony management.",
-    category: "education",
-    badge: "VIDEO COURSE",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.8,
-    review_count: 87,
-    is_active: true,
-    variants: [
-      { id: "ve3-1", size: "Online Access", price_kes: 5500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-4",
-    name: "HONEY PROCESSING MANUAL",
-    description: "Complete guide to extraction, filtering, bottling, and quality certification for commercial honey production.",
+    id: "l2",
+    name: "Advanced Hive Management",
+    description: "Master the art of high-yield sustainable beekeeping.",
     category: "education",
     badge: "Bestseller",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.7,
-    review_count: 134,
-    is_active: true,
-    variants: [
-      { id: "ve4-1", size: "PDF Download", price_kes: 2500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-5",
-    name: "HIVE MONITORING COURSE",
-    description: "Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.",
-    category: "education",
-    badge: "Technical",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.9,
-    review_count: 56,
-    is_active: true,
-    variants: [
-      { id: "ve5-1", size: "Online Access", price_kes: 4000, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-6",
-    name: "DISEASE & PEST MANAGEMENT",
-    description: "Identify and treat common bee diseases and pests in East Africa. Includes natural and chemical treatment options.",
-    category: "education",
-    badge: "Essential",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.8,
-    review_count: 98,
-    is_active: true,
-    variants: [
-      { id: "ve6-1", size: "PDF Download", price_kes: 2000, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-7",
-    name: "BUSINESS OF BEEKEEPING",
-    description: "Transform your hobby into a profitable venture. Covers pricing, marketing, regulations, and scaling operations.",
-    category: "education",
-    badge: "Entrepreneur",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.6,
-    review_count: 73,
-    is_active: true,
-    variants: [
-      { id: "ve7-1", size: "PDF + Templates", price_kes: 4500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-8",
-    name: "COMPLETE BEEKEEPER BUNDLE",
-    description: "All educational materials in one package! Includes all guides, courses, and lifetime updates.",
-    category: "education",
-    badge: "BEST VALUE",
-    images: ["/images/products/beekeeping_guide.png"],
+    images: ["/images/products/beeyield_course.png"],
     rating: 5.0,
-    review_count: 42,
+    review_count: 215,
     is_active: true,
-    variants: [
-      { id: "ve8-1", size: "Full Bundle", price_kes: 15000, stock_quantity: 9999, is_available: true }
-    ]
+    variants: [{ id: "vl2", size: "Video Course", price_kes: 5500, stock_quantity: 999, is_available: true }]
+  },
+  {
+    id: "l3",
+    name: "Pest & Disease Control",
+    description: "Keep your colonies healthy and strong throughout the year.",
+    category: "education",
+    badge: null,
+    images: ["/images/products/beeyield_course.png"],
+    rating: 4.8,
+    review_count: 142,
+    is_active: true,
+    variants: [{ id: "vl3", size: "Digital Guide", price_kes: 2200, stock_quantity: 999, is_available: true }]
+  },
+  {
+    id: "l4",
+    name: "Organic Honey Certification",
+    description: "Learn how to meet global organic standards for your harvest.",
+    category: "education",
+    badge: null,
+    images: ["/images/products/beeyield_course.png"],
+    rating: 4.7,
+    review_count: 88,
+    is_active: true,
+    variants: [{ id: "vl4", size: "Certification Course", price_kes: 8500, stock_quantity: 999, is_available: true }]
+  },
+  {
+    id: "l5",
+    name: "Wintering Success Guide",
+    description: "Ensure your bees survive the cold season with expert techniques.",
+    category: "education",
+    badge: "Seasonal",
+    images: ["/images/products/beeyield_course.png"],
+    rating: 4.9,
+    review_count: 67,
+    is_active: true,
+    variants: [{ id: "vl5", size: "E-Book", price_kes: 1800, stock_quantity: 999, is_available: true }]
+  },
+  {
+    id: "l6",
+    name: "Pollination Services 101",
+    description: "Turn your beekeeping hobby into a professional pollination service.",
+    category: "education",
+    badge: "Pro",
+    images: ["/images/products/beeyield_course.png"],
+    rating: 5.0,
+    review_count: 94,
+    is_active: true,
+    variants: [{ id: "vl6", size: "Workshop", price_kes: 12000, stock_quantity: 50, is_available: true }]
+  },
+  {
+    id: "l7",
+    name: "Queen Rearing Masterclass",
+    description: "Techniques for breeding superior queens and colony genetics.",
+    category: "education",
+    badge: "Advanced",
+    images: ["/images/products/beeyield_course.png"],
+    rating: 4.8,
+    review_count: 53,
+    is_active: true,
+    variants: [{ id: "vl7", size: "Full Course", price_kes: 9500, stock_quantity: 999, is_available: true }]
+  },
+  {
+    id: "l8",
+    name: "Urban Beekeeping Essentials",
+    description: "Thrive with hives in any city landscape or small space.",
+    category: "education",
+    badge: null,
+    images: ["/images/products/beeyield_course.png"],
+    rating: 4.6,
+    review_count: 121,
+    is_active: true,
+    variants: [{ id: "vl8", size: "E-Book", price_kes: 1400, stock_quantity: 999, is_available: true }]
   }
 ];
-
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [products, setProducts] = useState<Product[]>(STATIC_PRODUCTS);
-  const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<Product["category"]>('honey');
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await getProducts();
-        if (data && data.length > 0) {
-          // Map API response to local Product type if necessary
-          const mapped = data.map(p => ({
-            ...p,
-            category: p.category as Product["category"]
-          }));
-          setProducts(mapped);
-        }
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  // No loading state needed
+  const [activeCategory, setActiveCategory] = useState<string>("honey");
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const handleSizeChange = (productId: string, size: string) => {
-    const product = products.find(p => p.id === productId);
+    const product = STATIC_PRODUCTS.find(p => p.id === productId);
     if (!product) return;
 
     if (product.category === 'honey') {
-      // Synchronized switching for all honey products
       const newSizes = { ...selectedSizes };
-      products.forEach(p => {
+      STATIC_PRODUCTS.forEach(p => {
         if (p.category === 'honey') {
-          // Check if this honey product has the selected size
           const hasSize = p.variants.some(v => v.size === size);
           if (hasSize) {
             newSizes[p.id] = size;
@@ -494,8 +494,6 @@ const Shop = () => {
     }
 
     const variantIndex = variant ? product.variants.indexOf(variant) : -1;
-
-    // Safety check for images
     const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
       ? product.images[variantIndex + 1]
       : (product.images && product.images[0]) || "/placeholder.svg";
@@ -520,7 +518,6 @@ const Shop = () => {
     return `KES ${price.toLocaleString()}`;
   };
 
-
   const renderStars = (rating: number, count: number) => {
     return (
       <div className="flex items-center gap-1">
@@ -528,8 +525,7 @@ const Shop = () => {
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
-              className={`h-3 w-3 ${i < Math.floor(rating) ? "fill-primary text-primary" : "text-muted-foreground/30"
-                }`}
+              className={`h-3 w-3 ${i < Math.floor(rating) ? "fill-primary text-primary" : "text-muted-foreground/30"}`}
             />
           ))}
         </div>
@@ -538,24 +534,7 @@ const Shop = () => {
     );
   };
 
-  const honeyProducts = products.filter((p) => p.category === "honey").slice(0, 8);
-  const hardwareProducts = products
-    .filter((p) => p.category === "hardware")
-    // Ensure Sensors tab is truly hardware/sensors
-    .filter((p) => /beehub|beeyield|sensor|tracker|scale|probe|acoustic|queen/i.test(`${p.name} ${p.badge ?? ''} ${p.description}`))
-    .sort((a, b) => {
-      const ap = a.variants?.[0]?.price_kes ?? 0;
-      const bp = b.variants?.[0]?.price_kes ?? 0;
-      return ap - bp;
-    });
-  const merchProducts = products.filter((p) => p.category === "merch");
-  const educationProducts = products.filter((p) => p.category === "education");
-
-  const visibleProducts =
-    activeCategory === 'honey' ? honeyProducts :
-      activeCategory === 'hardware' ? hardwareProducts :
-        activeCategory === 'merch' ? merchProducts :
-          educationProducts;
+  const visibleProducts = STATIC_PRODUCTS.filter(p => p.category === activeCategory);
 
   return (
     <BeeYieldPageShell className="bg-background">
@@ -568,31 +547,11 @@ const Shop = () => {
               BeeYield <span className="text-[#F4D03F]">Store</span>
             </h1>
             <p className="text-sm text-muted-foreground max-w-xl">
-              Browse honey, sensors, merch, and education.
+              Our curated collection of premium 100% pure honey.
             </p>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex bg-muted/40 border border-border/50 rounded-xl p-1 gap-1">
-              {([
-                { id: 'honey', label: 'Honey' },
-                { id: 'hardware', label: 'Sensors' },
-                { id: 'merch', label: 'Merch' },
-                { id: 'education', label: 'Learn' },
-              ] as const).map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setActiveCategory(c.id)}
-                  className={cn(
-                    "h-9 px-4 rounded-lg font-semibold text-sm transition-all",
-                    activeCategory === c.id ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-
             <Button
               variant="outline"
               className="h-11 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-semibold text-sm gap-2"
@@ -606,45 +565,31 @@ const Shop = () => {
           </div>
         </div>
 
-        {activeCategory === 'hardware' && (
-          <div className="mb-10 overflow-hidden rounded-[2.5rem] border border-border/50 bg-[#FFF9F0] shadow-premium">
-            <div className="p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-muted-foreground">Sensors</p>
-                <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-foreground">
-                  BeeHUB <span className="text-[#F4D03F]">Sensors</span>
-                </h2>
-                <p className="text-sm text-muted-foreground max-w-2xl">
-                  Gateways and hive sensors for temperature, humidity, weight, GPS, and acoustic health—built for remote apiaries.
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {[
-                    { label: 'LoRa / GSM gateway', icon: Radio },
-                    { label: 'Hive metrics', icon: Activity },
-                    { label: 'Industrial hardware', icon: Cpu },
-                  ].map((b) => (
-                    <Badge
-                      key={b.label}
-                      className="bg-white/70 text-foreground border-border/40 font-semibold text-sm px-3 py-1.5 rounded-full flex items-center gap-1.5"
-                    >
-                      <b.icon className="h-3.5 w-3.5 text-primary" />
-                      {b.label}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+        {/* Category Tabs */}
+        <div className="flex items-center gap-4 mb-12 overflow-x-auto pb-4 scrollbar-hide">
+          {[
+            { id: "honey", label: "Honey products", icon: <Container className="h-4 w-4" /> },
+            { id: "hardware", label: "Sensors & Tech", icon: <Cpu className="h-4 w-4" /> },
+            { id: "merch", label: "Brand Merch", icon: <ShoppingBag className="h-4 w-4" /> },
+            { id: "education", label: "Bee Academy", icon: <BookOpen className="h-4 w-4" /> }
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={cn(
+                "flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs transition-all duration-300 border whitespace-nowrap",
+                activeCategory === cat.id
+                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
+                  : "bg-card text-muted-foreground border-border/50 hover:bg-muted/50"
+              )}
+            >
+              {cat.icon}
+              {cat.label}
+            </button>
+          ))}
+        </div>
 
-              <Button
-                className="h-11 rounded-2xl px-6 font-semibold text-sm bg-primary text-primary-foreground shadow-primary/20"
-                onClick={() => window.open('https://beeyield.com/shop-sensors', '_blank', 'noopener,noreferrer')}
-              >
-                View all sensors
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {visibleProducts.map((product) => (
             <Card
               key={product.id}
@@ -685,7 +630,7 @@ const Shop = () => {
                           const selectedSize = selectedSizes[product.id] || (product.variants?.[0]?.size ?? "");
                           const v = product.variants?.find((vv) => vv.size === selectedSize) || product.variants?.[0];
                           const inStock = !!v && v.is_available && (v.stock_quantity ?? 0) > 0;
-                          const label = inStock ? `${v?.stock_quantity ?? 0} in stock` : 'Out of stock';
+                          const label = inStock ? 'In Stock' : 'Out of stock';
                           return (
                             <div className="absolute bottom-8 right-8 z-30">
                               <Badge
