@@ -20,8 +20,24 @@ except Exception as e:
 
 import asyncio
 
+
+def ensure_rust_core():
+    """
+    Fail fast if the PyO3 module isn't built, and log the loaded version when present.
+    """
+    try:
+        import beeyield_core as rust_core  # triggers honey_rust shim
+        version = getattr(rust_core, "__version__", "unknown")
+        print(f"[Oxidize] Rust core loaded (honey_rust version: {version})")
+    except Exception as exc:
+        raise RuntimeError(
+            "Rust core module 'honey_rust' is missing. "
+            "Run `cd backend/beeyield_core && ..\\\\venv\\\\Scripts\\\\maturin develop --release` before starting the API."
+        ) from exc
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    ensure_rust_core()
     # Startup: Initialize shared DB client
     init_db_client()
     

@@ -12,12 +12,7 @@ from pathlib import Path
 from typing import Dict, Optional, List
 import logging
 
-try:
-    from honey_rust import AcousticEngine as _RustEngine
-    _RUST_AVAILABLE = True
-except ImportError:
-    _RUST_AVAILABLE = False
-    print("WARNING: honey_rust binary missing. Run 'maturin develop'.")
+from beeyield_core import AcousticEngine as _RustEngine  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +32,7 @@ class AcousticAnalyzer:
     def __init__(self, model_path: Optional[Path] = None):
         self.health_classifier = HealthStateClassifier()
         self.event_detector = EventDetector()
-        self._engine = _RustEngine() if _RUST_AVAILABLE else None
+        self._engine = _RustEngine()
         
     def analyze_audio_file(self, audio_bytes: bytes) -> Dict:
         try:
@@ -45,12 +40,7 @@ class AcousticAnalyzer:
             audio, sr = librosa.load(io.BytesIO(audio_bytes), sr=22050)
             
             # 2. Segmenting (RUST)
-            if self._engine:
-                segments = self._engine.segment_audio(audio.tolist(), sr)
-            else:
-                # Fallback windowing
-                win = int(2.0 * sr)
-                segments = [audio[i:i+win] for i in range(0, len(audio)-win, win)]
+            segments = self._engine.segment_audio(audio.tolist(), sr)
             
             results = []
             for segment in segments:
@@ -68,23 +58,11 @@ class AcousticAnalyzer:
                 })
             
             # 3. Aggregation (RUST)
-            if self._engine:
-                return self._engine.aggregate_results(results)
-            else:
-                return self._aggregate_results_fallback(results)
+            return self._engine.aggregate_results(results)
                 
         except Exception as e:
             logger.error(f"❌ Analysis failed: {e}")
             raise
-
-    def _aggregate_results_fallback(self, results: List[Dict]) -> Dict:
-        # Minimal Python fallback for voting
-        if not results:
-            return {'state': 'Unknown', 'confidence': 0.0}
-        states = [r['state'] for r in results]
-        winner = max(set(states), key=states.count)
-        conf = np.mean([r['confidence'] for r in results if r['state'] == winner])
-        return {'state': winner, 'confidence': float(conf), 'segments_analyzed': len(results)}
 
 # Singleton management preserved
 _analyzer_instance: Optional[AcousticAnalyzer] = None
