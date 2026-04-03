@@ -24,6 +24,13 @@ const SUGGESTIONS = [
 
 const BEEGPT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`;
 
+const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY_BEEYIELD ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY_SHOP ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY_CEBA ||
+  "";
+
 async function streamBeeGPT(
   messages: { role: string; content: string }[],
   onDelta: (text: string) => void,
@@ -34,7 +41,10 @@ async function streamBeeGPT(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      // Supabase Edge Functions accept either a user JWT or the project's anon key.
+      // The original BeeGPT project used a different env var name; in this repo we standardize on ANON_KEY.
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      apikey: SUPABASE_ANON_KEY,
     },
     body: JSON.stringify({ messages }),
   });

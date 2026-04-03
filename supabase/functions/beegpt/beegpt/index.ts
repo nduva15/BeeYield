@@ -1002,10 +1002,21 @@ serve(async (req) => {
     const body = await req.json();
     const { messages, imageBase64, imageType, audioBase64, audioType } = body;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    // Prefer Lovable gateway if configured; fall back to OpenAI directly.
+    // Support common secret names across environments (the project was cloned / moved).
+    const LOVABLE_API_KEY =
+      Deno.env.get("LOVABLE_API_KEY") ||
+      Deno.env.get("LOVABLE_GATEWAY_API_KEY") ||
+      Deno.env.get("AI_GATEWAY_API_KEY") ||
+      "";
+    const OPENAI_API_KEY =
+      Deno.env.get("OPENAI_API_KEY") ||
+      Deno.env.get("OPENAI_KEY") ||
+      "";
+    const OPENAI_MODEL =
+      Deno.env.get("OPENAI_MODEL") ||
+      Deno.env.get("OPENAI_CHAT_MODEL") ||
+      "gpt-4.1-mini";
 
     // Build the messages array, supporting multimodal content
     const builtMessages = messages.map((msg: { role: string; content: string | unknown[] }, idx: number) => {
@@ -1036,39 +1047,86 @@ serve(async (req) => {
       return msg;
     });
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
-          ...builtMessages,
-        ],
-        stream: true,
-      }),
-    });
+    const callLovable = async () => {
+      return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [
+            { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
+            ...builtMessages,
+          ],
+          stream: true,
+        }),
+      });
+    };
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment before asking another question." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+    const callOpenAI = async () => {
+      return await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          model: OPENAI_MODEL,
+          messages: [
+            { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
+            ...builtMessages,
+          ],
+          stream: true,
+        }),
+      });
+    };
+
+    let response: Response | null = null;
+    let lastErrorText = "";
+
+    if (LOVABLE_API_KEY) {
+      response = await callLovable();
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(
+            JSON.stringify({ error: "Rate limit exceeded. Please wait a moment before asking another question." }),
+            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        if (response.status === 402) {
+          return new Response(
+            JSON.stringify({ error: "Usage credits exhausted. Please add credits to continue." }),
+            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        lastErrorText = await response.text().catch(() => "");
+        console.error("Lovable gateway error:", response.status, lastErrorText);
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Usage credits exhausted. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+    }
+
+    if ((!response || !response.ok) && OPENAI_API_KEY) {
+      const openaiResp = await callOpenAI();
+      if (openaiResp.ok) {
+        response = openaiResp;
+      } else {
+        const txt = await openaiResp.text().catch(() => "");
+        console.error("OpenAI error:", openaiResp.status, txt);
+        lastErrorText = txt || lastErrorText;
+        response = openaiResp;
       }
-      const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
+    }
+
+    if (!response || !response.ok) {
+      const hint =
+        !LOVABLE_API_KEY && !OPENAI_API_KEY
+          ? "Missing AI provider keys. Set LOVABLE_API_KEY (or AI_GATEWAY_API_KEY) or OPENAI_API_KEY in Supabase secrets."
+          : "Upstream AI error. Please try again.";
       return new Response(
-        JSON.stringify({ error: "AI gateway error. Please try again." }),
+        JSON.stringify({ error: hint, detail: lastErrorText || undefined }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

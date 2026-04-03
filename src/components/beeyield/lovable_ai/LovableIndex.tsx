@@ -75,7 +75,9 @@ async function streamBeeyield(
 
   if (!resp.ok) {
     const data = await resp.json().catch(() => ({}));
-    onError(data.error || `Error ${resp.status}`);
+    const msg = (data as any)?.error || `Error ${resp.status}`;
+    const detail = typeof (data as any)?.detail === "string" ? String((data as any).detail) : "";
+    onError(detail ? `${msg} (${detail.slice(0, 200)})` : msg);
     return;
   }
 

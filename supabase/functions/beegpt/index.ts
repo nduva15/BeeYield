@@ -1006,12 +1006,24 @@ serve(async (req: any) => {
 
     // Prefer Lovable gateway if configured; fall back to OpenAI directly.
     // This prevents "AI gateway error" from killing the whole assistant output.
+    //
+    // Support common secret names across environments (the project was cloned / moved).
     // @ts-ignore
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") || "";
+    const LOVABLE_API_KEY =
+      Deno.env.get("LOVABLE_API_KEY") ||
+      Deno.env.get("LOVABLE_GATEWAY_API_KEY") ||
+      Deno.env.get("AI_GATEWAY_API_KEY") ||
+      "";
     // @ts-ignore
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") || "";
+    const OPENAI_API_KEY =
+      Deno.env.get("OPENAI_API_KEY") ||
+      Deno.env.get("OPENAI_KEY") ||
+      "";
     // @ts-ignore
-    const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-4.1-mini";
+    const OPENAI_MODEL =
+      Deno.env.get("OPENAI_MODEL") ||
+      Deno.env.get("OPENAI_CHAT_MODEL") ||
+      "gpt-4.1-mini";
 
     // Build the messages array, supporting multimodal content
     const builtMessages = messages.map((msg: { role: string; content: string | unknown[] }, idx: number) => {
