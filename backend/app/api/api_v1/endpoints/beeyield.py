@@ -4,6 +4,7 @@ User-specific management of apiaries, hives, harvests, tasks, and inspections
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from typing import Optional, List, Any
+from beeyield_core import DashboardEngine  # type: ignore
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from pydantic import BaseModel, Field
@@ -1389,6 +1390,7 @@ async def get_user_stats(
     token: Optional[str] = Depends(get_token)
 ):
     """Get dashboard statistics for the current user (owned + shared)"""
+    engine = DashboardEngine()
     try:
         # 1. Get all accessible apiary IDs (owned + shared)
         relevant_ids = await get_user_and_farmer_ids(user_id, token)
@@ -1433,22 +1435,8 @@ async def get_user_stats(
             except Exception:
                 pass
 
-        total_honey_kg = sum(float(h.get("quantity_kg", 0)) for h in harvests)
-        total_acres = sum(float(a.get("size_acres", 0)) for a in all_apiaries)
-        pending_tasks = len([t for t in tasks if t.get("status") == "pending"])
-        active_hives = len([h for h in hives if h.get("status") in ["Active & Healthy", "active"]])
-        
-        return {
-            "total_apiaries": len(all_apiaries),
-            "total_hives": len(hives),
-            "active_hives": active_hives,
-            "total_harvests": len(harvests),
-            "total_honey_kg": total_honey_kg,
-            "total_acres": total_acres,
-            "total_tasks": len(tasks),
-            "pending_tasks": pending_tasks,
-            "active_apiaries": len([a for a in all_apiaries if a.get("status") == "active"])
-        }
+        stats = engine.compute_stats(all_apiaries, hives, harvests, tasks)
+        return stats
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
