@@ -14,13 +14,8 @@ from app.schemas.pollination import (
     PollinationAnalytics,
 )
 
-try:
-    from beeyield_core import PollinationEngine as _RustEngine
-    _RUST_AVAILABLE = True
-except ImportError:
-    _RUST_AVAILABLE = False
-
-_engine = _RustEngine() if _RUST_AVAILABLE else None
+from beeyield_core import PollinationEngine as _RustEngine  # type: ignore
+_engine = _RustEngine()
 
 
 class PollinationService:
@@ -40,23 +35,14 @@ class PollinationService:
         crop_reqs = await self.get_crop_requirements(input_data.crop_type, token=token)
         target_fpa = crop_reqs[0].target_fpa if crop_reqs else 2.0
         
-        if _engine:
-            res = _engine.calculate_needs(
-                crop_type=input_data.crop_type,
-                acreage=input_data.acreage,
-                avg_frames=input_data.avg_frames_per_hive,
-                weather_factor=input_data.weather_factor,
-                target_fpa=target_fpa
-            )
-            return PollinationCalculatorResult(**res)
-        else:
-            # Fallback (simplified)
-            hives = int((target_fpa * input_data.acreage) / (input_data.avg_frames_per_hive * input_data.weather_factor))
-            return PollinationCalculatorResult(
-                crop_type=input_data.crop_type, acreage=input_data.acreage, target_fpa=target_fpa,
-                hives_needed=max(1, hives), actual_fpa=target_fpa, total_fpa_required=int(target_fpa * input_data.acreage),
-                coverage_health_percent=100, foraging_efficiency_percent=85, strength_category="STANDARD", forage_range_km="1.2 km"
-            )
+        res = _engine.calculate_needs(
+            crop_type=input_data.crop_type,
+            acreage=input_data.acreage,
+            avg_frames=input_data.avg_frames_per_hive,
+            weather_factor=input_data.weather_factor,
+            target_fpa=target_fpa
+        )
+        return PollinationCalculatorResult(**res)
 
     async def get_contracts(self, user_id=None, status=None, token=None) -> List[PollinationContract]:
         filters = {}
@@ -86,13 +72,9 @@ class PollinationService:
                 stat = "healthy" if 33 <= temp <= 36 else "warning" if 32 <= temp <= 37 else "critical"
                 sensor_list.append({"status": stat})
 
-        if _engine:
-            # Convert objects to dicts for Rust FFI
-            contracts_dicts = [c.model_dump() for c in contracts]
-            stats = _engine.calculate_analytics(contracts_dicts, sensor_list)
-            return PollinationAnalytics(**stats)
-        else:
-            return PollinationAnalytics(total_contracts=len(contracts), active_contracts=0, total_hives_deployed=0, total_acres_covered=0.0, average_fpa=0.0, coverage_health_percent=0.0, healthy_hives=0, warning_hives=0, critical_hives=0, total_revenue=0.0)
+        contracts_dicts = [c.model_dump() for c in contracts]
+        stats = _engine.calculate_analytics(contracts_dicts, sensor_list)
+        return PollinationAnalytics(**stats)
 
     # Note: CRUD operations for contracts, assignments, apiaries remain in Python 
     # as they are pure DB-IO bound and should use await.

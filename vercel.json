@@ -4,6 +4,16 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "installCommand": "pnpm install --frozen-lockfile",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://www.beeyield.com/:path*",
+      "permanent": true,
+      "has": [
+        { "type": "host", "value": "beeyield.com" }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/:path((?!api/).*)",

@@ -40,6 +40,7 @@ import { beeyieldService, Apiary, IoTDevice, SensorReading } from '@/services/be
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
+import { optimizeHivePlacementLocal, ForageZone } from '@/lib/pollinationOptimizer';
 import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
@@ -139,7 +140,14 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [calcInputs, setCalcInputs] = React.useState<CalculationInputs>({
         totalAcres: 50,
         targetFpa: 12,
-        averageFramesPerHive: 8
+        averageFramesPerHive: 8,
+        bloomIntensity: 1,
+        forageCondition: 1,
+        hives: Array.from({ length: 6 }).map((_, i) => ({
+            frameCount: 8 + (i % 2),
+            isStrong: i % 3 !== 0,
+            isLarge: i % 4 === 0
+        }))
     });
 
     React.useEffect(() => {
@@ -161,6 +169,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const metrics = React.useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
 
     const [deployments, setDeployments] = React.useState<any[]>([]);
+    const [forageZones, setForageZones] = React.useState<ForageZone[]>([]);
+    const [zonesLoading, setZonesLoading] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Active Sector
@@ -264,18 +274,47 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         try {
             const results = await beeyieldService.optimizePollinationPlacement2({
                 orchard_geojson: orchardGeoJSON,
-                hive_count: metrics.hivesRequired,
+                hive_count: Math.max(
+                    1,
+                    metrics.hivesRequired || Math.ceil((calcInputs.totalAcres || 1) * (calcInputs.targetFpa || 12) / Math.max(1, calcInputs.averageFramesPerHive || 8))
+                ),
                 target_crop: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
                 bee_flight_radius_km: 1.5,
                 ahp_weights: { bloom: 0.8, roads: 0.2, water: 0.1 }
             });
-            setOptimalPlacements(results);
-            toast.success(`Generated ${results.length} optimal placements.`);
+            const normalized = Array.isArray(results) ? results.map((r: any) => ({
+                lat: Number(r.lat ?? r.latitude ?? r.center?.lat ?? r.y ?? 0),
+                lng: Number(r.lng ?? r.longitude ?? r.center?.lng ?? r.x ?? 0),
+                coverage_radius_km: Number(r.coverage_radius_km ?? r.radius_km ?? 1.5),
+                score: Number(r.score ?? r.weight ?? 0.5),
+                source: 'api'
+            })).filter((r: any) => Number.isFinite(r.lat) && Number.isFinite(r.lng)) : [];
+
+            if (normalized.length) {
+                setOptimalPlacements(normalized);
+                toast.success(`Generated ${normalized.length} optimal placements (cloud).`);
+                setIsOptimizing(false);
+                return;
+            }
         } catch (error) {
-            toast.error('Failed to calculate optimal placement');
-        } finally {
-            setIsOptimizing(false);
+            console.error('optimizePollinationPlacement2 failed, falling back to local solver', error);
         }
+
+        const fallback = optimizeHivePlacementLocal({
+            orchardPolygon: orchardPolygon as any,
+            hiveCount: Math.max(
+                1,
+                metrics.hivesRequired || Math.ceil((calcInputs.totalAcres || 1) * (calcInputs.targetFpa || 12) / Math.max(1, calcInputs.averageFramesPerHive || 8))
+            ),
+            flightRadiusKm: 1.5,
+            zones: forageZones,
+            windDirectionDeg: 90,
+            calcInputs
+        });
+
+        setOptimalPlacements(fallback);
+        toast.success(`Generated ${fallback.length} optimal placements (edge AI).`);
+        setIsOptimizing(false);
     };
 
     React.useEffect(() => {
@@ -323,6 +362,34 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const loadZones = async () => {
+            if (!selectedApiaryId) {
+                setForageZones([]);
+                return;
+            }
+            setZonesLoading(true);
+            try {
+                const data = await beeyieldService.getForageZones(selectedApiaryId);
+                if (!mounted) return;
+                const normalized: ForageZone[] = (data || []).map((z: any) => ({
+                    lat: Number(z.latitude ?? z.lat ?? z.latitud) || 0,
+                    lng: Number(z.longitude ?? z.lng ?? z.long) || 0,
+                    ndvi: typeof z.ndvi === 'number' ? z.ndvi : (typeof z.density_score === 'number' ? z.density_score : undefined),
+                    soil_moisture: typeof z.soil_moisture === 'number' ? z.soil_moisture : undefined
+                })).filter((z: ForageZone) => Number.isFinite(z.lat) && Number.isFinite(z.lng));
+                setForageZones(normalized);
+            } catch {
+                if (mounted) setForageZones([]);
+            } finally {
+                if (mounted) setZonesLoading(false);
+            }
+        };
+        loadZones();
+        return () => { mounted = false; };
+    }, [selectedApiaryId]);
 
     const handleSaveDeployment = async () => {
         if (!Number.isFinite(calcInputs.totalAcres) || calcInputs.totalAcres <= 0) {

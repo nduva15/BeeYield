@@ -235,7 +235,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         return Array.from(seen).sort();
     }, [harvests]);
 
-    const stats = React.useMemo(() => {
+    const stats = (() => {
         const pending = tasks.filter(t => t.category === 'inspection' && t.status === 'pending').length;
         return {
             total: inspections.length,
@@ -248,7 +248,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                 return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
             }).length
         };
-    }, [inspections, tasks]);
+    })();
 
     if (isAddingInspection) {
         return (
