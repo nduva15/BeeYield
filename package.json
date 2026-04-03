@@ -14,6 +14,7 @@
     "dev:vinxi": "vinxi dev",
     "build:vinxi": "vinxi build",
     "build:dev": "vite build --mode development",
+    "build:win": "node scripts/build-with-esbuild-path.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
