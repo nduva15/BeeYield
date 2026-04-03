@@ -1583,7 +1583,7 @@ const ShopDashboard = () => {
 
     if (!user) {
         return (
-            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-[#F9F7F2] relative overflow-hidden p-0">
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-[#F9F7F2] relative overflow-hidden p-0 m-0">
                 {/* Visual Architecture */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#1B9157]/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -1652,7 +1652,7 @@ const ShopDashboard = () => {
     }
 
     return (
-        <BeeYieldPageShell className="p-0">
+        <BeeYieldPageShell className="p-0 m-0">
             <ShopDashboardLayout
                 activeTab={activeTab}
                 onTabChange={setActiveTab}

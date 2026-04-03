@@ -42,7 +42,7 @@ const AdminAuth = () => {
 
     if (loading) {
         return (
-            <BeeYieldPageShell className="bg-white flex items-center justify-center">
+      <BeeYieldPageShell className="bg-white flex items-center justify-center m-0">
                 <div className="flex flex-col items-center gap-4">
                     <div className="relative">
                         <div className="w-12 h-12 rounded-full border-4 border-honey/10 border-t-honey animate-spin" />
