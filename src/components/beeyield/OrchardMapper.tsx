@@ -6,6 +6,9 @@ import { motion } from 'framer-motion';
 import { MapContainer, TileLayer, Polygon, Marker, useMapEvents, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useApiaries } from '@/hooks/useApiaries';
+import { beeyieldService } from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -37,6 +40,9 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
     const [isDrawing, setIsDrawing] = React.useState(false);
     const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Active Sector
     const [zoom, setZoom] = React.useState(13);
+    const { data: apiaries } = useApiaries();
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const [isSaving, setIsSaving] = React.useState(false);
 
     const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
         const map = useMap();
@@ -66,6 +72,62 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
             setMapCenter([pos.coords.latitude, pos.coords.longitude]);
             setZoom(15);
         });
+    };
+
+    React.useEffect(() => {
+        if (!selectedApiaryId && (apiaries || []).length > 0) {
+            const first = apiaries![0];
+            setSelectedApiaryId(first.id);
+            if (first.latitude && first.longitude) {
+                setMapCenter([first.latitude, first.longitude]);
+            }
+        }
+    }, [apiaries, selectedApiaryId]);
+
+    React.useEffect(() => {
+        const current = (apiaries || []).find((a: any) => a.id === selectedApiaryId);
+        if (current && Number.isFinite(current.latitude) && Number.isFinite(current.longitude)) {
+            setMapCenter([current.latitude, current.longitude]);
+        }
+    }, [selectedApiaryId, apiaries]);
+
+    const handleSave = async () => {
+        if (!selectedApiaryId) {
+            toast.error('Select an apiary first.');
+            return;
+        }
+        if (points.length < 3) {
+            toast.error('Draw the boundary before saving.');
+            return;
+        }
+        setIsSaving(true);
+        try {
+            const geojson = {
+                type: 'Feature',
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[...points.map(p => [p[1], p[0]]), [points[0][1], points[0][0]]]]
+                },
+                properties: { source: 'orchard-mapper', acres: acreage }
+            };
+
+            const { error } = await beeyieldService.createForageZone({
+                apiary_id: selectedApiaryId,
+                zone_name: 'Orchard boundary',
+                flora_type: 'Crop zone',
+                radius_km: Math.max(0.2, Math.sqrt(acreage) * 0.08),
+                density_score: Math.min(1, suggestedHives / Math.max(1, acreage * 3)),
+                season: 'current',
+                geojson
+            });
+            if (error) throw error;
+            toast.success('Boundary saved to backend');
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e?.message || 'Failed to save boundary');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const MapEvents = () => {
@@ -114,7 +176,16 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                 title={<>Farm <span className="text-[#F4D03F]">Setup</span></>}
                 subtitle="Map area, estimate hive count, and plan drops."
                 actions={
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <select
+                            className="text-[10px] font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white"
+                            value={selectedApiaryId}
+                            onChange={(e) => setSelectedApiaryId(e.target.value)}
+                        >
+                            {(apiaries || []).map((a: any) => (
+                                <option key={a.id} value={a.id}>{a.name || 'Apiary'}</option>
+                            ))}
+                        </select>
                         <button
                             onClick={() => setIsDrawing(!isDrawing)}
                             className={cn(
@@ -130,6 +201,14 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold flex items-center gap-2 bg-white")}>
                             <Share2 className="w-3 h-3" />
                             Reset
+                        </button>
+                        <button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className={cn(glass.btnPrimary, "h-8 px-4 text-[10px] font-bold flex items-center gap-2 disabled:opacity-50")}
+                        >
+                            <Shield className="w-3 h-3" />
+                            {isSaving ? 'Saving…' : 'Save zone'}
                         </button>
                     </div>
                 }
