@@ -10,12 +10,7 @@ import time
 import numpy as np
 from PIL import Image, ImageDraw
 
-try:
-    from honey_rust import ImageEngine as _RustEngine
-    _RUST_AVAILABLE = True
-except ImportError:
-    _RUST_AVAILABLE = False
-    print("WARNING: honey_rust binary missing. Run 'maturin develop'.")
+from beeyield_core import ImageEngine as _RustEngine  # type: ignore
 
 # Optional ML imports
 try:
@@ -36,7 +31,7 @@ class ImageAnalysisService:
     MAX_BEES_TO_CLASSIFY = 40
     
     _detector_model = None
-    _engine = _RustEngine() if _RUST_AVAILABLE else None
+    _engine = _RustEngine()
     
     @classmethod
     def _get_detector(cls):
@@ -73,17 +68,11 @@ class ImageAnalysisService:
             detections = await ImageAnalysisService._classify_health(image_rgb, detections)
         
         # 3. Aggregate Diseases (RUST)
-        if ImageAnalysisService._engine:
-            disease_indicators = ImageAnalysisService._engine.aggregate_diseases(detections)
-            # Sort indicators descending (Rust return is already sorted or we do it here)
-            disease_indicators.sort(key=lambda x: x["probability"], reverse=True)
-            
-            # 4. Calculate Health Score (RUST)
-            health_score, health_status = ImageAnalysisService._engine.calculate_health_score(len(detections), disease_indicators)
-        else:
-            # Fallback
-            disease_indicators = []
-            health_score, health_status = 0, "Unknown"
+        disease_indicators = ImageAnalysisService._engine.aggregate_diseases(detections)
+        disease_indicators.sort(key=lambda x: x["probability"], reverse=True)
+        
+        # 4. Calculate Health Score (RUST)
+        health_score, health_status = ImageAnalysisService._engine.calculate_health_score(len(detections), disease_indicators)
         
         # 5. Recommendations (Python - Copy logic)
         recommendations = ImageAnalysisService._generate_recommendations(health_status, disease_indicators, len(detections))
@@ -129,19 +118,15 @@ class ImageAnalysisService:
                     pass
         
         # RUST SIMULATION PATH
-        if ImageAnalysisService._engine:
-            img_array = np.array(image)
-            brightness = np.mean(img_array)
-            contrast = np.std(img_array)
-            # Efficient yellow detection
-            yellow_mask = (img_array[:, :, 0] > 150) & (img_array[:, :, 1] > 100) & (img_array[:, :, 2] < 100)
-            yellow_ratio = np.sum(yellow_mask) / (width * height)
-            
-            return ImageAnalysisService._engine.simulate_detections(
-                width, height, brightness, contrast, yellow_ratio, confidence_threshold
-            )
+        img_array = np.array(image)
+        brightness = np.mean(img_array)
+        contrast = np.std(img_array)
+        yellow_mask = (img_array[:, :, 0] > 150) & (img_array[:, :, 1] > 100) & (img_array[:, :, 2] < 100)
+        yellow_ratio = np.sum(yellow_mask) / (width * height)
         
-        return []
+        return ImageAnalysisService._engine.simulate_detections(
+            width, height, brightness, contrast, yellow_ratio, confidence_threshold
+        )
 
     # Original health classification simulation (remains in Python for now)
     @staticmethod

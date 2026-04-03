@@ -8,26 +8,13 @@ from datetime import datetime
 from typing import Any, Optional, Dict
 from app.db.supabase_db import db_select, db_insert
 
-try:
-    from beeyield_core import HarvestBatcher as _RustBatcher
-    _RUST_AVAILABLE = True
-except ImportError:
-    _RUST_AVAILABLE = False
-
-
-# Global batcher instance
-_batcher = _RustBatcher() if _RUST_AVAILABLE else None
+from beeyield_core import HarvestBatcher as _RustBatcher  # type: ignore
+_batcher = _RustBatcher()
 
 
 async def generate_batch_id(hive_name: str, harvest_date: Optional[str] = None) -> str:
     """Uses Rust for base formatting, then checks DB for collisions."""
-    if _batcher:
-        base_id = _batcher.generate_id_prefix(hive_name, harvest_date)
-    else:
-        # Fallback
-        year_month = datetime.utcnow().strftime("%Y%m")
-        hive_tag = (hive_name or "UNK")[:3].upper()
-        base_id = f"BEE-{year_month}-{hive_tag}"
+    base_id = _batcher.generate_id_prefix(hive_name, harvest_date)
 
     # Collision check remains in Python (DB bound)
     existing = await db_select("harvests", columns="batch_id", filters={"batch_id": f"like.{base_id}%"})
@@ -109,31 +96,20 @@ async def log_harvest_batch(
     health_snapshot = await fetch_health_snapshot(hive_id)
 
     # 3. Compile in Rust (Atomic operation)
-    if _batcher:
-        batch_record = _batcher.compile_record(
-            user_id=user_id,
-            batch_id=batch_id,
-            hive_id=hive_id,
-            apiary_id=apiary_id,
-            harvest_date=harvest_date,
-            quantity_kg=quantity_kg,
-            florage_type=florage_type,
-            iot_snapshot=iot_snapshot,
-            health_snapshot=health_snapshot,
-            farmer_name=farmer_name,
-            extra_data=extra_data
-        )
-        qr_code_url = batch_record.get("qr_code_url")
-    else:
-        # Fallback
-        qr_code_url = f"https://beeyield.com/traceability?code={batch_id}"
-        batch_record = {
-            "user_id": user_id, "batch_id": batch_id, "hive_id": hive_id,
-            "apiary_id": apiary_id, "harvest_date": harvest_date,
-            "quantity_kg": quantity_kg, "florage_type": florage_type,
-            "iot_snapshot": iot_snapshot, "health_snapshot": health_snapshot,
-            "farmer_name": farmer_name, "qr_code_url": qr_code_url
-        }
+    batch_record = _batcher.compile_record(
+        user_id=user_id,
+        batch_id=batch_id,
+        hive_id=hive_id,
+        apiary_id=apiary_id,
+        harvest_date=harvest_date,
+        quantity_kg=quantity_kg,
+        florage_type=florage_type,
+        iot_snapshot=iot_snapshot,
+        health_snapshot=health_snapshot,
+        farmer_name=farmer_name,
+        extra_data=extra_data
+    )
+    qr_code_url = batch_record.get("qr_code_url")
 
     # 4. Persistence
     result = await db_insert("harvests", batch_record, token=token)

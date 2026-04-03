@@ -27,6 +27,8 @@ import { fadeInUp } from '@/lib/motion';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useApiaries } from '@/hooks/useApiaries';
+import { useHivesWithTelemetry } from '@/hooks/useHives';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -51,6 +53,10 @@ const MasterMapView: React.FC = () => {
     const [zoom, setZoom] = React.useState(13);
     const [searchQuery, setSearchQuery] = React.useState('');
     const [isSearching, setIsSearching] = React.useState(false);
+    const apiariesQuery = useApiaries();
+    const apiaries = apiariesQuery.data || [];
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(selectedApiaryId || undefined);
 
     const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
         const map = useMap();
@@ -88,6 +94,22 @@ const MasterMapView: React.FC = () => {
         });
     };
 
+    React.useEffect(() => {
+        if (!selectedApiaryId && apiaries.length > 0) {
+            setSelectedApiaryId(apiaries[0].id);
+            if (apiaries[0].latitude && apiaries[0].longitude) {
+                setMapCenter([apiaries[0].latitude, apiaries[0].longitude]);
+            }
+        }
+    }, [apiaries, selectedApiaryId]);
+
+    React.useEffect(() => {
+        const current = apiaries.find(a => a.id === selectedApiaryId);
+        if (current && Number.isFinite(current.latitude) && Number.isFinite(current.longitude)) {
+            setMapCenter([Number(current.latitude), Number(current.longitude)]);
+        }
+    }, [selectedApiaryId, apiaries]);
+
     return (
         <motion.div
             {...fadeInUp}
@@ -104,7 +126,16 @@ const MasterMapView: React.FC = () => {
                 title={<>Location <span className="text-[#F4D03F]">Overview</span></>}
                 subtitle="View your locations, boundaries, and site placements."
                 actions={
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
+                        <select
+                            className="text-[10px] font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white"
+                            value={selectedApiaryId}
+                            onChange={(e) => setSelectedApiaryId(e.target.value)}
+                        >
+                            {apiaries.map((a: any) => (
+                                <option key={a.id} value={a.id}>{a.name || 'Apiary'}</option>
+                            ))}
+                        </select>
                         <Button variant="outline" className="rounded-xl border border-gray-100 bg-white/50 text-gray-600 font-bold text-[10px] h-9 px-4 hover:bg-gray-50">
                             <Layers className="w-3.5 h-3.5 mr-2" />
                             Terrain view
@@ -176,7 +207,32 @@ const MasterMapView: React.FC = () => {
                                 />
                             )}
                             <MapController center={mapCenter} zoom={zoom} />
-                            
+
+                            {apiaries.map((a: any) => (
+                                Number.isFinite(a.latitude) && Number.isFinite(a.longitude) ? (
+                                    <Marker key={a.id} position={[a.latitude, a.longitude] as any}>
+                                        <Popup className="custom-popup">
+                                            <div className="text-xs font-bold">{a.name || 'Apiary'}</div>
+                                            <p className="text-[10px] text-gray-500">Size: {a.size_acres ?? '—'} ac</p>
+                                        </Popup>
+                                    </Marker>
+                                ) : null
+                            ))}
+
+                            {hives.map((h: any) => (
+                                Number.isFinite(h.latitude) && Number.isFinite(h.longitude) ? (
+                                    <React.Fragment key={h.id}>
+                                        <Marker position={[h.latitude, h.longitude] as any}>
+                                            <Popup className="custom-popup">
+                                                <div className="text-xs font-bold">{h.hive_code || 'Hive'}</div>
+                                                <p className="text-[10px] text-gray-500">Status: {h.status || 'Active'}</p>
+                                            </Popup>
+                                        </Marker>
+                                        <Circle center={[h.latitude, h.longitude] as any} radius={1200} pathOptions={{ color: '#10b981', weight: 1, fillOpacity: 0.08 }} />
+                                    </React.Fragment>
+                                ) : null
+                            ))}
+
                             <Marker 
                                 position={mapCenter}
                                 draggable={true}
@@ -206,11 +262,13 @@ const MasterMapView: React.FC = () => {
                                 <span className="text-[10px] font-bold text-gray-700">Coordinates</span>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[9px] font-mono text-gray-400">Lat: —</p>
-                                <p className="text-[9px] font-mono text-gray-400">Lon: —</p>
+                                <p className="text-[9px] font-mono text-gray-600">Lat: {mapCenter[0].toFixed(5)}</p>
+                                <p className="text-[9px] font-mono text-gray-600">Lon: {mapCenter[1].toFixed(5)}</p>
                                 <div className="flex items-center gap-2 mt-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-                                    <p className="text-[8px] font-bold text-gray-400">Searching signal</p>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                                    <p className="text-[8px] font-bold text-gray-500">
+                                        {hivesLoading ? 'Syncing hive telemetry…' : `${hives.length} hives visible`}
+                                    </p>
                                 </div>
                             </div>
                         </div>
