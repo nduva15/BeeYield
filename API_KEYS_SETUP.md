@@ -34,6 +34,29 @@ cd backend
 python -m uvicorn app.main:app --reload
 ```
 
+### 4️⃣ **If you're using BeeGPT via Supabase Edge Functions (recommended)**
+The BeeGPT chat UI calls `POST /functions/v1/beegpt` on your Supabase project.
+That function runs on Supabase (Deno) and **does not read your local `.env`** - you must set secrets in Supabase.
+
+Set at least one provider:
+
+```bash
+# Option A: Lovable AI Gateway
+supabase secrets set LOVABLE_API_KEY=YOUR_LOVABLE_KEY
+
+# Option B: OpenAI (fallback / primary)
+supabase secrets set OPENAI_API_KEY=sk-proj-...
+supabase secrets set OPENAI_MODEL=gpt-4.1-mini
+```
+
+Then deploy the function:
+```bash
+supabase functions deploy beegpt
+```
+
+If you don't use the Supabase CLI, set the same secrets in the Supabase Dashboard
+and redeploy/update the `beegpt` function.
+
 ## What This Fixes
 
 ### Before (Current State) ❌
