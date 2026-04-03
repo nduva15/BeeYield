@@ -16,6 +16,7 @@ mod assistant;
 mod payments;
 mod invoicing;
 mod dashboard;
+mod admin_dashboard;
 
 /// BeeYield Core — Rust compute engine exposed to Python via PyO3.
 ///
@@ -40,6 +41,7 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<payments::MpesaEngine>()?;
     m.add_class::<invoicing::InvoicingEngine>()?;
     m.add_class::<dashboard::DashboardEngine>()?;
+    m.add_class::<admin_dashboard::AdminDashboardEngine>()?;
     
     // Standalone functional helpers
     #[pyfunction]
