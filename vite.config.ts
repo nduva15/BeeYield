@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 // Detect if running inside `tauri dev`
 const isTauri = !!process.env.TAURI_ENV_PLATFORM
@@ -55,12 +58,12 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
-            '@tanstack/react-router': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
-            '@tanstack/react-start': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
-            '@tanstack/start': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
-            '@tanstack/router-plugin': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
-            'node:async_hooks': path.resolve(__dirname, './src/node-shim.ts'),
+            '@': path.resolve(rootDir, './src'),
+            '@tanstack/react-router': path.resolve(rootDir, './src/tanstack-router-shim.ts'),
+            '@tanstack/react-start': path.resolve(rootDir, './src/tanstack-router-shim.ts'),
+            '@tanstack/start': path.resolve(rootDir, './src/tanstack-router-shim.ts'),
+            '@tanstack/router-plugin': path.resolve(rootDir, './src/tanstack-router-shim.ts'),
+            'node:async_hooks': path.resolve(rootDir, './src/node-shim.ts'),
         },
     },
     build: {
