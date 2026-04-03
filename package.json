@@ -86,7 +86,7 @@
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "lucide-react": "^1.7.0",
     "nanoid": "^5.1.7",
     "next-themes": "^0.4.6",
@@ -140,14 +140,23 @@
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.57.2",
-    "vite": "^6.2.1",
+    "vite": "^6.4.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.2"
   },
   "pnpm": {
     "overrides": {
       "esbuild": ">=0.25.0",
       "rollup": ">=4.59.0",
+      "brace-expansion@>=2 <3": "2.0.3",
+      "d3-color": "3.1.0",
+      "h3@>=1 <2": "1.15.11",
+      "h3@>=2.0.0-beta.4 <2.0.1-rc.18": "2.0.1-rc.18",
+      "@tanstack/start-server-core>h3": "1.15.11",
+      "@tanstack/start-server-core>h3-v2": "npm:h3@2.0.1-rc.18",
+      "vinxi>h3": "1.15.11",
+      "@vinxi/listhen>h3": "1.15.11",
+      "js-yaml@<4": "3.14.2",
       "minimatch@>=9 <10": "9.0.9",
       "minimatch@>=10 <11": "10.2.4"
     }
