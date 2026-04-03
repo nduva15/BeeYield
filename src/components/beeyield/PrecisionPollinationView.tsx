@@ -894,10 +894,56 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F4D03F]/40 to-[#F4D03F] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${(calcInputs.averageFramesPerHive / 12) * 100}%` }} />
                                         </div>
                                     </div>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-[9px] font-black ml-1">
+                                            <span className="text-[#1A1A1A]/40">Bloom intensity multiplier</span>
+                                            <span className="text-[#1B9157]">{Math.round((calcInputs.bloomIntensity || 1) * 100)}%</span>
+                                        </div>
+                                        <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#1B9157]/10">
+                                            <input
+                                                id="precision-pollination-bloom-intensity"
+                                                name="bloom_intensity"
+                                                autoComplete="off"
+                                                type="range"
+                                                min="0.5"
+                                                max="1.5"
+                                                step="0.05"
+                                                value={calcInputs.bloomIntensity || 1}
+                                                onChange={e => setCalcInputs(p => ({ ...p, bloomIntensity: parseFloat(e.target.value) }))}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                aria-label="Bloom intensity multiplier"
+                                                title="Bloom intensity multiplier"
+                                            />
+                                            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#1B9157]/30 to-[#1B9157] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${(((calcInputs.bloomIntensity || 1) - 0.5) / 1) * 100}%` }} />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-[9px] font-black ml-1">
+                                            <span className="text-[#1A1A1A]/40">Forage condition score</span>
+                                            <span className="text-[#F4D03F]">{Math.round((calcInputs.forageCondition || 1) * 100)}%</span>
+                                        </div>
+                                        <div className="relative h-2 bg-white/40 rounded-full overflow-hidden border border-[#F4D03F]/10">
+                                            <input
+                                                id="precision-pollination-forage-condition"
+                                                name="forage_condition"
+                                                autoComplete="off"
+                                                type="range"
+                                                min="0.4"
+                                                max="1.2"
+                                                step="0.05"
+                                                value={calcInputs.forageCondition || 1}
+                                                onChange={e => setCalcInputs(p => ({ ...p, forageCondition: parseFloat(e.target.value) }))}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                aria-label="Forage condition score"
+                                                title="Forage condition score"
+                                            />
+                                            <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F4D03F]/30 to-[#F4D03F] rounded-full pointer-events-none transition-all duration-300" style={{ width: `${(((calcInputs.forageCondition || 1) - 0.4) / 0.8) * 100}%` }} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                              <div className="lg:col-span-2 space-y-5">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                    <div className={cn(glass.card, "p-5 border-l-4 border-l-[#1A1A1A] space-y-2 shadow-sm border-white/40")}>
                                       <p className={glass.microLabel}>Guaranteed Strength</p>
                                       <div className="flex items-baseline gap-2">
@@ -912,11 +958,25 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         <span className="text-[10px] font-black text-[#1B9157]/40">Boxes Required</span>
                                       </div>
                                    </div>
+                                   <div className={cn(glass.card, "p-5 border-l-4 border-l-[#F4D03F] space-y-2 shadow-sm border-white/40")}>
+                                      <p className={glass.microLabel}>Effective Force</p>
+                                      <div className="flex items-baseline gap-2">
+                                        <p className="text-3xl font-black tracking-tighter text-[#F4D03F] tabular-nums">{metrics.effectiveFrames}</p>
+                                        <span className="text-[10px] font-black text-[#F4D03F]/60">Adj. Frames</span>
+                                      </div>
+                                   </div>
+                                   <div className={cn(glass.card, "p-5 border-l-4 border-l-[#10b981] space-y-2 shadow-sm border-white/40 bg-[#10b981]/5")}>
+                                      <p className={glass.microLabel}>Pollination Efficacy</p>
+                                      <div className="flex items-baseline gap-2">
+                                        <p className="text-3xl font-black tracking-tighter text-[#10b981] tabular-nums">{metrics.pollinationEfficacy}</p>
+                                        <span className="text-[10px] font-black text-[#10b981]/60">%</span>
+                                      </div>
+                                   </div>
                                 </div>
                                 <div className={cn(glass.card, "p-5 grid grid-cols-3 gap-6 shadow-sm border-white/40")}>
                                    {[
                                        { l: 'FPA Matrix', v: calcInputs.targetFpa, c: 'text-[#1A1A1A]' },
-                                       { l: 'Frame Avg', v: calcInputs.averageFramesPerHive, c: 'text-[#F4D03F]' },
+                                       { l: 'Eff. FPA', v: metrics.effectiveFPA, c: 'text-[#F4D03F]' },
                                        { l: 'Orchard Size', v: calcInputs.totalAcres + ' ac', c: 'text-[#1B9157]' }
                                    ].map((m, i) => (
                                        <div key={i} className="text-center space-y-1">
@@ -983,6 +1043,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 </div>
                              </div>
                              <div className="flex gap-3">
+                                <div className="hidden md:flex items-center px-3 rounded-xl border border-[#1B9157]/10 bg-white text-[8px] font-black text-[#1B9157]">
+                                    {zonesLoading ? 'Syncing forage zones...' : `${forageZones.length} forage zones`}
+                                </div>
                                 <button onClick={handleOptimize} disabled={isOptimizing} className={cn(glass.btnSecondary, "h-9 px-4 text-[9px] font-black rounded-xl flex items-center gap-2 transition-all")}>
                                     {isOptimizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />} 
                                     <span>Sync Matrix</span>
