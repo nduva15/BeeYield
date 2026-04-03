@@ -500,6 +500,8 @@ async def get_admin_table_data(
 @router.get("/stats", response_model=dict[str, Any])
 async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """Calculate high-level dashboard stats. Requires admin."""
+    from beeyield_core import AdminDashboardEngine  # type: ignore
+    engine = AdminDashboardEngine()
     try:
         # Fallback counts if DB is empty
         orders = await db_select("orders", token=token)
@@ -521,7 +523,8 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
         for item in pollination:
             if item.get("farmer"):
                 item["farmer_name"] = item["farmer"].get("name")
-            del item["farmer"] # Remove the nested farmer object
+            if "farmer" in item:
+                del item["farmer"]
 
         # Blockchain counts if DB empty
         if not batches or len(batches) == 0:
@@ -536,25 +539,10 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
             from app.blockchain.honey_chain import honey_blockchain
             hives = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.HIVE_REGISTRATION)]
 
-        total_revenue = sum(float(o.get("total_amount", 0)) for o in orders if o.get("status") != "cancelled")
-        total_honey_kg = sum(float(b.get("quantity_kg", 0) or b.get("total_quantity_kg", 0)) for b in batches)
-        total_acres = sum(float(p.get("farm_size_acres", 0)) for p in pollination)
-        
-        return {
-            "total_orders": len(orders),
-            "total_products": len(products),
-            "total_users": len(users),
-            "total_batches": len(batches),
-            "total_apiaries": len(apiaries),
-            "total_hives": len(hives),
-            "total_pollination": len(pollination),
-            "total_revenue_kes": total_revenue,
-            "total_honey_kg": total_honey_kg,
-            "total_acres": total_acres,
-            "pending_orders": len([o for o in orders if o.get("status") == "pending"]),
-            "active_products": len([p for p in products if p.get("is_active")]),
-            "last_updated": datetime.utcnow().isoformat()
-        }
+        stats = engine.compute_stats(
+            orders, products, users, batches, apiaries, hives, pollination
+        )
+        return stats
     except Exception as e:
         print(f"Stats Error: {e}")
         return {"error": str(e)}
