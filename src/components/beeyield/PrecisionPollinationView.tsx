@@ -150,24 +150,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         }))
     });
 
-    React.useEffect(() => {
-        if (selectedCrop && crops.length > 0) {
-            const cropData = crops.find((c: any) => String(c?.crop_name || c?.cropName || '').trim() === selectedCrop);
-            if (cropData && cropData.target_fpa) {
-                setCalcInputs(prev => ({ ...prev, targetFpa: Number(cropData.target_fpa) }));
-            }
-        }
-    }, [selectedCrop, crops]);
-
-    React.useEffect(() => {
-        if (selectedApiary) {
-            const acres = selectedApiary.size_acres ?? 25;
-            setCalcInputs(prev => ({ ...prev, totalAcres: Number(acres) }));
-        }
-    }, [selectedApiary]);
-
-    const metrics = React.useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
-
     const [deployments, setDeployments] = React.useState<any[]>([]);
     const [forageZones, setForageZones] = React.useState<ForageZone[]>([]);
     const [zonesLoading, setZonesLoading] = React.useState(false);
@@ -213,10 +195,26 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [crops, setCrops] = React.useState<any[]>([]);
     const [selectedCrop, setSelectedCrop] = React.useState<string>('');
 
+    React.useEffect(() => {
+        if (selectedCrop && crops.length > 0) {
+            const cropData = crops.find((c: any) => String(c?.crop_name || c?.cropName || '').trim() === selectedCrop);
+            if (cropData && cropData.target_fpa) {
+                setCalcInputs(prev => ({ ...prev, targetFpa: Number(cropData.target_fpa) }));
+            }
+        }
+    }, [selectedCrop, crops]);
+
     const selectedApiary = React.useMemo(
         () => apiaries.find((a) => a.id === selectedApiaryId),
         [apiaries, selectedApiaryId]
     );
+
+    React.useEffect(() => {
+        if (selectedApiary) {
+            const acres = selectedApiary.size_acres ?? 25;
+            setCalcInputs(prev => ({ ...prev, totalAcres: Number(acres) }));
+        }
+    }, [selectedApiary]);
 
     const orchardPolygon = React.useMemo(() => {
         const lat = selectedApiary?.latitude ?? -1.285;

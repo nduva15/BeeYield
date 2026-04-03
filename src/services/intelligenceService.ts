@@ -132,6 +132,35 @@ export const intelligenceService = {
                 throw new Error(errData.error || `Knowledge Hub error: ${resp.status}`);
             }
 
+            const contentType = resp.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                const data: any = await resp.json().catch(() => null);
+                const text =
+                    data?.response ??
+                    data?.text ??
+                    data?.content ??
+                    data?.choices?.[0]?.message?.content ??
+                    '';
+                if (text && onChunk) onChunk(String(text));
+                return {
+                    response: String(text || ''),
+                    sources: [
+                        { type: 'knowledge_hub', name: 'BeeYield Knowledge Base (750K+ datasets)' },
+                        { type: 'research', name: 'Global Apiculture Research' },
+                    ],
+                    suggestions: [
+                        'What is BeeYield and how does it work?',
+                        'How do I trace a honey batch code?',
+                        'What are optimal harvest seasons in East Africa?',
+                        'How do I treat Varroa safely?',
+                        'Explain the FPA pollination model',
+                    ],
+                    confidence: 0.95,
+                    language,
+                    session_id: sessionId,
+                };
+            }
+
             if (!resp.body) {
                 throw new Error('No response body from Knowledge Hub');
             }
@@ -152,8 +181,9 @@ export const intelligenceService = {
                     let line = buf.slice(0, nl);
                     buf = buf.slice(nl + 1);
                     if (line.endsWith('\r')) line = line.slice(0, -1);
-                    if (!line.startsWith('data: ')) continue;
-                    const json = line.slice(6).trim();
+                    const m = line.match(/^data:\s*(.*)$/);
+                    if (!m) continue;
+                    const json = (m[1] || '').trim();
                     if (json === '[DONE]') break;
                     try {
                         const parsed = JSON.parse(json);
