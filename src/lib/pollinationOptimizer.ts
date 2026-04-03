@@ -111,14 +111,14 @@ export const optimizeHivePlacementLocal = (input: PlacementOptimizerInput): Plac
             ? zones.reduce((best, z) => {
                 const d = haversineKm(pt, [z.lat, z.lng]);
                 const ndviScore = normalizeNdvi(z.ndvi);
-                const proximity = Math.exp(-(d / Math.max(0.1, flightRadiusKm)) ** 2);
+                const proximity = Math.exp(-((d / Math.max(0.1, flightRadiusKm)) ** 2));
                 return Math.max(best, ndviScore * proximity);
             }, 0)
             : 0.5;
 
         const windScore = bearingScore(centroid, pt, windDirectionDeg);
         const distToCenter = haversineKm(pt, centroid);
-        const centroidScore = Math.exp(-(distToCenter / (flightRadiusKm * 1.2)) ** 2);
+        const centroidScore = Math.exp(-((distToCenter / (flightRadiusKm * 1.2)) ** 2));
 
         // Optional bloom / forage multipliers
         const bloom = calcInputs?.bloomIntensity ?? 1;
