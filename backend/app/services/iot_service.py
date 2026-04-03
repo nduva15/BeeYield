@@ -1,12 +1,18 @@
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from app.db.supabase_db import db_select, db_insert
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 
 async def get_devices(farmer_id: Optional[str] = None, token: Optional[str] = None) -> List[Dict[str, Any]]:
     filters = {}
     if farmer_id:
         filters["farmer_id"] = farmer_id
     return await db_select("iot_devices", filters=filters, order_by="created_at", token=token)
+
+async def get_device_by_id(device_id: str, token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    rows = await db_select("iot_devices", filters={"id": device_id}, limit=1, token=token)
+    if not rows:
+        return None
+    return rows[0]
 
 async def get_sensor_readings(
     device_id: Optional[str] = None, 
@@ -72,6 +78,31 @@ async def create_device(data: Dict[str, Any], token: Optional[str] = None) -> Di
     if result.get("success"):
         return result["data"][0] if result.get("data") else data
     return data
+
+async def update_device(device_id: str, patch: Dict[str, Any], token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    # Don't allow id overwrite
+    patch = {k: v for k, v in (patch or {}).items() if k not in ("id",)}
+    if not patch:
+        return await get_device_by_id(device_id, token=token)
+
+    # Ensure last_ping is serialized if provided as datetime
+    if isinstance(patch.get("last_ping"), datetime):
+        patch["last_ping"] = patch["last_ping"].isoformat()
+
+    res = await db_update("iot_devices", patch, {"id": device_id}, token=token)
+    if not res.get("success"):
+        return None
+
+    rows = res.get("data") or []
+    if isinstance(rows, list) and rows:
+        return rows[0]
+
+    # Fallback: re-fetch
+    return await get_device_by_id(device_id, token=token)
+
+async def delete_device(device_id: str, token: Optional[str] = None) -> bool:
+    res = await db_delete("iot_devices", {"id": device_id}, token=token)
+    return bool(res.get("success"))
 
 async def check_sensor_health(token: Optional[str] = None) -> Dict[str, Any]:
     """

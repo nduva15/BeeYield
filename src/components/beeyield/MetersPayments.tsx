@@ -214,8 +214,8 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
     }, [addRateLocal, isCreating, newRate, refreshRates]);
 
     return (
-        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn("p-8 -m-0 space-y-12 pb-12 min-h-screen")}>
+        <BeeYieldPageShell className={cn(glass.page, "space-y-12")}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
             <BeeYieldPageHeader
                 icon={CreditCard}
                 label="Billing and Rates"

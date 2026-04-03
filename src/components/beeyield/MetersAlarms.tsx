@@ -71,8 +71,8 @@ const MetersAlarms: React.FC = () => {
     };
 
     return (
-        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
-        <div className="space-y-6 animate-in fade-in duration-500 pb-12 p-4 md:p-6">
+        <BeeYieldPageShell className={cn(glass.page, "space-y-6")}>
+        <div className="space-y-6 animate-in fade-in duration-500">
             <BeeYieldPageHeader
                 icon={Bell}
                 label="Alerts"

@@ -33,6 +33,23 @@ async def create_meter(body: schemas.MeterCreate):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.patch("/devices/{meter_id}", response_model=schemas.Meter)
+async def update_meter(meter_id: str, body: schemas.MeterUpdate):
+    """Update a meter device."""
+    try:
+        return await MeterService.update_meter(meter_id, body.model_dump(exclude_unset=True))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/devices/{meter_id}")
+async def delete_meter(meter_id: str):
+    """Delete a meter device."""
+    try:
+        await MeterService.delete_meter(meter_id)
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.get("/readings/{meter_id}", response_model=List[schemas.Reading])
 async def get_meter_readings(meter_id: str, limit: int = 50):
     """Get historical readings for a specific meter."""
@@ -49,6 +66,23 @@ async def create_billing_rate(body: schemas.BillingRateCreate):
     """Create a new billing rate."""
     try:
         return await MeterService.create_billing_rate(body.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/billing-rates/{rate_id}", response_model=schemas.BillingRate)
+async def update_billing_rate(rate_id: str, body: schemas.BillingRateUpdate):
+    """Update a billing rate."""
+    try:
+        return await MeterService.update_billing_rate(rate_id, body.model_dump(exclude_unset=True))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/billing-rates/{rate_id}")
+async def delete_billing_rate(rate_id: str):
+    """Delete a billing rate."""
+    try:
+        await MeterService.delete_billing_rate(rate_id)
+        return {"success": True}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

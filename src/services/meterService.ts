@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from './api';
+import { apiDelete, apiGet, apiPatch, apiPost } from './api';
 
 export interface Building {
     id: string;
@@ -122,5 +122,21 @@ export const meterService = {
         status?: string;
     }): Promise<Meter> {
         return apiPost<Meter>('/meters/devices', input);
+    },
+
+    async updateMeter(meterId: string, patch: Partial<Pick<Meter, 'apartment_id' | 'building_id' | 'meter_type' | 'meter_number' | 'meter_code' | 'status' | 'has_alarm' | 'install_date'>>): Promise<Meter> {
+        return apiPatch<Meter>(`/meters/devices/${meterId}`, patch);
+    },
+
+    async deleteMeter(meterId: string): Promise<{ success: boolean }> {
+        return apiDelete<{ success: boolean }>(`/meters/devices/${meterId}`);
+    },
+
+    async updateBillingRate(rateId: string, patch: Partial<Pick<BillingRate, 'meter_type' | 'rate_per_unit' | 'unit' | 'currency' | 'description' | 'is_active'>>): Promise<BillingRate> {
+        return apiPatch<BillingRate>(`/meters/billing-rates/${rateId}`, patch);
+    },
+
+    async deleteBillingRate(rateId: string): Promise<{ success: boolean }> {
+        return apiDelete<{ success: boolean }>(`/meters/billing-rates/${rateId}`);
     },
 };

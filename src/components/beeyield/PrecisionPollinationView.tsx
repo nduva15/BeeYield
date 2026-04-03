@@ -372,9 +372,38 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             try {
                 const data = await beeyieldService.getForageZones(selectedApiaryId);
                 if (!mounted) return;
+
+                const centroidFromGeojson = (geojson: any): { lat: number; lng: number } | null => {
+                    try {
+                        const coords = geojson?.geometry?.coordinates;
+                        const ring = Array.isArray(coords?.[0]) ? coords[0] : null;
+                        if (!Array.isArray(ring) || ring.length < 3) return null;
+                        const pts = ring
+                            .map((p: any) => (Array.isArray(p) && p.length >= 2 ? { lng: Number(p[0]), lat: Number(p[1]) } : null))
+                            .filter(Boolean) as Array<{ lng: number; lat: number }>;
+                        if (pts.length < 3) return null;
+                        const lat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
+                        const lng = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
+                        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                        return { lat, lng };
+                    } catch {
+                        return null;
+                    }
+                };
+
                 const normalized: ForageZone[] = (data || []).map((z: any) => ({
-                    lat: Number(z.latitude ?? z.lat ?? z.latitud) || 0,
-                    lng: Number(z.longitude ?? z.lng ?? z.long) || 0,
+                    lat: (() => {
+                        const v = Number(z.latitude ?? z.lat ?? z.latitud);
+                        if (Number.isFinite(v)) return v;
+                        const c = centroidFromGeojson(z.geojson);
+                        return c?.lat ?? 0;
+                    })(),
+                    lng: (() => {
+                        const v = Number(z.longitude ?? z.lng ?? z.long);
+                        if (Number.isFinite(v)) return v;
+                        const c = centroidFromGeojson(z.geojson);
+                        return c?.lng ?? 0;
+                    })(),
                     ndvi: typeof z.ndvi === 'number' ? z.ndvi : (typeof z.density_score === 'number' ? z.density_score : undefined),
                     soil_moisture: typeof z.soil_moisture === 'number' ? z.soil_moisture : undefined
                 })).filter((z: ForageZone) => Number.isFinite(z.lat) && Number.isFinite(z.lng));

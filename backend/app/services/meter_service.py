@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Any
-from app.db.supabase_db import db_select, db_insert, db_update
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from datetime import datetime
 
 class MeterService:
@@ -87,3 +87,55 @@ class MeterService:
             raise Exception(res.get("error") or "Failed to create meter")
         rows = res.get("data") or []
         return rows[0] if isinstance(rows, list) and rows else payload
+
+    @staticmethod
+    async def update_meter(meter_id: str, patch: Dict[str, Any]) -> Dict[str, Any]:
+        patch = {k: v for k, v in (patch or {}).items() if k not in ("id",)}
+        if not patch:
+            rows = await db_select("meters_devices", filters={"id": meter_id}, limit=1)
+            if not rows:
+                raise Exception("Meter not found")
+            return rows[0]
+
+        res = await db_update("meters_devices", patch, {"id": meter_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to update meter")
+        rows = res.get("data") or []
+        if isinstance(rows, list) and rows:
+            return rows[0]
+        rows2 = await db_select("meters_devices", filters={"id": meter_id}, limit=1)
+        if not rows2:
+            raise Exception("Meter not found after update")
+        return rows2[0]
+
+    @staticmethod
+    async def delete_meter(meter_id: str) -> None:
+        res = await db_delete("meters_devices", {"id": meter_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to delete meter")
+
+    @staticmethod
+    async def update_billing_rate(rate_id: str, patch: Dict[str, Any]) -> Dict[str, Any]:
+        patch = {k: v for k, v in (patch or {}).items() if k not in ("id",)}
+        if not patch:
+            rows = await db_select("meters_billing_rates", filters={"id": rate_id}, limit=1)
+            if not rows:
+                raise Exception("Billing rate not found")
+            return rows[0]
+
+        res = await db_update("meters_billing_rates", patch, {"id": rate_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to update billing rate")
+        rows = res.get("data") or []
+        if isinstance(rows, list) and rows:
+            return rows[0]
+        rows2 = await db_select("meters_billing_rates", filters={"id": rate_id}, limit=1)
+        if not rows2:
+            raise Exception("Billing rate not found after update")
+        return rows2[0]
+
+    @staticmethod
+    async def delete_billing_rate(rate_id: str) -> None:
+        res = await db_delete("meters_billing_rates", {"id": rate_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to delete billing rate")

@@ -21,10 +21,18 @@ except Exception as e:
 import asyncio
 
 
+def _is_testing() -> bool:
+    # Pytest sets PYTEST_CURRENT_TEST for each test, and we also allow an explicit env flag.
+    return bool(os.environ.get("PYTEST_CURRENT_TEST")) or os.environ.get("BEEYIELD_TESTING") == "1"
+
+
 def ensure_rust_core():
     """
     Fail fast if the PyO3 module isn't built, and log the loaded version when present.
     """
+    if _is_testing():
+        print("[Oxidize] Skipping Rust core check (testing mode).")
+        return
     try:
         import beeyield_core as rust_core  # triggers honey_rust shim
         version = getattr(rust_core, "__version__", "unknown")
@@ -38,26 +46,29 @@ def ensure_rust_core():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     ensure_rust_core()
+
     # Startup: Initialize shared DB client
-    init_db_client()
-    
-    # Start the persistent background worker for task recurrence
-    from app.services.task_worker import chrono_worker
-    
-    async def run_worker_loop():
-        while True:
-            await chrono_worker.run_automation_cycle()
-            # Run every hour (3600 seconds) as per PRD
-            await asyncio.sleep(3600)
-            
-    # Keep a reference to the task so it isn't garbage collected
-    app.state.chrono_task = asyncio.create_task(run_worker_loop())
+    if not _is_testing():
+        init_db_client()
+
+        # Start the persistent background worker for task recurrence
+        from app.services.task_worker import chrono_worker
+
+        async def run_worker_loop():
+            while True:
+                await chrono_worker.run_automation_cycle()
+                # Run every hour (3600 seconds) as per PRD
+                await asyncio.sleep(3600)
+
+        # Keep a reference to the task so it isn't garbage collected
+        app.state.chrono_task = asyncio.create_task(run_worker_loop())
     
     yield
     # Shutdown: Close shared DB client
-    await close_db_client()
-    if hasattr(app.state, "chrono_task"):
-        app.state.chrono_task.cancel()
+    if not _is_testing():
+        await close_db_client()
+        if hasattr(app.state, "chrono_task"):
+            app.state.chrono_task.cancel()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

@@ -169,7 +169,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
     if (loading && activeSubTab === 'meters-dashboard') {
         return (
-            <BeeYieldPageShell className="space-y-0">
+            <BeeYieldPageShell className={glass.page}>
                 <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Activity className="w-8 h-8 animate-spin text-[#F4D03F]" />
                 <span className="text-sm font-semibold text-gray-600 italic">Updating data...</span>
@@ -179,11 +179,11 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     }
 
     return (
-        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
+        <BeeYieldPageShell className={cn(glass.page, "space-y-6")}>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={cn("p-4 lg:p-6 space-y-6 pb-20")}
+                className="space-y-6"
             >
             <BeeYieldPageHeader
                 icon={Activity}

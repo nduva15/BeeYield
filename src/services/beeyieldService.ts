@@ -1,5 +1,5 @@
 import { supabaseBeeYield } from '@/lib/supabase';
-import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPost, apiPut } from './api';
+import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -754,17 +754,21 @@ export const beeyieldService = {
 
     // ========== IoT DEVICES & GATEWAYS ==========
     async getDevices(): Promise<IoTDevice[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('devices').select('*').order('last_sync', { ascending: false });
-        if (error) { console.error('getDevices:', error); return []; }
-        return (data || []) as any;
+        try {
+            return await apiGet<IoTDevice[]>('/iot/devices');
+        } catch (error) {
+            console.error('getDevices:', error);
+            return [];
+        }
     },
 
     async getDeviceById(id: string): Promise<IoTDevice | null> {
-        if (!sb) return null;
-        const { data, error } = await sb.from('devices').select('*').eq('id', id).maybeSingle();
-        if (error) { console.error('getDeviceById:', error); return null; }
-        return (data || null) as any;
+        try {
+            return await apiGet<IoTDevice>(`/iot/devices/${id}`);
+        } catch (error) {
+            console.error('getDeviceById:', error);
+            return null;
+        }
     },
 
     // ========== INTEGRATIONS ==========
@@ -839,33 +843,49 @@ export const beeyieldService = {
     },
 
     async createDevice(input: IoTDeviceCreateInput): Promise<{ data: IoTDevice | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('devices').insert(input).select().single();
-        if (error) { console.error('createDevice:', error); toast.error('Failed to link device'); return { data: null, error }; }
-        toast.success('Device linked successfully!');
-        return { data: data as any, error: null };
+        try {
+            const payload: any = { ...input };
+            // Backend IoT schema doesn't support linked_apiary_id (frontend-only helper)
+            delete payload.linked_apiary_id;
+            const data = await apiPost<IoTDevice>('/iot/devices', payload);
+            toast.success('Device linked successfully!');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createDevice:', error);
+            toast.error('Failed to link device');
+            return { data: null, error };
+        }
     },
 
     async updateDevice(id: string, patch: IoTDeviceUpdateInput): Promise<{ data: IoTDevice | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const clean: any = { ...patch };
-        // Avoid accidental empty strings for nullable foreign keys
-        if (clean.hive_id === '') clean.hive_id = null;
-        if (clean.apiary_id === '') clean.apiary_id = null;
-        if (clean.linked_apiary_id === '') clean.linked_apiary_id = null;
+        try {
+            const clean: any = { ...patch };
+            // Avoid accidental empty strings for nullable foreign keys
+            if (clean.hive_id === '') clean.hive_id = null;
+            if (clean.apiary_id === '') clean.apiary_id = null;
+            if (clean.linked_apiary_id === '') clean.linked_apiary_id = null;
+            delete clean.linked_apiary_id;
 
-        const { data, error } = await sb.from('devices').update(clean).eq('id', id).select().single();
-        if (error) { console.error('updateDevice:', error); toast.error('Failed to update device'); return { data: null, error }; }
-        toast.success('Device updated');
-        return { data: data as any, error: null };
+            const data = await apiPatch<IoTDevice>(`/iot/devices/${id}`, clean);
+            toast.success('Device updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateDevice:', error);
+            toast.error('Failed to update device');
+            return { data: null, error };
+        }
     },
 
     async deleteDevice(id: string): Promise<{ success: boolean; error: any }> {
-        if (!sb) return { success: false, error: 'No client' };
-        const { error } = await sb.from('devices').delete().eq('id', id);
-        if (error) { console.error('deleteDevice:', error); toast.error('Failed to delete device'); return { success: false, error }; }
-        toast.success('Device deleted');
-        return { success: true, error: null };
+        try {
+            await apiDelete<void>(`/iot/devices/${id}`);
+            toast.success('Device deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteDevice:', error);
+            toast.error('Failed to delete device');
+            return { success: false, error };
+        }
     },
 
     // ========== DEVICE AUDIT LOGS ==========
@@ -1690,6 +1710,46 @@ export const beeyieldService = {
         }
     },
 
+    async createRequest(input: RequestCreateInput): Promise<{ data: SupportRequest | null; error: any }> {
+        try {
+            const payload: any = {
+                subject: input.subject,
+                description: input.description,
+                category: input.category || input.type || 'General',
+                priority: input.priority || 'medium',
+                status: 'new',
+                type: input.type || 'support',
+                apiary_id: input.apiary_id,
+                hive_id: input.hive_id,
+            };
+            const data = await apiPost<SupportRequest>('beeyield/requests', payload);
+            return { data, error: null };
+        } catch (error) {
+            console.error('createRequest:', error);
+            return { data: null, error };
+        }
+    },
+
+    async updateRequest(id: string, patch: Partial<Pick<SupportRequest, 'subject' | 'description' | 'category' | 'priority' | 'status'>>): Promise<{ data: SupportRequest | null; error: any }> {
+        try {
+            const data = await apiPatch<SupportRequest>(`beeyield/requests/${id}`, patch as any);
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateRequest:', error);
+            return { data: null, error };
+        }
+    },
+
+    async deleteRequest(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`beeyield/requests/${id}`);
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteRequest:', error);
+            return { success: false, error };
+        }
+    },
+
     // ========== ACTIVITY LOGS ==========
     async getActivityLogs(limit = 50): Promise<ActivityLog[]> {
         if (!sb) return [];
@@ -2484,12 +2544,12 @@ export const beeyieldService = {
 
     // ========== FORAGE ZONES (Flight Map) ==========
     async getForageZones(apiaryId?: string): Promise<any[]> {
-        if (!sb) return [];
-        let query = sb.from('land_readings').select('*').order('recorded_at', { ascending: false });
-        if (apiaryId) query = query.eq('apiary_id', apiaryId);
-        const { data, error } = await query;
-        if (error) { console.error('getForageZones:', error); return []; }
-        return (data || []) as any[];
+        try {
+            return await apiGet<any[]>('/forage/zones', apiaryId ? { apiary_id: apiaryId } : undefined);
+        } catch (error) {
+            console.error('getForageZones:', error);
+            return [];
+        }
     },
 
     async createForageZone(input: {
@@ -2502,16 +2562,69 @@ export const beeyieldService = {
         geojson?: any;
         notes?: string;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('land_readings').insert({
-            apiary_id: input.apiary_id,
-            ndvi: input.density_score,
-            soil_moisture: 0,
-            notes: `${input.zone_name || ''} - ${input.flora_type || ''} - ${input.notes || ''}`,
-        }).select().single();
-        if (error) { console.error('createForageZone:', error); toast.error('Failed to add forage zone'); return { data: null, error }; }
-        toast.success('Forage zone added');
+        try {
+            const withCentroid: any = { ...input };
+            // If geojson polygon is provided, derive a centroid to support marker-based UIs.
+            try {
+                const coords = withCentroid?.geojson?.geometry?.coordinates;
+                const ring = Array.isArray(coords?.[0]) ? coords[0] : null;
+                if (Array.isArray(ring) && ring.length >= 3) {
+                    const pts = ring
+                        .map((p: any) => (Array.isArray(p) && p.length >= 2 ? { lng: Number(p[0]), lat: Number(p[1]) } : null))
+                        .filter(Boolean) as Array<{ lng: number; lat: number }>;
+                    if (pts.length >= 3) {
+                        const lat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
+                        const lng = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
+                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                            withCentroid.latitude = lat;
+                            withCentroid.longitude = lng;
+                        }
+                    }
+                }
+            } catch {
+                // ignore centroid derivation
+            }
+
+            const data = await apiPost<any>('/forage/zones', withCentroid);
+            toast.success('Forage zone added');
             return { data, error: null };
+        } catch (error) {
+            console.error('createForageZone:', error);
+            toast.error('Failed to add forage zone');
+            return { data: null, error };
+        }
+    },
+
+    async updateForageZone(id: string, patch: Partial<{
+        zone_name: string;
+        flora_type: string;
+        radius_km: number;
+        density_score: number;
+        season: string;
+        geojson: any;
+        notes: string;
+    }>): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPatch<any>(`/forage/zones/${id}`, patch as any);
+            toast.success('Forage zone updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateForageZone:', error);
+            toast.error('Failed to update forage zone');
+            return { data: null, error };
+        }
+    },
+
+    async deleteForageZone(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`/forage/zones/${id}`);
+            toast.success('Forage zone deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteForageZone:', error);
+            toast.error('Failed to delete forage zone');
+            return { success: false, error };
+        }
     },
 
     // ========== HEALTH KNOWLEDGE BASE ==========

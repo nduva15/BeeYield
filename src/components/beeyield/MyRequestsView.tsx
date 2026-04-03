@@ -71,7 +71,9 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
         return combinedRequests.filter((req: any) => {
             const matchesSearch = req.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 req.id.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesStatus = statusFilter === "All" || req.status === statusFilter;
+            const normalized = String(req.status || '').toLowerCase();
+            const filterNorm = String(statusFilter || '').toLowerCase();
+            const matchesStatus = filterNorm === 'all' || normalized === filterNorm;
             return matchesSearch && matchesStatus;
         });
     }, [combinedRequests, searchQuery, statusFilter]);
@@ -103,21 +105,25 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     };
 
     const getStatusStyles = (status: string) => {
-        switch (status) {
-            case 'Resolved': return "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20";
-            case 'In Progress': return "bg-blue-500/10 text-blue-600 border-blue-500/20";
-            case 'Open': return "bg-orange-500/10 text-orange-600 border-orange-500/20";
-            case 'Closed': return "bg-gray-100 text-gray-600 border-gray-200";
+        const s = String(status || '').toLowerCase();
+        switch (s) {
+            case 'resolved': return "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20";
+            case 'in_progress': return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+            case 'open':
+            case 'new': return "bg-orange-500/10 text-orange-600 border-orange-500/20";
+            case 'closed': return "bg-gray-100 text-gray-600 border-gray-200";
             default: return "bg-gray-100 text-gray-600 border-gray-200";
         }
     };
 
     const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'Resolved': return CheckCircle2;
-            case 'In Progress': return Clock;
-            case 'Open': return AlertCircle;
-            case 'Closed': return XCircle;
+        const s = String(status || '').toLowerCase();
+        switch (s) {
+            case 'resolved': return CheckCircle2;
+            case 'in_progress': return Clock;
+            case 'open':
+            case 'new': return AlertCircle;
+            case 'closed': return XCircle;
             default: return AlertCircle;
         }
     };

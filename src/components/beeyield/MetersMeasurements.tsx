@@ -67,8 +67,8 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
     };
 
     return (
-        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
-        <div className={cn("p-8 -m-0 space-y-8 animate-in fade-in duration-500 pb-12 min-h-screen")}>
+        <BeeYieldPageShell className={cn(glass.page, "space-y-8")}>
+        <div className="space-y-8 animate-in fade-in duration-500">
             <BeeYieldPageHeader
                 icon={TrendingUp}
                 label="Data Analysis"

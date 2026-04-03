@@ -47,11 +47,14 @@ export function useCreateRequest() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (input: RequestCreateInput) => beeyieldService.createRequest(input),
-        onSuccess: (response) => {
-            if (response.data) {
-                queryClient.invalidateQueries({ queryKey: requestKeys.lists() });
-            }
+        mutationFn: async (input: RequestCreateInput) => {
+            const { data, error } = await beeyieldService.createRequest(input);
+            if (error) throw error;
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: requestKeys.lists() });
+            toast.success('Request submitted');
         },
     });
 }

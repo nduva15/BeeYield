@@ -28,7 +28,7 @@ import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import { NavItem } from '@/components/beeyield/DashboardSidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { BeeYieldPageHeader, BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { useSettings } from '@/contexts/SettingsContext';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
@@ -341,7 +341,18 @@ const BeeYieldDashboard: React.FC = () => {
             case 'home':
                 return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant':
-                return <LovableBeeYieldAI />;
+                return (
+                    <BeeYieldPageShell>
+                        <BeeYieldPageHeader
+                            icon={Hexagon}
+                            label="BeeYield AI"
+                            title={<>BeeYield <span className="text-[#F4D03F]">assistant</span></>}
+                            subtitle="Ask questions, generate exports, and get operational guidance."
+                            onBack={() => handleTabChange('home')}
+                        />
+                        <LovableBeeYieldAI />
+                    </BeeYieldPageShell>
+                );
             case 'agro-intelligence':
                 return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'precision-pollination-folder':
@@ -350,7 +361,18 @@ const BeeYieldDashboard: React.FC = () => {
 
             case 'bloom-tracking':
             case 'bloom-phenology':
-                return <BloomPhenology />;
+                return (
+                    <BeeYieldPageShell>
+                        <BeeYieldPageHeader
+                            icon={Calendar}
+                            label="Bloom Intelligence"
+                            title={<>Bloom <span className="text-[#F4D03F]">phenology</span></>}
+                            subtitle="Track bloom windows and align foraging and pollination schedules."
+                            onBack={() => handleTabChange('home')}
+                        />
+                        <BloomPhenology />
+                    </BeeYieldPageShell>
+                );
             case 'pollination-calcs':
             case 'pollination-engine':
                 return <PollinationEngine onTabChange={handleTabChange} />;
@@ -365,7 +387,18 @@ const BeeYieldDashboard: React.FC = () => {
 
             case 'logistics-setup':
             case 'master-map':
-                return <MasterMapView />;
+                return (
+                    <BeeYieldPageShell>
+                        <BeeYieldPageHeader
+                            icon={Map}
+                            label="Logistics"
+                            title={<>Master <span className="text-[#F4D03F]">map</span></>}
+                            subtitle="Plan deployments, view sites, and coordinate field operations."
+                            onBack={() => handleTabChange('home')}
+                        />
+                        <MasterMapView />
+                    </BeeYieldPageShell>
+                );
             case 'orchard-mapper':
                 return <OrchardMapper onTabChange={handleTabChange} />;
 
@@ -379,7 +412,18 @@ const BeeYieldDashboard: React.FC = () => {
 
             case 'bee-calculator':
             case 'calculator-suite':
-                return <BeeCalculatorSuite />;
+                return (
+                    <BeeYieldPageShell>
+                        <BeeYieldPageHeader
+                            icon={Calculator}
+                            label="Tools"
+                            title={<>Bee <span className="text-[#F4D03F]">calculator</span></>}
+                            subtitle="Operational calculators for planning, yield, and inputs."
+                            onBack={() => handleTabChange('home')}
+                        />
+                        <BeeCalculatorSuite />
+                    </BeeYieldPageShell>
+                );
 
             case 'hpa-optimizer':
                 return <HpaOptimizer />;

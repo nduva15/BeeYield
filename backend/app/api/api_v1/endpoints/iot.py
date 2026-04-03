@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from typing import Optional, List
 from app.core import security
 from app.core.config import settings
@@ -30,6 +30,24 @@ async def get_devices(
         farmer_id = user_id # Force self
 
     return await iot_service.get_devices(farmer_id, token=token)
+
+@router.get("/devices/{device_id}", response_model=schemas.IoTDevice)
+async def get_device(
+    device_id: str,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    """Get a single IoT device by ID (admin or owner)."""
+    device = await iot_service.get_device_by_id(device_id, token=token)
+    if not device:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Device not found")
+
+    email = current_user.get("email")
+    user_id = current_user.get("sub")
+    if email != settings.ADMIN_EMAIL and device.get("farmer_id") != user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    return device
 
 @router.get("/readings", response_model=List[schemas.SensorReading])
 async def get_readings(
@@ -72,10 +90,63 @@ async def create_device(
 ):
     """Create (link) an IoT device to a farmer account."""
     email = current_user.get("email")
+    user_id = current_user.get("sub")
+
+    payload = device_in.dict()
+
+    # Admin can link devices to any farmer; non-admin can only link to self.
     if email != settings.ADMIN_EMAIL:
-         raise HTTPException(status_code=403, detail="Not authorized to link devices")
-         
-    return await iot_service.create_device(device_in.dict(), token=token)
+        payload["farmer_id"] = user_id
+
+    return await iot_service.create_device(payload, token=token)
+
+@router.patch("/devices/{device_id}", response_model=schemas.IoTDevice)
+async def update_device(
+    device_id: str,
+    patch: schemas.IoTDeviceUpdate,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    """Update an IoT device (admin or owner)."""
+    existing = await iot_service.get_device_by_id(device_id, token=token)
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Device not found")
+
+    email = current_user.get("email")
+    user_id = current_user.get("sub")
+    if email != settings.ADMIN_EMAIL and existing.get("farmer_id") != user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    patch_data = patch.dict(exclude_unset=True)
+    # Non-admin cannot reassign ownership
+    if email != settings.ADMIN_EMAIL and "farmer_id" in patch_data:
+        patch_data.pop("farmer_id", None)
+
+    updated = await iot_service.update_device(device_id, patch_data, token=token)
+    if not updated:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update device")
+    return updated
+
+@router.delete("/devices/{device_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_device(
+    device_id: str,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    """Delete an IoT device (admin or owner)."""
+    existing = await iot_service.get_device_by_id(device_id, token=token)
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Device not found")
+
+    email = current_user.get("email")
+    user_id = current_user.get("sub")
+    if email != settings.ADMIN_EMAIL and existing.get("farmer_id") != user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    ok = await iot_service.delete_device(device_id, token=token)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete device")
+    return None
 
 @router.post("/health-check")
 async def trigger_health_check(

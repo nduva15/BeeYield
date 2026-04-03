@@ -278,8 +278,8 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
 
     if (loading && meters.length === 0) {
         return (
-            <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
-                <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4 p-4 md:p-6">
+            <BeeYieldPageShell className={glass.page}>
+                <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                     <Loader2 className="w-10 h-10 animate-spin text-gray-300" />
                     <p className="text-gray-500 font-medium">Synchronizing sensor data...</p>
                 </div>
@@ -288,8 +288,8 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
     }
 
     return (
-        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
-            <div className="space-y-6 animate-in fade-in duration-500 pb-20 p-4 md:p-6">
+        <BeeYieldPageShell className={cn(glass.page, "space-y-6")}>
+            <div className="space-y-6 animate-in fade-in duration-500">
                 <FirstStepsBanner onTabChange={onTabChange} />
 
                 <BeeYieldPageHeader

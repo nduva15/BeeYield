@@ -93,8 +93,8 @@ const MetersSettings: React.FC = () => {
     };
 
     return (
-        <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6")}>
+        <BeeYieldPageShell className={cn(glass.page, "space-y-6")}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             <BeeYieldPageHeader
                 icon={Settings2}
                 label="Sensor rules"
