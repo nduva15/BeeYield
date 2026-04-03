@@ -47,11 +47,28 @@ async function streamBeeyield(
   onDone: () => void,
   onError: (err: string) => void
 ) {
-  const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+  const baseUrl =
+    import.meta.env.VITE_SUPABASE_URL ||
+    import.meta.env.VITE_SUPABASE_URL_BEEYIELD ||
+    import.meta.env.VITE_SUPABASE_URL_SHOP ||
+    import.meta.env.VITE_SUPABASE_URL_CEBA;
+
+  const anonKey =
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY_BEEYIELD ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY_SHOP ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY_CEBA;
+
+  if (!baseUrl || !anonKey) {
+    onError("Missing Supabase URL or anon key for Beeyield AI");
+    return;
+  }
+
+  const resp = await fetch(`${baseUrl}/functions/v1/beegpt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${anonKey}`,
     },
     body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType }),
   });
@@ -61,6 +78,22 @@ async function streamBeeyield(
     onError(data.error || `Error ${resp.status}`);
     return;
   }
+
+  // Some deployments stream SSE; others return a single JSON payload.
+  const contentType = resp.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    const data: any = await resp.json().catch(() => null);
+    const text =
+      data?.response ??
+      data?.text ??
+      data?.content ??
+      data?.choices?.[0]?.message?.content ??
+      "";
+    if (text) onDelta(String(text));
+    onDone();
+    return;
+  }
+
   if (!resp.body) { onError("No response body"); return; }
 
   const reader = resp.body.getReader();
@@ -77,8 +110,10 @@ async function streamBeeyield(
       let line = buf.slice(0, nl);
       buf = buf.slice(nl + 1);
       if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (!line.startsWith("data: ")) continue;
-      const json = line.slice(6).trim();
+      const m = line.match(/^data:\s*(.*)$/);
+      if (!m) continue;
+      const json = (m[1] || "").trim();
+      if (!json) continue;
       if (json === "[DONE]") { done = true; break; }
       try {
         const parsed = JSON.parse(json);
