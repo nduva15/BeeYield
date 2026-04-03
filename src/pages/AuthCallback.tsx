@@ -140,7 +140,7 @@ const AuthCallback = () => {
     }, [navigate]);
 
     return (
-        <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-background">
+        <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-background m-0">
             <div className="text-center space-y-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
                 <h2 className="text-xl font-semibold">Signing you in...</h2>

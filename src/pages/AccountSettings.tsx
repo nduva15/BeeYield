@@ -67,7 +67,7 @@ const AccountSettings = () => {
 
     if (loading) {
         return (
-            <BeeYieldPageShell className="flex items-center justify-center min-h-screen">
+            <BeeYieldPageShell className="flex items-center justify-center min-h-screen m-0">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-8 w-8 animate-spin text-[#1B9157]" />
                     <span className="text-xs font-bold text-gray-500">Loading…</span>
@@ -79,7 +79,7 @@ const AccountSettings = () => {
     if (!user) {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
-                <BeeYieldPageShell className="min-h-screen py-16 lg:py-24">
+                <BeeYieldPageShell className="min-h-screen py-16 lg:py-24 m-0">
                     <div className="container max-w-sm mx-auto px-4 space-y-8 relative z-10">
                     <div className="space-y-4 text-center">
                         <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto border border-gray-100">
@@ -163,7 +163,7 @@ const AccountSettings = () => {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
-            <BeeYieldPageShell className="max-w-7xl mx-auto space-y-6 pb-20 p-4 lg:p-6">
+        <BeeYieldPageShell className="max-w-7xl mx-auto my-0 space-y-6 pb-20 p-4 lg:p-6">
                 <BeeYieldPageHeader
                     icon={User}
                     label="Account"

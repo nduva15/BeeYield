@@ -1,19 +1,18 @@
 """
 RATE LIMIT MANAGER — Rust-Accelerated (Post-Oxidize)
 ===================================================
-Timing state and backoff logic ported to `beeyield_core.RateLimiter`.
-Python layer handles async orchestration (asyncio.sleep).
+Timing state and backoff logic are 100% Rust. Python only orchestrates async sleeps.
 """
 import asyncio
 import functools
 from typing import Callable, Any
 
+from beeyield_core import RateLimiter as _RustLimiter  # type: ignore
+
+
 class RateLimitManager:
-    """
-    Manages API rate limits using high-precision Rust monotonic clocks.
-    """
-    
-    from beeyield_core import RateLimiter as _RustLimiter  # type: ignore
+    """Manages API rate limits using high-precision Rust monotonic clocks."""
+
     _limiter = _RustLimiter()
 
     @staticmethod
@@ -22,10 +21,10 @@ class RateLimitManager:
         max_retries: int = 5,
         base_delay: float = 1.0,
         max_delay: float = 60.0,
-        api_name: str = "default"
+        api_name: str = "default",
     ) -> Any:
         last_exception = None
-        
+
         for attempt in range(max_retries + 1):
             try:
                 result = await func()
@@ -34,28 +33,23 @@ class RateLimitManager:
             except Exception as e:
                 last_exception = e
                 error_str = str(e)
-                
-                # Use Rust to detect rate limit indicators
-                is_rate_limit = RateLimitManager._limiter.is_rate_limit_error(error_str)
 
+                is_rate_limit = RateLimitManager._limiter.is_rate_limit_error(error_str)
                 if not is_rate_limit or attempt == max_retries:
                     raise e
 
-                # Calculate delay in Rust (exp backoff + monotonic jitter)
                 RateLimitManager._limiter.record_failure(api_name)
                 total_delay_ms = RateLimitManager._limiter.backoff_delay(
-                    attempt=attempt, 
-                    base_delay_ms=base_delay * 1000.0, 
-                    max_delay_ms=max_delay * 1000.0
+                    attempt=attempt,
+                    base_delay_ms=base_delay * 1000.0,
+                    max_delay_ms=max_delay * 1000.0,
                 )
-                
-                # Check for suggested retry-after headers extracted by Rust
                 suggested_delay_ms = RateLimitManager._limiter.extract_retry_delay(error_str)
                 total_delay = max(total_delay_ms, suggested_delay_ms) / 1000.0
 
                 print(f"[RATE_LIMIT_RUST] {api_name}: Retry {attempt+1} in {total_delay:.1f}s")
                 await asyncio.sleep(total_delay)
-        
+
         raise last_exception
 
     @staticmethod

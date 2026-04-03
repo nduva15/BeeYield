@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
@@ -13,35 +12,38 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
-  const standalonePaths = ['/beeyield-dashboard', '/buyer-dashboard', '/shop-dashboard', '/my-account', '/ceba', '/ceba/login', '/admin', '/login', '/signup', '/beeyield-login'];
-  const isStandalone = standalonePaths.includes(location.pathname) || location.pathname.startsWith('/admin');
+  const pathname = location.pathname;
 
+  // "Dashboard" routes should not inherit the marketing site chrome (header/footer/marquee/cart).
+  // This keeps all BeeYield/Admin/Shop dashboards consistent with their own home view.
+  const standaloneExactPaths = new Set([
+    '/buyer-dashboard',
+    '/shop-dashboard',
+    '/my-account',
+    '/login',
+    '/signup',
+    '/beeyield-dashboard',
+    '/beeyield-login',
+    '/measurements',
+    '/account-settings',
+    '/update-password',
+  ]);
 
+  const standalonePrefixes = [
+    '/admin',
+    '/ceba',
+    '/receipt/',
+    '/auth/callback',
+    '/integrations/callback',
+  ];
 
-  const pageVariants = {
-    initial: {
-      opacity: 0,
-    },
-    enter: {
-      opacity: 1,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut" as any,
-      },
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.1,
-      },
-    },
-  };
+  const isStandalone =
+    standaloneExactPaths.has(pathname) ||
+    standalonePrefixes.some((prefix) => pathname.startsWith(prefix));
 
   if (isStandalone) {
     return (
       <>
-        <CartDrawer />
-
         <div className="animate-in fade-in duration-300">
           {children}
         </div>
