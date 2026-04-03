@@ -48,7 +48,7 @@ const UpdatePasswordForm: React.FC = () => {
 
     if (success) {
         return (
-            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans">
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans m-0">
                 <div className="w-full max-w-md">
                     <div className="bg-[#FFF9F0]/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10 space-y-8 text-center">
                         <div className="space-y-4">
@@ -77,7 +77,7 @@ const UpdatePasswordForm: React.FC = () => {
 
     if (!isValidSession) {
         return (
-            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-beeyield-cream p-4">
+            <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-beeyield-cream p-4 m-0">
                 <div className="text-center space-y-4">
                     <Loader2 className="h-10 w-10 animate-spin text-beeyield-green mx-auto" />
                     <p className="text-xs font-black text-beeyield-green/40">Checking session…</p>
@@ -87,7 +87,7 @@ const UpdatePasswordForm: React.FC = () => {
     }
 
     return (
-        <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans">
+        <BeeYieldPageShell className="min-h-screen flex items-center justify-center bg-gradient-to-br from-beeyield-cream via-white to-beeyield-gold/10 p-4 font-sans m-0">
             <div className="w-full max-w-md">
                 <div className="bg-[#FFF9F0]/80 backdrop-blur-xl rounded-[2.5rem] shadow-premium border border-beeyield-gold/20 p-10">
                     <form onSubmit={handleSubmit} className="space-y-8">

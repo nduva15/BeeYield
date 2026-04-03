@@ -92,7 +92,7 @@ export default function MeasurementData() {
     });
 
     return (
-        <BeeYieldPageShell className="container mx-auto p-6 space-y-8 min-h-screen bg-transparent">
+        <BeeYieldPageShell className="container mx-auto my-0 p-6 space-y-8 min-h-screen bg-transparent">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
@@ -147,8 +147,8 @@ export default function MeasurementData() {
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Internal Hive Temperature</CardTitle>
                             </CardHeader>
-                            <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[300px]" style={{ minWidth: 0, minHeight: 240 }}>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={120} minHeight={200}>
                                     <AreaChart data={hiveMetrics}>
                                         <defs>
                                             <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
@@ -179,8 +179,8 @@ export default function MeasurementData() {
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Hive Weight Gain/Loss</CardTitle>
                             </CardHeader>
-                            <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[300px]" style={{ minWidth: 0, minHeight: 240 }}>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={120} minHeight={200}>
                                     <LineChart data={hiveMetrics}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                                         <XAxis
@@ -207,8 +207,8 @@ export default function MeasurementData() {
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">Humidity Levels</CardTitle>
                             </CardHeader>
-                            <CardContent className="h-[250px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[250px]" style={{ minWidth: 0, minHeight: 200 }}>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={120} minHeight={180}>
                                     <BarChart data={hiveMetrics}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                                         <XAxis
