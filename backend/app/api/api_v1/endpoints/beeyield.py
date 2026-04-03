@@ -4,7 +4,10 @@ User-specific management of apiaries, hives, harvests, tasks, and inspections
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from typing import Optional, List, Any
-from beeyield_core import DashboardEngine  # type: ignore
+try:
+    from beeyield_core import DashboardEngine  # type: ignore
+except Exception:  # pragma: no cover
+    DashboardEngine = None  # type: ignore
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from pydantic import BaseModel, Field
@@ -1390,6 +1393,8 @@ async def get_user_stats(
     token: Optional[str] = Depends(get_token)
 ):
     """Get dashboard statistics for the current user (owned + shared)"""
+    if DashboardEngine is None:  # pragma: no cover
+        raise HTTPException(status_code=503, detail="Dashboard engine unavailable")
     engine = DashboardEngine()
     try:
         # 1. Get all accessible apiary IDs (owned + shared)

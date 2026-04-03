@@ -50,6 +50,8 @@ class MeterService:
         Create a new billing rate row in meters_billing_rates.
         Expects keys compatible with schemas.BillingRateCreate.
         """
+        payload = dict(payload or {})
+        payload.setdefault("effective_from", datetime.utcnow().isoformat())
         res = await db_insert("meters_billing_rates", payload)
         if not res.get("success"):
             raise Exception(res.get("error") or "Failed to create billing rate")
