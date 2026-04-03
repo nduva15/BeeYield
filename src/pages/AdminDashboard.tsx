@@ -1015,7 +1015,7 @@ const AdminDashboard: React.FC = () => {
 
     if (authLoading || isLoading) {
         return (
-            <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
+            <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4 m-0">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
                 <p className="text-sm font-medium animate-pulse text-muted-foreground">Loading dashboard...</p>
             </BeeYieldPageShell>
@@ -1024,7 +1024,7 @@ const AdminDashboard: React.FC = () => {
 
     if (!isAdmin) {
         return (
-            <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
+            <BeeYieldPageShell className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4 m-0">
                 <Shield className="h-16 w-16 text-destructive animate-pulse" />
                 <h2 className="text-2xl font-black">Restricted Access</h2>
                 <p className="text-muted-foreground">You do not have permission to access administration pages.</p>
@@ -1105,7 +1105,7 @@ const AdminDashboard: React.FC = () => {
     ];
 
     return (
-        <BeeYieldPageShell className="p-0">
+        <BeeYieldPageShell className="p-0 m-0">
             <AdminLayout
                 activeTab={activeTab}
                 onTabChange={setActiveTab}

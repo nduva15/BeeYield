@@ -23,7 +23,8 @@ const createNamedClient = (url: string, key: string, storageKey: string) => {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,
+        // Some browsers/extensions inject malformed hashes; disable hash parsing to avoid URIError crashes
+        detectSessionInUrl: false,
         storageKey, // Unique per client to avoid multiple GoTrueClient instance warnings
       }
     });

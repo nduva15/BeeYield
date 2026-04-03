@@ -117,6 +117,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     useEffect(() => {
+        const clearCorruptSessions = () => {
+            try {
+                localStorage.removeItem('sb-auth-token-shop');
+                localStorage.removeItem('sb-auth-token-beeyield');
+                localStorage.removeItem('sb-auth-token-ceba');
+            } catch (e) {
+                console.warn('Unable to clear stored auth tokens', e);
+            }
+        };
+
         const initAuth = async () => {
             // Short-circuit if no supabase clients exist
             if (!supabaseShop && !supabaseBeeYield && !supabaseCEBA) {
@@ -148,6 +158,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 }
             } catch (err) {
                 console.error('Auth initialization error:', err);
+                if (err instanceof URIError) {
+                    // Corrupted token or bad hash; clear persisted sessions and force fresh state
+                    clearCorruptSessions();
+                    await Promise.allSettled([
+                        supabaseShop?.auth.signOut(),
+                        supabaseBeeYield?.auth.signOut(),
+                        supabaseCEBA?.auth.signOut()
+                    ]);
+                }
             } finally {
                 setLoading(false);
             }
