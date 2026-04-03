@@ -1,9 +1,7 @@
 import React from 'react';
 import {
     Flower2,
-    Calendar,
     LineChart as ChartIcon,
-    ArrowRight,
     Search,
     Filter,
     CloudSun,
@@ -39,15 +37,20 @@ const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(mi
 
 const derivePhenology = (rows: any[], selectedApiaryId?: string | null): PhenologyPoint[] => {
     if (!rows?.length) return [];
+
     const daily = new Map<string, { temp: number; humidity: number; count: number }>();
+
     rows.forEach((r) => {
         if (selectedApiaryId && r.apiary_id && r.apiary_id !== selectedApiaryId) return;
+
         const ts = r.recorded_at || r.timestamp || r.created_at;
         if (!ts) return;
+
         const key = new Date(ts).toISOString().slice(0, 10);
         const temp = Number(r.temp_external ?? r.temperature ?? r.temp ?? r.ambient_temp);
         const humidity = Number(r.humidity_external ?? r.humidity ?? r.rh);
         if (!Number.isFinite(temp)) return;
+
         const bucket = daily.get(key) || { temp: 0, humidity: 0, count: 0 };
         bucket.temp += temp;
         bucket.humidity += Number.isFinite(humidity) ? humidity : 0;
@@ -57,15 +60,16 @@ const derivePhenology = (rows: any[], selectedApiaryId?: string | null): Phenolo
 
     const sortedKeys = Array.from(daily.keys()).sort();
     let cumulativeGdd = 0;
-    const baseTemp = 10; // GDD base (Â°C)
+    const baseTemp = 10;
 
     return sortedKeys.map((k) => {
         const bucket = daily.get(k)!;
         const avgTemp = bucket.temp / bucket.count;
         const gdd = Math.max(0, avgTemp - baseTemp);
         cumulativeGdd += gdd;
-        const intensity = clamp((cumulativeGdd / 180) * 100, 0, 120); // scale to 0-120%
+        const intensity = clamp((cumulativeGdd / 180) * 100, 0, 120);
         const humidity = bucket.count > 0 ? bucket.humidity / bucket.count : 0;
+
         return {
             date: k,
             intensity: Number(intensity.toFixed(1)),
@@ -87,7 +91,7 @@ const stageFromIntensity = (intensity: number) => {
 const BloomPhenology: React.FC = () => {
     const { data: apiaries } = useApiaries();
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string | null>(null);
-    const { data: sensorData, isLoading } = useSensorReadings(undefined, 24 * 21); // last 21 days
+    const { data: sensorData, isLoading } = useSensorReadings(undefined, 24 * 21);
 
     React.useEffect(() => {
         if (!selectedApiaryId && apiaries?.length) {
@@ -98,7 +102,7 @@ const BloomPhenology: React.FC = () => {
     const phenologyData = React.useMemo(() => {
         const derived = derivePhenology(sensorData || [], selectedApiaryId);
         if (derived.length) return derived;
-        // Fallback sample when no telemetry is available
+
         return [
             { date: '2026-03-01', intensity: 12, avgTemp: 16, humidity: 58, gdd: 6 },
             { date: '2026-03-05', intensity: 28, avgTemp: 18, humidity: 60, gdd: 8 },
@@ -113,16 +117,13 @@ const BloomPhenology: React.FC = () => {
     const stage = current ? stageFromIntensity(current.intensity) : 'Waiting for telemetry';
 
     return (
-        <motion.div
-            {...fadeInUp}
-            className="h-full"
-        >
+        <motion.div {...fadeInUp} className="h-full">
             <BeeYieldPageShell>
                 <BeeYieldPageHeader
                     icon={Flower2}
                     label="Phenology"
                     title={<>Bloom <span className="text-[#F4D03F]">synchronization</span></>}
-                    subtitle="Growth stages · Pollination window tracking · Forage conditions"
+                    subtitle="Growth stages | Pollination window tracking | Forage conditions"
                     actions={
                         <div className="flex items-center gap-3">
                             <select
@@ -143,7 +144,6 @@ const BloomPhenology: React.FC = () => {
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Stage Selection */}
                     <div className="lg:col-span-4 space-y-6">
                         <div className={cn(glass.section, "p-6 space-y-6")}>
                             <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
@@ -155,7 +155,7 @@ const BloomPhenology: React.FC = () => {
 
                             <div className="text-center py-8 bg-[#F9F7F2]/50 rounded-2xl border border-[#F4D03F]/10">
                                 <span className="text-5xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">
-                                    {current ? `${Math.round(current.intensity)}%` : '—'}
+                                    {current ? `${Math.round(current.intensity)}%` : '--'}
                                 </span>
                                 <p className="text-[10px] font-bold text-gray-500 mt-2">
                                     Growth Stage: {stage}
@@ -197,7 +197,6 @@ const BloomPhenology: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Intensity Chart */}
                     <div className="lg:col-span-8 flex flex-col gap-6">
                         <div className={cn(glass.section, "overflow-hidden flex flex-col")}>
                             <div className="px-5 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
@@ -244,7 +243,7 @@ const BloomPhenology: React.FC = () => {
                                 </ResponsiveContainer>
                                 {isLoading && (
                                     <div className="absolute inset-0 flex items-center justify-center text-[11px] text-gray-500 bg-white/50 backdrop-blur-sm">
-                                        Syncing bloom telemetry…
+                                        Syncing bloom telemetry...
                                     </div>
                                 )}
                             </div>
@@ -256,7 +255,7 @@ const BloomPhenology: React.FC = () => {
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current GDD</span>
                                     <CloudSun className="w-4 h-4 text-[#10b981]" />
                                 </div>
-                                <p className="text-3xl font-black tracking-tight">{current ? current.gdd : '—'}°</p>
+                                <p className="text-3xl font-black tracking-tight">{current ? current.gdd : '--'} deg</p>
                                 <p className="text-[11px] text-gray-500">Daily growing degree accumulation</p>
                             </div>
                             <div className={cn(glass.card, "p-5 space-y-3")}>
@@ -264,7 +263,7 @@ const BloomPhenology: React.FC = () => {
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avg Temp</span>
                                     <Filter className="w-4 h-4 text-[#1B9157]" />
                                 </div>
-                                <p className="text-3xl font-black tracking-tight">{current ? `${current.avgTemp}°C` : '—'}</p>
+                                <p className="text-3xl font-black tracking-tight">{current ? `${current.avgTemp} C` : '--'}</p>
                                 <p className="text-[11px] text-gray-500">Across selected telemetry window</p>
                             </div>
                             <div className={cn(glass.card, "p-5 space-y-3")}>
@@ -272,7 +271,7 @@ const BloomPhenology: React.FC = () => {
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Humidity</span>
                                     <Search className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                                <p className="text-3xl font-black tracking-tight">{current ? `${current.humidity}%` : '—'}</p>
+                                <p className="text-3xl font-black tracking-tight">{current ? `${current.humidity}%` : '--'}</p>
                                 <p className="text-[11px] text-gray-500">Helps time hive moves vs. nectar flow</p>
                             </div>
                         </div>
