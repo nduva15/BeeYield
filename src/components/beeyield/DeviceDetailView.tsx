@@ -1,11 +1,10 @@
 import React from 'react';
 import { IoTDevice, SensorReading, Apiary, Hive, beeyieldService } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
+import { glass, GlassModal } from './GlassTheme';
 import { BeeYieldCard, BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -390,85 +389,79 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
         </div>
       </div>
 
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="sm:max-w-xl">
+      <GlassModal isOpen={editOpen} onClose={() => setEditOpen(false)} title="Edit device" subtitle="Update name, type, and links" maxWidth="max-w-xl">
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-black">Edit device</h3>
-              <p className="text-sm text-muted-foreground">Update name, type, and link to a location/hive.</p>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="device-edit-name">Device name</Label>
+                <Label htmlFor="device-edit-name" className={glass.microLabel}>Device name</Label>
                 <Input
                   id="device-edit-name"
                   name="device_name"
                   autoComplete="off"
                   value={draft?.device_name || ''}
                   onChange={(e) => setDraft((d) => d ? { ...d, device_name: e.target.value } : d)}
+                  className={cn(glass.input, "text-[11px] font-bold")}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Device type</Label>
+                <Label className={glass.microLabel}>Device type</Label>
                 <Select value={draft?.device_type} onValueChange={(v: any) => setDraft((d) => d ? { ...d, device_type: v } : d)}>
-                  <SelectTrigger id="device-edit-type" aria-label="Device type">
+                  <SelectTrigger id="device-edit-type" aria-label="Device type" className={cn(glass.select, "text-[11px] font-black")}>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="inland">Gateway</SelectItem>
-                    <SelectItem value="infield">Sensor</SelectItem>
-                    <SelectItem value="disease">Health monitor</SelectItem>
+                  <SelectContent className={glass.selectContent}>
+                    <SelectItem value="inland" className="text-[11px] font-black">Gateway</SelectItem>
+                    <SelectItem value="infield" className="text-[11px] font-black">Sensor</SelectItem>
+                    <SelectItem value="disease" className="text-[11px] font-black">Health monitor</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Location</Label>
+                <Label className={glass.microLabel}>Location</Label>
                 <Select
                   value={draft?.linked_apiary_id || ''}
                   onValueChange={(v) => setDraft((d) => d ? { ...d, linked_apiary_id: v, hive_id: '' } : d)}
                 >
-                  <SelectTrigger id="device-edit-location" aria-label="Location">
+                  <SelectTrigger id="device-edit-location" aria-label="Location" className={cn(glass.select, "text-[11px] font-black")}>
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className={glass.selectContent}>
                     {apiaries.map((a) => (
-                      <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                      <SelectItem key={a.id} value={a.id} className="text-[11px] font-black">{a.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Hive (optional)</Label>
+                <Label className={glass.microLabel}>Hive (optional)</Label>
                 <Select
                   value={draft?.hive_id || ''}
                   onValueChange={(v) => setDraft((d) => d ? { ...d, hive_id: v } : d)}
                   disabled={!draft?.linked_apiary_id}
                 >
-                  <SelectTrigger id="device-edit-hive" aria-label="Hive (optional)">
+                  <SelectTrigger id="device-edit-hive" aria-label="Hive (optional)" className={cn(glass.select, "text-[11px] font-black")}>
                     <SelectValue placeholder={draft?.linked_apiary_id ? 'Select hive' : 'Select location first'} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">No hive</SelectItem>
+                  <SelectContent className={glass.selectContent}>
+                    <SelectItem value="" className="text-[11px] font-black">No hive</SelectItem>
                     {filteredHives.map((h) => (
-                      <SelectItem key={h.id} value={h.id}>{h.hive_code}</SelectItem>
+                      <SelectItem key={h.id} value={h.id} className="text-[11px] font-black">{h.hive_code}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="outline" onClick={() => setEditOpen(false)} disabled={saving}>
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F4D03F]/10">
+              <button type="button" onClick={() => setEditOpen(false)} disabled={saving} className={cn(glass.btnSecondary, "h-10 px-6 text-[10px] font-black")}>
                 Cancel
-              </Button>
-              <Button onClick={handleSave} disabled={saving}>
+              </button>
+              <button type="button" onClick={handleSave} disabled={saving} className={cn(glass.btnPrimary, "h-10 px-6 text-[10px] font-black")}>
                 {saving ? 'Saving…' : 'Save changes'}
-              </Button>
+              </button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+      </GlassModal>
     </BeeYieldPageShell>
   );
 }

@@ -17,10 +17,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -215,13 +216,13 @@ const FlightMapView: React.FC = () => {
     const mapCenter: [number, number] = selectedPlace ? [selectedPlace.latitude, selectedPlace.longitude] : [0, 0];
 
     return (
+        <BeeYieldPageShell className="space-y-6">
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={glass.page}
+            className="space-y-6"
         >
-            {/* Header Controls */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={MapIcon}
                 label="Flight map"
                 title={<>Flight <span className="text-[#F4D03F]">Deployment</span></>}
@@ -574,6 +575,7 @@ const FlightMapView: React.FC = () => {
                 </div>
             </div>
         </motion.div>
+        </BeeYieldPageShell>
     );
 };
 
