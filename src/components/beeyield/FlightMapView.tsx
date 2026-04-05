@@ -17,10 +17,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -215,13 +216,13 @@ const FlightMapView: React.FC = () => {
     const mapCenter: [number, number] = selectedPlace ? [selectedPlace.latitude, selectedPlace.longitude] : [0, 0];
 
     return (
+        <BeeYieldPageShell className="space-y-6">
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={glass.page}
+            className="space-y-6"
         >
-            {/* Header Controls */}
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={MapIcon}
                 label="Flight map"
                 title={<>Flight <span className="text-[#F4D03F]">Deployment</span></>}
@@ -259,7 +260,7 @@ const FlightMapView: React.FC = () => {
                 <div className="lg:col-span-4 space-y-6">
                     {/* Live Weather Metrics */}
                     <div className={cn(glass.card, "p-0 overflow-hidden")}>
-                        <div className="bg-[#1A1A1A] p-5 text-white">
+                        <div className="bg-[#F9F7F2] p-5 text-[#1A1A1A] border-b border-[#F4D03F]/10">
                             <h3 className="text-[10px] font-bold text-[#F4D03F] mb-4">Bee-Specific Meteo</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
@@ -267,14 +268,14 @@ const FlightMapView: React.FC = () => {
                                         <Wind className="w-4 h-4" />
                                         <span className="text-[10px] font-black">Density</span>
                                     </div>
-                                    <p className="text-xl font-bold tabular-nums text-white">{weather?.humidity}%</p>
+                                    <p className="text-xl font-bold tabular-nums text-[#1A1A1A]">{weather?.humidity}%</p>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-yellow-500">
                                         <Sun className="w-4 h-4" />
                                         <span className="text-[10px] font-black">Solar PSI</span>
                                     </div>
-                                    <p className="text-xl font-bold tabular-nums text-white">{weather?.solar_pressure || 840} <span className="text-[10px] opacity-40">W/m²</span></p>
+                                    <p className="text-xl font-bold tabular-nums text-[#1A1A1A]">{weather?.solar_pressure || 840} <span className="text-[10px] opacity-40">W/m²</span></p>
                                 </div>
                             </div>
                         </div>
@@ -356,7 +357,7 @@ const FlightMapView: React.FC = () => {
                                     variant={showHeatmap ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setShowHeatmap(!showHeatmap)}
-                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9", showHeatmap && "bg-[#1A1A1A] text-white")}
+                                    className={cn("rounded-lg font-bold text-[10px] px-5 h-9", showHeatmap && "bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#D4AC0D]")}
                                 >
                                     FLIGHT HEATMAP
                                 </Button>
@@ -534,7 +535,7 @@ const FlightMapView: React.FC = () => {
                         {/* Route Legend */}
                         {route.length > 0 && (
                             <div className="absolute bottom-8 left-8 z-[1000] animate-in slide-in-from-left-4">
-                                <div className="rounded-xl shadow-xl p-5 bg-[#1A1A1A] text-white border border-white/10">
+                                <div className={cn(glass.card, "p-5 bg-[#FFF9F0]/95 border-[#F4D03F]/20 shadow-xl")}>
                                     <div className="flex items-center gap-3 mb-4">
                                         <Route className="w-5 h-5 text-blue-400" />
                                         <span className="text-[10px] font-bold text-[#F4D03F]">Active route</span>
@@ -545,10 +546,10 @@ const FlightMapView: React.FC = () => {
                                                 <div className="w-4 h-4 rounded-full bg-blue-400 flex items-center justify-center text-[10px] font-bold text-white">
                                                     {i + 1}
                                                 </div>
-                                                <span className="text-[10px] font-bold opacity-80">{stop.name}</span>
+                                                <span className="text-[10px] font-bold text-[#1A1A1A]/80">{stop.name}</span>
                                             </div>
                                         ))}
-                                        {route.length > 3 && <p className="text-[9px] font-bold opacity-40">+{route.length - 3} MORE STOPS</p>}
+                                        {route.length > 3 && <p className="text-[9px] font-bold text-[#1A1A1A]/40">+{route.length - 3} MORE STOPS</p>}
                                     </div>
                                 </div>
                             </div>
@@ -574,6 +575,7 @@ const FlightMapView: React.FC = () => {
                 </div>
             </div>
         </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

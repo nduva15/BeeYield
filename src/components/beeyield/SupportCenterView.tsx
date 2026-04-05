@@ -1,13 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +17,7 @@ import { ServiceForm } from './ServiceForm';
 import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activity, ChevronRight, MessageSquare, ShieldCheck, Clock } from 'lucide-react';
 import { beeyieldService, SupportRequest } from '@/services/beeyieldService';
 import { motion } from 'framer-motion';
-import { glass, PageHeader } from './GlassTheme';
+import { glass, GlassModal, PageHeader } from './GlassTheme';
 
 interface SupportCenterViewProps {
     onTabChange: (tab: string) => void;
@@ -295,22 +288,17 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                 </div>
 
                 {/* Dialog Implementation */}
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent className={glass.modalCard}>
-                        <div className="p-8 lg:p-10 relative overflow-hidden bg-[#FFF9F0]">
-                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
-                            
-                            <div className="mb-8 flex items-center gap-4 relative z-10">
-                                <div className="w-12 h-12 bg-[#F9F7F2] rounded-xl flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                    <MessageSquare className="w-5 h-5 text-[#F4D03F]" />
-                                </div>
-                                <div>
-                                    <h2 className={glass.sectionTitle}>New <span className="text-[#F4D03F]">Ticket</span></h2>
-                                    <p className={glass.microLabel}>Submit support request to Mission Control</p>
-                                </div>
-                            </div>
+                <GlassModal
+                    isOpen={isDialogOpen}
+                    onClose={() => setIsDialogOpen(false)}
+                    title="New ticket"
+                    subtitle="Submit support request to Mission Control"
+                    maxWidth="max-w-2xl"
+                >
+                            <div className="relative overflow-hidden">
+                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
 
-                            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label className={glass.microLabel}>Category</Label>
@@ -387,9 +375,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     </div>
                                 </div>
                             </form>
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                            </div>
+                </GlassModal>
             </div>
         </motion.div>
     );

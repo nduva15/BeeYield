@@ -2,12 +2,13 @@ import React from 'react';
 import { Target, Activity, ShieldAlert, Download, BarChart3, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
 import beeyieldService from '@/services/beeyieldService';
 import { useApiaries } from '@/hooks/useApiaries';
 import { useHarvests } from '@/hooks/useHarvests';
 import { useSensorReadings } from '@/hooks/useSensorReadings';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface PredictiveSuccessEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -122,14 +123,16 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
     const summary = derivedData?.summary ?? { lbsPerAcre: null, accuracyPct: null, growthPct: null };
 
     return (
+        <BeeYieldPageShell className="space-y-6">
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={glass.page}
+            className="space-y-6"
         >
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={Target}
                 label="Forecast"
+                onBack={() => onTabChange('home')}
                 title={<>Harvest <span className="text-[#F4D03F]">Predictor</span></>}
                 subtitle="High-fidelity yield forecasting based on activity telemetry."
                 actions={
@@ -369,6 +372,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
             </div>
 
         </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

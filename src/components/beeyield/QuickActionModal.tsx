@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
-} from "@/components/ui/dialog";
+    Plus
+} from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { ApiaryForm } from './ApiaryForm';
 import { HiveForm } from './HiveForm';
 import { cn } from '@/lib/utils';
+import { glass, GlassModal } from './GlassTheme';
 
 interface QuickActionModalProps {
     isOpen: boolean;
@@ -31,61 +31,48 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent 
-                className={cn(
-                    "bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-[2rem] shadow-2xl p-0 overflow-hidden outline-none transition-all duration-300",
-                    activeTab === 'apiary' ? 'max-w-4xl' : 'max-w-xl'
-                )}
-            >
-                {/* Header */}
-                <div className="bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-8 py-6 border-b border-[#F4D03F]/10">
-                    <DialogHeader>
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F]/10 rounded-xl border border-[#F4D03F]/20 w-fit mb-3">
-                            <Plus className="w-4 h-4 text-[#F4D03F]" />
-                            <span className="text-[11px] font-black tracking-wider text-[#F4D03F] uppercase">New Record</span>
-                        </div>
-                        <DialogTitle className="text-2xl font-black text-[#1A1A1A] tracking-tight">
-                            Create New Asset
-                        </DialogTitle>
-                        <DialogDescription className="text-xs font-bold text-muted-foreground">
-                            Configure a new apiary deployment site or register a hive unit.
-                        </DialogDescription>
-                    </DialogHeader>
+        <GlassModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Create new asset"
+            subtitle="Configure a deployment site (apiary) or register a hive unit."
+            maxWidth={activeTab === 'apiary' ? 'max-w-4xl' : 'max-w-xl'}
+        >
+            <div className="space-y-6">
+                <div className={cn('inline-flex items-center gap-2 w-fit', glass.badge, 'bg-[#F4D03F]/10 border-[#F4D03F]/20 text-[#1A1A1A]/70')}>
+                    <Plus className="w-3.5 h-3.5 text-[#F4D03F]" aria-hidden="true" focusable="false" />
+                    <span className="text-[10px] font-black tracking-wider uppercase">New record</span>
                 </div>
 
-                {/* Content */}
-                <div className="px-8 py-6 bg-white/50 backdrop-blur-xl">
-                    <Tabs defaultValue="apiary" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 bg-white/40 p-1.5 h-12 rounded-xl mb-8 border border-[#F4D03F]/10 shadow-sm">
-                            <TabsTrigger 
-                                value="apiary" 
-                                className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-md transition-all h-9"
-                            >
-                                Deployment Site (Apiary)
-                            </TabsTrigger>
-                            <TabsTrigger 
-                                value="hive" 
-                                className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-md transition-all h-9"
-                            >
-                                Hive Unit
-                            </TabsTrigger>
-                        </TabsList>
+                <Tabs defaultValue="apiary" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 bg-white/40 p-1.5 h-12 rounded-xl border border-[#F4D03F]/10 shadow-sm">
+                        <TabsTrigger
+                            value="apiary"
+                            className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-md transition-all h-9"
+                        >
+                            Deployment Site (Apiary)
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="hive"
+                            className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-md transition-all h-9"
+                        >
+                            Hive Unit
+                        </TabsTrigger>
+                    </TabsList>
 
-                        <div className="max-h-[65vh] overflow-y-auto pr-2 pb-2">
-                            <AnimatePresence mode="wait">
-                                <TabsContent value="apiary" className="m-0 focus-visible:outline-none">
-                                    <ApiaryForm onSuccess={handleSuccess} onCancel={onClose} />
-                                </TabsContent>
-                                <TabsContent value="hive" className="m-0 focus-visible:outline-none">
-                                    <HiveForm onSuccess={handleSuccess} onCancel={onClose} />
-                                </TabsContent>
-                            </AnimatePresence>
-                        </div>
-                    </Tabs>
-                </div>
-            </DialogContent>
-        </Dialog>
+                    <div className="max-h-[65vh] overflow-y-auto pr-2 pb-1 mt-6">
+                        <AnimatePresence mode="wait">
+                            <TabsContent value="apiary" className="m-0 focus-visible:outline-none">
+                                <ApiaryForm onSuccess={handleSuccess} onCancel={onClose} />
+                            </TabsContent>
+                            <TabsContent value="hive" className="m-0 focus-visible:outline-none">
+                                <HiveForm onSuccess={handleSuccess} onCancel={onClose} />
+                            </TabsContent>
+                        </AnimatePresence>
+                    </div>
+                </Tabs>
+            </div>
+        </GlassModal>
     );
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Map, MapPin, MousePointer2, Calculator, Share2, Info, Zap, Layers, Activity, Search, Locate, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion } from 'framer-motion';
 import { MapContainer, TileLayer, Polygon, Marker, useMapEvents, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -9,6 +9,7 @@ import 'leaflet/dist/leaflet.css';
 import { useApiaries } from '@/hooks/useApiaries';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -165,14 +166,16 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
     };
 
     return (
+        <BeeYieldPageShell className="space-y-6">
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
+            className="space-y-6"
         >
-            <PageHeader
+            <BeeYieldPageHeader
                 icon={Layers}
                 label="Map"
+                onBack={() => onTabChange?.('home')}
                 title={<>Farm <span className="text-[#F4D03F]">Setup</span></>}
                 subtitle="Map area, estimate hive count, and plan drops."
                 actions={
@@ -352,6 +355,7 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                 </div>
             </div>
         </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

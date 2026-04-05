@@ -21,10 +21,8 @@ import beeyieldService, { Apiary, Hive, GeneratedReport, ScheduledReport } from 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { glass } from './GlassTheme';
+import { glass, GlassModal, GlassStatCard } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { GlassStatCard } from './GlassTheme';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useGeneratedReports, useScheduledReports, useCreateScheduledReport, useDeleteScheduledReport } from '@/hooks/useReports';
 
@@ -831,30 +829,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                 </div>
             </div>
 
-            <Dialog open={isScheduleModalOpen} onOpenChange={setIsScheduleModalOpen}>
-                <DialogContent className={cn("max-w-xl bg-transparent border-none p-0 shadow-none overflow-visible")}>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative border-[#F4D03F]/10 bg-[#FFF9F0]/95 backdrop-blur-2xl")}
-                    >
-                        <DialogHeader className="bg-[#FFF9F0] px-6 py-5 border-b border-border/50 relative z-10">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shadow-sm border border-emerald-100">
-                                    <Network className="w-4 h-4 text-emerald-600" aria-hidden="true" focusable="false" />
-                                </div>
-                                <div>
-                                    <DialogTitle className={cn(glass.sectionTitle, "text-lg normal-case italic")}>
-                                        Create <span className="text-[#1B9157]">Schedule</span>
-                                    </DialogTitle>
-                                    <DialogDescription className={cn(glass.microLabel, "normal-case italic font-bold opacity-40 mt-0.5")}>
-                                        Configure automatic report delivery (works offline too).
-                                    </DialogDescription>
-                                </div>
-                            </div>
-                        </DialogHeader>
-
-                        <form onSubmit={handleCreateSchedule} className="p-6 space-y-5">
+            <GlassModal
+                isOpen={isScheduleModalOpen}
+                onClose={() => setIsScheduleModalOpen(false)}
+                title="Create schedule"
+                subtitle="Configure automatic report delivery (works offline too)."
+                maxWidth="max-w-xl"
+            >
+                        <form onSubmit={handleCreateSchedule} className="space-y-5">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="schedule-report-type" className={glass.microLabel}>Report Type</Label>
@@ -983,9 +965,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                                 </button>
                             </div>
                         </form>
-                    </motion.div>
-                </DialogContent>
-            </Dialog>
+            </GlassModal>
             
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
