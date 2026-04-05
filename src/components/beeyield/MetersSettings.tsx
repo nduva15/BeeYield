@@ -1,11 +1,10 @@
 import React from 'react';
 import { Bell, Shield, Plug, Settings2, ArrowRight } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
+import { glass, GlassModal } from './GlassTheme';
 import { motion } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
@@ -176,99 +175,94 @@ const MetersSettings: React.FC = () => {
                 </div>
             </div>
 
-            <Dialog open={isIntegrationsOpen} onOpenChange={setIsIntegrationsOpen}>
-                <DialogContent className={cn(glass.card, "p-0 overflow-hidden shadow-xl max-w-md mx-auto bg-white/80 border-white/40")}>
-                    <DialogHeader className="p-5 border-b border-white/20 bg-white/30">
-                        <DialogTitle className="text-[11px] font-black text-[#1A1A1A] text-center">
-                            Integrations
-                        </DialogTitle>
-                        <DialogDescription className="text-[9px] font-bold text-[#1A1A1A]/50 text-center mt-1">
-                            Local configuration only
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="p-5 space-y-3">
-                        <p className="text-[11px] font-semibold text-gray-600">
-                            This Meters module does not require a backend to save settings. If you want to connect a billing system, export CSV from Payments or Meter List.
-                        </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                            <button
-                                type="button"
-                                className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black")}
-                                onClick={() => {
-                                    try {
-                                        navigator.clipboard.writeText(JSON.stringify({ notificationSettings, thresholdSettings }, null, 2));
-                                    } catch {
-                                        // ignore
-                                    }
-                                }}
-                            >
-                                Copy settings JSON
-                            </button>
-                            <button
-                                type="button"
-                                className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-black")}
-                                onClick={() => setIsIntegrationsOpen(false)}
-                            >
-                                Done
-                            </button>
-                        </div>
+            <GlassModal
+                isOpen={isIntegrationsOpen}
+                onClose={() => setIsIntegrationsOpen(false)}
+                title="Integrations"
+                subtitle="Local configuration only"
+                maxWidth="max-w-md"
+            >
+                <div className="space-y-3">
+                    <p className="text-[11px] font-semibold text-gray-600">
+                        This Meters module does not require a backend to save settings. If you want to connect a billing system, export CSV from Payments or Meter List.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <button
+                            type="button"
+                            className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black")}
+                            onClick={() => {
+                                try {
+                                    navigator.clipboard.writeText(JSON.stringify({ notificationSettings, thresholdSettings }, null, 2));
+                                } catch {
+                                    // ignore
+                                }
+                            }}
+                        >
+                            Copy settings JSON
+                        </button>
+                        <button
+                            type="button"
+                            className={cn(glass.btnPrimary, "h-9 px-4 text-[10px] font-black")}
+                            onClick={() => setIsIntegrationsOpen(false)}
+                        >
+                            Done
+                        </button>
                     </div>
-                </DialogContent>
-            </Dialog>
+                </div>
+            </GlassModal>
 
             {/* Edit Dialog */}
-            <Dialog open={!!activeDialog} onOpenChange={(open) => !open && setActiveDialog(null)}>
-                <DialogContent className={cn(glass.card, "p-0 overflow-hidden shadow-xl max-w-sm mx-auto bg-white/80 border-white/40")}>
-                    <DialogHeader className="p-5 border-b border-white/20 bg-white/30">
-                        <DialogTitle className="text-[11px] font-black text-[#1A1A1A] text-center">{getDialogTitle()}</DialogTitle>
-                        <DialogDescription className="text-[9px] font-bold text-[#1A1A1A]/50 text-center mt-1">
-                            Update your settings below
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="p-5 space-y-4">
-                        <div className="space-y-2">
-                            {activeDialog?.type === 'notification' ? (
-                                <Label className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
-                                    Notification method
-                                </Label>
-                            ) : (
-                                <Label htmlFor="setting-value" className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
-                                    Alert threshold
-                                </Label>
-                            )}
-                            {activeDialog?.type === 'notification' ? (
-                                <Select value={tempValue} onValueChange={setTempValue}>
-                                    <SelectTrigger id="meters-settings-notification-method" aria-label="Protocol method" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
-                                        <SelectValue placeholder="Select Method" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90">
-                                        <SelectItem value="Email" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email</SelectItem>
-                                        <SelectItem value="SMS" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">SMS</SelectItem>
-                                        <SelectItem value="Push" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Push</SelectItem>
-                                        <SelectItem value="Email + SMS" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email Sms</SelectItem>
-                                        <SelectItem value="Email + Push" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email Push</SelectItem>
-                                        <SelectItem value="All" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">All Channels</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            ) : (
-                                <Input
-                                    id="setting-value"
-                                    name="threshold_value"
-                                    autoComplete="off"
-                                    value={tempValue}
-                                    onChange={(e) => setTempValue(e.target.value)}
-                                    placeholder="E.G. +25%"
-                                    className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black focus:bg-white transition-colors"
-                                />
-                            )}
-                        </div>
+            <GlassModal
+                isOpen={!!activeDialog}
+                onClose={() => setActiveDialog(null)}
+                title={getDialogTitle()}
+                subtitle="Update your settings below"
+                maxWidth="max-w-sm"
+            >
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        {activeDialog?.type === 'notification' ? (
+                            <Label className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
+                                Notification method
+                            </Label>
+                        ) : (
+                            <Label htmlFor="setting-value" className="text-[9px] font-black text-[#1A1A1A]/50 ml-1">
+                                Alert threshold
+                            </Label>
+                        )}
+                        {activeDialog?.type === 'notification' ? (
+                            <Select value={tempValue} onValueChange={setTempValue}>
+                                <SelectTrigger id="meters-settings-notification-method" aria-label="Protocol method" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
+                                    <SelectValue placeholder="Select Method" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90">
+                                    <SelectItem value="Email" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email</SelectItem>
+                                    <SelectItem value="SMS" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">SMS</SelectItem>
+                                    <SelectItem value="Push" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Push</SelectItem>
+                                    <SelectItem value="Email + SMS" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email Sms</SelectItem>
+                                    <SelectItem value="Email + Push" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Email Push</SelectItem>
+                                    <SelectItem value="All" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">All Channels</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                            <Input
+                                id="setting-value"
+                                name="threshold_value"
+                                autoComplete="off"
+                                value={tempValue}
+                                onChange={(e) => setTempValue(e.target.value)}
+                                placeholder="E.G. +25%"
+                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black focus:bg-white transition-colors"
+                            />
+                        )}
                     </div>
-                    <DialogFooter className="p-4 border-t border-white/20 bg-white/40 flex sm:justify-end gap-2">
+
+                    <div className="pt-2 border-t border-[#F4D03F]/10 flex sm:justify-end gap-2">
                         <button onClick={() => setActiveDialog(null)} className={cn(glass.btnSecondary, "h-8 px-4 font-black text-[8px] w-full sm:w-auto")}>Abort</button>
                         <button onClick={handleSave} className={cn(glass.btnPrimary, "h-8 px-5 font-black text-[8px] w-full sm:w-auto")}>Commit Changes</button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    </div>
+                </div>
+            </GlassModal>
             </motion.div>
         </BeeYieldPageShell>
     );

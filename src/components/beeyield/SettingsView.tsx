@@ -17,14 +17,6 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { glass, GlassModal, GlassConfirmModal } from './GlassTheme';
 import { Input } from '@/components/ui/input';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { deletePaymentMethod, getPaymentMethods, saveStripePaymentMethod } from '@/services/shopService';
 import { beeyieldService, uploadAvatar, BillingOverview, Transaction } from '@/services/beeyieldService';

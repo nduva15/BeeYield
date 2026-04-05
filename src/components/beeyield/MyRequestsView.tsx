@@ -19,9 +19,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-import { glass, GlassStatCard } from './GlassTheme';
+import { glass, GlassModal, GlassStatCard } from './GlassTheme';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 const CATEGORIES = [
@@ -508,56 +507,57 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 </div>
             </div>
 
-            <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                <DialogContent className="max-w-2xl bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-2xl">
-                    <DialogHeader>
-                        <DialogTitle className="text-lg font-black tracking-tight">Request details</DialogTitle>
-                        <DialogDescription className="text-[11px] font-bold text-gray-500">
-                            Reference: #{selectedRequest?.id?.substring(0, 8)?.toUpperCase()}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {selectedRequest && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
-                                    <p className="text-[10px] font-bold text-gray-400">Status</p>
-                                    <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.status}</p>
-                                </div>
-                                <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
-                                    <p className="text-[10px] font-bold text-gray-400">Category</p>
-                                    <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.category}</p>
-                                </div>
-                            </div>
-
+            <GlassModal
+                isOpen={isDetailsOpen}
+                onClose={() => setIsDetailsOpen(false)}
+                title="Request details"
+                subtitle={selectedRequest?.id ? `Reference: #${selectedRequest.id.substring(0, 8).toUpperCase()}` : undefined}
+                maxWidth="max-w-2xl"
+            >
+                {selectedRequest && (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
-                                <p className="text-[10px] font-bold text-gray-400">Subject</p>
-                                <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.subject}</p>
-                                <p className="text-[11px] text-gray-600 mt-2 whitespace-pre-wrap">{selectedRequest.description}</p>
+                                <p className="text-[10px] font-bold text-gray-400">Status</p>
+                                <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.status}</p>
                             </div>
-
-                            <div className="flex gap-3 justify-end pt-2">
-                                <Button variant="outline" onClick={() => setIsDetailsOpen(false)} className="rounded-xl">
-                                    Close
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        try {
-                                            navigator.clipboard.writeText(selectedRequest.id);
-                                            toast.success('Reference copied');
-                                        } catch {
-                                            toast.error('Could not copy reference');
-                                        }
-                                    }}
-                                    className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold rounded-xl")}
-                                >
-                                    Copy reference
-                                </Button>
+                            <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
+                                <p className="text-[10px] font-bold text-gray-400">Category</p>
+                                <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.category}</p>
                             </div>
                         </div>
-                    )}
-                </DialogContent>
-            </Dialog>
+
+                        <div className="p-4 rounded-xl bg-white/70 border border-[#F4D03F]/10">
+                            <p className="text-[10px] font-bold text-gray-400">Subject</p>
+                            <p className="text-sm font-black text-[#1A1A1A]">{selectedRequest.subject}</p>
+                            <p className="text-[11px] text-gray-600 mt-2 whitespace-pre-wrap">{selectedRequest.description}</p>
+                        </div>
+
+                        <div className="flex gap-3 justify-end pt-2">
+                            <button
+                                type="button"
+                                onClick={() => setIsDetailsOpen(false)}
+                                className={cn(glass.btnSecondary, "rounded-xl")}
+                            >
+                                Close
+                            </button>
+                            <Button
+                                onClick={() => {
+                                    try {
+                                        navigator.clipboard.writeText(selectedRequest.id);
+                                        toast.success('Reference copied');
+                                    } catch {
+                                        toast.error('Could not copy reference');
+                                    }
+                                }}
+                                className={cn(glass.btnPrimary, "h-9 px-4 text-xs font-bold rounded-xl")}
+                            >
+                                Copy reference
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </GlassModal>
             </motion.div>
         </BeeYieldPageShell>
     );

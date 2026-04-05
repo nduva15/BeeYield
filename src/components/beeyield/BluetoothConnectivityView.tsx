@@ -25,13 +25,13 @@ import {
     Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass, PageHeader } from './GlassTheme';
+import { glass, GlassModal, PageHeader } from './GlassTheme';
 
 // Service UUID from PRD
 const BEEYIELD_SERVICE_UUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
@@ -498,24 +498,18 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                 </div>
             </div>
 
-            <Dialog open={showSetupModal} onOpenChange={setShowSetupModal}>
-                <DialogContent className="max-w-[400px] bg-transparent border-none p-0 shadow-none overflow-visible">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative bg-white/90 border-white/20")}
-                    >
+            <GlassModal
+                isOpen={showSetupModal}
+                onClose={() => setShowSetupModal(false)}
+                title="Add sensor"
+                subtitle="Link a sensor to a hive."
+                maxWidth="max-w-md"
+            >
+                <div className="relative overflow-hidden">
+                    <div className="relative">
                          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-                        
-                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 relative z-10">
-                            <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3 inline-block')}>
-                                Add sensor
-                            </div>
-                            <h2 className={cn(glass.sectionTitle, "uppercase leading-none mb-1")}>Add <span className="text-[#F4D03F]">sensor</span></h2>
-                            <p className={glass.microLabel}>Link a sensor to a hive.</p>
-                        </div>
 
-                        <div className="p-6 space-y-5 relative z-10">
+                        <div className="space-y-5 relative z-10">
                             <div className="space-y-2">
                                 <Label htmlFor="bluetooth-setup-name" className={glass.microLabel}>Sensor Alias</Label>
                                 <Input
@@ -546,6 +540,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
 
                             <div className="flex flex-col gap-2 pt-4 border-t border-[#F4D03F]/10">
                                 <button
+                                    type="button"
                                     className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black rounded-xl")}
                                     onClick={handleSetupSubmit}
                                 >
@@ -553,6 +548,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                     <span>Save</span>
                                 </button>
                                 <button
+                                    type="button"
                                     className={cn(glass.btnSecondary, "w-full h-10 text-[10px] font-black rounded-xl")}
                                     onClick={() => setShowSetupModal(false)}
                                 >
@@ -560,9 +556,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                 </button>
                             </div>
                         </div>
-                    </motion.div>
-                </DialogContent>
-            </Dialog>
+                    </div>
+                </div>
+            </GlassModal>
 
             <style>{`
                 .thin-scrollbar::-webkit-scrollbar { width: 3px; }

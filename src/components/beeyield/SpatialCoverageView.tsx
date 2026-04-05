@@ -94,13 +94,13 @@ const SpatialCoverageView: React.FC = () => {
                         <div className="absolute top-6 left-6 z-20 flex flex-col gap-2">
                             <button 
                                 onClick={() => setViewMode('kernel')}
-                                className={cn("p-3 rounded-2xl transition-all border shadow-lg", viewMode === 'kernel' ? "bg-gray-900 border-gray-900 text-white" : "bg-white border-gray-100 text-gray-400 hover:text-gray-900")}
+                                className={cn("p-3 rounded-2xl transition-all border shadow-lg", viewMode === 'kernel' ? "bg-[#F4D03F] border-[#F4D03F]/40 text-[#1A1A1A]" : "bg-white border-gray-100 text-gray-400 hover:text-gray-900")}
                             >
                                 <Target className="w-5 h-5" />
                             </button>
                             <button 
                                 onClick={() => setViewMode('satellite')}
-                                className={cn("p-3 rounded-2xl transition-all border shadow-lg", viewMode === 'satellite' ? "bg-gray-900 border-gray-900 text-white" : "bg-white border-gray-100 text-gray-400 hover:text-gray-900")}
+                                className={cn("p-3 rounded-2xl transition-all border shadow-lg", viewMode === 'satellite' ? "bg-[#F4D03F] border-[#F4D03F]/40 text-[#1A1A1A]" : "bg-white border-gray-100 text-gray-400 hover:text-gray-900")}
                             >
                                 <Satellite className="w-5 h-5" />
                             </button>
@@ -183,7 +183,7 @@ const SpatialCoverageView: React.FC = () => {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <div className={cn(glass.badge, "bg-gray-900 text-white border-0 py-2.5 px-4 flex items-center gap-3 backdrop-blur-md shadow-2xl pointer-events-auto")}>
+                                    <div className={cn(glass.badge, "bg-[#FFF9F0]/90 text-[#1A1A1A] border-[#F4D03F]/30 py-2.5 px-4 flex items-center gap-3 backdrop-blur-md shadow-2xl pointer-events-auto")}>
                                         <Maximize2 className="w-4 h-4" />
                                         <span className="text-[10px] font-black tracking-widest">Maximize View</span>
                                     </div>
