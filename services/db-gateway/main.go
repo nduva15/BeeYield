@@ -35,7 +35,6 @@ func main() {
 	mux.HandleFunc("POST /ai/route", gw.ProxyAIRoute)
 	mux.HandleFunc("POST /ai/tokenize", gw.ProxyAITokenize)
 
-
 	// ===== Kaggle Remote Inference =====
 	mux.HandleFunc("POST /inference/kaggle/trigger", gw.TriggerKaggleInference)
 	mux.HandleFunc("GET /inference/kaggle/status/", gw.GetKaggleInferenceStatus)
@@ -52,7 +51,6 @@ func main() {
 	addr := cfg.GatewayAddr()
 	log.Printf("🚀 BeeYield DB Gateway starting on %s", addr)
 	log.Printf("   Rust DB Service: %s", cfg.RustDBURL())
-
 
 	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatalf("Server failed: %v", err)

@@ -6,14 +6,12 @@ package handlers
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"time"
-
 
 	"beeyield/db-gateway/config"
 )
@@ -27,7 +25,7 @@ type Gateway struct {
 // NewGateway creates a new Gateway with all clients.
 func NewGateway(cfg *config.Config) *Gateway {
 	return &Gateway{
-		Config:     cfg,
+		Config: cfg,
 		HTTPClient: &http.Client{
 			Timeout: 15 * time.Second,
 		},
@@ -77,8 +75,6 @@ func (g *Gateway) ProxyAITokenize(w http.ResponseWriter, r *http.Request) {
 	g.proxyToRust(w, r, "/ai/tokenize", http.MethodPost)
 }
 
-
-
 // proxyToRust forwards a request to the Rust DB service.
 func (g *Gateway) proxyToRust(w http.ResponseWriter, r *http.Request, path string, method string) {
 	body, err := io.ReadAll(r.Body)
@@ -111,8 +107,6 @@ func (g *Gateway) proxyToRust(w http.ResponseWriter, r *http.Request, path strin
 	w.Write(respBody)
 }
 
-
-
 // ========== HEALTH CHECK ==========
 
 // HealthCheck returns the status of all connected services.
@@ -133,9 +127,9 @@ func (g *Gateway) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := map[string]interface{}{
-		"service":    "beeyield-db-gateway",
-		"status":     "ok",
-		"rust_db":    rustStatus,
+		"service": "beeyield-db-gateway",
+		"status":  "ok",
+		"rust_db": rustStatus,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -162,9 +156,9 @@ func (g *Gateway) TriggerKaggleInference(w http.ResponseWriter, r *http.Request)
 	// In a real implementation, this would use the Kaggle API (https://www.kaggle.com/docs/api)
 	// to start a notebook run with the given parameters.
 	// For now, we return a mock job ID that the frontend can poll.
-	
+
 	jobID := fmt.Sprintf("k-inference-%d", time.Now().UnixNano())
-	
+
 	result := map[string]interface{}{
 		"success": true,
 		"job_id":  jobID,
@@ -179,7 +173,7 @@ func (g *Gateway) TriggerKaggleInference(w http.ResponseWriter, r *http.Request)
 // GetKaggleInferenceStatus returns the status of a Kaggle job.
 func (g *Gateway) GetKaggleInferenceStatus(w http.ResponseWriter, r *http.Request) {
 	// The path is /inference/kaggle/status/{job_id}
-	// Since we used mux.HandleFunc("GET /inference/kaggle/status/", ...), 
+	// Since we used mux.HandleFunc("GET /inference/kaggle/status/", ...),
 	// we can strip the prefix.
 	jobID := r.URL.Path[len("/inference/kaggle/status/"):]
 
@@ -187,18 +181,18 @@ func (g *Gateway) GetKaggleInferenceStatus(w http.ResponseWriter, r *http.Reques
 
 	// Simulate a successful completion if enough time has passed
 	// Real implementation would query Kaggle kernels status API
-	
+
 	status := "processing"
 	var inferenceResult interface{}
 
 	// If it's a mock ID and starts with 'k-inference', we simulate success for demo
 	status = "completed"
 	inferenceResult = map[string]interface{}{
-		"prediction":          "Optimal Ventilation // Thermal Control Active",
-		"confidence":          0.983,
-		"model_version":       "Kaggle v4 (28GB Training)",
-		"processing_time_ms":  4250,
-		"is_authenticated":    true,
+		"prediction":         "Optimal Ventilation // Thermal Control Active",
+		"confidence":         0.983,
+		"model_version":      "Kaggle v4 (28GB Training)",
+		"processing_time_ms": 4250,
+		"is_authenticated":   true,
 	}
 
 	result := map[string]interface{}{

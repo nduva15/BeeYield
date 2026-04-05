@@ -18,14 +18,12 @@ type Config struct {
 	RustDBHost string
 	RustDBPort int
 
-
-
 	// Kaggle
-	KaggleUsername  string
-	KaggleAPIKey    string
+	KaggleUsername string
+	KaggleAPIKey   string
 
 	// JWT
-	JWTSecret    string
+	JWTSecret         string
 	SupabaseJWTSecret string
 
 	// Debug
@@ -42,12 +40,10 @@ func LoadFromEnv() *Config {
 		RustDBHost: getEnvDefault("RUST_DB_HOST", "127.0.0.1"),
 		RustDBPort: getEnvIntDefault("RUST_DB_PORT", 9091),
 
-
-
 		KaggleUsername: os.Getenv("KAGGLE_USERNAME"),
 		KaggleAPIKey:   os.Getenv("KAGGLE_KEY"),
 
-		JWTSecret:    os.Getenv("SECRET_KEY"),
+		JWTSecret:         os.Getenv("SECRET_KEY"),
 		SupabaseJWTSecret: os.Getenv("SUPABASE_JWT_SECRET"),
 
 		Debug: getEnvBoolDefault("DEBUG", false),
@@ -65,8 +61,6 @@ func (c *Config) RustDBURL() string {
 func (c *Config) GatewayAddr() string {
 	return fmt.Sprintf("%s:%d", c.ListenHost, c.ListenPort)
 }
-
-
 
 // JWTSecretKey returns the preferred JWT secret for verification.
 func (c *Config) JWTSecretKey() string {
