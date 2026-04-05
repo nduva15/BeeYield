@@ -7,7 +7,7 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media,
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
-    settings, payments, labels, bluetooth,
+    settings, payments, labels, bluetooth, measurements,
     requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub, health_guide
 )
 
@@ -52,6 +52,9 @@ api_router.include_router(intelligence.router, prefix="/intelligence", tags=["In
 
 # IoT endpoint
 api_router.include_router(iot.router, prefix="/iot", tags=["IoT"])
+
+# Measurements (time-series, disease radar, land metrics)
+api_router.include_router(measurements.router, prefix="/measurements", tags=["Measurements"])
 
 # Core business endpoints
 api_router.include_router(company.router, prefix="/company", tags=["Company"])

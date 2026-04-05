@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from datetime import datetime, timedelta
-from app.db.supabase_db import db_select
+from app.db.supabase_db import db_select, db_insert
 from app.core import security
 
 router = APIRouter()
@@ -78,7 +78,7 @@ async def get_land_metrics(
     
     results = await db_select(
         "land_readings",
-        columns="recorded_at, soil_moisture, rainfall_mm, ambient_temp, wind_speed_kmh",
+        columns="recorded_at, soil_moisture, rainfall_mm, ambient_temp, wind_speed_kmh, ndvi, notes",
         filters={
             "apiary_id": apiary_id,
             "recorded_at": f"gte.{start_time}",
@@ -118,4 +118,27 @@ async def get_disease_radar(
     )
     
     return results
+
+@router.post("/diseases/radar", status_code=201)
+async def create_disease_detection(
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    """
+    Create a disease detection event (e.g., Varroa).
+    """
+    allowed = {"hive_id", "disease_type", "detection_method", "severity", "notes", "metadata"}
+    payload = {k: v for k, v in (body or {}).items() if k in allowed}
+    if not payload.get("hive_id"):
+        raise HTTPException(status_code=400, detail="hive_id is required")
+
+    payload["user_id"] = user_id
+    payload.setdefault("detected_at", datetime.utcnow().isoformat())
+
+    res = await db_insert("disease_detections", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create disease detection"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
 

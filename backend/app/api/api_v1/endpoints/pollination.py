@@ -8,6 +8,7 @@ from datetime import date
 from app.core import security
 from app.schemas import pollination as schemas
 from app.services.pollination_service import pollination_service
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 
 router = APIRouter()
 
@@ -467,3 +468,73 @@ async def get_dashboard_data(
         recent_activities=recent_activities,
         crop_requirements=crop_requirements
     )
+
+
+# ========== DEPLOYMENTS (Tactical plans) ==========
+
+@router.get("/deployments", response_model=List[schemas.PollinationDeployment])
+async def list_deployments(
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    user_id = current_user.get("sub")
+    rows = await db_select("pollination_deployments", filters={"user_id": user_id}, order_by="created_at", ascending=False, limit=1000, token=token)
+    return [schemas.PollinationDeployment(**r) for r in rows]
+
+
+@router.post("/deployments", response_model=schemas.PollinationDeployment, status_code=201)
+async def create_deployment(
+    body: schemas.PollinationDeploymentCreate,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    user_id = current_user.get("sub")
+    payload = body.model_dump()
+    payload["user_id"] = user_id
+    res = await db_insert("pollination_deployments", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create deployment"))
+    rows = res.get("data") or []
+    created = rows[0] if isinstance(rows, list) and rows else payload
+    return schemas.PollinationDeployment(**created)
+
+
+@router.patch("/deployments/{deployment_id}", response_model=schemas.PollinationDeployment)
+async def update_deployment(
+    deployment_id: str,
+    body: schemas.PollinationDeploymentUpdate,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    user_id = current_user.get("sub")
+    existing = await db_select("pollination_deployments", filters={"id": deployment_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Deployment not found")
+
+    patch = body.model_dump(exclude_unset=True)
+    if not patch:
+        return schemas.PollinationDeployment(**existing[0])
+    patch["updated_at"] = __import__("datetime").datetime.utcnow().isoformat()
+    res = await db_update("pollination_deployments", patch, {"id": deployment_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update deployment"))
+    rows = res.get("data") or []
+    updated = rows[0] if isinstance(rows, list) and rows else existing[0]
+    return schemas.PollinationDeployment(**updated)
+
+
+@router.delete("/deployments/{deployment_id}", status_code=204)
+async def delete_deployment(
+    deployment_id: str,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    user_id = current_user.get("sub")
+    existing = await db_select("pollination_deployments", filters={"id": deployment_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Deployment not found")
+
+    res = await db_delete("pollination_deployments", {"id": deployment_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete deployment"))
+    return None

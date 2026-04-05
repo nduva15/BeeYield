@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from './api';
+import { apiDelete, apiGet, apiPatch, apiPost } from './api';
 
 export interface Building {
     id: string;
@@ -91,12 +91,20 @@ export const meterService = {
         return apiGet<Meter[]>('/meters/devices', filters || {});
     },
 
+    async getMeter(id: string): Promise<Meter> {
+        return apiGet<Meter>(`/meters/devices/${id}`);
+    },
+
     async getReadings(meterId: string, limit: number = 50): Promise<Reading[]> {
         return apiGet<Reading[]>(`/meters/readings/${meterId}`, { limit });
     },
 
     async getBillingRates(): Promise<BillingRate[]> {
         return apiGet<BillingRate[]>('/meters/billing-rates');
+    },
+
+    async getBillingRate(id: string): Promise<BillingRate> {
+        return apiGet<BillingRate>(`/meters/billing-rates/${id}`);
     },
 
     async createBillingRate(input: {
@@ -108,6 +116,22 @@ export const meterService = {
         is_active?: boolean;
     }): Promise<BillingRate> {
         return apiPost<BillingRate>('/meters/billing-rates', input);
+    },
+
+    async updateBillingRate(id: string, patch: Partial<{
+        meter_type: string;
+        rate_per_unit: number;
+        unit: string;
+        currency: string;
+        description: string;
+        is_active: boolean;
+        effective_from: string;
+    }>): Promise<BillingRate> {
+        return apiPatch<BillingRate>(`/meters/billing-rates/${id}`, patch);
+    },
+
+    async deleteBillingRate(id: string): Promise<void> {
+        await apiDelete<void>(`/meters/billing-rates/${id}`);
     },
 
     async getEvents(severity?: string): Promise<MeterEvent[]> {
@@ -122,5 +146,23 @@ export const meterService = {
         status?: string;
     }): Promise<Meter> {
         return apiPost<Meter>('/meters/devices', input);
+    },
+
+    async updateMeter(id: string, patch: Partial<{
+        apartment_id: string | null;
+        building_id: string;
+        meter_type: string;
+        meter_number: string;
+        meter_code: string | null;
+        status: string;
+        has_alarm: boolean;
+        install_date: string | null;
+        metadata: any;
+    }>): Promise<Meter> {
+        return apiPatch<Meter>(`/meters/devices/${id}`, patch);
+    },
+
+    async deleteMeter(id: string): Promise<void> {
+        await apiDelete<void>(`/meters/devices/${id}`);
     },
 };

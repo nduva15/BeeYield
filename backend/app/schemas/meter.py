@@ -53,6 +53,17 @@ class MeterBase(BaseModel):
 class MeterCreate(MeterBase):
     pass
 
+class MeterUpdate(BaseModel):
+    apartment_id: Optional[str] = None
+    building_id: Optional[str] = None
+    meter_type: Optional[str] = None
+    meter_number: Optional[str] = None
+    meter_code: Optional[str] = None
+    status: Optional[str] = None
+    has_alarm: Optional[bool] = None
+    install_date: Optional[date] = None
+    metadata: Optional[dict] = None
+
 class Meter(MeterBase):
     id: str
     last_reading_at: Optional[datetime] = None
@@ -87,6 +98,15 @@ class BillingRateBase(BaseModel):
 
 class BillingRateCreate(BillingRateBase):
     pass
+
+class BillingRateUpdate(BaseModel):
+    meter_type: Optional[str] = None
+    rate_per_unit: Optional[float] = None
+    unit: Optional[str] = None
+    currency: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+    effective_from: Optional[datetime] = None
 
 class BillingRate(BillingRateBase):
     id: str

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from typing import Optional, List, Any
 from datetime import datetime
 from app.core import security
-from app.db.supabase_db import db_select
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
+from app.schemas import forage as schemas
 
 router = APIRouter()
 
@@ -10,6 +11,94 @@ def get_token(request: Request) -> Optional[str]:
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         return auth_header.split(" ")[1]
+    return None
+
+def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User ID not found in token")
+    return str(user_id)
+
+
+# ============================================
+# FORAGE ZONES (CRUD)
+# ============================================
+
+@router.get("/zones", response_model=List[schemas.ForageZone])
+async def list_forage_zones(
+    apiary_id: Optional[str] = None,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    filters: dict[str, Any] = {"user_id": user_id}
+    if apiary_id:
+        filters["apiary_id"] = apiary_id
+    return await db_select("forage_zones", filters=filters, order_by="created_at", ascending=False, limit=1000, token=token)
+
+
+@router.get("/zones/{zone_id}", response_model=schemas.ForageZone)
+async def get_forage_zone(
+    zone_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    rows = await db_select("forage_zones", filters={"id": zone_id, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Forage zone not found")
+    return rows[0]
+
+
+@router.post("/zones", response_model=schemas.ForageZone, status_code=status.HTTP_201_CREATED)
+async def create_forage_zone(
+    body: schemas.ForageZoneCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    payload = body.model_dump(mode="json")
+    payload["user_id"] = user_id
+    res = await db_insert("forage_zones", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create forage zone"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.patch("/zones/{zone_id}", response_model=schemas.ForageZone)
+async def update_forage_zone(
+    zone_id: str,
+    body: schemas.ForageZoneUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("forage_zones", filters={"id": zone_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Forage zone not found")
+
+    patch = body.model_dump(exclude_unset=True, mode="json")
+    if not patch:
+        return existing[0]
+    patch["updated_at"] = datetime.utcnow().isoformat()
+
+    res = await db_update("forage_zones", patch, {"id": zone_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update forage zone"))
+    rows = await db_select("forage_zones", filters={"id": zone_id, "user_id": user_id}, limit=1, token=token)
+    return rows[0] if rows else {**existing[0], **patch}
+
+
+@router.delete("/zones/{zone_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_forage_zone(
+    zone_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("forage_zones", filters={"id": zone_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Forage zone not found")
+
+    res = await db_delete("forage_zones", {"id": zone_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete forage zone"))
     return None
 
 @router.get("/potential")
