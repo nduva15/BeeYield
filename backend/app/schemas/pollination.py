@@ -350,3 +350,36 @@ class PollinationDashboardData(BaseModel):
     analytics: PollinationAnalytics
     recent_activities: List[PollinationActivityLog]
     crop_requirements: List[CropPollinationRequirements]
+
+
+# ========== DEPLOYMENTS (Tactical plans) ==========
+
+class PollinationDeploymentBase(BaseModel):
+    field_name: str
+    crop_type: str
+    total_acres: float
+    bloom_intensity: Optional[float] = 1.0
+    forage_condition: Optional[float] = 1.0
+    status: Optional[str] = "active"
+    metrics_json: Optional[Dict[str, Any]] = None
+
+
+class PollinationDeploymentCreate(PollinationDeploymentBase):
+    pass
+
+
+class PollinationDeploymentUpdate(BaseModel):
+    field_name: Optional[str] = None
+    crop_type: Optional[str] = None
+    total_acres: Optional[float] = None
+    bloom_intensity: Optional[float] = None
+    forage_condition: Optional[float] = None
+    status: Optional[str] = None
+    metrics_json: Optional[Dict[str, Any]] = None
+
+
+class PollinationDeployment(PollinationDeploymentBase):
+    id: str
+    user_id: str
+    created_at: datetime
+    updated_at: Optional[datetime] = None

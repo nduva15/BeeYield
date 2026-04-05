@@ -27,6 +27,21 @@ async def read_notes(
     notes = await db_select("notes", filters={"user_id": user_id}, order_by="created_at", ascending=False, token=token)
     return notes
 
+@router.get("/{note_id}", response_model=Any)
+async def get_note(
+    note_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    """
+    Get a single note by id (owner only).
+    """
+    user_id = current_user.get("sub")
+    rows = await db_select("notes", filters={"id": note_id, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return rows[0]
+
 @router.post("/", response_model=Any)
 async def create_note(
     note_in: NoteCreate,

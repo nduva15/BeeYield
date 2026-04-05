@@ -40,6 +40,7 @@ import { cn } from '@/lib/utils';
 import WeightDynamicsChart from '@/components/telemetry/WeightDynamicsChart';
 import AcousticWaveform from '@/components/telemetry/AcousticWaveform';
 import { glass } from './GlassTheme';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface WeightData {
     time: string;
@@ -237,7 +238,7 @@ const HiveTelemetryView: React.FC = () => {
     }, [data]);
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+        <BeeYieldPageShell className="space-y-12 animate-in fade-in duration-700 pb-20">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
                 <div className="space-y-2">
@@ -544,7 +545,7 @@ const HiveTelemetryView: React.FC = () => {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 

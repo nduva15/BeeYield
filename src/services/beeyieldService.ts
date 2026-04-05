@@ -1,5 +1,5 @@
 import { supabaseBeeYield } from '@/lib/supabase';
-import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPost, apiPut } from './api';
+import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -357,6 +357,14 @@ export interface RequestCreateInput {
     apiary_id?: string;
     hive_id?: string;
     category?: string;
+}
+
+export interface RequestComment {
+    id: string;
+    request_id: string;
+    author_id: string;
+    message: string;
+    created_at: string;
 }
 
 // ========== APIARY & FARMER TYPES ==========
@@ -754,17 +762,21 @@ export const beeyieldService = {
 
     // ========== IoT DEVICES & GATEWAYS ==========
     async getDevices(): Promise<IoTDevice[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('devices').select('*').order('last_sync', { ascending: false });
-        if (error) { console.error('getDevices:', error); return []; }
-        return (data || []) as any;
+        try {
+            return await apiGet<IoTDevice[]>('/iot/devices');
+        } catch (error) {
+            console.error('getDevices:', error);
+            return [];
+        }
     },
 
     async getDeviceById(id: string): Promise<IoTDevice | null> {
-        if (!sb) return null;
-        const { data, error } = await sb.from('devices').select('*').eq('id', id).maybeSingle();
-        if (error) { console.error('getDeviceById:', error); return null; }
-        return (data || null) as any;
+        try {
+            return await apiGet<IoTDevice>(`/iot/devices/${id}`);
+        } catch (error) {
+            console.error('getDeviceById:', error);
+            return null;
+        }
     },
 
     // ========== INTEGRATIONS ==========
@@ -832,58 +844,62 @@ export const beeyieldService = {
     },
 
     async getGateways(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('telemetry_gateways').select('*').order('last_ping', { ascending: false });
-        if (error) { console.error('getGateways:', error); return []; }
-        return data || [];
+        try {
+            return await apiGet<any[]>('/iot/gateways');
+        } catch (error) {
+            console.error('getGateways:', error);
+            return [];
+        }
     },
 
     async createDevice(input: IoTDeviceCreateInput): Promise<{ data: IoTDevice | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('devices').insert(input).select().single();
-        if (error) { console.error('createDevice:', error); toast.error('Failed to link device'); return { data: null, error }; }
-        toast.success('Device linked successfully!');
-        return { data: data as any, error: null };
+        try {
+            const payload: any = { ...input };
+            delete payload.linked_apiary_id;
+            const data = await apiPost<IoTDevice>('/iot/devices', payload);
+            toast.success('Device linked successfully!');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createDevice:', error);
+            toast.error('Failed to link device');
+            return { data: null, error };
+        }
     },
 
     async updateDevice(id: string, patch: IoTDeviceUpdateInput): Promise<{ data: IoTDevice | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const clean: any = { ...patch };
-        // Avoid accidental empty strings for nullable foreign keys
-        if (clean.hive_id === '') clean.hive_id = null;
-        if (clean.apiary_id === '') clean.apiary_id = null;
-        if (clean.linked_apiary_id === '') clean.linked_apiary_id = null;
+        try {
+            const clean: any = { ...patch };
+            if (clean.hive_id === '') clean.hive_id = null;
+            if (clean.apiary_id === '') clean.apiary_id = null;
+            if (clean.linked_apiary_id === '') clean.linked_apiary_id = null;
+            delete clean.linked_apiary_id;
 
-        const { data, error } = await sb.from('devices').update(clean).eq('id', id).select().single();
-        if (error) { console.error('updateDevice:', error); toast.error('Failed to update device'); return { data: null, error }; }
-        toast.success('Device updated');
-        return { data: data as any, error: null };
+            const data = await apiPatch<IoTDevice>(`/iot/devices/${id}`, clean);
+            toast.success('Device updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateDevice:', error);
+            toast.error('Failed to update device');
+            return { data: null, error };
+        }
     },
 
     async deleteDevice(id: string): Promise<{ success: boolean; error: any }> {
-        if (!sb) return { success: false, error: 'No client' };
-        const { error } = await sb.from('devices').delete().eq('id', id);
-        if (error) { console.error('deleteDevice:', error); toast.error('Failed to delete device'); return { success: false, error }; }
-        toast.success('Device deleted');
-        return { success: true, error: null };
+        try {
+            await apiDelete<void>(`/iot/devices/${id}`);
+            toast.success('Device deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteDevice:', error);
+            toast.error('Failed to delete device');
+            return { success: false, error };
+        }
     },
 
     // ========== DEVICE AUDIT LOGS ==========
     async getDeviceAuditLogs(deviceId: string, limit: number = 50): Promise<DeviceAuditLog[]> {
-        if (!sb) return [];
         try {
-            const { data, error } = await sb
-                .from('device_audit_logs')
-                .select('*')
-                .eq('device_id', deviceId)
-                .order('created_at', { ascending: false })
-                .limit(limit);
-            if (error) {
-                // Table may not exist in some deployments; fail gracefully.
-                console.warn('getDeviceAuditLogs:', error);
-                return [];
-            }
-            return (data || []) as any;
+            return await apiGet<DeviceAuditLog[]>(`/iot/devices/${deviceId}/audit-logs`, { limit });
         } catch (e) {
             console.warn('getDeviceAuditLogs error:', e);
             return [];
@@ -891,23 +907,14 @@ export const beeyieldService = {
     },
 
     async logDeviceAuditEvent(input: { device_id: string; action: DeviceAuditAction; changes?: any }): Promise<void> {
-        if (!sb) return;
         try {
-            const { data: auth } = await sb.auth.getUser();
-            const user = auth?.user;
             const payload: any = {
                 device_id: input.device_id,
                 action: input.action,
                 changes: input.changes ?? null,
                 created_at: new Date().toISOString(),
-                user_id: user?.id || null,
-                user_email: user?.email || null,
             };
-            const { error } = await sb.from('device_audit_logs').insert(payload);
-            if (error) {
-                // Fail silently if audit log isn't configured yet.
-                console.warn('logDeviceAuditEvent:', error);
-            }
+            await apiPost(`/iot/devices/${input.device_id}/audit-logs`, payload);
         } catch (e) {
             console.warn('logDeviceAuditEvent error:', e);
         }
@@ -919,12 +926,15 @@ export const beeyieldService = {
     },
 
     async getSensorReadings(type?: 'infield' | 'inland' | 'disease', hours: number = 24): Promise<SensorReading[]> {
-        if (!sb) return [];
-        const since = new Date(Date.now() - hours * 3600000).toISOString();
-        const query = sb.from('sensor_readings').select('*').gte('recorded_at', since).order('recorded_at', { ascending: false });
-        const { data, error } = await query;
-        if (error) { console.error('getSensorReadings:', error); return []; }
-        return (data || []) as any;
+        try {
+            return await apiGet<SensorReading[]>('/iot/readings', {
+                sensor_type: type,
+                hours,
+            });
+        } catch (error) {
+            console.error('getSensorReadings:', error);
+            return [];
+        }
     },
 
     subscribeToDeviceReadings(deviceId: string, callback: (payload: any) => void) {
@@ -958,10 +968,12 @@ export const beeyieldService = {
     },
 
     async getClientHives(_userId?: string): Promise<ClientHive[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('hives').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getClientHives:', error); return []; }
-        return (data || []) as any;
+        try {
+            return await apiGet<ClientHive[]>('/iot/client-hives');
+        } catch (error) {
+            console.error('getClientHives:', error);
+            return [];
+        }
     },
 
     async getDashboardStats(): Promise<DashboardStats> {
@@ -1023,30 +1035,16 @@ export const beeyieldService = {
         language?: string | null;
         unit_system?: string | null;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-
-        const payload: any = {
-            id: user.id,
-            updated_at: new Date().toISOString(),
-            ...input,
-        };
-
-        const { data, error } = await sb
-            .from('profiles')
-            .upsert(payload, { onConflict: 'id' })
-            .select()
-            .single();
-
-        if (error) {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPut<any>('/settings/profile', input as any, { headers });
+            toast.success('Profile updated');
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
             console.error('updateUserProfile:', error);
             toast.error('Failed to update profile');
             return { data: null, error };
         }
-
-        toast.success('Profile updated');
-        return { data, error: null };
     },
 
     // ========== APIARIES ==========
@@ -1059,14 +1057,8 @@ export const beeyieldService = {
                 forage_type: a.primary_forage || a.forage_type || ''
             }));
         } catch (error) {
-            console.warn('Falling back to direct Supabase for apiaries', error);
-            if (!sb) return [];
-            const { data } = await sb.from('apiaries').select('*').order('created_at', { ascending: false });
-            return (data || []).map((a: any) => ({
-                ...a,
-                type: a.apiary_type || a.type || 'Permanent',
-                forage_type: a.primary_forage || a.forage_type || ''
-            }));
+            console.error('getApiaries:', error);
+            return [];
         }
     },
 
@@ -1106,22 +1098,9 @@ export const beeyieldService = {
             toast.success('Apiary removed');
             return { error: null };
         } catch (error: any) {
-            console.warn('[BeeYieldService] Backend unreachable for deleteApiary, falling back to Supabase:', error?.message);
-            // Fallback: delete directly via Supabase client
-            if (!sb) {
-                toast.error('Failed to delete apiary: no connection');
-                return { error };
-            }
-            try {
-                const { error: sbError } = await sb.from('apiaries').delete().eq('id', id);
-                if (sbError) throw sbError;
-                toast.success('Apiary removed');
-                return { error: null };
-            } catch (sbError: any) {
-                const msg = sbError?.message || 'Unknown error';
-                toast.error(`Failed to delete apiary: ${msg}`);
-                return { error: sbError };
-            }
+            console.error('deleteApiary:', error);
+            toast.error('Failed to delete apiary');
+            return { error };
         }
     },
 
@@ -1166,21 +1145,9 @@ export const beeyieldService = {
             toast.success('Note deleted');
             return { error: null };
         } catch (error: any) {
-            console.warn('[BeeYieldService] Backend unreachable for deleteNote, falling back to Supabase:', error?.message);
-            if (!sb) {
-                toast.error('Failed to delete note: no connection');
-                return { error };
-            }
-            try {
-                const { error: sbError } = await sb.from('notes').delete().eq('id', id);
-                if (sbError) throw sbError;
-                toast.success('Note deleted');
-                return { error: null };
-            } catch (sbError: any) {
-                const msg = sbError?.message || 'Unknown error';
-                toast.error(`Failed to delete note: ${msg}`);
-                return { error: sbError };
-            }
+            console.error('deleteNote:', error);
+            toast.error('Failed to delete note');
+            return { error };
         }
     },
 
@@ -1193,15 +1160,8 @@ export const beeyieldService = {
                 apiary_name: h.apiary?.name || h.apiary_name
             }));
         } catch (error) {
-            console.warn('Falling back to direct Supabase for hives', error);
-            if (!sb) return [];
-            let query = sb.from('hives').select('*, apiary:apiaries(id, name)').order('hive_code', { ascending: true });
-            if (apiaryId) query = query.eq('apiary_id', apiaryId);
-            const { data } = await query;
-            return (data || []).map((h: any) => ({
-                ...h,
-                apiary_name: h.apiary?.name || h.apiary_name
-            }));
+            console.error('getHives:', error);
+            return [];
         }
     },
 
@@ -1236,94 +1196,35 @@ export const beeyieldService = {
             toast.success('Hive removed');
             return { error: null };
         } catch (error: any) {
-            console.warn('[BeeYieldService] Backend unreachable for deleteHive, falling back to Supabase:', error?.message);
-            if (!sb) {
-                toast.error('Failed to delete hive: no connection');
-                return { error };
-            }
-            try {
-                const { error: sbError } = await sb.from('hives').delete().eq('id', id);
-                if (sbError) throw sbError;
-                toast.success('Hive removed');
-                return { error: null };
-            } catch (sbError: any) {
-                const msg = sbError?.message || 'Unknown error';
-                toast.error(`Failed to delete hive: ${msg}`);
-                return { error: sbError };
-            }
+            console.error('deleteHive:', error);
+            toast.error('Failed to delete hive');
+            return { error };
         }
     },
 
     // ========== HARVESTS ==========
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
-            // First try the backend API
             const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
-            if (Array.isArray(data)) return data;
-        } catch (apiError) {
-            console.warn('[BeeYieldService] API getHarvests failed, trying direct Supabase:', apiError);
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error('getHarvests:', error);
+            return [];
         }
-
-        // Fallback or secondary try: Direct Supabase
-        if (!sb) return [];
-        let query = sb
-            .from('harvests')
-            .select('*, hive:hives(id, hive_code), farmer:farmers(id, name), apiary:apiaries(id, name)')
-            .order('harvest_date', { ascending: false });
-        
-        if (filters?.hive_id) query = query.eq('hive_id', filters.hive_id);
-        if (filters?.year) {
-            const start = `${filters.year}-01-01`;
-            const end = `${filters.year}-12-31`;
-            query = query.gte('harvest_date', start).lte('harvest_date', end);
-        }
-
-        const { data, error } = await query;
-        if (error) { 
-            console.error('[BeeYieldService] Direct Supabase getHarvests failed:', error); 
-            return []; 
-        }
-
-        return (data || []).map((h: any) => ({
-            ...h,
-            harvest_date: h.harvest_date || h.date,
-            quantity_kg: h.quantity_kg || h.weight_kg || 0,
-        })) as Harvest[];
     },
 
     async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<any[]> {
-        // Try backend API first (uses service role, bypasses RLS)
         try {
             const params: any = {};
             if (filters?.honey_type) params.honey_type = filters.honey_type;
             if (filters?.year) params.year = filters.year;
             if (filters?.limit) params.limit = filters.limit;
             const data = await apiGet<any[]>('beeyield/batches', params);
-            if (Array.isArray(data) && data.length > 0) return data;
-        } catch (_) {
-            // fall through to direct Supabase
-        }
-
-        if (!sb) return [];
-        let query = sb
-            .from('honey_batches' as any)
-            .select('*, farmer:farmer_name, apiary:apiary_name')
-            .order('harvest_date', { ascending: false });
-
-        if (filters?.honey_type) query = (query as any).eq('honey_type', filters.honey_type);
-        if (filters?.year) {
-            query = (query as any)
-                .gte('harvest_date', `${filters.year}-01-01`)
-                .lte('harvest_date', `${filters.year}-12-31`);
-        }
-        if (filters?.limit) query = (query as any).limit(filters.limit);
-
-        const { data, error } = await (query as any);
-        if (error) {
-            console.error('[BeeYieldService] getBatches failed:', error);
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error('getBatches:', error);
             return [];
         }
-        return data || [];
     },
 
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
@@ -1345,59 +1246,55 @@ export const beeyieldService = {
             ).subscribe();
     },
 
-    async updateIoTSettings(settings: Partial<IoTSettings>): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-        const { data, error } = await sb.from('user_settings').upsert({ user_id: user.id, ...settings }).select().single();
-        if (error) { console.error('updateIoTSettings:', error); toast.error('Failed to update IoT settings'); return { data: null, error }; }
-        toast.success('IoT settings updated');
-        return { data, error: null };
-    },
-
     // ========== CALCULATOR LOGS ==========
     async getCalculatorLogs(type?: string): Promise<CalculatorLog[]> {
-        if (!sb) return [];
-        let query = sb.from('calculator_logs').select('*').order('created_at', { ascending: false });
-        if (type) query = query.eq('calculation_type', type);
-        const { data, error } = await query;
-        if (error) { console.error('getCalculatorLogs:', error); return []; }
-        return (data || []) as CalculatorLog[];
+        try {
+            const params: any = {};
+            if (type) params.calculation_type = type;
+            return await apiGet<CalculatorLog[]>('/beeyield/calculator-logs', params);
+        } catch (error) {
+            console.error('getCalculatorLogs:', error);
+            return [];
+        }
     },
 
     async logCalculation(input: CalculatorLogCreateInput): Promise<{ data: CalculatorLog | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('calculator_logs').insert(input).select().single();
-        if (error) { console.error('logCalculation:', error); toast.error('Failed to sync calculation'); return { data: null, error }; }
-        toast.success('Calculation persisted to Cloud');
-        return { data: data as CalculatorLog, error: null };
+        try {
+            const data = await apiPost<CalculatorLog>('/beeyield/calculator-logs', input as any);
+            toast.success('Calculation persisted to Cloud');
+            return { data, error: null };
+        } catch (error) {
+            console.error('logCalculation:', error);
+            toast.error('Failed to sync calculation');
+            return { data: null, error };
+        }
     },
 
     async logHarvestBatch(input: HarvestBatchInput): Promise<{ data: any | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const payload = {
-            hive_id: input.hive_id,
-            quantity_kg: input.quantity_kg,
-            floral_source: input.florage_type,
-            date: input.harvest_date || new Date().toISOString().split('T')[0],
-            honey_type: input.honey_type,
-            notes: input.notes,
-        };
-        const { data, error } = await sb.from('harvests').insert(payload).select().single();
-        if (error) { console.error('logHarvestBatch:', error); toast.error('Failed to log batch'); return { data: null, error }; }
-
-        // F5: Activity Log
-        await this.logActivity({
-            event_type: 'harvest_logged',
-            entity_type: 'hive',
-            entity_id: input.hive_id,
-            title: 'Harvest recorded',
-            subtitle: `${input.quantity_kg}kg harvested`,
-            metadata: { value: `${input.quantity_kg}kg`, type: input.honey_type }
-        });
-
-        toast.success('Harvest recorded');
-        return { data, error: null };
+        try {
+            if (!input.apiary_id) {
+                const error = new Error('Missing apiary_id for harvest batch');
+                toast.error('Please select an apiary.');
+                return { data: null, error };
+            }
+            const payload: any = {
+                hive_id: input.hive_id,
+                apiary_id: input.apiary_id,
+                harvest_date: input.harvest_date || new Date().toISOString().slice(0, 10),
+                quantity_kg: input.quantity_kg,
+                honey_type: input.honey_type,
+                florage_type: input.florage_type,
+                notes: input.notes,
+            };
+            const headers = await getAuthHeaders();
+            const data = await apiPost<any>('/beeyield/harvests', payload, { headers });
+            toast.success('Harvest recorded');
+            return { data, error: null };
+        } catch (error) {
+            console.error('logHarvestBatch:', error);
+            toast.error('Failed to log batch');
+            return { data: null, error };
+        }
     },
 
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
@@ -1544,10 +1441,12 @@ export const beeyieldService = {
     },
 
     async getInspectionById(id: string): Promise<Inspection | null> {
-        if (!sb) return null;
-        const { data, error } = await sb.from('inspections').select('*').eq('id', id).single();
-        if (error) { console.error('getInspectionById:', error); return null; }
-        return data ? (data as any) : null;
+        try {
+            return await apiGet<Inspection>(`inspections/${id}`);
+        } catch (error) {
+            console.error('getInspectionById:', error);
+            return null;
+        }
     },
 
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
@@ -1588,87 +1487,137 @@ export const beeyieldService = {
 
     // ========== SETTINGS ==========
     async getSettings(): Promise<UserSettings | null> {
-        if (!sb) return null;
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return null;
-        const { data, error } = await sb.from('user_settings').select('*, notification_configs:notification_configs(*)').eq('user_id', user.id).single();
-        if (error) { console.error('getSettings:', error); return null; }
-        return data as any;
+        // Legacy alias: return preferences + global thresholds from /settings/full.
+        try {
+            const headers = await getAuthHeaders();
+            const full = await apiGet<any>('/settings/full', undefined, { headers });
+            const prefs = full?.preferences || {};
+            const global = full?.global_thresholds || {};
+            return {
+                ...prefs,
+                temp_threshold_high: global?.temp_high,
+                temp_threshold_low: global?.temp_low,
+                weight_drop_threshold: global?.weight_drop,
+            } as any;
+        } catch (error) {
+            console.error('getSettings:', error);
+            return null;
+        }
     },
 
     async updateSettings(settings: UserSettingsUpdate): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-        const { data, error } = await sb.from('user_settings').upsert({ user_id: user.id, ...settings }).select().single();
-        if (error) { console.error('updateSettings:', error); toast.error('Failed to update preferences'); return { data: null, error }; }
-        toast.success('Preferences updated');
-        return { data, error: null };
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPut<any>('/settings/preferences', settings as any, { headers });
+            toast.success('Preferences updated');
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
+            console.error('updateSettings:', error);
+            toast.error('Failed to update preferences');
+            return { data: null, error };
+        }
     },
 
-    async updateNotificationConfig(eventType: string, config: NotificationConfigUpdate): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-        const { data, error } = await sb.from('notification_configs').upsert({ user_id: user.id, event_type: eventType, ...config }).select().single();
-        if (error) { console.error('updateNotificationConfig:', error); toast.error('Failed to update notification settings'); return { data: null, error }; }
-        toast.success('Notification updated');
-        return { data, error: null };
+    async updateNotificationConfig(_eventType: string, config: NotificationConfigUpdate): Promise<{ data: any; error: any }> {
+        // Legacy adapter: map to PRD notification settings endpoint.
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPatch<any>(
+                '/settings/notifications',
+                {
+                    email_alerts_enabled: config.email_enabled,
+                    push_notifications_enabled: config.push_enabled,
+                    sms_alerts_enabled: config.sms_enabled,
+                } as any,
+                { headers }
+            );
+            toast.success('Notification updated');
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
+            console.error('updateNotificationConfig:', error);
+            toast.error('Failed to update notification settings');
+            return { data: null, error };
+        }
     },
 
     async updateHiveThresholds(hiveId: string, thresholds: { temp_high?: number; temp_low?: number; weight_drop?: number }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('hives').update({
-            temp_threshold_high: thresholds.temp_high,
-            temp_threshold_low: thresholds.temp_low,
-            weight_drop_threshold: thresholds.weight_drop,
-        }).eq('id', hiveId).select().single();
-        if (error) { console.error('updateHiveThresholds:', error); toast.error('Failed to update hive thresholds'); return { data: null, error }; }
-        toast.success('Hive thresholds updated');
-        return { data, error: null };
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPost<any>(`/settings/hives/${hiveId}/thresholds`, thresholds as any, { headers });
+            toast.success('Hive thresholds updated');
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
+            console.error('updateHiveThresholds:', error);
+            toast.error('Failed to update hive thresholds');
+            return { data: null, error };
+        }
     },
 
     async getHiveSettings(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('hives').select('id, hive_code, temp_threshold_high, temp_threshold_low, weight_drop_threshold');
-        if (error) { console.error('getHiveSettings:', error); return []; }
-        return (data || []) as any[];
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any[]>('/settings/hives', undefined, { headers });
+        } catch (error) {
+            console.error('getHiveSettings:', error);
+            return [];
+        }
     },
 
     async getFullSettings(): Promise<any> {
-        const [settings, hiveSettings, notifSettings] = await Promise.all([
-            this.getSettings(),
-            this.getHiveSettings(),
-            this.getNotificationSettings(),
-        ]);
-        return { ...settings, hive_settings: hiveSettings, notification_settings: notifSettings };
+        try {
+            const headers = await getAuthHeaders();
+            const [full, hiveSettings, notifSettings] = await Promise.all([
+                apiGet<any>('/settings/full', undefined, { headers }),
+                apiGet<any[]>('/settings/hives', undefined, { headers }),
+                apiGet<UserNotificationSettings>('/settings/notifications', undefined, { headers }).catch(() => null),
+            ]);
+            return { ...full, hive_settings: hiveSettings, notification_settings: notifSettings };
+        } catch (error) {
+            console.error('getFullSettings:', error);
+            return null;
+        }
     },
 
     async getNotificationSettings(): Promise<UserNotificationSettings | null> {
-        if (!sb) return null;
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return null;
-        const { data, error } = await sb.from('notification_configs').select('*').eq('user_id', user.id);
-        if (error) { console.error('getNotificationSettings:', error); return null; }
-        return data as any;
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<UserNotificationSettings>('/settings/notifications', undefined, { headers });
+        } catch (error) {
+            console.error('getNotificationSettings:', error);
+            return null;
+        }
     },
 
     async updateNotificationSettings(settings: Partial<UserNotificationSettings>): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-        const { data, error } = await sb.from('notification_configs').upsert({ user_id: user.id, ...settings }).select().single();
-        if (error) { console.error('updateNotificationSettings:', error); return { data: null, error }; }
-        return { data, error: null };
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPatch<any>('/settings/notifications', settings as any, { headers });
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
+            console.error('updateNotificationSettings:', error);
+            return { data: null, error };
+        }
     },
 
     async getIoTSettings(): Promise<IoTSettings | null> {
-        if (!sb) return null;
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return null;
-        const { data, error } = await sb.from('user_settings').select('*').eq('user_id', user.id).single();
-        if (error) { console.error('getIoTSettings:', error); return null; }
-        return data as any;
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<IoTSettings>('/settings/iot', undefined, { headers });
+        } catch (error) {
+            console.error('getIoTSettings:', error);
+            return null;
+        }
+    },
+
+    async updateIoTSettings(settings: Partial<IoTSettings>): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPatch<any>('/settings/iot', settings as any, { headers });
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
+            console.error('updateIoTSettings:', error);
+            return { data: null, error };
+        }
     },
 
     // ========== REPORTS ==========
@@ -1690,68 +1639,133 @@ export const beeyieldService = {
         }
     },
 
+    async getRequestById(id: string): Promise<SupportRequest | null> {
+        try {
+            return await apiGet<SupportRequest>(`beeyield/requests/${id}`);
+        } catch (error) {
+            console.error('getRequestById:', error);
+            return null;
+        }
+    },
+
+    async createRequest(input: RequestCreateInput): Promise<{ data: SupportRequest | null; error: any }> {
+        try {
+            const pRaw = String(input.priority || 'Medium').trim();
+            const priority =
+                pRaw.toLowerCase() === 'low' ? 'Low' :
+                pRaw.toLowerCase() === 'high' ? 'High' :
+                'Medium';
+            const payload: any = {
+                subject: input.subject,
+                description: input.description,
+                category: input.category || input.type || 'General',
+                priority,
+                status: 'Open',
+            };
+            const data = await apiPost<SupportRequest>('beeyield/requests', payload);
+            toast.success('Request submitted');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createRequest:', error);
+            toast.error('Failed to submit request');
+            return { data: null, error };
+        }
+    },
+
+    async updateRequest(id: string, patch: Partial<{ subject: string; description: string; category: string; priority: string; status: string }>): Promise<{ data: SupportRequest | null; error: any }> {
+        try {
+            const data = await apiPatch<SupportRequest>(`beeyield/requests/${id}`, patch as any);
+            toast.success('Request updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateRequest:', error);
+            toast.error('Failed to update request');
+            return { data: null, error };
+        }
+    },
+
+    async deleteRequest(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`beeyield/requests/${id}`);
+            toast.success('Request deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteRequest:', error);
+            toast.error('Failed to delete request');
+            return { success: false, error };
+        }
+    },
+
+    async getRequestComments(requestId: string): Promise<RequestComment[]> {
+        try {
+            return await apiGet<RequestComment[]>(`beeyield/requests/${requestId}/comments`);
+        } catch (error) {
+            console.error('getRequestComments:', error);
+            return [];
+        }
+    },
+
+    async addRequestComment(requestId: string, message: string): Promise<{ data: RequestComment | null; error: any }> {
+        try {
+            const data = await apiPost<RequestComment>(`beeyield/requests/${requestId}/comments`, { message } as any);
+            return { data, error: null };
+        } catch (error) {
+            console.error('addRequestComment:', error);
+            return { data: null, error };
+        }
+    },
+
     // ========== ACTIVITY LOGS ==========
     async getActivityLogs(limit = 50): Promise<ActivityLog[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('activity_logs')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(limit);
-        if (error) { console.error('getActivityLogs error:', error); return []; }
-        return (data || []) as ActivityLog[];
+        try {
+            return await apiGet<ActivityLog[]>('/beeyield/activity-logs', { limit });
+        } catch (error) {
+            console.error('getActivityLogs error:', error);
+            return [];
+        }
     },
 
     async logActivity(input: Partial<ActivityLog>): Promise<void> {
-        if (!sb) return;
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return;
-
-        await sb.from('activity_logs').insert({
-            user_id: user.id,
-            event_type: input.event_type || 'system',
-            title: input.title || 'Activity Logged',
-            subtitle: input.subtitle,
-            entity_type: input.entity_type,
-            entity_id: input.entity_id,
-            metadata: input.metadata
-        });
+        try {
+            await apiPost('/beeyield/activity-logs', input as any);
+        } catch (error) {
+            console.warn('logActivity failed:', error);
+        }
     },
 
     // ========== SENSOR ALERTS ==========
     async getSensorAlerts(resolved = false, limit = 50): Promise<SensorAlert[]> {
-        if (!sb) return [];
-        let query = sb.from('sensor_alerts').select('*').order('created_at', { ascending: false }).limit(limit);
-        if (resolved !== undefined) query = query.eq('resolved', resolved);
-        const { data, error } = await query;
-        if (error) { console.error('getSensorAlerts error:', error); return []; }
-        return (data || []) as SensorAlert[];
+        try {
+            return await apiGet<SensorAlert[]>('/iot/alerts', { resolved, limit });
+        } catch (error) {
+            console.error('getSensorAlerts error:', error);
+            return [];
+        }
     },
 
     async resolveSensorAlert(alertId: string, notes?: string): Promise<{ success: boolean; error: any }> {
-        if (!sb) return { success: false, error: 'No client' };
-        const { error } = await sb.from('sensor_alerts').update({
-            resolved: true,
-            resolved_at: new Date().toISOString(),
-            metadata: { resolution_notes: notes }
-        }).eq('id', alertId);
+        try {
+            await apiPatch(`/iot/alerts/${alertId}`, {
+                resolved: true,
+                resolved_at: new Date().toISOString(),
+                metadata: { resolution_notes: notes }
+            } as any);
 
-        if (error) {
+            await this.logActivity({
+                event_type: 'alert_resolved',
+                entity_type: 'alert',
+                entity_id: alertId,
+                title: 'Critical Breach Resolved',
+                subtitle: `Incident Response: ${notes || 'Manual override complete'}`,
+                metadata: { alert_id: alertId }
+            });
+
+            toast.success('Alert resolved');
+            return { success: true, error: null };
+        } catch (error) {
             console.error('resolveSensorAlert error:', error);
             return { success: false, error };
         }
-
-        // F5: Activity Log
-        await this.logActivity({
-            event_type: 'alert_resolved',
-            entity_type: 'alert',
-            entity_id: alertId,
-            title: 'Critical Breach Resolved',
-            subtitle: `Incident Response: ${notes || 'Manual override complete'}`,
-            metadata: { alert_id: alertId }
-        });
-
-        toast.success('Alert resolved');
-        return { success: true, error: null };
     },
 
     // ========== PRECISION POLLINATION ==========
@@ -1762,26 +1776,8 @@ export const beeyieldService = {
         bee_flight_radius_km: number;
         ahp_weights?: any;
     }): Promise<any[]> {
-        if (!sb) return [];
-
-        // F2: Real-time Calculation Service
         try {
-            // Call Supabase Edge Function for the Spatial Genetic Algorithm
-            const { data, error } = await sb.functions.invoke('calculate-pollination', {
-                body: inputs
-            });
-
-            if (error) {
-                console.warn('Pollination Edge Function fallback used', error);
-                // Fallback deterministic mock for UI continuity if function not deployed
-                return Array(inputs.hive_count).fill(null).map((_, i) => ({
-                    id: `opt-${i}`,
-                    lat: -1.285 + (Math.random() - 0.5) * 0.01,
-                    lng: 36.825 + (Math.random() - 0.5) * 0.01,
-                    score: 0.85 + Math.random() * 0.1,
-                    radius: inputs.bee_flight_radius_km
-                }));
-            }
+            const placements = await apiPost<any[]>('/pollination/optimize', inputs as any);
 
             // F5: Activity Log
             await this.logActivity({
@@ -1792,7 +1788,7 @@ export const beeyieldService = {
                 metadata: { hive_count: inputs.hive_count, crop: inputs.target_crop }
             });
 
-            return data;
+            return Array.isArray(placements) ? placements : [];
         } catch (err) {
             console.error('optimizePollinationPlacement error:', err);
             return [];
@@ -1800,32 +1796,38 @@ export const beeyieldService = {
     },
 
     async getPollinationDeployments(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('pollination_deployments').select('*, hive:hives(*), contract:pollination_contracts(*)').order('created_at', { ascending: false });
-        if (error) { console.error('getPollinationDeployments:', error); return []; }
-        return data || [];
+        try {
+            return await apiGet<any[]>('/pollination/deployments');
+        } catch (error) {
+            console.error('getPollinationDeployments:', error);
+            return [];
+        }
     },
 
     async getPollinationContractAnalytics(): Promise<PollinationAnalytics | null> {
-        if (!sb) return null;
-        // Aggregation logic for the precision dashboard
-        const { data: contracts } = await sb.from('pollination_contracts').select('*');
-        const { data: deployments } = await sb.from('pollination_deployments').select('*');
+        try {
+            const [contracts, deployments] = await Promise.all([
+                apiGet<any[]>('/pollination/contracts'),
+                apiGet<any[]>('/pollination/deployments'),
+            ]);
+            if (!Array.isArray(contracts)) return null;
 
-        if (!contracts) return null;
-
-        return {
-            total_contracts: contracts.length,
-            active_contracts: contracts.filter(c => c.status === 'active').length,
-            total_hives_deployed: deployments?.length || 0,
-            total_acres_covered: contracts.reduce((s, c) => s + (c.farm_size_acres || 0), 0),
-            average_fpa: 0,
-            coverage_health_percent: 0,
-            healthy_hives: deployments?.length || 0,
-            warning_hives: 0,
-            critical_hives: 0,
-            total_revenue: contracts.reduce((s, c) => s + (c.payment_amount || 0), 0)
-        };
+            return {
+                total_contracts: contracts.length,
+                active_contracts: contracts.filter((c: any) => String(c.status || '').toLowerCase() === 'active').length,
+                total_hives_deployed: Array.isArray(deployments) ? deployments.length : 0,
+                total_acres_covered: contracts.reduce((s: number, c: any) => s + (Number(c.farm_size_acres) || 0), 0),
+                average_fpa: 0,
+                coverage_health_percent: 0,
+                healthy_hives: Array.isArray(deployments) ? deployments.length : 0,
+                warning_hives: 0,
+                critical_hives: 0,
+                total_revenue: contracts.reduce((s: number, c: any) => s + (Number(c.payment_amount) || 0), 0),
+            };
+        } catch (error) {
+            console.error('getPollinationContractAnalytics:', error);
+            return null;
+        }
     },
 
     async generateReport(input: ReportCreateInput): Promise<{ data: GeneratedReport | null; error: any }> {
@@ -1964,13 +1966,14 @@ export const beeyieldService = {
 
     // ========== ACOUSTIC READINGS (Sound Analysis) ==========
     async getAcousticReadings(hiveId?: string, days: number = 30): Promise<any[]> {
-        if (!sb) return [];
-        const since = new Date(Date.now() - days * 86400000).toISOString();
-        let query = sb.from('sensor_readings').select('*').gte('recorded_at', since).order('recorded_at', { ascending: false });
-        if (hiveId) query = query.eq('hive_id', hiveId);
-        const { data, error } = await query;
-        if (error) { console.error('getAcousticReadings:', error); return []; }
-        return (data || []) as any[];
+        try {
+            if (!hiveId) return [];
+            const time_range = days <= 1 ? '24h' : days <= 7 ? '7d' : '30d';
+            return await apiGet<any[]>(`/measurements/hive/${hiveId}`, { time_range });
+        } catch (error) {
+            console.error('getAcousticReadings:', error);
+            return [];
+        }
     },
 
     async createAcousticReading(input: {
@@ -1981,20 +1984,18 @@ export const beeyieldService = {
         spectral_profile?: any;
         tags?: string[];
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('sensor_readings').insert(input).select().single();
-        if (error) { console.error('createAcousticReading:', error); return { data: null, error }; }
-        return { data, error: null };
+        // Sound readings are persisted server-side (acoustic inferences/readings). Client should not write raw sensor rows.
+        return { data: null, error: new Error('createAcousticReading is not supported via client-side CRUD') };
     },
 
     // ========== VARROA READINGS & TREATMENTS ==========
     async getVarroaReadings(hiveId?: string): Promise<any[]> {
-        if (!sb) return [];
-        let query = sb.from('disease_detections').select('*').order('detected_at', { ascending: false });
-        if (hiveId) query = query.eq('hive_id', hiveId);
-        const { data, error } = await query;
-        if (error) { console.error('getVarroaReadings:', error); return []; }
-        return (data || []) as any[];
+        try {
+            return await apiGet<any[]>('/measurements/diseases/radar', hiveId ? { hive_id: hiveId } : undefined);
+        } catch (error) {
+            console.error('getVarroaReadings:', error);
+            return [];
+        }
     },
 
     async createVarroaReading(input: {
@@ -2006,26 +2007,32 @@ export const beeyieldService = {
         inspector_name?: string;
         notes?: string;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('disease_detections').insert({
-            hive_id: input.hive_id,
-            disease_type: 'varroa',
-            detection_method: input.method || 'manual',
-            severity: input.mite_count > 3 ? 'high' : input.mite_count > 1 ? 'medium' : 'low',
-            notes: input.notes,
-        }).select().single();
-        if (error) { console.error('createVarroaReading:', error); toast.error('Failed to record varroa reading'); return { data: null, error }; }
-        toast.success('Varroa reading recorded');
-        return { data, error: null };
+        try {
+            const payload: any = {
+                hive_id: input.hive_id,
+                disease_type: 'varroa',
+                detection_method: input.method || 'manual',
+                severity: input.mite_count > 3 ? 'high' : input.mite_count > 1 ? 'medium' : 'low',
+                notes: input.notes,
+            };
+            const data = await apiPost<any>('/measurements/diseases/radar', payload);
+            toast.success('Varroa reading recorded');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createVarroaReading:', error);
+            toast.error('Failed to record varroa reading');
+            return { data: null, error };
+        }
     },
 
     async getVarroaTreatments(hiveId?: string): Promise<any[]> {
-        if (!sb) return [];
-        let query = sb.from('inspections').select('*').eq('health_status', 'treated').order('inspection_date', { ascending: false });
-        if (hiveId) query = query.eq('hive_id', hiveId);
-        const { data, error } = await query;
-        if (error) { console.error('getVarroaTreatments:', error); return []; }
-        return (data || []) as any[];
+        try {
+            const rows = await apiGet<any[]>('/inspections', hiveId ? { hive_id: hiveId } : undefined);
+            return (rows || []).filter((r: any) => String(r?.health_status || '').toLowerCase() === 'treated');
+        } catch (error) {
+            console.error('getVarroaTreatments:', error);
+            return [];
+        }
     },
 
     async createVarroaTreatment(input: {
@@ -2037,32 +2044,31 @@ export const beeyieldService = {
         effectiveness_percent?: number;
         notes?: string;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('inspections').insert({
-            hive_id: input.hive_id,
-            inspection_date: input.start_date,
-            health_status: 'treated',
-            actions_taken: `${input.treatment_type} - ${input.dosage || 'standard'}`,
-            notes: input.notes,
-        }).select().single();
-        if (error) { console.error('createVarroaTreatment:', error); toast.error('Failed to record treatment'); return { data: null, error }; }
-        toast.success('Treatment recorded');
-        return { data, error: null };
+        try {
+            const data = await apiPost<any>('/inspections', {
+                hive_id: input.hive_id,
+                inspection_date: input.start_date,
+                health_status: 'treated',
+                actions_taken: `${input.treatment_type} - ${input.dosage || 'standard'}`,
+                notes: input.notes,
+            } as any);
+            toast.success('Treatment recorded');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createVarroaTreatment:', error);
+            toast.error('Failed to record treatment');
+            return { data: null, error };
+        }
     },
 
     // ========== BILLING & SUBSCRIPTIONS ==========
     async getBillingOverview(): Promise<BillingOverview | null> {
-        if (!sb) return null;
-        const { data: txs } = await sb.from('billing_ledger').select('amount, transaction_type');
-        const revenue = txs?.filter(t => t.transaction_type === 'income').reduce((s, t) => s + (t.amount || 0), 0) || 0;
-        const costs = txs?.filter(t => t.transaction_type === 'expense').reduce((s, t) => s + (t.amount || 0), 0) || 0;
-
-        return {
-            total_revenue: revenue,
-            total_costs: costs,
-            net_result: revenue - costs,
-            outstanding_invoices: 0
-        };
+        try {
+            return await apiGet<BillingOverview>('/beeyield/billing/overview');
+        } catch (error) {
+            console.error('getBillingOverview:', error);
+            return null;
+        }
     },
 
     async getSubscriptionPlans(): Promise<any[]> {
@@ -2105,16 +2111,19 @@ export const beeyieldService = {
     },
 
     async getTransactions(): Promise<Transaction[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('billing_ledger').select('*').order('date', { ascending: false }).limit(50);
-        if (error) { console.error('getTransactions:', error); return []; }
-        return (data || []).map((t: any) => ({
-            ...t,
-            type: t.transaction_type,
-            category: t.module_type,
-            status: t.etims_status === 'synced' ? 'completed' : 'pending',
-            etims_qr_url: t.metadata?.etims_qr_url || null
-        })) as Transaction[];
+        try {
+            const data = await apiGet<any[]>('/beeyield/billing/ledger', { limit: 50 });
+            return (data || []).map((t: any) => ({
+                ...t,
+                type: t.transaction_type,
+                category: t.module_type,
+                status: t.etims_status === 'synced' ? 'completed' : 'pending',
+                etims_qr_url: t.metadata?.etims_qr_url || null
+            })) as Transaction[];
+        } catch (error) {
+            console.error('getTransactions:', error);
+            return [];
+        }
     },
 
     async createTransaction(input: {
@@ -2127,66 +2136,52 @@ export const beeyieldService = {
         status: string;
         entity_id?: string;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
+        try {
+            const data = await apiPost<any>('/beeyield/billing/ledger', {
+                transaction_type: input.type,
+                module_type: input.category,
+                description: input.description,
+                amount: input.amount,
+                currency: input.currency,
+                date: input.date,
+                etims_status: 'pending',
+            });
 
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
+            await this.logActivity({
+                event_type: 'transaction_created',
+                entity_type: 'transaction',
+                entity_id: data?.id,
+                title: input.type === 'income' ? 'Revenue Captured' : 'Expense Recorded',
+                subtitle: `${input.currency} ${input.amount.toLocaleString()} - ${input.category}`,
+                metadata: { amount: input.amount, type: input.type }
+            });
 
-        const { data, error } = await sb.from('billing_ledger').insert({
-            user_id: user.id,
-            transaction_type: input.type,
-            module_type: input.category,
-            description: input.description,
-            amount: input.amount,
-            currency: input.currency,
-            date: input.date,
-            etims_status: 'pending'
-        }).select().single();
-
-        if (error) { console.error('createTransaction:', error); return { data: null, error }; }
-
-        // F5: Activity Log
-        await this.logActivity({
-            event_type: 'transaction_created',
-            entity_type: 'transaction',
-            entity_id: data.id,
-            title: input.type === 'income' ? 'Revenue Captured' : 'Expense Recorded',
-            subtitle: `${input.currency} ${input.amount.toLocaleString()} — ${input.category}`,
-            metadata: { amount: input.amount, type: input.type }
-        });
-
-        return { data, error: null };
+            return { data, error: null };
+        } catch (error) {
+            console.error('createTransaction:', error);
+            return { data: null, error };
+        }
     },
 
     async deleteTransaction(id: string): Promise<{ success: boolean; error: any }> {
-        if (!sb) return { success: false, error: 'No client' };
+        try {
+            await apiDelete<void>(`/beeyield/billing/ledger/${id}`);
 
-        // F1: Compliance Guard
-        const { data: tx } = await sb.from('billing_ledger').select('etims_status').eq('id', id).single();
-        if (tx?.etims_status === 'synced') {
-            const err = 'Cannot delete tax-synced transactions due to eTIMS compliance regulations.';
-            toast.error(err);
-            return { success: false, error: err };
-        }
+            await this.logActivity({
+                event_type: 'transaction_deleted',
+                entity_type: 'transaction',
+                entity_id: id,
+                title: 'Financial Ledger Corrected',
+                subtitle: `Transaction #${id.slice(0, 8)} removed from records.`,
+            });
 
-        const { error } = await sb.from('billing_ledger').delete().eq('id', id);
-        if (error) {
+            toast.success('Transaction removed');
+            return { success: true, error: null };
+        } catch (error: any) {
             console.error('deleteTransaction:', error);
-            toast.error('Failed to remove transaction');
+            toast.error(error?.message || 'Failed to remove transaction');
             return { success: false, error };
         }
-
-        // F5: Activity Log
-        await this.logActivity({
-            event_type: 'transaction_deleted',
-            entity_type: 'transaction',
-            entity_id: id,
-            title: 'Financial Ledger Corrected',
-            subtitle: `Transaction #${id.slice(0, 8)} removed from records.`,
-        });
-
-        toast.success('Transaction removed');
-        return { success: true, error: null };
     },
 
     async submitToETIMS(id: string): Promise<{ success: boolean; etims_id?: string; error?: any }> {
@@ -2200,14 +2195,7 @@ export const beeyieldService = {
     },
 
     async getFinancialAggregate(groupBy: 'month' | 'category' = 'month'): Promise<any[]> {
-        if (!sb) return [];
-
-        // In a real production SQL, we would use a RPC or specialized view
-        // For now, we fetch and aggregate locally to ensure stability with standard PostgREST
-        const { data, error } = await sb.from('billing_ledger').select('*');
-        if (error) { console.error('getFinancialAggregate:', error); return []; }
-
-        const txs = data || [];
+        const txs = await this.getTransactions();
 
         if (groupBy === 'month') {
             const months: Record<string, any> = {};
@@ -2232,48 +2220,48 @@ export const beeyieldService = {
 
     // ========== BLUETOOTH DEVICES ==========
     async getBluetoothDevices(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('bluetooth_devices').select('*').order('last_seen', { ascending: false });
-        if (error) { console.error('getBluetoothDevices:', error); return []; }
-        return (data || []) as any[];
+        try {
+            return await apiGet<any[]>('/beeyield/bluetooth/devices');
+        } catch (error) {
+            console.error('getBluetoothDevices:', error);
+            return [];
+        }
     },
 
     async registerBluetoothDevice(input: any): Promise<any> {
-        if (!sb) return null;
-        const { data, error } = await sb.from('bluetooth_devices').insert(input).select().single();
-        if (error) { console.error('registerBluetoothDevice:', error); toast.error('Failed to register device'); return null; }
-        toast.success('Bluetooth device registered');
-        return data;
+        try {
+            const data = await apiPost<any>('/beeyield/bluetooth/devices', input);
+            toast.success('Bluetooth device registered');
+            return data;
+        } catch (error) {
+            console.error('registerBluetoothDevice:', error);
+            toast.error('Failed to register device');
+            return null;
+        }
     },
 
     async uploadBluetoothReadings(readings: any[]): Promise<any> {
-        if (!sb) throw new Error('No client');
-        const { data, error } = await sb.from('sensor_readings_buffer').insert(readings).select();
-        if (error) { console.error('uploadBluetoothReadings:', error); throw error; }
-        return data;
+        const payload = { readings };
+        return apiPost<any>('/beeyield/bluetooth/sync', payload);
     },
 
     // ========== ACTIVITY FEED ==========
     async getActivityLogs2(limit = 10): Promise<ActivityLog[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(limit);
-        if (error) { console.error('getActivityLogs:', error); return []; }
-        return (data || []) as ActivityLog[];
+        try {
+            return await apiGet<ActivityLog[]>('/beeyield/activity-logs', { limit });
+        } catch (error) {
+            console.error('getActivityLogs2:', error);
+            return [];
+        }
     },
 
     async logActivity2(input: Partial<ActivityLog>): Promise<{ data: ActivityLog | null; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-
-        const payload = {
-            user_id: user.id,
-            ...input,
-            created_at: new Date().toISOString()
-        };
-
-        const { data, error } = await sb.from('activity_logs').insert(payload).select().single();
-        return { data: data as ActivityLog, error };
+        try {
+            const data = await apiPost<ActivityLog>('/beeyield/activity-logs', input as any);
+            return { data, error: null };
+        } catch (error) {
+            return { data: null, error };
+        }
     },
 
     // ========== ACCOUNT & DEVICES ==========
@@ -2283,10 +2271,12 @@ export const beeyieldService = {
 
     // ========== USB DEVICE PAIRING ==========
     async getPairedUsbDevices(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('devices').select('*').eq('connection_type', 'usb');
-        if (error) { console.error('getPairedUsbDevices:', error); return []; }
-        return (data || []) as any[];
+        try {
+            return await apiGet<any[]>('/hub/devices');
+        } catch (error) {
+            console.error('getPairedUsbDevices:', error);
+            return [];
+        }
     },
 
     async pairUsbDevice(input: {
@@ -2296,78 +2286,69 @@ export const beeyieldService = {
         firmware_version?: string;
         config?: any;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('devices').insert({
-            serial_number: input.serial_number || input.device_uid,
-            device_type: input.device_type || 'usb',
-            firmware_version: input.firmware_version,
-            connection_type: 'usb',
-            status: 'online',
-        }).select().single();
-        if (error) { console.error('pairUsbDevice:', error); toast.error('Failed to pair device'); return { data: null, error }; }
-        toast.success('Device paired successfully');
+        try {
+            const payload = {
+                serial_number: input.serial_number || input.device_uid,
+                firmware_version: input.firmware_version,
+                config_json: input.config || {},
+            };
+            const data = await apiPost<any>('/hub/handshake', payload);
+            toast.success('Device paired successfully');
             return { data, error: null };
+        } catch (error) {
+            console.error('pairUsbDevice:', error);
+            toast.error('Failed to pair device');
+            return { data: null, error };
+        }
     },
 
     async unpairUsbDevice(id: string): Promise<{ error: any }> {
-        if (!sb) return { error: 'No client' };
-        const { error } = await sb.from('devices').delete().eq('serial_number', id);
-        if (error) { console.error('unpairUsbDevice:', error); toast.error('Failed to unpair device'); return { error }; }
-        toast.success('Device unpaired');
+        try {
+            await apiDelete<void>(`/hub/devices/${id}`);
+            toast.success('Device unpaired');
             return { error: null };
+        } catch (error) {
+            console.error('unpairUsbDevice:', error);
+            toast.error('Failed to unpair device');
+            return { error };
+        }
     },
 
     // ========== SENSOR CALIBRATION ==========
     async tareSensor(deviceId: string): Promise<{ success: boolean; error?: any }> {
-        if (!sb) return { success: false, error: 'No client' };
-
-        const { data: latestReading } = await sb
-            .from('sensor_readings')
-            .select('weight_kg')
-            .eq('device_id', deviceId)
-            .order('recorded_at', { ascending: false })
-            .limit(1)
-            .single();
-
-        const offset = latestReading?.weight_kg || 0;
-
-        const { error } = await sb
-            .from('infrastructure_registry')
-            .update({ calibration_offset: -offset, updated_at: new Date().toISOString() })
-            .eq('serial_number', deviceId);
-
-        if (error) {
+        try {
+            // Compute offset via backend readings endpoint (admin-only in some setups)
+            const readings = await apiGet<any[]>('/iot/readings', { device_id: deviceId, hours: 24 });
+            const latest = Array.isArray(readings) && readings.length > 0 ? readings[0] : null;
+            const offset = latest?.weight_kg ?? latest?.readings?.hive_weight ?? 0;
+            await apiPatch(`/beeyield/infrastructure-registry/${deviceId}`, { calibration_offset: -Number(offset || 0) } as any);
+            toast.success(`Sensor ${deviceId} tared to 0.00kg`);
+            return { success: true };
+        } catch (error) {
             console.error('tareSensor error:', error);
             return { success: false, error };
         }
-
-        toast.success(`Sensor ${deviceId} tared to 0.00kg`);
-        return { success: true };
     },
 
     async setOffsetCorrection(deviceId: string, offsetValue: number): Promise<{ success: boolean; error?: any }> {
-        if (!sb) return { success: false, error: 'No client' };
-
-        const { error } = await sb
-            .from('infrastructure_registry')
-            .update({ calibration_offset: offsetValue, updated_at: new Date().toISOString() })
-            .eq('serial_number', deviceId);
-
-        if (error) {
+        try {
+            await apiPatch(`/beeyield/infrastructure-registry/${deviceId}`, { calibration_offset: offsetValue } as any);
+            toast.success(`Calibration offset set to ${offsetValue}kg`);
+            return { success: true };
+        } catch (error) {
             console.error('setOffsetCorrection error:', error);
             return { success: false, error };
         }
-
-        toast.success(`Calibration offset set to ${offsetValue}kg`);
-        return { success: true };
     },
 
     // ========== PRECISION POLLINATION ==========
     async getPollinationDeployments2(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('pollination_deployments').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getPollinationDeployments:', error); return []; }
-        return data || [];
+        try {
+            return await apiGet<any[]>('/pollination/deployments');
+        } catch (error) {
+            console.error('getPollinationDeployments2:', error);
+            return [];
+        }
     },
 
     async getCropRequirements(cropName?: string): Promise<CropPollinationRequirement[]> {
@@ -2393,18 +2374,23 @@ export const beeyieldService = {
     },
 
     async createPollinationContract(contract: any): Promise<any> {
-        if (!sb) return { error: 'No client' };
-        const { data, error } = await sb.from('pollination_contracts').insert(contract).select().single();
-        if (error) { console.error('createPollinationContract:', error); return { error }; }
-        toast.success('Pollination contract created');
-        return data;
+        try {
+            const data = await apiPost<any>('/pollination/contracts', contract);
+            toast.success('Pollination contract created');
+            return data;
+        } catch (error) {
+            console.error('createPollinationContract:', error);
+            return { error };
+        }
     },
 
     async getPollinationContracts(): Promise<PollinationContract[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('pollination_contracts').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getPollinationContracts:', error); return []; }
-        return (data || []) as PollinationContract[];
+        try {
+            return await apiGet<PollinationContract[]>('/pollination/contracts');
+        } catch (error) {
+            console.error('getPollinationContracts:', error);
+            return [];
+        }
     },
 
     async getPollinationAnalytics(): Promise<PollinationAnalytics | null> {
@@ -2424,35 +2410,33 @@ export const beeyieldService = {
     },
 
     async getPollinationActivityLogs(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('tasks').select('*').eq('category', 'pollination').order('created_at', { ascending: false }).limit(20);
-        if (error) { console.error('getPollinationActivityLogs:', error); return []; }
-        return (data || []) as any[];
+        try {
+            const tasks = await apiGet<any[]>('beeyield/tasks');
+            return (tasks || []).filter((t: any) => String(t?.category || '').toLowerCase() === 'pollination').slice(0, 20);
+        } catch (error) {
+            console.error('getPollinationActivityLogs:', error);
+            return [];
+        }
     },
 
     async savePollinationDeployment(input: any): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-
-        const { data, error } = await sb.from('pollination_deployments').insert({
-            user_id: user.id,
-            ...input
-        }).select().single();
-
-        if (error) { console.error('savePollinationDeployment:', error); return { data: null, error }; }
-        toast.success('Pollination deployment saved');
-        return { data, error: null };
+        try {
+            const data = await apiPost<any>('/pollination/deployments', input as any);
+            toast.success('Pollination deployment saved');
+            return { data, error: null };
+        } catch (error) {
+            console.error('savePollinationDeployment:', error);
+            return { data: null, error };
+        }
     },
 
     async logExport(payload: { export_type: string; entity_scope: string; file_name: string; record_count: number }): Promise<void> {
-        if (!sb) return;
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return;
-
-        await sb.from('export_audit_logs').insert({
-            user_id: user.id,
-            ...payload
+        await this.logActivity({
+            event_type: 'export_generated',
+            entity_type: payload.entity_scope,
+            title: `Export: ${payload.export_type}`,
+            subtitle: `${payload.record_count} records`,
+            metadata: payload,
         });
     },
 
@@ -2464,32 +2448,42 @@ export const beeyieldService = {
 
     // ========== SATELLITE / AGRO INTELLIGENCE ==========
     async getSatelliteIndices(apiaryId?: string, days: number = 90): Promise<any[]> {
-        if (!sb) return [];
-        const since = new Date(Date.now() - days * 86400000).toISOString();
-        let query = sb.from('land_readings').select('*').gte('recorded_at', since).order('recorded_at', { ascending: false });
-        if (apiaryId) query = query.eq('apiary_id', apiaryId);
-        const { data, error } = await query;
-        if (error) { console.error('getSatelliteIndices:', error); return []; }
-        return (data || []) as any[];
+        try {
+            if (!apiaryId) return [];
+            const time_range = days <= 1 ? '24h' : days <= 7 ? '7d' : '30d';
+            return await apiGet<any[]>(`/measurements/land/${apiaryId}`, { time_range });
+        } catch (error) {
+            console.error('getSatelliteIndices:', error);
+            return [];
+        }
     },
 
     async getWeatherHistory(apiaryId?: string, days: number = 30): Promise<any[]> {
-        if (!sb) return [];
-        const since = new Date(Date.now() - days * 86400000).toISOString();
-        const query = sb.from('sensor_readings').select('temp_external, humidity_external, recorded_at, hive_id').gte('recorded_at', since).order('recorded_at', { ascending: false });
-        const { data, error } = await query;
-        if (error) { console.error('getWeatherHistory:', error); return []; }
-        return (data || []) as any[];
+        try {
+            const hours = Math.max(1, Math.floor(days * 24));
+            const rows = await apiGet<any[]>('/iot/readings', { hours });
+            // Best-effort mapping (field names vary across deployments)
+            return (rows || []).map((r: any) => ({
+                temp_external: r?.temp_external ?? r?.temperature ?? r?.temp_internal ?? null,
+                humidity_external: r?.humidity_external ?? r?.humidity ?? r?.humidity_internal ?? null,
+                recorded_at: r?.recorded_at ?? r?.timestamp ?? r?.created_at ?? null,
+                hive_id: r?.hive_id ?? null,
+                apiary_id: apiaryId ?? r?.apiary_id ?? null,
+            }));
+        } catch (error) {
+            console.error('getWeatherHistory:', error);
+            return [];
+        }
     },
 
     // ========== FORAGE ZONES (Flight Map) ==========
     async getForageZones(apiaryId?: string): Promise<any[]> {
-        if (!sb) return [];
-        let query = sb.from('land_readings').select('*').order('recorded_at', { ascending: false });
-        if (apiaryId) query = query.eq('apiary_id', apiaryId);
-        const { data, error } = await query;
-        if (error) { console.error('getForageZones:', error); return []; }
-        return (data || []) as any[];
+        try {
+            return await apiGet<any[]>('/forage/zones', apiaryId ? { apiary_id: apiaryId } : undefined);
+        } catch (error) {
+            console.error('getForageZones:', error);
+            return [];
+        }
     },
 
     async createForageZone(input: {
@@ -2502,16 +2496,15 @@ export const beeyieldService = {
         geojson?: any;
         notes?: string;
     }): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data, error } = await sb.from('land_readings').insert({
-            apiary_id: input.apiary_id,
-            ndvi: input.density_score,
-            soil_moisture: 0,
-            notes: `${input.zone_name || ''} - ${input.flora_type || ''} - ${input.notes || ''}`,
-        }).select().single();
-        if (error) { console.error('createForageZone:', error); toast.error('Failed to add forage zone'); return { data: null, error }; }
-        toast.success('Forage zone added');
+        try {
+            const data = await apiPost<any>('/forage/zones', input as any);
+            toast.success('Forage zone added');
             return { data, error: null };
+        } catch (error) {
+            console.error('createForageZone:', error);
+            toast.error('Failed to add forage zone');
+            return { data: null, error };
+        }
     },
 
     // ========== HEALTH KNOWLEDGE BASE ==========
@@ -2746,22 +2739,19 @@ export const beeyieldService = {
                 raw,
             };
 
-            // Persist to Health Audit Logs
-            if (sb && payload.hiveId) {
-                const { data: { user } } = await sb.auth.getUser();
-                if (user) {
-                    await sb.from('health_audit_logs').insert({
-                        user_id: user.id,
-                        hive_id: payload.hiveId,
-                        analysis_type: 'vision',
-                        mite_count: result.bee_count, // legacy mapping
-                        brood_coverage_pct: result.health_score,
-                        spectral_classification: result.health_status,
-                        confidence_score: result.confidence,
-                        result_json: result.raw
-                    });
-                }
-            }
+            await this.logActivity({
+                event_type: 'health_audit_vision',
+                entity_type: 'hive',
+                entity_id: payload.hiveId,
+                title: 'Image health audit completed',
+                subtitle: result.health_status,
+                metadata: {
+                    hive_id: payload.hiveId,
+                    bee_count: result.bee_count,
+                    health_score: result.health_score,
+                    confidence: result.confidence,
+                },
+            });
             return result;
         } catch (error) {
             console.error('analyzeHiveImage:', error);
@@ -2801,20 +2791,19 @@ export const beeyieldService = {
                 raw,
             };
 
-            // Persist to Health Audit Logs
-            if (sb && payload.hiveId) {
-                const { data: { user } } = await sb.auth.getUser();
-                if (user) {
-                    await sb.from('health_audit_logs').insert({
-                        user_id: user.id,
-                        hive_id: payload.hiveId,
-                        analysis_type: 'acoustic',
-                        spectral_classification: result.prediction,
-                        confidence_score: result.probability,
-                        result_json: result.raw
-                    });
-                }
-            }
+            await this.logActivity({
+                event_type: 'health_audit_acoustic',
+                entity_type: 'hive',
+                entity_id: payload.hiveId,
+                title: 'Acoustic health audit completed',
+                subtitle: String(result.prediction || ''),
+                metadata: {
+                    hive_id: payload.hiveId,
+                    prediction: result.prediction,
+                    probability: result.probability,
+                    alert: result.alert,
+                },
+            });
             return result;
         } catch (error) {
             console.error('analyzeHiveAudio:', error);
@@ -2844,12 +2833,14 @@ export const beeyieldService = {
 
     // ========== JOBS (External API) ==========
     async getUserProfile(): Promise<{ data: any; error: any }> {
-        if (!sb) return { data: null, error: 'No client' };
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) return { data: null, error: 'Not authenticated' };
-
-        const { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
-        return { data, error };
+        try {
+            const headers = await getAuthHeaders();
+            const full = await apiGet<any>('/settings/full', undefined, { headers });
+            return { data: full?.profile ?? null, error: null };
+        } catch (error) {
+            console.error('getUserProfile:', error);
+            return { data: null, error };
+        }
     },
 
     async processPayment(payload: { amount: number; currency: string; payment_method: string; subscription_tier: string }): Promise<{ success: boolean; transaction_id?: string; error?: any }> {
@@ -2883,19 +2874,21 @@ export const beeyieldService = {
         }
     },
     async getInfrastructureRegisters(): Promise<any[]> {
-        if (!sb) return [];
-        const { data, error } = await sb.from('infrastructure_registry').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('getInfrastructureRegisters:', error); return []; }
-        return data || [];
+        try {
+            return await apiGet<any[]>('/beeyield/infrastructure-registry');
+        } catch (error) {
+            console.error('getInfrastructureRegisters:', error);
+            return [];
+        }
     },
 
     async logIntegrationAudit(platform: string, eventType: string, status: string, metrics: any): Promise<void> {
-        if (!sb) return;
-        await sb.rpc('log_integration_event', {
-            p_platform: platform,
-            p_event_type: eventType,
-            p_status: status,
-            p_metrics: metrics
+        await this.logActivity({
+            event_type: 'integration_audit',
+            entity_type: platform,
+            title: `${platform}: ${eventType}`,
+            subtitle: status,
+            metadata: metrics,
         });
     },
 

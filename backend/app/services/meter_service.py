@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Any
-from app.db.supabase_db import db_select, db_insert, db_update
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from datetime import datetime
 
 class MeterService:
@@ -31,6 +31,11 @@ class MeterService:
         return await db_select("meters_devices", filters=filters, order_by="meter_number")
 
     @staticmethod
+    async def get_meter(meter_id: str) -> Optional[Dict[str, Any]]:
+        rows = await db_select("meters_devices", filters={"id": meter_id}, limit=1)
+        return rows[0] if rows else None
+
+    @staticmethod
     async def get_readings(meter_id: str, limit: int = 100) -> List[Dict[str, Any]]:
         return await db_select(
             "meters_readings", 
@@ -45,6 +50,11 @@ class MeterService:
         return await db_select("meters_billing_rates", filters={"is_active": True})
 
     @staticmethod
+    async def get_billing_rate(rate_id: str) -> Optional[Dict[str, Any]]:
+        rows = await db_select("meters_billing_rates", filters={"id": rate_id}, limit=1)
+        return rows[0] if rows else None
+
+    @staticmethod
     async def create_billing_rate(payload: Dict[str, Any]) -> Dict[str, Any]:
         """
         Create a new billing rate row in meters_billing_rates.
@@ -55,6 +65,20 @@ class MeterService:
             raise Exception(res.get("error") or "Failed to create billing rate")
         rows = res.get("data") or []
         return rows[0] if isinstance(rows, list) and rows else payload
+
+    @staticmethod
+    async def update_billing_rate(rate_id: str, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        if not payload:
+            return await MeterService.get_billing_rate(rate_id)
+        res = await db_update("meters_billing_rates", payload, {"id": rate_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to update billing rate")
+        return await MeterService.get_billing_rate(rate_id) or (res.get("data") or [None])[0]
+
+    @staticmethod
+    async def delete_billing_rate(rate_id: str) -> bool:
+        res = await db_delete("meters_billing_rates", {"id": rate_id})
+        return bool(res.get("success"))
 
     @staticmethod
     async def get_events(severity: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
@@ -87,3 +111,17 @@ class MeterService:
             raise Exception(res.get("error") or "Failed to create meter")
         rows = res.get("data") or []
         return rows[0] if isinstance(rows, list) and rows else payload
+
+    @staticmethod
+    async def update_meter(meter_id: str, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        if not payload:
+            return await MeterService.get_meter(meter_id)
+        res = await db_update("meters_devices", payload, {"id": meter_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to update meter")
+        return await MeterService.get_meter(meter_id) or (res.get("data") or [None])[0]
+
+    @staticmethod
+    async def delete_meter(meter_id: str) -> bool:
+        res = await db_delete("meters_devices", {"id": meter_id})
+        return bool(res.get("success"))

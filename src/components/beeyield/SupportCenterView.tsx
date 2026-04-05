@@ -62,16 +62,23 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
         loadRequests();
     }, []);
 
+    const normalizeStatus = React.useCallback((s: any) => String(s || '').toLowerCase().replace(/\s+/g, '_'), []);
+
     const stats = {
         total: supportRequests.length,
         lastRequest: supportRequests.length > 0 ? new Date(supportRequests[0].created_at).toLocaleDateString() : 'None',
-        pending: supportRequests.filter(r => r.status === 'new').length,
-        active: supportRequests.filter(r => r.status === 'in_progress').length,
-        completed: supportRequests.filter(r => r.status === 'resolved').length,
+        pending: supportRequests.filter(r => ['new', 'open', 'draft'].includes(normalizeStatus(r.status))).length,
+        active: supportRequests.filter(r => ['in_progress'].includes(normalizeStatus(r.status))).length,
+        completed: supportRequests.filter(r => ['resolved', 'closed'].includes(normalizeStatus(r.status))).length,
     };
 
     const filteredRequests = supportRequests.filter(request => {
-        const matchesTab = activeTab === 'all' || request.status === activeTab;
+        const s = normalizeStatus(request.status);
+        const matchesTab =
+            activeTab === 'all' ||
+            (activeTab === 'new' && (s === 'new' || s === 'open' || s === 'draft')) ||
+            (activeTab === 'in_progress' && s === 'in_progress') ||
+            (activeTab === 'resolved' && (s === 'resolved' || s === 'closed'));
         const matchesFilter = request.subject?.toLowerCase().includes(filterText.toLowerCase());
         return matchesTab && matchesFilter;
     });

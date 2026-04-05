@@ -701,6 +701,39 @@ async def get_user_harvests(
     
     return all_harvests
 
+@router.get("/harvests/{harvest_id}", response_model=dict)
+async def get_harvest(
+    harvest_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Get a single harvest record by id (owned or via shared apiary)."""
+    relevant_ids = await get_user_and_farmer_ids(user_id, token)
+
+    columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
+    rows = await db_select("harvests", filters={"id": harvest_id, "user_id": relevant_ids}, columns=columns, limit=1, token=token)
+    if rows:
+        return rows[0]
+
+    # Shared apiary path
+    all_rows = await db_select("harvests", filters={"id": harvest_id}, columns=columns, limit=1, token=token)
+    if not all_rows:
+        raise HTTPException(status_code=404, detail="Harvest not found")
+
+    harvest = all_rows[0]
+    apiary_id = harvest.get("apiary_id")
+    if apiary_id:
+        shares = await db_select(
+            "apiary_shares",
+            filters={"apiary_id": apiary_id, "shared_with_user_id": user_id},
+            limit=1,
+            token=token,
+        )
+        if shares:
+            return harvest
+
+    raise HTTPException(status_code=403, detail="Harvest access denied")
+
 @router.get("/batches", response_model=List[dict])
 async def get_user_batches(
     user_id: str = Depends(get_user_id),
@@ -1068,6 +1101,108 @@ async def get_hive_readings(
     )
     return readings or []
 
+
+# ============================================
+# ACTIVITY LOGS (BeeYield dashboard feed)
+# ============================================
+
+@router.get("/activity-logs", response_model=List[dict])
+async def get_activity_logs(
+    limit: int = Query(50, ge=1, le=200),
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    return await db_select("activity_logs", filters={"user_id": user_id}, order_by="created_at", ascending=False, limit=limit, token=token)
+
+
+@router.post("/activity-logs", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def create_activity_log(
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    allowed = {"event_type", "entity_type", "entity_id", "title", "subtitle", "metadata"}
+    payload = {k: v for k, v in (body or {}).items() if k in allowed}
+    if not payload.get("title"):
+        raise HTTPException(status_code=400, detail="title is required")
+    payload["user_id"] = user_id
+    payload.setdefault("event_type", "system")
+    payload.setdefault("created_at", datetime.utcnow().isoformat())
+
+    res = await db_insert("activity_logs", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create activity log"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+# ============================================
+# CALCULATOR LOGS
+# ============================================
+
+@router.get("/calculator-logs", response_model=List[dict])
+async def get_calculator_logs(
+    calculation_type: Optional[str] = Query(None),
+    limit: int = Query(100, ge=1, le=500),
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    filters: dict[str, Any] = {"user_id": user_id}
+    if calculation_type:
+        filters["calculation_type"] = calculation_type
+    return await db_select("calculator_logs", filters=filters, order_by="created_at", ascending=False, limit=limit, token=token)
+
+
+@router.post("/calculator-logs", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def create_calculator_log(
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    payload = dict(body or {})
+    payload["user_id"] = user_id
+    payload.setdefault("created_at", datetime.utcnow().isoformat())
+
+    res = await db_insert("calculator_logs", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create calculator log"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+# ============================================
+# INFRASTRUCTURE REGISTRY (calibration)
+# ============================================
+
+@router.get("/infrastructure-registry", response_model=List[dict])
+async def get_infrastructure_registry(
+    limit: int = Query(500, ge=1, le=2000),
+    token: Optional[str] = Depends(get_token),
+):
+    # Registry isn't strictly user-scoped in all deployments; rely on RLS where configured.
+    return await db_select("infrastructure_registry", limit=limit, order_by="created_at", ascending=False, token=token)
+
+
+@router.patch("/infrastructure-registry/{serial_number}", response_model=dict)
+async def update_infrastructure_registry(
+    serial_number: str,
+    body: dict,
+    token: Optional[str] = Depends(get_token),
+):
+    rows = await db_select("infrastructure_registry", filters={"serial_number": serial_number}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    allowed = {"calibration_offset", "metadata", "status"}
+    patch = {k: v for k, v in (body or {}).items() if k in allowed}
+    patch["updated_at"] = datetime.utcnow().isoformat()
+
+    res = await db_update("infrastructure_registry", patch, {"serial_number": serial_number}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update registry"))
+    updated = res.get("data") or []
+    return updated[0] if isinstance(updated, list) and updated else rows[0]
+
 # ============================================
 # TASKS ENDPOINTS
 # ============================================
@@ -1136,6 +1271,37 @@ async def get_user_tasks(
                 task["hive_code"] = hives[0].get("hive_code")
     
     return all_tasks
+
+@router.get("/tasks/{task_id}", response_model=dict)
+async def get_task(
+    task_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Get a single task by id (owned or via shared apiary)."""
+    relevant_ids = await get_user_and_farmer_ids(user_id, token)
+
+    rows = await db_select("tasks", filters={"id": task_id, "user_id": relevant_ids}, limit=1, token=token)
+    if rows:
+        return rows[0]
+
+    # Shared apiary path
+    all_rows = await db_select("tasks", filters={"id": task_id}, limit=1, token=token)
+    if not all_rows:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task = all_rows[0]
+    apiary_id = task.get("apiary_id")
+    if apiary_id:
+        shares = await db_select(
+            "apiary_shares",
+            filters={"apiary_id": apiary_id, "shared_with_user_id": user_id},
+            limit=1,
+            token=token,
+        )
+        if shares:
+            return task
+
+    raise HTTPException(status_code=403, detail="Task access denied")
 
 @router.post("/tasks", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_task(
@@ -1290,6 +1456,36 @@ async def get_user_inspections(
                 inspection["hive_code"] = hives[0].get("hive_code")
     
     return all_inspections
+
+@router.get("/inspections/{inspection_id}", response_model=dict)
+async def get_inspection(
+    inspection_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Get a single inspection by id (owned or via shared apiary)."""
+    relevant_ids = await get_user_and_farmer_ids(user_id, token)
+    rows = await db_select("inspections", filters={"id": inspection_id, "user_id": relevant_ids}, limit=1, token=token)
+    if rows:
+        return rows[0]
+
+    # Shared apiary path
+    all_rows = await db_select("inspections", filters={"id": inspection_id}, limit=1, token=token)
+    if not all_rows:
+        raise HTTPException(status_code=404, detail="Inspection not found")
+    inspection = all_rows[0]
+    apiary_id = inspection.get("apiary_id")
+    if apiary_id:
+        shares = await db_select(
+            "apiary_shares",
+            filters={"apiary_id": apiary_id, "shared_with_user_id": user_id},
+            limit=1,
+            token=token,
+        )
+        if shares:
+            return inspection
+
+    raise HTTPException(status_code=403, detail="Inspection access denied")
 
 
 @router.post("/inspections", response_model=dict, status_code=status.HTTP_201_CREATED)

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from typing import List, Optional
+from typing import List, Optional, Any
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 from app.core import security
-from app.db.supabase_db import db_insert, db_select
+from app.db.supabase_db import db_insert, db_select, db_update, db_delete
 from app.services.email_service import email_service
 from app.core.config import settings
 
@@ -19,6 +20,13 @@ class RequestCreate(BaseModel):
     category: str = Field("General", description="Hardware, Software, Traceability, General")
     priority: str = Field("Medium", description="Low, Medium, High, Critical")
     status: str = Field("Open", description="Draft, Open")
+
+class RequestUpdate(BaseModel):
+    subject: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    priority: Optional[str] = None
+    status: Optional[str] = None  # Open, In Progress, Resolved, Draft
 
 class RequestCommentCreate(BaseModel):
     message: str = Field(..., description="Content of the comment")
@@ -61,6 +69,42 @@ def get_token(request: Request) -> Optional[str]:
     if auth_header and auth_header.startswith("Bearer "):
         return auth_header.split(" ")[1]
     return None
+
+def _is_admin(current_user: dict) -> bool:
+    return (current_user.get("email") or "").lower() == (settings.ADMIN_EMAIL or "").lower()
+
+def _normalize_status(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+    v = str(value).strip()
+    if not v:
+        return None
+    # Normalize common variants
+    v_lower = v.lower().replace("_", " ")
+    if v_lower in {"open", "opened", "new"}:
+        return "Open"
+    if v_lower in {"in progress", "inprogress", "progress"}:
+        return "In Progress"
+    if v_lower in {"resolved", "done", "closed"}:
+        return "Resolved"
+    if v_lower in {"draft"}:
+        return "Draft"
+    # Keep as-is (but callers must validate)
+    return v
+
+def _validate_status_transition(existing: str, desired: str, is_admin: bool) -> None:
+    allowed = {"Draft", "Open", "In Progress", "Resolved"}
+    if desired not in allowed:
+        raise HTTPException(status_code=400, detail=f"Invalid status '{desired}'. Allowed: {sorted(allowed)}")
+
+    if is_admin:
+        return
+
+    # Non-admin users can only keep requests in Draft/Open.
+    if desired not in {"Draft", "Open"}:
+        raise HTTPException(status_code=403, detail="Only admins can set this status")
+    if existing not in {"Draft", "Open"}:
+        raise HTTPException(status_code=403, detail="Request can no longer be modified")
 
 # ============================================
 # ENDPOINTS
@@ -150,6 +194,103 @@ async def get_request_details(
         raise HTTPException(status_code=404, detail="Request not found")
         
     return requests[0]
+
+@router.patch("/{request_id}", response_model=RequestResponse)
+async def update_request(
+    request_id: str,
+    patch: RequestUpdate,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    """
+    Update a support request.
+    - Owners can edit subject/description/category/priority while status is Draft/Open.
+    - Only admins can set status to In Progress/Resolved.
+    """
+    is_admin = _is_admin(current_user)
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    # Load existing request (admin can access any; users only their own)
+    existing_filters: dict[str, Any] = {"id": request_id}
+    if not is_admin:
+        existing_filters["user_id"] = user_id
+
+    rows = await db_select("requests", filters=existing_filters, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Request not found")
+    existing = rows[0]
+
+    payload = patch.dict(exclude_unset=True)
+    # Normalize/validate status if provided
+    if "status" in payload:
+        desired = _normalize_status(payload.get("status"))
+        if desired is None:
+            payload.pop("status", None)
+        else:
+            current = _normalize_status(existing.get("status") or "Open") or "Open"
+            _validate_status_transition(current, desired, is_admin=is_admin)
+            payload["status"] = desired
+
+    # Non-admin: block edits once the request is no longer editable
+    if not is_admin:
+        current = _normalize_status(existing.get("status") or "Open") or "Open"
+        if current not in {"Draft", "Open"}:
+            raise HTTPException(status_code=403, detail="Request can no longer be modified")
+
+    # Nothing to update
+    if not payload:
+        return existing
+
+    payload["updated_at"] = datetime.utcnow().isoformat()
+
+    update_filters: dict[str, Any] = {"id": request_id}
+    if not is_admin:
+        update_filters["user_id"] = user_id
+
+    res = await db_update("requests", payload, update_filters, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update request"))
+
+    # Re-fetch for a stable response
+    updated_rows = await db_select("requests", filters=existing_filters, token=token)
+    return updated_rows[0] if updated_rows else {**existing, **payload}
+
+@router.delete("/{request_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_request(
+    request_id: str,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token),
+):
+    """
+    Delete a support request.
+    - Owners can delete while status is Draft/Open.
+    - Admins can delete any.
+    """
+    is_admin = _is_admin(current_user)
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    filters: dict[str, Any] = {"id": request_id}
+    if not is_admin:
+        filters["user_id"] = user_id
+
+    rows = await db_select("requests", filters=filters, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    existing = rows[0]
+    if not is_admin:
+        current = _normalize_status(existing.get("status") or "Open") or "Open"
+        if current not in {"Draft", "Open"}:
+            raise HTTPException(status_code=403, detail="Only Draft/Open requests can be deleted")
+
+    res = await db_delete("requests", filters=filters, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete request"))
+    return None
 
 @router.post("/{request_id}/comments", response_model=CommentResponse)
 async def add_comment(

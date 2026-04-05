@@ -142,3 +142,22 @@ async def get_my_devices(
     """Get all devices owned by user"""
     return await db_select("hub_devices", filters={"user_id": user_id}, token=token)
 
+
+@router.delete("/devices/{serial_number}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_device(
+    serial_number: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Unpair a hub device (delete record) if owned by user."""
+    rows = await db_select("hub_devices", filters={"serial_number": serial_number, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    from app.db.supabase_db import db_delete
+    res = await db_delete("hub_devices", {"serial_number": serial_number}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete device"))
+
+    return None
+

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Thermometer, Droplets, Weight, Download, FileText, Zap, Calendar, Database } from 'lucide-react';
@@ -9,7 +8,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { beeyieldService, SensorReading } from '@/services/beeyieldService';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface MeasurementDataViewProps {
     onTabChange: (tab: string) => void;
@@ -21,32 +22,32 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
     const { data: metrics } = useQuery({
         queryKey: ['measurement_data', timeRange],
         queryFn: async () => {
-            if (!supabase) return [];
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return [];
+            const hours = timeRange === '24h' ? 24 : timeRange === '7d' ? 24 * 7 : 24 * 30;
+            const rows: SensorReading[] = await beeyieldService.getSensorReadings(undefined, hours);
+            const toNum = (v: any) => (typeof v === 'number' ? v : (v != null && !Number.isNaN(Number(v)) ? Number(v) : null));
 
-            const days = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : 30;
-            const startTime = new Date();
-            startTime.setDate(startTime.getDate() - days);
+            // Best-effort normalization (schema varies by device type).
+            return (rows || [])
+                .map((d: any) => {
+                    const tsRaw = d?.recorded_at || d?.timestamp || d?.created_at;
+                    const ts = tsRaw ? new Date(tsRaw) : null;
+                    if (!ts || Number.isNaN(ts.getTime())) return null;
 
-            const { data, error } = await supabase
-                .from('sensor_readings')
-                .select('*')
-                .gte('recorded_at', startTime.toISOString())
-                .order('recorded_at', { ascending: true });
+                    const readings = d?.readings || {};
+                    const temp = toNum(d?.temp_internal ?? d?.temperature ?? readings?.temperature ?? readings?.internal_temp);
+                    const hum = toNum(d?.humidity_internal ?? d?.humidity ?? readings?.humidity);
+                    const weight = toNum(d?.weight_kg ?? d?.hive_weight ?? d?.hive_weight_kg ?? d?.weight ?? readings?.hive_weight);
+                    const acoustics = toNum(d?.acoustic_freq ?? readings?.acoustic_freq ?? d?.signal_strength);
 
-            if (error) {
-                console.error("Error fetching measurements:", error);
-                return [];
-            }
-
-            return data.map(d => ({
-                time: new Date(d.recorded_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                temp: d.temp_internal,
-                hum: d.humidity_internal,
-                acoustics: d.acoustic_freq,
-                weight: d.weight_kg
-            }));
+                    return {
+                        time: ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        temp: temp ?? 0,
+                        hum: hum ?? 0,
+                        acoustics: acoustics ?? 0,
+                        weight: weight ?? 0,
+                    };
+                })
+                .filter(Boolean) as any[];
         }
     });
 
@@ -54,9 +55,8 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
     const latest = displayData[displayData.length - 1] || { temp: 0, hum: 0, weight: 0, acoustics: 0 };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-20 p-8 -m-8">
-            {/* Header Section */}
-            <PageHeader
+        <BeeYieldPageShell className="space-y-8 animate-in fade-in duration-500 pb-20">
+            <BeeYieldPageHeader
                 icon={Database}
                 label="Sensor Dashboard"
                 title="Telemetry Analytics"
@@ -217,7 +217,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     </div>
                 </div>
             </div>
-        </div>
+        </BeeYieldPageShell>
     );
 };
 
