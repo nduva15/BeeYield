@@ -162,102 +162,42 @@ const STATIC_PRODUCTS: Product[] = [
     ]
   },
 
-  // --- SENSORS (8 Items) ---
+  // --- SENSORS ---
   {
     id: "s1",
-    name: "BeeYield Smart Hive Monitor",
-    description: "Advanced acoustic and temperature monitoring for optimal hive health.",
+    name: "BeeHUB Queen",
+    description: "Primary hub with SIM/LTE-M / NB-IoT / 2G connectivity that links BLE modules, streams data to the cloud and delivers full apiary monitoring.",
     category: "hardware",
-    badge: "Featured",
-    images: ["/images/products/beeyield_sensor.png"],
+    badge: "Gateway",
+    images: ["/images/products/beeyield_hub_sensor.jpg"],
     rating: 4.8,
     review_count: 42,
     is_active: true,
-    variants: [{ id: "vs1", size: "Standard", price_kes: 15000, stock_quantity: 50, is_available: true }]
+    variants: [{ id: "vs1", size: "Unit", price_kes: 400, stock_quantity: 50, is_available: true }]
   },
   {
     id: "s2",
-    name: "Hive Heat Sensor",
-    description: "Precise brood nest temperature tracking in any climate.",
+    name: "BeeHUB Sense",
+    description: "Compact BLE module for hive-level sensing (temperature, sound, weight with scale) that pairs wirelessly with BeeHUB Queen.",
     category: "hardware",
-    badge: null,
-    images: ["/images/products/beeyield_sensor.png"],
+    badge: "BLE Module",
+    images: ["/images/products/beehub_temp_humidity.png"],
     rating: 4.6,
     review_count: 28,
     is_active: true,
-    variants: [{ id: "vs2", size: "Standard", price_kes: 4500, stock_quantity: 100, is_available: true }]
+    variants: [{ id: "vs2", size: "Unit", price_kes: 400, stock_quantity: 100, is_available: true }]
   },
   {
     id: "s3",
-    name: "Humidity Controller",
-    description: "Maintain optimal hive environment to prevent mold and moisture.",
+    name: "BeeHUB Tracker (GPS)",
+    description: "GPS tracker for hive transport and theft protection; sends location via BeeHUB Queen connectivity or bundled accelerometer upgrade.",
     category: "hardware",
-    badge: null,
-    images: ["/images/products/beeyield_sensor.png"],
+    badge: "Security",
+    images: ["/images/products/beehub_sim_card.png"],
     rating: 4.7,
     review_count: 15,
     is_active: true,
-    variants: [{ id: "vs3", size: "Standard", price_kes: 6200, stock_quantity: 30, is_available: true }]
-  },
-  {
-    id: "s4",
-    name: "Activity Monitor",
-    description: "Track bee flight patterns and traffic in real-time.",
-    category: "hardware",
-    badge: "New",
-    images: ["/images/products/beeyield_sensor.png"],
-    rating: 4.9,
-    review_count: 12,
-    is_active: true,
-    variants: [{ id: "vs4", size: "Standard", price_kes: 8500, stock_quantity: 25, is_available: true }]
-  },
-  {
-    id: "s5",
-    name: "Queen Cell Sensor",
-    description: "Early detection of swarming or supersedure cells.",
-    category: "hardware",
-    badge: null,
-    images: ["/images/products/beeyield_sensor.png"],
-    rating: 4.5,
-    review_count: 9,
-    is_active: true,
-    variants: [{ id: "vs5", size: "Standard", price_kes: 5800, stock_quantity: 40, is_available: true }]
-  },
-  {
-    id: "s6",
-    name: "Propolis Weight Sensor",
-    description: "Monitor hive productivity by tracking weight changes.",
-    category: "hardware",
-    badge: null,
-    images: ["/images/products/beeyield_sensor.png"],
-    rating: 4.4,
-    review_count: 21,
-    is_active: true,
-    variants: [{ id: "vs6", size: "Standard", price_kes: 12500, stock_quantity: 15, is_available: true }]
-  },
-  {
-    id: "s7",
-    name: "Smart Hive Battery Pack",
-    description: "Extended power for remote honey production sites.",
-    category: "hardware",
-    badge: null,
-    images: ["/images/products/beeyield_sensor.png"],
-    rating: 4.7,
-    review_count: 34,
-    is_active: true,
-    variants: [{ id: "vs7", size: "Standard", price_kes: 3500, stock_quantity: 60, is_available: true }]
-  },
-  {
-    id: "s8",
-    name: "Apiary Solar Station",
-    description: "Renewable energy for all your sensors and connectivity.",
-    category: "hardware",
-    badge: "Eco",
-    images: ["/images/products/beeyield_sensor.png"],
-    rating: 5.0,
-    review_count: 7,
-    is_active: true,
-    variants: [{ id: "vs8", size: "Standard", price_kes: 22000, stock_quantity: 10, is_available: true }]
+    variants: [{ id: "vs3", size: "Unit", price_kes: 400, stock_quantity: 30, is_available: true }]
   },
 
   // --- MERCH (8 Items) ---
@@ -514,7 +454,11 @@ const Shop = () => {
     toast.success(`Added ${product.name} to cart`);
   };
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number, category?: string) => {
+    if (category === "hardware") {
+      return `USD ${price.toLocaleString()}`;
+    }
+
     return `KES ${price.toLocaleString()}`;
   };
 
