@@ -673,7 +673,8 @@ const Shop = () => {
                                 {formatPrice(
                                   product.variants?.find(
                                     (v) => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size)
-                                  )?.price_kes || product.variants?.[0]?.price_kes || 0
+                                  )?.price_kes || product.variants?.[0]?.price_kes || 0,
+                                  product.category
                                 )}
                               </p>
                             </div>

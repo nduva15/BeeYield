@@ -11,6 +11,7 @@ import httpx
 from typing import Optional, Any
 from app.core.config import settings
 from contextlib import contextmanager
+import re
 
 # Gateway URL from environment — no hardcoded defaults for production
 DB_GATEWAY_URL = settings.DB_GATEWAY_URL
@@ -26,6 +27,7 @@ _sdk_import_failed = False
 
 # ============ SHARED HTTP CLIENT (Connection Pooling) ============
 _async_client: Optional[httpx.AsyncClient] = None
+_POSTGREST_OPERATOR_RE = re.compile(r"^(eq|neq|gt|gte|lt|lte|like|ilike|is|in|cs|cd|ov|sl|sr|nxr|nxl|adj|not)\.")
 
 def init_db_client():
     """Initialize the shared AsyncClient. Call this on app startup."""
@@ -182,6 +184,8 @@ async def db_select(
                     params[k] = f"in.({v_list})"
                 else:
                     params[k] = "is.null"
+            elif isinstance(v, str) and _POSTGREST_OPERATOR_RE.match(v):
+                params[k] = v
             else:
                 params[k] = f"eq.{v}"
             

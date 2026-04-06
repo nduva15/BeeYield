@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { glass, PageHeader } from './GlassTheme';
 import { useApiaries } from '@/hooks/useApiaries';
 import { cn } from '@/lib/utils';
 import { beeyieldService, PublicFlightMapPayload } from '@/services/beeyieldService';
@@ -361,53 +362,80 @@ const FlightMapView: React.FC = () => {
         ['Flight heatmap', showHeatmap, setShowHeatmap],
         ['Forage potential', showForagePotential, setShowForagePotential],
     ] as const;
+    const activeLayerCount = layerButtons.filter(([, active]) => active).length;
+    const primaryLocationLabel = String(flightArea?.apiary?.location_name || 'Kibwezi, Kenya');
+    const topStats = [
+        {
+            label: 'Forage potential',
+            value: `~${Math.round(Number(flightArea?.forage?.potential_pct || 0))}%`,
+            detail: `Share ${Math.round(Number(flightArea?.forage?.estimated_share_pct || 0))}%`,
+        },
+        {
+            label: 'Effective radius',
+            value: formatMeters(effectiveRadiusKm),
+            detail: 'High-confidence flight zone',
+        },
+        {
+            label: 'Maximum radius',
+            value: formatMeters(maxRadiusKm),
+            detail: 'Outer operating envelope',
+        },
+        {
+            label: 'Live layers',
+            value: activeLayerCount,
+            detail: showHeatmap ? 'Heatmap active' : 'Map overlays trimmed',
+        },
+    ];
 
     if (loading) {
         return (
-            <div className="flex min-h-[620px] items-center justify-center rounded-[30px] border border-[#eadbbc] bg-[#fffaf1]">
+            <div className={cn(glass.section, 'flex min-h-[620px] items-center justify-center')}>
                 <div className="space-y-4 text-center">
-                    <Loader2 className="mx-auto h-12 w-12 animate-spin text-[#ca8a04]" />
-                    <p className="text-sm font-medium text-[#7f6b4e]">Loading bee flight area...</p>
+                    <Loader2 className="mx-auto h-12 w-12 animate-spin text-[#F4D03F]" />
+                    <p className="text-sm font-medium text-[#1A1A1A]/70">Loading bee flight area...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="-m-4 min-h-screen space-y-7 bg-[#f4f6fb] px-4 py-6 md:-m-6 md:px-6 md:py-8">
-            <div className="space-y-2">
-                <h1 className="text-4xl font-bold tracking-tight text-[#142645]">Bee Flight Area</h1>
-                <p className="text-sm text-[#6f7b93]">
-                    {hasPrivateApiaries ? 'Live forage, map, and route planning for your selected apiary.' : 'Live Kibwezi, Kenya map with backend weather and forage coverage.'}
-                </p>
-            </div>
-
-            <section className={cn(card, 'p-5 md:p-6')}>
-                <div className="space-y-6">
-                    <div className="rounded-[22px] border border-[#d6c29f] bg-white/70 p-4">
-                        <div className="mb-2 text-sm font-medium text-[#9a7d45]">{hasPrivateApiaries ? 'My locations' : 'Live location'}</div>
-                        <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
-                            <SelectTrigger className="h-14 rounded-2xl border-[#c8b189] bg-white text-lg font-medium text-[#3f3426]">
-                                <SelectValue placeholder="Select an apiary" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-[#dbc7a3] bg-[#fffaf1]">
-                                {locationOptions.map((location: any) => (
-                                    <SelectItem key={location.id} value={location.id}>{location.label || location.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, 'font-sans')}>
+            <PageHeader
+                icon={Route}
+                label="Flight intelligence"
+                title="Bee Flight Area"
+                subtitle={hasPrivateApiaries ? 'Live forage, map, and route planning for your selected apiary.' : 'Live Kibwezi, Kenya map with backend weather and forage coverage.'}
+                actions={
+                    <div className="flex items-center gap-2">
+                        <div className={cn(glass.badge, 'border-[#1B9157]/20 bg-[#1B9157]/10 text-[#166534]')}>
+                            {primaryLocationLabel}
+                        </div>
+                        {isFetching ? <Loader2 className="h-4 w-4 animate-spin text-[#F4D03F]" /> : null}
                     </div>
+                }
+            />
 
-                    <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)_minmax(0,1fr)]">
+            <section className={cn(glass.section, 'overflow-hidden')}>
+                <div className="border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.98),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
+                    <div className="grid gap-5 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)]">
                         <div className="space-y-4">
-                            <div className="flex items-end justify-between">
-                                <div>
-                                    <div className="text-[1.05rem] font-semibold text-[#1f2f4d]">Forage potential</div>
-                                </div>
-                                <div className="text-3xl font-bold text-[#17335f]">~{Math.round(Number(flightArea?.forage?.potential_pct || 0))}%</div>
-                                {isFetching ? <Loader2 className="h-4 w-4 animate-spin text-[#ca8a04]" /> : null}
+                            <div className="space-y-1">
+                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{hasPrivateApiaries ? 'My locations' : 'Live location'}</p>
+                                <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
+                                    <SelectTrigger className="h-12 rounded-xl border-[#F4D03F]/30 bg-[#FFF9F0] text-sm font-semibold text-[#1A1A1A] shadow-sm">
+                                        <SelectValue placeholder="Select an apiary" />
+                                    </SelectTrigger>
+                                    <SelectContent className={cn(glass.selectContent, 'rounded-xl')}>
+                                        {locationOptions.map((location: any) => (
+                                            <SelectItem key={location.id} value={location.id} className="rounded-lg text-sm font-semibold text-[#1A1A1A]">
+                                                {location.label || location.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
-                            <div className="rounded-[24px] border border-[#c7781a] bg-[#fff8f2] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
+
+                            <div className="rounded-[22px] border border-[#c7781a] bg-[#fff8f2] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
                                 <div className="mb-3 text-sm font-medium text-[#b45f0b]">Land type</div>
                                 <Select value={activeLandTypeId} onValueChange={setSelectedLandTypeId}>
                                     <SelectTrigger className="h-[70px] rounded-[18px] border-2 border-[#b56a13] bg-[#fffdf9] px-5 text-lg font-medium text-[#3f3426] shadow-none focus:ring-0 focus:ring-offset-0">
@@ -424,43 +452,53 @@ const FlightMapView: React.FC = () => {
                                             </SelectItem>
                                         ))}
                                         {landTypes.length === 0 ? (
-                                            <div className="px-5 py-4 text-sm font-medium text-[#8b6f57]">
-                                                No land types available yet.
-                                            </div>
+                                            <div className="px-5 py-4 text-sm font-medium text-[#8b6f57]">No land types available yet.</div>
                                         ) : null}
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-[#88724f]">
-                                <span className="h-3 w-3 rounded-full bg-[#f2b300]" />
-                                Estimated forage share: {Math.round(Number(flightArea?.forage?.estimated_share_pct || 0))}%
+
+                            <div className="flex flex-wrap gap-2">
+                                {layerButtons.map(([label, active, setter]) => (
+                                    <button key={label} className={pill(active)} onClick={() => setter((value: boolean) => !value)} type="button">
+                                        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#a96600] bg-white text-[#a96600]"><Check className="h-4 w-4" /></span>
+                                        {label}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="flex items-end justify-between">
-                                <div className="text-sm font-semibold text-[#1f2f4d]">Effective radius</div>
-                                <div className="text-2xl font-semibold text-[#17335f]">{formatMeters(effectiveRadiusKm)}</div>
+                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            {topStats.map((stat) => (
+                                <div key={stat.label} className={cn(glass.section, 'bg-white/60 p-4')}>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/45">{stat.label}</p>
+                                    <p className="mt-3 text-2xl font-bold tracking-tight text-[#1A1A1A]">{stat.value}</p>
+                                    <p className="mt-2 text-xs font-semibold text-[#1A1A1A]/55">{stat.detail}</p>
+                                </div>
+                            ))}
+                            <div className={cn(glass.section, 'bg-white/60 p-4 sm:col-span-2 xl:col-span-4')}>
+                                <div className="mb-3 flex items-center justify-between">
+                                    <div className="text-sm font-semibold text-[#1A1A1A]">Flight radius tuning</div>
+                                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[#1A1A1A]/45">Live controls</div>
+                                </div>
+                                <div className="grid gap-4 xl:grid-cols-2">
+                                    <div className="space-y-3">
+                                        <div className="flex items-end justify-between">
+                                            <div className="text-sm font-semibold text-[#1A1A1A]/75">Effective radius</div>
+                                            <div className="text-lg font-bold text-[#1A1A1A]">{formatMeters(effectiveRadiusKm)}</div>
+                                        </div>
+                                        <Slider value={[effectiveRadiusKm]} min={0.5} max={Math.max(5, maxRadiusKm)} step={0.1} onValueChange={([value]) => setEffectiveRadiusKm(value)} className="py-2" />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-end justify-between">
+                                            <div className="text-sm font-semibold text-[#1A1A1A]/75">Maximum radius</div>
+                                            <div className="text-lg font-bold text-[#1A1A1A]">{formatMeters(maxRadiusKm)}</div>
+                                        </div>
+                                        <Slider value={[maxRadiusKm]} min={effectiveRadiusKm} max={10} step={0.1} onValueChange={([value]) => setMaxRadiusKm(value)} className="py-2" />
+                                    </div>
+                                </div>
                             </div>
-                            <Slider value={[effectiveRadiusKm]} min={0.5} max={Math.max(5, maxRadiusKm)} step={0.1} onValueChange={([value]) => setEffectiveRadiusKm(value)} className="py-2" />
                         </div>
-
-                        <div className="space-y-4">
-                            <div className="flex items-end justify-between">
-                                <div className="text-sm font-semibold text-[#1f2f4d]">Maximum radius</div>
-                                <div className="text-2xl font-semibold text-[#17335f]">{formatMeters(maxRadiusKm)}</div>
-                            </div>
-                            <Slider value={[maxRadiusKm]} min={effectiveRadiusKm} max={10} step={0.1} onValueChange={([value]) => setMaxRadiusKm(value)} className="py-2" />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3 rounded-[22px] border border-dashed border-[#e2be73] bg-[#fff4d6] p-3">
-                        {layerButtons.map(([label, active, setter]) => (
-                            <button key={label} className={pill(active)} onClick={() => setter((value: boolean) => !value)} type="button">
-                                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#a96600] bg-white text-[#a96600]"><Check className="h-4 w-4" /></span>
-                                {label}
-                            </button>
-                        ))}
                     </div>
                 </div>
             </section>

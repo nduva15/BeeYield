@@ -2262,7 +2262,7 @@ export const beeyieldService = {
     // ========== VARROA READINGS & TREATMENTS ==========
     async getVarroaReadings(hiveId?: string): Promise<any[]> {
         try {
-            return await apiGet<any[]>('/measurements/diseases/radar', hiveId ? { hive_id: hiveId } : undefined);
+            return await apiGet<any[]>('/measurements/varroa/readings', hiveId ? { hive_id: hiveId } : undefined);
         } catch (error) {
             console.error('getVarroaReadings:', error);
             return [];
@@ -2279,14 +2279,16 @@ export const beeyieldService = {
         notes?: string;
     }): Promise<{ data: any; error: any }> {
         try {
-            const payload: any = {
+            const payload = {
                 hive_id: input.hive_id,
-                disease_type: 'varroa',
-                detection_method: input.method || 'manual',
-                severity: input.mite_count > 3 ? 'high' : input.mite_count > 1 ? 'medium' : 'low',
+                reading_date: input.reading_date,
+                method: input.method || 'alcohol_wash',
+                mite_count: input.mite_count,
+                sample_size: input.sample_size || 300,
+                inspector_name: input.inspector_name,
                 notes: input.notes,
             };
-            const data = await apiPost<any>('/measurements/diseases/radar', payload);
+            const data = await apiPost<any>('/measurements/varroa/readings', payload);
             toast.success('Varroa reading recorded');
             return { data, error: null };
         } catch (error) {
@@ -2298,8 +2300,7 @@ export const beeyieldService = {
 
     async getVarroaTreatments(hiveId?: string): Promise<any[]> {
         try {
-            const rows = await apiGet<any[]>('/inspections', hiveId ? { hive_id: hiveId } : undefined);
-            return (rows || []).filter((r: any) => String(r?.health_status || '').toLowerCase() === 'treated');
+            return await apiGet<any[]>('/measurements/varroa/treatments', hiveId ? { hive_id: hiveId } : undefined);
         } catch (error) {
             console.error('getVarroaTreatments:', error);
             return [];
@@ -2316,13 +2317,15 @@ export const beeyieldService = {
         notes?: string;
     }): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPost<any>('/inspections', {
+            const data = await apiPost<any>('/measurements/varroa/treatments', {
                 hive_id: input.hive_id,
-                inspection_date: input.start_date,
-                health_status: 'treated',
-                actions_taken: `${input.treatment_type} - ${input.dosage || 'standard'}`,
+                treatment_type: input.treatment_type,
+                start_date: input.start_date,
+                end_date: input.end_date,
+                dosage: input.dosage,
+                effectiveness_percent: input.effectiveness_percent,
                 notes: input.notes,
-            } as any);
+            });
             toast.success('Treatment recorded');
             return { data, error: null };
         } catch (error) {

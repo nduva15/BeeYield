@@ -142,3 +142,122 @@ async def create_disease_detection(
     rows = res.get("data") or []
     return rows[0] if isinstance(rows, list) and rows else payload
 
+
+@router.get("/varroa/readings")
+async def get_varroa_readings(
+    hive_id: Optional[str] = None,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    """
+    Fetch dedicated Varroa reading records for the authenticated user.
+    """
+    filters: dict[str, Any] = {"user_id": user_id}
+    if hive_id:
+        filters["hive_id"] = hive_id
+
+    results = await db_select(
+        "varroa_readings",
+        filters=filters,
+        order_by="reading_date",
+        ascending=False,
+        limit=200,
+        token=token,
+    )
+    return results
+
+
+@router.post("/varroa/readings", status_code=201)
+async def create_varroa_reading(
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    """
+    Create a dedicated Varroa reading row.
+    """
+    hive_id = body.get("hive_id")
+    if not hive_id:
+        raise HTTPException(status_code=400, detail="hive_id is required")
+
+    mite_count = int(body.get("mite_count") or 0)
+    sample_size = int(body.get("sample_size") or 300)
+    infestation_rate = round((mite_count / sample_size) * 100, 2) if sample_size > 0 else 0
+
+    payload = {
+        "hive_id": hive_id,
+        "user_id": user_id,
+        "reading_date": body.get("reading_date") or datetime.utcnow().date().isoformat(),
+        "method": body.get("method") or "alcohol_wash",
+        "mite_count": mite_count,
+        "sample_size": sample_size,
+        "infestation_rate": body.get("infestation_rate", infestation_rate),
+        "inspector_name": body.get("inspector_name"),
+        "notes": body.get("notes"),
+    }
+
+    res = await db_insert("varroa_readings", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create Varroa reading"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.get("/varroa/treatments")
+async def get_varroa_treatments(
+    hive_id: Optional[str] = None,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    """
+    Fetch dedicated Varroa treatment records for the authenticated user.
+    """
+    filters: dict[str, Any] = {"user_id": user_id}
+    if hive_id:
+        filters["hive_id"] = hive_id
+
+    results = await db_select(
+        "varroa_treatments",
+        filters=filters,
+        order_by="start_date",
+        ascending=False,
+        limit=200,
+        token=token,
+    )
+    return results
+
+
+@router.post("/varroa/treatments", status_code=201)
+async def create_varroa_treatment(
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    """
+    Create a dedicated Varroa treatment row.
+    """
+    hive_id = body.get("hive_id")
+    treatment_type = body.get("treatment_type")
+
+    if not hive_id:
+        raise HTTPException(status_code=400, detail="hive_id is required")
+    if not treatment_type:
+        raise HTTPException(status_code=400, detail="treatment_type is required")
+
+    payload = {
+        "hive_id": hive_id,
+        "user_id": user_id,
+        "treatment_type": treatment_type,
+        "start_date": body.get("start_date") or datetime.utcnow().date().isoformat(),
+        "end_date": body.get("end_date"),
+        "dosage": body.get("dosage"),
+        "effectiveness_percent": body.get("effectiveness_percent"),
+        "notes": body.get("notes"),
+    }
+
+    res = await db_insert("varroa_treatments", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create Varroa treatment"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
