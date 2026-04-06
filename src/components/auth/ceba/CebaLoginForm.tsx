@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Shield, Terminal, Activity, Server, Globe, LogIn } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 interface CebaLoginFormProps {
     onSuccess?: () => void;
@@ -104,13 +105,16 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     .single();
 
                 if (profileError) {
-                    await supabaseCEBA.from('profiles').upsert({
-                        id: loggedInUser.id,
-                        email: loggedInUser.email,
-                        full_name: loggedInUser.user_metadata?.full_name || 'Admin User',
-                        role: 'admin',
-                        updated_at: new Date().toISOString()
-                    });
+                    const { error: ensureProfileError } = await ensureProfileForUser(
+                        supabaseCEBA,
+                        'ceba',
+                        loggedInUser,
+                        { role: userRole === 'super_admin' ? 'super_admin' : 'admin' },
+                    );
+
+                    if (ensureProfileError) {
+                        console.error('Admin profile sync failed after login', ensureProfileError);
+                    }
                 }
 
                 toast.success('Login successful');

@@ -224,6 +224,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     const [design, setDesign] = React.useState<LabelDesign>(defaultDesign);
     const [savedDesigns, setSavedDesigns] = React.useState<LabelDesign[]>([]);
     const [isGenerating, setIsGenerating] = React.useState(false);
+    const [isSavingDesign, setIsSavingDesign] = React.useState(false);
     const { data: apiariesData } = useApiaries();
     const { data: hivesData } = useHives();
     const { data: harvestsData } = useHarvests();
@@ -244,6 +245,16 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     // Refs
     const previewRef = React.useRef<HTMLDivElement>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const upsertSavedDesign = (saved: LabelDesign) => {
+        setSavedDesigns(prev => {
+            const existingIndex = prev.findIndex(item => item.id === saved.id);
+            if (existingIndex >= 0) {
+                return prev.map(item => item.id === saved.id ? saved : item);
+            }
+            return [saved, ...prev];
+        });
+    };
 
     React.useEffect(() => {
         const loadInitialData = async () => {
@@ -269,6 +280,20 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     const updateDesign = (updates: Partial<LabelDesign>) => {
         setDesign(prev => ({ ...prev, ...updates }));
     };
+
+    const isPersistedDesign = React.useMemo(
+        () => savedDesigns.some(saved => saved.id === design.id),
+        [savedDesigns, design.id]
+    );
+
+    const normalizedDesignName = React.useMemo(() => {
+        const designName = (design.name || '').trim();
+        if (designName) {
+            return designName;
+        }
+        const fallbackName = (design.productName || '').trim();
+        return fallbackName || 'Untitled Label';
+    }, [design.name, design.productName]);
 
     const copyToClipboard = async (label: string, value: string) => {
         try {
@@ -318,43 +343,59 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     }, [design.showQRCode, design.batchNumber]);
 
     const saveDesign = async () => {
+        setIsSavingDesign(true);
         try {
-            const saved = await labelService.saveLabel(design);
+            const payload: LabelDesign = {
+                ...design,
+                name: normalizedDesignName,
+            };
+            const saved = isPersistedDesign
+                ? await labelService.updateLabel(design.id, payload)
+                : await labelService.createLabel(payload);
 
-            // Update the local list
-            const existingIndex = savedDesigns.findIndex(d => d.id === saved.id);
-            const newSavedDesigns = existingIndex >= 0
-                ? savedDesigns.map((d, i) => i === existingIndex ? saved as LabelDesign : d)
-                : [saved as LabelDesign, ...savedDesigns];
-
-            setSavedDesigns(newSavedDesigns);
-
-            // Update current design state with the ID from DB/Mock
+            upsertSavedDesign(saved as LabelDesign);
             setDesign(saved as LabelDesign);
-            toast.success('Label design saved successfully!');
+            toast.success(isPersistedDesign ? 'Label design updated successfully!' : 'Label design saved successfully!');
         } catch (error) {
             console.error('Save failed:', error);
             toast.error('Failed to save design');
+        } finally {
+            setIsSavingDesign(false);
         }
     };
 
-    const loadDesign = (savedDesign: LabelDesign) => {
-        setDesign(savedDesign);
-        setSelectedApiaryId(savedDesign.apiaryId || '');
-        setSelectedHiveId(savedDesign.hiveId || '');
-        setSelectedHarvestId(savedDesign.harvestId || '');
-        toast.success('Design loaded');
+    const loadDesign = async (savedDesign: LabelDesign) => {
+        try {
+            const latestDesign = await labelService.getLabel(savedDesign.id);
+            setDesign(latestDesign as LabelDesign);
+            setSelectedApiaryId(latestDesign.apiaryId || '');
+            setSelectedHiveId(latestDesign.hiveId || '');
+            setSelectedHarvestId(latestDesign.harvestId || '');
+            upsertSavedDesign(latestDesign as LabelDesign);
+            toast.success('Design loaded');
+        } catch (error) {
+            console.error('Load failed:', error);
+            setDesign(savedDesign);
+            setSelectedApiaryId(savedDesign.apiaryId || '');
+            setSelectedHiveId(savedDesign.hiveId || '');
+            setSelectedHarvestId(savedDesign.harvestId || '');
+            toast.error('Could not refresh the saved design. Loaded cached version instead.');
+        }
     };
 
     const createNewDesign = () => {
         setDesign({ ...defaultDesign, id: crypto.randomUUID() });
+        setSelectedApiaryId('');
+        setSelectedHiveId('');
+        setSelectedHarvestId('');
+        setLabelPack(null);
         toast.info('Created new design');
     };
 
     const deleteDesign = async (designId: string) => {
         try {
             await labelService.deleteLabel(designId);
-            setSavedDesigns(savedDesigns.filter(d => d.id !== designId));
+            setSavedDesigns(prev => prev.filter(d => d.id !== designId));
             if (design.id === designId) {
                 createNewDesign();
             }
@@ -589,6 +630,14 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             <span>New label</span>
                         </button>
                         <button
+                            onClick={saveDesign}
+                            disabled={isSavingDesign}
+                            className={cn(glass.btnSecondary, "h-9 px-4 rounded-xl")}
+                        >
+                            {isSavingDesign ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[#F4D03F]" /> : <Save className="w-3.5 h-3.5 text-[#F4D03F]" />}
+                            <span>{isSavingDesign ? 'Saving…' : 'Save design'}</span>
+                        </button>
+                        <button
                             onClick={handleGeneratePDF}
                             disabled={isGenerating}
                             className={cn(glass.btnPrimary, "h-9 px-6 rounded-xl")}
@@ -809,6 +858,15 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             <div className="h-px bg-gradient-to-r from-[#F4D03F]/20 to-transparent" />
 
                             <div className="space-y-4">
+                                <BeeYieldFormField id="by_label_design_name" label="Design name" hint="Used to organize your saved label layouts">
+                                    <BeeYieldTextInput
+                                        id="by_label_design_name"
+                                        value={design.name}
+                                        onChange={e => updateDesign({ name: e.target.value })}
+                                        placeholder="e.g. Retail jar label v1"
+                                    />
+                                </BeeYieldFormField>
+
                                 <BeeYieldFormField id="by_label_product_name" label="Product name" hint="What you want printed on the label">
                                     <BeeYieldTextInput
                                         id="by_label_product_name"
@@ -1193,9 +1251,22 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </div>
                                 ) : (
                                     savedDesigns.map(saved => (
-                                        <div key={saved.id} className="p-3 rounded-lg border border-[#F4D03F]/10 bg-white/40 hover:bg-white/80 transition-all group flex justify-between items-center">
-                                            <div>
-                                                <p className="text-sm font-semibold text-[#1A1A1A]">{saved.productName || 'Untitled label'}</p>
+                                        <div
+                                            key={saved.id}
+                                            className={cn(
+                                                "p-3 rounded-lg border bg-white/40 hover:bg-white/80 transition-all group flex justify-between items-center",
+                                                saved.id === design.id ? "border-[#F4D03F]/40 shadow-sm" : "border-[#F4D03F]/10"
+                                            )}
+                                        >
+                                            <div className="min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm font-semibold text-[#1A1A1A] truncate">{saved.name || saved.productName || 'Untitled label'}</p>
+                                                    {saved.id === design.id && (
+                                                        <Badge variant="secondary" className="h-5 rounded-full border-0 bg-[#F4D03F]/15 text-[#8A6A00]">
+                                                            Active
+                                                        </Badge>
+                                                    )}
+                                                </div>
                                                 <p className="text-xs text-gray-500">{saved.honeyType} • {saved.customWidth}×{saved.customHeight} mm</p>
                                             </div>
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

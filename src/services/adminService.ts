@@ -310,13 +310,8 @@ export const adminService = {
         try {
             return await apiGet<any[]>('/admin/batches');
         } catch (error) {
-            console.error("Failed to fetch batches via API, falling back to direct Supabase", error);
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
-            const { data, error: sbError } = await supabase
-                .from('honey_batches' as any)
-                .select('*')
-                .order('created_at', { ascending: false });
-            return data || [];
+            console.error("Failed to fetch canonical batches via API", error);
+            throw error;
         }
     },
 
@@ -753,6 +748,10 @@ export const adminService = {
     },
 
     logHistory: async (trace: any) => {
+        return await apiPost<any>('/admin/history', trace);
+    },
+
+    logTrace: async (trace: any) => {
         return await apiPost<any>('/admin/history', trace);
     },
 

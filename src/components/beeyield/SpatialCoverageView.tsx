@@ -1,269 +1,415 @@
 import React from 'react';
-import { Maximize2, Zap, Target, TrendingUp, Info, ArrowUpRight, ShieldCheck, MapPin, Wind, Thermometer, Satellite, Database, Activity, LayoutGrid, Sparkles, Navigation, Layers, Crosshair, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import {
+  Activity,
+  AlertCircle,
+  Layers,
+  MapPin,
+  Navigation,
+  Satellite,
+  Target,
+  Thermometer,
+  Wind,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+
+import { useApiaries } from '@/hooks/useHives';
+import { useHivesWithTelemetry } from '@/hooks/useHives';
+import { useSensorAlerts } from '@/hooks/useSensorAlerts';
+import {
+  BeeYieldBadge,
+  BeeYieldEmptyState,
+  BeeYieldLoading,
+  BeeYieldPageHeader,
+  BeeYieldPageShell,
+} from '@/components/beeyield/BeeYieldUI';
+import {
+  describeCoverageAction,
+  deriveCoverageMetrics,
+  filterAlertsByApiary,
+} from '@/lib/pollinationInsights';
+import { beeyieldService, CropPollinationRequirement } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
-import { calculatePointCoverage } from '@/lib/apicultureModels';
-import { useHivesWithTelemetry } from '@/hooks/useHives';
 
-const SaturationLegend = () => (
-    <div className="flex flex-col gap-3">
-        <span className="text-[10px] font-black tracking-widest text-gray-400 mb-1">Density Level</span>
-        <div className="flex items-center gap-3">
-            <div className="w-4 h-4 rounded-md bg-[#1B9157]" />
-            <span className="text-[10px] font-bold text-gray-500">Optimal (FPA 18+)</span>
-        </div>
-        <div className="flex items-center gap-3">
-            <div className="w-4 h-4 rounded-md bg-[#F4D03F]" />
-            <span className="text-[10px] font-bold text-gray-500">Sub-Optimal (FPA 10-18)</span>
-        </div>
-        <div className="flex items-center gap-3">
-            <div className="w-4 h-4 rounded-md bg-[#EF4444]/20 border border-red-500/30" />
-            <span className="text-[10px] font-bold text-gray-400">Warning (FPA &lt; 10)</span>
-        </div>
-    </div>
-);
+const getNumeric = (...values: Array<number | string | null | undefined>) => {
+  for (const value of values) {
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) return numeric;
+  }
+  return null;
+};
 
 const SpatialCoverageView: React.FC = () => {
-    const [viewMode, setViewMode] = React.useState<'kernel' | 'satellite' | 'zones'>('kernel');
-    const { hives, isLoading } = useHivesWithTelemetry();
+  const [viewMode, setViewMode] = React.useState<'kernel' | 'nodes'>('kernel');
+  const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
+  const [cropRequirements, setCropRequirements] = React.useState<CropPollinationRequirement[]>([]);
+  const [weather, setWeather] = React.useState<any>(null);
+  const [weatherLoading, setWeatherLoading] = React.useState(false);
 
-    // Map hives to SVG positions dynamically
-    const pallets = React.useMemo(() => {
-        if (!hives.length) return [];
-        return hives.slice(0, 12).map((h, i) => {
-            const cols = 4;
-            const col = i % cols;
-            const row = Math.floor(i / cols);
-            return {
-                id: h.id,
-                x: 100 + col * 85,
-                y: 120 + row * 90,
-                strength: 1.0,
-                label: h.hive_code,
-                status: h.status,
-            };
-        });
-    }, [hives]);
+  const apiariesQuery = useApiaries();
+  const alertsQuery = useSensorAlerts(false);
+  const apiaries = apiariesQuery.data || [];
+  const selectedApiary = React.useMemo(
+    () => apiaries.find((apiary) => apiary.id === selectedApiaryId) || null,
+    [apiaries, selectedApiaryId],
+  );
 
-    // Compute stats from real hive data
-    const stats = React.useMemo(() => {
-        const total = hives.length;
-        if (!total) return null;
-        const activeStatuses = ['active', 'healthy', 'ok'];
-        const active = hives.filter(h => activeStatuses.includes((h.status || '').toLowerCase())).length;
-        const nodeEfficiency = total > 0 ? Math.round((active / total) * 100) : 0;
-        const coverageGap = total > 0 ? Math.max(0, Math.round(100 - nodeEfficiency - (total * 0.5))).toFixed(1) : '—';
-        const fieldDensity = total > 0 ? (total * 1.6).toFixed(1) : '—';
-        const overlapRating = total > 0 ? Math.min(1, (active / total) * 1.1).toFixed(2) : '—';
-        return { nodeEfficiency, coverageGap, fieldDensity, overlapRating };
-    }, [hives]);
+  const { hives, isLoading: hivesLoading, refetch: refetchHives } = useHivesWithTelemetry(selectedApiaryId || undefined);
+  const activeAlerts = React.useMemo(
+    () => filterAlertsByApiary(alertsQuery.data || [], selectedApiaryId, hives),
+    [alertsQuery.data, hives, selectedApiaryId],
+  );
 
-    return (
-        <BeeYieldPageShell>
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6 pb-20"
-            >
-            <BeeYieldPageHeader
-                icon={Navigation}
-                label="BeeYield AI Spatial Intelligence"
-                title={<>Coverage <span className="text-[#1B9157]">Overview</span></>}
-                subtitle="Precision spatial distribution analysis and density mapping."
-                actions={
-                    <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-gray-100 shadow-sm">
-                         <div className="flex items-center gap-2 border-r border-gray-100 pr-4">
-                            <Wind className="w-3.5 h-3.5 text-blue-500" />
-                            <span className="text-[10px] font-black text-gray-400">8 km/h</span>
-                         </div>
-                         <div className="flex items-center gap-2">
-                             <Thermometer className="w-3.5 h-3.5 text-orange-500" />
-                             <span className="text-[10px] font-black text-gray-400">22°C</span>
-                         </div>
-                    </div>
-                }
-            />
+  React.useEffect(() => {
+    if (!selectedApiaryId && apiaries.length > 0) {
+      setSelectedApiaryId(apiaries[0].id);
+    }
+  }, [apiaries, selectedApiaryId]);
 
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 relative z-10">
-                {/* Main Map Area */}
-                <div className="xl:col-span-8 group">
-                    <div className={cn(glass.section, "p-0 overflow-hidden relative")}>
-                        {/* Map Toolbar */}
-                        <div className="absolute top-6 left-6 z-20 flex flex-col gap-2">
-                            <button 
-                                onClick={() => setViewMode('kernel')}
-                                className={cn("p-3 rounded-2xl transition-all border shadow-lg", viewMode === 'kernel' ? "bg-gray-900 border-gray-900 text-white" : "bg-white border-gray-100 text-gray-400 hover:text-gray-900")}
-                            >
-                                <Target className="w-5 h-5" />
-                            </button>
-                            <button 
-                                onClick={() => setViewMode('satellite')}
-                                className={cn("p-3 rounded-2xl transition-all border shadow-lg", viewMode === 'satellite' ? "bg-gray-900 border-gray-900 text-white" : "bg-white border-gray-100 text-gray-400 hover:text-gray-900")}
-                            >
-                                <Satellite className="w-5 h-5" />
-                            </button>
-                        </div>
+  React.useEffect(() => {
+    let mounted = true;
 
-                        <div className="absolute top-6 right-6 z-20">
-                             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full border border-[#1B9157]/20 shadow-xl">
-                                <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
-                                <span className="text-[9px] font-black text-[#1A1A1A] tracking-widest">Real-Time Overlay</span>
-                            </div>
-                        </div>
+    const loadCropRequirements = async () => {
+      try {
+        const data = await beeyieldService.getCropRequirements();
+        if (mounted) setCropRequirements(data || []);
+      } catch (error) {
+        console.error(error);
+        if (mounted) setCropRequirements([]);
+      }
+    };
 
-                        {/* Interactive SVG Map */}
-                        <div className="relative aspect-[16/10] sm:aspect-auto sm:h-[600px] w-full bg-[#F9F7F2] pattern-grid">
-                            <svg viewBox="0 0 500 450" className="w-full h-full">
-                                {/* Density Contours (Mocked via radial gradients) */}
-                                <defs>
-                                    <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" stopColor="#1B9157" stopOpacity="0.4" />
-                                        <stop offset="70%" stopColor="#1B9157" stopOpacity="0.1" />
-                                        <stop offset="100%" stopColor="#1B9157" stopOpacity="0" />
-                                    </radialGradient>
-                                    <radialGradient id="gradWarn" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" stopColor="#EF4444" stopOpacity="0.1" />
-                                        <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
-                                    </radialGradient>
-                                </defs>
+    loadCropRequirements();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-                                {/* Orchard Boundary */}
-                                <path d="M50,50 L450,50 L420,400 L80,380 Z" fill="white" fillOpacity={0.5} stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4 4" />
+  React.useEffect(() => {
+    let mounted = true;
 
-                                {/* Coverage Heatmap */}
-                                <AnimatePresence mode="wait">
-                                    {viewMode === 'kernel' && (
-                                        <motion.g
-                                            key="kernel-view"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                        >
-                                            <circle cx="200" cy="200" r="140" fill="url(#grad1)" />
-                                            <circle cx="340" cy="240" r="120" fill="url(#grad1)" />
-                                            <circle cx="120" cy="300" r="100" fill="url(#gradWarn)" />
-                                        </motion.g>
-                                    )}
-                                </AnimatePresence>
+    const loadWeather = async () => {
+      if (!selectedApiary?.latitude || !selectedApiary?.longitude) {
+        setWeather(null);
+        return;
+      }
 
-                                {/* Nodes / Pallets */}
-                                {isLoading ? (
-                                    <text x="200" y="230" fontSize="9" fill="#9CA3AF" textAnchor="middle" fontWeight="700">Loading hive data...</text>
-                                ) : pallets.length === 0 ? (
-                                    <text x="200" y="230" fontSize="9" fill="#9CA3AF" textAnchor="middle" fontWeight="700">No hives to display. Add hives to see coverage.</text>
-                                ) : pallets.map(p => (
-                                    <motion.g 
-                                        key={p.id} 
-                                        whileHover={{ scale: 1.1 }}
-                                        className="cursor-pointer"
-                                    >
-                                        <rect x={p.x - 4} y={p.y - 4} width="8" height="8" rx="2" fill="#1A1A1A" />
-                                        <circle cx={p.x} cy={p.y} r="15" fill="#1B9157" fillOpacity={0.1} stroke="#1B9157" strokeWidth="0.5" strokeDasharray="2 2" />
-                                        <text x={p.x + 10} y={p.y + 4} fontSize="8" fontWeight="900" fill="#1A1A1A" className="tracking-widest">{p.label}</text>
-                                    </motion.g>
-                                ))}
+      setWeatherLoading(true);
+      try {
+        const data = await beeyieldService.getWeatherData(selectedApiary.latitude, selectedApiary.longitude);
+        if (mounted) setWeather(data);
+      } catch (error) {
+        console.error(error);
+        if (mounted) setWeather(null);
+      } finally {
+        if (mounted) setWeatherLoading(false);
+      }
+    };
 
-                                {/* Optimizer Suggestion */}
-                                <motion.g
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ repeat: Infinity, duration: 2, repeatType: 'reverse' }}
-                                >
-                                    <circle cx="100" cy="340" r="12" fill="none" stroke="#F4D03F" strokeWidth="2" strokeDasharray="3 3" />
-                                    <text x="118" y="348" fontSize="7" fontWeight="900" fill="#F4D03F" className="tracking-widest">Target Node C1</text>
-                                </motion.g>
-                            </svg>
+    loadWeather();
+    return () => {
+      mounted = false;
+    };
+  }, [selectedApiary?.latitude, selectedApiary?.longitude]);
 
-                            {/* Map Information / Hover State */}
-                            <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between pointer-events-none">
-                                <div className={cn(glass.card, "bg-white/80 backdrop-blur-md px-5 py-4 border-gray-100 shadow-2xl space-y-3 pointer-events-auto")}>
-                                     <SaturationLegend />
-                                </div>
+  const coverage = React.useMemo(
+    () => deriveCoverageMetrics(selectedApiary, hives, activeAlerts, cropRequirements),
+    [activeAlerts, cropRequirements, hives, selectedApiary],
+  );
 
-                                <div className="space-y-3">
-                                    <div className={cn(glass.badge, "bg-gray-900 text-white border-0 py-2.5 px-4 flex items-center gap-3 backdrop-blur-md shadow-2xl pointer-events-auto")}>
-                                        <Maximize2 className="w-4 h-4" />
-                                        <span className="text-[10px] font-black tracking-widest">Maximize View</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const nodePositions = React.useMemo(() => {
+    if (!hives.length) return [];
 
-                {/* Satellite & Data Panel */}
-                <div className="xl:col-span-4 space-y-6">
-                    <div className={cn(glass.section, "p-8 space-y-8")}>
-                        <div className="flex items-center gap-4 border-b border-gray-50 pb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/5 flex items-center justify-center border border-[#1B9157]/20">
-                                <Activity className="w-6 h-6 text-[#1B9157]" />
-                            </div>
-                            <div>
-                                <h3 className="text-base font-black text-[#1A1A1A] tracking-tight">Spatial Coverage</h3>
-                                <p className="text-[10px] font-bold text-emerald-600 tracking-widest leading-none">Healthy Balance</p>
-                            </div>
-                        </div>
+    const columns = Math.max(3, Math.ceil(Math.sqrt(hives.length)));
+    const rows = Math.max(1, Math.ceil(hives.length / columns));
 
-                        <div className="grid grid-cols-2 gap-6">
-                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 tracking-widest">Overlap Rating</p>
-                                <p className="text-xl font-black text-[#1A1A1A]">{stats?.overlapRating ?? '—'} <span className="text-[9px] text-[#1B9157]">{stats ? 'Live' : ''}</span></p>
-                             </div>
-                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 tracking-widest">Field Density</p>
-                                <p className="text-xl font-black text-[#1A1A1A]">{stats?.fieldDensity ?? '—'} <span className="text-[9px] text-gray-400">{stats ? 'FPA' : ''}</span></p>
-                             </div>
-                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 tracking-widest">Coverage Gaps</p>
-                                <p className="text-xl font-black text-red-500">{stats?.coverageGap ?? '—'} <span className="text-[9px] opacity-40">{stats ? '%' : ''}</span></p>
-                             </div>
-                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 tracking-widest">Node Efficiency</p>
-                                <p className="text-xl font-black text-[#1B9157]">{stats?.nodeEfficiency ?? '—'} <span className="text-[9px] opacity-40">{stats ? '%' : ''}</span></p>
-                             </div>
-                        </div>
+    return hives.map((hive, index) => {
+      const column = index % columns;
+      const row = Math.floor(index / columns);
+      const x = 90 + (column / Math.max(1, columns - 1)) * 320;
+      const y = 110 + (row / Math.max(1, rows - 1 || 1)) * 220;
+      const isActive = String(hive.status || '').toLowerCase() === 'active' || String(hive.status || '').toLowerCase() === 'healthy';
+      return {
+        id: hive.id,
+        label: hive.hive_code,
+        x,
+        y,
+        radius: 34 + Math.min(24, (Number(hive.frame_count) || 8) * 2),
+        active: isActive,
+      };
+    });
+  }, [hives]);
 
-                        <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 border-l-4 border-l-[#F4D03F]">
-                             <div className="flex items-center gap-3 mb-3">
-                                <Target className="w-4 h-4 text-[#F4D03F]" />
-                                <h4 className="text-xs font-black text-[#1A1A1A] tracking-tight">Smart Analysis</h4>
-                             </div>
-                             <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-                                Detected coverage gap in Area C (SW). System recommends deploying a high-strength colony node to mitigate yield delta.
-                             </p>
-                             <button className="w-full mt-4 h-10 bg-white border border-[#F4D03F]/30 rounded-xl text-[9px] font-black text-[#1A1A1A] tracking-widest hover:bg-[#F4D03F]/5 transition-all">
-                                Update Data Points
-                             </button>
-                        </div>
-                    </div>
+  const weatherTemperature = getNumeric(
+    weather?.temperature_c,
+    weather?.temperature,
+    weather?.temp_c,
+    weather?.current?.temperature,
+    weather?.current?.temp_c,
+  );
+  const weatherWind = getNumeric(
+    weather?.wind_speed_kph,
+    weather?.wind_speed,
+    weather?.wind?.speed_kph,
+    weather?.current?.wind_speed_kph,
+  );
 
-                    <div className={cn(glass.card, "p-8 space-y-6 relative overflow-hidden group")}>
-                         <div className="absolute -right-4 -top-4 opacity-[0.03] group-hover:rotate-12 transition-transform duration-700">
-                             <Satellite className="w-32 h-32" />
-                         </div>
-                         <div className="space-y-1 relative">
-                            <h3 className="text-sm font-black text-[#1A1A1A] uppercase tracking-wider">Atmospheric Integrity</h3>
-                            <p className="text-[10px] font-bold text-gray-400 tracking-widest">Flight visibility check</p>
-                         </div>
-                         
-                         <div className="space-y-4 relative">
-                             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                                 <span className="text-[10px] font-black text-gray-500 uppercase">Wind Resistance</span>
-                                 <span className="text-sm font-black text-[#1A1A1A]">Level 2 (Low)</span>
-                             </div>
-                             <div className="flex items-center justify-between">
-                                 <span className="text-[10px] font-black text-gray-500 uppercase">Foraging Radius</span>
-                                 <span className="text-sm font-black text-[#1B9157]">400m / Node</span>
-                             </div>
-                         </div>
-                    </div>
-                </div>
+  const windStatus =
+    weatherWind === null ? 'Unavailable' : weatherWind <= 10 ? 'Low' : weatherWind <= 20 ? 'Moderate' : 'High';
+  const foragingRadius = coverage.totalHives
+    ? `${Math.max(250, Math.round((coverage.coveragePercent / 100) * 450))}m / hive`
+    : 'No hive data';
+
+  const handleRefresh = () => {
+    apiariesQuery.refetch();
+    alertsQuery.refetch();
+    refetchHives();
+  };
+
+  const loading = apiariesQuery.isLoading || hivesLoading || alertsQuery.isLoading;
+
+  return (
+    <BeeYieldPageShell>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pb-20">
+        <BeeYieldPageHeader
+          icon={Navigation}
+          label="Coverage Area"
+          title={
+            <>
+              Coverage <span className="text-[#1B9157]">Area</span>
+            </>
+          }
+          subtitle="Selected-apiary coverage density, hive spacing, and live environmental context."
+          onRefresh={handleRefresh}
+          actions={
+            <div className="flex items-center gap-3 rounded-2xl border border-[#F4D03F]/20 bg-white/70 px-4 py-2 shadow-sm">
+              <div className="flex items-center gap-2 border-r border-gray-100 pr-3">
+                <Wind className="h-4 w-4 text-blue-500" />
+                <span className="text-[10px] font-black text-gray-500">
+                  {weatherLoading ? '...' : weatherWind !== null ? `${Math.round(weatherWind)} km/h` : 'No wind'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Thermometer className="h-4 w-4 text-orange-500" />
+                <span className="text-[10px] font-black text-gray-500">
+                  {weatherLoading ? '...' : weatherTemperature !== null ? `${Math.round(weatherTemperature)}°C` : 'No temp'}
+                </span>
+              </div>
             </div>
-            </motion.div>
-        </BeeYieldPageShell>
-    );
+          }
+        />
+
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8">
+            <div className={cn(glass.section, 'overflow-hidden')}>
+              <div className="flex items-center justify-between border-b border-[#F4D03F]/10 px-5 py-4 bg-white/60">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
+                    <Layers className="h-5 w-5 text-[#1B9157]" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Spatial Overlay</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
+                      {selectedApiary?.name || 'Choose an apiary'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-xl border border-[#F4D03F]/15 bg-white/80 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('kernel')}
+                    className={cn(
+                      'rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
+                      viewMode === 'kernel' ? 'bg-[#1A1A1A] text-white' : 'text-gray-500 hover:bg-[#F4D03F]/10',
+                    )}
+                  >
+                    Kernel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('nodes')}
+                    className={cn(
+                      'rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
+                      viewMode === 'nodes' ? 'bg-[#1A1A1A] text-white' : 'text-gray-500 hover:bg-[#F4D03F]/10',
+                    )}
+                  >
+                    Nodes
+                  </button>
+                </div>
+              </div>
+
+              <div className="relative min-h-[520px] bg-[#F9F7F2] p-5">
+                {loading && !nodePositions.length ? (
+                  <BeeYieldLoading label="Loading coverage map..." />
+                ) : !selectedApiary ? (
+                  <BeeYieldEmptyState
+                    icon={MapPin}
+                    title="No apiary selected"
+                    description="Select an apiary to render its live coverage layout."
+                  />
+                ) : !nodePositions.length ? (
+                  <BeeYieldEmptyState
+                    icon={Target}
+                    title="No hives assigned"
+                    description="Attach hives to this apiary to calculate coverage density and gaps."
+                  />
+                ) : (
+                  <>
+                    <div className="absolute left-5 top-5 z-10 space-y-2">
+                      <select
+                        value={selectedApiaryId}
+                        onChange={(event) => setSelectedApiaryId(event.target.value)}
+                        className={cn(glass.input, 'h-10 min-w-[220px] bg-white/80')}
+                        aria-label="Select apiary"
+                        title="Select apiary"
+                      >
+                        {apiaries.map((apiary) => (
+                          <option key={apiary.id} value={apiary.id}>
+                            {apiary.name}
+                          </option>
+                        ))}
+                      </select>
+                      <BeeYieldBadge variant={coverage.coveragePercent >= 100 ? 'success' : coverage.coveragePercent >= 70 ? 'warning' : 'error'}>
+                        {coverage.coveragePercent.toFixed(0)}% target coverage
+                      </BeeYieldBadge>
+                    </div>
+
+                    <svg viewBox="0 0 500 380" className="h-full w-full">
+                      <path
+                        d="M55,55 L445,55 L425,330 L85,350 Z"
+                        fill="rgba(255,255,255,0.9)"
+                        stroke="#DAD7CD"
+                        strokeWidth="1.5"
+                        strokeDasharray="6 6"
+                      />
+
+                      {viewMode === 'kernel' &&
+                        nodePositions.map((node) => (
+                          <circle
+                            key={`coverage-${node.id}`}
+                            cx={node.x}
+                            cy={node.y}
+                            r={node.radius}
+                            fill={node.active ? 'rgba(27, 145, 87, 0.12)' : 'rgba(239, 68, 68, 0.08)'}
+                            stroke={node.active ? 'rgba(27, 145, 87, 0.24)' : 'rgba(239, 68, 68, 0.18)'}
+                            strokeDasharray="4 4"
+                          />
+                        ))}
+
+                      {nodePositions.map((node) => (
+                        <g key={node.id}>
+                          <circle
+                            cx={node.x}
+                            cy={node.y}
+                            r="8"
+                            fill={node.active ? '#1B9157' : '#EF4444'}
+                            stroke="#1A1A1A"
+                            strokeWidth="1"
+                          />
+                          <text
+                            x={node.x + 12}
+                            y={node.y + 4}
+                            fontSize="8"
+                            fontWeight="900"
+                            fill="#1A1A1A"
+                          >
+                            {node.label}
+                          </text>
+                        </g>
+                      ))}
+                    </svg>
+
+                    <div className="absolute bottom-5 left-5 rounded-2xl border border-[#F4D03F]/15 bg-white/80 p-4 shadow-lg">
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Coverage legend</p>
+                      <div className="mt-3 space-y-2">
+                        <div className="flex items-center gap-3 text-[11px] text-gray-600">
+                          <span className="h-3 w-3 rounded-full bg-[#1B9157]" />
+                          Active hive coverage
+                        </div>
+                        <div className="flex items-center gap-3 text-[11px] text-gray-600">
+                          <span className="h-3 w-3 rounded-full bg-[#EF4444]" />
+                          Hive needs attention
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="xl:col-span-4 space-y-6">
+            <div className={cn(glass.section, 'p-6')}>
+              <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
+                  <Activity className="h-5 w-5 text-[#1B9157]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Coverage Metrics</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Live apiary summary</p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Current FPA</p>
+                  <p className="text-2xl font-black text-[#1A1A1A]">{coverage.currentFpa.toFixed(1)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Target FPA</p>
+                  <p className="text-2xl font-black text-[#1B9157]">{coverage.targetFpa.toFixed(1)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Coverage Gap</p>
+                  <p className="text-2xl font-black text-red-600">{coverage.coverageGapPercent.toFixed(0)}%</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Node Efficiency</p>
+                  <p className="text-2xl font-black text-[#1B9157]">{coverage.nodeEfficiency.toFixed(0)}%</p>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-[#F4D03F]/20 bg-white/70 p-4">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-[#F4D03F]" />
+                  <h4 className="text-xs font-black tracking-tight text-[#1A1A1A]">Actionable Insight</h4>
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-gray-600">{describeCoverageAction(coverage)}</p>
+              </div>
+            </div>
+
+            <div className={cn(glass.card, 'p-6')}>
+              <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/10">
+                  <Satellite className="h-5 w-5 text-[#F4D03F]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Environmental Context</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Weather and flight range</p>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Wind resistance</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">{windStatus}</span>
+                </div>
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Foraging radius</span>
+                  <span className="text-sm font-black text-[#1B9157]">{foragingRadius}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Open alerts</span>
+                  <span className="text-sm font-black text-red-600">{activeAlerts.filter((alert) => !alert.resolved).length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </BeeYieldPageShell>
+  );
 };
 
 export default SpatialCoverageView;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Reorder } from 'framer-motion';
 import { Input } from '@/components/ui/input';
-import { Droplet, Flame, Zap, FileText, CreditCard, GripVertical, Plus, Loader2 } from 'lucide-react';
+import { Droplet, Flame, Zap, FileText, CreditCard, GripVertical, Plus, Loader2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { meterService, BillingRate } from '@/services/meterService';
@@ -19,27 +19,6 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [isCreating, setIsCreating] = React.useState(false);
-
-    const LOCAL_RATES_KEY = React.useMemo(() => 'beeyield_local_meter_rates_v1', []);
-
-    const readLocalRates = React.useCallback((): BillingRate[] => {
-        try {
-            const raw = globalThis.localStorage?.getItem(LOCAL_RATES_KEY);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? (parsed as BillingRate[]) : [];
-        } catch {
-            return [];
-        }
-    }, [LOCAL_RATES_KEY]);
-
-    const writeLocalRates = React.useCallback((next: BillingRate[]) => {
-        try {
-            globalThis.localStorage?.setItem(LOCAL_RATES_KEY, JSON.stringify(next));
-        } catch {
-            // ignore
-        }
-    }, [LOCAL_RATES_KEY]);
 
     const consumptionData = [
         { label: 'Energy usage', value: '12,483', unit: 'Units', subtext: 'last month', icon: Zap, color: 'text-[#1B9157]' },
@@ -63,20 +42,14 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                 const data = await meterService.getBillingRates();
                 setRates(data);
             } catch (error) {
-                const local = readLocalRates();
-                if (local.length > 0) {
-                    setRates(local);
-                    toast.info('Loaded billing rates from this device');
-                } else {
-                    setError('Billing rates unavailable right now.');
-                    toast.error('Failed to load billing rates');
-                }
+                setError('Billing rates are unavailable right now.');
+                toast.error('Failed to load billing rates');
             } finally {
                 setLoading(false);
             }
         };
         loadRates();
-    }, [readLocalRates]);
+    }, []);
 
     const refreshRates = React.useCallback(async () => {
         const data = await meterService.getBillingRates();
@@ -137,42 +110,6 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         is_active: true,
     });
 
-    const addRateLocal = React.useCallback(() => {
-        const rateNum = Number(newRate.rate_per_unit);
-        if (!Number.isFinite(rateNum) || rateNum <= 0) {
-            toast.error('Enter a valid unit rate (> 0)');
-            return;
-        }
-        if (!newRate.unit.trim()) {
-            toast.error('Unit is required');
-            return;
-        }
-        if (!newRate.currency.trim()) {
-            toast.error('Currency is required');
-            return;
-        }
-
-        const row: any = {
-            id:
-                typeof crypto !== 'undefined' && 'randomUUID' in crypto
-                    ? `local-${crypto.randomUUID()}`
-                    : `local-${Date.now()}`,
-            meter_type: newRate.meter_type,
-            rate_per_unit: rateNum,
-            currency: newRate.currency.toUpperCase(),
-            unit: newRate.unit,
-            description: newRate.description,
-            is_active: newRate.is_active,
-            effective_from: new Date().toISOString(),
-        };
-
-        const next = [row as BillingRate, ...(rates || [])];
-        setRates(next);
-        writeLocalRates(next);
-        setNewRate((prev) => ({ ...prev, rate_per_unit: '', description: '' }));
-        toast.success('New billing rate saved (local)');
-    }, [newRate, rates, writeLocalRates]);
-
     const addRateRemote = React.useCallback(async () => {
         if (isCreating) return;
         const rateNum = Number(newRate.rate_per_unit);
@@ -206,12 +143,22 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         } catch (e: any) {
             console.error(e);
             toast.error(e?.message || 'Could not save billing rate', { id: tid });
-            // keep UX usable even if backend is unavailable
-            addRateLocal();
         } finally {
             setIsCreating(false);
         }
-    }, [addRateLocal, isCreating, newRate, refreshRates]);
+    }, [isCreating, newRate, refreshRates]);
+
+    const deleteRate = React.useCallback(async (id: string) => {
+        const tid = toast.loading('Removing billing rate...');
+        try {
+            await meterService.deleteBillingRate(id);
+            await refreshRates();
+            toast.success('Billing rate removed', { id: tid });
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error?.message || 'Could not remove billing rate', { id: tid });
+        }
+    }, [refreshRates]);
 
     return (
         <BeeYieldPageShell className="p-0 md:p-0 -m-4 md:-m-6 space-y-0 pb-0">
@@ -330,6 +277,14 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                         <div className="flex items-center md:justify-end gap-2 mt-1">
                                             {item.is_active && <div className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 px-2 py-0.5 rounded-md text-[8px] font-black">Active</div>}
                                             <p className="text-[8px] font-bold text-gray-400">EFF: {new Date(item.effective_from).toLocaleDateString()}</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => deleteRate(item.id)}
+                                                className={cn(glass.btnSecondary, 'h-7 px-2.5 text-[8px] font-black')}
+                                                aria-label={`Delete ${item.meter_type} rate`}
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                            </button>
                                         </div>
                                     </div>
                                 </motion.div>

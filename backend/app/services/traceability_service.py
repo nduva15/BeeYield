@@ -1,87 +1,217 @@
 """
-Traceability Service — Rust-Accelerated (Post-Oxidize)
-=====================================================
-Timeline construction and impact stats moved to `beeyield_core.TraceabilityEngine`.
-Data fetching and blockchain interaction remains in Python.
+Traceability service backed by canonical normalized batch views.
 """
+from __future__ import annotations
+
 from typing import Any, Optional
-from app.db.supabase_db import db_select, db_get_by_id
+
+from app.db.supabase_db import db_insert, db_select, db_upsert
 from app.schemas import traceability as schemas
+from app.services.traceability_batch_service import (
+    audit_account_traceability,
+    build_batch_view,
+    get_all_batch_views,
+    get_batch_view_by_code,
+)
 
 from beeyield_core import TraceabilityEngine as _RustEngine  # type: ignore
+
 _engine = _RustEngine()
+
+
+def _as_dict(payload: Any) -> dict[str, Any]:
+    if hasattr(payload, "dict"):
+        return payload.dict(exclude_unset=True)
+    return dict(payload)
+
+
+async def _get_impact_stats(token: Optional[str]) -> dict[str, Any]:
+    stats = await db_select("company_stats", token=token)
+    if stats:
+        return {row["stat_key"]: row["stat_value"] for row in stats if row.get("stat_key")}
+
+    return {
+        "total_honey_kg": "0",
+        "hive_count": "0",
+        "beekeepers": "0",
+        "farmers_served": "0",
+        "acres_pollinated": "0",
+    }
 
 
 class TraceabilityService:
     @staticmethod
-    async def _build_db_journey(harvest: dict[str, Any], token: Optional[str] = None) -> schemas.TraceResponse:
-        """Uses Rust to construct the timeline."""
-        import asyncio
-        farmer_task = db_get_by_id("farmers", harvest.get("farmer_id"), token=token)
-        apiary_task = db_get_by_id("apiaries", harvest.get("apiary_id"), token=token)
-        hive_task = db_get_by_id("hives", harvest.get("hive_id"), token=token)
-        
-        results = await asyncio.gather(farmer_task, apiary_task, hive_task, return_exceptions=True)
-        farmer_data, apiary_data, hive_data = [r if isinstance(r, dict) else {} for r in results]
-        
-        timeline_dicts = _engine.build_timeline(harvest, apiary_data)
+    async def _build_trace_response(view: dict[str, Any], token: Optional[str] = None) -> schemas.TraceResponse:
+        harvest = view.get("harvest") or {}
+        apiary = view.get("apiary") or {}
+        timeline_dicts = _engine.build_timeline(harvest or view, apiary or {})
         timeline = [schemas.TraceJourneyStep(**step) for step in timeline_dicts]
 
-        # Impact Stats from DB
-        stats = await db_select("company_stats", token=token)
-        impact_stats = {s["stat_key"]: s["stat_value"] for s in stats} if stats else {}
+        farmer_data = view.get("farmer") or {}
+        apiary_data = view.get("apiary") or {}
+        hive_data = view.get("hive") or {}
 
         return schemas.TraceResponse(
-            batch_code=harvest.get("batch_code") or harvest.get("id"),
-            product_name=harvest.get("honey_type", "Premium Honey"),
-            verified=True,
-            blockchain_verified=True,
-            verification_url="",
+            batch_code=view.get("batch_code") or "",
+            product_name=view.get("honey_type") or "Unknown Honey",
+            harvest_date=view.get("harvest_date"),
+            verified=view.get("verification_status") != "unverified",
+            blockchain_verified=bool(view.get("blockchain_verified")),
+            verification_url=view.get("verification_url") or "",
+            verification_status=view.get("verification_status"),
+            blockchain_status=view.get("blockchain_status"),
+            completeness=view.get("completeness"),
             farmer=schemas.Farmer(**farmer_data) if farmer_data else None,
             apiary=schemas.Apiary(**apiary_data) if apiary_data else None,
             hive=schemas.Hive(**hive_data) if hive_data else None,
-            story_title="The BeeYield Story",
-            story_content=farmer_data.get('story', '') if farmer_data else '',
-            impact_stats=impact_stats,
-            sensor_snapshot={}, 
-            health_snapshot={"status": "Certified Healthy"},
-            florage_type=harvest.get("florage_type", ""),
-            extra_metadata=harvest.get("extra_metadata") or {},
-            timeline=timeline
+            story_title="Traceability Overview",
+            story_content=(farmer_data.get("story") or "").strip(),
+            impact_stats=await _get_impact_stats(token),
+            sensor_snapshot=view.get("sensor_snapshot"),
+            health_snapshot=view.get("health_snapshot"),
+            florage_type=view.get("florage_type"),
+            extra_metadata=view.get("extra_metadata") or {},
+            timeline=timeline,
         )
+
+    @staticmethod
+    async def register_farmer(farmer_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+        farmer_data = _as_dict(farmer_in)
+        record = {
+            **farmer_data,
+            "farmer_id": farmer_data.get("farmer_id") or farmer_data.get("id"),
+        }
+        await db_upsert("farmers", record, on_conflict="id", token=token)
+
+        try:
+            from app.blockchain.honey_chain import honey_blockchain
+
+            honey_blockchain.register_farmer(record)
+        except Exception as exc:
+            record["_blockchain_error"] = str(exc)
+
+        return record
+
+    @staticmethod
+    async def register_apiary(apiary_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+        apiary_data = _as_dict(apiary_in)
+        record = {
+            **apiary_data,
+            "apiary_id": apiary_data.get("apiary_id") or apiary_data.get("id"),
+        }
+        await db_upsert("apiaries", record, on_conflict="id", token=token)
+
+        try:
+            from app.blockchain.honey_chain import honey_blockchain
+
+            honey_blockchain.register_apiary(record)
+        except Exception as exc:
+            record["_blockchain_error"] = str(exc)
+
+        return record
+
+    @staticmethod
+    async def register_hive(hive_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+        hive_data = _as_dict(hive_in)
+        record = {
+            **hive_data,
+            "hive_id": hive_data.get("hive_id") or hive_data.get("id"),
+        }
+        await db_upsert("hives", record, on_conflict="id", token=token)
+
+        try:
+            from app.blockchain.honey_chain import honey_blockchain
+
+            honey_blockchain.register_hive(record)
+        except Exception as exc:
+            record["_blockchain_error"] = str(exc)
+
+        return record
+
+    @staticmethod
+    def record_sensor_data(sensor_in: Any) -> dict[str, Any]:
+        payload = _as_dict(sensor_in)
+        try:
+            from app.blockchain.honey_chain import honey_blockchain
+
+            block = honey_blockchain.record_sensor_data(payload)
+            return {
+                "success": True,
+                "block_index": block.index,
+                "hash": block.hash,
+                "payload": payload,
+            }
+        except Exception as exc:
+            return {"success": False, "error": str(exc), "payload": payload}
+
+    @staticmethod
+    async def record_harvest(harvest_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+        harvest_data = _as_dict(harvest_in)
+        result = await db_insert("harvests", harvest_data, token=token)
+        record = result.get("data", [harvest_data])[0] if result.get("success") else harvest_data
+
+        try:
+            from app.blockchain.honey_chain import honey_blockchain
+
+            block = honey_blockchain.record_harvest(harvest_data)
+            record["blockchain_hash"] = block.hash
+        except Exception as exc:
+            record["_blockchain_error"] = str(exc)
+
+        return record
 
     @staticmethod
     async def get_all_harvests(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
         columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
-        data = await db_select("harvests", columns=columns, order_by="harvest_date", ascending=False, limit=limit, token=token)
-        for h in data:
-            if not h.get('honey_type'):
-                h['honey_type'] = 'Multifloral'
-            if h.get('hive') and h['hive'].get('apiary'):
-                h['apiary'] = h['hive']['apiary']
-        return data
+        data = await db_select("harvests", columns=columns, order_by="date", ascending=False, limit=limit, token=token)
+        normalized: list[dict[str, Any]] = []
+        for harvest in data:
+            view = await build_batch_view(None, harvest, token=token, include_live_snapshots=False)
+            normalized.append(view.get("harvest") or harvest)
+        return normalized
+
+    @staticmethod
+    async def get_all_apiaries(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+        return await db_select("apiaries", order_by="created_at", ascending=False, limit=limit, token=token)
+
+    @staticmethod
+    async def get_all_hives(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+        return await db_select("hives", order_by="created_at", ascending=False, limit=limit, token=token)
+
+    @staticmethod
+    async def create_batch(batch_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+        batch_data = _as_dict(batch_in)
+        result = await db_insert("honey_batches", batch_data, token=token)
+        record = result.get("data", [batch_data])[0] if result.get("success") else batch_data
+
+        try:
+            from app.blockchain.honey_chain import honey_blockchain
+
+            block = honey_blockchain.create_batch(record)
+            record["block_hash"] = block.hash
+        except Exception as exc:
+            record["_blockchain_error"] = str(exc)
+
+        return record
+
+    @staticmethod
+    async def get_all_batches(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+        return await get_all_batch_views(token=token, limit=limit)
 
     @staticmethod
     async def get_history(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
-        """Alias for journey lookup."""
         return await TraceabilityService.get_trace_journey(batch_code, token=token)
 
     @staticmethod
     async def get_trace_journey(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
-        """Reconstruct journey. Prioritizes DB (Smart Batching).
-        Uses service_role_key to bypass RLS since this is a public lookup."""
-        from app.core.config import settings
-        # For public traceability lookups, use the service role key to bypass RLS
-        lookup_token = token or getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY', None)
-        try:
-            harvests = await db_select("harvests", filters={"batch_code": batch_code}, token=lookup_token)
-            if harvests:
-                return await TraceabilityService._build_db_journey(harvests[0], token=lookup_token)
-        except Exception as e:
-            print(f"Journey reconstruction failed: {e}")
-        return None
+        view = await get_batch_view_by_code(batch_code, token=token, include_live_snapshots=True)
+        if not view:
+            return None
+        return await TraceabilityService._build_trace_response(view, token=token)
 
-# Export class for __init__.py
+    @staticmethod
+    async def audit_account(email: Optional[str] = None, user_id: Optional[str] = None, token: Optional[str] = None) -> dict[str, Any]:
+        return await audit_account_traceability(email=email, user_id=user_id, token=token)
+
+
 TraceabilityService = TraceabilityService()
-
-# Note: Blockhain write operations remain in Python as they are IO-bound and use local state.

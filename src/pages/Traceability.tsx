@@ -22,7 +22,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
 import LOGO from '@/assets/Logo.png';
 import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
 import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
@@ -40,6 +39,32 @@ const Traceability = () => {
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
+  const missingDataLabel = "Missing backend data";
+
+  const hasValue = useCallback((value: unknown) => {
+    if (value === null || value === undefined) return false;
+    if (typeof value === "string") return value.trim().length > 0;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === "object") return Object.keys(value as Record<string, unknown>).length > 0;
+    return true;
+  }, []);
+
+  const textOrMissing = useCallback((value: unknown, fallback = missingDataLabel) => {
+    return hasValue(value) ? String(value) : fallback;
+  }, [hasValue]);
+
+  const numberOrMissing = useCallback((value: unknown, unit = "", digits?: number) => {
+    if (typeof value !== "number" || Number.isNaN(value)) return missingDataLabel;
+    const rendered = typeof digits === "number" ? value.toFixed(digits) : String(value);
+    return `${rendered}${unit}`;
+  }, []);
+
+  const dateOrMissing = useCallback((value: unknown) => {
+    if (!hasValue(value)) return missingDataLabel;
+    const date = new Date(String(value));
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleDateString("en-KE", { year: "numeric", month: "short", day: "numeric" });
+  }, [hasValue]);
 
   const handleTrace = useCallback(async (code: string) => {
     if (!code.trim()) return;
@@ -450,18 +475,18 @@ const Traceability = () => {
 
                       <div className="h-1 md:h-24 w-24 md:w-1 bg-gradient-to-b from-transparent via-green-200 to-transparent hidden md:block" />
 
-                      {traceData?.farmer?.name === "Timothy Nduva" ? (
-                        <div className="relative">
-                          <div className="absolute -inset-3 bg-gradient-to-r from-amber-400 to-green-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
-                          <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-white relative z-10 shadow-2xl" />
-                        </div>
-                      ) : traceData?.farmer?.photo_url ? (
-                        <img src={traceData.farmer.photo_url} alt={traceData.farmer.name} className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-white shadow-2xl" />
-                      ) : null}
+                      <div className="relative">
+                        <div className="absolute -inset-3 bg-gradient-to-r from-amber-400 to-green-500 rounded-full blur-xl opacity-20"></div>
+                        <img
+                          src={traceData?.farmer?.photo_url || PLACEHOLDER_SVG}
+                          alt={traceData?.farmer?.name || "Beekeeper image unavailable"}
+                          className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-white relative z-10 shadow-2xl bg-white"
+                        />
+                      </div>
                     </div>
 
                     <Badge className="bg-green-100 text-[#1B9157] border-green-200 text-xs px-4 py-2 hover:bg-[#1B9157] transition-colors inline-flex items-center font-bold mb-4">
-                      <ShieldCheck className="mr-1.5 h-4 w-4" /> Verified Authentic
+                      <ShieldCheck className="mr-1.5 h-4 w-4" /> {textOrMissing(traceData?.verification_status, "Verification pending")}
                     </Badge>
 
                     <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Traceability Report</h2>
@@ -477,7 +502,7 @@ const Traceability = () => {
                       <h3 className="text-2xl font-black tracking-tight">The BeeYield Story</h3>
                     </div>
 
-                    <div className="space-y-4 text-lg text-neutral-800 leading-relaxed font-medium">
+                    <div className="hidden space-y-4 text-lg text-neutral-800 leading-relaxed font-medium">
                       <p>
                         In 2020, Timothy Nduva saw an opportunity in the quiet of rural Makueni. With just <span className="text-[#1B9157] font-black">4 beehives on half an acre</span>, BeeYield was born as a family mission for sustainable pollination.
                       </p>
@@ -489,6 +514,14 @@ const Traceability = () => {
                       </p>
                     </div>
 
+                    <div className="space-y-4 text-lg text-neutral-800 leading-relaxed font-medium">
+                      <p>{textOrMissing(traceData?.story_content)}</p>
+                      <p className="text-neutral-600 font-normal">
+                        Completeness status: <span className="font-black text-[#1B9157]">{textOrMissing(traceData?.completeness?.status)}</span>.
+                        Missing backend fields remain visible until the source tables are filled.
+                      </p>
+                    </div>
+
                     <div className="flex flex-wrap gap-3 pt-6 border-t border-slate-200 mt-6 md:mt-8">
                       <Badge className="bg-amber-100 text-[#F4D03F] border-amber-200 px-4 py-2 rounded-xl font-bold text-sm">SDG 2: Zero Hunger</Badge>
                       <Badge className="bg-green-100 text-[#1B9157] border-green-200 px-4 py-2 rounded-xl font-bold text-sm">SDG 13: Climate Action</Badge>
@@ -497,7 +530,7 @@ const Traceability = () => {
                   </div>
 
                   {/* Real-time Hive Metrics (Dashboard Data) */}
-                  <div className="mb-12">
+                  <div className="hidden mb-12">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Hive Conditions</h3>
                       <Badge variant="outline" className="bg-green-50 text-[#1B9157] border-green-200 font-bold gap-1.5 py-1 px-3">
@@ -541,7 +574,7 @@ const Traceability = () => {
                   </div>
 
                   {/* Main Grid: Origin & Beekeeper */}
-                  <div className="grid md:grid-cols-2 gap-8 mb-12">
+                  <div className="hidden grid md:grid-cols-2 gap-8 mb-12">
                     {/* Origin Details Card */}
                     <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-[#FFF9F0] h-full relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
@@ -868,7 +901,7 @@ const Traceability = () => {
                           <div className="flex items-center gap-8">
                             <div className="relative group">
                               <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400 to-green-500 rounded-[1.8rem] blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                              <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
+                              <img src={PLACEHOLDER_SVG} alt="Beekeeper image unavailable" className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
                             </div>
                             <div className="relative flex flex-col items-center gap-2 group">
                               <img src={LOGO} alt="BeeYield" className="h-20 w-20 md:h-24 md:w-24 object-contain transition-transform group-hover:scale-110 duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
@@ -917,6 +950,94 @@ const Traceability = () => {
 
                       {/* Decorative BG Blob */}
                       <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl pointer-events-none" />
+                    </Card>
+                  </div>
+
+                  <div className="grid gap-8 mb-12 md:grid-cols-2">
+                    <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-[#FFF9F0]">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Origin Details</h3>
+                        <Badge className="bg-slate-100 text-slate-700 border-slate-200 font-bold">
+                          {textOrMissing(traceData?.completeness?.status)}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Batch Identifier</p>
+                          <p className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.batch_code)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Harvest Date</p>
+                          <p className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || traceData?.extra_metadata?.harvest_window)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Apiary</p>
+                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Location</p>
+                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.location_name)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Flora</p>
+                          <p className="font-semibold text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : missingDataLabel}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Water Source</p>
+                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.water_source)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Beekeeper</p>
+                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.farmer?.name)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Experience</p>
+                          <p className="font-semibold text-[#1A1A1A]">{hasValue(traceData?.farmer?.experience_years) ? `${traceData?.farmer?.experience_years} years` : missingDataLabel}</p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-white">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-2xl font-black tracking-tighter">Verification & Telemetry</h3>
+                        <Badge className="bg-white/10 text-white border-white/20 font-bold">
+                          {textOrMissing(traceData?.verification_status)}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Blockchain</p>
+                          <p className="font-semibold">{textOrMissing(traceData?.blockchain_status?.overall)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Verification URL</p>
+                          <p className="font-semibold break-all">{textOrMissing(traceData?.verification_url)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Temperature</p>
+                          <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.avg_temp, " C", 1)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Humidity</p>
+                          <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.avg_humidity, "%", 1)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Hive Weight</p>
+                          <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.weight_kg, "kg")}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Health Status</p>
+                          <p className="font-semibold">{textOrMissing(traceData?.health_snapshot?.status)}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-[10px] font-black text-white/60 mb-1">Completeness</p>
+                          <p className="font-semibold">
+                            {traceData?.completeness
+                              ? `${traceData.completeness.present} present, ${traceData.completeness.derivable} derivable, ${traceData.completeness.missing} missing`
+                              : missingDataLabel}
+                          </p>
+                        </div>
+                      </div>
                     </Card>
                   </div>
 

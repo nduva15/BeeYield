@@ -51,6 +51,16 @@ def read_root():
         "status": "online"
     }
 
+
+@app.get("/health")
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "ok",
+        "service": settings.PROJECT_NAME,
+        "version": "2.0.0",
+    }
+
 if __name__ == "__main__":
     import logging
     import uvicorn

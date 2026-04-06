@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Sparkles, UserPlus } from "lucide-react";
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 interface ShopRegisterFormProps {
     onSuccess?: () => void;
@@ -34,7 +35,7 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
             return;
         }
 
-        const { data: signupData, error } = await signUp(email, password, {
+        const { error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'user'
@@ -43,17 +44,21 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
         if (error) {
             toast.error("Registration failed", { description: error.message });
         } else {
-            // Auto-provision profile
             const { supabaseShop } = await import('@/lib/supabase');
-            if (supabaseShop && signupData?.user) {
-                await supabaseShop.from('shop_profiles').upsert({
-                    id: signupData.user.id,
-                    email: signupData.user.email,
-                    full_name: `${firstName} ${lastName}`.trim(),
-                    first_name: firstName,
-                    last_name: lastName,
-                    updated_at: new Date().toISOString()
-                });
+            if (supabaseShop) {
+                const { data: { user } } = await supabaseShop.auth.getUser();
+                if (user) {
+                    const { error: profileError } = await ensureProfileForUser(
+                        supabaseShop,
+                        'shop',
+                        user,
+                        { firstName, lastName, role: 'user' },
+                    );
+
+                    if (profileError) {
+                        console.error('Shop profile sync failed after registration', profileError);
+                    }
+                }
             }
 
             toast.success("Account created successfully");

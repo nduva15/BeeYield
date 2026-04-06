@@ -79,8 +79,32 @@ export const meterService = {
         return apiGet<Building[]>('/meters/buildings');
     },
 
+    async createBuilding(input: Omit<Building, 'id' | 'created_at'>): Promise<Building> {
+        return apiPost<Building>('/meters/buildings', input);
+    },
+
+    async updateBuilding(id: string, patch: Partial<Building>): Promise<Building> {
+        return apiPatch<Building>(`/meters/buildings/${id}`, patch);
+    },
+
+    async deleteBuilding(id: string): Promise<void> {
+        await apiDelete<void>(`/meters/buildings/${id}`);
+    },
+
     async getApartments(buildingId?: string): Promise<Apartment[]> {
         return apiGet<Apartment[]>('/meters/apartments', buildingId ? { building_id: buildingId } : {});
+    },
+
+    async createApartment(input: Omit<Apartment, 'id' | 'created_at'>): Promise<Apartment> {
+        return apiPost<Apartment>('/meters/apartments', input);
+    },
+
+    async updateApartment(id: string, patch: Partial<Apartment>): Promise<Apartment> {
+        return apiPatch<Apartment>(`/meters/apartments/${id}`, patch);
+    },
+
+    async deleteApartment(id: string): Promise<void> {
+        await apiDelete<void>(`/meters/apartments/${id}`);
     },
 
     async getMeters(filters?: {
@@ -97,6 +121,10 @@ export const meterService = {
 
     async getReadings(meterId: string, limit: number = 50): Promise<Reading[]> {
         return apiGet<Reading[]>(`/meters/readings/${meterId}`, { limit });
+    },
+
+    async createReading(input: Omit<Reading, 'id'>): Promise<Reading> {
+        return apiPost<Reading>('/meters/readings', input);
     },
 
     async getBillingRates(): Promise<BillingRate[]> {
@@ -136,6 +164,14 @@ export const meterService = {
 
     async getEvents(severity?: string): Promise<MeterEvent[]> {
         return apiGet<MeterEvent[]>('/meters/events', severity ? { severity } : {});
+    },
+
+    async createEvent(input: Omit<MeterEvent, 'id'>): Promise<MeterEvent> {
+        return apiPost<MeterEvent>('/meters/events', input);
+    },
+
+    async resolveEvent(id: string): Promise<MeterEvent> {
+        return apiPatch<MeterEvent>(`/meters/events/${id}/resolve`, {});
     },
 
     async createMeter(input: {

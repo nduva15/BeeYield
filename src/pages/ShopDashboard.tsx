@@ -299,7 +299,6 @@ const ShopDashboard = () => {
                     id: user?.id,
                     first_name: profileForm.firstName,
                     last_name: profileForm.lastName,
-                    full_name: `${profileForm.firstName} ${profileForm.lastName}`.trim(),
                     phone: profileForm.phone,
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });

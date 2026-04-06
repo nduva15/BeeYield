@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Shield, UserPlus } from "lucide-react";
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 interface CebaRegisterFormProps {
     onSuccess?: () => void;
@@ -34,7 +35,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
             return;
         }
 
-        const { data: signupData, error } = await signUp(email, password, {
+        const { error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'admin',
@@ -45,14 +46,20 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
             toast.error("Registration failed", { description: error.message });
         } else {
             const { supabaseCEBA } = await import('@/lib/supabase');
-            if (supabaseCEBA && signupData?.user) {
-                await supabaseCEBA.from('profiles').upsert({
-                    id: signupData.user.id,
-                    email: signupData.user.email,
-                    full_name: `${firstName} ${lastName}`.trim(),
-                    role: 'admin',
-                    updated_at: new Date().toISOString()
-                });
+            if (supabaseCEBA) {
+                const { data: { user } } = await supabaseCEBA.auth.getUser();
+                if (user) {
+                    const { error: profileError } = await ensureProfileForUser(
+                        supabaseCEBA,
+                        'ceba',
+                        user,
+                        { firstName, lastName, role: 'admin' },
+                    );
+
+                    if (profileError) {
+                        console.error('Admin profile sync failed after registration', profileError);
+                    }
+                }
             }
 
             toast.success("Admin account created successfully");

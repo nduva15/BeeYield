@@ -1,6 +1,7 @@
 /// BeeYield Rust Database Service
 /// High-performance Supabase REST client with connection pooling.
 /// ALL config from environment variables. ZERO hardcoded data.
+mod app_api;
 mod config;
 mod handlers;
 mod models;
@@ -46,6 +47,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(cors)
             .app_data(app_state.clone())
+            .configure(app_api::configure)
             // Database CRUD endpoints
             .route("/db/insert", web::post().to(handlers::handle_insert))
             .route("/db/select", web::post().to(handlers::handle_select))
@@ -53,6 +55,16 @@ async fn main() -> std::io::Result<()> {
             .route("/db/delete", web::delete().to(handlers::handle_delete))
             .route("/db/upsert", web::post().to(handlers::handle_upsert))
             .route("/db/get-by-id", web::post().to(handlers::handle_get_by_id))
+            // Integrations
+            .route("/integrations/configs", web::get().to(handlers::list_integration_configs))
+            .route("/integrations/config", web::post().to(handlers::upsert_integration_config))
+            .route("/integrations/quickbooks/authorize-url", web::get().to(handlers::quickbooks_authorize_url))
+            .route("/integrations/quickbooks/complete", web::post().to(handlers::quickbooks_complete))
+            .route("/integrations/quickbooks/sync", web::post().to(handlers::quickbooks_sync))
+            .route("/integrations/shopify/authorize-url", web::get().to(handlers::shopify_authorize_url))
+            .route("/integrations/shopify/complete", web::post().to(handlers::shopify_complete))
+            .route("/integrations/shopify/sync", web::post().to(handlers::shopify_sync))
+            .route("/integrations/etims/sync/{transaction_id}", web::post().to(handlers::etims_sync_transaction))
             // Health
             .route("/health", web::get().to(handlers::health_check))
             // AI Routing & Query

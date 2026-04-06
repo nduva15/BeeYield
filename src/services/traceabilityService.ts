@@ -54,6 +54,41 @@ export interface TraceJourneyStep {
     hash?: string;
 }
 
+export interface CompletenessSection {
+    status: string;
+    present: number;
+    derivable: number;
+    missing: number;
+    fields: Record<string, string>;
+}
+
+export interface CompletenessSummary {
+    status: string;
+    present: number;
+    derivable: number;
+    missing: number;
+    sections: Record<string, CompletenessSection>;
+}
+
+export interface BlockchainVerificationDetails {
+    verified?: boolean;
+    status?: string;
+    block_hash?: string;
+    tx_hash?: string;
+    verification_url?: string;
+    network?: string;
+    on_chain_verified?: boolean;
+    error?: string;
+    chain_stats?: Record<string, unknown>;
+}
+
+export interface BlockchainStatus {
+    overall: string;
+    block_hash?: string;
+    honeychain?: BlockchainVerificationDetails;
+    polygon?: BlockchainVerificationDetails;
+}
+
 export interface SensorSnapshot {
     avg_temp?: number;
     avg_humidity?: number;
@@ -85,9 +120,13 @@ export interface SensorSnapshot {
 export interface TraceResponse {
     batch_code: string;
     product_name: string;
+    harvest_date?: string;
     verified: boolean;
     blockchain_verified: boolean;
     verification_url: string;
+    verification_status?: string;
+    blockchain_status?: BlockchainStatus;
+    completeness?: CompletenessSummary;
 
     // Entities
     farmer?: Farmer;

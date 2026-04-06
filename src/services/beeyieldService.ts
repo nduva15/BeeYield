@@ -165,6 +165,9 @@ export interface IoTDevice {
     firmware_version: string;
     last_ping: string;
     location_name: string;
+    latitude?: number;
+    longitude?: number;
+    farmer_id?: string;
     apiary_id?: string;
     linked_apiary_id?: string;
     hive_id?: string;
@@ -175,6 +178,9 @@ export interface IoTDeviceCreateInput {
     device_name: string;
     device_type: 'infield' | 'inland' | 'disease';
     location_name?: string;
+    latitude?: number;
+    longitude?: number;
+    farmer_id?: string;
     apiary_id?: string;
     linked_apiary_id?: string;
     hive_id?: string;
@@ -520,6 +526,82 @@ export interface HarvestBatchInput {
     notes?: string;
 }
 
+export interface CompletenessSection {
+    status: string;
+    present: number;
+    derivable: number;
+    missing: number;
+    fields: Record<string, string>;
+}
+
+export interface BatchCompleteness {
+    status: string;
+    present: number;
+    derivable: number;
+    missing: number;
+    sections: Record<string, CompletenessSection>;
+}
+
+export interface BatchVerificationDetails {
+    verified?: boolean;
+    status?: string;
+    block_hash?: string;
+    tx_hash?: string;
+    verification_url?: string;
+    network?: string;
+    on_chain_verified?: boolean;
+    error?: string;
+}
+
+export interface BatchBlockchainStatus {
+    overall: string;
+    block_hash?: string;
+    honeychain?: BatchVerificationDetails;
+    polygon?: BatchVerificationDetails;
+}
+
+export interface BatchView {
+    id: string;
+    batch_code: string;
+    honey_type?: string;
+    harvest_date?: string;
+    quantity_kg?: number;
+    processing_method?: string;
+    farmer_name?: string;
+    farmer_phone?: string;
+    beekeeper_name?: string;
+    beekeeper_id?: string;
+    apiary_name?: string;
+    location_county?: string;
+    location_region?: string;
+    latitude?: number;
+    longitude?: number;
+    quality_grade?: string;
+    moisture_content?: number;
+    color_grade?: string;
+    status?: string;
+    block_hash?: string;
+    blockchain_verified?: boolean;
+    verification_status?: string;
+    verification_url?: string;
+    blockchain_status?: BatchBlockchainStatus;
+    completeness?: BatchCompleteness;
+    harvest?: Harvest | null;
+    hive?: Hive | null;
+    apiary?: Apiary | null;
+    farmer?: Farmer | null;
+    sensor_snapshot?: Record<string, unknown> | null;
+    health_snapshot?: Record<string, unknown> | null;
+    florage_type?: string;
+    extra_metadata?: Record<string, unknown>;
+    quantity_left_for_bees_kg?: number;
+    sustainability?: {
+        rule: string;
+        ratio?: number | null;
+        status: string;
+    };
+}
+
 // ========== TASK TYPES ==========
 export interface Task {
     id: string;
@@ -808,6 +890,10 @@ export const beeyieldService = {
                 platform: config.platform,
                 is_active: config.is_active,
                 store_url: config.store_url,
+                kra_pin: config.kra_pin,
+                branch_code: config.branch_code,
+                device_serial: config.device_serial,
+                access_token: config.access_token,
                 config_json: config.config_json,
             }, { headers });
             
@@ -843,6 +929,16 @@ export const beeyieldService = {
         return apiPost<{ success: boolean }>('/integrations/shopify/complete', input, { headers });
     },
 
+    async syncQuickBooksLedger(): Promise<{ success: boolean; platform: string; message?: string; metrics?: any; config?: any }> {
+        const headers = await getAuthHeaders();
+        return apiPost('/integrations/quickbooks/sync', {}, { headers });
+    },
+
+    async syncShopifyProducts(): Promise<{ success: boolean; platform: string; message?: string; metrics?: any; config?: any }> {
+        const headers = await getAuthHeaders();
+        return apiPost('/integrations/shopify/sync', {}, { headers });
+    },
+
     async getGateways(): Promise<any[]> {
         try {
             return await apiGet<any[]>('/iot/gateways');
@@ -852,16 +948,23 @@ export const beeyieldService = {
         }
     },
 
-    async createDevice(input: IoTDeviceCreateInput): Promise<{ data: IoTDevice | null; error: any }> {
+    async createDevice(input: IoTDeviceCreateInput, options?: { silent?: boolean }): Promise<{ data: IoTDevice | null; error: any }> {
         try {
             const payload: any = { ...input };
+            if (payload.hive_id === '') payload.hive_id = null;
+            if (payload.apiary_id === '') payload.apiary_id = null;
+            if (payload.location_name === '') payload.location_name = null;
             delete payload.linked_apiary_id;
             const data = await apiPost<IoTDevice>('/iot/devices', payload);
-            toast.success('Device linked successfully!');
+            if (!options?.silent) {
+                toast.success('Device linked successfully!');
+            }
             return { data, error: null };
         } catch (error) {
             console.error('createDevice:', error);
-            toast.error('Failed to link device');
+            if (!options?.silent) {
+                toast.error('Failed to link device');
+            }
             return { data: null, error };
         }
     },
@@ -1213,13 +1316,13 @@ export const beeyieldService = {
         }
     },
 
-    async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<any[]> {
+    async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {
         try {
             const params: any = {};
             if (filters?.honey_type) params.honey_type = filters.honey_type;
             if (filters?.year) params.year = filters.year;
             if (filters?.limit) params.limit = filters.limit;
-            const data = await apiGet<any[]>('beeyield/batches', params);
+            const data = await apiGet<BatchView[]>('beeyield/batches', params);
             return Array.isArray(data) ? data : [];
         } catch (error) {
             console.error('getBatches:', error);
@@ -1287,8 +1390,8 @@ export const beeyieldService = {
                 notes: input.notes,
             };
             const headers = await getAuthHeaders();
-            const data = await apiPost<any>('/beeyield/harvests', payload, { headers });
-            toast.success('Harvest recorded');
+            const data = await apiPost<any>('/beeyield/harvests/log', payload, { headers });
+            toast.success('Harvest batch recorded');
             return { data, error: null };
         } catch (error) {
             console.error('logHarvestBatch:', error);
@@ -2186,7 +2289,7 @@ export const beeyieldService = {
 
     async submitToETIMS(id: string): Promise<{ success: boolean; etims_id?: string; error?: any }> {
         try {
-            const result = await apiPost<any>(`/beeyield/billing/sync-etims/${id}`, {});
+            const result = await apiPost<any>(`/integrations/etims/sync/${id}`, {});
             return result;
         } catch (error) {
             console.error('submitToETIMS error:', error);

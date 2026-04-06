@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import {
     Droplet, Flame, Zap, AlertTriangle, TrendingUp, Send,
     Bot, ThermometerSun, Activity, Search, RefreshCw, ChevronRight, Database, Layers, ShieldCheck,
-    LayoutList, ChevronDown, Gauge, List, Bell, Banknote, FileText, Settings
+    Gauge, List, Bell, Banknote, FileText, Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -23,7 +23,7 @@ import ReportsExportsView from './ReportsExportsView';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { glass } from './GlassTheme';
-import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldTabBar } from '@/components/beeyield/BeeYieldUI';
 
 interface MetersViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -42,29 +42,6 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         { role: 'assistant', content: 'Checking system status... How can I help you today?' },
     ]);
 
-    const LS_KEY = React.useMemo(() => 'beeyield_meters_dashboard_cache_v1', []);
-    const readCache = React.useCallback((): { meters: Meter[]; events: MeterEvent[]; buildings: Building[] } | null => {
-        try {
-            const raw = globalThis.localStorage?.getItem(LS_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            const m = Array.isArray(parsed?.meters) ? (parsed.meters as Meter[]) : [];
-            const e = Array.isArray(parsed?.events) ? (parsed.events as MeterEvent[]) : [];
-            const b = Array.isArray(parsed?.buildings) ? (parsed.buildings as Building[]) : [];
-            return { meters: m, events: e, buildings: b };
-        } catch {
-            return null;
-        }
-    }, [LS_KEY]);
-
-    const writeCache = React.useCallback((next: { meters: Meter[]; events: MeterEvent[]; buildings: Building[] }) => {
-        try {
-            globalThis.localStorage?.setItem(LS_KEY, JSON.stringify(next));
-        } catch {
-            // ignore
-        }
-    }, [LS_KEY]);
-
     React.useEffect(() => {
         const loadDashboardData = async () => {
             if (activeSubTab !== 'meters-dashboard') return;
@@ -79,25 +56,16 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 setMeters(mData);
                 setEvents(eData);
                 setBuildings(bData);
-                writeCache({ meters: mData || [], events: eData || [], buildings: bData || [] });
             } catch (error) {
                 console.error('Failed to load meter dashboard', error);
-                const cached = readCache();
-                if (cached && (cached.meters.length > 0 || cached.events.length > 0 || cached.buildings.length > 0)) {
-                    setMeters(cached.meters);
-                    setEvents(cached.events);
-                    setBuildings(cached.buildings);
-                    toast.info('Loaded meters dashboard from this device');
-                } else {
-                    setError('Connecting to sensors... Data may be incomplete until you reconnect.');
-                    toast.error('Failed to load dashboard data');
-                }
+                setError('Live telemetry is temporarily unavailable. Retry to fetch the latest backend data.');
+                toast.error('Failed to load dashboard data');
             } finally {
                 setLoading(false);
             }
         };
         loadDashboardData();
-    }, [activeSubTab, readCache, writeCache]);
+    }, [activeSubTab]);
 
     const getUsageByMedium = (medium: string) => {
         const mediumMeters = meters.filter(m => m.meter_type === medium);
@@ -137,6 +105,14 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     }, [meters, usageFilter]);
 
     const activeAlarmsCount = events.filter(e => !e.is_resolved).length;
+    const navTabs = [
+        { id: 'meters-dashboard', label: 'Dashboard' },
+        { id: 'meters-list', label: 'Meter List' },
+        { id: 'meters-alarms', label: 'Alarms' },
+        { id: 'meters-payments', label: 'Payments' },
+        { id: 'meters-reports', label: 'Reports' },
+        { id: 'meters-settings', label: 'Settings' },
+    ];
 
     const handleSendMessage = () => {
         const msg = aiMessage.trim();
@@ -193,48 +169,26 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 onBack={() => onTabChange('home')}
                 actions={
                     <div className="flex items-center gap-3">
-                         <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">
+                        <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
                             <span className="text-xs font-semibold text-gray-500">Live</span>
                         </div>
-
-                        <div className="relative group/nav">
-                            <Button
-                                className={cn(glass.btnPrimary, "h-9 px-4 text-sm font-semibold gap-2")}
-                            >
-                                <LayoutList className="w-3.5 h-3.5" />
-                                Navigation <ChevronDown className="w-3 h-3 transition-transform group-hover/nav:rotate-180" />
-                            </Button>
-                            
-                            <div className="absolute right-0 top-full mt-2 w-56 bg-white/90 backdrop-blur-xl border border-[#F4D03F]/20 rounded-2xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all z-50 overflow-hidden">
-                                {[
-                                    { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
-                                    { id: 'meters-list', label: 'Meter list', icon: List },
-                                    { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
-                                    { id: 'meters-payments', label: 'Payments', icon: Banknote },
-                                    { id: 'meters-reports', label: 'Reports', icon: FileText },
-                                    { id: 'meters-settings', label: 'Settings', icon: Settings }
-                                ].map((item) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => onTabChange(item.id)}
-                                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#F4D03F]/10 transition-colors border-b border-[#F4D03F]/5 last:border-none group/item"
-                                    >
-                                        <item.icon className="w-4 h-4 text-gray-400 group-hover/item:text-[#F4D03F] transition-colors" />
-                                        <span className="text-[10px] font-black text-gray-600">{item.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 }
+            />
+
+            <BeeYieldTabBar
+                tabs={navTabs}
+                activeTab={activeSubTab}
+                onChange={(tab) => onTabChange(tab)}
+                className="w-full max-w-full overflow-x-auto"
             />
 
             {error && (
                 <div className={cn(glass.card, "p-4 border border-red-200 bg-red-50/60")}>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <div>
-                            <div className="text-[10px] font-black text-red-600">Offline mode</div>
+                            <div className="text-[10px] font-black text-red-600">Live data issue</div>
                             <div className="text-sm font-semibold text-slate-700 mt-1">{error}</div>
                         </div>
                         <Button

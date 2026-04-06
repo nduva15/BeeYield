@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 /**
  * Auth Callback Page
@@ -55,29 +56,18 @@ const AuthCallback = () => {
 
                     if (user) {
                         try {
-                            const profileTable = storedBackend === 'shop' ? 'shop_profiles' :
-                                storedBackend === 'beeyield' ? 'beeyield_profiles' :
-                                    'profiles';
+                            const { error: profileError } = await ensureProfileForUser(
+                                activeClient,
+                                storedBackend,
+                                user,
+                                {
+                                    onlyIfMissing: true,
+                                    role: storedBackend === 'ceba' ? 'admin' : undefined,
+                                },
+                            );
 
-                            // Check if profile exists
-                            const { data: existingProfile } = await activeClient
-                                .from(profileTable)
-                                .select('id')
-                                .eq('id', user.id)
-                                .single();
-
-                            if (!existingProfile) {
-                                // Create the profile if it doesn't exist (e.g. first time on this platform)
-                                await activeClient
-                                    .from(profileTable)
-                                    .insert({
-                                        id: user.id,
-                                        first_name: user.user_metadata?.given_name || (user.user_metadata?.full_name?.split(' ')[0]) || '',
-                                        last_name: user.user_metadata?.family_name || (user.user_metadata?.full_name?.split(' ')[1]) || '',
-                                        email: user.email,
-                                        ...(storedBackend === 'beeyield' ? { is_professional: true } : {}),
-                                        ...(storedBackend === 'ceba' ? { role: 'admin' } : {})
-                                    });
+                            if (profileError) {
+                                console.error('Error ensuring platform profile:', profileError);
                             }
                         } catch (profileErr) {
                             console.error('Error ensuring platform profile:', profileErr);

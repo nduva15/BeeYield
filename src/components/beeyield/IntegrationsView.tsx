@@ -22,6 +22,7 @@ const IntegrationsView: React.FC = () => {
     const [activeTab, setActiveTab] = React.useState<'ecosystem' | 'quickbooks' | 'shopify' | 'etims'>('ecosystem');
     const [auditLogs, setAuditLogs] = React.useState<Record<string, any[]>>({});
     const [activeConfig, setActiveConfig] = React.useState<any>(null);
+    const [syncResult, setSyncResult] = React.useState<Record<string, any>>({});
 
     const [shopUrl, setShopUrl] = React.useState('');
     const [qboIncomeAccount, setQboIncomeAccount] = React.useState('Sales of Bee Products');
@@ -38,7 +39,7 @@ const IntegrationsView: React.FC = () => {
                 setConfigs(data || []);
                 
                 // PERFORMANCE: Pre-fetch logs for all known platforms in background
-                ['quickbooks', 'shopify'].forEach(p => {
+                ['quickbooks', 'shopify', 'etims'].forEach(p => {
                     beeyieldService.getIntegrationAuditLogs(p).then(logs => {
                         setAuditLogs(prev => ({ ...prev, [p]: logs || [] }));
                     });
@@ -47,7 +48,8 @@ const IntegrationsView: React.FC = () => {
 
             const platform = activeTab === 'ecosystem' ? '' : activeTab;
             if (platform) {
-                const current = configs?.find((c: any) => c.platform === platform);
+                const source = force || configs.length === 0 ? (await beeyieldService.getIntegrationConfigs()) : configs;
+                const current = source?.find((c: any) => c.platform === platform);
                 if (current) {
                     setActiveConfig(current.config_json || {});
                     if (platform === 'shopify') setShopUrl(current.store_url || '');
@@ -82,6 +84,7 @@ const IntegrationsView: React.FC = () => {
             if (platform === 'shopify') res = await beeyieldService.syncShopifyProducts();
             
             if (res?.success) {
+                setSyncResult(prev => ({ ...prev, [platform]: res }));
                 toast.success(`${platform} Sync Finalized`, { id: tid });
                 fetchConfigs();
             } else {
@@ -350,10 +353,25 @@ const IntegrationsView: React.FC = () => {
                                 <LockIcon className="w-4 h-4 text-[#F4D03F]" />
                                 <span className="text-xs font-bold tracking-tight">Secure</span>
                             </div>
-                            <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">
-                                Credentials are encrypted and stored securely.
-                            </p>
-                        </div>
+                                <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">
+                                    Credentials are encrypted and stored securely.
+                                </p>
+                            </div>
+
+                        {(syncResult[p]?.metrics || activeConfig?.last_sync) && (
+                            <div className={cn(glass.card, "p-4 space-y-3 bg-white border-gray-100")}>
+                                <div>
+                                    <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Latest sync</h4>
+                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Rust integration runtime</p>
+                                </div>
+                                {Object.entries(syncResult[p]?.metrics || activeConfig?.last_sync || {}).slice(0, 4).map(([key, value]) => (
+                                    <div key={key} className="flex items-center justify-between text-[11px] gap-3">
+                                        <span className="font-bold text-gray-500 uppercase tracking-wider">{key.replace(/_/g, ' ')}</span>
+                                        <span className="font-medium text-[#1A1A1A] text-right">{String(value)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
