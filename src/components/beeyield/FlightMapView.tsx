@@ -441,18 +441,18 @@ const FlightMapView: React.FC = () => {
                                 </Select>
                             </div>
 
-                            <div className="rounded-[22px] border border-[#c7781a] bg-[#fff8f2] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
-                                <div className="mb-3 text-sm font-medium text-[#b45f0b]">Land type</div>
+                            <div className="rounded-[22px] border border-[#d28b3d] bg-[#fff7ef] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
+                                <div className="mb-3 text-sm font-medium text-[#b86a19]">Land type</div>
                                 <Select value={activeLandTypeId} onValueChange={setSelectedLandTypeId}>
-                                    <SelectTrigger className="h-[70px] rounded-[18px] border-2 border-[#b56a13] bg-[#fffdf9] px-5 text-lg font-medium text-[#3f3426] shadow-none focus:ring-0 focus:ring-offset-0">
+                                    <SelectTrigger className="h-[70px] rounded-[18px] border-2 border-[#b97726] bg-[#fffaf5] px-5 text-lg font-medium text-[#33281d] shadow-none focus:ring-0 focus:ring-offset-0">
                                         <SelectValue placeholder="Choose forage type" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-[24px] border-[#c7781a] bg-[#fdf0e7] p-0 shadow-[0_24px_40px_rgba(126,62,0,0.16)]">
+                                    <SelectContent className="rounded-[24px] border-[#d28b3d] bg-[#fbefe6] p-0 shadow-[0_24px_40px_rgba(126,62,0,0.14)]">
                                         {landTypes.map((option: any) => (
                                             <SelectItem
                                                 key={option.id}
                                                 value={option.id}
-                                                className="min-h-[68px] rounded-none border-b border-[#efd9cf] pl-5 pr-12 text-[1.05rem] font-medium text-[#2f2416] focus:bg-[#f8cfb8] focus:text-[#2f2416] data-[state=checked]:bg-[#f8cfb8] data-[state=checked]:text-[#2f2416] [&>span]:left-auto [&>span]:right-4"
+                                                className="min-h-[68px] rounded-none border-b border-[#ead7ca] pl-5 pr-12 text-[1.05rem] font-medium text-[#2f2416] focus:bg-[#f4cfbc] focus:text-[#2f2416] data-[state=checked]:bg-[#f4cfbc] data-[state=checked]:text-[#2f2416] [&>span]:left-auto [&>span]:right-4"
                                             >
                                                 {option.name}
                                             </SelectItem>
@@ -525,7 +525,25 @@ const FlightMapView: React.FC = () => {
                             {primaryLocationLabel}
                         </div>
                     </div>
-                    <div className="h-[340px] overflow-hidden sm:h-[420px] lg:h-[520px]">
+                    <div className="relative h-[340px] overflow-hidden sm:h-[420px] lg:h-[520px]">
+                        <div className="pointer-events-none absolute left-3 top-3 z-[1000] flex max-w-[calc(100%-24px)] flex-wrap gap-2">
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#f1d699] bg-[rgba(255,249,235,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#7c5a14] shadow-sm backdrop-blur">
+                                <span className="h-2 w-2 rounded-full bg-[#f2a900]" />
+                                Core site
+                            </div>
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#efcf94] bg-[rgba(255,247,226,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#8a5a08] shadow-sm backdrop-blur">
+                                <span className="h-2 w-2 rounded-full bg-[#d8931c]" />
+                                Heatmap
+                            </div>
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#cde2bf] bg-[rgba(244,251,241,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#466d31] shadow-sm backdrop-blur">
+                                <span className="h-2 w-2 rounded-full bg-[#6da84d]" />
+                                Forage
+                            </div>
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#cfe0fa] bg-[rgba(246,250,255,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#345c9d] shadow-sm backdrop-blur">
+                                <span className="block h-[2px] w-3 rounded-full bg-[#2563eb]" />
+                                Route
+                            </div>
+                        </div>
                         <MapContainer center={mapCenter} zoom={12} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
                             <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap contributors &copy; CARTO' />
                             <HeatLayer points={heatmapPoints} visible={showHeatmap} />
@@ -588,14 +606,14 @@ const FlightMapView: React.FC = () => {
             </section>
 
             <section className={cn(glass.section, 'p-4 md:p-6')}>
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                     <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">Economic route planner</h2>
-                    <p className="max-w-md text-right text-sm text-[#1A1A1A]/55">{flightArea?.route_planner?.helper_text || 'Choose a start point and hive status to build a simple visit order.'}</p>
+                    <p className="max-w-md text-sm text-[#1A1A1A]/55 md:text-right">{flightArea?.route_planner?.helper_text || 'Choose a start point and hive status to build a simple visit order.'}</p>
                 </div>
-                <div className="mt-5 grid gap-4 xl:grid-cols-2 xl:gap-5">
-                    <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-5">
-                        <div className="text-lg font-semibold text-[#1A1A1A]">Start point</div>
-                        <div className="mt-5">
+                <div className="mt-4 grid gap-3 xl:grid-cols-2 xl:gap-5">
+                    <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-4 sm:p-5">
+                        <div className="text-base font-semibold text-[#1A1A1A] sm:text-lg">Start point</div>
+                        <div className="mt-4">
                             <Select value={startPointId || selectedApiaryId} onValueChange={setStartPointId}>
                                 <SelectTrigger className="h-12 rounded-xl border-[#F4D03F]/30 bg-white text-sm font-semibold text-[#1A1A1A]">
                                     <SelectValue placeholder="Select a start point" />
@@ -609,42 +627,46 @@ const FlightMapView: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-5">
+                    <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-4 sm:p-5">
                         <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div className="text-lg font-semibold text-[#1A1A1A]">Which hives to visit?</div>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="text-base font-semibold text-[#1A1A1A] sm:text-lg">Which hives to visit?</div>
+                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                 {statusOptions.map((status) => (
-                                    <button key={status} type="button" onClick={() => setStatusFilter(status)} className={cn('rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors', statusFilter === status ? 'border-[#F4D03F] bg-[#F4D03F]/15 text-[#1A1A1A]' : 'border-[#F4D03F]/20 bg-white text-[#1A1A1A]/60')}>
+                                    <button key={status} type="button" onClick={() => setStatusFilter(status)} className={cn('rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors sm:px-3 sm:py-1.5 sm:text-xs', statusFilter === status ? 'border-[#F4D03F] bg-[#F4D03F]/15 text-[#1A1A1A]' : 'border-[#F4D03F]/20 bg-white text-[#1A1A1A]/60')}>
                                         {status === 'all' ? 'All hives' : status}
                                     </button>
                                 ))}
                             </div>
                         </div>
-                        <div className="mt-4 max-h-[240px] space-y-3 overflow-auto pr-1">
+                        <div className="mt-3 max-h-[220px] space-y-2.5 overflow-auto pr-1 sm:mt-4 sm:max-h-[240px] sm:space-y-3">
                             {filteredHives.map((hive: any) => (
-                                <label key={hive.id} className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#F4D03F]/20 bg-white px-4 py-3">
-                                    <Checkbox checked={selectedHiveIds.includes(hive.id)} onCheckedChange={(value) => toggleHive(hive.id, Boolean(value))} />
+                                <label key={hive.id} className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#F4D03F]/20 bg-white px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3">
+                                    <Checkbox
+                                        checked={selectedHiveIds.includes(hive.id)}
+                                        onCheckedChange={(value) => toggleHive(hive.id, Boolean(value))}
+                                        className="mt-0.5 h-3.5 w-3.5 rounded-[4px] border-[#d9b351] data-[state=checked]:border-[#d9b351] data-[state=checked]:bg-[#F4D03F] data-[state=checked]:text-[#1A1A1A]"
+                                    />
                                     <div className="min-w-0 flex-1">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
-                                            <div className="font-semibold text-[#1A1A1A]">{hive.name}</div>
+                                            <div className="text-sm font-semibold text-[#1A1A1A]">{hive.name}</div>
                                             <span className={cn('rounded-full border px-2.5 py-1 text-xs font-semibold', statusTone(hive.status))}>{hive.status}</span>
                                         </div>
-                                        <div className="mt-1 text-sm text-[#1A1A1A]/55">{Number(hive.latitude).toFixed(4)}, {Number(hive.longitude).toFixed(4)}</div>
+                                        <div className="mt-1 text-xs text-[#1A1A1A]/55 sm:text-sm">{Number(hive.latitude).toFixed(4)}, {Number(hive.longitude).toFixed(4)}</div>
                                     </div>
                                 </label>
                             ))}
-                            {filteredHives.length === 0 ? <div className="rounded-xl border border-dashed border-[#F4D03F]/30 bg-white/70 px-4 py-6 text-sm text-[#1A1A1A]/55">No hives match this status filter.</div> : null}
+                            {filteredHives.length === 0 ? <div className="rounded-xl border border-dashed border-[#F4D03F]/30 bg-white/70 px-4 py-5 text-sm text-[#1A1A1A]/55">No hives match this status filter.</div> : null}
                         </div>
-                        <div className="mt-5 flex flex-wrap items-center gap-3">
+                        <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:mt-5 sm:gap-3">
                             <Button onClick={handlePlanRoute} disabled={planningRoute} className={cn(glass.btnPrimary, 'h-11 rounded-xl px-5')}>
                                 {planningRoute ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Route className="mr-2 h-4 w-4" />}Route plan
                             </Button>
                             <div className="text-sm text-[#1A1A1A]/55">{selectedHiveIds.length} hive(s) selected</div>
                         </div>
                         {routePath.length > 0 ? (
-                            <div className="mt-5 rounded-xl border border-[#dfe6f3] bg-[#f8fbff] p-4">
+                            <div className="mt-4 rounded-xl border border-[#dfe6f3] bg-[#f8fbff] p-3 sm:mt-5 sm:p-4">
                                 <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#5577ac]"><CheckCircle2 className="h-4 w-4" />Route summary</div>
-                                <div className="space-y-2">
+                                <div className="space-y-1.5 sm:space-y-2">
                                     {routePath.map((point, index) => (
                                         <div key={`${point.id}-${index}`} className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-sm text-[#20304d]">
                                             <span>{index + 1}. {point.name}</span>

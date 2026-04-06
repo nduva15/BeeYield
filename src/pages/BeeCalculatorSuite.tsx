@@ -17,13 +17,12 @@ import {
   Truck,
   Wind,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { cn } from '@/lib/utils';
 import { useBeekeepingMath } from '@/hooks/useBeekeepingMath';
-import { calculateHealthyHiveIndex, calculatePollinationMetrics, type HealthyHiveInputs } from '@/lib/pollinationCalculations';
+import { calculatePollinationMetrics } from '@/lib/pollinationCalculations';
 
 type FeedRatio = '1:1' | '2:1';
 type HiveStrength = 'Modest' | 'Medium' | 'Strong';
@@ -37,12 +36,12 @@ const sectionTone = 'border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgb
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const sectionMeta = [
-  { id: 'feeding', label: 'Feeding', note: '3 tools' },
-  { id: 'treatment', label: 'Treatment / prophylaxis', note: '2 tools' },
-  { id: 'equipment', label: 'Equipment / apiary', note: '3 tools' },
-  { id: 'economics', label: 'Economics', note: '2 tools' },
-  { id: 'mini', label: 'Mini calculators (educational)', note: '4 tools' },
-  { id: 'quizzes', label: 'Quizzes and tips', note: '4 tools' },
+  { id: 'feeding', label: 'Feeding', note: '3 tools', icon: Beaker },
+  { id: 'treatment', label: 'Treatment / prophylaxis', note: '2 tools', icon: Syringe },
+  { id: 'equipment', label: 'Equipment / apiary', note: '3 tools', icon: Package },
+  { id: 'economics', label: 'Economics', note: '2 tools', icon: GaugeCircle },
+  { id: 'mini', label: 'Mini calculators (educational)', note: '4 tools', icon: Brain },
+  { id: 'quizzes', label: 'Quizzes and tips', note: '4 tools', icon: BookOpen },
 ] as const;
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -125,8 +124,8 @@ function ToolCard({
     <article className={cn(homeCard, className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="text-lg font-black tracking-tight text-[#1A1A1A]">{title}</h3>
-          <p className="text-sm text-gray-500">{description}</p>
+          <h3 className="text-[1.1rem] font-black tracking-tight text-[#1A1A1A]">{title}</h3>
+          <p className="text-[13px] leading-relaxed text-gray-500">{description}</p>
         </div>
         <div className="flex items-center gap-2">
           {badge ? (
@@ -139,7 +138,7 @@ function ToolCard({
           </div>
         </div>
       </div>
-      <div className="mt-5 space-y-4">{children}</div>
+      <div className="mt-4 space-y-4">{children}</div>
     </article>
   );
 }
@@ -148,18 +147,38 @@ function SectionBlock({
   id,
   title,
   subtitle,
+  badge,
+  icon: Icon,
   children,
 }: {
   id: string;
   title: string;
   subtitle: string;
+  badge?: string;
+  icon?: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className={cn(glass.section, 'overflow-hidden')}>
-      <div className={cn(sectionTone, 'px-5 py-5 md:px-6')}>
-        <h2 className="text-[1.6rem] font-black tracking-tight text-[#1A1A1A]">{title}</h2>
-        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+    <section id={id} className={cn(glass.section, 'scroll-mt-24 overflow-hidden')}>
+      <div className={cn(sectionTone, 'px-5 py-4 md:px-6')}>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              {Icon ? (
+                <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/80 p-2 text-[#8a6a00]">
+                  <Icon className="h-4 w-4" />
+                </div>
+              ) : null}
+              {badge ? (
+                <Badge className="rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
+                  {badge}
+                </Badge>
+              ) : null}
+            </div>
+            <h2 className="text-[1.45rem] font-black tracking-tight text-[#1A1A1A]">{title}</h2>
+          </div>
+        </div>
+        <p className="mt-1 text-[13px] text-gray-500">{subtitle}</p>
       </div>
       <div className="grid gap-4 p-5 md:p-6 xl:grid-cols-3">{children}</div>
     </section>
@@ -320,12 +339,6 @@ const BeeCalculatorSuite = () => {
   }, [apiaryHives, forageAreaHa, overloadSeason]);
   const honeyFrameEstimate = React.useMemo(() => `${Math.max(1, clamp(Math.round({ Poor: 4, Average: 7, Rich: 10 }[honeyFrameForage] + { Modest: -1, Medium: 0, Strong: 2 }[honeyFrameStrength] - honeyFrameDistance * 1.2), 1, 14) - 1)}-${Math.min(15, clamp(Math.round({ Poor: 4, Average: 7, Rich: 10 }[honeyFrameForage] + { Modest: -1, Medium: 0, Strong: 2 }[honeyFrameStrength] - honeyFrameDistance * 1.2), 1, 14) + 1)} frames`, [honeyFrameDistance, honeyFrameForage, honeyFrameStrength]);
 
-  const healthyHiveInputs = React.useMemo<HealthyHiveInputs>(
-    () => ({ colonyFrames: flightStrength === 'Strong' ? 11 : flightStrength === 'Medium' ? 8 : 6, broodFrames: flightStrength === 'Strong' ? 5 : flightStrength === 'Medium' ? 4 : 3, queenPresenceScore: flightStrength === 'Strong' ? 0.92 : flightStrength === 'Medium' ? 0.82 : 0.68, weeklyFlightHours: seasonFlights === 'Summer' ? 40 : seasonFlights === 'Spring' ? 33 : 24, weatherQuality: 1 - weatherRisk, orientation: 'east' }),
-    [flightStrength, seasonFlights, weatherRisk],
-  );
-  const healthyHiveMetrics = React.useMemo(() => calculateHealthyHiveIndex(healthyHiveInputs), [healthyHiveInputs]);
-
   const beekeeperStyle = React.useMemo(() => (reactionStyle === 'Treat early' && planningStyle === 'Season plan' ? 'Preventive planner' : reactionStyle === 'Wait and observe' && riskAttitude === 'Avoid chemistry' ? 'Low-intervention observer' : 'Adaptive field manager'), [planningStyle, reactionStyle, riskAttitude]);
   const stopDecision = React.useMemo(() => {
     const floor = { Spring: 13, Summer: 12, Autumn: 15, Winter: 16 }[stopSeason];
@@ -348,6 +361,33 @@ const BeeCalculatorSuite = () => {
     setActiveSection(id);
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  React.useEffect(() => {
+    const sections = sectionMeta
+      .map((section) => document.getElementById(section.id))
+      .filter((node): node is HTMLElement => Boolean(node));
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleEntries[0]?.target?.id) {
+          setActiveSection(visibleEntries[0].target.id);
+        }
+      },
+      {
+        rootMargin: '-20% 0px -55% 0px',
+        threshold: [0.2, 0.35, 0.5, 0.7],
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
   React.useEffect(() => {
     setTargetStoresKg(winterHiveType === 'Nucleus' ? 8 : winterHiveType === 'Double brood' ? 25 : 18);
@@ -387,10 +427,23 @@ const BeeCalculatorSuite = () => {
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Tip</p>
                 <p className="mt-2 text-sm font-semibold leading-relaxed text-[#1A1A1A]">Move section by section like a seasonal checklist.</p>
               </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Winter gap</p>
+                <p className="mt-2 text-2xl font-black tracking-tight text-[#8a6a00]">{winterResult.deficitKg} kg</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">Current shortfall to winter stores.</p>
+              </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Varroa call</p>
+                <p className={cn('mt-2 text-2xl font-black tracking-tight', varroaDecision.tone === 'green' ? 'text-[#166534]' : varroaDecision.tone === 'amber' ? 'text-[#a16207]' : 'text-[#b45309]')}>
+                  {varroaDecision.label}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{varroaResult.percentage}% infestation in current sample.</p>
+              </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 p-4 md:p-5">
+        <div className="border-t border-[#F4D03F]/10 bg-[#F9F7F2] px-4 py-4 md:px-5">
+          <div className="flex flex-wrap gap-2">
           {sectionMeta.map((section) => (
             <button
               key={section.id}
@@ -398,14 +451,18 @@ const BeeCalculatorSuite = () => {
               onClick={() => jumpToSection(section.id)}
               className={cn('rounded-full border px-4 py-2 text-left transition-all', activeSection === section.id ? 'border-[#F4D03F]/40 bg-[#FFF4CC] text-[#1A1A1A]' : 'border-[#F4D03F]/15 bg-white text-gray-600 hover:border-[#F4D03F]/30 hover:bg-[#FFF9F0]')}
             >
-              <div className="text-[11px] font-black tracking-tight">{section.label}</div>
+              <div className="flex items-center gap-2 text-[11px] font-black tracking-tight">
+                <section.icon className="h-3.5 w-3.5" />
+                <span>{section.label}</span>
+              </div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.14em] opacity-60">{section.note}</div>
             </button>
           ))}
+          </div>
         </div>
       </section>
 
-      <SectionBlock id="feeding" title="Feeding" subtitle="Plan winter stores and syrup quantities before the next feeding round.">
+      <SectionBlock id="feeding" title="Feeding" subtitle="Plan winter stores and syrup quantities before the next feeding round." badge="3 tools" icon={Beaker}>
         <ToolCard icon={Beaker} title="Sugar syrup calculator" description="Quick ratio mix for field batches.">
           <Field label="Syrup ratio">
             <div className="grid grid-cols-2 gap-2">
@@ -468,7 +525,7 @@ const BeeCalculatorSuite = () => {
         </ToolCard>
       </SectionBlock>
 
-      <SectionBlock id="treatment" title="Treatment / prophylaxis" subtitle="Check weather windows and interpret mite pressure before you treat.">
+      <SectionBlock id="treatment" title="Treatment / prophylaxis" subtitle="Check weather windows and interpret mite pressure before you treat." badge="2 tools" icon={Syringe}>
         <ToolCard icon={Syringe} title="Treatment timing & weather window" description="Simple weather gate for common treatment methods.">
           <Field label="Method">
             <SelectInput value={treatmentMethod} onChange={(event) => setTreatmentMethod(event.target.value as Method)}>
@@ -549,7 +606,7 @@ const BeeCalculatorSuite = () => {
         </ToolCard>
       </SectionBlock>
 
-      <SectionBlock id="equipment" title="Equipment / apiary" subtitle="Plan purchases, packaging, and replacement queens before the next yard move.">
+      <SectionBlock id="equipment" title="Equipment / apiary" subtitle="Plan purchases, packaging, and replacement queens before the next yard move." badge="3 tools" icon={Package}>
         <ToolCard icon={Package} title="Wax foundation calculator" description="Count the sheets and wax weight needed for upcoming frame work.">
           <Field label="Frame type">
             <SelectInput value={frameType} onChange={(event) => setFrameType(event.target.value as 'Langstroth deep' | 'Langstroth super' | 'Warre')}>
@@ -612,8 +669,8 @@ const BeeCalculatorSuite = () => {
         </ToolCard>
       </SectionBlock>
 
-      <SectionBlock id="economics" title="Economics" subtitle="Keep the forecasting pieces from the old suite, but inside the home dashboard visual language.">
-        <ToolCard icon={GaugeCircle} title="Pollination contract optimizer" description="Blend coverage, bloom, and value into a quick contract check." badge="ROI">
+      <SectionBlock id="economics" title="Economics" subtitle="Keep the forecasting pieces from the old suite, but inside the home dashboard visual language." badge="2 tools" icon={GaugeCircle}>
+        <ToolCard icon={GaugeCircle} title="Pollination contract optimizer" description="Blend coverage, bloom, and value into a quick contract check." badge="ROI" className="xl:col-span-2">
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Orchard size ac">
               <NumberInput value={economicAcres} min={10} step={5} onChange={(event) => setEconomicAcres(Number(event.target.value))} />
@@ -653,7 +710,7 @@ const BeeCalculatorSuite = () => {
           </div>
         </ToolCard>
 
-        <ToolCard icon={Truck} title="Deployment calculus" description="Translate hive need into pallets, travel, and field hours." badge={`ROI ${projectedRoi}%`}>
+        <ToolCard icon={Truck} title="Deployment calculus" description="Translate hive need into pallets, travel, and field hours." badge={`ROI ${projectedRoi}%`} className="xl:col-span-1">
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Hives per pallet">
               <NumberInput value={hivesPerPallet} min={1} max={8} step={1} onChange={(event) => setHivesPerPallet(Number(event.target.value))} />
@@ -678,7 +735,7 @@ const BeeCalculatorSuite = () => {
         </ToolCard>
       </SectionBlock>
 
-      <SectionBlock id="mini" title="Mini calculators (educational)" subtitle="Fast heuristics for training, field intuition, and crew alignment.">
+      <SectionBlock id="mini" title="Mini calculators (educational)" subtitle="Fast heuristics for training, field intuition, and crew alignment." badge="4 tools" icon={Brain}>
         <ToolCard icon={Wind} title="Is it worth flying there?" description="Energy balance heuristic for forage trips.">
           <Field label="Forage distance km">
             <NumberInput value={flightDistance} min={0.2} step={0.1} onChange={(event) => setFlightDistance(Number(event.target.value))} />
@@ -762,7 +819,7 @@ const BeeCalculatorSuite = () => {
         </ToolCard>
       </SectionBlock>
 
-      <SectionBlock id="quizzes" title="Quizzes and tips" subtitle="Tiny interactive prompts for training decisions and inspection judgment.">
+      <SectionBlock id="quizzes" title="Quizzes and tips" subtitle="Tiny interactive prompts for training decisions and inspection judgment." badge="4 tools" icon={BookOpen}>
         <ToolCard icon={BookOpen} title="Your beekeeping style" description="See the management bias your answers imply.">
           <Field label="Reaction to first symptoms">
             <SelectInput value={reactionStyle} onChange={(event) => setReactionStyle(event.target.value as 'Wait and observe' | 'Treat early')}>
@@ -843,21 +900,6 @@ const BeeCalculatorSuite = () => {
         </ToolCard>
       </SectionBlock>
 
-      <section className={cn(glass.section, 'overflow-hidden')}>
-        <div className="grid gap-4 p-5 md:grid-cols-[minmax(0,1fr)_auto] md:p-6">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Quick read</p>
-            <h3 className="mt-2 text-xl font-black tracking-tight text-[#1A1A1A]">This view matches the reference structure while staying visually consistent with the BeeYield home dashboard.</h3>
-            <p className="mt-2 text-sm text-gray-500">Feeding and treatment live at the top, operations and economics sit in the middle, and the educational micro-tools remain lightweight for field crews.</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Badge className="rounded-full border border-[#1B9157]/15 bg-[#eefaf0] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#166534]">Healthy hive index {healthyHiveMetrics.healthyHiveIndex}%</Badge>
-            <Button type="button" className={cn(glass.btnSecondary, 'rounded-full px-5')} onClick={() => jumpToSection('feeding')}>
-              Back to top tools
-            </Button>
-          </div>
-        </div>
-      </section>
     </BeeYieldPageShell>
   );
 };
