@@ -14,6 +14,15 @@ class BuildingBase(BaseModel):
 class BuildingCreate(BuildingBase):
     pass
 
+class BuildingUpdate(BaseModel):
+    name: Optional[str] = None
+    address: Optional[str] = None
+    county: Optional[str] = None
+    region: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    metadata: Optional[dict] = None
+
 class Building(BuildingBase):
     id: str
     created_at: datetime
@@ -30,6 +39,13 @@ class ApartmentBase(BaseModel):
 
 class ApartmentCreate(ApartmentBase):
     pass
+
+class ApartmentUpdate(BaseModel):
+    building_id: Optional[str] = None
+    unit_number: Optional[str] = None
+    floor: Optional[str] = None
+    occupant_name: Optional[str] = None
+    metadata: Optional[dict] = None
 
 class Apartment(ApartmentBase):
     id: str

@@ -56,6 +56,8 @@ dist/
 .cache/
 build/
 out/
+output/
+tmp/
 target/
 **/*.rlib
 **/*.pdb
@@ -91,6 +93,7 @@ brain/
 node_modules/
 .venv/
 venv/
+backend/Lib/
 
 # BEE-SOUND-ANALYSIS (cloned locally for model reference, deployed to Kaggle)
 beeyield-sound-analysis/

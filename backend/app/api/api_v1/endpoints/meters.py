@@ -10,10 +10,84 @@ async def list_buildings():
     """List all buildings with meters."""
     return await MeterService.get_buildings()
 
+@router.get("/buildings/{building_id}", response_model=schemas.Building)
+async def get_building(building_id: str):
+    """Get a single building by ID."""
+    building = await MeterService.get_building(building_id)
+    if not building:
+        raise HTTPException(status_code=404, detail="Building not found")
+    return building
+
+@router.post("/buildings", response_model=schemas.Building)
+async def create_building(body: schemas.BuildingCreate):
+    """Create a building."""
+    try:
+        return await MeterService.create_building(body.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/buildings/{building_id}", response_model=schemas.Building)
+async def update_building(building_id: str, body: schemas.BuildingUpdate):
+    """Update a building."""
+    try:
+        updated = await MeterService.update_building(building_id, body.model_dump(exclude_unset=True))
+        if not updated:
+            raise HTTPException(status_code=404, detail="Building not found")
+        return updated
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/buildings/{building_id}", status_code=204)
+async def delete_building(building_id: str):
+    """Delete a building."""
+    ok = await MeterService.delete_building(building_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Building not found or deletion failed")
+    return None
+
 @router.get("/apartments", response_model=List[schemas.Apartment])
 async def list_apartments(building_id: Optional[str] = None):
     """List apartments, optionally filtered by building."""
     return await MeterService.get_apartments(building_id)
+
+@router.get("/apartments/{apartment_id}", response_model=schemas.Apartment)
+async def get_apartment(apartment_id: str):
+    """Get a single apartment by ID."""
+    apartment = await MeterService.get_apartment(apartment_id)
+    if not apartment:
+        raise HTTPException(status_code=404, detail="Apartment not found")
+    return apartment
+
+@router.post("/apartments", response_model=schemas.Apartment)
+async def create_apartment(body: schemas.ApartmentCreate):
+    """Create an apartment."""
+    try:
+        return await MeterService.create_apartment(body.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/apartments/{apartment_id}", response_model=schemas.Apartment)
+async def update_apartment(apartment_id: str, body: schemas.ApartmentUpdate):
+    """Update an apartment."""
+    try:
+        updated = await MeterService.update_apartment(apartment_id, body.model_dump(exclude_unset=True))
+        if not updated:
+            raise HTTPException(status_code=404, detail="Apartment not found")
+        return updated
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/apartments/{apartment_id}", status_code=204)
+async def delete_apartment(apartment_id: str):
+    """Delete an apartment."""
+    ok = await MeterService.delete_apartment(apartment_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Apartment not found or deletion failed")
+    return None
 
 @router.get("/devices", response_model=List[schemas.Meter])
 async def list_meters(

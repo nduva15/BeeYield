@@ -1,7 +1,0 @@
-[
-    {
-        "op": "add",
-        "path": "/components/beeyield/HarvestsView.tsx",
-        "content": "// ... existing code ...\nimport { Check, ChevronsUpDown } from \"lucide-react\"\nimport { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from \"@/components/ui/command\"\nimport { Popover, PopoverContent, PopoverTrigger } from \"@/components/ui/popover\"\n// ... existing code ...\n\n// Add new states for batch ID and date\nconst [batchId, setBatchId] = useState<string>('')\nconst [harvestDate, setHarvestDate] = useState<Date | undefined>(new Date())\n\n// Function to generate batch ID based on hive and date\nuseEffect(() => {\n    if (selectedHive && harvestDate) {\n        const hive = hives.find(h => h.id === selectedHive)\n        const dateStr = harvestDate.toISOString().split('T')[0].replace(/-/g, '')\n        if (hive) {\n            setBatchId(`HB-${dateStr}-${hive.hive_code}`)\n        }\n    }\n}, [selectedHive, harvestDate, hives])\n\n// ... inside render ...\n<div className=\"space-y-2\">\n    <Label>Batch ID (HoneyChain™)</Label>\n    <Input \n        value={batchId} \n        onChange={(e) => setBatchId(e.target.value)} \n        placeholder=\"HB-YYYYMMDD-HIVE\"\n        className=\"font-mono\"\n    />\n    <p className=\"text-[10px] text-gray-400\">Auto-generated unique batch identifier for traceability.</p>\n</div>\n// ... existing code ..."
-    }
-]

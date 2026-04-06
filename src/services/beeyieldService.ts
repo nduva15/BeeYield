@@ -175,9 +175,15 @@ export interface IoTDeviceCreateInput {
     device_name: string;
     device_type: 'infield' | 'inland' | 'disease';
     location_name?: string;
+    latitude?: number;
+    longitude?: number;
+    farmer_id?: string;
     apiary_id?: string;
     linked_apiary_id?: string;
     hive_id?: string;
+    status?: 'active' | 'inactive';
+    battery_level?: number;
+    firmware_version?: string;
 }
 
 export type IoTDeviceUpdateInput = Partial<IoTDeviceCreateInput> & {

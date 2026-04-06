@@ -8,11 +8,65 @@ class MeterService:
         return await db_select("meters_buildings", order_by="name")
 
     @staticmethod
+    async def get_building(building_id: str) -> Optional[Dict[str, Any]]:
+        rows = await db_select("meters_buildings", filters={"id": building_id}, limit=1)
+        return rows[0] if rows else None
+
+    @staticmethod
+    async def create_building(payload: Dict[str, Any]) -> Dict[str, Any]:
+        res = await db_insert("meters_buildings", payload)
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to create building")
+        rows = res.get("data") or []
+        return rows[0] if isinstance(rows, list) and rows else payload
+
+    @staticmethod
+    async def update_building(building_id: str, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        if not payload:
+            return await MeterService.get_building(building_id)
+        res = await db_update("meters_buildings", payload, {"id": building_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to update building")
+        return await MeterService.get_building(building_id) or (res.get("data") or [None])[0]
+
+    @staticmethod
+    async def delete_building(building_id: str) -> bool:
+        res = await db_delete("meters_buildings", {"id": building_id})
+        return bool(res.get("success"))
+
+    @staticmethod
     async def get_apartments(building_id: Optional[str] = None) -> List[Dict[str, Any]]:
         filters = {}
         if building_id:
             filters["building_id"] = building_id
         return await db_select("meters_apartments", filters=filters, order_by="unit_number")
+
+    @staticmethod
+    async def get_apartment(apartment_id: str) -> Optional[Dict[str, Any]]:
+        rows = await db_select("meters_apartments", filters={"id": apartment_id}, limit=1)
+        return rows[0] if rows else None
+
+    @staticmethod
+    async def create_apartment(payload: Dict[str, Any]) -> Dict[str, Any]:
+        res = await db_insert("meters_apartments", payload)
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to create apartment")
+        rows = res.get("data") or []
+        return rows[0] if isinstance(rows, list) and rows else payload
+
+    @staticmethod
+    async def update_apartment(apartment_id: str, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        if not payload:
+            return await MeterService.get_apartment(apartment_id)
+        res = await db_update("meters_apartments", payload, {"id": apartment_id})
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to update apartment")
+        return await MeterService.get_apartment(apartment_id) or (res.get("data") or [None])[0]
+
+    @staticmethod
+    async def delete_apartment(apartment_id: str) -> bool:
+        res = await db_delete("meters_apartments", {"id": apartment_id})
+        return bool(res.get("success"))
 
     @staticmethod
     async def get_meters(
