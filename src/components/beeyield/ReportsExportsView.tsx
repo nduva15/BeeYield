@@ -370,10 +370,21 @@ const ReportsExportsView: React.FC = () => {
                                                 {schedule.frequency} • {schedule.recipients?.join(', ') || 'No recipients'}
                                             </div>
                                         </div>
-                                        <Button className={glass.btnSecondary} onClick={() => handleDeleteSchedule(schedule.id)} disabled={deleteSchedule.isPending}>
-                                            <Trash2 className="w-4 h-4" />
-                                            Remove
-                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <span className={cn(glass.badge, schedule.is_active ? 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]' : 'border-gray-200 bg-gray-100 text-gray-500')}>
+                                                {schedule.is_active ? 'Active' : 'Paused'}
+                                            </span>
+                                            <Button className={glass.btnSecondary} onClick={() => handleEditSchedule(schedule)}>
+                                                Edit
+                                            </Button>
+                                            <Button className={glass.btnSecondary} onClick={() => handleToggleSchedule(schedule)} disabled={updateSchedule.isPending}>
+                                                {schedule.is_active ? 'Pause' : 'Resume'}
+                                            </Button>
+                                            <Button className={glass.btnSecondary} onClick={() => handleDeleteSchedule(schedule.id)} disabled={deleteSchedule.isPending}>
+                                                <Trash2 className="w-4 h-4" />
+                                                Remove
+                                            </Button>
+                                        </div>
                                     </div>
                                 ))
                             )}
