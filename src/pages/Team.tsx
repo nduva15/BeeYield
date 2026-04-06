@@ -417,7 +417,9 @@ const Team = () => {
                                     <img 
                                         src={member.image} 
                                         alt={member.name} 
-                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
+                                        className={member.image === LOGO
+                                            ? "w-full h-full object-contain p-10 bg-[#fff9f0] transition-all duration-700 group-hover:scale-105"
+                                            : "w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"}
                                     />
                                     <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[10px] text-beeyield-green font-semibold">

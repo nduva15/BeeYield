@@ -1635,7 +1635,15 @@ async def get_user_stats(
             except Exception:
                 pass
 
-        stats = engine.compute_stats(all_apiaries, hives, harvests, tasks)
+        if engine is not None:
+            stats = engine.compute_stats(all_apiaries, hives, harvests, tasks)
+        else:
+            stats = {
+                "apiaries": len(all_apiaries),
+                "hives": len(hives),
+                "harvests": len(harvests),
+                "tasks": len(tasks),
+            }
         return stats
     except Exception as e:
         raise HTTPException(
