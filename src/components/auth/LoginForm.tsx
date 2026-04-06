@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
+import { buildProfilePayload, getProfileNameParts } from '@/lib/authProfile';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Shield } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
@@ -71,21 +72,23 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 .single();
 
             if (profileError || !profile) {
-                const firstName = loggedInUser.user_metadata?.first_name || '';
-                const lastName = loggedInUser.user_metadata?.last_name || '';
+                const { firstName, lastName } = getProfileNameParts(loggedInUser.user_metadata);
                 const { error: insertError } = await supabaseInstance
                     .from(profileTable)
-                    .upsert({
-                        id: loggedInUser.id,
-                        email: loggedInUser.email,
-                        first_name: firstName || 'New',
-                        last_name: lastName || 'User',
-                        full_name: `${firstName} ${lastName}`.trim() || 'New User',
-                        role: loggedInUser.user_metadata?.role || 'user',
-                        ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
-                        ...(activeBackend === 'ceba' ? { role: 'admin' } : {}),
-                        updated_at: new Date().toISOString()
-                    });
+                    .upsert(
+                        buildProfilePayload({
+                            id: loggedInUser.id,
+                            email: loggedInUser.email,
+                            firstName: firstName || 'New',
+                            lastName: lastName || 'User',
+                            role: activeBackend === 'ceba'
+                                ? 'admin'
+                                : typeof loggedInUser.user_metadata?.role === 'string'
+                                    ? loggedInUser.user_metadata.role
+                                    : 'user',
+                            backend: activeBackend
+                        })
+                    );
 
                 if (insertError) {
                     const isSuperAdmin = [SUPER_ADMIN_EMAIL, 'timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');
@@ -146,10 +149,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     }
                 }
             }
-
-            const fullName = (loggedInUser?.user_metadata?.full_name || loggedInUser?.user_metadata?.name) ||
-                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.user_metadata.first_name} ${loggedInUser.user_metadata.last_name || ''}`.trim() : null) ||
-                'User';
 
             toast.success(`Welcome back!`);
             onSuccess?.();

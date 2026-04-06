@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
+import { buildProfilePayload } from '@/lib/authProfile';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Sparkles, UserPlus } from "lucide-react";
 
@@ -46,14 +47,15 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
             // Auto-provision profile
             const { supabaseShop } = await import('@/lib/supabase');
             if (supabaseShop && signupData?.user) {
-                await supabaseShop.from('shop_profiles').upsert({
-                    id: signupData.user.id,
-                    email: signupData.user.email,
-                    full_name: `${firstName} ${lastName}`.trim(),
-                    first_name: firstName,
-                    last_name: lastName,
-                    updated_at: new Date().toISOString()
-                });
+                await supabaseShop.from('shop_profiles').upsert(
+                    buildProfilePayload({
+                        id: signupData.user.id,
+                        email: signupData.user.email,
+                        firstName,
+                        lastName,
+                        backend: 'shop'
+                    })
+                );
             }
 
             toast.success("Account created successfully");

@@ -21,6 +21,8 @@ import { glass, PageHeader } from './GlassTheme';
 import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -84,7 +86,6 @@ const FlightMapView: React.FC = () => {
     const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
     const { data: hivesData, isLoading: hivesLoading } = useHives(selectedPlaceId || undefined);
     
-    const [weather, setWeather] = useState<any>(null);
     const [foragePotential, setForagePotential] = useState<any>(null);
     const [effectiveRadius, setEffectiveRadius] = useState(2);
     const [maxRadius, setMaxRadius] = useState(5);
@@ -95,6 +96,8 @@ const FlightMapView: React.FC = () => {
 
     const [places, setPlaces] = useState<any[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const selectedApiaryId = selectedPlace?.apiary_id || selectedPlace?.linked_apiary_id || selectedPlaceId || '';
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiaryId || undefined);
 
     // Initial Data Fetch
     useEffect(() => {
@@ -155,13 +158,7 @@ const FlightMapView: React.FC = () => {
         setRoute([]);
 
         try {
-            // Fetch relative data
-            const [weatherRes, potentialRes] = await Promise.all([
-                beeyieldService.getWeatherData(place.latitude, place.longitude),
-                beeyieldService.getFlightPotential(place.id)
-            ]);
-
-            setWeather(weatherRes);
+            const potentialRes = await beeyieldService.getFlightPotential(place.apiary_id || place.id);
             setForagePotential(potentialRes);
             toast.success(`Tactical scan complete for ${place.name}`);
         } catch (err) {

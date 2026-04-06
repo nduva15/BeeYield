@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
+import { buildProfilePayload } from '@/lib/authProfile';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, ShieldCheck, Database, ArrowRight, Zap, UserPlus } from "lucide-react";
 import { cn } from '@/lib/utils';
@@ -48,13 +49,15 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         } else {
             const { supabaseBeeYield } = await import('@/lib/supabase');
             if (supabaseBeeYield && signupData?.user) {
-                await supabaseBeeYield.from('beeyield_profiles').upsert({
-                    id: signupData.user.id,
-                    email: signupData.user.email,
-                    full_name: `${firstName} ${lastName}`.trim(),
-                    is_professional: true,
-                    updated_at: new Date().toISOString()
-                });
+                await supabaseBeeYield.from('beeyield_profiles').upsert(
+                    buildProfilePayload({
+                        id: signupData.user.id,
+                        email: signupData.user.email,
+                        firstName,
+                        lastName,
+                        backend: 'beeyield'
+                    })
+                );
             }
 
             toast.success("Account created");

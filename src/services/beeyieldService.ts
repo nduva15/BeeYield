@@ -1,5 +1,7 @@
 import { supabaseBeeYield } from '@/lib/supabase';
 import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
+import { beeHealthData, type SymptomDetail } from '@/data/beeHealthData';
+import { beeSpeciesData, type BeeSpeciesDetail } from '@/data/beeSpeciesData';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -32,6 +34,104 @@ function _nowIso() {
 function _uuid() {
     // crypto.randomUUID exists in modern browsers; fall back gracefully.
     return (globalThis.crypto as any)?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function _slugifyGuideId(value: string) {
+    return value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function _includesGuideQuery(values: Array<string | undefined>, q?: string) {
+    if (!q?.trim()) return true;
+    const needle = q.trim().toLowerCase();
+    return values.some((value) => value?.toLowerCase().includes(needle));
+}
+
+function _buildDiseaseGuideItems(q?: string) {
+    return Object.entries(beeHealthData)
+        .map(([name, detail]: [string, SymptomDetail]) => ({
+            id: _slugifyGuideId(name),
+            name,
+            type: detail.scientificName ? `${detail.riskLevel} risk | ${detail.scientificName}` : `${detail.riskLevel} risk`,
+            causes: [
+                detail.signs ? `Signs: ${detail.signs}` : '',
+                detail.symptoms ? `Symptoms: ${detail.symptoms}` : '',
+                detail.transmission ? `Transmission: ${detail.transmission}` : '',
+                detail.detection ? `Detection: ${detail.detection}` : '',
+            ]
+                .filter(Boolean)
+                .join(' '),
+            treatment: [
+                detail.treatment ? `Treatment: ${detail.treatment}` : '',
+                detail.prevention ? `Prevention: ${detail.prevention}` : '',
+                detail.steps?.length ? `Response: ${detail.steps.join(' -> ')}` : '',
+            ]
+                .filter(Boolean)
+                .join(' '),
+            riskLevel: detail.riskLevel,
+            scientificName: detail.scientificName,
+            references: detail.references ?? [],
+        }))
+        .filter((item) =>
+            _includesGuideQuery(
+                [
+                    item.name,
+                    item.type,
+                    item.causes,
+                    item.treatment,
+                    item.riskLevel,
+                    item.scientificName,
+                ],
+                q
+            )
+        );
+}
+
+function _buildSpeciesGuideItems(q?: string) {
+    return Object.entries(beeSpeciesData)
+        .map(([name, detail]: [string, BeeSpeciesDetail]) => ({
+            id: _slugifyGuideId(name),
+            name,
+            commonName: detail.scientificName,
+            suitability: [
+                detail.description,
+                `Climate: ${detail.climateSuitability}`,
+                `Temperament: ${detail.temperament}`,
+                `Profile: ${detail.characteristics}`,
+                `Honey yield: ${detail.honeyYield}`,
+            ]
+                .filter(Boolean)
+                .join(' '),
+            location: detail.origin,
+            traits: Array.from(
+                new Set(
+                    [
+                        detail.temperament.split(/[;,]/)[0]?.trim(),
+                        ...detail.pros,
+                    ].filter(Boolean)
+                )
+            ).slice(0, 5),
+            is_extinct: false,
+            references: detail.references ?? [],
+        }))
+        .filter((item) =>
+            _includesGuideQuery(
+                [
+                    item.name,
+                    item.commonName,
+                    item.suitability,
+                    item.location,
+                    ...(item.traits || []),
+                ],
+                q
+            )
+        );
+}
+
+function _getHealthGuideFallback(kind: 'diseases' | 'species', q?: string) {
+    return kind === 'diseases' ? _buildDiseaseGuideItems(q) : _buildSpeciesGuideItems(q);
 }
 
 function _lsRead<T>(key: string, fallback: T): T {
@@ -1008,6 +1108,24 @@ export const beeyieldService = {
         }
     },
 
+    async getApiarySensorReadings(apiaryId: string, hours: number = 24): Promise<SensorReading[]> {
+        try {
+            const hives = await this.getHives(apiaryId);
+            if (!hives.length) return [];
+
+            const rows = await Promise.all(
+                hives.map((hive) => this.getReadings(hive.id, Math.max(1, Math.min(hours * 4, 200))))
+            );
+
+            return rows
+                .flat()
+                .sort((a, b) => new Date(b.timestamp || '').getTime() - new Date(a.timestamp || '').getTime());
+        } catch (error) {
+            console.error('getApiarySensorReadings:', error);
+            return [];
+        }
+    },
+
     subscribeToDeviceReadings(deviceId: string, callback: (payload: any) => void) {
         if (!sb) return null;
         return sb
@@ -1073,6 +1191,15 @@ export const beeyieldService = {
 
     async getTelemetryLatest(): Promise<SensorReading[]> {
         return this.getSensorReadings(undefined, 1);
+    },
+
+    async getApiaryWeatherSummary(apiaryId: string): Promise<ApiaryWeatherSummary | null> {
+        try {
+            return await apiGet<ApiaryWeatherSummary>('/forage/weather-summary', { apiary_id: apiaryId });
+        } catch (error) {
+            console.error('getApiaryWeatherSummary:', error);
+            return null;
+        }
     },
 
     async getImpactStats(): Promise<{ total_apiaries: number; total_hives: number; total_honey_kg: number }> {
@@ -2531,15 +2658,15 @@ export const beeyieldService = {
 
     async getWeatherHistory(apiaryId?: string, days: number = 30): Promise<any[]> {
         try {
-            const hours = Math.max(1, Math.floor(days * 24));
-            const rows = await apiGet<any[]>('/iot/readings', { hours });
-            // Best-effort mapping (field names vary across deployments)
-            return (rows || []).map((r: any) => ({
-                temp_external: r?.temp_external ?? r?.temperature ?? r?.temp_internal ?? null,
-                humidity_external: r?.humidity_external ?? r?.humidity ?? r?.humidity_internal ?? null,
-                recorded_at: r?.recorded_at ?? r?.timestamp ?? r?.created_at ?? null,
-                hive_id: r?.hive_id ?? null,
-                apiary_id: apiaryId ?? r?.apiary_id ?? null,
+            if (!apiaryId) return [];
+            const summary = await this.getApiaryWeatherSummary(apiaryId);
+            const hourly = summary?.hourly_forecast || [];
+            return hourly.slice(0, Math.max(1, Math.min(days * 24, hourly.length))).map((point) => ({
+                temp_external: point.temperature_c ?? null,
+                humidity_external: point.humidity_pct ?? null,
+                pressure_hpa: point.pressure_hpa ?? null,
+                recorded_at: point.time ?? null,
+                apiary_id: apiaryId,
             }));
         } catch (error) {
             console.error('getWeatherHistory:', error);
@@ -2585,10 +2712,13 @@ export const beeyieldService = {
                 "/beeyield/health/knowledge",
                 { kind, q }
             );
-            return Array.isArray(resp?.items) ? resp.items : [];
+            if (Array.isArray(resp?.items) && resp.items.length > 0) {
+                return resp.items;
+            }
+            return _getHealthGuideFallback(kind, q);
         } catch (error) {
             console.error("getHealthGuide:", error);
-            return [];
+            return _getHealthGuideFallback(kind, q);
         }
     },
 
@@ -3019,11 +3149,7 @@ export const beeyieldService = {
 
     async getWeatherData(lat: number, lng: number): Promise<any> {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-            const headers = await getAuthHeaders();
-            const response = await fetch(`${apiUrl}/api/v1/forage/weather?lat=${lat}&lng=${lng}`, { headers });
-            if (!response.ok) throw new Error('Failed to fetch weather');
-            return response.json();
+            return await apiGet<any>('/forage/weather', { lat, lng });
         } catch (error) {
             console.error('getWeatherData:', error);
             return null;

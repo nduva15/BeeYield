@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from '@/components/beeyield/WeatherTelemetryPanel';
 
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
@@ -43,6 +45,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const { mutate: deleteHarvest, isPending: isDeleting } = useDeleteHarvest();
     const [isEditing, setIsEditing] = React.useState(false);
     const [editForm, setEditForm] = React.useState<Partial<Harvest>>({});
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
 
     const handleEdit = () => {
         if (selectedHarvest) {
@@ -81,6 +84,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const recentHarvests = [...harvests]
         .sort((a: any, b: any) => new Date(b.harvest_date).getTime() - new Date(a.harvest_date).getTime())
         .slice(0, 8);
+
+    React.useEffect(() => {
+        if (!selectedApiaryId && apiaries.length > 0) {
+            setSelectedApiaryId(apiaries[0].id);
+        }
+    }, [apiaries, selectedApiaryId]);
+
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiaryId || undefined);
 
     return (
         <motion.div
@@ -259,6 +270,37 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             )}
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div className={cn(glass.section, 'overflow-hidden mt-6')}>
+                <div className="flex flex-col gap-4 border-b border-[#F4D03F]/20 px-5 py-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h3 className="text-sm font-semibold text-[#1A1A1A]">Modern weather board</h3>
+                        <p className="text-[11px] text-gray-500">Live device telemetry plus real apiary weather.</p>
+                    </div>
+                    <div className="w-full md:w-72">
+                        <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                            <SelectTrigger className={cn(glass.select, 'h-10')}>
+                                <SelectValue placeholder="Select apiary" />
+                            </SelectTrigger>
+                            <SelectContent className={glass.selectContent}>
+                                {apiaries.map((apiary) => (
+                                    <SelectItem key={apiary.id} value={apiary.id}>
+                                        {apiary.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="p-4">
+                    <WeatherTelemetryPanel
+                        summary={weatherSummary}
+                        isLoading={weatherLoading}
+                        title="Home weather summary"
+                        compact
+                    />
                 </div>
             </div>
 

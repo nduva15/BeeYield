@@ -18,6 +18,8 @@ import beeyieldService from '@/services/beeyieldService';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 import {
     AreaChart,
     Area,
@@ -35,25 +37,7 @@ interface OrchardDashboardViewProps {
 
 const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onTabChange }) => {
     const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(apiary?.id);
-    const [weather, setWeather] = React.useState<any>(null);
-    const [isWeatherLoading, setIsWeatherLoading] = React.useState(false);
-
-    React.useEffect(() => {
-        const lat = apiary?.latitude;
-        const lon = apiary?.longitude;
-        if (lat && lon) {
-            const fetchWeather = async () => {
-                setIsWeatherLoading(true);
-                try {
-                    const data = await beeyieldService.getWeatherData(lat, lon);
-                    if (data) setWeather(data);
-                } finally {
-                    setIsWeatherLoading(false);
-                }
-            };
-            fetchWeather();
-        }
-    }, [apiary?.latitude, apiary?.longitude]);
+    const { data: weatherSummary, isLoading: isWeatherLoading } = useApiaryWeatherSummary(apiary?.id);
 
     const [historicalReadings, setHistoricalReadings] = React.useState<any[]>([]);
     const [isHistoryLoading, setIsHistoryLoading] = React.useState(false);
@@ -216,6 +200,14 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
             </div>
 
             {/* Stats Grid */}
+            <WeatherTelemetryPanel
+                summary={weatherSummary}
+                isLoading={isWeatherLoading}
+                title="Apiary weather summary"
+                compact
+                className="mb-6"
+            />
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {statCards.map((s, i) => (
                     <div key={i} className={cn(glass.card, "p-4 space-y-3 hover:border-gray-200 transition-all group")}>

@@ -16,11 +16,41 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        beeyieldService.getHealthGuide('diseases').then(d => setDiseaseData(d || []));
-        beeyieldService.getHealthGuide('species').then(s => {
-            setSpeciesData(s || []);
+        let isMounted = true;
+
+        const loadGuide = async () => {
+            setLoading(true);
+
+            const [diseases, species] = await Promise.all([
+                beeyieldService.getHealthGuide('diseases'),
+                beeyieldService.getHealthGuide('species'),
+            ]);
+
+            if (!isMounted) return;
+
+            const nextDiseases = diseases || [];
+            const nextSpecies = species || [];
+            setDiseaseData(nextDiseases);
+            setSpeciesData(nextSpecies);
+
+            if (nextDiseases.length > 0) {
+                setActiveTab('diseases');
+                setSelectedItem(nextDiseases[0]);
+            } else if (nextSpecies.length > 0) {
+                setActiveTab('species');
+                setSelectedItem(nextSpecies[0]);
+            } else {
+                setSelectedItem(null);
+            }
+
             setLoading(false);
-        });
+        };
+
+        void loadGuide();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     return (

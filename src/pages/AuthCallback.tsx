@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
+import { buildProfilePayload, getProfileNameParts } from '@/lib/authProfile';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
@@ -67,17 +68,20 @@ const AuthCallback = () => {
                                 .single();
 
                             if (!existingProfile) {
+                                const { firstName, lastName } = getProfileNameParts(user.user_metadata);
                                 // Create the profile if it doesn't exist (e.g. first time on this platform)
                                 await activeClient
                                     .from(profileTable)
-                                    .insert({
-                                        id: user.id,
-                                        first_name: user.user_metadata?.given_name || (user.user_metadata?.full_name?.split(' ')[0]) || '',
-                                        last_name: user.user_metadata?.family_name || (user.user_metadata?.full_name?.split(' ')[1]) || '',
-                                        email: user.email,
-                                        ...(storedBackend === 'beeyield' ? { is_professional: true } : {}),
-                                        ...(storedBackend === 'ceba' ? { role: 'admin' } : {})
-                                    });
+                                    .insert(
+                                        buildProfilePayload({
+                                            id: user.id,
+                                            email: user.email,
+                                            firstName,
+                                            lastName,
+                                            role: storedBackend === 'ceba' ? 'admin' : 'user',
+                                            backend: storedBackend
+                                        })
+                                    );
                             }
                         } catch (profileErr) {
                             console.error('Error ensuring platform profile:', profileErr);

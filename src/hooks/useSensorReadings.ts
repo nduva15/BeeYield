@@ -9,7 +9,7 @@ export const sensorKeys = {
 export function useSensorReadings(hiveId?: string, limit: number = 50) {
     return useQuery({
         queryKey: sensorKeys.list(hiveId, limit),
-        queryFn: () => beeyieldService.getSensorReadings(hiveId, limit),
+        queryFn: () => hiveId ? beeyieldService.getReadings(hiveId, limit) : beeyieldService.getSensorReadings(undefined, limit),
         staleTime: 1000 * 60, // Sensor data fresh for 1 minute
         refetchInterval: 1000 * 60, // Poll every 1 minute
     });

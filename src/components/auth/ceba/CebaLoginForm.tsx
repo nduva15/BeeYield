@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
+import { buildProfilePayload, getProfileNameParts } from '@/lib/authProfile';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Shield, Terminal, Activity, Server, Globe, LogIn } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
@@ -104,13 +105,17 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     .single();
 
                 if (profileError) {
-                    await supabaseCEBA.from('profiles').upsert({
-                        id: loggedInUser.id,
-                        email: loggedInUser.email,
-                        full_name: loggedInUser.user_metadata?.full_name || 'Admin User',
-                        role: 'admin',
-                        updated_at: new Date().toISOString()
-                    });
+                    const { firstName, lastName } = getProfileNameParts(loggedInUser.user_metadata);
+                    await supabaseCEBA.from('profiles').upsert(
+                        buildProfilePayload({
+                            id: loggedInUser.id,
+                            email: loggedInUser.email,
+                            firstName: firstName || 'Admin',
+                            lastName: lastName || 'User',
+                            role: 'admin',
+                            backend: 'ceba'
+                        })
+                    );
                 }
 
                 toast.success('Login successful');

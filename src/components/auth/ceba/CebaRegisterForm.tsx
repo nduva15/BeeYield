@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
+import { buildProfilePayload } from '@/lib/authProfile';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Shield, UserPlus } from "lucide-react";
 
@@ -46,13 +47,16 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
         } else {
             const { supabaseCEBA } = await import('@/lib/supabase');
             if (supabaseCEBA && signupData?.user) {
-                await supabaseCEBA.from('profiles').upsert({
-                    id: signupData.user.id,
-                    email: signupData.user.email,
-                    full_name: `${firstName} ${lastName}`.trim(),
-                    role: 'admin',
-                    updated_at: new Date().toISOString()
-                });
+                await supabaseCEBA.from('profiles').upsert(
+                    buildProfilePayload({
+                        id: signupData.user.id,
+                        email: signupData.user.email,
+                        firstName,
+                        lastName,
+                        role: 'admin',
+                        backend: 'ceba'
+                    })
+                );
             }
 
             toast.success("Admin account created successfully");

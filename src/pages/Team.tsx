@@ -57,12 +57,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { submitContactForm } from "@/services/contactService";
 import { useToast } from "@/hooks/use-toast";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
+import IMPACT_BEEKEEPING from "@/assets/impact-beekeeping.jpg";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import LOGO from "@/assets/Logo.png";
+import STORY_HERO from "@/assets/story-hero-honey.png";
 
 interface TeamMember {
   name: string;
@@ -138,9 +141,9 @@ const Team = () => {
     const founders: TeamMember[] = [
         {
             name: "Timothy Nduva",
-            role: "CEO & Founder",
-            department: "Directorate",
-            description: "Timothy founded BeeYield at the family farm in Kibwezi during the 2020 pandemic. He leads the team building practical tools for beekeepers and a clear traceability record for every harvest.",
+            role: "Founder & CEO",
+            department: "Leadership",
+            description: "Timothy founded BeeYield at the family farm in Kibwezi during the 2020 season. He leads the company around practical beekeeping systems, precision pollination, and traceable harvest records.",
             image: TIMOTHY_PHOTO,
             linkedin: "https://linkedin.com/in/timothynduva",
             email: "info@beeyield.com",
@@ -148,23 +151,23 @@ const Team = () => {
         },
         {
             name: "Carole Nduva",
-            role: "Technical Director",
+            role: "Director, Operations & Growth",
             department: "Operations",
-            description: "Co-architect of BeeYield's strategic operations. Carole leads the integration of operational technology with large-scale apiary management, scaling our impact to hundreds of commercial partners.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
+            description: "Carole helps translate BeeYield's family story into dependable partner operations, delivery coordination, and growth systems that support field work.",
+            image: LOGO,
+            linkedin: "",
             email: "info@beeyield.com",
-            achievements: ["Operations Scalability", "Partner Ecosystem", "Logistics Architecture"]
+            achievements: ["Partner coordination", "Operations systems", "Growth execution"]
         },
         {
             name: "Agatha Nduva",
-            role: "Technical Director",
+            role: "Director, Product & Engineering",
             department: "Engineering",
             description: "Agatha leads our engineering work—building reliable systems for data collection, reporting, and traceability.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
+            image: LOGO,
+            linkedin: "",
             email: "info@beeyield.com",
-            achievements: ["Product engineering", "Data reliability", "Security & privacy"]
+            achievements: ["Product systems", "Data reliability", "Trust-focused engineering"]
         },
     ];
 
@@ -172,29 +175,29 @@ const Team = () => {
         {
             name: "Rose Ndinda",
             role: "VP Technology",
-            department: "Engineering",
-            description: "Expert software architect focused on building resilient, user-centric mobile and web platforms for beekeepers. Leading our specialist technical unit to deliver high-fidelity data visualizations.",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
+            department: "Technology",
+            description: "Rose supports the technical systems that turn hive data into useful dashboards, monitoring workflows, and more practical decision-making for teams in the field.",
+            image: LOGO,
+            linkedin: "",
             email: "info@beeyield.com",
-            achievements: ["IoT Dashboard Architect", "Mobile Latency Optimization", "UI/UX Technical Lead"]
+            achievements: ["Technical systems", "Dashboard experience", "Platform resilience"]
         },
         {
             name: "Nicholas Nduva",
-            role: "Board Member",
+            role: "Board & Governance Advisor",
             department: "Governance",
-            description: "Seasoned advisor providing strategic oversight and ensuring BeeYield maintains the highest standards of corporate governance and environmental stewardship.",
-            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
+            description: "Nicholas provides governance support around compliance, stewardship, and the accountability needed to keep BeeYield's commitments measurable.",
+            image: LOGO,
+            linkedin: "",
             email: "info@beeyield.com",
-            achievements: ["Seed Funding Oversight", "Sustainability Roadmap", "Legal Compliance"]
+            achievements: ["Governance support", "Long-term stewardship", "Accountability"]
         },
     ];
 
     const teamValues = [
         {
             title: "Family Integrity",
-            description: "Founded on the sibling bond of Timothy, Carole, and Agatha, we operate with a level of trust that only family can provide.",
+            description: "Our team story begins with Timothy, Carole, and Agatha building BeeYield together in Kibwezi and carrying that trust into every decision.",
             icon: <Users className="h-8 w-8 text-beeyield-green" />
         },
         {
@@ -203,21 +206,21 @@ const Team = () => {
             icon: <Activity className="h-8 w-8 text-beeyield-green" />
         },
         {
-            title: "Technical Excellence",
-            description: "We engineering the future of apiculture using high-precision IoT sensors and distributed intelligent systems.",
+            title: "Precision Pollination",
+            description: "We build practical technology that helps monitor hive health, support field operations, and improve pollination outcomes.",
             icon: <Cpu className="h-8 w-8 text-beeyield-green" />
         },
         {
-            title: "Planetary Stewardship",
-            description: "Every line of code and every sensor deployed is dedicated to securing the future of global biodiversity.",
-            icon: <Globe className="h-8 w-8 text-beeyield-green" />
+            title: "ESG Accountability",
+            description: "Our team page now reflects the same stewardship language used across BeeYield's ESG and commitment pages.",
+            icon: <ShieldCheck className="h-8 w-8 text-beeyield-green" />
         }
     ];
 
     return (
         <BeeYieldPageShell className="bg-background text-foreground">
-            {/* Hero Section - Cleaner flow with Big Logo */}
-            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-br from-beeyield-green/5 via-background to-background overflow-hidden border-b border-neutral-100">
+            {/* Hero Section */}
+            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-br from-[#fffdf8] via-[#f7f2e7] to-[#fffdf8] overflow-hidden border-b border-neutral-100">
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                         <motion.img 
@@ -225,24 +228,36 @@ const Team = () => {
                             animate={{ opacity: 1, y: 0 }}
                             src={LOGO} 
                             alt="BeeYield Logo" 
-                            className="h-32 md:h-48 w-auto mb-16 drop-shadow-2xl" 
+                            className="h-28 md:h-36 w-auto mb-10 drop-shadow-2xl" 
                         />
                         <Badge className="mb-6 bg-beeyield-green/10 text-beeyield-green border-none px-4 py-1.5 font-black text-[10px]">
-                            The Sibling Narrative
+                            Family-led since 2020
                         </Badge>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter leading-[0.9] text-neutral-900 uppercase">
-                            Architecture <br /> Of <span className="text-beeyield-green">Trust</span>
+                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter leading-[0.9] text-neutral-900">
+                            Meet the team shaping BeeYield's <span className="text-beeyield-green">story, standards, and impact</span>
                         </h1>
                         <p className="text-xl text-neutral-500 leading-relaxed mb-12 max-w-2xl mx-auto font-medium">
-                            Engineering the future of verifiable apiculture and ecosystem restoration through family unity and technical courage since 2020.
+                            This page now follows the same story told across About Us, Our Story, ESG, and Commitment: a Kibwezi family mission focused on healthier hives, better pollination, and more trustworthy harvest records.
                         </p>
+                        <div className="grid gap-4 md:grid-cols-3 w-full max-w-3xl mb-10">
+                            {[
+                                { value: "184", label: "monitored hives" },
+                                { value: "25+", label: "acres pollinated" },
+                                { value: "2,500+", label: "trees planted" }
+                            ].map((stat) => (
+                                <div key={stat.label} className="rounded-[1.75rem] border border-[#1B9157]/10 bg-white/80 px-5 py-6 shadow-[0_18px_45px_rgba(18,53,36,0.06)] backdrop-blur">
+                                    <p className="text-3xl font-black text-neutral-900">{stat.value}</p>
+                                    <p className="mt-2 text-sm font-medium text-neutral-500">{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button 
                                 size="lg" 
-                                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-black text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
+                                className="h-14 px-10 bg-neutral-900 text-white font-black text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
                                 onClick={() => document.getElementById('narrative')?.scrollIntoView({ behavior: 'smooth' })}
                             >
-                                Our Journey
+                                Read Our Team Story
                             </Button>
                             <Button 
                                 size="lg" 
@@ -250,7 +265,7 @@ const Team = () => {
                                 className="h-14 px-10 border-neutral-200 text-neutral-900 font-black text-xs rounded-2xl hover:bg-neutral-50 transition-all"
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
-                                Contact Directorate
+                                Contact The Team
                             </Button>
                         </div>
                     </div>
@@ -260,7 +275,7 @@ const Team = () => {
                 <div className="absolute bottom-0 left-0 w-1/4 h-full bg-beeyield-gold/[0.02] skew-x-12 -translate-x-20 pointer-events-none" />
             </section>
 
-            {/* Narrative Section - Kibwezi Genesis */}
+            {/* Narrative Section */}
             <section id="narrative" className="py-32 lg:py-48 relative overflow-hidden bg-white">
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-100 to-transparent" />
                 <div className="container mx-auto px-4">
@@ -273,9 +288,9 @@ const Team = () => {
                         >
                             <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
                                 <img 
-                                    src="/antigravity/brain/b2a8ae08-a486-48a2-ab35-59df514ab2bf/kibwezi_farm_arid_beauty_1773451657629.png" 
-                                    alt="Kibwezi Farm Genesis" 
-                                    className="w-full h-full object-cover grayscale opacity-60 group-hover:scale-110 transition-transform"
+                                    src={STORY_HERO}
+                                    alt="BeeYield story rooted in Kibwezi" 
+                                    className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform"
                                     style={{ transitionDuration: '2000ms' }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
@@ -285,7 +300,7 @@ const Team = () => {
                                       <span className="text-[10px] font-black text-beeyield-green">Est. 2020</span>
                                    </div>
                                    <p className="text-white text-xl md:text-2xl font-black italic leading-tight tracking-tighter">
-                                     "Rural courage and family unity are the core sensors of our mission."
+                                     "One family story now drives our leadership, ESG language, and field commitments."
                                    </p>
                                 </div>
                             </div>
@@ -297,14 +312,14 @@ const Team = () => {
                         <div className="space-y-12">
                             <div>
                                 <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-4 py-1.5 font-black text-[10px]">
-                                    Strategic Genesis
+                                    Re-edited Team Story
                                 </Badge>
                                 <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter leading-none mb-8">
-                                    Kibwezi <br />
-                                    <span className="text-beeyield-green">Genesis</span>
+                                    From <br />
+                                    <span className="text-beeyield-green">Kibwezi To Commitment</span>
                                 </h2>
                                 <p className="text-xl text-neutral-500 leading-relaxed font-medium">
-                                    BeeYield was born from a sibling's commitment to verifiable stewardship. In 2020, Timothy Nduva and his sisters Carole and Agatha returned to their family farm in Kibwezi to architect a future where technology serves the hive.
+                                    BeeYield was born from a sibling commitment to stewardship. This section now blends the family origin from About Us and Our Story with the accountability language from ESG and Commitment, so the team page feels connected to the rest of the company story.
                                 </p>
                             </div>
 
@@ -315,7 +330,7 @@ const Team = () => {
                                    </div>
                                    <div>
                                       <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">50/50 Harvest Promise</h4>
-                                      <p className="text-neutral-400 font-medium leading-relaxed">Hard-coded commitment to leaving half the surplus honey for colony survival and ecosystem health.</p>
+                                      <p className="text-neutral-400 font-medium leading-relaxed">The team story now clearly reflects BeeYield's colony-first harvest promise and stewardship responsibility.</p>
                                    </div>
                                 </div>
                                 <div className="flex items-start gap-6 group">
@@ -323,8 +338,17 @@ const Team = () => {
                                       <ShieldCheck className="w-6 h-6 text-beeyield-gold group-hover:text-white transition-colors" />
                                    </div>
                                    <div>
-                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">Traceability</h4>
-                                      <p className="text-neutral-400 font-medium leading-relaxed">Each batch can be checked so customers can see where their honey came from.</p>
+                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">Traceability And Pollination Impact</h4>
+                                      <p className="text-neutral-400 font-medium leading-relaxed">The team leads around clear records, precision pollination support, and measurable proof points like acreage served and trees planted.</p>
+                                   </div>
+                                </div>
+                                <div className="flex items-start gap-6 group">
+                                   <div className="h-14 w-14 shrink-0 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-beeyield-green group-hover:border-beeyield-green transition-all shadow-sm">
+                                      <Users className="w-6 h-6 text-beeyield-green group-hover:text-white transition-colors" />
+                                   </div>
+                                   <div>
+                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">Family-Led Leadership</h4>
+                                      <p className="text-neutral-400 font-medium leading-relaxed">The page centers the people behind BeeYield instead of stock placeholders, using the BeeYield logo wherever a portrait is not yet available.</p>
                                    </div>
                                 </div>
                             </div>
@@ -333,14 +357,14 @@ const Team = () => {
                 </div>
             </section>
 
-            {/* Directives Section - Technical Grid */}
+            {/* Values Section */}
             <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(27,145,87,0.06),_transparent_42%)] pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-24">
-                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4 italic">Core Directives</h2>
+                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4 italic">What Our Team Stands For</h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
-                        <p className="text-neutral-400 font-medium text-xs">The underlying code of the Directorate</p>
+                        <p className="text-neutral-400 font-medium text-xs">A modern version of the BeeYield story, rewritten around leadership, ESG, and commitment.</p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
                         {teamValues.map((value, index) => (
@@ -365,16 +389,16 @@ const Team = () => {
                 </div>
             </section>
 
-            {/* Team Grid Section - Strategic Command */}
+            {/* Team Grid Section */}
             <section id="team-members" className="py-32 lg:py-48 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-32 max-w-3xl mx-auto">
                         <Badge className="bg-neutral-100 text-neutral-400 border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
-                            Strategic Command Unit
+                            Meet The People
                         </Badge>
-                        <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-8 italic leading-none">The Directorate</h2>
+                        <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-8 italic leading-none">The BeeYield Team</h2>
                         <p className="text-xl text-neutral-500 font-medium leading-relaxed">
-                            A unified specialist unit engineering the precision protocols and distributed infrastructure of BeeYield.
+                            Leadership, operations, technology, and governance now sit inside one clearer company story.
                         </p>
                     </div>
 
@@ -405,7 +429,7 @@ const Team = () => {
                                     </div>
                                 </div>
                                 <div className="text-center space-y-3">
-                                    <span className="text-[9px] font-black text-neutral-300">Technical Directorate</span>
+                                    <span className="text-[9px] font-black text-neutral-300">BeeYield Leadership</span>
                                     <h4 className="text-4xl font-black text-neutral-900 italic tracking-tight leading-none">{member.name}</h4>
                                     <div className="flex items-center justify-center gap-2">
                                        <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
@@ -418,7 +442,7 @@ const Team = () => {
 
                     <div className="flex items-center gap-12 mb-24 max-w-6xl mx-auto">
                         <div className="h-px w-full bg-gradient-to-r from-transparent to-neutral-200" />
-                        <span className="text-[10px] whitespace-nowrap font-black text-neutral-300">Technical Specialists</span>
+                        <span className="text-[10px] whitespace-nowrap font-black text-neutral-300">Support, Technology & Governance</span>
                         <div className="h-px w-full bg-gradient-to-l from-transparent to-neutral-200" />
                     </div>
 
@@ -445,7 +469,7 @@ const Team = () => {
                                      </div>
                                  </div>
                                  <div className="text-center space-y-3">
-                                     <span className="text-[9px] font-black text-neutral-300">Operations Unit</span>
+                                      <span className="text-[9px] font-black text-neutral-300">BeeYield Support Team</span>
                                      <h4 className="text-4xl font-black text-neutral-900 italic tracking-tight leading-none">{member.name}</h4>
                                      <div className="flex items-center justify-center gap-2">
                                         <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />

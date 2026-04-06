@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
+import { buildProfilePayload } from '@/lib/authProfile';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User } from "lucide-react";
 
@@ -83,17 +84,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
                     await supabaseInstance
                         .from(profileTable)
-                        .upsert({
-                            id: user.id,
-                            email: user.email,
-                            first_name: firstName,
-                            last_name: lastName,
-                            full_name: `${firstName} ${lastName}`.trim(),
-                            role: defaultRole,
-                            ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
-                            ...(activeBackend === 'ceba' ? { role: 'admin' } : {}),
-                            updated_at: new Date().toISOString()
-                        });
+                        .upsert(
+                            buildProfilePayload({
+                                id: user.id,
+                                email: user.email,
+                                firstName,
+                                lastName,
+                                role: activeBackend === 'ceba' ? 'admin' : defaultRole,
+                                backend: activeBackend
+                            })
+                        );
                 }
             }
 

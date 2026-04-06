@@ -1,116 +1,118 @@
 import React from 'react';
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Cell,
-    ReferenceLine
-} from 'recharts';
-import { Cloud, Sun, Wind, Thermometer, Zap, AlertCircle, Info, Activity, ArrowRight, Calendar } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Calendar, Thermometer, Wind, Sun, Activity } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { glass, PageHeader, GlassStatCard } from './GlassTheme';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useApiaries } from '@/hooks/useApiaries';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import { cn } from '@/lib/utils';
 
-interface BFHData {
-    day: string;
-    hours: number;
-    temp: number;
-    wind: number;
-    uv: number;
-    status: 'optimal' | 'moderate' | 'low';
+function computeFlightHours(temp?: number | null, wind?: number | null, uv?: number | null) {
+    if (temp == null || wind == null) return 0;
+    if (temp < 12 || temp > 38) return 0;
+    if (wind > 28) return 0;
+    const uvFactor = uv == null ? 1 : Math.min(Math.max(uv / 6, 0.4), 1.15);
+    const tempFactor = temp >= 16 && temp <= 30 ? 1 : 0.65;
+    const windFactor = wind <= 12 ? 1 : wind <= 20 ? 0.75 : 0.45;
+    return Number((8 * uvFactor * tempFactor * windFactor).toFixed(1));
 }
 
-const CUSTOM_COLORS = {
-    optimal: 'hsl(var(--honey))',
-    moderate: 'hsl(var(--honey) / 0.5)',
-    low: 'hsl(var(--foreground) / 0.1)',
-};
-
 const BeeFlightHoursForecast: React.FC = () => {
+    const { data: apiaries = [] } = useApiaries();
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+
+    React.useEffect(() => {
+        if (!selectedApiaryId && apiaries.length > 0) {
+            setSelectedApiaryId(apiaries[0].id);
+        }
+    }, [apiaries, selectedApiaryId]);
+
+    const { data: summary, isLoading } = useApiaryWeatherSummary(selectedApiaryId || undefined);
+
+    const chartData = React.useMemo(
+        () =>
+            (summary?.hourly_forecast || []).slice(0, 12).map((point) => ({
+                time: point.time ? new Date(point.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--',
+                hours: computeFlightHours(point.temperature_c, point.wind_speed_kmh, point.uv_index),
+                temp: point.temperature_c ?? 0,
+                wind: point.wind_speed_kmh ?? 0,
+                uv: point.uv_index ?? 0,
+            })),
+        [summary],
+    );
+
+    const totalWeek = chartData.reduce((sum, item) => sum + item.hours, 0).toFixed(1);
+    const minFlightTemp = chartData.length ? Math.min(...chartData.map((item) => item.temp || 0)).toFixed(1) : 'N/A';
+    const maxWind = chartData.length ? Math.max(...chartData.map((item) => item.wind || 0)).toFixed(1) : 'N/A';
+    const maxUv = chartData.length ? Math.max(...chartData.map((item) => item.uv || 0)).toFixed(1) : 'N/A';
+
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={glass.page}>
             <PageHeader
                 icon={Calendar}
                 label="Forecast"
                 title={<>Flight <span className="text-[#F4D03F]">Hours</span></>}
-                subtitle="Requires real weather + flight telemetry."
+                subtitle="Live weather-driven flight capacity from your selected apiary."
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-                <GlassStatCard label="Min Flight Temp" value="—" icon={Thermometer} index={0} />
-                <GlassStatCard label="Max Wind Speed" value="—" icon={Wind} index={1} color="text-red-500" />
-                <GlassStatCard label="Light Index" value="—" icon={Sun} index={2} />
-                <GlassStatCard label="Total Week" value="—" icon={Activity} index={3} color="text-[#1B9157]" />
+            <div className="mb-4 flex max-w-xs">
+                <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                    <SelectTrigger className="h-11 rounded-2xl border border-white/60 bg-white/70 font-bold text-xs">
+                        <SelectValue placeholder="Select apiary" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {apiaries.map((apiary) => (
+                            <SelectItem key={apiary.id} value={apiary.id}>
+                                {apiary.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
-            <div className={cn(glass.section, "overflow-hidden flex flex-col mt-6")}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                <GlassStatCard label="Min Flight Temp" value={isLoading ? '...' : `${minFlightTemp}°`} icon={Thermometer} index={0} />
+                <GlassStatCard label="Max Wind Speed" value={isLoading ? '...' : `${maxWind} km/h`} icon={Wind} index={1} color="text-red-500" />
+                <GlassStatCard label="Light Index" value={isLoading ? '...' : maxUv} icon={Sun} index={2} />
+                <GlassStatCard label="Total Window" value={isLoading ? '...' : `${totalWeek}h`} icon={Activity} index={3} color="text-[#1B9157]" />
+            </div>
+
+            <div className={cn(glass.section, 'overflow-hidden flex flex-col mt-6')}>
                 <div className="px-5 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/20 flex items-center justify-center">
-                            <Zap className="w-4 h-4 text-[#F4D03F]" />
-                        </div>
-                        <div className="space-y-0.5">
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Weekly Capacity</h3>
-                            <p className="text-[10px] text-gray-500 text-[9px]">Predicted Work Windows</p>
-                        </div>
+                    <div className="space-y-0.5">
+                        <h3 className="text-sm font-bold text-[#1A1A1A]">Hourly Flight Capacity</h3>
+                        <p className="text-[10px] text-gray-500">Computed from live temperature, wind, and UV conditions</p>
                     </div>
                 </div>
 
                 <div className="h-[380px] w-full p-6 relative bg-[#FFF9F0]">
                     <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                    
-                    <div className={cn(glass.card, "h-full w-full flex items-center justify-center bg-white/50 border border-[#F4D03F]/10")}>
-                        <div className="text-center space-y-2 p-6">
-                            <div className="inline-flex items-center gap-2 justify-center text-[#1A1A1A]">
-                                <AlertCircle className="w-4 h-4 text-[#F4D03F]" />
-                                <span className="text-sm font-bold">No forecast data yet</span>
+                    {chartData.length ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
+                                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b', fontWeight: 800 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b', fontWeight: 800 }} />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '16px', border: '1px solid rgba(244, 208, 63, 0.2)', background: 'rgba(255,255,255,0.96)' }}
+                                    formatter={(value: number) => [`${value}h`, 'Flight window']}
+                                />
+                                <Bar dataKey="hours" radius={[12, 12, 0, 0]} fill="#F4D03F" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className={cn(glass.card, 'h-full w-full flex items-center justify-center bg-white/50 border border-[#F4D03F]/10')}>
+                            <div className="text-center space-y-2 p-6">
+                                <div className="text-sm font-bold text-[#1A1A1A]">No forecast data yet</div>
+                                <p className="text-xs font-medium text-gray-500 max-w-md">
+                                    Select an apiary with linked coordinates and weather data to compute real flight windows.
+                                </p>
                             </div>
-                            <p className="text-xs font-medium text-gray-500 max-w-md">
-                                This view no longer uses mock weekly forecast data. Wire weather inputs + flight telemetry to enable charts.
-                            </p>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
-
-            <div className={cn(glass.card, "p-8 mt-6 bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] text-white border-transparent relative overflow-hidden group")}>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/10 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none group-hover:bg-[#F4D03F]/15 transition-all duration-1000" />
-
-                <div className="flex flex-col lg:flex-row items-center gap-10 relative z-10">
-                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F] flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(244,208,63,0.3)]">
-                        <Info className="w-8 h-8 text-[#1A1A1A]" />
-                    </div>
-                    <div className="flex-1 space-y-4">
-                        <div className="space-y-1">
-                            <h4 className="text-xl font-bold tracking-tight">Activity <span className="text-[#F4D03F]">Intelligence</span></h4>
-                            <p className="text-[10px] font-bold text-[#F4D03F]/60">Weather & Foraging Cycles</p>
-                        </div>
-                        <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-[#F4D03F]/40">
-                            We use precision local weather data to predict bee activity windows.
-                            Optimum flight occurs between 15°C and 25°C with wind speeds under 25km/h.
-                        </p>
-                    </div>
-                    <button className={cn(glass.btnSecondary, "h-12 px-8 bg-white border-transparent hover:bg-white/90 text-[#1A1A1A]")}>
-                        Learn More
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                    </button>
-                </div>
-            </div>
-
-
-            <style>{`
-                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
-            `}</style>
         </motion.div>
     );
 };
