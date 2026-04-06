@@ -13,7 +13,10 @@ use std::io::BufWriter;
 use std::path::PathBuf;
 
 use crate::handlers::AppState;
-use crate::models::{DbDeleteRequest, DbGetByIdRequest, DbInsertRequest, DbSelectRequest, DbUpdateRequest, DbUpsertRequest};
+use crate::models::{
+    DbDeleteRequest, DbGetByIdRequest, DbInsertRequest, DbSelectRequest, DbUpdateRequest,
+    DbUpsertRequest,
+};
 
 const USER_OWNED_TABLES: &[&str] = &[
     "apiaries",
@@ -46,30 +49,63 @@ struct ReportGenerateRequest {
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/api/v1")
-            .route("/beeyield/alerts/{id}/resolve", web::patch().to(resolve_sensor_alert))
-            .route("/beeyield/alerts/{id}/resolve", web::post().to(resolve_sensor_alert))
-            .route("/meters/events/{id}/resolve", web::patch().to(resolve_meter_event))
-            .route("/meters/events/{id}/resolve", web::post().to(resolve_meter_event))
+            .route(
+                "/beeyield/alerts/{id}/resolve",
+                web::patch().to(resolve_sensor_alert),
+            )
+            .route(
+                "/beeyield/alerts/{id}/resolve",
+                web::post().to(resolve_sensor_alert),
+            )
+            .route(
+                "/meters/events/{id}/resolve",
+                web::patch().to(resolve_meter_event),
+            )
+            .route(
+                "/meters/events/{id}/resolve",
+                web::post().to(resolve_meter_event),
+            )
             .route("/iot/alerts/{id}", web::patch().to(resolve_sensor_alert))
             .route("/beeyield/readings", web::get().to(list_sensor_readings))
             .route("/iot/readings", web::get().to(list_sensor_readings))
             .route("/iot/gateways", web::get().to(list_iot_gateways))
             .route("/iot/client-hives", web::get().to(list_client_hives))
-            .route("/iot/devices/{device_id}/audit-logs", web::get().to(list_device_audit_logs))
-            .route("/iot/devices/{device_id}/audit-logs", web::post().to(create_device_audit_log))
-            .route("/meters/readings/{meter_id}", web::get().to(list_meter_readings_by_meter))
+            .route(
+                "/iot/devices/{device_id}/audit-logs",
+                web::get().to(list_device_audit_logs),
+            )
+            .route(
+                "/iot/devices/{device_id}/audit-logs",
+                web::post().to(create_device_audit_log),
+            )
+            .route(
+                "/meters/readings/{meter_id}",
+                web::get().to(list_meter_readings_by_meter),
+            )
             .route("/settings/full", web::get().to(get_full_settings))
             .route("/settings/preferences", web::put().to(update_preferences))
             .route("/settings/preferences", web::patch().to(update_preferences))
-            .route("/settings/notifications", web::get().to(get_notification_settings))
-            .route("/settings/notifications", web::patch().to(update_notification_settings))
+            .route(
+                "/settings/notifications",
+                web::get().to(get_notification_settings),
+            )
+            .route(
+                "/settings/notifications",
+                web::patch().to(update_notification_settings),
+            )
             .route("/settings/iot", web::get().to(get_iot_settings))
             .route("/settings/iot", web::patch().to(update_iot_settings))
             .route("/settings/hives", web::get().to(list_hive_settings))
-            .route("/settings/hives/{hive_id}/thresholds", web::post().to(update_hive_thresholds))
+            .route(
+                "/settings/hives/{hive_id}/thresholds",
+                web::post().to(update_hive_thresholds),
+            )
             .route("/reports/generate", web::post().to(generate_report))
             .route("/reports/status/{id}", web::get().to(get_report_status))
-            .route("/reports/download/{file_name}", web::get().to(download_report)),
+            .route(
+                "/reports/download/{file_name}",
+                web::get().to(download_report),
+            ),
     );
 
     register_crud_scope(cfg, "/api/v1/beeyield/apiaries", "apiaries");
@@ -237,7 +273,10 @@ async fn list_rows(
         table: table.to_string(),
         columns: Some("*".to_string()),
         filters: Some(query_to_filters(&query)).filter(|f| !f.is_empty()),
-        limit: query.get("limit").and_then(|value| value.parse::<i64>().ok()).or(Some(200)),
+        limit: query
+            .get("limit")
+            .and_then(|value| value.parse::<i64>().ok())
+            .or(Some(200)),
         order_by: query
             .get("order_by")
             .cloned()
@@ -359,7 +398,10 @@ async fn list_meter_readings_by_meter(
         table: "meters_readings".to_string(),
         columns: Some("*".to_string()),
         filters: Some(filters),
-        limit: query.get("limit").and_then(|v| v.parse::<i64>().ok()).or(Some(50)),
+        limit: query
+            .get("limit")
+            .and_then(|v| v.parse::<i64>().ok())
+            .or(Some(50)),
         order_by: Some("timestamp".to_string()),
         ascending: Some(false),
         token: request_token(&req),
@@ -395,7 +437,10 @@ async fn list_device_audit_logs(
         table: "device_audit_logs".to_string(),
         columns: Some("*".to_string()),
         filters: Some(filters),
-        limit: query.get("limit").and_then(|v| v.parse::<i64>().ok()).or(Some(50)),
+        limit: query
+            .get("limit")
+            .and_then(|v| v.parse::<i64>().ok())
+            .or(Some(50)),
         order_by: Some("created_at".to_string()),
         ascending: Some(false),
         token: request_token(&req),
@@ -482,9 +527,17 @@ async fn get_full_settings(state: web::Data<AppState>, req: HttpRequest) -> Http
     let token = request_token(&req);
     let user_id = request_user_id(&req);
 
-    let preferences = load_single_user_row(&state, "user_preferences", token.clone(), user_id.clone()).await;
-    let thresholds = load_single_user_row(&state, "alert_thresholds", token.clone(), user_id.clone()).await;
-    let notifications = load_single_user_row(&state, "user_notification_settings", token.clone(), user_id.clone()).await;
+    let preferences =
+        load_single_user_row(&state, "user_preferences", token.clone(), user_id.clone()).await;
+    let thresholds =
+        load_single_user_row(&state, "alert_thresholds", token.clone(), user_id.clone()).await;
+    let notifications = load_single_user_row(
+        &state,
+        "user_notification_settings",
+        token.clone(),
+        user_id.clone(),
+    )
+    .await;
     let iot = load_single_user_row(&state, "global_iot_settings", token, user_id.clone()).await;
 
     HttpResponse::Ok().json(json!({
@@ -540,7 +593,14 @@ async fn update_iot_settings(
     req: HttpRequest,
     body: web::Json<Value>,
 ) -> HttpResponse {
-    upsert_user_table_row(state, req, "global_iot_settings", body.into_inner(), default_iot_settings()).await
+    upsert_user_table_row(
+        state,
+        req,
+        "global_iot_settings",
+        body.into_inner(),
+        default_iot_settings(),
+    )
+    .await
 }
 
 async fn update_preferences(
@@ -548,7 +608,14 @@ async fn update_preferences(
     req: HttpRequest,
     body: web::Json<Value>,
 ) -> HttpResponse {
-    upsert_user_table_row(state, req, "user_preferences", body.into_inner(), default_preferences()).await
+    upsert_user_table_row(
+        state,
+        req,
+        "user_preferences",
+        body.into_inner(),
+        default_preferences(),
+    )
+    .await
 }
 
 async fn list_hive_settings(state: web::Data<AppState>, req: HttpRequest) -> HttpResponse {
@@ -574,7 +641,14 @@ async fn update_hive_thresholds(
     let payload = body.into_inner();
 
     if hive_id == "global" {
-        return upsert_user_table_row(state, req, "alert_thresholds", payload, default_thresholds()).await;
+        return upsert_user_table_row(
+            state,
+            req,
+            "alert_thresholds",
+            payload,
+            default_thresholds(),
+        )
+        .await;
     }
 
     let data = json!({
@@ -701,7 +775,13 @@ async fn download_report(path: web::Path<String>) -> Result<NamedFile> {
 fn safe_slug(input: &str) -> String {
     input
         .chars()
-        .map(|ch| if ch.is_ascii_alphanumeric() { ch.to_ascii_lowercase() } else { '-' })
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() {
+                ch.to_ascii_lowercase()
+            } else {
+                '-'
+            }
+        })
         .collect::<String>()
         .trim_matches('-')
         .to_string()
@@ -739,7 +819,16 @@ async fn generate_report(
     };
     let _ = state.client.insert(&insert_req).await;
 
-    match build_report_artifact(&state, &req, &job_id, &report_type, &file_format, &parameters).await {
+    match build_report_artifact(
+        &state,
+        &req,
+        &job_id,
+        &report_type,
+        &file_format,
+        &parameters,
+    )
+    .await
+    {
         Ok((file_name, file_url)) => {
             let mut filters = HashMap::new();
             filters.insert("id".to_string(), Value::String(job_id.clone()));
@@ -823,7 +912,10 @@ async fn build_report_artifact(
         write_pdf_report(&file_path, report_type, parameters, &summary)?;
     }
 
-    Ok((file_name.clone(), format!("/api/v1/reports/download/{}", file_name)))
+    Ok((
+        file_name.clone(),
+        format!("/api/v1/reports/download/{}", file_name),
+    ))
 }
 
 async fn collect_report_summary(
@@ -869,7 +961,13 @@ async fn collect_report_summary(
             ascending: None,
             token: token.clone(),
         };
-        let count = state.client.select(&req).await.as_array().map(|rows| rows.len()).unwrap_or(0);
+        let count = state
+            .client
+            .select(&req)
+            .await
+            .as_array()
+            .map(|rows| rows.len())
+            .unwrap_or(0);
         out.push((label.to_string(), count));
     }
 

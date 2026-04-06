@@ -60,13 +60,13 @@ impl Config {
             .unwrap_or_else(|_| "com.intuit.quickbooks.accounting".to_string());
         let shopify_api_key = env::var("SHOPIFY_API_KEY").unwrap_or_default();
         let shopify_api_secret = env::var("SHOPIFY_API_SECRET").unwrap_or_default();
-        let shopify_scopes = env::var("SHOPIFY_SCOPES")
-            .unwrap_or_else(|_| "read_products,read_orders".to_string());
+        let shopify_scopes =
+            env::var("SHOPIFY_SCOPES").unwrap_or_else(|_| "read_products,read_orders".to_string());
         let etims_api_key = env::var("ETIMS_API_KEY").unwrap_or_default();
         let etims_base_url = env::var("ETIMS_BASE_URL")
             .unwrap_or_else(|_| "https://etims-sandbox.kra.go.ke/api/v1".to_string());
-        let etims_vscu_serial = env::var("ETIMS_VSCU_SERIAL")
-            .unwrap_or_else(|_| "BY-VSCU-MOCK-2026".to_string());
+        let etims_vscu_serial =
+            env::var("ETIMS_VSCU_SERIAL").unwrap_or_else(|_| "BY-VSCU-MOCK-2026".to_string());
 
         Config {
             supabase_url,
@@ -102,5 +102,35 @@ impl Config {
     /// Returns the REST API base URL (e.g. https://xxx.supabase.co/rest/v1)
     pub fn rest_url(&self) -> String {
         format!("{}/rest/v1", self.supabase_url.trim_end_matches('/'))
+    }
+
+    pub fn quickbooks_redirect_uri(&self) -> String {
+        format!(
+            "{}/integrations/callback/quickbooks",
+            self.app_url.trim_end_matches('/')
+        )
+    }
+
+    pub fn shopify_redirect_uri(&self) -> String {
+        format!(
+            "{}/integrations/callback/shopify",
+            self.app_url.trim_end_matches('/')
+        )
+    }
+
+    pub fn mpesa_configured(&self) -> bool {
+        !self.mpesa_key.is_empty()
+            && !self.mpesa_secret.is_empty()
+            && !self.mpesa_shortcode.is_empty()
+            && !self.mpesa_passkey.is_empty()
+            && !self.mpesa_callback_url.is_empty()
+    }
+
+    pub fn etims_verify_url(&self, transaction_id: &str) -> String {
+        format!(
+            "{}/verify?id={}",
+            self.etims_base_url.trim_end_matches('/'),
+            transaction_id
+        )
     }
 }

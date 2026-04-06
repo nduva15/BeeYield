@@ -8,7 +8,7 @@ mod models;
 mod supabase_client;
 
 use actix_cors::Cors;
-use actix_web::{web, App, HttpServer, middleware::Logger};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use std::sync::Arc;
 
 use config::Config;
@@ -56,15 +56,42 @@ async fn main() -> std::io::Result<()> {
             .route("/db/upsert", web::post().to(handlers::handle_upsert))
             .route("/db/get-by-id", web::post().to(handlers::handle_get_by_id))
             // Integrations
-            .route("/integrations/configs", web::get().to(handlers::list_integration_configs))
-            .route("/integrations/config", web::post().to(handlers::upsert_integration_config))
-            .route("/integrations/quickbooks/authorize-url", web::get().to(handlers::quickbooks_authorize_url))
-            .route("/integrations/quickbooks/complete", web::post().to(handlers::quickbooks_complete))
-            .route("/integrations/quickbooks/sync", web::post().to(handlers::quickbooks_sync))
-            .route("/integrations/shopify/authorize-url", web::get().to(handlers::shopify_authorize_url))
-            .route("/integrations/shopify/complete", web::post().to(handlers::shopify_complete))
-            .route("/integrations/shopify/sync", web::post().to(handlers::shopify_sync))
-            .route("/integrations/etims/sync/{transaction_id}", web::post().to(handlers::etims_sync_transaction))
+            .route(
+                "/integrations/configs",
+                web::get().to(handlers::list_integration_configs),
+            )
+            .route(
+                "/integrations/config",
+                web::post().to(handlers::upsert_integration_config),
+            )
+            .route(
+                "/integrations/quickbooks/authorize-url",
+                web::get().to(handlers::quickbooks_authorize_url),
+            )
+            .route(
+                "/integrations/quickbooks/complete",
+                web::post().to(handlers::quickbooks_complete),
+            )
+            .route(
+                "/integrations/quickbooks/sync",
+                web::post().to(handlers::quickbooks_sync),
+            )
+            .route(
+                "/integrations/shopify/authorize-url",
+                web::get().to(handlers::shopify_authorize_url),
+            )
+            .route(
+                "/integrations/shopify/complete",
+                web::post().to(handlers::shopify_complete),
+            )
+            .route(
+                "/integrations/shopify/sync",
+                web::post().to(handlers::shopify_sync),
+            )
+            .route(
+                "/integrations/etims/sync/{transaction_id}",
+                web::post().to(handlers::etims_sync_transaction),
+            )
             // Health
             .route("/health", web::get().to(handlers::health_check))
             // AI Routing & Query
@@ -72,12 +99,16 @@ async fn main() -> std::io::Result<()> {
             .route("/ai/query", web::post().to(handlers::handle_ai_query))
             .route("/ai/tokenize", web::post().to(handlers::handle_tokenize))
             // Payments
-            .route("/payments/stk-push", web::post().to(handlers::handle_mpesa_push))
-            .route("/payments/parse-callback", web::post().to(handlers::handle_parse_callback))
+            .route(
+                "/payments/stk-push",
+                web::post().to(handlers::handle_mpesa_push),
+            )
+            .route(
+                "/payments/parse-callback",
+                web::post().to(handlers::handle_parse_callback),
+            )
     })
-
     .bind(&bind_addr)?
-
     .run()
     .await
 }

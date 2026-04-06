@@ -7,8 +7,8 @@ use std::sync::Arc;
 
 use crate::config::Config;
 use crate::models::{
-    DbDeleteRequest, DbInsertRequest, DbResponse, DbSelectRequest,
-    DbUpdateRequest, DbUpsertRequest, DbGetByIdRequest,
+    DbDeleteRequest, DbGetByIdRequest, DbInsertRequest, DbResponse, DbSelectRequest,
+    DbUpdateRequest, DbUpsertRequest,
 };
 
 pub struct SupabaseClient {
@@ -29,11 +29,19 @@ impl SupabaseClient {
     }
 
     /// Build headers for a request, using optional bearer token override.
-    fn build_headers(&self, token: Option<&str>, prefer: Option<&str>) -> reqwest::header::HeaderMap {
+    fn build_headers(
+        &self,
+        token: Option<&str>,
+        prefer: Option<&str>,
+    ) -> reqwest::header::HeaderMap {
         let mut headers = reqwest::header::HeaderMap::new();
         let auth_key = self.config.auth_key();
         let public_key = &self.config.supabase_key;
-        let apikey = if token.is_some() { public_key } else { auth_key };
+        let apikey = if token.is_some() {
+            public_key
+        } else {
+            auth_key
+        };
 
         headers.insert("apikey", apikey.parse().unwrap());
         headers.insert(
@@ -45,10 +53,7 @@ impl SupabaseClient {
         headers.insert("Content-Type", "application/json".parse().unwrap());
         headers.insert(
             "Prefer",
-            prefer
-                .unwrap_or("return=representation")
-                .parse()
-                .unwrap(),
+            prefer.unwrap_or("return=representation").parse().unwrap(),
         );
 
         headers
@@ -59,7 +64,14 @@ impl SupabaseClient {
         let url = format!("{}/{}", self.config.rest_url(), req.table);
         let headers = self.build_headers(req.token.as_deref(), None);
 
-        match self.client.post(&url).headers(headers).json(&req.data).send().await {
+        match self
+            .client
+            .post(&url)
+            .headers(headers)
+            .json(&req.data)
+            .send()
+            .await
+        {
             Ok(resp) => {
                 let status = resp.status();
                 let body = resp.text().await.unwrap_or_default();
@@ -80,7 +92,10 @@ impl SupabaseClient {
         let headers = self.build_headers(req.token.as_deref(), None);
 
         let mut params: Vec<(String, String)> = vec![
-            ("select".to_string(), req.columns.clone().unwrap_or_else(|| "*".to_string())),
+            (
+                "select".to_string(),
+                req.columns.clone().unwrap_or_else(|| "*".to_string()),
+            ),
             ("limit".to_string(), req.limit.unwrap_or(100).to_string()),
         ];
 
@@ -89,10 +104,12 @@ impl SupabaseClient {
             for (key, value) in filters {
                 let filter_val = if let Some(s) = value.as_str() {
                     // Check if it already has an operator prefix
-                    let has_operator = ["eq.", "neq.", "gt.", "lt.", "gte.", "lte.",
-                        "like.", "ilike.", "is.", "in.", "cs.", "cd."]
-                        .iter()
-                        .any(|op| s.starts_with(op));
+                    let has_operator = [
+                        "eq.", "neq.", "gt.", "lt.", "gte.", "lte.", "like.", "ilike.", "is.",
+                        "in.", "cs.", "cd.",
+                    ]
+                    .iter()
+                    .any(|op| s.starts_with(op));
                     if has_operator {
                         s.to_string()
                     } else {
@@ -101,7 +118,11 @@ impl SupabaseClient {
                 } else if let Some(arr) = value.as_array() {
                     let vals: Vec<String> = arr
                         .iter()
-                        .map(|v| v.as_str().map(|s| s.to_string()).unwrap_or_else(|| v.to_string()))
+                        .map(|v| {
+                            v.as_str()
+                                .map(|s| s.to_string())
+                                .unwrap_or_else(|| v.to_string())
+                        })
                         .collect();
                     format!("in.({})", vals.join(","))
                 } else {
@@ -113,7 +134,11 @@ impl SupabaseClient {
 
         // Apply ordering
         if let Some(ref order_by) = req.order_by {
-            let direction = if req.ascending.unwrap_or(true) { "asc" } else { "desc" };
+            let direction = if req.ascending.unwrap_or(true) {
+                "asc"
+            } else {
+                "desc"
+            };
             params.push(("order".to_string(), format!("{}.{}", order_by, direction)));
         }
 

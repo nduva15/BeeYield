@@ -178,7 +178,6 @@ pub struct PaymentCallbackResponse {
 
 #[derive(Debug, Serialize)]
 pub struct HealthResponse {
-
     pub service: String,
     pub status: String,
     pub supabase_configured: bool,
@@ -241,4 +240,3 @@ pub struct IntegrationSyncResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub config: Option<Value>,
 }
-
