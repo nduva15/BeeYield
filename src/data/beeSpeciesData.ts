@@ -452,5 +452,77 @@ export const beeSpeciesData: Record<string, BeeSpeciesDetail> = {
         pros: ["Propolis producer", "Resilient to tropical pests"],
         cons: ["Small hive volume"],
         description: "Known for the quality of its resin. BeeYield's 'Dammar-Sense' nodes provide real-time resin-flow analytics."
+    },
+    "Western Dark Bee": {
+        scientificName: "Apis mellifera mellifera",
+        commonName: "German Black Bee / European Dark Bee",
+        origin: "Northern and Western Europe",
+        characteristics: "Dark-bodied, compact, and conservative in brood rearing; stores heavily for winter and flies in cool weather windows.",
+        honeyYield: "Moderate to high in heather, moorland, and mixed temperate forage.",
+        temperament: "Can be defensive if crossed, but stable and steady in well-selected lines.",
+        climateSuitability: "Cold, wet, and windy northern climates with long winters.",
+        pros: ["Excellent winter thrift", "Strong disease resilience in local strains", "Good in cool coastal weather"],
+        cons: ["Can be defensive", "Slow spring buildup compared with Italian lines"],
+        description: "A classic northern European bee valued by conservation breeders for hardiness, thrift, and adaptation to long, damp winters."
+    },
+    "Iberian Honey Bee": {
+        scientificName: "Apis mellifera iberiensis",
+        commonName: "Iberian Bee",
+        origin: "Spain and Portugal",
+        characteristics: "Highly variable dark-to-banded coloration; agile flyers; adapts quickly to dry forage pulses and rugged landscapes.",
+        honeyYield: "Moderate to high when matched to rosemary, eucalyptus, chestnut, and wild scrub flows.",
+        temperament: "Alert and defensive under pressure, but productive in experienced hands.",
+        climateSuitability: "Mediterranean climates with hot dry summers and mild, wet winters.",
+        pros: ["Drought tolerant", "Strong orientation ability", "Performs well on sparse forage"],
+        cons: ["Can become defensive", "Swarming pressure rises if nectar arrives suddenly"],
+        description: "A regionally adapted honey bee shaped by Iberia's sharp seasonal shifts, prized where heat tolerance and fast foraging matter."
+    },
+    "Himalayan Cliff Bee": {
+        scientificName: "Apis laboriosa",
+        commonName: "Himalayan Giant Honey Bee",
+        origin: "Himalayan foothills of Nepal, Bhutan, and northern India",
+        characteristics: "Massive open-nesting honey bee that hangs single combs from cliffs and migrates with altitude and bloom cycles.",
+        honeyYield: "High per colony in wild harvest settings, though it is not managed in standard hives.",
+        temperament: "Highly defensive when nesting; resilient in harsh alpine exposure.",
+        climateSuitability: "Cool high-altitude mountain zones with seasonal floral migrations.",
+        pros: ["Exceptional cold tolerance", "Long foraging flights", "Important wild pollinator of mountain flora"],
+        cons: ["Not suitable for standard hive management", "Dangerous to harvest", "Migratory nesting behavior"],
+        description: "The world's largest honey bee, famous for cliff nesting and high-elevation honey hunting traditions across the Himalayas."
+    },
+    "Red Dwarf Honey Bee": {
+        scientificName: "Apis andreniformis",
+        commonName: "Black Dwarf Honey Bee",
+        origin: "Southeast Asia",
+        characteristics: "Tiny open-nesting bee with reddish to black abdomen bands; builds small exposed combs in shrubs and low branches.",
+        honeyYield: "Very low; mainly valuable as a wild pollinator rather than a honey producer.",
+        temperament: "Generally mild, quick, and evasive rather than confrontational.",
+        climateSuitability: "Warm humid tropical forests and edge habitats.",
+        pros: ["Efficient on small blossoms", "Low space requirements in the wild", "Adapted to tropical heat"],
+        cons: ["Minimal harvest potential", "Open nesting makes management difficult", "Absconds readily"],
+        description: "A close relative of the dwarf honey bee, important in tropical pollination webs but poorly suited to commercial hive systems."
+    },
+    "Jatai Stingless Bee": {
+        scientificName: "Tetragonisca fiebrigi",
+        commonName: "Jatai Bee",
+        origin: "South America",
+        characteristics: "Very small golden stingless bee that builds resin entrance tubes and thrives in compact urban and forest-edge nests.",
+        honeyYield: "Low, but the honey is highly prized for flavor and medicinal use.",
+        temperament: "Very gentle and easy to work around homes, schools, and gardens.",
+        climateSuitability: "Warm subtropical and tropical climates.",
+        pros: ["Safe for urban meliponiculture", "Excellent pollinator of small fruits and vegetables", "High-value specialty honey"],
+        cons: ["Sensitive to cold snaps", "Small colonies limit production", "Needs protected hive design"],
+        description: "One of the most approachable stingless bees for small-scale keepers, especially where education, pollination, and specialty honey matter more than volume."
+    },
+    "Tawny Mining Bee": {
+        scientificName: "Andrena fulva",
+        commonName: "Tawny Mining Bee",
+        origin: "Europe and western Asia",
+        characteristics: "Rust-orange solitary ground nester active in spring; females excavate burrows in sunny bare soil near fruit bloom.",
+        honeyYield: "None.",
+        temperament: "Solitary and non-aggressive; stings are extremely rare.",
+        climateSuitability: "Temperate spring climates with open soil and orchard bloom.",
+        pros: ["Powerful early-season pollinator", "Excellent for apples and pears", "Easy to support through habitat planting"],
+        cons: ["Short seasonal activity", "Requires undisturbed bare ground", "No honey production"],
+        description: "A charismatic spring solitary bee that helps orchard pollination and signals healthy nesting habitat in low-disturbance landscapes."
     }
 };

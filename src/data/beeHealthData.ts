@@ -1,5 +1,6 @@
 export interface SymptomDetail {
     scientificName?: string;
+    causes?: string;
     signs: string;
     symptoms: string;
     detection: string;
@@ -15,22 +16,24 @@ export const beeHealthData: Record<string, SymptomDetail> = {
     // === BACTERIAL DISEASES ===
     "American Foulbrood (AFB)": {
         scientificName: "Paenibacillus larvae",
+        causes: "Spore-forming bacterial infection that blooms when contaminated honey, comb, or robbing behavior exposes young larvae to Paenibacillus larvae spores.",
         signs: "Sunken, dark, perforated cappings; 'pupal tongue' protruding from remains.",
         symptoms: "Larvae turn coffee-brown and ropy; distinct 'foul' decayed-fish odor.",
         detection: "Rope Test; Holst Milk Test; EFD Diagnostic Kits.",
         treatment: "Incineration of bees and equipment; scorching non-combustibles.",
-        prevention: "Regular inspection; tool sterilization; hygienic queens.",
+        prevention: "Inspect brood often; sterilize hive tools between colonies; avoid exchanging contaminated comb or honey; use hygienic queens and isolate suspect equipment immediately.",
         transmission: "Robbing; drifting; contaminated equipment.",
         riskLevel: "CRITICAL",
         steps: ["Execute Rope Test", "Contact apiary inspector", "Incinerate infected frames"]
     },
     "European Foulbrood (EFB)": {
         scientificName: "Melissococcus plutonius",
+        causes: "Bacterial brood disease favored by nutritional stress, chilled brood cycles, and colonies that cannot keep nurse bees ahead of larval feeding demand.",
         signs: "Twisted, yellow/brown larvae coiled in 'C' shape; die before capping.",
         symptoms: "Melted/rubbery larvae; sour/yeasty smell; spotty brood pattern.",
         detection: "Visual inspection of coiled larvae; potash test.",
         treatment: "Re-queening; Shook Swarm; Terramycin (in some regions).",
-        prevention: "Strong nutrition; reducing spring stress.",
+        prevention: "Maintain strong spring nutrition; avoid prolonged brood chilling; replace dark comb; reduce stress during dearth and requeen weak colonies quickly.",
         transmission: "Nurse bees; trophallaxis; contaminated pollen.",
         riskLevel: "HIGH",
         steps: ["Identify twisted yellow larvae", "Feed syrup", "Re-queen"]
@@ -72,11 +75,12 @@ export const beeHealthData: Record<string, SymptomDetail> = {
     // === FUNGAL DISEASES ===
     "Chalkbrood": {
         scientificName: "Ascosphaera apis",
+        causes: "Fungal spores germinate when brood stays cool and damp, especially in weak colonies, shaded apiaries, or hives with poor airflow.",
         signs: "Hard, white/grey 'mummies' on bottom board; cotton-like growth in cells.",
         symptoms: "Larvae harden into blocks; reduced adult population.",
         detection: "Visual 'mummy' identification.",
         treatment: "Strengthen colony; improve ventilation; remove infected frames.",
-        prevention: "Dry apiary sites; tilt hives forward.",
+        prevention: "Keep hives dry and well ventilated; favor sunny apiary placement; tilt boxes forward for drainage; rotate out damp comb and requeen weak stock.",
         transmission: "Spores carried by workers; shared water.",
         riskLevel: "MEDIUM",
         steps: ["Scrape bottom board", "Improve ventilation", "Tilt hive forward"]
@@ -105,11 +109,12 @@ export const beeHealthData: Record<string, SymptomDetail> = {
     },
     "Nosema ceranae (Disappearing)": {
         scientificName: "Nosema ceranae",
+        causes: "Microsporidian infection spreads through contaminated feces, water, and drifting bees, then worsens under pesticide pressure and chronic nutritional stress.",
         signs: "No dysentery; quiet dwindling; foragers 'disappear' away from hive.",
         symptoms: "Chronic intestinal damage; suppressed immune system.",
         detection: "PCR testing; quantitative microscopy.",
         treatment: "Keep colonies strong; probiotic supplements.",
-        prevention: "Minimize pesticide exposure; diverse pollen.",
+        prevention: "Provide diverse forage and clean water; reduce pesticide exposure; avoid damp wintering conditions; replace old comb and prevent drifting between colonies.",
         transmission: "Queen trade; drifting; shared waterers.",
         riskLevel: "CRITICAL",
         steps: ["PCR test", "Protein supplements", "Limit stress"]
@@ -118,11 +123,12 @@ export const beeHealthData: Record<string, SymptomDetail> = {
     // === VIRAL DISEASES ===
     "Deformed Wing Virus (DWV)": {
         scientificName: "DWV-A/B",
+        causes: "Virus amplification follows unmanaged Varroa infestations, which inject DWV directly into developing brood and adult bees.",
         signs: "Emerging bees with shriveled wings; truncated abdomens.",
         symptoms: "Inability to fly; shortened lifestyle; population crash.",
         detection: "Observation; RT-PCR.",
         treatment: "Aggressive Varroa suppression.",
-        prevention: "Mite levels <1%; VSH queens.",
+        prevention: "Keep Varroa below action thresholds all season; monitor with alcohol washes; rotate mite treatments; favor hygienic/VSH stock and avoid collapsing donor colonies.",
         transmission: "Varroa destructor (vector); vertical.",
         riskLevel: "CRITICAL",
         steps: ["Alcohol Wash", "Miticide treatment", "Re-test count"]
@@ -263,11 +269,12 @@ export const beeHealthData: Record<string, SymptomDetail> = {
     // === MITES & PARASITES ===
     "Varroa Destructor (Generic)": {
         scientificName: "Varroa destructor",
+        causes: "External parasitic mite pressure rises through robbing, drifting, shared equipment, and untreated brood cycles that allow mites to reproduce unchecked.",
         signs: "Red-brown mites on bees; phoretic staging.",
         symptoms: "Deformed wings; PMS; weight loss; collapse.",
         detection: "Alcohol Wash (>3%); Sticky Board.",
         treatment: "Organic Acids; Thymol; Amitraz.",
-        prevention: "VSH Queens; Drone Culling.",
+        prevention: "Run an IPM plan with frequent mite counts; rotate treatment families; cull drone brood strategically; prevent robbing and select for hygienic/VSH queens.",
         transmission: "Drifting; robbing; transport.",
         riskLevel: "CRITICAL",
         steps: ["300-bee wash", "Apply treatment", "Re-test"]
@@ -1086,5 +1093,61 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         transmission: "Aerosol.",
         riskLevel: "MEDIUM",
         steps: ["Move apiary", "Wash hive face"]
+    },
+    "Pesticide Poisoning": {
+        causes: "Acute exposure to insecticides, fungicide mixes, or contaminated tank blends during bloom or nearby spray events overwhelms foragers and contaminates incoming nectar and pollen.",
+        signs: "Large numbers of trembling or dead bees at the entrance; tongues extended; fresh pollen loads on dead foragers.",
+        symptoms: "Disorientation, paralysis, rapid field losses, queen slowdown, and sudden population drop after spray windows.",
+        detection: "Compare losses with recent spray timing; collect fresh bee and pollen samples for residue testing; inspect nearby bloom and water sources.",
+        treatment: "Close entrances temporarily if drift is active; move colonies when possible; feed clean syrup and pollen substitute; remove heavily contaminated feed frames if losses continue.",
+        prevention: "Coordinate spray windows with growers; avoid placing hives beside treated bloom; provide clean water on-site; favor evening or post-bloom applications only.",
+        transmission: "Contaminated nectar, pollen, dust, guttation droplets, and direct spray drift.",
+        riskLevel: "CRITICAL",
+        steps: ["Collect fresh samples", "Contact grower immediately", "Feed clean syrup", "Relocate if exposure continues"]
+    },
+    "Chilled Brood": {
+        causes: "Brood temperature falls below the colony's ability to keep it warm after cold snaps, over-inspection, sudden splits, or weak populations covering too much comb.",
+        signs: "Sunken or dark brood concentrated on outer comb edges; patchy dead brood after cold weather or hive disturbance.",
+        symptoms: "Brood dies before emergence, colony stalls in buildup, and weakened larvae become vulnerable to secondary infection.",
+        detection: "Review recent weather, inspection timing, and colony strength; confirm dead brood is concentrated in poorly covered or exposed areas.",
+        treatment: "Reduce hive space, combine weak units, insulate if needed, and stop opening brood nests during cold or windy periods.",
+        prevention: "Match box size to colony strength; avoid long inspections in cold weather; support weak colonies before major cold swings; keep wind exposure low.",
+        transmission: "Not contagious; triggered by environmental exposure and management stress.",
+        riskLevel: "MEDIUM",
+        steps: ["Consolidate brood area", "Reduce empty space", "Add feed if cluster is light"]
+    },
+    "Starvation Stress": {
+        causes: "Colonies exhaust honey or pollen reserves during dearth, winter confinement, poor forage, or brood expansion that outpaces incoming nectar and stored feed.",
+        signs: "Bees head-first in cells; very light hive weight; dry comb above cluster; frantic robbing behavior.",
+        symptoms: "Rapid worker death, brood cannibalism, queen slowdown, and collapse even when the brood nest appears otherwise healthy.",
+        detection: "Heft hives regularly; inspect feed arcs around brood; confirm low stores with frame-by-frame checks and weight telemetry.",
+        treatment: "Emergency feed with warm syrup, fondant, or dry sugar depending on season; add protein only when bees can access water and brood is active.",
+        prevention: "Monitor hive weight through dearth and winter; leave adequate honey reserves; feed before colonies reach critical lightness; reduce excess empty space.",
+        transmission: "Nutritional and management failure rather than infectious spread.",
+        riskLevel: "CRITICAL",
+        steps: ["Feed immediately", "Verify queen is alive", "Reduce robbing pressure", "Recheck stores within 48 hours"]
+    },
+    "Asian Hornet Predation": {
+        scientificName: "Vespa velutina",
+        causes: "Persistent hawking by Asian hornets strips returning foragers and traps colonies indoors, especially in late summer when hornet nests peak.",
+        signs: "Hornets hovering at hive entrances; piles of dismembered bees; reduced pollen return despite favorable weather.",
+        symptoms: "Forager paralysis, colony stress, starvation, and sharp drops in flight activity as bees refuse to leave the hive.",
+        detection: "Direct observation at entrances, camera monitoring, and triangulation of repeated hornet flight paths toward nest sites.",
+        treatment: "Install hornet guards or muzzles; trap scouts early; destroy confirmed nests with local authorities or trained crews.",
+        prevention: "Monitor apiaries from midsummer onward; keep entrance reducers and protective screens ready; remove attractants and trap founding queens in spring where legal.",
+        transmission: "Predatory pressure from nearby nests and repeated scout recruitment.",
+        riskLevel: "HIGH",
+        steps: ["Install entrance guards", "Trap scouts", "Report nest location", "Monitor forage traffic daily"]
+    },
+    "Colony Collapse Disorder (CCD)": {
+        causes: "Multifactor stress syndrome linked to Varroa, viruses, pesticide load, transport stress, poor nutrition, and queen failure rather than a single pathogen.",
+        signs: "Sudden loss of most adult workers while brood, queen, and food remain in the hive; delayed robbing from neighboring colonies.",
+        symptoms: "Field force disappears, brood care breaks down, and the remaining colony cannot recover despite food reserves.",
+        detection: "Rule out starvation, queen loss, and acute poisoning first; review mite history, migration events, feed quality, and recent disease pressure.",
+        treatment: "Stabilize surviving units by combining weak colonies, requeening if needed, correcting Varroa pressure, and improving forage and feed support.",
+        prevention: "Maintain strong year-round Varroa control; reduce transport and nutritional stress; replace failing queens promptly; avoid stacking multiple chemical exposures.",
+        transmission: "Syndromic collapse rather than direct contagion; often emerges from multiple concurrent stressors.",
+        riskLevel: "CRITICAL",
+        steps: ["Audit mite history", "Review forage and pesticide exposure", "Combine survivors if needed", "Requeen weak units"]
     }
 };

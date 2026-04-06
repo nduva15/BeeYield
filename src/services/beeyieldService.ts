@@ -56,6 +56,7 @@ function _buildDiseaseGuideItems(q?: string) {
             name,
             type: detail.scientificName ? `${detail.riskLevel} risk | ${detail.scientificName}` : `${detail.riskLevel} risk`,
             causes: [
+                detail.causes ? `Causes: ${detail.causes}` : '',
                 detail.signs ? `Signs: ${detail.signs}` : '',
                 detail.symptoms ? `Symptoms: ${detail.symptoms}` : '',
                 detail.transmission ? `Transmission: ${detail.transmission}` : '',

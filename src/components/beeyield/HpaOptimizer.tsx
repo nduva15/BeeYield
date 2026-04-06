@@ -1,7 +1,6 @@
 import React from 'react';
 import { Target, Zap, TrendingUp, Info, ArrowRight, ShieldCheck, Database, LayoutGrid, CheckCircle2, ChevronDown, Binary, ShieldAlert, Activity, Settings, List as ListIcon, Hexagon, Loader2, Gauge, Scale, Waves, Trees, Calculator, TreePine, BarChart3, Maximize2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { CROP_PROFILES, calculateRequiredHives, ColonyGrade } from '@/lib/apicultureModels';
+import { dashboardPollinationCropNames } from '@/data/beePollinationData';
 
 const CircularGauge: React.FC<{ value: number; max: number; label: string; isPremium?: boolean }> = ({ value, max, label, isPremium }) => {
     const pct = Math.min(1, value / max);
@@ -52,40 +52,12 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; isPre
 const HpaOptimizer: React.FC = () => {
     const [acreage, setAcreage] = React.useState<number>(50);
     const [treeDensity, setTreeDensity] = React.useState<string>('medium');
-    const [variety, setVariety] = React.useState<string>('Almond (Nonpareil)');
+    const [variety, setVariety] = React.useState<string>(dashboardPollinationCropNames[0]);
     const [colonyGrade, setColonyGrade] = React.useState<ColonyGrade>('Grade A');
     const [treesPerAcre, setTreesPerAcre] = React.useState<number>(110);
-    const [cropOptions, setCropOptions] = React.useState<string[]>([]);
-    const [cropsLoading, setCropsLoading] = React.useState(true);
+    const cropOptions = dashboardPollinationCropNames;
 
-    React.useEffect(() => {
-        let mounted = true;
-        const load = async () => {
-            setCropsLoading(true);
-            try {
-                const data = await beeyieldService.getCropRequirements();
-                const names = (data || [])
-                    .map((c: any) => String(c?.crop_name || c?.cropName || '').trim())
-                    .filter(Boolean);
-                if (!mounted) return;
-                setCropOptions(names);
-                if (names.length > 0 && !names.includes(variety)) {
-                    setVariety(names[0]);
-                }
-            } catch {
-                if (!mounted) return;
-                setCropOptions(Object.keys(CROP_PROFILES));
-            } finally {
-                if (mounted) setCropsLoading(false);
-            }
-        };
-        load();
-        return () => {
-            mounted = false;
-        };
-    }, [variety]);
-
-    const profile = CROP_PROFILES[variety as keyof typeof CROP_PROFILES] || CROP_PROFILES['Almond (Nonpareil)'];
+    const profile = CROP_PROFILES[variety as keyof typeof CROP_PROFILES] || CROP_PROFILES[dashboardPollinationCropNames[0]];
     
     // Density multiplier based on tree density selection
     const densityMultiplier = treeDensity === 'high' ? 1.2 : treeDensity === 'low' ? 0.8 : 1.0;
@@ -197,7 +169,7 @@ const HpaOptimizer: React.FC = () => {
                              <div className="space-y-2">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">Variety Profile</label>
                                 <div className="max-h-[220px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
-                                    {(cropOptions.length > 0 ? cropOptions : Object.keys(CROP_PROFILES)).map((c) => (
+                                    {cropOptions.map((c) => (
                                         <button
                                             key={c}
                                             onClick={() => setVariety(c)}

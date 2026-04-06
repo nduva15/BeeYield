@@ -14,48 +14,69 @@ export interface CropProfile {
 }
 
 export const CROP_PROFILES: Record<string, CropProfile> = {
-    'Almonds': {
-        name: 'Almonds',
+    'Maize': {
+        name: 'Maize',
+        minFPA: 4,
+        recommendedFPA: 8,
+        maxFPA: 12,
+        description: 'Low bee dependency, but useful for pollen collection and colony support.'
+    },
+    'Sunflower': {
+        name: 'Sunflower',
         minFPA: 12,
-        recommendedFPA: 18,
+        recommendedFPA: 16,
         maxFPA: 24,
-        description: 'Requires high density for synchronized bloom window.'
+        description: 'Needs strong morning forage overlap for seed set and oil yield.'
     },
-    'Apples': {
-        name: 'Apples',
-        minFPA: 6,
-        recommendedFPA: 10,
-        maxFPA: 14,
-        description: 'Moderate density sufficient for cross-pollination.'
-    },
-    'Blueberries': {
-        name: 'Blueberries',
-        minFPA: 10,
-        recommendedFPA: 14,
-        maxFPA: 20,
-        description: 'High activity required for buzz-pollination efficiency.'
-    },
-    'Cherries': {
-        name: 'Cherries',
-        minFPA: 8,
-        recommendedFPA: 12,
-        maxFPA: 16,
-        description: 'Sensitive to temperature-dependent flight hours.'
+    'Mangoes': {
+        name: 'Mangoes',
+        minFPA: 16,
+        recommendedFPA: 24,
+        maxFPA: 32,
+        description: 'Requires consistent pollinator pressure to reduce fruit drop and lift quality.'
     },
     'Avocados': {
         name: 'Avocados',
-        minFPA: 10,
-        recommendedFPA: 15,
-        maxFPA: 22,
+        minFPA: 20,
+        recommendedFPA: 32,
+        maxFPA: 40,
         description: 'Complex flowering cycle requires sustained saturation.'
     },
-    'Macadamias': {
-        name: 'Macadamias',
+    'Beans': {
+        name: 'Beans',
         minFPA: 8,
         recommendedFPA: 12,
         maxFPA: 18,
-        description: 'Focus on internal hive traffic and weight delta.'
-    }
+        description: 'Medium dependency crop where stable bee traffic improves pod fill and seed quality.'
+    },
+    'Oranges': {
+        name: 'Oranges',
+        minFPA: 8,
+        recommendedFPA: 20,
+        maxFPA: 28,
+        description: 'Citrus bloom benefits from steady colony strength and balanced saturation.'
+    },
+    'Tomatoes': {
+        name: 'Tomatoes',
+        minFPA: 8,
+        recommendedFPA: 12,
+        maxFPA: 18,
+        description: 'Buzz-pollination crop that needs healthy colonies and precise deployment timing.'
+    },
+    'Onions': {
+        name: 'Onions',
+        minFPA: 32,
+        recommendedFPA: 48,
+        maxFPA: 60,
+        description: 'Very high pollination density is needed for strong onion seed production.'
+    },
+    'Sisal': {
+        name: 'Sisal',
+        minFPA: 2,
+        recommendedFPA: 4,
+        maxFPA: 8,
+        description: 'Lower direct dependency crop that still supports ecosystem-level forage planning.'
+    },
 };
 
 export type ColonyGrade = 'Grade A' | 'Grade B' | 'Grade C';
@@ -77,7 +98,7 @@ export interface RequiredHivesResult {
  * Calculates the required hives for a target FPA.
  */
 export function calculateRequiredHives(input: RequiredHivesInput): RequiredHivesResult {
-    const profile = CROP_PROFILES[input.cropType] || CROP_PROFILES['Almonds'];
+    const profile = CROP_PROFILES[input.cropType] || CROP_PROFILES['Maize'];
     const targetFPA = profile.recommendedFPA;
     const framesPerHive = input.colonyGrade === 'Grade A' ? 12 : input.colonyGrade === 'Grade B' ? 8 : 6;
     const requiredHives = Math.ceil((input.acreage * targetFPA) / framesPerHive);

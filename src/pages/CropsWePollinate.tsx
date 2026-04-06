@@ -8,11 +8,11 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { beePollinationData } from "@/data/beePollinationData";
+import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
-  const pollinationCrops = Object.values(beePollinationData);
+  const pollinationCrops = dashboardPollinationCropDetails;
 
   const locations = [
     { continent: "Africa", countries: ["Kenya"], color: "bg-primary" }
@@ -109,7 +109,7 @@ const CropsWePollinate = () => {
             </Card>
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">9+</p>
+                <p className="text-4xl font-bold text-primary mb-2">9</p>
                 <p className="text-muted-foreground font-medium">Crop Varieties</p>
               </CardContent>
             </Card>

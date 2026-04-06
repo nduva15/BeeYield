@@ -262,17 +262,23 @@ const OurStory = () => {
           </Card>
         </div>
       </section>
-      {/* Full-width Video Section - Before Footer */}
-      <div className="relative w-full h-[70vh] bg-[#F0F7F0]">
-        <iframe
-          className="absolute inset-0 w-full h-full opacity-60"
-          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
-          title="About BeeYield"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-transparent to-transparent pointer-events-none" />
+      {/* Branded Story Panel */}
+      <div className="relative w-full min-h-[70vh] bg-[#F0F7F0] overflow-hidden">
+        <img src={storyHeroHoney} alt="BeeYield story panel" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-[#F0F7F0]/60 to-[#F0F7F0]/20" />
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 h-full flex items-center justify-center">
+          <Card className="max-w-4xl w-full border-none bg-white/75 backdrop-blur-xl shadow-2xl rounded-[3rem]">
+            <CardContent className="p-10 sm:p-14 text-center">
+              <img src={Logo} alt="BeeYield logo" className="h-20 w-auto mx-auto mb-8" />
+              <h2 className="text-3xl sm:text-5xl font-bold text-foreground mb-6">
+                A local story with a long horizon
+              </h2>
+              <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
+                Where we do not have dedicated media, we now use BeeYield's own mark and local brand imagery so the story stays consistent, modern, and rooted in the company itself.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </BeeYieldPageShell>
   );

@@ -17,10 +17,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { 
     CROP_PROFILES, 
     calculateCurrentFPA, 
-    calculateSuccessProbability, 
+    calculateSuccessProbability,
     estimateYieldLoss,
     calculateRequiredHives
 } from '@/lib/apicultureModels';
+import { dashboardPollinationCropNames } from '@/data/beePollinationData';
 
 interface PollinationEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -68,7 +69,7 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; isPre
 };
 
 const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) => {
-    const [selectedCrop, setSelectedCrop] = React.useState<string>('Almonds');
+    const [selectedCrop, setSelectedCrop] = React.useState<string>(dashboardPollinationCropNames[0]);
     const [acreage, setAcreage] = React.useState<number>(100);
     const [weatherFactor, setWeatherFactor] = React.useState<number>(0.9);
     const [bloomIntensity, setBloomIntensity] = React.useState<number>(1.0);
@@ -88,7 +89,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
     });
 
     const [isSaving, setIsSaving] = React.useState(false);
-    const cropProfile = CROP_PROFILES[selectedCrop] || CROP_PROFILES['Almonds'];
+    const cropProfile = CROP_PROFILES[selectedCrop] || CROP_PROFILES[dashboardPollinationCropNames[0]];
 
     const calculateStats = (scenario: Scenario) => {
         const currentFPA = calculateCurrentFPA(scenario.hivesPerAcre, scenario.framesPerHive, 1);
@@ -149,7 +150,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                                 </div>
                             </SelectTrigger>
                             <SelectContent className={cn(glass.selectContent, "z-[105]")}>
-                                {Object.keys(CROP_PROFILES).map(name => (
+                                {dashboardPollinationCropNames.map(name => (
                                     <SelectItem key={name} value={name} className="text-xs font-bold py-2.5">
                                         {name}
                                     </SelectItem>
